@@ -42,8 +42,8 @@ describe(`Reduced Standard Deduction`, () => {
       ...singleFilerData,
       ...{ [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false) },
     });
-    // Normal standard deduction for 2024= $14,600
-    expect(factGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`14600.00`);
+    // Normal standard deduction for 2026= $16,100 (Rev. Proc. 2025-32 §4.14 p.18)
+    expect(factGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`16100.00`);
   });
 
   it(`When the filer can be claimed, but the claimer is filing for refund only or not filing,
@@ -59,8 +59,8 @@ describe(`Reduced Standard Deduction`, () => {
         [`/primaryFilerPotentialClaimerFiledOnlyForRefund`]: createBooleanWrapper(true),
       },
     });
-    // Normal standard deduction for 2024= $14,600
-    expect(filingFactGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`14600.00`);
+    // Normal standard deduction for 2026= $16,100 (Rev. Proc. 2025-32 §4.14 p.18)
+    expect(filingFactGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`16100.00`);
     task.meta.testedFactPaths = [`/standardDeduction`];
 
     // The claimer isn't filing
@@ -72,8 +72,8 @@ describe(`Reduced Standard Deduction`, () => {
         [`/filers/#${primaryFilerId}/potentialClaimerDidFile`]: createBooleanWrapper(false),
       },
     });
-    // Normal standard deduction for 2024= $14,600
-    expect(factGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`14600.00`);
+    // Normal standard deduction for 2026= $16,100 (Rev. Proc. 2025-32 §4.14 p.18)
+    expect(factGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`16100.00`);
   });
 
   it(`When the filer can be claimed,
