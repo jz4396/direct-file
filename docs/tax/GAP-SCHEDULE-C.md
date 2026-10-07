@@ -2,51 +2,64 @@
 
 **Status:** Gap PR (spec + acceptance criteria). Implementation by Dev.
 **Tax year target:** 2026
-**Authority:** IRC §§61, 1401–1402, 162; Form 1040 Schedule C; Schedule SE; Form 1099-NEC / 1099-K reporting rules as applicable for TY2026.
+
+## Audit sources (required on every claim)
+
+### Statute (HTML)
+
+- Gross income: [26 U.S.C. § 61](https://www.law.cornell.edu/uscode/text/26/61)
+- Trade/business expenses: [26 U.S.C. § 162](https://www.law.cornell.edu/uscode/text/26/162)
+- SE tax rates / definitions: [26 U.S.C. § 1401](https://www.law.cornell.edu/uscode/text/26/1401), [§ 1402](https://www.law.cornell.edu/uscode/text/26/1402)
+- Deduction for employer-equivalent portion of SE tax: [26 U.S.C. § 164(f)](https://www.law.cornell.edu/uscode/text/26/164)
+- QBI (if implemented): [26 U.S.C. § 199A](https://www.law.cornell.edu/uscode/text/26/199A)
+
+### Forms / instructions (PDF)
+
+- [Schedule C (Form 1040) — latest instructions PDF](https://www.irs.gov/instructions/i1040sc) (follow through to current-year PDF; cite **page number** of any line rule used)
+- [Schedule SE instructions](https://www.irs.gov/instructions/i1040sse)
+- Upstream scope exclusion (why this is a gap): [Pub 6048 (12-2024)](https://www.irs.gov/pub/irs-pdf/p6048.pdf) — Direct File did **not** support gig/business/rental income
+
+### Snippet — Pub 6048 scope (audit trail for the gap itself)
+
+From IRS Direct File eligibility materials (Pub 6048 / related outreach): taxpayers **cannot** use Direct File if they had other types of income such as gig economy, rental, or business income. Full PDF: https://www.irs.gov/pub/irs-pdf/p6048.pdf — quote the exact “Income” / exclusion bullets and note the **PDF page** when updating this PR after opening the PDF in implementation.
+
+### Snippet — IRC § 1401(a) (SE tax)
+
+> In addition to other taxes, there shall be imposed for each taxable year, on the self-employment income of every individual, a tax equal to 12.4 percent of the amount of the self-employment income for such taxable year…
+
+Source: [26 U.S.C. § 1401](https://www.law.cornell.edu/uscode/text/26/1401). Pair with § 1401(b) hospital insurance and § 1402 definitions. TY2026 Social Security wage base: cite the SSA/IRS figure in the implementation PR (do not hardcode without a dated source).
+
+### Snippet — IRC § 164(f) (deductible half of SE tax)
+
+> In the case of an individual, … there shall be allowed as a deduction … an amount equal to … the taxes imposed by section 1401 … (employer-equivalent portion).
+
+Source: [26 U.S.C. § 164(f)](https://www.law.cornell.edu/uscode/text/26/164#f).
+
+**Standing rule:** implementation commits must paste the controlling instruction page or IRC subsection next to each computation.
 
 ## Current behavior (upstream)
 
-IRS Direct File (TY2024 / filing season 2025) **did not support** gig, rental, or business income. Eligibility docs (Pub 6048 / 6035 / 5949) list W-2, SSA-1099, 1099-G, 1099-INT, 1099-R, Alaska APFD only. Taxpayers with Schedule C income were out of scope.
+Direct File excluded Schedule C / gig / business income. This fork targets full-return coverage.
 
-This fork’s goal is full-return coverage. Schedule C + SE is the largest commercial-parity gap after TY2026 parameters.
+## Product intent (MVP)
 
-## Product intent (MVP for this PR series)
-
-Phase 1 (this PR’s implementation target):
-
-1. Interview flow: "Did you have self-employment / gig / freelance income?"
-2. Capture one or more businesses (name, EIN/SSN, principal business code optional for MVP)
-3. Income: gross receipts (cash / 1099-NEC / 1099-K) with clear sourcing questions
-4. Expenses: common Schedule C Part II categories (MVP subset allowed if documented; full Part II is preferred)
-5. Net profit/loss → Form 1040 Schedule 1 → AGI
-6. Schedule SE: SE tax on net earnings; deductible half of SE tax as adjustment
-7. QBI (IRC §199A) — **stub or out-of-scope flag** for Phase 1 unless Dev can prove simple cases; do not silently omit if income is in scope — either implement simplified QBI or hard-block with explanation
-
-Phase 2 (follow-up PRs, do not block Phase 1 merge on these):
-
-- Home office, vehicle actual vs standard mileage, depreciation, inventory, multi-state apportionment
-- PDF + MeF for Schedule C / SE
-- 1099-K de minimis / reporting thresholds for TY2026
-
-## Fact-graph / code touchpoints
-
-1. New fact-dictionary module(s) under `direct-file/df-client/df-client-app/src/fact-dictionary/`
-2. Flow screens under `.../src/flow` and locales
-3. Culminating facts: Schedule C net profit, SE tax, deductible SE tax, AGI linkage
-4. Eligibility / "out of scope" gates that currently reject business income — remove or re-gate
-5. PDF: extend `direct-file/backend/.../pdf` (no Schedule C form today)
-6. MeF XML in `submit` when filing path is ready
+1. Interview for self-employment / gig / freelance income
+2. One or more businesses
+3. Gross receipts + expense categories (MVP subset OK if documented)
+4. Net → Schedule 1 → AGI
+5. Schedule SE + deductible half under § 164(f)
+6. QBI § 199A: implement simple case **or** explicit non-support (no silent zero)
 
 ## Acceptance criteria (Rev review gate)
 
-- [ ] Taxpayers with only in-scope W-2 (+ existing DF income) still compute identically (regression)
-- [ ] Simple cash Schedule C (receipts − expenses = profit) flows to AGI correctly
-- [ ] Schedule SE tax and deductible half match IRC §1401/1402 for the TY2026 SE rate and wage base (cite Rev. Proc. / SSA for wage base in PR)
-- [ ] Negative net → no SE tax; loss handling documented
-- [ ] QBI: implemented for simple case **or** explicit non-support with user-facing block (no silent zero)
-- [ ] Fact-dictionary tests for culminating facts
-- [ ] Proof: scenario table (inputs → Schedule C net, SE tax, AGI) in PR body
+- [ ] Every formula cites IRC § or Schedule C/SE instructions **PDF page**
+- [ ] W-2-only regression unchanged
+- [ ] Simple cash Schedule C → AGI correct
+- [ ] SE tax + § 164(f) deduction match cited law for TY2026 wage base
+- [ ] Loss / zero SE documented
+- [ ] QBI handled or explicitly blocked
+- [ ] Proof scenario table in PR body
 
 ## Reviewer notes
 
-High blast radius on AGI and credits (EITC/CTC phaseouts). Requires Rev compliance writeup before @Feat merge. Prefer vertical slice (one business, cash basis, standard mileage optional) over incomplete full Schedule C.
+High blast radius on AGI/credits. Feat merges only after Rev writeup.
