@@ -1,0 +1,221 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/ctc8862Required">
+      <Name>ctc8862Required</Name>
+      <Description>Used to indicate whether Part III of Schedule 8862 is applicable</Description>
+      <Export downstreamFacts="true" mef="true" />
+
+      <Derived>
+        <All>
+          <Any>
+            <Dependency path="/isReceivingCtc" />
+            <Dependency path="/isReceivingActc" />
+            <Dependency path="/isReceivingOdc" />
+          </Any>
+          <Dependency path="/receivedImproperClaims" />
+          <Not>
+            <Dependency path="/hasFiledCtcOdcSinceNoticeExpired" />
+          </Not>
+          <Any>
+            <All>
+              <Dependency path="/hadCtcOdcImproperClaimsBan" />
+              <Dependency path="/improperClaimsNoticeExpired" />
+            </All>
+            <Equal>
+              <Left>
+                <Dependency path="/receivedImproperClaimsNotice" />
+              </Left>
+              <Right>
+                <Enum optionsPath="/improperClaimsNoticeOptions">zeroYears</Enum>
+              </Right>
+            </Equal>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/receivedImproperClaims">
+      <Name>Received CTC improper claims</Name>
+      <Description>Since 2015 (TY -8?) the IRS has reduced or disallowed the TP or MFJ spouse's CTC,
+        ACTC, or ODC for
+        reasons other than a math error.</Description>
+
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/receivedImproperClaimsNotice">
+      <Name>Received CTC improper Claims notice</Name>
+      <Description>Whether the TP received a letter from the IRS telling them they're not allowed to
+        take CTC, ACTC, or
+        ODC for a number of years</Description>
+      <Writable>
+        <Enum optionsPath="/improperClaimsNoticeOptions" />
+      </Writable>
+    </Fact>
+    <Fact path="/improperClaimsNoticeExpired">
+      <Name>CTC improper claims notice expired</Name>
+      <Description>Whether the improper claims notice that the TP previously received is far enough
+        in the past to be
+        expired. E.g. They could not file for 2 years, and it has been at least 2 years</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/hasFiledCtcOdcSinceNoticeExpired">
+      <Name>CTC Has Filed CTC or ODC since notice expired</Name>
+      <Description>Whether the TP has filed for CTC or ODC again since the notice has expired. The
+        first time a taxpayer
+        files after their notice has expired, they need to fill out form 8862.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/hadCtcOdcImproperClaimsBan">
+      <Name>Flow CTC Ask Improper Claims Expiration</Name>
+      <Description>Whether the flow should ask a person if their CTC improper claims notice has
+        expired</Description>
+      <Derived>
+        <All>
+          <Not>
+            <Dependency path="/hasFiledCtcOdcSinceNoticeExpired" />
+          </Not>
+          <Any>
+            <Equal>
+              <Left>
+                <Dependency path="/receivedImproperClaimsNotice" />
+              </Left>
+              <Right>
+                <Enum optionsPath="/improperClaimsNoticeOptions">twoYears</Enum>
+              </Right>
+            </Equal>
+            <Equal>
+              <Left>
+                <Dependency path="/receivedImproperClaimsNotice" />
+              </Left>
+              <Right>
+                <Enum optionsPath="/improperClaimsNoticeOptions">tenYears</Enum>
+              </Right>
+            </Equal>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/dependentCreditMagi">
+      <Name>Modified AGI for purposes of dependent credits</Name>
+      <Description>
+        Modified AGI for purposes of dependent credits. Reported on line 3 of Schedule 8812.
+
+        Schedule 8812
+        line 2a is 0 because Puerto Rico is out of scope;
+        Schedule 8812 line 2b is 0 because Foreign Earned
+        Income (Form
+        2555) is out of scope;
+        Schedule 8812 line 2c is 0 because residents of American Samoa (Form 4563) are
+        out of
+        scope;
+        Therefore the MAGI, due to scope, is the AGI
+      </Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Round>
+          <Dependency module="taxCalculations" path="/agi" />
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/pdfIncludeSchedule8812">
+      <Name>Include Schedule 8812 in tax return PDF</Name>
+      <Description>Whether the tax return PDF should include Schedule 8812.</Description>
+
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/totalCtcAndOdc"></Dependency>
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/additionalCtc"></Dependency>
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line18a">
+      <Name>Display value for PDF Schedule 8812, Line 18a</Name>
+      <Description>Earned income with all combat pay if completing Part II-A; undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency module="income" path="/earnedIncomeWithAllCombatPay" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line18b">
+      <Name>Display value for PDF Schedule 8812, Line 18b</Name>
+      <Description>Nontaxable combat pay if completing Part II-A; undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency module="formW2s" path="/allCombatPay" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line21">
+      <Name>Display value for PDF Schedule 8812, Line 21</Name>
+      <Description>Social Security taxes withheld if completing Part II-B; undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine20" />
+            </When>
+            <Then>
+              <Dependency module="formW2s" path="/socialSecurityTaxesWithheld" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line24">
+      <Name>Display value for PDF Schedule 8812, Line 24</Name>
+      <Description>Earned income credit if completing Part II-B; undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine20" />
+            </When>
+            <Then>
+              <Dependency module="eitc" path="/earnedIncomeCredit" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
