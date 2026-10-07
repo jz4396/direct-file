@@ -8,12 +8,12 @@
 Durable write-up of the **Modernized e-File (MeF) path-forward** for this fork, plus two related Phase A items:
 
 1. **Print-forms feature** — generate printable IRS tax forms from interview answers.
-2. **PDF generator comparison (open question)** — keep upstream PDFBox/Java vs port to a non-Java stack.
+2. **PDF generator comparison** — can an **existing non-Java** language in this repo fill IRS AcroForms well enough to drop Java from the stack?
 
 This doc does **not** replace or amend [YEAR-TAX-CONFIG](./YEAR-TAX-CONFIG.md), [CLIENT-SAVE-STATE](./CLIENT-SAVE-STATE.md), [HOSTING-AND-LOCAL](./HOSTING-AND-LOCAL.md), or the `docs/tax/` gap specs.
 
 ## Normative sources (audit trail)
-- Product requirements: Joshua → Feat (Oct 2026) — MeF path-forward research; print-forms + PDF-generator decision rule.
+- Product requirements: Joshua → Feat (Oct 2026) — MeF path-forward research; print-forms + PDF-generator decision (reframed: remove Java via in-stack library?).
 - IRS MeF / e-file:
   - [Publication 3112 — IRS e-File Application and Participation](https://www.irs.gov/pub/irs-pdf/p3112.pdf)
   - [Publication 4164 — MeF Guide for Software Developers and Transmitters](https://www.irs.gov/pub/irs-pdf/p4164.pdf)
@@ -93,8 +93,8 @@ Generate **printable IRS tax forms** from interview / Fact Graph answers, modele
 6. Run PDF scenario tests / visual spot-check; security review if any document store is introduced.
 
 ### Out of scope for this item
-- Replacing PDFBox (see §3).
-- Running PDF generation on Cloudflare Pages free (needs local or separate backend — same as today).
+- Replacing PDFBox (see §3) unless a separate decision ports print to pdf-lib.
+- Running PDF generation on Cloudflare Pages free (needs local or separate backend — same as today for PDFBox; pdf-lib could run in Node or even client-side).
 
 ### Acceptance (when implemented)
 - [ ] `pdf/2026/` (or agreed year folder) with refreshed 1040-family packs
@@ -104,28 +104,50 @@ Generate **printable IRS tax forms** from interview / Fact Graph answers, modele
 
 ---
 
-## 3. NEW — PDF generator comparison (open question)
+## 3. PDF generator — can we delete Java?
 
-**Status:** open question — **Feat recommendation below**  
-**Decision rule (Joshua):** If expanding the existing TY2024 template set for 2026 is enough, **stick with PDFBox**. Only port if a non-Java option is **clearly better** for filling IRS AcroForm templates.
+**Status:** answered (Oct 2026)  
+**Real question (Joshua):** Is there a PDF fill-in library in a language we **already use** (non-Java) that would let us **delete Java from the stack entirely**? Do **not** add Python or any new language. Jinja optional / skippable.
 
-### Options
+### 3.1 Languages already in this repo
 
-| Option | Stack | Fit for IRS AcroForm fill | Effort vs stick | Notes |
-|--------|-------|---------------------------|-----------------|-------|
-| **A. Keep PDFBox / Java** (upstream) | JVM backend | **Best** — already fills IRS PDFs via field maps + YAML; PdfToYaml + documented year update process | **Lowest** — expand year folder + new packs | Matches upstream README; 24+ existing packs |
-| **B. pdf-lib (JS/TS)** | Node / browser | Good AcroForm support in JS | **High** — rewrite fill engine + re-encode all YAML/field maps; browser fill possible but large PDFs / PII in-client |
-| **C. pypdf / PyPDF form (Python)** | Python service | Solid AcroForm fill | **High** — new service language + rewrite mappings; still not Pages-native |
-| **D. Jinja → HTML → PDF** | Any | **Poor** for official IRS forms — recreates appearance, not IRS fillable PDFs; a11y / exact form fidelity risk | **Very high** + compliance risk | Fine for statements; wrong tool for f1040*.pdf packs |
+Rough share of application code (Java + TS/TSX + Scala ≈ 1,750 source files; excludes node_modules / build):
 
-### Evidence
-- Upstream already invested in PDFBox + per-form `configuration.yml` + PdfToYaml; year updates are a **known process** (pdf README: “Guidelines for updating configurations when IRS updates PDF forms”).
-- Porting means reimplementing AcroForm fill **and** migrating **24+** template packs without a clear win for IRS-supplied fillable PDFs.
-- Phase A Pages hosting **cannot** run PDFBox **or** a JVM MeF submitter; PDF generation stays **local / separate backend** either way — porting does not unlock Pages-only PDF.
+| Language | ~share | Where |
+|----------|--------|--------|
+| TypeScript / TSX | ~43% | `df-client/` (React app, static site, packages) |
+| Java | ~41% | `backend`, `submit`, `state-api`, `email-service`, `status`, `libs/*`, `utils/pdf-to-yaml` (Maven / Spring Boot) |
+| Scala | ~15% | `fact-graph-scala` (JVM + Scala.js) |
+| Python | tooling only | `utils/csp-simulator`, `scripts/*.py` — **not** a runtime language for PDF |
+| YAML / JSON / Docker / Shell | infra | config, compose, CI, PDF field maps |
+
+### 3.2 In-stack PDF fill options (no new languages)
+
+| Option | Lang | Can fill IRS AcroForms? | Notes |
+|--------|------|-------------------------|-------|
+| **Apache PDFBox** (current) | Java | **Yes** — proven in-repo | Lowest risk for TY2026 template expansion |
+| **pdf-lib** | TypeScript / JS | **Yes** — text, checkbox, radio, multi-page, flatten; fontkit for non-Latin | Best non-Java option already in-stack |
+| Scala PDF libs | Scala | No mature AcroForm filler we’d bet IRS print on | Don’t invent one |
+| Python (pypdf, reportlab, …) | Python | Capable, but **out of scope** — would add a language we refuse to add for this | Skip |
+| pdfmake / Jinja→HTML→PDF | JS / any | Generate / recreate layout — **not** fill official IRS PDFs | Wrong tool |
+| Hosted PDF APIs | SaaS | Possible fill, but tax PII / FTI leaves the stack | Avoid |
+
+### 3.3 Direct answers
+
+1. **Can we produce printable IRS forms without Java on the PDF path?**  
+   **Yes.** Port `PdfService` to **pdf-lib** (TypeScript): load IRS templates → map fact paths (reuse YAML field maps) → set fields → flatten → bytes. Works in Node (or potentially client-side for Phase A local/print). Migration cost: rewrite of `api/pdf` wiring + field-by-field validation of ~24 packs vs current PDFBox output — **moderate** (weeks, not a weekend), no new language.
+
+2. **Can we remove Java from the entire stack just by swapping the PDF library?**  
+   **No.** PDFBox is a leaf. `backend` / `submit` / `state-api` / `email-service` are Java Spring. Deleting Java means rewriting those services — a full backend migration, not a PDF decision.
+
+3. **TY2026 / Phase A recommendation**  
+   - **Default:** keep **PDFBox**, expand TY2024 packs → TY2026 (incl. Schedules C/D/E/A). Lowest risk while Dev/Cod ship tax gaps.  
+   - **If the goal is “no JVM for print”** (e.g. Pages-adjacent or pure Node print): port print to **pdf-lib**; keep Java backends until a deliberate backend rewrite.  
+   - Cloudflare Pages still cannot host MeF; PDF stays local / separate service either way for mail-ready production flows that need a backend.
 
 ### Feat recommendation
 
-**Stick with PDFBox / Java.** Expand and remap the TY2024 packs into a TY2026 folder; add Schedules C/D/E/A templates. **Do not port** unless a later decision drops the Java backend entirely for a non-JVM stack — revisit only then.
+**Stick with PDFBox for TY2026 template expansion** unless Joshua prioritizes removing the JVM from the **print** path — then choose **pdf-lib** only. Do **not** treat a PDF port as deleting Java from the project.
 
 ---
 
@@ -139,5 +161,5 @@ Generate **printable IRS tax forms** from interview / Fact Graph answers, modele
 - [x] Spec under `docs/product/MEF-PATH-FORWARD.md`
 - [x] MeF path-forward items captured (enrollment, software, Phase A timing, bot guardrails)
 - [x] Print-forms feature scoped
-- [x] PDF generator comparison + Feat recommendation recorded
+- [x] PDF comparison reframed: in-stack non-Java (pdf-lib) vs deleting Java; Feat recommendation recorded
 - [x] No edits to other product/tax roadmap docs in this change
