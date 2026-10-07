@@ -89,7 +89,8 @@ describe(`Reduced Standard Deduction`, () => {
         [`/filers/#${primaryFilerId}/potentialClaimerMustFile`]: createBooleanWrapper(true),
       },
     });
-    expect(mustFileFactGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`1300.00`);
+    // Dependent minimum std deduction TY2026 = $1,350 (Rev. Proc. 2025-32 §4.14(2) p.18)
+    expect(mustFileFactGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`1350.00`);
 
     // The claimer is filing for refund + credits
     const { factGraph } = setupFactGraph({
@@ -101,7 +102,7 @@ describe(`Reduced Standard Deduction`, () => {
         [`/primaryFilerPotentialClaimerFiledOnlyForRefund`]: createBooleanWrapper(false),
       },
     });
-    expect(factGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`1300.00`);
+    expect(factGraph.get(`/standardDeduction` as ConcretePath).get.toString()).toBe(`1350.00`);
   });
 });
 
