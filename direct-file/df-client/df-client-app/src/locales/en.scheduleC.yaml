@@ -1,0 +1,57 @@
+# Schedule C / SE locale strings (gap #3). Merged into en via locales/index.ts.
+headings:
+  /heading/income/schedule-c: Self-employment income
+  /heading/income/schedule-c/intro: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
+  /heading/income/schedule-c/qbi: Do you want to claim the qualified business income deduction?
+  /heading/income/schedule-c/loop-intro: Add each business or gig activity
+  /heading/income/schedule-c/business-basics: Tell us about this business
+  /heading/income/schedule-c/amounts: Enter gross receipts and expenses
+  /heading/knockout/schedule-c-qbi: Direct File doesn’t yet support the qualified business income deduction
+  /info/income/schedule-c/intro: >-
+    This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C.
+  /info/income/schedule-c/qbi: >-
+    The qualified business income (QBI) deduction under Internal Revenue Code section 199A is not supported
+    in this version. If you need to claim it, you can’t use Direct File for this return yet.
+  /info/income/schedule-c/loop-intro: >-
+    Add one entry for each business or gig activity. We’ll calculate net profit and self-employment tax.
+  /info/income/schedule-c/amounts: >-
+    Gross receipts are your total business income before expenses. Expenses are ordinary and necessary
+    costs of running the business (Internal Revenue Code section 162).
+  /info/knockout/schedule-c-qbi: >-
+    Direct File doesn’t calculate the qualified business income deduction yet. You’ll need another way
+    to file if you want to claim it.
+fields:
+  /hadSelfEmploymentIncome:
+    boolean:
+      "yes": Yes, I had self-employment, gig, or freelance income
+      "no": No, I didn’t have self-employment income
+  /wantsQbiDeduction:
+    boolean:
+      "yes": Yes, I want to claim the qualified business income deduction
+      "no": No, I don’t need the qualified business income deduction
+  /scheduleCBusinesses:
+    controls:
+      add: Add a business
+      complete_zero: I don’t have a business to add
+      complete: I’m done adding businesses
+      back: Go to business list
+    collectionListing:
+      itemHeading1: "{{/scheduleCBusinesses/*/businessName}}"
+      itemHeading2: Incomplete business
+    deleteControl:
+      text: <LinkModal1>Remove business</LinkModal1>
+      LinkModal1:
+        header: Are you sure you want to remove this business?
+        body:
+          - p: This can’t be undone.
+        controls:
+          confirm: Remove this business
+          cancel: Cancel
+  /scheduleCBusinesses/*/filer:
+    item: "{{/filers/*/firstName}} {{/filers/*/lastName}}"
+  /scheduleCBusinesses/*/businessName:
+    name: Business or gig activity name
+  /scheduleCBusinesses/*/writableGrossReceipts:
+    name: Gross receipts or sales
+  /scheduleCBusinesses/*/writableTotalExpenses:
+    name: Total business expenses

@@ -1,0 +1,80 @@
+ <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/unreportedTipIncome">
+      <Name>Unreported tip income</Name>
+      <Description>
+        Tip income not reported on line 1a
+
+        Form 1040, (line 1c)
+      </Description>
+
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerUnreportedTipIncome" />
+          <Dependency path="/secondaryFilerUnreportedTipIncome" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerMedicareWaiverPayments">
+      <Description>
+        Primary filer's Medicaid waiver payments not reported on Form(s) W-2
+
+        OUT OF SCOPE
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerMedicareWaiverPayments">
+      <Description>
+        Secondary filer's Medicaid waiver payments not reported on Form(s) W-2
+
+        OUT OF SCOPE
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/medicareWaiverPayments">
+      <Name>Medicare Waiver Payments</Name>
+      <Description>
+        Medicaid waiver payments not reported on Form(s) W-2
+
+        Form 1040 (line 1d)
+      </Description>
+
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerMedicareWaiverPayments" />
+          <Dependency path="/secondaryFilerMedicareWaiverPayments" />
+        </Add>
+      </Derived>
+    </Fact>
+
+
+    <Fact path="/taxableDependentCare">
+      <Name>Taxable Dependent Care</Name>
+      <Description>Taxable dependent care benefits from Form 2441 (line 1e)</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Dependency module="cdcc" path="/cdccTaxableBenefits" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerEmployerProvidedAdoptionBenefits">
+      <Description>
+        Primary filer's Employer-provided adoption benefits from Form 8839 (line 1f)
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Deri

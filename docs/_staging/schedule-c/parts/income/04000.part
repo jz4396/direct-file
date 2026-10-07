@@ -1,0 +1,59 @@
+t?</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Any>
+          <Dependency path="/isForeignTrustsGrantor" />
+          <Dependency path="/hasForeignTrustsTransactions" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/isNotForeignTrustsGrantorAndDoesNotHaveForeignTrustsTransactions">
+      <Name>Is the TP NOT an owner, grantor, settler or trustor of a foreign trust AND did the TP NOT have any
+        transactions with a foreign trust?</Name>
+      <Description>Is the TP NOT an owner, grantor, settler or trustor of a foreign trust AND did the TP NOT have any
+        transactions with a foreign trust?</Description>
+
+      <Derived>
+        <Not>
+          <Dependency path="/isForeignTrustsGrantorOrHasForeignTrustsTransactions" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hasForeignAccountsOrTrusts">
+      <Description>The TP has interest in foreign accounts or foreign trusts</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <Any>
+          <Dependency path="/hasForeignAccounts" />
+          <Dependency path="/isForeignTrustsGrantorOrHasForeignTrustsTransactions" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/doesNotHaveForeignAccountsOrTrusts">
+      <Name>Not foreign accounts nor foreign trusts</Name>
+      <Description>The TP does not have interest in foreign accounts nor does the TP have interest in foreign trusts</Description>
+
+      <Derived>
+        <Not>
+          <Dependency path="/hasForeignAccountsOrTrusts" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/madeIraContributions">
+      <Name>Made IRA contributions</Name>
+      <Description>Whether the TP made contributions to an Individual Retirement Arrangement.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/incomeSourcesIsComplete">
+      <Name>Income sources complete</Name>
+      <Description>The i

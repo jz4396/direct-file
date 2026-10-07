@@ -1,0 +1,56 @@
+doesNotHaveForeignAccounts">
+      <Name>Does not have interest of signature authorization in a foreign financial account</Name>
+      <Description>Logical Negation of has foreign accounts</Description>
+
+      <Derived>
+        <Not>
+          <Dependency path="/hasForeignAccounts" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/isForeignTrustsGrantor">
+      <Name>Is the TP an owner, grantor, settler or trustor of a foreign trust?</Name>
+      <Description>At any time during 2023, did you own a foreign trust?</Description>
+
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/isNotForeignTrustsGrantor">
+      <Name>Is the TP NOT an owner, grantor, settler or trustor of a foreign trust?</Name>
+      <Description>Logical Negation of has foreign trusts grantor</Description>
+
+      <Derived>
+        <Not>
+          <Dependency path="/isForeignTrustsGrantor" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hasForeignTrustsTransactions">
+      <Name>Did the TP have any transactions with a foreign trust?</Name>
+      <Description>At any time during 2023, did you have a transaction with a foreign trust?</Description>
+
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/doesNotHaveForeignTrustsTransactions">
+      <Name>Is the TP NOT an owner, grantor, settler or trustor of a foreign trust?</Name>
+      <Description>Logical Negation of has foreign trusts grantor</Description>
+
+      <Derived>
+        <Not>
+          <Dependency path="/hasForeignTrustsTransactions" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/isForeignTrustsGrantorOrHasForeignTrustsTransactions">
+      <Name>Is the TP an owner, grantor, settler or trustor of a foreign trust OR did the TP have any transactions with
+        a foreign trust?</Name>
+      <Description>Is the TP an owner, grantor, settler or trustor of a foreign trust OR did the TP have any
+        transactions with a foreign trus

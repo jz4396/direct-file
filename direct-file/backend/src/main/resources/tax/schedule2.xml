@@ -9,6 +9,14 @@
           <IsComplete>
             <Dependency module="ptc" path="/netPtcAmountWhenNegative" />
           </IsComplete>
+          <GreaterThan>
+            <Left>
+              <Dependency module="scheduleC" path="/selfEmploymentTax" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
         </Any>
       </Derived>
     </Fact>

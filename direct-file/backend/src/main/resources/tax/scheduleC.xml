@@ -1,0 +1,284 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<!--
+  Schedule C (Profit or Loss From Business) + Schedule SE (Self-Employment Tax) — TY2026 vertical slice.
+
+  Audit cites (required next to every computation):
+  - Gross income: 26 U.S.C. § 61 — https://www.law.cornell.edu/uscode/text/26/61
+  - Trade/business expenses: 26 U.S.C. § 162 — https://www.law.cornell.edu/uscode/text/26/162
+  - SE tax: 26 U.S.C. § 1401 — https://www.law.cornell.edu/uscode/text/26/1401
+  - Net earnings from SE: 26 U.S.C. § 1402 — https://www.law.cornell.edu/uscode/text/26/1402
+  - Deductible employer-equivalent portion: 26 U.S.C. § 164(f) — https://www.law.cornell.edu/uscode/text/26/164#f
+  - TY2026 OASDI wage base $184,500: SSA contribution and benefit base —
+    https://www.ssa.gov/oact/cola/cbb.html
+    Federal Register 90 Fed. Reg. 210 (Nov. 3, 2025) — OASDI base for 2026
+  - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
+    https://www.irs.gov/instructions/i1040sse
+  - QBI § 199A: explicitly unsupported in this slice (no silent zero) —
+    https://www.law.cornell.edu/uscode/text/26/199A
+
+  Implements gap: docs/tax/GAP-SCHEDULE-C.md (PR #3).
+-->
+<FactDictionaryModule>
+  <Facts>
+
+    <!-- ========== Collection / interview ========== -->
+
+    <Fact path="/scheduleCBusinesses">
+      <Name>Schedule C businesses</Name>
+      <Description>
+        One or more sole-proprietor / gig businesses reported on Schedule C.
+        Gross income inclusion authority: 26 U.S.C. § 61.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Collection />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinessesIsDone">
+      <Name>Schedule C businesses done</Name>
+      <Description>Filer finished the Schedule C business loop.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hasScheduleCBusinesses">
+      <Name>Has Schedule C businesses</Name>
+      <Description>Whether any Schedule C businesses are listed.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <CollectionSize>
+              <Dependency path="/scheduleCBusinesses" />
+            </CollectionSize>
+          </Left>
+          <Right>
+            <Int>0</Int>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hadSelfEmploymentIncome">
+      <Name>Had self-employment / gig / freelance income</Name>
+      <Description>
+        Interview gate: whether the filer (or spouse) had self-employment, gig, or freelance income
+        that belongs on Schedule C. Gap evidence Pub 6048 excluded this from upstream Direct File:
+        https://www.irs.gov/pub/irs-pdf/p6048.pdf
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/wantsQbiDeduction">
+      <Name>Wants qualified business income deduction</Name>
+      <Description>
+        Explicit § 199A gate. This vertical slice does NOT compute QBI.
+        If true → knockout (no silent zero). Cite: 26 U.S.C. § 199A —
+        https://www.law.cornell.edu/uscode/text/26/199A
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleCQbi">
+      <Name>Knockout: QBI § 199A not supported</Name>
+      <Description>
+        Explicit non-support for § 199A in this slice. Blast radius: AGI/credits if QBI were silently zeroed.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/hadSelfEmploymentIncome" />
+          <Dependency path="/wantsQbiDeduction" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <!-- ========== Per-business facts ========== -->
+
+    <Fact path="/scheduleCBusinesses/*/filer">
+      <Name>Business owner (filer)</Name>
+      <Description>Which filer owns this Schedule C business.</Description>
+      <Writable>
+        <CollectionItem collection="/filers" />
+      </Writable>
+      <Placeholder>
+        <Dependency module="filers" path="/primaryFiler" />
+      </Placeholder>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/businessName">
+      <Name>Business name</Name>
+      <Description>Schedule C identifying information — principal business / professional activity name.</Description>
+      <Writable>
+        <String />
+        <Limit type="Match">
+          <String><![CDATA[[\sA-Za-z0-9\-.,&']+]]></String>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableGrossReceipts">
+      <Name>Gross receipts or sales</Name>
+      <Description>
+        Schedule C Part I gross receipts (cash MVP). Inclusion: 26 U.S.C. § 61.
+        Cite Schedule C instructions PDF page for the line rule used in the implementation PR notes.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/grossReceipts">
+      <Name>Gross receipts or sales (derived)</Name>
+      <Description>Gross receipts defaulting incomplete writable to zero for sums.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableGrossReceipts" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableGrossReceipts" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableTotalExpenses">
+      <Name>Total business expenses (MVP)</Name>
+      <Description>
+        MVP expense bucket (sum of deductible trade/business expenses). Authority: 26 U.S.C. § 162
+        (ordinary and necessary expenses paid or incurred in carrying on a trade or business) —
+        https://www.law.cornell.edu/uscode/text/26/162
+        Category-level Schedule C Part II lines can replace this bucket in a later PR.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/totalExpenses">
+      <Name>Total business expenses (derived)</Name>
+      <Description>Expenses defaulting incomplete writable to zero for sums.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableTotalExpenses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableTotalExpenses" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/netProfitOrLoss">
+      <Name>Net profit or (loss)</Name>
+      <Description>
+        Schedule C net profit (loss) = gross receipts − expenses.
+        Flows to Schedule 1, line 3 (business income or loss).
+        Gross: § 61; expenses: § 162.
+      </Description>
+      <Export mef="true" />
+      <Derived>
+        <Round>
+          <Subtract>
+            <Minuend>
+              <Dependency path="../grossReceipts" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="../totalExpenses" />
+            </Subtrahends>
+          </Subtract>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/isComplete">
+      <Name>Schedule C business complete</Name>
+      <Description>Minimum fields for MVP: name, gross receipts, expenses.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../businessName" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableGrossReceipts" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableTotalExpenses" />
+          </IsComplete>
+        </All>
+      </Derived>
+    </Fact>
+
+    <!-- ========== Aggregates → Schedule 1 ========== -->
+
+    <Fact path="/scheduleCNetProfitOrLoss">
+      <Name>Total Schedule C net profit or (loss)</Name>
+      <Description>
+        Sum of Schedule C net profit/(loss) for Schedule 1 line 3 → Form 1040 line 8 (via Schedule 1 line 10).
+        Cite: Schedule C instructions; Form 1040 Schedule 1 line 3.
+      </Description>
+      <Export downstreamFacts="true" mef="true" />
+      <ExportZero />
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleCBusinesses/*/netProfitOrLoss" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCNetProfitForEarnedIncome">
+      <Name>Schedule C net profit included in earned income</Name>
+      <Description>
+        Positive Schedule C net profit counts as earned income (EITC/ACTC). Losses do not reduce earned
+        income below other earned income sources in this MVP (floored at zero for this component).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/scheduleCNetProfitOrLoss" />
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+
+  </Facts>
+</FactDictionaryModule>

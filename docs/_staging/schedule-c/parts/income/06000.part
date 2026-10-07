@@ -1,0 +1,80 @@
+ncome sources sub-subsection is complete.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/incomeSourcesSupported" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="/notDigitalAssets" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="/doesNotHaveForeignAccountsOrTrusts" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="/madeIraContributions" />
+          </IsComplete>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerUnreportedHouseholdWages">
+      <Description>
+        Primary Filer's Household employee wages not reported on Form(s) W-2
+
+        OUT OF SCOPE
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerUnreportedHouseholdWages">
+      <Description>
+        Primary Filer's household employee wages not reported on Form(s) W-2
+
+        OUT OF SCOPE
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/unreportedHouseholdWages">
+      <Name>Unreported household wages</Name>
+      <Description>
+        Household employee wages not reported on Form(s) W-2
+
+        Form 1040, 1b
+      </Description>
+
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerUnreportedHouseholdWages" />
+          <Dependency path="/secondaryFilerUnreportedHouseholdWages" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerUnreportedTipIncome">
+      <Description>
+        Primary Filer's tip income not reported on line 1a
+
+        OUT OF SCOPE
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerUnreportedTipIncome">
+      <Description>
+        Secondary Filer's tip income not reported on line 1a
+
+        OUT OF SCOPE
+      </Description>
+
+     
