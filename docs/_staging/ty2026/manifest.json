@@ -1,0 +1,32 @@
+[
+  {
+    "dest": "direct-file/backend/src/main/resources/tax/constants.xml",
+    "staging": "docs/_staging/ty2026/direct-file__backend__src__main__resources__tax__constants.xml.gz.b64",
+    "b64_len": 6116
+  },
+  {
+    "dest": "direct-file/backend/src/main/resources/tax/ctcOdc.xml",
+    "staging": "docs/_staging/ty2026/direct-file__backend__src__main__resources__tax__ctcOdc.xml.gz.b64",
+    "b64_len": 8172
+  },
+  {
+    "dest": "direct-file/backend/src/main/resources/tax/eitc.xml",
+    "staging": "docs/_staging/ty2026/direct-file__backend__src__main__resources__tax__eitc.xml.gz.b64",
+    "b64_len": 12456
+  },
+  {
+    "dest": "direct-file/backend/src/main/resources/tax/taxCalculations.xml",
+    "staging": "docs/_staging/ty2026/direct-file__backend__src__main__resources__tax__taxCalculations.xml.gz.b64",
+    "b64_len": 7896
+  },
+  {
+    "dest": "direct-file/df-client/df-client-app/src/test/factDictionaryTests/eitc.test.ts",
+    "staging": "docs/_staging/ty2026/direct-file__df-client__df-client-app__src__test__factDictionaryTests__eitc.test.ts.gz.b64",
+    "b64_len": 7200
+  },
+  {
+    "dest": "direct-file/df-client/df-client-app/src/test/factDictionaryTests/standardDeduction.test.ts",
+    "staging": "docs/_staging/ty2026/direct-file__df-client__df-client-app__src__test__factDictionaryTests__standardDeduction.test.ts.gz.b64",
+    "b64_len": 2896
+  }
+]
