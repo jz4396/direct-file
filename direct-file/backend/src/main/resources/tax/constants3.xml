@@ -1,0 +1,189 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/tinTypeOptionsLong">
+      <Name>TIN type Options</Name>
+      <Description>Options for TIN type</Description>
+      <Derived>
+        <EnumOptions>
+          <String>ssn</String>
+          <String>itin</String>
+          <String>atin</String>
+          <String>none</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/copyOptions">
+      <Description>A hacky enum used to get copy to the client that can later be translated, since raw strings from the
+        fact graph cannot</Description>
+      <Derived>
+        <EnumOptions>
+          <String>i</String>
+          <String>we</String>
+          <String>otherThanYourSpouse</String>
+          <String>doNotIncludeYourSpouse</String>
+          <String>emptyString</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/signaturePinEnteredByCode">
+      <Name>Signature Pin Entered by Code</Name>
+      <Description>The code representing how the taxpayer's signature pin was entered. Used to populate return header
+        fields in the 1040 XML.</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <String>Taxpayer</String>
+      </Derived>
+    </Fact>
+    <Fact path="/combatPayOptions">
+      <Name>Combat Pay Options</Name>
+      <Description>Options for combat pay</Description>
+      <Derived>
+        <EnumOptions>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/onlyMFJSpouseHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>useSpouseCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/onlyPrimaryFilerHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>usePrimaryCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/bothFilersHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>useBothCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/bothFilersHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>usePrimaryNotSpouseCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/bothFilersHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>useSpouseNotPrimaryCombatPay</String>
+            </Value>
+          </EnumOption>
+          <String>noCombatPay</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/apfForm1099MiscPayer">
+      <Description>The name of the payer on the 1099-Misc form for the Alaska Permanent Fund Dividend.</Description>
+      <Derived>
+        <String>State of Alaska</String>
+      </Derived>
+    </Fact>
+    <Fact path="/apfForm1099MiscPayerEin">
+      <Description>The EIN of the payer on the 1099-Misc form for the Alaska Permanent Fund Dividend.</Description>
+      <Derived>
+        <!--      The alaskaPFD (https://pfd.alaska.gov/payments/tax-information) Federal Tax Identification number is 92-6001185-->
+        <EIN>926001185</EIN>
+      </Derived>
+    </Fact>
+    <Fact path="/totalDistributionTaxableStartYear">
+      <Name>Total Distribution taxable</Name>
+      <Description>The date before which a TP cannot claim a total distribution on 1099-R in current scope.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Day>1936-01-02</Day>
+      </Derived>
+    </Fact>
+    <Fact path="/form1099RsDistributionCodeValidChars">
+      <Description>Characters that appear in DF-supported distribution codes.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <String>247BGH</String>
+      </Derived>
+    </Fact>
+    <Fact path="/hsaExcessContributionsPenalty">
+      <Description>Penalty for excess HSA contributions.</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <String>6%</String>
+      </Derived>
+    </Fact>
+    <Fact path="/hsaSelfOnlyCoverageLimit">
+      <Description>Self-only coverage limit for HSA contributions. Changes
+        each year, amount can be found in Form 8889
+        and instructions.
+        Rev Proc .01 HSA Inflation Adjusted Items §223(b)(2)(A)
+      </Description>
+      <Export downstreamFacts="true" />
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>4150</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/hsaFamilyCoverageLimit">
+      <Description>Family coverage limit for HSA contributions. Changes
+        each year, amount can be found in Form 8889 and
+        instructions.
+        Rev Proc .01 HSA Inflation Adjusted Items §223(b)(2)(B)
+      </Description>
+      <Export downstreamFacts="true" />
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>8300</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/hsaOver55AdditionalCoverageLimit">
+      <Description>Additional coverage limit for HSA contributions when TP is over 55. See instructions for form 8889
+        for details.</Description>
+      <Export downstreamFacts="true" />
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>1000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/alaskaPfdAmount">
+      <Description>Total value of the Alaska Permanent Fund</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Add>
+          <Dependency path="/alaskaPfdAmountDividendPortion" />
+          <Dependency path="/alaskaPfdAmountEnergyReliefPaymentPortion" />
+        </Add>
+      </Derived>
+    </Fact>
+    <Fact path="/alaskaPfdAmountDividendPortion">
+      <Description>Portion of the Alaska Permanent Fund that was the normal dividend distribution</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>1403.83</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/alaskaPfdAmountEnergyReliefPaymentPortion">
+      <Description>Portion of the Alaska Permanent Fund that was a one-time engergy relief payment</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>298.17</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/hdhpMinAnnualDeductibleSelf">
+      <Description>High Deductible Health Plan (HDHP) minimum annual deductible for self-only coverage (source
+        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>1600</Dollar>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

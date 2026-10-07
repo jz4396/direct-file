@@ -22,12 +22,15 @@ describe(`Credit for the Elderly or the Disabled`, () => {
   describe(`EDC qualification`, () => {
     const testCases = [
       {
+        // TY2026: Single elderly std ded $16,100 + aged addl $2,050 = $18,150
+        // (Rev. Proc. 2025-32 §4.14 p.18) exceeds statutory EDC AGI ceiling $17,500
+        // (IRC §22(d); fact /edcMaxSingleHohQssAgiLimit). No tax liability → not qualified.
         description: `Single, elderly under AGI limit`,
         data: {
           ...singleElderlyFilerEdcBase,
           ...makeW2Data(17000),
         },
-        expectedQualification: true,
+        expectedQualification: false,
       },
       {
         description: `Single, elderly over AGI limit`,

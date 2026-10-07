@@ -1,0 +1,148 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/hasNoStateIncomeTax">
+      <Name>State has an individual income tax</Name>
+      <Description>
+        Whether the taxayer lives in a state without an individual income tax; used for purposes of
+        validating
+        boxes 15-20 of Form W-2.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">ak</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">fl</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">nh</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">nv</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">sd</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">tn</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">tx</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">wa</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">wy</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/primaryFilerSsnEmploymentValidityOptions">
+      <Name>SSN Employment Validity Options</Name>
+      <Description>Options for SSN Employment validity</Description>
+      <Derived>
+        <EnumOptions>
+          <String>neither</String>
+          <String>notValid</String>
+          <String>validOnlyWithDhsAuthorization</String>
+          <String>validOnlyWithDhsAuthorizationExpired</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/ssnEmploymentValidityOptions">
+      <Name>SSN Employment Validity Options</Name>
+      <Description>Options for SSN Employment validity</Description>
+      <Derived>
+        <EnumOptions>
+          <String>neither</String>
+          <String>notValid</String>
+          <String>validOnlyWithDhsAuthorization</String>
+          <String>validOnlyWithDhsAuthorizationExpired</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/yesNoUnknownOptions">
+      <Name>Yes/No/Unknown Options</Name>
+      <Description>Options for yes/no/unknown enum</Description>
+      <Derived>
+        <EnumOptions>
+          <String>yes</String>
+          <String>no</String>
+          <String>unknown</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/moreLessEqualOptions">
+      <Name>More/Less/equal Options</Name>
+      <Description>Options for More/Less/equal enum</Description>
+      <Derived>
+        <EnumOptions>
+          <String>more</String>
+          <String>less</String>
+          <String>equal</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/tinTypeOptions">
+      <Name>TIN type Options</Name>
+      <Description>Options for TIN type</Description>
+      <Derived>
+        <EnumOptions>
+          <String>ssn</String>
+          <String>itin</String>
+          <String>atin</String>
+          <String>none</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
