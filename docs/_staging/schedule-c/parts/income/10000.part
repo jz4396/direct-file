@@ -1,0 +1,68 @@
+ved>
+    </Fact>
+
+    <Fact path="/secondaryFilerEmployerProvidedAdoptionBenefits">
+      <Description>
+        Secondary filer's employer-provided adoption benefits from Form 8839 (line 1f)
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/employerProvidedAdoptionBenefits">
+      <Name>Employer Provided Adoption Benefits</Name>
+      <Description>Employer-provided adoption benefits from Form 8839 (line 1f)</Description>
+
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerEmployerProvidedAdoptionBenefits" />
+          <Dependency path="/secondaryFilerEmployerProvidedAdoptionBenefits" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerWagesFrom8919">
+      <Description>
+        Primary filer's wages from Form 8919 (line 1g)
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerWagesFrom8919">
+      <Description>
+        Secondary filer's wages from Form 8919 (line 1g)
+      </Description>
+
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/wagesFrom8919">
+      <Name>Wages From 8919</Name>
+      <Description>Wages from Form 8919 (line 1g)</Description>
+
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerWagesFrom8919" />
+          <Dependency path="/secondaryFilerWagesFrom8919" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerOtherEarnedIncome">
+      <Name>Other earned income</Name>
+      <Description>Other earned income (line 1h) OUT OF SCOPE.</Description>
+
+      <Derived>
+        <Add>
+          <!-- TODO We are not yet supporting strike or lockout benefits, excessive elective deferrals, or corrective distributions from a retirement plan. -->
+          <!-- <Dependency module="form1099Rs" path="/primaryFilerDisabilityPensionsBeforeMinRetirementAge" /> -->
+          <Dollar>0</Dollar>
+        </Add>
+  

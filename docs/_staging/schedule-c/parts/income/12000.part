@@ -1,0 +1,54 @@
+    </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerOtherEarnedIncome">
+      <Name>Other earned income</Name>
+      <Description>Other earned income (line 1h) OUT OF SCOPE.</Description>
+
+      <Derived>
+        <Add>
+          <!-- TODO We are not yet supporting strike or lockout benefits, excessive elective deferrals, or corrective distributions from a retirement plan. -->
+          <!-- <Dependency module="form1099Rs" path="/secondaryFilerDisabilityPensionsBeforeMinRetirementAge" /> -->
+          <Dollar>0</Dollar>
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/otherEarnedIncome">
+      <Name>Other earned income</Name>
+      <Description>Other earned income (line 1h)</Description>
+
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerOtherEarnedIncome" />
+          <Dependency path="/secondaryFilerOtherEarnedIncome" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerEmployerIncomeSubtotalBase">
+      <Description>
+        The summed value of line 1a to 1d and 1f to 1h, using only the primary filer's income, but excluding
+        any taxable CDCC benefits.
+      </Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <Add>
+          <Dependency module="formW2s" path="/primaryFilerWages" />
+          <Dependency path="/primaryFilerUnreportedHouseholdWages" />
+          <Dependency path="/primaryFilerUnreportedTipIncome" />
+          <Dependency path="/primaryFilerMedicareWaiverPayments" />
+          <Dependency path="/primaryFilerEmployerProvidedAdoptionBenefits" />
+          <Dependency path="/primaryFilerWagesFrom8919" />
+          <Dependency path="/primaryFilerOtherEarnedIncome" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerEmployerIncomeSubtotalBase">
+      <Description>
+        The summed value of line 1a to 1d and 1f to 1h, using only the secondary filer's income, but
+        excluding any taxable CDCC benefits.
+      </Description>
+   
