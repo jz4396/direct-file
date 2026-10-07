@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: rev/ty2026-parameters
-      - name: Decode staged gzip+base64 files into tree
+      - name: Decode staged gzip+base64 test files into tree
         run: |
           set -euo pipefail
           python3 << 'PY'
@@ -29,21 +29,17 @@ jobs:
               dest.write_bytes(raw)
               print('wrote', dest, len(raw))
           PY
-      - name: Commit restored tax files
+      - name: Commit TY2026 fact-dictionary tests
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
-            direct-file/backend/src/main/resources/tax/constants.xml \
-            direct-file/backend/src/main/resources/tax/ctcOdc.xml \
-            direct-file/backend/src/main/resources/tax/eitc.xml \
-            direct-file/backend/src/main/resources/tax/taxCalculations.xml \
             direct-file/df-client/df-client-app/src/test/factDictionaryTests/eitc.test.ts \
             direct-file/df-client/df-client-app/src/test/factDictionaryTests/standardDeduction.test.ts
           if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "feat(tax): apply TY2026 parameters from staging (Rev. Proc. 2025-32)"
+          git commit -m "test(tax): apply TY2026 EITC + standard deduction fact-dictionary tests (Rev. Proc. 2025-32)"
           git push origin HEAD:rev/ty2026-parameters
