@@ -1,0 +1,61 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<!-- This module holds income types that do not exist in their own modules -->
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/incomeSourcesSupported">
+      <Name>Income sources supported</Name>
+      <Description>Does Direct File support all of the income sources that you/you and your spouse have?</Description>
+      <Export downstreamFacts="true" />
+
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/receivedDigitalAssets">
+      <Name>Digital assets</Name>
+      <Description>At any time during 2023, did you: (a) receive (as a reward, award, or payment for property or
+        services) a digital asset (or a financial interest in a digital asset)?</Description>
+
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/disposedDigitalAssets">
+      <Name>Digital assets</Name>
+      <Description>At any time during 2023, did you sell, exchange, gift, or otherwise dispose of a digital asset (or a
+        financial interest in a digital asset)?</Description>
+
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/notDigitalAssets">
+      <Name>Not Digital Assets</Name>
+      <Description>The TP did not receive receive or dispose of digital assets</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency path="/receivedDigitalAssets" />
+            <Dependency path="/disposedDigitalAssets" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hasForeignAccounts">
+      <Name>Interest of signature authorization in a foreign financial account</Name>
+      <Description>At any time during 2023, did you have a financial interest in or signature authority over a financial
+        account located in a foreign country?</Description>
+      <Export mef="true" />
+
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/
