@@ -12,19 +12,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: cod/impl-schedule-c
+          ref: ${{ github.ref_name }}
       - name: Decode staging into tax modules
         run: |
           python3 <<'PY'
           import gzip, base64, pathlib
           root = pathlib.Path("docs/_staging/schedule-c")
           dest = pathlib.Path("direct-file/backend/src/main/resources/tax")
-          for name in ["flow.xml", "income.xml", "taxCalculations.xml"]:
-              b64 = (root / f"{name}.gz.b64").read_text().strip()
-              data = gzip.decompress(base64.b64decode(b64))
-              out = dest / name
-              out.write_bytes(data)
-              print(name, len(data), "flowKnockoutScheduleCQbi" in data.decode(errors="ignore"))
+          for name in ["flow.xml", "income.xml", "taxCalculations.xml", "scheduleC.xml", "scheduleSE.xml"]:
+              p = root / f"{name}.gz.b64"
+              if not p.exists():
+                  print("skip missing", name)
+                  continue
+              data = gzip.decompress(base64.b64decode(p.read_text().strip()))
+              (dest / name).write_bytes(data)
+              text = data.decode(errors="ignore")
+              print(name, len(data),
+                    "QBI" if "flowKnockoutScheduleCQbi" in text else "-",
+                    "net" if "scheduleCNetProfitOrLoss" in text else "-",
+                    "SE" if "selfEmploymentTax" in text else "-")
           PY
       - name: Commit restored tax XML
         run: |
@@ -32,7 +38,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add direct-file/backend/src/main/resources/tax/flow.xml \
                   direct-file/backend/src/main/resources/tax/income.xml \
-                  direct-file/backend/src/main/resources/tax/taxCalculations.xml
+                  direct-file/backend/src/main/resources/tax/taxCalculations.xml \
+                  direct-file/backend/src/main/resources/tax/scheduleC.xml \
+                  direct-file/backend/src/main/resources/tax/scheduleSE.xml || true
           git diff --cached --quiet && echo "no changes" && exit 0
-          git commit -m "fix(tax): restore flow.xml + wire Schedule C/SE from staging"
+          git commit -m "fix(tax): restore flow + wire Schedule C/SE from staging"
           git push
