@@ -1,0 +1,22 @@
+[
+  {
+    "path": "direct-file/backend/src/main/resources/tax/scheduleD.xml",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__tax__scheduleD.xml.gz.b64",
+    "bytes": 22220
+  },
+  {
+    "path": "direct-file/backend/src/main/resources/tax/income.xml",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__tax__income.xml.gz.b64",
+    "bytes": 60935
+  },
+  {
+    "path": "direct-file/backend/src/main/resources/application.yaml",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__application.yaml.gz.b64",
+    "bytes": 18879
+  },
+  {
+    "path": "direct-file/backend/src/main/resources/factgraphservice/xmlFactPaths",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__factgraphservice__xmlFactPaths.gz.b64",
+    "bytes": 21481
+  }
+]

@@ -1,0 +1,37 @@
+name: apply-schedule-d-staging
+on:
+  workflow_dispatch:
+  push:
+    branches: [rev/gap-schedule-d]
+    paths:
+      - 'docs/_staging/schedule-d/**'
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rev/gap-schedule-d
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Decode staging into working tree
+        run: |
+          python3 <<'PY'
+          import gzip, base64, json
+          from pathlib import Path
+          manifest = json.loads(Path("docs/_staging/schedule-d/manifest.json").read_text())
+          for item in manifest:
+            raw = gzip.decompress(base64.b64decode(Path(item["staging"]).read_text()))
+            dest = Path(item["path"])
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(raw)
+            print("wrote", dest, len(raw))
+          PY
+      - name: Commit applied files if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "chore(tax): apply Schedule D staging (facts + PDFBox templates)"
+          git push
