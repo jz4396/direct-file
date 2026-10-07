@@ -18,5 +18,40 @@
     "path": "direct-file/backend/src/main/resources/factgraphservice/xmlFactPaths",
     "parts_prefix": "docs/_staging/schedule-d/xmlFactPaths.part",
     "bytes": 21481
+  },
+  {
+    "path": "direct-file/backend/src/main/resources/tax/scheduleD2.xml",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__tax__scheduleD2.xml.gz.b64",
+    "bytes": 8057
+  },
+  {
+    "path": "direct-file/backend/src/main/java/gov/irs/directfile/api/pdf/PdfTemplate.java",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__java__gov__irs__directfile__api__pdf__PdfTemplate.java.gz.b64",
+    "bytes": 9166
+  },
+  {
+    "path": "direct-file/df-client/df-client-app/src/test/factDictionaryTests/scheduleD.test.ts",
+    "staging": "docs/_staging/schedule-d/direct-file__df-client__df-client-app__src__test__factDictionaryTests__scheduleD.test.ts.gz.b64",
+    "bytes": 10660
+  },
+  {
+    "path": "docs/tax/GAP-SCHEDULE-D.md",
+    "staging": "docs/_staging/schedule-d/docs__tax__GAP-SCHEDULE-D.md.gz.b64",
+    "bytes": 3451
+  },
+  {
+    "path": "direct-file/backend/src/main/resources/pdf/2024/IRS1040SD/en/configuration.yml",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__pdf__2024__IRS1040SD__en__configuration.yml.gz.b64",
+    "bytes": 1252
+  },
+  {
+    "path": "direct-file/backend/src/main/resources/pdf/2024/IRS8949/en/configuration.yml",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__pdf__2024__IRS8949__en__configuration.yml.gz.b64",
+    "bytes": 2004
+  },
+  {
+    "path": "direct-file/backend/src/main/resources/pdf/2024/fetch-schedule-d-pdfs.sh",
+    "staging": "docs/_staging/schedule-d/direct-file__backend__src__main__resources__pdf__2024__fetch-schedule-d-pdfs.sh.gz.b64",
+    "bytes": 458
   }
 ]
