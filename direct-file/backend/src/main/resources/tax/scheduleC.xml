@@ -93,6 +93,7 @@
       <Description>
         Explicit non-support for § 199A in this slice. Blast radius: AGI/credits if QBI were silently zeroed.
       </Description>
+      <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
         <All>
