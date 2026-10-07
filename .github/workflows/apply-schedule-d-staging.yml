@@ -22,7 +22,12 @@ jobs:
           from pathlib import Path
           manifest = json.loads(Path("docs/_staging/schedule-d/manifest.json").read_text())
           for item in manifest:
-            raw = gzip.decompress(base64.b64decode(Path(item["staging"]).read_text()))
+            if "parts_prefix" in item:
+              parts = sorted(Path(".").glob(item["parts_prefix"] + "*"), key=lambda p: int(p.name.split("part")[-1]))
+              b64 = "".join(p.read_text().strip() for p in parts)
+              raw = gzip.decompress(base64.b64decode(b64))
+            else:
+              raw = gzip.decompress(base64.b64decode(Path(item["staging"]).read_text()))
             dest = Path(item["path"])
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(raw)
@@ -33,5 +38,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || git commit -m "chore(tax): apply Schedule D staging (facts + PDFBox templates)"
+          git diff --cached --quiet || git commit -m "chore(tax): apply Schedule D staging (facts + configs)"
           git push
