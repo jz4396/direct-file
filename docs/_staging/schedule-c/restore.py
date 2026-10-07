@@ -7,12 +7,10 @@ written, failed = [], []
 
 def load(name):
     stem = name.replace(".xml", "")
-    single = root / "parts" / stem / "00000.part"
-    if single.exists():
-        return single.read_bytes()
     parts_dir = root / "parts" / stem
-    if parts_dir.exists() and any(parts_dir.glob("*.part")):
-        return "".join(p.read_text() for p in sorted(parts_dir.glob("*.part"))).encode()
+    parts = sorted(parts_dir.glob("*.part")) if parts_dir.exists() else []
+    if parts:
+        return "".join(p.read_text() for p in parts).encode()
     import gzip, base64
     b64p = root / f"{name}.gz.b64"
     if b64p.exists():
@@ -25,6 +23,8 @@ for name in ["flow.xml", "income.xml", "taxCalculations.xml", "scheduleC.xml", "
         text = data.decode("utf-8")
         if "PLACEHOLDER" in text or text.startswith("file:"):
             raise RuntimeError("bad placeholder content")
+        if not text.rstrip().endswith("</FactDictionaryModule>"):
+            raise RuntimeError("incomplete FactDictionaryModule")
         (dest / name).write_bytes(data)
         print(name, len(data),
               "QBI" if "flowKnockoutScheduleCQbi" in text else "-",
