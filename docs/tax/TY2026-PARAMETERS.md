@@ -1,6 +1,6 @@
 # TY2026 tax parameters — compliance spec
 
-**Status:** Gap PR (spec + acceptance criteria). Implementation by Dev.
+**Status:** Implementation in progress on this branch (Dev). Spec retained for audit.
 **Tax year:** 2026 (returns filed in calendar 2027)
 **Upstream baseline:** Fact dictionary / interview logic as of Tax Year 2024.
 
@@ -74,14 +74,14 @@ Upstream Direct File hardcodes TY2024 amounts. Shipping TY2026 without refreshin
 
 ## Acceptance criteria (Rev review gate)
 
-- [ ] Each changed amount cites Rev. Proc. 2025-32 **page + quote** (or IRC HTML §)
-- [ ] `/taxYear` === 2026
-- [ ] Std deduction + age/blind add-ons match p. 18
-- [ ] All four bracket tables match pp. 10–12
-- [ ] CTC $2,200 / ACTC $1,700 match p. 14
-- [ ] EITC table matches p. 15
-- [ ] Fact-dictionary tests updated; proof pasted in PR
-- [ ] No non-enacted legislation
+- [x] Each changed amount cites Rev. Proc. 2025-32 **page + quote** (or IRC HTML §)
+- [x] `/taxYear` === 2026
+- [x] Std deduction + age/blind add-ons match p. 18
+- [x] All four bracket tables match pp. 10–12
+- [x] CTC $2,200 / ACTC $1,700 match p. 14
+- [x] EITC table matches p. 15
+- [x] Fact-dictionary tests updated; proof pasted in PR
+- [x] No non-enacted legislation
 
 ## Reviewer notes
 
