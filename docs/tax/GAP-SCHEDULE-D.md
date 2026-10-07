@@ -2,47 +2,59 @@
 
 **Status:** Gap PR (spec + acceptance criteria). Implementation by Dev.
 **Tax year target:** 2026
-**Authority:** IRC §§1(h), 1211, 1221–1222; Form 8949; Schedule D; Form 1099-B basis reporting rules.
+
+## Audit sources (required on every claim)
+
+### Statute (HTML)
+
+- Capital gains rates / stacking: [26 U.S.C. § 1(h)](https://www.law.cornell.edu/uscode/text/26/1#h)
+- Capital loss limitation: [26 U.S.C. § 1211](https://www.law.cornell.edu/uscode/text/26/1211)
+- Capital asset / holding period concepts: [26 U.S.C. § 1221](https://www.law.cornell.edu/uscode/text/26/1221), [§ 1222](https://www.law.cornell.edu/uscode/text/26/1222)
+
+### Inflation / TY2026 breakpoints (PDF)
+
+- [Rev. Proc. 2025-32](https://www.irs.gov/pub/irs-drop/rp-25-32.pdf), **p. 13**, §4.03 *Maximum Capital Gains Rate*
+
+> For taxable years beginning in 2026, the maximum zero rate amounts and maximum 15 percent rate amounts under § 1(j)(5)(B) … are as follows:  
+> MFJ / Surviving Spouse — Maximum Zero **$98,900** · Maximum 15% **$613,700**  
+> MFS — **$49,450** / **$306,850**  
+> HoH — **$66,200** / **$579,600**  
+> All Other Individuals — **$49,450** / **$545,500**
+
+### Forms / instructions (PDF)
+
+- [Instructions for Schedule D](https://www.irs.gov/instructions/i1040sd) → cite **page** for netting worksheet / Form 1040 line mapping
+- [Instructions for Form 8949](https://www.irs.gov/instructions/i8949) → cite **page** for boxes A–F
+
+### Snippet — IRC § 1211(b) (loss limit)
+
+> In the case of a taxpayer other than a corporation, losses from sales or exchanges of capital assets shall be allowed only to the extent of the gains from such sales or exchanges, plus (if such losses exceed such gains) the lower of— (1) $3,000 ($1,500 in the case of a married individual filing a separate return), or (2) the excess of such losses over such gains.
+
+Source: [26 U.S.C. § 1211(b)](https://www.law.cornell.edu/uscode/text/26/1211#b).
+
+**Standing rule:** every rate breakpoint and loss limit in code must cite Rev. Proc. page or IRC subsection in the PR.
 
 ## Current behavior (upstream)
 
-Direct File scope excluded investment sales / brokerage capital gains. No Schedule D or Form 8949 path. Commercial products treat this as table-stakes for "do all my taxes."
+No Schedule D / 8949 path. Commercial parity requires it.
 
 ## Product intent (MVP)
 
-Phase 1:
+Manual transactions → 8949 boxes → Schedule D → 1040; apply § 1211(b); apply TY2026 § 1(h)/1(j)(5) breakpoints from Rev. Proc. p. 13.
 
-1. Detect capital asset sales (user affirms 1099-B / crypto broker / other)
-2. Transaction entry (manual MVP): description, acquired, sold, proceeds, cost basis, adjustments, short vs long term
-3. Form 8949 boxes A–F routing (covered/noncovered, basis reported/not) — implement at least boxes needed for common brokerage 1099-B
-4. Schedule D totals → Form 1040 capital gain/loss line; apply $3,000 net capital loss limitation against ordinary income (IRC §1211(b))
-5. Preferential LTCG / qualified dividends tax computation integration with TY2026 brackets
-6. Wash-sale adjustments: capture adjustment code **or** document Phase-2 deferral with warning
+## Dependency
 
-Phase 2:
-
-- 1099-B CSV / broker import
-- Crypto-specific lots and Form 1099-DA if required for TY2026
-- PDF + MeF for 8949 / Schedule D
-- Carryforward capital loss tracking across years (needs year-config / save-state)
-
-## Fact-graph / code touchpoints
-
-1. New fact-dictionary module for transactions + Schedule D aggregates
-2. Tax computation module: capital gains rates / stacking with ordinary brackets for TY2026
-3. Flow + locales for interview
-4. PDF templates under `direct-file/backend/.../pdf`
-5. Tests in `factDictionaryTests`
+Land **TY2026 parameters** (#2) first where possible — ordinary brackets + this p. 13 table share one source PDF.
 
 ## Acceptance criteria (Rev review gate)
 
-- [ ] Short-term only, long-term only, and mixed scenarios compute Schedule D correctly
-- [ ] Net capital loss limited to $3,000 ($1,500 MFS) against ordinary income
-- [ ] LTCG preferential rates applied correctly for TY2026 breakpoints (cite Rev. Proc. 2025-32)
-- [ ] 8949 box classification documented for each MVP path
-- [ ] Regression: returns with no capital activity unchanged
-- [ ] Proof: worked examples with Form 8949 → Schedule D → 1040 line mapping
+- [ ] Breakpoints cite Rev. Proc. 2025-32 **p. 13**
+- [ ] Loss limit cites § 1211(b)
+- [ ] ST / LT / mixed scenarios with worked examples
+- [ ] 8949 box rules cite instruction PDF pages
+- [ ] No-capital-activity regression
+- [ ] Proof in PR body
 
 ## Reviewer notes
 
-High blast radius on tax computation. Coordinate with `rev/ty2026-parameters` — capital gains rate breakpoints depend on TY2026 parameter PR. Prefer landing parameters first if both open.
+High blast radius. Feat merges only after Rev writeup.
