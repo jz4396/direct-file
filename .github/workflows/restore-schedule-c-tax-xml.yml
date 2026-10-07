@@ -11,27 +11,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
       - name: Decode staging into tax modules
-        run: |
-          python3 <<'PY'
-          import gzip, base64, pathlib
-          root = pathlib.Path("docs/_staging/schedule-c")
-          dest = pathlib.Path("direct-file/backend/src/main/resources/tax")
-          for name in ["flow.xml", "income.xml", "taxCalculations.xml", "scheduleC.xml", "scheduleSE.xml"]:
-              p = root / f"{name}.gz.b64"
-              if not p.exists():
-                  print("skip missing", name)
-                  continue
-              data = gzip.decompress(base64.b64decode(p.read_text().strip()))
-              (dest / name).write_bytes(data)
-              text = data.decode(errors="ignore")
-              print(name, len(data),
-                    "QBI" if "flowKnockoutScheduleCQbi" in text else "-",
-                    "net" if "scheduleCNetProfitOrLoss" in text else "-",
-                    "SE" if "selfEmploymentTax" in text else "-")
-          PY
+        run: python3 docs/_staging/schedule-c/restore.py
       - name: Commit restored tax XML
         run: |
           git config user.name "github-actions[bot]"
