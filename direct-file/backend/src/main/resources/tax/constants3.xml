@@ -14,97 +14,148 @@
       </Derived>
     </Fact>
     <Fact path="/copyOptions">
-      <Name>Copy Options</Name>
-      <Description>Options for Copy B / Copy 2</Description>
+      <Description>A hacky enum used to get copy to the client that can later be translated, since raw strings from the
+        fact graph cannot</Description>
       <Derived>
         <EnumOptions>
-          <String>b</String>
-          <String>2</String>
+          <String>i</String>
+          <String>we</String>
+          <String>otherThanYourSpouse</String>
+          <String>doNotIncludeYourSpouse</String>
+          <String>emptyString</String>
         </EnumOptions>
       </Derived>
     </Fact>
     <Fact path="/signaturePinEnteredByCode">
-      <Name>Who entered the signature PIN</Name>
-      <Description>Options for who entered the signature PIN</Description>
+      <Name>Signature Pin Entered by Code</Name>
+      <Description>The code representing how the taxpayer's signature pin was entered. Used to populate return header
+        fields in the 1040 XML.</Description>
+      <Export mef="true" />
+
       <Derived>
-        <EnumOptions>
-          <String>taxpayer</String>
-          <String>spouse</String>
-          <String>both</String>
-        </EnumOptions>
+        <String>Taxpayer</String>
       </Derived>
     </Fact>
     <Fact path="/combatPayOptions">
-      <Name>Combat pay election options</Name>
-      <Description>Options for combat pay election</Description>
+      <Name>Combat Pay Options</Name>
+      <Description>Options for combat pay</Description>
       <Derived>
         <EnumOptions>
-          <String>primaryFiler</String>
-          <String>secondaryFiler</String>
-          <String>bothFilers</String>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/onlyMFJSpouseHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>useSpouseCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/onlyPrimaryFilerHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>usePrimaryCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/bothFilersHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>useBothCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/bothFilersHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>usePrimaryNotSpouseCombatPay</String>
+            </Value>
+          </EnumOption>
+          <EnumOption>
+            <Condition>
+              <Dependency module="formW2s" path="/bothFilersHasCombatPay" />
+            </Condition>
+            <Value>
+              <String>useSpouseNotPrimaryCombatPay</String>
+            </Value>
+          </EnumOption>
           <String>noCombatPay</String>
         </EnumOptions>
       </Derived>
     </Fact>
     <Fact path="/apfForm1099MiscPayer">
-      <Name>Alaska Permanent Fund Form 1099-MISC payer name</Name>
-      <Description>Hardcoded payer name for Alaska Permanent Fund</Description>
-      <Writable>
-        <StringDefault>STATE OF ALASKA PERMANENT FUND DIVIDEND</StringDefault>
-      </Writable>
+      <Description>The name of the payer on the 1099-Misc form for the Alaska Permanent Fund Dividend.</Description>
+      <Derived>
+        <String>State of Alaska</String>
+      </Derived>
     </Fact>
     <Fact path="/apfForm1099MiscPayerEin">
-      <Name>Alaska Permanent Fund Form 1099-MISC payer EIN</Name>
-      <Description>Hardcoded payer EIN for Alaska Permanent Fund</Description>
-      <Writable>
-        <EinDefault>926001184</EinDefault>
-      </Writable>
+      <Description>The EIN of the payer on the 1099-Misc form for the Alaska Permanent Fund Dividend.</Description>
+      <Derived>
+        <!--      The alaskaPFD (https://pfd.alaska.gov/payments/tax-information) Federal Tax Identification number is 92-6001185-->
+        <EIN>926001185</EIN>
+      </Derived>
     </Fact>
     <Fact path="/totalDistributionTaxableStartYear">
-      <Name>Total distribution taxable start year threshold</Name>
-      <Description>Year threshold for total distribution taxable amount</Description>
-      <Writable>
-        <IntDefault>1936</IntDefault>
-      </Writable>
+      <Name>Total Distribution taxable</Name>
+      <Description>The date before which a TP cannot claim a total distribution on 1099-R in current scope.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Day>1936-01-02</Day>
+      </Derived>
     </Fact>
     <Fact path="/form1099RsDistributionCodeValidChars">
-      <Name>Valid Form 1099-R distribution code characters</Name>
-      <Description>Valid characters for Form 1099-R box 7 distribution codes</Description>
-      <Writable>
-        <StringDefault>123456789ABCDEFGHIJKLMNPQRTUW</StringDefault>
-      </Writable>
+      <Description>Characters that appear in DF-supported distribution codes.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <String>247BGH</String>
+      </Derived>
     </Fact>
     <Fact path="/hsaExcessContributionsPenalty">
-      <Name>HSA Excess Contributions Penalty Rate</Name>
-      <Description>Additional tax rate on excess HSA contributions</Description>
-      <Writable>
-        <RationalDefault>6/100</RationalDefault>
-      </Writable>
+      <Description>Penalty for excess HSA contributions.</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <String>6%</String>
+      </Derived>
     </Fact>
     <Fact path="/hsaSelfOnlyCoverageLimit">
-      <Name>HSA Self-Only Coverage Contribution Limit</Name>
-      <Description>TY2026 HSA self-only coverage contribution limit — confirm against Rev. Proc. 2025-32 / IR-2025 when publishing final</Description>
-      <Writable>
-        <DollarDefault>4400</DollarDefault>
-      </Writable>
+      <Description>Self-only coverage limit for HSA contributions. Changes
+        each year, amount can be found in Form 8889
+        and instructions.
+        Rev Proc .01 HSA Inflation Adjusted Items §223(b)(2)(A)
+      </Description>
+      <Export downstreamFacts="true" />
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>4150</Dollar>
+      </Derived>
     </Fact>
     <Fact path="/hsaFamilyCoverageLimit">
-      <Name>HSA Family Coverage Contribution Limit</Name>
-      <Description>TY2026 HSA family coverage contribution limit — confirm against Rev. Proc. 2025-32 / IR-2025 when publishing final</Description>
-      <Writable>
-        <DollarDefault>8750</DollarDefault>
-      </Writable>
+      <Description>Family coverage limit for HSA contributions. Changes
+        each year, amount can be found in Form 8889 and
+        instructions.
+        Rev Proc .01 HSA Inflation Adjusted Items §223(b)(2)(B)
+      </Description>
+      <Export downstreamFacts="true" />
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>8300</Dollar>
+      </Derived>
     </Fact>
     <Fact path="/hsaOver55AdditionalCoverageLimit">
-      <Name>HSA Over-55 Additional Contribution Limit</Name>
-      <Description>Additional HSA contribution limit for age 55+</Description>
-      <Writable>
-        <DollarDefault>1000</DollarDefault>
-      </Writable>
+      <Description>Additional coverage limit for HSA contributions when TP is over 55. See instructions for form 8889
+        for details.</Description>
+      <Export downstreamFacts="true" />
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>1000</Dollar>
+      </Derived>
     </Fact>
     <Fact path="/alaskaPfdAmount">
-      <Name>Alaska Permanent Fund Dividend amount</Name>
-      <Description>Sum of dividend and energy relief portions</Description>
+      <Description>Total value of the Alaska Permanent Fund</Description>
+      <TaxYear>2024</TaxYear>
       <Derived>
         <Add>
           <Dependency path="/alaskaPfdAmountDividendPortion" />
@@ -113,109 +164,26 @@
       </Derived>
     </Fact>
     <Fact path="/alaskaPfdAmountDividendPortion">
-      <Name>Alaska PFD dividend portion</Name>
-      <Description>Dividend portion of Alaska Permanent Fund</Description>
-      <Writable>
-        <DollarDefault>0</DollarDefault>
-      </Writable>
+      <Description>Portion of the Alaska Permanent Fund that was the normal dividend distribution</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>1403.83</Dollar>
+      </Derived>
     </Fact>
     <Fact path="/alaskaPfdAmountEnergyReliefPaymentPortion">
-      <Name>Alaska PFD energy relief portion</Name>
-      <Description>Energy relief payment portion of Alaska Permanent Fund</Description>
-      <Writable>
-        <DollarDefault>0</DollarDefault>
-      </Writable>
+      <Description>Portion of the Alaska Permanent Fund that was a one-time engergy relief payment</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>298.17</Dollar>
+      </Derived>
     </Fact>
     <Fact path="/hdhpMinAnnualDeductibleSelf">
-      <Name>HDHP minimum annual deductible — self-only</Name>
-      <Description>Minimum annual deductible for HDHP self-only coverage</Description>
-      <Writable>
-        <DollarDefault>1650</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/hdhpMinAnnualDeductibleFamily">
-      <Name>HDHP minimum annual deductible — family</Name>
-      <Description>Minimum annual deductible for HDHP family coverage</Description>
-      <Writable>
-        <DollarDefault>3300</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/hdhpMaxOOPExpensesSelf">
-      <Name>HDHP maximum out-of-pocket — self-only</Name>
-      <Description>Maximum out-of-pocket expenses for HDHP self-only</Description>
-      <Writable>
-        <DollarDefault>8300</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/hdhpMaxOOPExpensesFamily">
-      <Name>HDHP maximum out-of-pocket — family</Name>
-      <Description>Maximum out-of-pocket expenses for HDHP family</Description>
-      <Writable>
-        <DollarDefault>16600</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/hsaForm5498DueDate">
-      <Name>HSA Form 5498 due date</Name>
-      <Description>Due date for Form 5498-SA</Description>
-      <Writable>
-        <DayDefault>2027-05-31</DayDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGainsZeroRateMFJ">
-      <Name>Max zero rate amount — MFJ / Surviving Spouse</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFJ / Surviving Spouse maximum zero rate amount $98,900</Description>
-      <Writable>
-        <DollarDefault>98900</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGains15RateMFJ">
-      <Name>Max 15% rate amount — MFJ / Surviving Spouse</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFJ / Surviving Spouse maximum 15% rate amount $613,700</Description>
-      <Writable>
-        <DollarDefault>613700</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGainsZeroRateMFS">
-      <Name>Max zero rate amount — MFS</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFS maximum zero rate amount $49,450</Description>
-      <Writable>
-        <DollarDefault>49450</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGains15RateMFS">
-      <Name>Max 15% rate amount — MFS</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFS maximum 15% rate amount $306,850</Description>
-      <Writable>
-        <DollarDefault>306850</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGainsZeroRateHoH">
-      <Name>Max zero rate amount — Heads of Household</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — HoH maximum zero rate amount $66,200</Description>
-      <Writable>
-        <DollarDefault>66200</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGains15RateHoH">
-      <Name>Max 15% rate amount — Heads of Household</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — HoH maximum 15% rate amount $579,600</Description>
-      <Writable>
-        <DollarDefault>579600</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGainsZeroRateSingle">
-      <Name>Max zero rate amount — All Other Individuals</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — unmarried maximum zero rate amount $49,450</Description>
-      <Writable>
-        <DollarDefault>49450</DollarDefault>
-      </Writable>
-    </Fact>
-    <Fact path="/capGains15RateSingle">
-      <Name>Max 15% rate amount — All Other Individuals</Name>
-      <Description>Rev. Proc. 2025-32 §4.03 p.13 — unmarried maximum 15% rate amount $545,500</Description>
-      <Writable>
-        <DollarDefault>545500</DollarDefault>
-      </Writable>
+      <Description>High Deductible Health Plan (HDHP) minimum annual deductible for self-only coverage (source
+        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>1600</Dollar>
+      </Derived>
     </Fact>
   </Facts>
 </FactDictionaryModule>
