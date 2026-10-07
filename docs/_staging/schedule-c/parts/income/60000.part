@@ -1,11 +1,24 @@
-dule="scheduleC" path="/scheduleCNetProfitForEarnedIncome" />
-          </Add>
-        </Round>
+or in school. Used for CDCC</Description>
+
+      <Derived>
+        <Multiply>
+          <Dependency module="filers" path="/secondaryFiler/cdccMonthsDisabledOrInSchool" />
+          <Dependency path="/monthlyIncomeIfDisabledOrInSchool" />
+        </Multiply>
       </Derived>
     </Fact>
 
+    <Fact path="/cdccMaximumCreditRequiresUnsupportedCalculation">
+      <Export downstreamFacts="true" />
 
-
-
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency path="/cdccAllTaxableDependentCareBenefitsShouldBeAddedtoPrimaryEarnedIncome" />
+            <Dependency path="/cdccAllTaxableDependentCareBenefitsShouldBeAddedtoSecondaryEarnedIncome" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
   </Facts>
 </FactDictionaryModule>
