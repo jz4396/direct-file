@@ -1,7 +1,7 @@
 # Gap: Schedule C + self-employment tax
 
 **Status:** Gap PR (spec + acceptance criteria). Implementation by Cod (secondary to Dev).
-**Tax year target:** 2026
+**Tax year target:** TY2026, filed in 2027
 
 ## Audit sources (required on every claim)
 
@@ -27,7 +27,7 @@ Source: [26 U.S.C. § 1401](https://www.law.cornell.edu/uscode/text/26/1401).
 
 ### Snippet — IRC § 164(f) (deductible half of SE tax)
 
-> In the case of an individual, … there shall be allowed as a deduction … an amount equal to … the taxes imposed by section 1401 … (employer-equivalent portion).
+> In the case of an individual, in addition to the taxes described in subsection (a), there shall be allowed as a deduction for the taxable year an amount equal to one-half of the taxes imposed by section 1401 (other than the taxes imposed by section 1401(b)(2)) for such taxable year.
 
 Source: [26 U.S.C. § 164(f)](https://www.law.cornell.edu/uscode/text/26/164#f).
 
