@@ -1,0 +1,433 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/maxPotentialOdcAfterPhaseOut">
+      <Name>Max potential ODC amount after phase out</Name>
+      <Description>The max potential odc amount accounting for phase out if applicable</Description>
+
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/totalPotentialOdc" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/dependentCreditPhaseout" />
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/xmlHasRemainingCtcAndOdc">
+      <Name>Has remaining CTC and ODC</Name>
+      <Description>Whether there is any CTC or ODC remaining to be processed, meaning that the
+        dependent credit
+        hasn't
+        phased out and there is still some CTC or ODC. Encountered on line 16a of form 8812.
+        Determines if lines 16b -
+        26
+        may be applicable.</Description>
+      <Export mef="true" />
+      <Derived>
+        <All>
+          <Dependency path="/dependentCreditNotFullyPhasedOut" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="/remainingCtcAndOdc" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/xmlHasPotentialActc">
+      <Name>Has potential ACTC</Name>
+      <Description>Whether there is any CTC or ODC that can be processed and there is some potential
+        ACTC
+        representing
+        Encountered on line 16b of form 8812. Determines if lines 17-26 may be applicable</Description>
+      <Export mef="true" />
+      <Derived>
+        <All>
+          <Dependency path="/xmlHasRemainingCtcAndOdc" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="/totalPotentialActc" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/xmlThreeOrMoreCtcEligibleDependents">
+      <Name>Three of more CTC eligible CTC dependents</Name>
+      <Description>Whether we have 3 CTC eligible dependents and potential ACTC. Encountered on line
+        20 of Schedule
+        8812.
+        Determines if lines 21-26 are applicable. TODO in future tax years: take Puerto Rico
+        residency into
+        account
+      </Description>
+      <Export mef="true" />
+      <Derived>
+        <All>
+          <Dependency path="/xmlHasPotentialActc" />
+          <Dependency path="/threeOrMoreCtcEligibleDependents" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/totalCtc">
+      <Name>Total CTC from the CTC/ODC</Name>
+      <Description>Total amount of CTC the TP will receive after the phaseout. It is derived and used for us to help the
+        taxpayer make sense of how much of their credit comes from ctc, but it does not exist directly on schedule 8812.
+        CTC credits are applied after ODC credits as per the IRM and when there is a phase out are reduced after ODC
+        credits.</Description>
+
+      <Derived>
+        <Switch>
+          <!-- Switch statement is necessary to avoid divide by zero when total is zero -->
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/totalCtcAndOdc" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/totalCtcAndOdc" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/totalOdc" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/isReceivingCtc">
+      <Name>Is receiving CTC</Name>
+      <Description>Whether the TP is receiving the child tax credit</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/totalCtc" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+    <Fact path="/totalOdc">
+      <Name>Total ODC from the CTC/ODC</Name>
+      <Description>Total amount of ODC the TP will receive after the phaseout. It is derived and used for us to help the
+        taxpayer make sense of how much of their credit comes from odc, but it does not exist directly on schedule 8812.
+        ODC credits are applied before CTC credits as per the IRM and is also reduced first if there is a phase out.</Description>
+
+      <Derived>
+        <Switch>
+          <!-- Switch statement is necessary to avoid divide by zero when total is zero -->
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/totalCtcAndOdc" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <LesserOf>
+                <Dependency path="/maxPotentialOdcAfterPhaseOut" />
+                <Dependency path="/totalCtcAndOdc" />
+              </LesserOf>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/isReceivingOdc">
+      <Name>Is receiving ODC </Name>
+      <Description>Whether the TP is receiving the credit for other dependents</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/totalOdc" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+    <Fact path="/isReceivingCtcOrOdc">
+      <Name>Is receiving CTC or ODC</Name>
+      <Description>Whether the TP is receiving the child tax credit or credit for other dependents</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/totalCtcAndOdc" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+    <Fact path="/sched8812CreditLimit">
+      <Name>Credit Limit for Credits for Qualifying Children and Other Depednents</Name>
+      <Description>The credit limit per Credit Limit Worksheet A from Schedule 8812. Reported on line 13.</Description>
+      <Export mef="true" />
+      <ExportZero />
+
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency module="taxCalculations" path="/totalTentativeTax" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency module="schedule3" path="/sched3Line1" /> <!-- PLACEHOLDER -->
+              <Dependency module="cdcc" path="/cdccTotalCredit" />
+              <Dependency module="schedule3" path="/sched3Line3" /> <!-- PLACEHOLDER -->
+              <Dependency module="saversCredits" path="/qualifiedSaverCreditAmount" />
+              <Dependency module="schedule3" path="/sched3Line5b" /> <!-- PLACEHOLDER -->
+              <Dependency module="elderlyAndDisabled" path="/totalEdc" />
+              <Dependency module="schedule3" path="/sched3Line6f" /> <!-- PLACEHOLDER -->
+              <Dependency module="schedule3" path="/sched3Line6l" /> <!-- PLACEHOLDER -->
+              <Dependency module="schedule3" path="/sched3Line6m" /> <!-- PLACEHOLDER -->
+              <!-- OUT OF SCOPE: AMOUNT FROM CREDIT LIMIT WORKSHEET B -->
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/totalCtcAndOdc">
+      <Name>Total CTC and ODC</Name>
+      <Description>The total amount of the child tax credit and credit for other dependents.
+        Reported on line 14 of Form
+        8812 (although for ExportZero reasons, there is a separate fact below), and line 19 of Form
+        1040.</Description>
+      <Export downstreamFacts="true" mef="true" />
+
+      <Derived>
+        <Round>
+          <LesserOf>
+            <Dependency path="/dependentCreditLessPhaseout" />
+            <Dependency path="/sched8812CreditLimit" />
+          </LesserOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/xmlTotalCtcAndOdcFor8812">
+      <Name>Total CTC and ODC</Name>
+      <Description>The total amount of the child tax credit and credit for other dependents.
+        Reported on line 14 of Form
+        8812.</Description>
+      <Export mef="true" />
+      <ExportZero />
+
+      <Derived>
+        <Dependency path="/totalCtcAndOdc" />
+      </Derived>
+    </Fact>
+    <Fact path="/remainingCtcAndOdc">
+      <Name>Remaining CTC and ODC</Name>
+      <Description>The amount of dependent credits left to claim after crediting the total tentative
+        tax. Reported on
+        line 16a of Form 8812.</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Round>
+          <GreaterOf>
+            <Subtract>
+              <Minuend>
+                <Dependency path="/dependentCreditLessPhaseout" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/totalCtcAndOdc" />
+              </Subtrahends>
+            </Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/totalPotentialActc">
+      <Name>Total potential additional CTC</Name>
+      <Description>The maximum amount of the Additional Child Tax Credit that could be claimed.
+        Reported on line 16b of
+        Schedule 8812.</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Any>
+                  <Dependency path="/ctcOdcDisqualifiedForImproperClaims" />
+                  <Not>
+                    <Dependency path="/maybeEligibleForCtc" />
+                  </Not>
+                </Any>
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Multiply>
+                  <Dependency path="/ctcEligibleDependents" />
+                  <Dependency path="/maxActcAmount" />
+                </Multiply>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/maxActcAmount">
+      <Name>Maximum additional child tax credit amount</Name>
+      <Description>The maximum additional tax credit per child.
+        Rev. Proc. 2025-32 §4.05(2) p.14: "the amount used in § 24(d)(1)(A) … is $1,700."
+      </Description>
+      <TaxYear>2026</TaxYear>
+
+      <Derived>
+        <Dollar>1700</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/remainingPotentialActc">
+      <Name>Remaining potential additional CTC</Name>
+      <Description>The remaining amount of the Additional Child Tax Credit that could be claimed
+        after crediting the
+        total tentative tax.</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Round>
+          <LesserOf>
+            <Dependency path="/remainingCtcAndOdc" />
+            <Dependency path="/totalPotentialActc" />
+          </LesserOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line17">
+      <Name>Display value for PDF Schedule 8812, Line 17</Name>
+      <Description>The remaining amount of the Additional Child Tax Credit that could be claimed if
+        completing Part
+        II-A;
+        undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency path="/remainingPotentialActc" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/actcRefundabilityThreshold">
+      <Name>Additional CTC refundability threshold</Name>
+      <Description>The amount of earned income that must be exceeded in order to receive the
+        refundable additional child
+        tax credit.</Description>
+      <TaxYear>2024</TaxYear>
+
+      <Derived>
+        <Dollar>2500</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/earnedIncomeAboveActcRefundabilityThreshold">
+      <Name>Earned income above additional CTC refundability threshold</Name>
+      <Description>The amount of earned income that can be used to calculate the refundable amount
+        of the additional
+        child tax credit.</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Round>
+          <GreaterOf>
+            <Subtract>
+              <Minuend>
+                <Dependency module="income" path="/earnedIncomeWithAllCombatPay" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/actcRefundabilityThreshold" />
+              </Subtrahends>
+            </Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line19Amount">
+      <Name>Display value for PDF Schedule 8812, Line 19 amount</Name>
+      <Description>Earned income above additional CTC refundability threshold if completing Part
+        II-A; undefined
+        otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency path="/earnedIncomeAboveActcRefundabilityThreshold" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

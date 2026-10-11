@@ -1,0 +1,10 @@
+[
+  {
+    "dest": "direct-file/df-client/df-client-app/src/test/factDictionaryTests/eitc.test.ts",
+    "staging": "docs/_staging/ty2026/direct-file__df-client__df-client-app__src__test__factDictionaryTests__eitc.test.ts.gz.b64"
+  },
+  {
+    "dest": "direct-file/df-client/df-client-app/src/test/factDictionaryTests/standardDeduction.test.ts",
+    "staging": "docs/_staging/ty2026/direct-file__df-client__df-client-app__src__test__factDictionaryTests__standardDeduction.test.ts.gz.b64"
+  }
+]

@@ -17,10 +17,10 @@ import {
   createTinWrapper,
 } from '../persistenceWrappers.js';
 import { Path } from '../../flow/Path.js';
-import { CURRENT_TAX_YEAR, TAX_YEAR_2024 } from '../../constants/taxConstants.js';
+import { CURRENT_TAX_YEAR, TAX_YEAR_2026 } from '../../constants/taxConstants.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 
-const THRESHOLDS = TAX_YEAR_2024.EITC_INCOME_THRESHOLDS;
+const THRESHOLDS = TAX_YEAR_2026.EITC_INCOME_THRESHOLDS;
 
 const childDependentId = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d48`;
 const childDependentId2 = `71c66f78-31b0-4a92-ab5b-c211784b16c7`;
@@ -740,12 +740,12 @@ describe(`EITC eligibility`, () => {
       ...makeW2Data(5000.0),
     };
 
-    it(`Eligible if investment income is $11,600 or less`, ({ task }) => {
+    it(`Eligible if investment income is $12,200 or less`, ({ task }) => {
       task.meta.testedFactPaths = [`/maybeEligibleForEitc`];
 
       const { factGraph } = setupFactGraph({
         ...baseCase,
-        ...make1099IntData(11600.0),
+        ...make1099IntData(12200.0),
       });
 
       expect(factGraph.get(Path.concretePath(`/belowEitcInvestmentIncomeLimit`, null)).get).toBe(true);
@@ -753,12 +753,12 @@ describe(`EITC eligibility`, () => {
       expect(factGraph.get(Path.concretePath(`/maybeEligibleForEitc`, null)).get).toBe(true);
     });
 
-    it(`Ineligible if investment income is more than $11,600`, ({ task }) => {
+    it(`Ineligible if investment income is more than $12,200`, ({ task }) => {
       task.meta.testedFactPaths = [`/maybeEligibleForEitc`];
 
       const { factGraph } = setupFactGraph({
         ...baseCase,
-        ...make1099IntData(11601.0),
+        ...make1099IntData(12201.0),
       });
 
       expect(factGraph.get(Path.concretePath(`/belowEitcInvestmentIncomeLimit`, null)).get).toBe(false);
@@ -1084,17 +1084,17 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //              #  ####  ####  AAAA  BBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 2999, 5999, 8249, 8250, 10349, 18549, 18590, 11200],
+      thresholds: [1, 2999, 5999, 8649, 8650, 10899, 19499, 19539, 11200],
       expected: [
         [`2.00`, `2.00`, `2.00`, `2.00`],
         [`228.00`, `228.00`, `228.00`, `228.00`],
-        [`457.00`, `457.00`, `457.00`, `200.00`],
-        [`629.00`, `629.00`, `629.00`, `28.00`],
-        [`632.00`, `632.00`, `632.00`, `24.00`],
-        [`632.00`, `632.00`, `629.00`, `0.00`],
+        [`457.00`, `457.00`, `457.00`, `273.00`],
+        [`660.00`, `660.00`, `660.00`, `70.00`],
+        [`664.00`, `664.00`, `664.00`, `66.00`],
+        [`664.00`, `664.00`, `659.00`, `0.00`],
         [`5.00`, `5.00`, `2.00`, `0.00`],
         [`2.00`, `2.00`, `0.00`, `0.00`],
-        [`564.00`, `564.00`, `564.00`, `0.00`],
+        [`636.00`, `636.00`, `636.00`, `0.00`],
       ],
     },
     {
@@ -1109,14 +1109,14 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //           #  AAAAA  BBBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 12349, 12350, 22749, 49049, 49083],
+      thresholds: [1, 12999, 13000, 23899, 51549, 51592],
       expected: [
         [`9.00`, `9.00`, `9.00`, `9.00`],
-        [`4191.00`, `4191.00`, `4191.00`, `4191.00`],
-        [`4213.00`, `4213.00`, `4213.00`, `4213.00`],
-        [`4213.00`, `4213.00`, `4204.00`, `2614.00`],
-        [`9.00`, `9.00`, `3.00`, `0.00`],
-        [`3.00`, `3.00`, `0.00`, `0.00`],
+        [`4412.00`, `4412.00`, `4412.00`, `4412.00`],
+        [`4427.00`, `4427.00`, `4427.00`, `4427.00`],
+        [`4427.00`, `4427.00`, `4421.00`, `2831.00`],
+        [`11.00`, `11.00`, `4.00`, `0.00`],
+        [`4.00`, `4.00`, `0.00`, `0.00`],
       ],
     },
     {
@@ -1131,14 +1131,14 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //           #  AAAAA  BBBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 17399, 17400, 22749, 55749, 55767],
+      thresholds: [1, 18249, 18250, 23899, 58599, 58628],
       expected: [
         [`10.00`, `10.00`, `10.00`, `10.00`],
-        [`6950.00`, `6950.00`, `6950.00`, `5980.00`],
-        [`6960.00`, `6960.00`, `6960.00`, `5969.00`],
-        [`6960.00`, `6960.00`, `6948.00`, `4853.00`],
-        [`9.00`, `9.00`, `2.00`, `0.00`],
-        [`2.00`, `2.00`, `0.00`, `0.00`],
+        [`7290.00`, `7290.00`, `7290.00`, `6403.00`],
+        [`7316.00`, `7316.00`, `7316.00`, `6393.00`],
+        [`7316.00`, `7316.00`, `7309.00`, `5213.00`],
+        [`11.00`, `11.00`, `3.00`, `0.00`],
+        [`3.00`, `3.00`, `0.00`, `0.00`],
       ],
     },
     {
@@ -1153,14 +1153,14 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //           #  AAAAA  BBBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 17399, 17400, 22749, 59849, 59898],
+      thresholds: [1, 18249, 18250, 23899, 62949, 62973],
       expected: [
         [`11.00`, `11.00`, `11.00`, `11.00`],
-        [`7819.00`, `7819.00`, `7819.00`, `6850.00`],
-        [`7830.00`, `7830.00`, `7830.00`, `6839.00`],
-        [`7830.00`, `7830.00`, `7818.00`, `5723.00`],
-        [`16.00`, `16.00`, `5.00`, `0.00`],
-        [`5.00`, `5.00`, `0.00`, `0.00`],
+        [`8201.00`, `8201.00`, `8201.00`, `7318.00`],
+        [`8231.00`, `8231.00`, `8231.00`, `7308.00`],
+        [`8231.00`, `8231.00`, `8224.00`, `6128.00`],
+        [`10.00`, `10.00`, `2.00`, `0.00`],
+        [`2.00`, `2.00`, `0.00`, `0.00`],
       ],
     },
     {
@@ -1175,14 +1175,14 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //           #  AAAA  BBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 8249, 8250, 17249, 25499, 25510],
+      thresholds: [1, 8649, 8650, 18149, 26799, 26819],
       expected: [
         [`2.00`, `2.00`, `2.00`, `2.00`],
-        [`629.00`, `629.00`, `629.00`, `557.00`],
-        [`632.00`, `632.00`, `632.00`, `554.00`],
-        [`632.00`, `632.00`, `630.00`, `0.00`],
-        [`3.00`, `3.00`, `0.00`, `0.00`],
-        [`0.00`, `0.00`, `0.00`, `0.00`],
+        [`660.00`, `660.00`, `660.00`, `627.00`],
+        [`664.00`, `664.00`, `664.00`, `623.00`],
+        [`664.00`, `664.00`, `661.00`, `0.00`],
+        [`3.00`, `3.00`, `1.00`, `0.00`],
+        [`1.00`, `1.00`, `0.00`, `0.00`],
       ],
     },
     {
@@ -1197,14 +1197,14 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //           #  AAAAA  BBBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 12349, 12350, 29649, 55999, 56003],
+      thresholds: [1, 12999, 13000, 31199, 58849, 58862],
       expected: [
         [`9.00`, `9.00`, `9.00`, `9.00`],
-        [`4191.00`, `4191.00`, `4191.00`, `4191.00`],
-        [`4213.00`, `4213.00`, `4213.00`, `4213.00`],
-        [`4213.00`, `4213.00`, `4207.00`, `2617.00`],
-        [`5.00`, `5.00`, `0.00`, `0.00`],
-        [`0.00`, `0.00`, `0.00`, `0.00`],
+        [`4412.00`, `4412.00`, `4412.00`, `4412.00`],
+        [`4427.00`, `4427.00`, `4427.00`, `4427.00`],
+        [`4427.00`, `4427.00`, `4417.00`, `2827.00`],
+        [`6.00`, `6.00`, `1.00`, `0.00`],
+        [`1.00`, `1.00`, `0.00`, `0.00`],
       ],
     },
     {
@@ -1219,14 +1219,14 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //           #  AAAAA  BBBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 17399, 17400, 29649, 62649, 62687],
+      thresholds: [1, 18249, 18250, 31199, 65849, 65898],
       expected: [
         [`10.00`, `10.00`, `10.00`, `10.00`],
-        [`6950.00`, `6950.00`, `6950.00`, `6950.00`],
-        [`6960.00`, `6960.00`, `6960.00`, `6960.00`],
-        [`6960.00`, `6960.00`, `6953.00`, `4857.00`],
-        [`13.00`, `13.00`, `4.00`, `0.00`],
-        [`4.00`, `4.00`, `0.00`, `0.00`],
+        [`7290.00`, `7290.00`, `7290.00`, `7290.00`],
+        [`7316.00`, `7316.00`, `7316.00`, `7316.00`],
+        [`7316.00`, `7316.00`, `7302.00`, `5207.00`],
+        [`16.00`, `16.00`, `5.00`, `0.00`],
+        [`5.00`, `5.00`, `0.00`, `0.00`],
       ],
     },
     {
@@ -1241,14 +1241,14 @@ describe(`EITC amount`, () => {
       // D: The upper bound of the row before the Completed Phaseout Amount
       // E: The Completed Phaseout Amount minus $1
       //           #  AAAAA  BBBBB  CCCCC  DDDDD  EEEEE
-      thresholds: [1, 17399, 17400, 29649, 66799, 66818],
+      thresholds: [1, 18249, 18250, 31199, 70199, 70243],
       expected: [
         [`11.00`, `11.00`, `11.00`, `11.00`],
-        [`7819.00`, `7819.00`, `7819.00`, `7819.00`],
-        [`7830.00`, `7830.00`, `7830.00`, `7830.00`],
-        [`7830.00`, `7830.00`, `7823.00`, `5727.00`],
-        [`9.00`, `9.00`, `2.00`, `0.00`],
-        [`2.00`, `2.00`, `0.00`, `0.00`],
+        [`8201.00`, `8201.00`, `8201.00`, `8201.00`],
+        [`8231.00`, `8231.00`, `8231.00`, `8231.00`],
+        [`8231.00`, `8231.00`, `8217.00`, `6122.00`],
+        [`14.00`, `14.00`, `5.00`, `0.00`],
+        [`5.00`, `5.00`, `0.00`, `0.00`],
       ],
     },
   ];
