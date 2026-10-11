@@ -1,5 +1,5 @@
-import mockEnYaml from './en.yaml';
-import mockEsYaml from './es.yaml';
+import { enLocale as mockEnYaml } from './featureLocales.js';
+import { esLocale as mockEsYaml } from './featureLocales.js';
 import mockEnScreenerYaml from '../../../df-static-site/src/locales/en.yaml';
 import mockEsScreenerYaml from '../../../df-static-site/src/locales/es.yaml';
 import { z, ZodError } from 'zod';

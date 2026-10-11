@@ -1,5 +1,5 @@
-import rawEnLocale from '../locales/en.yaml';
-import rawEsLocale from '../locales/es.yaml';
+import { enLocale as rawEnLocale } from '../locales/featureLocales.js';
+import { esLocale as rawEsLocale } from '../locales/featureLocales.js';
 import Locale from '../scripts/locale.js';
 
 const enLocale = new Locale(rawEnLocale);
