@@ -384,3 +384,40 @@ describe(`QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) — 0% / 15% / 20%`,
     expect(get(factGraph, `/tentativeTaxFromTaxableIncome`)).toBe(get(factGraph, `/taxOnTaxableIncomeRegularRates`));
   });
 });
+
+describe(`NIIT knockout (IRC §1411) — capital gain counts as investment income`, () => {
+  // IRC §1411(b): thresholds $250,000 MFJ/QSS, $125,000 MFS, $200,000 other; §1411(c)(1)(A)(iii) net gain.
+  // https://www.law.cornell.edu/uscode/text/26/1411
+  const niitFacts = (wages: number, gain: number) => ({
+    ...singleFilerData,
+    ...makeW2Data(wages),
+    [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+    '/flowHasSeenDeductions': createBooleanWrapper(true),
+    '/form8949Transactions': createCollectionWrapper([tx1]),
+    ...tx(tx1, { description: `LT`, proceeds: `${gain}`, costBasis: `0`, box: `D`, holdingPeriod: `longTerm` }),
+    '/form8949TransactionsIsDone': createBooleanWrapper(true),
+  });
+
+  it(`Single, no interest, $150,000 wages + $100,000 LT gain (AGI $250,000 > $200,000) → knocked out`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/hasInterestOrCapitalGainForNiit`,
+      `/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh`,
+      `/flowIsKnockedOut`,
+    ];
+    const { factGraph } = setupFactGraph(niitFacts(150000, 100000));
+    expect(get(factGraph, `/interestIncome`)).toBe(`0.00`);
+    expect(get(factGraph, `/agi`)).toBe(`250000.00`);
+    expect(factGraph.get(`/hasInterestOrCapitalGainForNiit` as ConcretePath).get).toBe(true);
+    expect(factGraph.get(`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh` as ConcretePath).get).toBe(true);
+    expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+  });
+
+  it(`Single, no interest, $50,000 wages + $100,000 LT gain (AGI $150,000 ≤ $200,000) → not knocked out`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh`];
+    const { factGraph } = setupFactGraph(niitFacts(50000, 100000));
+    expect(get(factGraph, `/agi`)).toBe(`150000.00`);
+    expect(factGraph.get(`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh` as ConcretePath).get).toBe(false);
+  });
+});
