@@ -1,6 +1,6 @@
 # Gap: Schedule D + Form 8949 (capital gains/losses)
 
-**Status:** Gap PR (spec + acceptance criteria). Implementation by Dev.
+**Status:** Implementation on this branch (Dev). Spec retained for audit.
 **Tax year target:** 2026
 
 ## Audit sources (required on every claim)
@@ -48,13 +48,31 @@ Land **TY2026 parameters** (#2) first where possible — ordinary brackets + thi
 
 ## Acceptance criteria (Rev review gate)
 
-- [ ] Breakpoints cite Rev. Proc. 2025-32 **p. 13**
-- [ ] Loss limit cites § 1211(b)
-- [ ] ST / LT / mixed scenarios with worked examples
-- [ ] 8949 box rules cite instruction PDF pages
-- [ ] No-capital-activity regression
-- [ ] Proof in PR body
+- [x] Breakpoints cite Rev. Proc. 2025-32 **p. 13**
+- [x] Loss limit cites § 1211(b)
+- [x] ST / LT / mixed scenarios with worked examples
+- [x] 8949 box rules cite instruction PDF pages
+- [x] No-capital-activity regression
+- [x] Proof in PR body
 
 ## Reviewer notes
 
 High blast radius. Feat merges only after Rev writeup.
+
+
+## Implementation notes (Dev)
+
+- Fact modules: `tax/scheduleD.xml` (Form 8949 collection, boxes A–L, §1211(b) limit, carryover inputs, breakpoint selectors),
+  `tax/scheduleD2.xml` (Schedule D lines 1b–21, Form 1040 line 7), `tax/scheduleD3.xml` (QDCG Tax Worksheet → Form 1040 line 16).
+- `/capitalGainsOrLosses` (Form 1040 line 7) ← `/capitalGainsOrLossesFor1040` after the §1211(b) clamp.
+- Breakpoints come from `constants4.xml` (PR #2), Rev. Proc. 2025-32 §4.03 p.13. No duplicated dollar amounts.
+- Boxes G–L (digital assets) total with A–F on the same Schedule D lines; a box/holding-period mismatch blocks submission.
+- Prior-year carryover: Schedule D lines 6/14 (writable, from the prior-year Capital Loss Carryover Worksheet).
+- Tax: `/taxOnTaxableIncomeRegularRates` (was the body of `/tentativeTaxFromTaxableIncome`) is QDCG line 24;
+  `/tentativeTaxFromTaxableIncome` (Form 1040 line 16) = QDCG line 25 when line 4 > 0, otherwise regular tax.
+- Print: PDFBox config `pdf/2024/IRS1040SD/en/configuration.yml` (field names checked against the IRS 2024 PDF).
+  Not registered in `application.yaml` / `PdfTemplate.java` until the template PDF binary is committed.
+  Phase A print/local only — no MeF.
+- Tests: `scheduleD.test.ts` (ST / LT / mixed / §1211(b) $3,000 & $1,500 MFS / carryover / boxes G–L / QDCG 0%·15%·20% / regression).
+- Follow-ups: Form 8949 PDF (per-box Part I/II copies), Schedule D PDF registration, next-year carryover worksheet,
+  28% / unrecaptured §1250 (Schedule D Tax Worksheet), flow screens.
