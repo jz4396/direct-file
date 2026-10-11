@@ -11,7 +11,7 @@
           </IsComplete>
           <GreaterThan>
             <Left>
-              <Dependency module="scheduleC" path="/selfEmploymentTax" />
+              <Dependency module="scheduleSE" path="/selfEmploymentTax" />
             </Left>
             <Right>
               <Dollar>0</Dollar>

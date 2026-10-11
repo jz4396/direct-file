@@ -1,6 +1,6 @@
 <?xml-model href="./FactDictionaryModule.rng"?>
 <!--
-  Schedule C (Profit or Loss From Business) + Schedule SE (Self-Employment Tax) — TY2026 vertical slice.
+  Schedule C (Profit or Loss From Business) + Schedule SE (Self-Employment Tax) — TY2026 (filed in 2027) vertical slice.
 
   Audit cites (required next to every computation):
   - Gross income: 26 U.S.C. § 61 — https://www.law.cornell.edu/uscode/text/26/61
@@ -10,7 +10,10 @@
   - Deductible employer-equivalent portion: 26 U.S.C. § 164(f) — https://www.law.cornell.edu/uscode/text/26/164#f
   - TY2026 OASDI wage base $184,500: SSA contribution and benefit base —
     https://www.ssa.gov/oact/cola/cbb.html
-    Federal Register 90 Fed. Reg. 210 (Nov. 3, 2025) — OASDI base for 2026
+    SSA, "Cost-of-Living Increase and Other Determinations for 2026", 90 FR 49047 (Nov. 3, 2025),
+    at 49047 and 49050: "The OASDI contribution and benefit base is $184,500 for remuneration paid in
+    2026 and self-employment income earned in tax years beginning in 2026." —
+    https://www.federalregister.gov/d/2025-19763 (PDF: https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf)
   - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
     https://www.irs.gov/instructions/i1040sse
   - QBI § 199A: explicitly unsupported in this slice (no silent zero) —
@@ -100,6 +103,85 @@
           <Dependency path="/hadSelfEmploymentIncome" />
           <Dependency path="/wantsQbiDeduction" />
         </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSecondaryFilerBusinesses">
+      <Name>Schedule C businesses owned by the secondary filer</Name>
+      <Derived>
+        <Filter path="/scheduleCBusinesses">
+          <Dependency path="filer/isSecondaryFiler" />
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleCSpouseBusiness">
+      <Name>Knockout: spouse-owned Schedule C business</Name>
+      <Description>
+        Schedule SE is computed per individual (26 U.S.C. 1402(b); each spouse has a separate OASDI
+        contribution and benefit base). This slice runs one Schedule SE coordinated against the
+        primary filer's W-2 OASDI wages only, so any business owned by the secondary filer is
+        explicitly knocked out rather than mis-computed.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <CollectionSize>
+              <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+            </CollectionSize>
+          </Left>
+          <Right>
+            <Int>0</Int>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleCEarnedIncomeCredits">
+      <Name>Knockout: Schedule C income with EITC / CDCC (or ACTC with a loss)</Name>
+      <Description>
+        Explicit non-support (no silent mis-statement) in this slice:
+        - EITC earned income (26 U.S.C. 32(c)(2)(A)(ii)) and CDCC earned income (26 U.S.C. 21(d)(2),
+          32(c)(2)) include net earnings from self-employment, but the eitc*/cdcc modules still use
+          wages only (/employerIncomeSubtotal). Any nonzero Schedule C result with EITC or CDCC
+          eligibility is knocked out until those modules are wired.
+        - ACTC earned income (Schedule 8812 line 18a) is wired via /scheduleCNetProfitForEarnedIncome,
+          which floors a net loss at zero; a Schedule C loss with CTC eligibility is knocked out.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <All>
+            <Not>
+              <Equal>
+                <Left>
+                  <Dependency path="/scheduleCNetProfitOrLoss" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </Equal>
+            </Not>
+            <Any>
+              <Dependency module="eitc" path="/eitcQualified" />
+              <Dependency module="cdcc" path="/cdccQualified" />
+            </Any>
+          </All>
+          <All>
+            <LessThan>
+              <Left>
+                <Dependency path="/scheduleCNetProfitOrLoss" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </LessThan>
+            <Dependency module="ctcOdc" path="/ctcQualified" />
+          </All>
+        </Any>
       </Derived>
     </Fact>
 
@@ -255,25 +337,82 @@
       </Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
+      <!--
+        Unset collection handling: a filer who answered "no" (or never reached this section) has no
+        /scheduleCBusinesses collection, which would otherwise leave /totalIncome incomplete. If the
+        filer answered "yes" but the collection is still unset, the result stays incomplete so
+        /totalTaxIsIncomplete blocks submission (no silent zero).
+      -->
       <Derived>
-        <Round>
-          <CollectionSum>
-            <Dependency path="/scheduleCBusinesses/*/netProfitOrLoss" />
-          </CollectionSum>
-        </Round>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleCBusinesses/*/netProfitOrLoss" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadSelfEmploymentIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/hadSelfEmploymentIncome" />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleCBusinesses/*/netProfitOrLoss" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
     <Fact path="/scheduleCNetProfitForEarnedIncome">
       <Name>Schedule C net profit included in earned income</Name>
       <Description>
-        Positive Schedule C net profit counts as earned income (EITC/ACTC). Losses do not reduce earned
-        income below other earned income sources in this MVP (floored at zero for this component).
+        Earned income from self-employment for EITC/ACTC = Schedule C net profit minus the deductible
+        part of SE tax (Schedule 1 line 15), per Pub. 596 EIC Worksheet B (26 U.S.C. 32(c)(2)(A)(ii)).
+        Floored at zero for this component in this MVP (net SE loss not netted against wages).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
         <GreaterOf>
-          <Dependency path="/scheduleCNetProfitOrLoss" />
+          <Subtract>
+            <Minuend>
+              <Dependency path="/scheduleCNetProfitOrLoss" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+            </Subtrahends>
+          </Subtract>
           <Dollar>0</Dollar>
         </GreaterOf>
       </Derived>

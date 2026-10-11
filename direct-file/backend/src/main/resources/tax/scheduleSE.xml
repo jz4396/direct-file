@@ -1,6 +1,6 @@
 <?xml-model href="./FactDictionaryModule.rng"?>
 <!--
-  Schedule SE (Self-Employment Tax) — TY2026 vertical slice companion to scheduleC.xml.
+  Schedule SE (Self-Employment Tax) — TY2026 (filed in 2027) vertical slice companion to scheduleC.xml.
   Cross-module: net profit from module scheduleC.
   Audit cites on each computation fact.
 -->
@@ -15,8 +15,9 @@
         TY2026 OASDI contribution and benefit base = $184,500.
         Primary source: SSA https://www.ssa.gov/oact/cola/cbb.html
         ("For earnings in 2026, this base is $184,500.")
-        Also: 90 Fed. Reg. (Nov. 3, 2025) announcing $184,500 for remuneration paid in 2026
-        and self-employment income earned in tax years beginning in 2026.
+        Also: 90 FR 49047, 49050 (Nov. 3, 2025), https://www.federalregister.gov/d/2025-19763 :
+        "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and
+        self-employment income earned in tax years beginning in 2026."
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -57,7 +58,9 @@
         Schedule SE: net profit × 92.35% (0.9235).
         Cite: Schedule SE instructions (multiply by 92.35%); reflects employer-equivalent portion
         already excluded via the 7.65% reduction embedded in 92.35% (= 100% − 7.65%).
-        Related: 26 U.S.C. § 1402(a)(12) / Schedule SE computational worksheet.
+        Authority: 26 U.S.C. § 1402(a)(12): deduction "equal to the product of (A) the taxpayer's net
+        earnings from self-employment ... and (B) one-half of the sum of the rates imposed by
+        subsections (a) and (b) of section 1401" = 1 - (12.4% + 2.9%) / 2 = 0.9235.
         Rational 9235/10000 = 0.9235.
       </Description>
       <Export downstreamFacts="true" mef="true" />
@@ -246,7 +249,9 @@
       <Description>
         Employer-equivalent portion = one-half of SE tax. Schedule 1 adjustment.
         Cite: 26 U.S.C. § 164(f) — https://www.law.cornell.edu/uscode/text/26/164#f
-        Quote: deduction equal to the employer-equivalent portion of the taxes imposed by section 1401.
+        Quote (§ 164(f)(1)): "there shall be allowed as a deduction for the taxable year an amount equal to
+        one-half of the taxes imposed by section 1401 (other than the taxes imposed by section 1401(b)(2))".
+        Flows to Schedule 1 line 15 → /adjustmentsToIncome (taxCalculations.xml).
       </Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />

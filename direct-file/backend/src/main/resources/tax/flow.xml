@@ -116,6 +116,8 @@
           <Dependency module="cdcc" path="/knockoutCdccWorksheetA" />
           <Dependency module="cdcc" path="/flowKnockoutHouseholdEmployee" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
         </Any>
       </Derived>
       <Placeholder>
@@ -688,6 +690,7 @@
             <Dependency module="spouseSection" path="/spouseSectionCompleted" />
             <Dependency module="estimatedPayments" path="/estimatedTaxesIsComplete" />
             <Dependency module="cdcc" path="/cdccSectionIsComplete" />
+            <Dependency module="scheduleSE" path="/scheduleCSectionIsComplete" />
             <IsComplete>
               <Dependency module="filingStatus" path="/isFilingStatusComplete" />
             </IsComplete>
