@@ -57,6 +57,8 @@
       <Description>The max income before someone is eligible to pay net investment income tax</Description>
 
       <Derived>
+        <!-- IRC §1411(b)(2): "in the case of a married taxpayer filing a separate return, ½ of the dollar amount
+             determined under paragraph (1)" = $125,000. https://www.law.cornell.edu/uscode/text/26/1411 -->
         <Dollar>125000</Dollar>
       </Derived>
     </Fact>
@@ -66,6 +68,8 @@
       <Description>The max income before someone is eligible to pay net investment income tax</Description>
 
       <Derived>
+        <!-- IRC §1411(b)(1): "$250,000 in the case of a taxpayer making a joint return under section 6013 or a
+             surviving spouse (as defined in section 2(a))". https://www.law.cornell.edu/uscode/text/26/1411 -->
         <Dollar>250000</Dollar>
       </Derived>
     </Fact>
@@ -75,7 +79,36 @@
       <Description>The max income before someone is eligible to pay net investment income tax</Description>
 
       <Derived>
+        <!-- IRC §1411(b)(3): "$200,000 in any other case". https://www.law.cornell.edu/uscode/text/26/1411 -->
         <Dollar>200000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hasInterestOrCapitalGainForNiit">
+      <Name>Has investment income subject to the NIIT check</Name>
+      <Description>True when there is taxable interest or a positive net capital gain on Form 1040 line 7.
+        Both are net investment income under IRC §1411(c)(1)(A)(i) (interest) and (iii) (net gain from disposition
+        of property). The 3.8% NIIT (Form 8960) is out of scope, so the filer is knocked out when this is true and
+        MAGI exceeds the §1411(b) threshold. https://www.law.cornell.edu/uscode/text/26/1411</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/interestIncome" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="income" path="/capitalGainsOrLosses" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </Any>
       </Derived>
     </Fact>
 
@@ -91,14 +124,9 @@
                 final AGI -->
           <Dependency module="flow" path="/flowHasSeenDeductions" />
           <Dependency module="filingStatus" path="/isFilingStatusMFS" />
-          <GreaterThan>
-            <Left>
-              <Dependency path="/interestIncome" />
-            </Left>
-            <Right>
-              <Dollar>0</Dollar>
-            </Right>
-          </GreaterThan>
+          <!-- Investment income includes interest AND net capital gain (IRC §1411(c)(1)(A)(i), (iii)),
+               not just interest. -->
+          <Dependency path="/hasInterestOrCapitalGainForNiit" />
           <GreaterThan>
             <Left>
               <Dependency module="taxCalculations" path="/agi" />
@@ -126,14 +154,9 @@
             <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
             <Dependency module="filingStatus" path="/isFilingStatusQSS" />
           </Any>
-          <GreaterThan>
-            <Left>
-              <Dependency path="/interestIncome" />
-            </Left>
-            <Right>
-              <Dollar>0</Dollar>
-            </Right>
-          </GreaterThan>
+          <!-- Investment income includes interest AND net capital gain (IRC §1411(c)(1)(A)(i), (iii)),
+               not just interest. -->
+          <Dependency path="/hasInterestOrCapitalGainForNiit" />
           <GreaterThan>
             <Left>
               <Dependency module="taxCalculations" path="/agi" />
@@ -161,14 +184,9 @@
             <Dependency module="filingStatus" path="/isFilingStatusSingle" />
             <Dependency module="filingStatus" path="/isFilingStatusHOH" />
           </Any>
-          <GreaterThan>
-            <Left>
-              <Dependency path="/interestIncome" />
-            </Left>
-            <Right>
-              <Dollar>0</Dollar>
-            </Right>
-          </GreaterThan>
+          <!-- Investment income includes interest AND net capital gain (IRC §1411(c)(1)(A)(i), (iii)),
+               not just interest. -->
+          <Dependency path="/hasInterestOrCapitalGainForNiit" />
           <GreaterThan>
             <Left>
               <Dependency module="taxCalculations" path="/agi" />
