@@ -1,0 +1,135 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/stateCanTransferData">
+      <Name>The list of states with "full integration" with Direct File that can transfer data</Name>
+      <Description>
+        These options are used in the sign and submit section to link to state tools.
+
+        Note: This should be
+        obtained from the state api, not the fact graph.
+        Wherever possible, do not use this fact. Instead, request the
+        state profile from the state-api.
+        If a state profile is returned, and has a redirectUrl configured, then
+        "stateCanTransferData".
+      </Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">az</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">id</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">il</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">ma</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">md</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">nc</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">nj</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">nm</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">ny</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">or</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">pa</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">wi</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/scopedStateDoesNotHavePersonalIncomeTax">
+      <Name>Whether or not the in scope state has personal income tax.</Name>
+      <Description>These options are used in the sign and submit section and dashboard to determine what information to
+        display about potential state taxes filing needs.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">wa</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

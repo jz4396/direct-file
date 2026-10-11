@@ -1,8 +1,8 @@
 // Current Tax Year was hardcoded in several places.
 // This needs to be dynamic eventually, so we'll centralize usages to one constant to reduce the torment
 // of that burden, by making it clear where our debts lie.
-export const CURRENT_TAX_YEAR = `2024`;
-export const DEFAULT_TAX_DAY = `April 15, 2025`;
+export const CURRENT_TAX_YEAR = `2026`;
+export const DEFAULT_TAX_DAY = `April 15, 2027`;
 
 // I would've just inlined a "4", but Javascript made weird choices with dates
 const APRIL_MONTH_INDEX = 3;
@@ -59,5 +59,19 @@ export const TAX_YEAR_2024 = {
     INELIGIBLE_INCOME_EITC_2QC_MFJ: 62688.0,
     INELIGIBLE_INCOME_EITC_1QC_MFJ: 56004.0,
     INELIGIBLE_INCOME_EITC_0QC_MFJ: 25511.0,
+  },
+} as const;
+
+/** Rev. Proc. 2025-32 §4.06 p.15 — Completed Phaseout Amounts (first dollar with $0 credit). */
+export const TAX_YEAR_2026 = {
+  EITC_INCOME_THRESHOLDS: {
+    INELIGIBLE_INCOME_EITC_3QC: 62974.0,
+    INELIGIBLE_INCOME_EITC_2QC: 58629.0,
+    INELIGIBLE_INCOME_EITC_1QC: 51593.0,
+    INELIGIBLE_INCOME_EITC_0QC: 19540.0,
+    INELIGIBLE_INCOME_EITC_3QC_MFJ: 70244.0,
+    INELIGIBLE_INCOME_EITC_2QC_MFJ: 65899.0,
+    INELIGIBLE_INCOME_EITC_1QC_MFJ: 58863.0,
+    INELIGIBLE_INCOME_EITC_0QC_MFJ: 26820.0,
   },
 } as const;

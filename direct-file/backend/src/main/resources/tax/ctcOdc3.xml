@@ -1,0 +1,434 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/earnedIncomeExceedsActcRefundabilityThreshold">
+      <Name>Earned income exceeds additional CTC refundability threshold</Name>
+      <Description>Whether the taxpayer has enough earned income to qualify for the additional Child
+        Tax Credit.
+        Addition
+        12/22/23 - Also checking the real potential ACTC (compared against remaining CTC,
+        ODC and potential
+        ACTC)
+        This
+        represents the "Yes" checkbox on line 19 of the 8812 that determines if the line 19
+        dollar amount
+        field should
+        have a value.
+      </Description>
+      <Export mef="true" />
+      <Derived>
+        <All>
+          <Dependency path="/xmlHasPotentialActc" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="/earnedIncomeAboveActcRefundabilityThreshold" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line19Yes">
+      <Name>Display value for PDF Schedule 8812, Line 19 Yes checkbox</Name>
+      <Description>Whether earned income exceeds threshold if completing Part II-A; undefined
+        otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency path="/earnedIncomeExceedsActcRefundabilityThreshold" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/earnedIncomeSubceedsActcRefundabilityThreshold">
+      <Name>Earned income additional CTC refundability threshold</Name>
+      <Description>Whether the taxpayer has too little earned income to qualify for the additional
+        Child Tax Credit.
+        Reported in a checkbox on line 19 of Form 8812.</Description>
+
+      <Derived>
+        <Not>
+          <Dependency path="/earnedIncomeExceedsActcRefundabilityThreshold" />
+        </Not>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line19No">
+      <Name>Display value for PDF Schedule 8812, Line 19 No checkbox</Name>
+      <Description>Whether earned income subceeds threshold if completing Part II-A; undefined
+        otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency path="/earnedIncomeSubceedsActcRefundabilityThreshold" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/regularMaximumActc">
+      <Name>Regular maximum additional child tax credit</Name>
+      <Description>The maximum amount of the additional child tax credit that could be refunded to
+        you, absent
+        provisions
+        for taxpayers with three or more children.</Description>
+      <Export mef="true" />
+      <ExportZero />
+
+      <Derived>
+        <Round>
+          <Multiply>
+            <Dependency path="/earnedIncomeAboveActcRefundabilityThreshold" />
+            <Rational>15/100</Rational>
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line20">
+      <Name>Display value for PDF Schedule 8812, Line 20</Name>
+      <Description>Regular maximum ACTC if completing Part II-A; undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency path="/regularMaximumActc" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/threeOrMoreCtcEligibleDependents">
+      <Name>Three or more CTC-eligible dependents</Name>
+      <Description>Whether the taxpayer has three or more CTC-eligible dependents.</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <GreaterThanOrEqual>
+          <Left>
+            <Dependency path="/ctcEligibleDependents" />
+          </Left>
+          <Right>
+            <Int>3</Int>
+          </Right>
+        </GreaterThanOrEqual>
+      </Derived>
+    </Fact>
+    <Fact path="/exactlyOneCtcEligibleDependent">
+      <Name>Exactly one CTC-eligible dependent</Name>
+      <Description>Whether the taxpayer has exactly one CTC-eligible dependent.</Description>
+
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="/ctcEligibleDependents" />
+          </Left>
+          <Right>
+            <Int>1</Int>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/moreThanOneCtcEligibleDependent">
+      <Name>More than one CTC-eligible dependent</Name>
+      <Description>Whether the taxpayer has more than one CTC-eligible dependent.</Description>
+
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/ctcEligibleDependents" />
+          </Left>
+          <Right>
+            <Int>1</Int>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line20Yes">
+      <Name>Display value for PDF Schedule 8812, Line 20 Yes checkbox</Name>
+      <Description>Whether the taxpayer has three or more CTC-eligible dependents if completing Part
+        II-A; undefined
+        otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency path="/threeOrMoreCtcEligibleDependents" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/lessThanThreeCtcEligibleDependents">
+      <Name>Less than three CTC-eligible dependents</Name>
+      <Description>Whether the taxpayer has less than three CTC-eligible dependents. Entered in a
+        checkbox on line 20 of
+        Form 8812.</Description>
+
+      <Derived>
+        <Not>
+          <Dependency path="/threeOrMoreCtcEligibleDependents" />
+        </Not>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line20No">
+      <Name>Display value for PDF Schedule 8812, Line 20 No checkbox</Name>
+      <Description>Whether the taxpayer has less than three CTC-eligible dependents if completing
+        Part II-A; undefined
+        otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine16b" />
+            </When>
+            <Then>
+              <Dependency path="/lessThanThreeCtcEligibleDependents" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812ContinueFromLine20">
+      <Name>Continue Schedule 8812 from Line 20</Name>
+      <Description>Whether to continue in sequence from Line 20.</Description>
+      <TaxYear>2024</TaxYear>
+      <!-- Note there is logic for PR residents not reflected here as it is out of scope. -->
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/pdf8812Line16bAmount" />
+                  </Left>
+                  <Right>
+                    <Multiply>
+                      <Int>3</Int>
+                      <Dependency path="/maxActcAmount" />
+                    </Multiply>
+                  </Right>
+                </GreaterThanOrEqual>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/pdf8812Line20" />
+                </Left>
+                <Right>
+                  <Dependency path="/pdf8812Line17" />
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/socialSecurityOverEitc">
+      <Name>Social Security taxes in excess of EITC claimed</Name>
+      <Description>Social Security taxes in excess of EITC claimed.</Description>
+      <Export mef="true" />
+      <ExportZero />
+
+      <Derived>
+        <Round>
+          <GreaterOf>
+            <Subtract>
+              <Minuend>
+                <Dependency module="formW2s" path="/socialSecurityTaxesWithheld" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="eitc" path="/earnedIncomeCredit" />
+              </Subtrahends>
+            </Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line25">
+      <Name>Display value for PDF Schedule 8812, Line 25</Name>
+      <Description>Social Security taxes in excess of EITC claimed if completing Part II-B;
+        undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine20" />
+            </When>
+            <Then>
+              <Dependency path="/socialSecurityOverEitc" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/maximumActc">
+      <Name>Maximum additional child tax credit</Name>
+      <Description>The maximum amount of the additional child tax credit that could be refunded to
+        you.</Description>
+      <Export mef="true" />
+
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Dependency path="/threeOrMoreCtcEligibleDependents" />
+              </When>
+              <Then>
+                <GreaterOf>
+                  <Dependency path="/regularMaximumActc" />
+                  <Dependency path="/socialSecurityOverEitc" />
+                </GreaterOf>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dependency path="/regularMaximumActc" />
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/pdf8812Line26">
+      <Name>Display value for PDF Schedule 8812, Line 26</Name>
+      <Description>Maximum additional child tax credit if completing Part II-B; undefined otherwise.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/pdf8812ContinueFromLine20" />
+            </When>
+            <Then>
+              <Dependency path="/maximumActc" />
+            </Then>
+          </Case>
+          <!-- otherwise: undefined -->
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/additionalCtc">
+      <Name>Additional child tax credit</Name>
+      <Description>The refundable amount of the additional child tax credit. Entered on line 27 of
+        Form 8812 and line 28
+        of Form 1040.</Description>
+      <Export downstreamFacts="true" mef="true" />
+
+      <Derived>
+        <Round>
+          <LesserOf>
+            <Dependency path="/remainingPotentialActc" />
+            <Dependency path="/maximumActc" />
+          </LesserOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/isReceivingActc">
+      <Name>Is receiving actc</Name>
+      <Description>Whether the TP is receiving ACTC</Description>
+      <Export downstreamFacts="true" mef="true" />
+
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/additionalCtc" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+    <Fact path="/ctcOdcDisqualifiedForImproperClaims">
+      <Name>CTC Disqualified for Improper Claims</Name>
+      <Description>Whether the TP has been diqualified from taking the CTC due to previous improper
+        claims</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <All>
+          <Dependency path="/receivedImproperClaims" />
+          <Not>
+            <Dependency path="/hasFiledCtcOdcSinceNoticeExpired" />
+          </Not>
+          <Dependency path="/hadCtcOdcImproperClaimsBan" />
+          <Not>
+            <Dependency path="/improperClaimsNoticeExpired" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/ctcQualified">
+      <Name>Receiving CTC</Name>
+      <Description>Whether the TP can receive the CTC, prior to MAGI adjustments</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <All>
+          <Not>
+            <Dependency path="/ctcOdcDisqualifiedForImproperClaims" />
+          </Not>
+          <Dependency path="/maybeEligibleForCtc" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/odcQualified">
+      <Name>Receiving ODC</Name>
+      <Description>Whether the TP can receive the ODC, prior to MAGI adjustments</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <All>
+          <Not>
+            <Dependency path="/ctcOdcDisqualifiedForImproperClaims" />
+          </Not>
+          <Dependency path="/maybeEligibleForOdc" />
+        </All>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

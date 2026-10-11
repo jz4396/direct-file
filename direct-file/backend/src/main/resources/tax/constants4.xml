@@ -1,0 +1,101 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/hdhpMinAnnualDeductibleFamily">
+      <Description>High Deductible Health Plan (HDHP) minimum annual deductible for family coverage (source
+        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>3200</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/hdhpMaxOOPExpensesSelf">
+      <Description>High Deductible Health Plan (HDHP) maximum out-of-pocket expenses for self-only coverage (source
+        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>8050</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/hdhpMaxOOPExpensesFamily">
+      <Description>High Deductible Health Plan (HDHP) maximum out-of-pocket expenses for family coverage (source
+        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
+      <TaxYear>2024</TaxYear>
+      <Derived>
+        <Dollar>16100</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/hsaForm5498DueDate">
+      <Description>The last day that form 5498s can be sent to the TP</Description>
+      <TaxYear>2024</TaxYear>
+
+      <Derived>
+        <Day>2025-06-02</Day>
+      </Derived>
+    </Fact>
+    <Fact path="/capGainsZeroRateMFJ">
+      <Name>Max zero rate amount — MFJ / Surviving Spouse</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFJ / Surviving Spouse maximum zero rate amount $98,900</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>98900</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/capGains15RateMFJ">
+      <Name>Max 15% rate amount — MFJ / Surviving Spouse</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFJ / Surviving Spouse maximum 15% rate amount $613,700</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>613700</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/capGainsZeroRateMFS">
+      <Name>Max zero rate amount — MFS</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFS maximum zero rate amount $49,450</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>49450</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/capGains15RateMFS">
+      <Name>Max 15% rate amount — MFS</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — MFS maximum 15% rate amount $306,850</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>306850</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/capGainsZeroRateHoH">
+      <Name>Max zero rate amount — Heads of Household</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — HoH maximum zero rate amount $66,200</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>66200</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/capGains15RateHoH">
+      <Name>Max 15% rate amount — Heads of Household</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — HoH maximum 15% rate amount $579,600</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>579600</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/capGainsZeroRateSingle">
+      <Name>Max zero rate amount — All Other Individuals</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — unmarried maximum zero rate amount $49,450</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>49450</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/capGains15RateSingle">
+      <Name>Max 15% rate amount — All Other Individuals</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — unmarried maximum 15% rate amount $545,500</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>545500</Dollar>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

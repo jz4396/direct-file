@@ -55,13 +55,13 @@ describe(`CTC and ODC amounts`, () => {
         ...child2Data,
         ...child3Data,
       },
-      // /tentativeTaxFromTaxableIncome is 3860 from the tax tables, this caps this credit
-      // For the 2 QC under 17, we get 2000 * 2 = 4000
-      // For the 1 QC over 17, we get 500, for a total potential creditof 4500
-      // We are capped to the 3860, from which we take 500 for ODC, leaving 3509 for CTC
+      // /tentativeTaxFromTaxableIncome is 3567 from TY2026 tax tables (HoH std ded $24,150), this caps this credit
+      // For the 2 QC under 17, we get 2200 * 2 = 4400 (Rev. Proc. 2025-32 §4.05 p.14)
+      // For the 1 QC over 17, we get 500, for a total potential credit of 4900
+      // We are capped to 3567, from which we take 500 for ODC, leaving 3067 for CTC
       odcAmount: `500.00`,
-      ctcAmount: `3360.00`,
-      total: `3860.00`,
+      ctcAmount: `3067.00`,
+      total: `3567.00`,
     },
     {
       name: `HOH filer with 3 QC (2 under 17 and one older) and partial phase out in wages`,
@@ -75,15 +75,15 @@ describe(`CTC and ODC amounts`, () => {
         ...child2Data,
         ...child3Data,
       },
-      // For the 2 QC under 17, we get 2000 * 2 = 4000
-      // For the 1 QC over 17, we get 500, for a total potential creditof 4500
+      // For the 2 QC under 17, we get 2200 * 2 = 4400
+      // For the 1 QC over 17, we get 500, for a total potential credit of 4900
       // /dependentCreditPhaseoutThreshold is 200000, income is $1000 over that.
       // /dependentCreditPhaseout is .05 * 1000 = 50
-      // So credit = 4500 - 50 = 4450
-      // odc is phased out first and taken out first so odc = 450 leaving 4000 for ctc
+      // So credit = 4900 - 50 = 4850
+      // odc is phased out first and taken out first so odc = 450 leaving 4400 for ctc
       odcAmount: `450.00`,
-      ctcAmount: `4000.00`,
-      total: `4450.00`,
+      ctcAmount: `4400.00`,
+      total: `4850.00`,
     },
     {
       name: `HOH filer with 3 QC (2 under 17 and one older) and partial phase out in wages with rounding`,
@@ -97,17 +97,17 @@ describe(`CTC and ODC amounts`, () => {
         ...child2Data,
         ...child3Data,
       },
-      // For the 2 QC under 17, we get 2000 * 2 = 4000
-      // For the 1 QC over 17, we get 500, for a total potential creditof 4500
+      // For the 2 QC under 17, we get 2200 * 2 = 4400
+      // For the 1 QC over 17, we get 500, for a total potential credit of 4900
       // /dependentCreditPhaseoutThreshold is 200000
       // We round income to 223000, so this income is $23000 over threshold.
       // /dependentCreditPhaseout is .05 * 23000 = 1150
       // odc is phased out to zero
-      // So credit = 4500 - 1150 = 3350
-      // odc is phased out first and taken out first so odc = 0 leaving 3350 for ctc
+      // So credit = 4900 - 1150 = 3750
+      // odc is phased out first and taken out first so odc = 0 leaving 3750 for ctc
       odcAmount: `0.00`,
-      ctcAmount: `3350.00`,
-      total: `3350.00`,
+      ctcAmount: `3750.00`,
+      total: `3750.00`,
     },
     {
       name: `HOH filer with 2 QC (both under 17) and non limiting wages`,
@@ -120,13 +120,13 @@ describe(`CTC and ODC amounts`, () => {
         },
         ...child2Data,
       },
-      // For the 2 QC under 17, we get 2000 * 2 = 4000
+      // For the 2 QC under 17, we get 2200 * 2 = 4400 (Rev. Proc. 2025-32 §4.05 p.14)
       // /dependentCreditPhaseoutThreshold is 200000
       // Income is under the threshold so no phaseout
-      // So ctc is 4000
+      // So ctc is 4400
       odcAmount: `0.00`,
-      ctcAmount: `4000.00`,
-      total: `4000.00`,
+      ctcAmount: `4400.00`,
+      total: `4400.00`,
     },
   ];
 
