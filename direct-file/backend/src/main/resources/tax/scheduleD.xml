@@ -1,0 +1,977 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+
+
+    <!--
+      Schedule D + Form 8949 — TY2026 capital gains/losses (Phase A: print/local).
+      Cites:
+      - Rev. Proc. 2025-32 §4.03 p.13 (breakpoints; reused from constants4.xml merged in PR #2 — no duplicate amounts)
+      - IRC §1211(b) ($3,000 / $1,500 MFS loss limit)
+      - IRC §1(h), §1221, §1222
+      - Form 8949 instructions (2025) pp.3–4 (boxes A–F / G–L)
+      - Schedule D instructions (2025) p.3 ($3,000 against ordinary income); p.10 (lines 6/14 carryover worksheet); p.14 (line 21)
+      - Schedule D (2025) lines 1b/2/3/8b/9/10: "Totals for all transactions reported on Form(s) 8949
+        with Box A or Box G checked" (likewise B/H, C/I, D/J, E/K, F/L)
+      QDCG Tax Worksheet (Form 1040 line 16) lives in scheduleD3.xml.
+      Out of scope this PR: MeF e-file, wash sales, 28% collectibles / unrecaptured §1250 (Schedule D
+      Tax Worksheet), next-year carryover worksheet, Form 8949 PDF.
+    -->
+
+    <Fact path="/form8949BoxOptions">
+      <Name>Form 8949 box options</Name>
+      <Description>Form 8949 Part I boxes A–C / G–I and Part II boxes D–F / J–L.
+        Instructions for Form 8949 (2025) pp.3–4: Box A/G basis reported to IRS; B/H basis not
+        reported; C/I no 1099-B/DA (C/F exclude digital — use I/L). Digital G–L added 2025.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>A</String>
+          <String>B</String>
+          <String>C</String>
+          <String>D</String>
+          <String>E</String>
+          <String>F</String>
+          <String>G</String>
+          <String>H</String>
+          <String>I</String>
+          <String>J</String>
+          <String>K</String>
+          <String>L</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949HoldingPeriodOptions">
+      <Name>Holding period options</Name>
+      <Description>IRC §1222 — short-term (held ≤1 year) vs long-term (held &gt;1 year).
+        Form 8949 Part I = short-term; Part II = long-term (Form 8949 instr. (2025) p.3).</Description>
+      <Derived>
+        <EnumOptions>
+          <String>shortTerm</String>
+          <String>longTerm</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/capitalLossLimit">
+      <Export downstreamFacts="true" />
+      <Name>Capital loss limit against ordinary income</Name>
+      <Description>IRC §1211(b): losses allowed only to the extent of gains plus the lower of
+        (1) $3,000 ($1,500 if MFS), or (2) excess of losses over gains.
+        Schedule D instr. (2025) p.3: "You can deduct capital losses up to the amount of your
+        capital gains plus $3,000 ($1,500 if married filing separately)."</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+            </When>
+            <Then>
+              <!-- IRC §1211(b)(1): "$3,000 ($1,500 in the case of a married individual filing a separate return)"
+                   https://www.law.cornell.edu/uscode/text/26/1211 ; Schedule D instr. (2025) p.3 -->
+              <Dollar>1500</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <!-- IRC §1211(b)(1) $3,000 limit https://www.law.cornell.edu/uscode/text/26/1211 ;
+                   Schedule D instr. (2025) p.3 -->
+              <Dollar>3000</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/capitalLossLimitAsNegative">
+      <Export downstreamFacts="true" />
+      <Name>Capital loss limit as negative dollar</Name>
+      <Description>Negated §1211(b) limit for GreaterOf clamp on Form 1040 line 7.</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dollar>0</Dollar>
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/capitalLossLimit" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/capGainsZeroRateAmount">
+      <Export downstreamFacts="true" />
+      <Name>Selected max zero rate amount (preferential CG)</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — filing-status-selected maximum zero rate amount
+        under §1(j)(5)(B). Selects the PR #2 constants4.xml facts (no duplicated dollar amounts).</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Any>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                <Dependency module="filingStatus" path="/isFilingStatusQSS" />
+              </Any>
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — MFJ / Surviving Spouse maximum zero rate $98,900 -->
+              <Dependency module="constants" path="/capGainsZeroRateMFJ" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — MFS maximum zero rate $49,450 -->
+              <Dependency module="constants" path="/capGainsZeroRateMFS" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusHOH" />
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — HoH maximum zero rate $66,200 -->
+              <Dependency module="constants" path="/capGainsZeroRateHoH" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — All Other Individuals maximum zero rate $49,450 -->
+              <Dependency module="constants" path="/capGainsZeroRateSingle" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/capGains15RateAmount">
+      <Export downstreamFacts="true" />
+      <Name>Selected max 15% rate amount (preferential CG)</Name>
+      <Description>Rev. Proc. 2025-32 §4.03 p.13 — filing-status-selected maximum 15% rate amount.
+        Above this breakpoint, 20% rate applies under §1(h)(1)(D). Selects the PR #2 constants4.xml facts.</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Any>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                <Dependency module="filingStatus" path="/isFilingStatusQSS" />
+              </Any>
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — MFJ / Surviving Spouse maximum 15% rate $613,700 -->
+              <Dependency module="constants" path="/capGains15RateMFJ" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — MFS maximum 15% rate $306,850 -->
+              <Dependency module="constants" path="/capGains15RateMFS" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusHOH" />
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — HoH maximum 15% rate $579,600 -->
+              <Dependency module="constants" path="/capGains15RateHoH" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <!-- Rev. Proc. 2025-32 §4.03 p.13 — All Other Individuals maximum 15% rate $545,500 -->
+              <Dependency module="constants" path="/capGains15RateSingle" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions">
+      <Export downstreamFacts="true" />
+      <Name>Form 8949 transactions</Name>
+      <Description>Manual capital asset dispositions reported on Form 8949 then totaled on Schedule D.
+        Form 8949 instr. (2025) pp.1–3: report sales/exchanges of capital assets.</Description>
+      <Writable>
+        <Collection />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949TransactionsIsDone">
+      <Name>Form 8949 transactions entry done</Name>
+      <Description>Taxpayer indicated they finished entering Form 8949 transactions.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+      <Placeholder>
+        <False />
+      </Placeholder>
+    </Fact>
+
+    <Fact path="/hasForm8949Transactions">
+      <Export downstreamFacts="true" />
+      <Name>Has Form 8949 transactions</Name>
+      <Description>Whether any Form 8949 transactions were entered.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/form8949Transactions" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/form8949Transactions" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/requiresScheduleD">
+      <Name>Requires Schedule D</Name>
+      <Description>Schedule D is required when there is Form 8949 activity (Schedule D instr. (2025) p.11:
+        complete Form 8949 before Schedule D lines 1b/2/3/8b/9/10) or a prior-year capital loss
+        carryover (Schedule D lines 6/14).</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <Derived>
+        <Any>
+          <Dependency path="/hasForm8949Transactions" />
+          <Dependency path="/hasCapitalLossCarryover" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/description">
+      <Name>Description of property</Name>
+      <Description>Form 8949 column (a) — Description of property (Form 8949 instr. (2025) p.6).</Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>100</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/dateAcquired">
+      <Name>Date acquired</Name>
+      <Description>Form 8949 column (b) — Date acquired (Form 8949 instr. (2025) p.6).</Description>
+      <Writable>
+        <Day />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/dateSold">
+      <Name>Date sold or disposed of</Name>
+      <Description>Form 8949 column (c) — Date sold or disposed of (Form 8949 instr. (2025) p.6).</Description>
+      <Writable>
+        <Day />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/proceeds">
+      <Name>Proceeds (sales price)</Name>
+      <Description>Form 8949 column (d) — Proceeds (Form 8949 instr. (2025) p.6).</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/costBasis">
+      <Name>Cost or other basis</Name>
+      <Description>Form 8949 column (e) — Cost or other basis (Form 8949 instr. (2025) p.6).</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/writableAdjustment">
+      <Name>Amount of adjustment</Name>
+      <Description>Form 8949 column (g) — Amount of adjustment (Form 8949 instr. (2025) p.8). Optional.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/adjustment">
+      <Name>Amount of adjustment (default 0)</Name>
+      <Description>Form 8949 column (g); defaults to $0 when blank.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableAdjustment" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableAdjustment" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/adjustmentCode">
+      <Name>Code(s) from instructions for columns (f) and (g)</Name>
+      <Description>Form 8949 column (f) — optional adjustment code (Form 8949 instr. (2025) p.7).</Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>7</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/box">
+      <Name>Form 8949 checkbox</Name>
+      <Description>Which Form 8949 box applies (A–L). Instructions pp.3–4.</Description>
+      <Writable>
+        <Enum optionsPath="/form8949BoxOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/holdingPeriod">
+      <Name>Holding period</Name>
+      <Description>shortTerm → Form 8949 Part I / Schedule D Part I;
+        longTerm → Form 8949 Part II / Schedule D Part II. IRC §1222.</Description>
+      <Writable>
+        <Enum optionsPath="/form8949HoldingPeriodOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/hasSeenLastAvailableScreen">
+      <Name>Has seen last available screen</Name>
+      <Description>Flow completeness marker for this Form 8949 transaction.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/gainOrLoss">
+      <Name>Gain or loss</Name>
+      <Description>Form 8949 column (h): column (d) − column (e) ± column (g)
+        (Form 8949 instr. (2025) p.11, "Column (h)—Gain (or Loss)" Examples 1–3).</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Subtract>
+              <Minuend>
+                <Dependency path="../proceeds" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="../costBasis" />
+              </Subtrahends>
+            </Subtract>
+            <Dependency path="../adjustment" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/isShortTerm">
+      <Name>Is short-term transaction</Name>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../holdingPeriod" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949HoldingPeriodOptions">shortTerm</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/isLongTerm">
+      <Name>Is long-term transaction</Name>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../holdingPeriod" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949HoldingPeriodOptions">longTerm</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/shortTermGainOrLoss">
+      <Name>Short-term gain or loss contribution</Name>
+      <Description>gainOrLoss if short-term, else $0 — for Schedule D Part I CollectionSum.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/longTermGainOrLoss">
+      <Name>Long-term gain or loss contribution</Name>
+      <Description>gainOrLoss if long-term, else $0 — for Schedule D Part II CollectionSum.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/isBoxA">
+      <Description>Box A or G — both total to the same Schedule D line (Schedule D 2025 line labels;
+        Form 8949 instr. (2025) pp.3–4: G is the digital-asset/1099-DA counterpart of A).</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">A</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">G</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/isBoxB">
+      <Description>Box B or H — both total to the same Schedule D line (Schedule D 2025 line labels;
+        Form 8949 instr. (2025) pp.3–4: H is the digital-asset/1099-DA counterpart of B).</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">B</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">H</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/isBoxC">
+      <Description>Box C or I — both total to the same Schedule D line (Schedule D 2025 line labels;
+        Form 8949 instr. (2025) pp.3–4: I is the digital-asset/1099-DA counterpart of C).</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">C</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">I</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/isBoxD">
+      <Description>Box D or J — both total to the same Schedule D line (Schedule D 2025 line labels;
+        Form 8949 instr. (2025) pp.3–4: J is the digital-asset/1099-DA counterpart of D).</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">D</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">J</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/isBoxE">
+      <Description>Box E or K — both total to the same Schedule D line (Schedule D 2025 line labels;
+        Form 8949 instr. (2025) pp.3–4: K is the digital-asset/1099-DA counterpart of E).</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">E</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">K</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/isBoxF">
+      <Description>Box F or L — both total to the same Schedule D line (Schedule D 2025 line labels;
+        Form 8949 instr. (2025) pp.3–4: L is the digital-asset/1099-DA counterpart of F).</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">F</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="../box" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/form8949BoxOptions">L</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/gainOrLossBoxA">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isBoxA" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/gainOrLossBoxB">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isBoxB" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/gainOrLossBoxC">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isBoxC" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/gainOrLossBoxD">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isBoxD" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/gainOrLossBoxE">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isBoxE" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/gainOrLossBoxF">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isBoxF" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/isComplete">
+      <Name>Is Form 8949 transaction complete</Name>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../hasSeenLastAvailableScreen" />
+          </IsComplete>
+          <Dependency path="../hasSeenLastAvailableScreen" />
+          <IsComplete>
+            <Dependency path="../description" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../proceeds" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../costBasis" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../holdingPeriod" />
+          </IsComplete>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hasIncompleteForm8949Transactions">
+      <Name>Has incomplete Form 8949 transactions</Name>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Count>
+              <All>
+                <Not>
+                  <Dependency path="/form8949Transactions/*/isComplete" />
+                </Not>
+              </All>
+            </Count>
+          </Left>
+          <Right>
+            <Int>0</Int>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+
+
+    <Fact path="/form8949Transactions/*/isShortTermBox">
+      <Name>Box is a Part I (short-term) box</Name>
+      <Description>Boxes A/B/C/G/H/I are Part I (short-term); D/E/F/J/K/L are Part II (long-term).
+        Form 8949 instr. (2025) pp.3–4.</Description>
+      <Derived>
+        <Any>
+          <Dependency path="../isBoxA" />
+          <Dependency path="../isBoxB" />
+          <Dependency path="../isBoxC" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/hasBoxHoldingPeriodMismatch">
+      <Name>Box does not match holding period</Name>
+      <Description>IRC §1222: short-term (held 1 year or less) goes in Part I, long-term in Part II.
+        A Part II box with a short-term holding period (or vice versa) would put the gain on the wrong
+        Schedule D line, so it blocks submission.</Description>
+      <Derived>
+        <Not>
+          <Equal>
+            <Left>
+              <Dependency path="../isShortTermBox" />
+            </Left>
+            <Right>
+              <Dependency path="../isShortTerm" />
+            </Right>
+          </Equal>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hasForm8949BoxHoldingPeriodMismatch">
+      <Name>Any Form 8949 box / holding period mismatch</Name>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Count>
+              <Dependency path="/form8949Transactions/*/hasBoxHoldingPeriodMismatch" />
+            </Count>
+          </Left>
+          <Right>
+            <Int>0</Int>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <!-- Prior-year capital loss carryover (Schedule D lines 6 and 14). Entered as positive amounts
+         from the prior-year Capital Loss Carryover Worksheet (Schedule D instructions, lines 6 and 14).
+         IRC §1212(b)(1): the excess loss carries forward, keeping its short-/long-term character. -->
+    <Fact path="/writableShortTermCapitalLossCarryover">
+      <Name>Short-term capital loss carryover (writable)</Name>
+      <Description>Schedule D line 6 — short-term capital loss carryover from the prior year. IRC §1212(b)(1)(A).</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/shortTermCapitalLossCarryover">
+      <Name>Short-term capital loss carryover</Name>
+      <Description>Schedule D line 6; $0 when not entered.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/writableShortTermCapitalLossCarryover" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/writableShortTermCapitalLossCarryover" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/writableLongTermCapitalLossCarryover">
+      <Name>Long-term capital loss carryover (writable)</Name>
+      <Description>Schedule D line 14 — long-term capital loss carryover from the prior year. IRC §1212(b)(1)(B).</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/longTermCapitalLossCarryover">
+      <Name>Long-term capital loss carryover</Name>
+      <Description>Schedule D line 14; $0 when not entered.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/writableLongTermCapitalLossCarryover" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/writableLongTermCapitalLossCarryover" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/hasCapitalLossCarryover">
+      <Name>Has prior-year capital loss carryover</Name>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Add>
+              <Dependency path="/shortTermCapitalLossCarryover" />
+              <Dependency path="/longTermCapitalLossCarryover" />
+            </Add>
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+  </Facts>
+</FactDictionaryModule>
