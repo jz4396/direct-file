@@ -1,4 +1,9 @@
-# Schedule C / SE locale strings (gap #3). Merged into en via locales/index.ts.
+# Schedule C / SE locale strings (gap #3, TY2026 filed in 2027).
+# Feature overlay merged onto en.yaml by locales/featureLocales.ts (keeps the 1.4 MB base file untouched).
+subsubcategories:
+  /flow/income/schedule-c:
+    schedule-c-eligibility: Self-employment income
+    schedule-c-business: Business information
 headings:
   /heading/income/schedule-c: Self-employment income
   /heading/income/schedule-c/intro: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
@@ -6,20 +11,26 @@ headings:
   /heading/income/schedule-c/loop-intro: Add each business or gig activity
   /heading/income/schedule-c/business-basics: Tell us about this business
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
-  /heading/knockout/schedule-c-qbi: Direct File doesn’t yet support the qualified business income deduction
-  /info/income/schedule-c/intro: >-
-    This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C.
-  /info/income/schedule-c/qbi: >-
-    The qualified business income (QBI) deduction under Internal Revenue Code section 199A is not supported
-    in this version. If you need to claim it, you can’t use Direct File for this return yet.
-  /info/income/schedule-c/loop-intro: >-
-    Add one entry for each business or gig activity. We’ll calculate net profit and self-employment tax.
-  /info/income/schedule-c/amounts: >-
-    Gross receipts are your total business income before expenses. Expenses are ordinary and necessary
-    costs of running the business (Internal Revenue Code section 162).
-  /info/knockout/schedule-c-qbi: >-
-    Direct File doesn’t calculate the qualified business income deduction yet. You’ll need another way
-    to file if you want to claim it.
+  /heading/knockout/schedule-c-qbi: This tool doesn’t yet support the qualified business income deduction
+info:
+  /info/income/schedule-c/intro:
+    body: This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C.
+  /info/income/schedule-c/qbi:
+    body: >-
+      The qualified business income deduction (Internal Revenue Code section 199A) isn’t supported yet. If you
+      want to claim it, you can’t use this tool for this return.
+  /info/income/schedule-c/loop-intro:
+    body: Add one entry for each business or gig activity. We’ll calculate net profit and self-employment tax.
+  /info/income/schedule-c/amounts:
+    body: >-
+      Gross receipts are your total business income before expenses. Expenses are ordinary and necessary costs
+      of running the business (Internal Revenue Code section 162).
+  /info/knockout/schedule-c-qbi:
+    alertText:
+      body:
+        - p: >-
+            This tool doesn’t calculate the qualified business income deduction yet. You’ll need another way to
+            file if you want to claim it.
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -38,6 +49,9 @@ fields:
     collectionListing:
       itemHeading1: "{{/scheduleCBusinesses/*/businessName}}"
       itemHeading2: Incomplete business
+      label1: "Owner: {{/scheduleCBusinesses/*/filer/fullName}}"
+      label2: Net profit or (loss)
+      value2: <strong>{{/scheduleCBusinesses/*/netProfitOrLoss}}</strong>
     deleteControl:
       text: <LinkModal1>Remove business</LinkModal1>
       LinkModal1:
@@ -55,3 +69,17 @@ fields:
     name: Gross receipts or sales
   /scheduleCBusinesses/*/writableTotalExpenses:
     name: Total business expenses
+checklist:
+  /flow/income/schedule-c:
+    heading: Self-employment income (Schedule C)
+    dataItems:
+      scheduleCHasBusiness: "Net profit or (loss): {{/scheduleCNetProfitOrLoss}}"
+      scheduleCNone: "None reported"
+dataviews:
+  /flow/income/schedule-c:
+    /hadSelfEmploymentIncome: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
+    /wantsQbiDeduction: Do you want to claim the qualified business income deduction?
+    /scheduleCBusinesses/*/filer/fullName: Whose business is it?
+    /scheduleCBusinesses/*/businessName: Business or gig activity name
+    /scheduleCBusinesses/*/writableGrossReceipts: Gross receipts or sales
+    /scheduleCBusinesses/*/writableTotalExpenses: Total business expenses
