@@ -12,6 +12,7 @@ headings:
   /heading/income/schedule-c/business-basics: Tell us about this business
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
   /heading/knockout/schedule-c-qbi: This tool doesn’t yet support the qualified business income deduction
+  /heading/knockout/schedule-c-additional-medicare: This tool doesn’t yet support Additional Medicare Tax
 info:
   /info/income/schedule-c/intro:
     body: This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C.
@@ -31,6 +32,14 @@ info:
         - p: >-
             This tool doesn’t calculate the qualified business income deduction yet. You’ll need another way to
             file if you want to claim it.
+  /info/knockout/schedule-c-additional-medicare:
+    alertText:
+      body:
+        - p: >-
+            Your Medicare wages plus your self-employment earnings are more than the limit for your filing status
+            ($200,000, or $250,000 if married filing jointly, or $125,000 if married filing separately). You may owe
+            Additional Medicare Tax on Form 8959, which this tool doesn’t calculate yet. You’ll need another way to
+            file this return.
 fields:
   /hadSelfEmploymentIncome:
     boolean:

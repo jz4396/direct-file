@@ -18,6 +18,7 @@
    - `/flowKnockoutScheduleCQbi` — § 199A QBI deduction requested
    - `/flowKnockoutScheduleCSpouseBusiness` — any business owned by the secondary filer (Schedule SE is per individual, § 1402(b); this slice runs one SE computation)
    - `/flowKnockoutScheduleCEarnedIncomeCredits` — nonzero Schedule C with EITC or CDCC eligibility (those modules still use wages-only earned income), or a Schedule C loss with CTC eligibility (ACTC earned income floors the SE component at zero)
+   - `/flowKnockoutScheduleCAdditionalMedicare`: W-2 Medicare wages (`formW2s /formW2totalMedicareWages`) + net SE earnings (92.35% figure) > `formW2s /medicareWagesAdditionalTaxThreshhold` ($200k / $250k MFJ / $125k MFS), when SE tax applies. Under 26 U.S.C. § 1401(b)(2)(A) the 0.9% Additional Medicare Tax hits SE income above the threshold, and § 1401(b)(2)(B) reduces the threshold by FICA wages (https://www.law.cornell.edu/uscode/text/26/1401#b_2). The wage-only `/knockoutMedicareWages` misses e.g. single $150k wages + $100k profit (150,000 + 92,350 > 200,000, about $381 owed). Form 8959 is not computed, so this case is knocked out.
 9. Section is required: `/scheduleCSectionIsComplete` is part of `flow.xml` `/flowIncomplete`
 10. Unset `/scheduleCBusinesses` collection: "no" (or section not reached) → $0, complete; "yes" with no businesses → incomplete, so `/totalTaxIsIncomplete` blocks submission
 
@@ -25,7 +26,7 @@
 
 - Schedule C Part II category-level expense lines
 - Farm optional methods / Schedule F / church employee income
-- Additional 0.9% Medicare tax (Form 8959)
+- Additional 0.9% Medicare tax (Form 8959): not computed; knocked out when wages + SE earnings exceed the threshold (see above)
 - QBI § 199A computation (knocked out)
 - EITC / CDCC earned income from self-employment (knocked out, see above)
 - MFJ spouse-owned business / per-spouse Schedule SE (MVP: one combined SE computation; wage base coordinated against primary filer W-2 OASDI wages only)

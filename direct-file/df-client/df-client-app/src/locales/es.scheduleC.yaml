@@ -12,6 +12,7 @@ headings:
   /heading/income/schedule-c/business-basics: Infórmenos sobre este negocio
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta todavía no admite la deducción por ingreso calificado de negocios
+  /heading/knockout/schedule-c-additional-medicare: Esta herramienta todavía no admite el Impuesto Adicional del Medicare
 info:
   /info/income/schedule-c/intro:
     body: >-
@@ -35,6 +36,15 @@ info:
         - p: >-
             Esta herramienta todavía no calcula la deducción por ingreso calificado de negocios. Necesitará otra
             manera de presentar la declaración si desea reclamarla.
+  /info/knockout/schedule-c-additional-medicare:
+    alertText:
+      body:
+        - p: >-
+            Sus salarios sujetos al Medicare más sus ganancias del trabajo por cuenta propia superan el límite para su
+            estado civil para efectos de la declaración ($200,000, o $250,000 si es casado que presenta una declaración
+            conjunta, o $125,000 si es casado que presenta por separado). Es posible que deba el Impuesto Adicional del
+            Medicare en el Formulario 8959, que esta herramienta todavía no calcula. Necesitará otra manera de
+            presentar esta declaración.
 fields:
   /hadSelfEmploymentIncome:
     boolean:
