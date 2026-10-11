@@ -685,9 +685,9 @@
 
     <Fact path="/capitalGainsScheduleDNotRequired">
       <Name>Capital Gains Schedule D Not Required</Name>
-      <Description>1040 checkbox to be marked when *nonzero* gain/loss is exempt from Schedule D requirement. Capital
-        gain/loss is always zero for our TY2023 scope. So, per W&amp;I counsel we should never mark this in TY 2023.
-        (Instructions on Form 1040 are poor; see instruction booklet p. 31)
+      <Description>1040 checkbox when *nonzero* gain/loss is exempt from Schedule D.
+        Always false in scope: capital gain distributions (1099-DIV box 2a) are not supported, and every
+        Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p.11).
       </Description>
       <Derived>
         <False />
@@ -696,12 +696,32 @@
 
     <Fact path="/capitalGainsOrLosses">
       <Name>Capital Gains or Losses</Name>
-      <Description>Total capital gains or losses for line 7 of the 1040
-
-        OUT OF SCOPE</Description>
+      <Description>Total capital gains or losses for Form 1040 line 7 from Schedule D
+        (after IRC §1211(b) limitation). See scheduleD module /capitalGainsOrLossesFor1040.
+        Preferential 0/15/20% tax on net capital gain: QDCG Tax Worksheet in scheduleD3.xml
+        (breakpoints Rev. Proc. 2025-32 §4.03 p.13).</Description>
       <Export downstreamFacts="true" />
       <Derived>
-        <Dollar>0</Dollar>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency module="scheduleD2" path="/capitalGainsOrLossesFor1040" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency module="scheduleD2" path="/capitalGainsOrLossesFor1040" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
