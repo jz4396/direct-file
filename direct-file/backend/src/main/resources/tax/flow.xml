@@ -118,6 +118,7 @@
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCAdditionalMedicare" />
         </Any>
       </Derived>
       <Placeholder>

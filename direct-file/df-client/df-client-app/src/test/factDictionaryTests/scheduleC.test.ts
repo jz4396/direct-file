@@ -218,4 +218,55 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     expect(mk(spouseId).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(true);
     expect(mk(primaryFilerId).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(false);
   });
+
+  describe(`Additional Medicare Tax (Form 8959) knockout: W-2 Medicare wages + net SE earnings`, () => {
+    // 26 U.S.C. 1401(b)(2)(A): 0.9% on SE income above $200,000 (single) / $250,000 (MFJ) / $125,000 (MFS);
+    // 1401(b)(2)(B): threshold reduced (not below zero) by FICA wages.
+    // https://www.law.cornell.edu/uscode/text/26/1401#b_2
+    const w2Id = `b59c03d1-af4a-447f-96aa-d19397048a02`;
+    const mk = (filingStatus: string, medicareWages: string, grossReceipts: string) =>
+      setupFactGraph({
+        ...baseSingle,
+        '/filingStatus': createEnumWrapper(filingStatus, `/filingStatusOptions`),
+        '/formW2s': createCollectionWrapper([w2Id]),
+        [`/formW2s/#${w2Id}/filer`]: createCollectionItemWrapper(primaryFilerId),
+        [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(medicareWages),
+        [`/formW2s/#${w2Id}/writableMedicareWages`]: createDollarWrapper(medicareWages),
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/wantsQbiDeduction': createBooleanWrapper(false),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+        [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Consulting`),
+        [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(grossReceipts),
+        [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      }).factGraph;
+
+    it(`single, $150,000 Medicare wages + $100,000 profit → knocked out (150,000 + 92,350 > 200,000)`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutScheduleCAdditionalMedicare`, `/flowIsKnockedOut`];
+      const fg = mk(`single`, `150000`, `100000`);
+      expect(fg.get(`/seNetEarningsFromSelfEmployment` as ConcretePath).get.toString()).toBe(`92350.00`);
+      // The wage-only W-2 check does not fire on its own...
+      expect(fg.get(`/knockoutMedicareWages` as ConcretePath).get).toBe(false);
+      // ...so the combined wages + SE check must.
+      expect(fg.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(true);
+      expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+    });
+
+    it(`single, $150,000 Medicare wages + $50,000 profit → not knocked out (150,000 + 46,175 < 200,000)`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutScheduleCAdditionalMedicare`];
+      const fg = mk(`single`, `150000`, `50000`);
+      expect(fg.get(`/seNetEarningsFromSelfEmployment` as ConcretePath).get.toString()).toBe(`46175.00`);
+      expect(fg.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(false);
+    });
+
+    it(`MFJ uses the $250,000 threshold: $150,000 wages + $100,000 profit (242,350) → not knocked out`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutScheduleCAdditionalMedicare`];
+      const under = mk(`marriedFilingJointly`, `150000`, `100000`);
+      expect(under.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(false);
+      // $150,000 + round(120,000 × 0.9235) = 150,000 + 110,820 = 260,820 > 250,000 → knocked out
+      const over = mk(`marriedFilingJointly`, `150000`, `120000`);
+      expect(over.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(true);
+    });
+  });
 });
