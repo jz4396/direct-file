@@ -770,6 +770,7 @@
                 <Dependency path="/hasOtherIncome" />
                 <Dependency path="/hasAdjustmentsToIncome" />
                 <Dependency module="unemployment" path="/receivedUnemploymentCompensation" />
+                <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
               </Any>
             </When>
             <Then>
@@ -804,6 +805,8 @@
           <Add>
             <Dependency module="unemployment" path="/unemploymentCompensation" />
             <Dependency path="/schedule1TotalOtherIncome" />
+            <!-- Schedule 1 line 3 business income (Schedule C) — § 61 / § 162; see scheduleC.xml -->
+            <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
           </Add>
         </Round>
       </Derived>
@@ -842,6 +845,7 @@
           <Dependency module="cdcc" path="/hasReportedDependentCareBenefits" />
           <Dependency module="form1099Rs" path="/has1099R" />
           <Dependency module="socialSecurity" path="/hasSocialSecurityBenefits" />
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
         </Any>
       </Derived>
     </Fact>
@@ -872,6 +876,8 @@
           <Add>
             <Dependency path="/employerIncomeSubtotal" />
             <Dependency module="formW2s" path="/allCombatPay" />
+            <!-- Positive Schedule C net profit is earned income for EITC/ACTC -->
+            <Dependency module="scheduleC" path="/scheduleCNetProfitForEarnedIncome" />
           </Add>
         </Round>
       </Derived>

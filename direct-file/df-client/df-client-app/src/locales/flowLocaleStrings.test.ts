@@ -23,7 +23,7 @@ import {
 } from './flowLocaleHelpers.js';
 
 // Because of the parity tests, we only need to check the English yaml file
-import rawEnLocale from '../locales/en.yaml';
+import { enLocale as rawEnLocale } from '../locales/featureLocales.js';
 import Locale from '../scripts/locale.js';
 
 const enLocale = new Locale(rawEnLocale);

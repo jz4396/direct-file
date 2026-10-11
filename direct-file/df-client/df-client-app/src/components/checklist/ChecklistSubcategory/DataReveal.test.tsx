@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { Provider } from 'react-redux';
 import { createFlowConfig } from '../../../flow/flowConfig.js';
 import flowNodes from '../../../flow/flow.js';
-import en from '../../../locales/en.yaml';
+import { enLocale as en } from '../../../locales/featureLocales.js';
 import { FactGraphContextProvider } from '../../../factgraph/FactGraphContext.js';
 import { setupStore } from '../../../redux/store.js';
 import { render, screen } from '@testing-library/react';

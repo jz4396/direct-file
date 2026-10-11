@@ -1,5 +1,4 @@
-import englishTranslation from './en.yaml';
-import spanishTranslation from './es.yaml';
+import { enLocale as englishTranslation, esLocale as spanishTranslation } from './featureLocales.js';
 
 export { YamlSettings } from './yaml-settings.js';
 

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Provider } from 'react-redux';
 import { createFlowConfig } from '../../flow/flowConfig.js';
 import flowNodes from '../../flow/flow.js';
-import en from '../../locales/en.yaml';
+import { enLocale as en } from '../../locales/featureLocales.js';
 import { FactConfig, contentConfigIsFactConfig } from '../../flow/ContentDeclarations.js';
 import { FactGraphContextProvider } from '../../factgraph/FactGraphContext.js';
 import { unwrapScalaOptional } from '@irs/js-factgraph-scala';
@@ -29,6 +29,7 @@ const dependentId = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d48`;
 const apfForm1099Id = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d42`;
 const retirementForm1099Id = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d75`;
 const hsaForm1099Id = `4fa3a5a7-a9d1-43a9-a0fb-382384e94d23`;
+const scheduleCBusinessId = `a59c03d1-af4a-447f-96aa-d19397048a01`;
 const baseDependentData = {
   '/familyAndHousehold': { $type: `gov.irs.factgraph.persisters.CollectionWrapper`, item: { items: [dependentId] } },
   [`/familyAndHousehold/#${dependentId}/firstName`]: createStringWrapper(`John`),
@@ -205,6 +206,7 @@ describe(`SubSubCategory`, () => {
           [`/flow/income/alaska-pfd`]: apfForm1099Id,
           [`/flow/income/hsa`]: hsaForm1099Id,
           [`/flow/income/social-security`]: reportId,
+          [`/flow/income/schedule-c`]: scheduleCBusinessId,
         };
         for (const ssc of allSubSubCategories) {
           it(`Subsubcategory ${ssc.fullRoute} renders without errors`, () => {
@@ -244,6 +246,11 @@ describe(`SubSubCategory`, () => {
                           `RRB-1099`,
                           `/socialSecurityIncomeFormTypeOptions`
                         ),
+                        // Schedule C
+                        '/scheduleCBusinesses': {
+                          $type: `gov.irs.factgraph.persisters.CollectionWrapper`,
+                          item: { items: [scheduleCBusinessId] },
+                        },
                         [`/filedLastYear`]: createBooleanWrapper(true),
                         [`/selfSelectPinLastYear`]: createStringWrapper(`33333`),
                         [`/signReturnIdentity`]: createEnumWrapper(`lastYearPin`, `/signReturnIdentityOptions`),

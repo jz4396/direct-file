@@ -8,7 +8,7 @@ import {
   InfoDisplayDeclaration,
   MefAlertDeclaration,
 } from './ContentDeclarations.js';
-import en from '../locales/en.yaml';
+import { enLocale as en } from '../locales/featureLocales.js';
 import { findFlowNodesOfType } from './findFlowNodesOfType.js';
 import { CollectionLoopDeclaration } from './flowDeclarations.js';
 import { EnumFactProps } from '../types/core.js';

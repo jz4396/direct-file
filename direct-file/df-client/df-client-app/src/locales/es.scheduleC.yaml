@@ -1,0 +1,99 @@
+# Cadenas del Anexo C / SE (brecha #3, año tributario 2026 presentado en 2027).
+# Superposición combinada con es.yaml por locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/schedule-c:
+    schedule-c-eligibility: Ingresos de trabajo por cuenta propia
+    schedule-c-business: Información del negocio
+headings:
+  /heading/income/schedule-c: Ingresos de trabajo por cuenta propia
+  /heading/income/schedule-c/intro: ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en {{/taxYear}}?
+  /heading/income/schedule-c/qbi: ¿Desea reclamar la deducción por ingreso calificado de negocios?
+  /heading/income/schedule-c/loop-intro: Agregue cada negocio o actividad esporádica
+  /heading/income/schedule-c/business-basics: Infórmenos sobre este negocio
+  /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
+  /heading/knockout/schedule-c-qbi: Esta herramienta todavía no admite la deducción por ingreso calificado de negocios
+  /heading/knockout/schedule-c-additional-medicare: Esta herramienta todavía no admite el Impuesto Adicional del Medicare
+info:
+  /info/income/schedule-c/intro:
+    body: >-
+      Esto incluye los ingresos de un negocio por cuenta propia, trabajos esporádicos o trabajo independiente que
+      se declaran en el Anexo C.
+  /info/income/schedule-c/qbi:
+    body: >-
+      La deducción por ingreso calificado de negocios (sección 199A del Código de Impuestos Internos) todavía no
+      está disponible. Si desea reclamarla, no puede usar esta herramienta para esta declaración.
+  /info/income/schedule-c/loop-intro:
+    body: >-
+      Agregue una entrada por cada negocio o actividad esporádica. Calcularemos la ganancia neta y el impuesto sobre
+      el trabajo por cuenta propia.
+  /info/income/schedule-c/amounts:
+    body: >-
+      Los ingresos brutos son el total de los ingresos del negocio antes de los gastos. Los gastos son los costos
+      ordinarios y necesarios para operar el negocio (sección 162 del Código de Impuestos Internos).
+  /info/knockout/schedule-c-qbi:
+    alertText:
+      body:
+        - p: >-
+            Esta herramienta todavía no calcula la deducción por ingreso calificado de negocios. Necesitará otra
+            manera de presentar la declaración si desea reclamarla.
+  /info/knockout/schedule-c-additional-medicare:
+    alertText:
+      body:
+        - p: >-
+            Sus salarios sujetos al Medicare más sus ganancias del trabajo por cuenta propia superan el límite para su
+            estado civil para efectos de la declaración ($200,000, o $250,000 si es casado que presenta una declaración
+            conjunta, o $125,000 si es casado que presenta por separado). Es posible que deba el Impuesto Adicional del
+            Medicare en el Formulario 8959, que esta herramienta todavía no calcula. Necesitará otra manera de
+            presentar esta declaración.
+fields:
+  /hadSelfEmploymentIncome:
+    boolean:
+      "yes": Sí, tuve ingresos de trabajo por cuenta propia, esporádico o independiente
+      "no": No, no tuve ingresos de trabajo por cuenta propia
+  /wantsQbiDeduction:
+    boolean:
+      "yes": Sí, deseo reclamar la deducción por ingreso calificado de negocios
+      "no": No, no necesito la deducción por ingreso calificado de negocios
+  /scheduleCBusinesses:
+    controls:
+      add: Agregar un negocio
+      complete_zero: No tengo un negocio para agregar
+      complete: Terminé de agregar negocios
+      back: Ir a la lista de negocios
+    collectionListing:
+      itemHeading1: "{{/scheduleCBusinesses/*/businessName}}"
+      itemHeading2: Negocio incompleto
+      label1: "Propietario: {{/scheduleCBusinesses/*/filer/fullName}}"
+      label2: Ganancia o (pérdida) neta
+      value2: <strong>{{/scheduleCBusinesses/*/netProfitOrLoss}}</strong>
+    deleteControl:
+      text: <LinkModal1>Eliminar negocio</LinkModal1>
+      LinkModal1:
+        header: ¿Está seguro de que desea eliminar este negocio?
+        body:
+          - p: Esta acción no se puede deshacer.
+        controls:
+          confirm: Eliminar este negocio
+          cancel: Cancelar
+  /scheduleCBusinesses/*/filer:
+    item: "{{/filers/*/firstName}} {{/filers/*/lastName}}"
+  /scheduleCBusinesses/*/businessName:
+    name: Nombre del negocio o actividad esporádica
+  /scheduleCBusinesses/*/writableGrossReceipts:
+    name: Ingresos brutos o ventas
+  /scheduleCBusinesses/*/writableTotalExpenses:
+    name: Total de gastos del negocio
+checklist:
+  /flow/income/schedule-c:
+    heading: Ingresos de trabajo por cuenta propia (Anexo C)
+    dataItems:
+      scheduleCHasBusiness: "Ganancia o (pérdida) neta: {{/scheduleCNetProfitOrLoss}}"
+      scheduleCNone: "No se declaró ninguno"
+dataviews:
+  /flow/income/schedule-c:
+    /hadSelfEmploymentIncome: ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en {{/taxYear}}?
+    /wantsQbiDeduction: ¿Desea reclamar la deducción por ingreso calificado de negocios?
+    /scheduleCBusinesses/*/filer/fullName: ¿De quién es el negocio?
+    /scheduleCBusinesses/*/businessName: Nombre del negocio o actividad esporádica
+    /scheduleCBusinesses/*/writableGrossReceipts: Ingresos brutos o ventas
+    /scheduleCBusinesses/*/writableTotalExpenses: Total de gastos del negocio
