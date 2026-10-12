@@ -2,12 +2,10 @@
 headings:
   /heading/income/income-sources/capital-assets-sold: In {{/taxYear}}, did you sell stock, digital assets such as crypto, or other capital assets, or get a Form 1099-B or Form 1099-DA?
   /heading/knockout/capital-assets: This tool doesn’t yet support reporting sales of stock, digital assets (crypto), or other capital assets
-  /heading/income/income-sources/collectibles: "In {{/taxYear}}, did you have any gain or loss from collectibles, such as coins, art, antiques, gems, or precious metals?"
+  /heading/income/income-sources/collectibles: "In {{/taxYear}}, did you have collectibles (28%) gain, shown in box 2d of a Form 1099-DIV or on a Schedule K-1?"
   /heading/knockout/collectibles: This tool doesn’t yet support collectibles gain
-  /heading/income/income-sources/unrecaptured-1250-gain: "In {{/taxYear}}, did you have unrecaptured section 1250 gain?"
+  /heading/income/income-sources/unrecaptured-1250-gain: "In {{/taxYear}}, did you have unrecaptured section 1250 gain, shown in box 2b of a Form 1099-DIV or on a Schedule K-1?"
   /heading/knockout/unrecaptured-1250-gain: This tool doesn’t yet support unrecaptured section 1250 gain
-  /heading/income/income-sources/wash-sale-loss: "In {{/taxYear}}, was any loss you had disallowed as a wash sale?"
-  /heading/knockout/wash-sale-loss: This tool doesn’t yet support wash sales
 info:
   /info/income/income-sources/capital-assets-sold:
     body: Capital assets include stocks, bonds, mutual fund shares, digital assets such as cryptocurrency, and property you hold for investment. Sales are reported on Form 8949 and Schedule D.
@@ -18,7 +16,7 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/income/income-sources/collectibles:
-    body: This includes collectibles gain shown on a Form 1099-DIV (box 2d) or from a fund or partnership. Collectibles gain can be taxed at up to 28%.
+    body: Check box 2d (Collectibles (28%) gain) on any Form 1099-DIV, and any Schedule K-1 from a partnership, S corporation, estate, or trust. This gain can be taxed at up to 28%.
   /info/knockout/collectibles:
     alertText:
       body:
@@ -26,16 +24,8 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/income/income-sources/unrecaptured-1250-gain:
-    body: This usually comes from selling depreciated real property, such as a rental, or is shown on a Form 1099-DIV (box 2b). It can be taxed at up to 25%.
+    body: Check box 2b (Unrecaptured Sec. 1250 gain) on any Form 1099-DIV, and any Schedule K-1 from a partnership, S corporation, estate, or trust. This gain comes from depreciable real property and can be taxed at up to 25%.
   /info/knockout/unrecaptured-1250-gain:
-    alertText:
-      body:
-        - p: <Link1>Find other ways to file your federal taxes.</Link1>
-      urls:
-        Link1: https://www.irs.gov/filing/individuals/how-to-file
-  /info/income/income-sources/wash-sale-loss:
-    body: A wash sale happens when you sell stock or securities at a loss and buy substantially identical stock or securities within 30 days before or after the sale.
-  /info/knockout/wash-sale-loss:
     alertText:
       body:
         - p: <Link1>Find other ways to file your federal taxes.</Link1>

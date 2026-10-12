@@ -482,7 +482,7 @@ describe(`NIIT knockout (IRC §1411) — capital gain counts as investment incom
 
 describe(`Schedule D — special capital gains knockouts (#21)`, () => {
   // Schedule D instr. (2025) p. D-11, Lines 18/19 (28% Rate Gain / Unrecaptured §1250 Gain Worksheets);
-  // p. D-5 "Wash Sales"; IRC §1(h)(4)-(6), §1091(a).
+  // Form 1099-DIV instr. (Rev. 01-2024) p. 4, boxes 2b/2d; IRC §1(h)(4)-(6).
   const clean = () => ({
     ...Object.fromEntries(
       Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
@@ -494,7 +494,6 @@ describe(`Schedule D — special capital gains knockouts (#21)`, () => {
   const cases = [
     [`/soldCollectibles`, `/flowKnockoutCollectibles`],
     [`/hasUnrecapturedSection1250Gain`, `/flowKnockoutUnrecaptured1250Gain`],
-    [`/hasWashSaleLossDisallowed`, `/flowKnockoutWashSale`],
   ] as const;
   for (const [answer, knockout] of cases) {
     it(`${answer} = yes on a clean return knocks out and blocks submission`, ({ task }) => {
@@ -505,7 +504,7 @@ describe(`Schedule D — special capital gains knockouts (#21)`, () => {
       expect(submissionBlockingFacts).toContain(knockout);
     });
   }
-  it(`clean return with all three answered no: not knocked out, total tax complete`, ({ task }) => {
+  it(`clean return with both answered no: not knocked out, total tax complete`, ({ task }) => {
     task.meta.testedFactPaths = [...cases.map(([, k]) => k), `/flowIsKnockedOut`, `/totalTax`];
     const data: Record<string, unknown> = clean();
     for (const [answer] of cases) data[answer] = createBooleanWrapper(false);

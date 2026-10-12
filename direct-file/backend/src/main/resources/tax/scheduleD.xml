@@ -229,7 +229,7 @@
     <Fact path="/soldCollectibles">
       <Export downstreamFacts="true" />
       <Name>Sold collectibles</Name>
-      <Description>#21: collectibles gain (coins, art, precious metals, etc.), taxed up to 28%. IRC §1(h)(4)-(5); Schedule D instr. (2025) p. D-11, Line 18 (28% Rate Gain Worksheet).</Description>
+      <Description>#21: collectibles (28%) gain, e.g. Form 1099-DIV box 2d or a Schedule K-1, taxed up to 28%. IRC §1(h)(4)-(5); Schedule D instr. (2025) p. D-11, Line 18 (28% Rate Gain Worksheet).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -238,16 +238,7 @@
     <Fact path="/hasUnrecapturedSection1250Gain">
       <Export downstreamFacts="true" />
       <Name>Has unrecaptured section 1250 gain</Name>
-      <Description>#21: unrecaptured §1250 gain (e.g. depreciated rental property), taxed up to 25%. IRC §1(h)(1)(E), §1(h)(6); Schedule D instr. (2025) p. D-11, Line 19.</Description>
-      <Writable>
-        <Boolean />
-      </Writable>
-    </Fact>
-
-    <Fact path="/hasWashSaleLossDisallowed">
-      <Export downstreamFacts="true" />
-      <Name>Has wash sale loss disallowed</Name>
-      <Description>#21: a loss disallowed under the wash sale rule. IRC §1091(a); Schedule D instr. (2025) p. D-5 "Wash Sales" (Form 8949 code W, column (g)).</Description>
+      <Description>#21: unrecaptured §1250 gain, e.g. Form 1099-DIV box 2b or a Schedule K-1, taxed up to 25%. IRC §1(h)(1)(E), §1(h)(6); Schedule D instr. (2025) p. D-11, Line 19.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -279,21 +270,6 @@
             <Dependency path="/hasUnrecapturedSection1250Gain" />
           </IsComplete>
           <Dependency path="/hasUnrecapturedSection1250Gain" />
-        </All>
-      </Derived>
-    </Fact>
-
-    <Fact path="/flowKnockoutWashSale">
-      <Export downstreamFacts="true" />
-      <Name>Flow knockout: wash sale</Name>
-      <Description>#21: yes to /hasWashSaleLossDisallowed. Code W / column (g) entry needs Form 8949 entry screens, which do not exist yet.</Description>
-      <BlockSubmissionOnTrue />
-      <Derived>
-        <All>
-          <IsComplete>
-            <Dependency path="/hasWashSaleLossDisallowed" />
-          </IsComplete>
-          <Dependency path="/hasWashSaleLossDisallowed" />
         </All>
       </Derived>
     </Fact>

@@ -276,18 +276,6 @@ export const IncomeSourcesSubcategory = (
         <DFAlert i18nKey='/info/knockout/unrecaptured-1250-gain' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      <Screen route='wash-sale-loss' condition={{ operator: `isFalse`, condition: `/soldCapitalAssets` }}>
-        <Heading i18nKey='/heading/income/income-sources/wash-sale-loss' />
-        <InfoDisplay i18nKey='/info/income/income-sources/wash-sale-loss' />
-        <Boolean path='/hasWashSaleLossDisallowed' />
-        <SaveAndOrContinueButton />
-      </Screen>
-      <Screen route='wash-sale-loss-knockout' condition='/flowKnockoutWashSale' isKnockout={true}>
-        <IconDisplay name='ErrorOutline' size={9} isCentered />
-        <Heading i18nKey='/heading/knockout/wash-sale-loss' />
-        <DFAlert i18nKey='/info/knockout/wash-sale-loss' headingLevel='h3' type='warning' />
-        <KnockoutButton i18nKey='button.knockout' />
-      </Screen>
     </SubSubcategory>
     <SubSubcategory route='iras'>
       <Screen route='ira-contributions'>
