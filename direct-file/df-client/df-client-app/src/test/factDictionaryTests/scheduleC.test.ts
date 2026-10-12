@@ -269,4 +269,58 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
       expect(over.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(true);
     });
   });
+
+  describe(`Schedule SE line 8: W-2 box 7 tips reduce the remaining Social Security wage base (#24)`, () => {
+    // 26 U.S.C. 1402(b)(1); Schedule SE line 8a = W-2 boxes 3 + 7; TY2026 base $184,500 (SSA CBB).
+    const w2Id = `b59c03d1-af4a-447f-96aa-d19397048a03`;
+    const mk = (oasdiWages: string, oasdiTips: string | null, grossReceipts: string) =>
+      setupFactGraph({
+        ...baseSingle,
+        '/formW2s': createCollectionWrapper([w2Id]),
+        [`/formW2s/#${w2Id}/filer`]: createCollectionItemWrapper(primaryFilerId),
+        [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(oasdiWages),
+        [`/formW2s/#${w2Id}/writableOasdiWages`]: createDollarWrapper(oasdiWages),
+        ...(oasdiTips === null ? {} : { [`/formW2s/#${w2Id}/writableOasdiTips`]: createDollarWrapper(oasdiTips) }),
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/wantsQbiDeduction': createBooleanWrapper(false),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+        [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Consulting`),
+        [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(grossReceipts),
+        [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      }).factGraph;
+
+    it(`Rev's case: $150,000 box 3 + $20,000 box 7 + $40,000 profit → SS portion $1,798 (was $4,278)`, ({ task }) => {
+      task.meta.testedFactPaths = [
+        `/primaryFilerOasdiTipsTotal`,
+        `/seRemainingSocialSecurityWageBase`,
+        `/seSocialSecurityTaxableEarnings`,
+        `/seSocialSecurityTax`,
+      ];
+      const fg = mk(`150000`, `20000`, `40000`);
+      expect(fg.get(`/seNetEarningsFromSelfEmployment` as ConcretePath).get.toString()).toBe(`36940.00`);
+      expect(fg.get(`/primaryFilerOasdiTipsTotal` as ConcretePath).get.toString()).toBe(`20000.00`);
+      // 184,500 − 150,000 − 20,000 = 14,500
+      expect(fg.get(`/seRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`14500.00`);
+      expect(fg.get(`/seSocialSecurityTaxableEarnings` as ConcretePath).get.toString()).toBe(`14500.00`);
+      // 14,500 × 12.4% = 1,798
+      expect(fg.get(`/seSocialSecurityTax` as ConcretePath).get.toString()).toBe(`1798.00`);
+    });
+
+    it(`no tips: $150,000 box 3 + $40,000 profit → unchanged behavior, SS portion $4,278`, ({ task }) => {
+      task.meta.testedFactPaths = [`/seRemainingSocialSecurityWageBase`, `/seSocialSecurityTax`];
+      const fg = mk(`150000`, null, `40000`);
+      expect(fg.get(`/seRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`34500.00`);
+      // min(36,940, 34,500) × 12.4% = 4,278
+      expect(fg.get(`/seSocialSecurityTax` as ConcretePath).get.toString()).toBe(`4278.00`);
+    });
+
+    it(`tips push wages past the base → remaining base floors at $0`, ({ task }) => {
+      task.meta.testedFactPaths = [`/seRemainingSocialSecurityWageBase`, `/seSocialSecurityTax`];
+      const fg = mk(`175000`, `20000`, `40000`);
+      expect(fg.get(`/seRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`0.00`);
+      expect(fg.get(`/seSocialSecurityTax` as ConcretePath).get.toString()).toBe(`0.00`);
+    });
+  });
 });
