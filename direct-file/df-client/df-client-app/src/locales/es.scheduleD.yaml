@@ -1,10 +1,10 @@
 # Cadenas del cuestionario del Anexo D / Formulario 8949 (#28). Se combinan en locales/featureLocales.ts.
 headings:
-  /heading/income/income-sources/capital-assets-sold: En {{/taxYear}}, ¿vendió acciones u otros bienes de capital, o recibió un Formulario 1099-B?
-  /heading/knockout/capital-assets: Esta herramienta todavía no admite declarar ventas de acciones u otros bienes de capital
+  /heading/income/income-sources/capital-assets-sold: En {{/taxYear}}, ¿vendió acciones, activos digitales como criptomonedas u otros bienes de capital, o recibió un Formulario 1099-B o 1099-DA?
+  /heading/knockout/capital-assets: Esta herramienta todavía no admite declarar ventas de acciones, activos digitales (criptomonedas) u otros bienes de capital
 info:
   /info/income/income-sources/capital-assets-sold:
-    body: Los bienes de capital incluyen acciones, bonos, participaciones en fondos mutuos y bienes que tiene como inversión. Las ventas se declaran en el Formulario 8949 y el Anexo D.
+    body: Los bienes de capital incluyen acciones, bonos, participaciones en fondos mutuos, activos digitales como criptomonedas y bienes que tiene como inversión. Las ventas se declaran en el Formulario 8949 y el Anexo D.
   /info/knockout/capital-assets:
     alertText:
       body:

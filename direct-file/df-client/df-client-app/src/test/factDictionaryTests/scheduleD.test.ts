@@ -9,6 +9,7 @@ import {
 } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
+import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 import { baseFilerData, filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, mfjFilerData, mfsFilerData, primaryFilerId, singleFilerData } from '../testData.js';
 
 /**
@@ -109,11 +110,13 @@ describe(`Schedule D / Form 8949 — capital assets screener (#28)`, () => {
     expect(factGraph.get(`/capitalGainsOrLosses` as ConcretePath).get.toString()).toBe(`0.00`);
     expect(factGraph.get(`/totalTax` as ConcretePath).complete).toBe(true);
   });
-  it(`answered yes: knocked out`, ({ task }) => {
+  it(`answered yes: knocked out and submission blocked`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutCapitalAssets`, `/flowIsKnockedOut`];
     const { factGraph } = setupFactGraph({ ...base(), '/soldCapitalAssets': createBooleanWrapper(true) });
     expect(factGraph.get(`/flowKnockoutCapitalAssets` as ConcretePath).get).toBe(true);
     expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+    // Rev (#29): blocks submission, not just the flow
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutCapitalAssets`);
   });
 });
 

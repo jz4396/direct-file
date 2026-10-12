@@ -1,10 +1,10 @@
 # Schedule D / Form 8949 screener strings (#28). Overlay merged by locales/featureLocales.ts.
 headings:
-  /heading/income/income-sources/capital-assets-sold: In {{/taxYear}}, did you sell stock or other capital assets, or get a Form 1099-B?
-  /heading/knockout/capital-assets: This tool doesn’t yet support reporting sales of stock or other capital assets
+  /heading/income/income-sources/capital-assets-sold: In {{/taxYear}}, did you sell stock, digital assets such as crypto, or other capital assets, or get a Form 1099-B or Form 1099-DA?
+  /heading/knockout/capital-assets: This tool doesn’t yet support reporting sales of stock, digital assets (crypto), or other capital assets
 info:
   /info/income/income-sources/capital-assets-sold:
-    body: Capital assets include stocks, bonds, mutual fund shares, and property you hold for investment. Sales are reported on Form 8949 and Schedule D.
+    body: Capital assets include stocks, bonds, mutual fund shares, digital assets such as cryptocurrency, and property you hold for investment. Sales are reported on Form 8949 and Schedule D.
   /info/knockout/capital-assets:
     alertText:
       body:
