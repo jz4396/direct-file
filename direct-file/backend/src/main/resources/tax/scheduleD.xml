@@ -205,6 +205,27 @@
       </Derived>
     </Fact>
 
+    <Fact path="/soldCapitalAssets">
+      <Export downstreamFacts="true" />
+      <Name>Sold stock or other capital assets</Name>
+      <Description>Screener (#28): in the tax year, did the filer sell or exchange stock, bonds, digital assets (crypto), or other capital
+        assets, or receive a Form 1099-B or Form 1099-DA? Schedule D instr. (2025) p. D-1: "Use Schedule D: To figure the overall gain
+        or loss from transactions reported on Form 8949". Unset is not treated as no.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/flowKnockoutCapitalAssets">
+      <Export downstreamFacts="true" />
+      <Name>Flow knockout: capital asset sales</Name>
+      <Description>The interview has no Form 8949 entry screens yet, so a yes to /soldCapitalAssets knocks out.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Dependency path="/soldCapitalAssets" />
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions">
       <Export downstreamFacts="true" />
       <Name>Form 8949 transactions</Name>

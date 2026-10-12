@@ -909,6 +909,7 @@ export const filerWithW2NoDeductionsNoCreditsBaseData = {
   // This should be the minimal data, when combined with wage information, to get a complete `/totalTax` amount
   [`/hasCdccCarryoverAmountFromPriorTaxYear`]: createBooleanWrapper(false),
   [`/flowKnockoutHouseholdEmployee`]: createBooleanWrapper(false),
+  [`/soldCapitalAssets`]: createBooleanWrapper(false),
   '/formW2s': { $type: `gov.irs.factgraph.persisters.CollectionWrapper`, item: { items: [uuid] } },
   [Path.concretePath(`/formW2s/*/filer`, uuid)]: createCollectionItemWrapper(uuid),
   '/socialSecurityReports': { $type: `gov.irs.factgraph.persisters.CollectionWrapper`, item: { items: [] } },
@@ -1948,6 +1949,7 @@ export const singleElderlyFilerEdcBase = {
 export const singleDisabledFilerEdcBase = {
   ...baseFilerEdcData,
   ...primaryFilerDisabilityEdcFacts,
+  [`/soldCapitalAssets`]: createBooleanWrapper(false),
   [`/filers/#${primaryFilerId}/dateOfBirth`]: getDobFromAgeDefinedByTyPlusOne(35),
 };
 

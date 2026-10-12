@@ -117,6 +117,7 @@
           <Dependency module="cdcc" path="/knockoutCdccWorksheetA" />
           <Dependency module="cdcc" path="/flowKnockoutHouseholdEmployee" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
+          <Dependency module="scheduleD" path="/flowKnockoutCapitalAssets" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCAdditionalMedicare" />
