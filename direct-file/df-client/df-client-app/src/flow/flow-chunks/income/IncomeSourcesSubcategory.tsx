@@ -252,6 +252,30 @@ export const IncomeSourcesSubcategory = (
         <DFAlert i18nKey='/info/knockout/capital-assets' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      <Screen route='collectibles-sold' condition={{ operator: `isFalse`, condition: `/soldCapitalAssets` }}>
+        <Heading i18nKey='/heading/income/income-sources/collectibles' />
+        <InfoDisplay i18nKey='/info/income/income-sources/collectibles' />
+        <Boolean path='/soldCollectibles' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='collectibles-sold-knockout' condition='/flowKnockoutCollectibles' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/collectibles' />
+        <DFAlert i18nKey='/info/knockout/collectibles' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='unrecaptured-1250-gain' condition={{ operator: `isFalse`, condition: `/soldCapitalAssets` }}>
+        <Heading i18nKey='/heading/income/income-sources/unrecaptured-1250-gain' />
+        <InfoDisplay i18nKey='/info/income/income-sources/unrecaptured-1250-gain' />
+        <Boolean path='/hasUnrecapturedSection1250Gain' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='unrecaptured-1250-gain-knockout' condition='/flowKnockoutUnrecaptured1250Gain' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/unrecaptured-1250-gain' />
+        <DFAlert i18nKey='/info/knockout/unrecaptured-1250-gain' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
     </SubSubcategory>
     <SubSubcategory route='iras'>
       <Screen route='ira-contributions'>
