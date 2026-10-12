@@ -967,5 +967,20 @@ export const JobIncomeSubcategory = (
         </Screen>
       </SubSubcategory>
     </CollectionLoop>
+    {/* #26: Form 4137 unreported tips screener + knockout (cites in formW2s.xml /hasUnreportedTips). */}
+    <SubSubcategory route='unreported-tips'>
+      <Screen route='w2-unreported-tips' condition='/hasW2s'>
+        <Heading i18nKey='/heading/income/jobs/unreported-tips' />
+        <InfoDisplay i18nKey='/info/income/jobs/unreported-tips' />
+        <Boolean path='/hasUnreportedTips' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='w2-unreported-tips-ko' condition='/flowKnockoutUnreportedTips' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/unreported-tips' />
+        <DFAlert i18nKey='/info/knockout/unreported-tips' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
   </Subcategory>
 );

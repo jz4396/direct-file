@@ -1,0 +1,25 @@
+# Propinas no declaradas (Formulario 4137) (#26, año tributario 2026, se presenta en 2027).
+# Superposición de funciones combinada con es.yaml en locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/jobs:
+    unreported-tips: Propinas no declaradas a su empleador
+headings:
+  /heading/income/jobs/unreported-tips: ¿Recibió propinas que no le declaró a su empleador?
+  /heading/knockout/unreported-tips: Esta herramienta todavía no acepta propinas que no le declaró a su empleador
+info:
+  /info/income/jobs/unreported-tips:
+    body: >-
+      Conteste que sí si, en cualquier mes, recibió $20 o más en propinas en efectivo y con tarjeta en un empleo y
+      no le declaró todas esas propinas a su empleador. No cuente las propinas asignadas en la casilla 8 de su W-2.
+  /info/knockout/unreported-tips:
+    alertText:
+      body:
+        - p: >-
+            Usted debe el impuesto del Seguro Social y Medicare sobre las propinas que no le declaró a su empleador.
+            Ese impuesto se calcula en el Formulario 4137, que esta herramienta todavía no acepta. Tendrá que usar
+            otra manera de presentar esta declaración.
+fields:
+  /hasUnreportedTips:
+    boolean:
+      "yes": Sí, recibí propinas que no le declaré a mi empleador
+      "no": No, declaré todas mis propinas o no recibí propinas

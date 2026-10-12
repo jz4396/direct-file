@@ -11,6 +11,8 @@ import scheduleCEn from './en.scheduleC.yaml';
 import scheduleCEs from './es.scheduleC.yaml';
 import scheduleDEn from './en.scheduleD.yaml';
 import scheduleDEs from './es.scheduleD.yaml';
+import unreportedTipsEn from './en.unreportedTips.yaml';
+import unreportedTipsEs from './es.unreportedTips.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -25,6 +27,6 @@ export function deepMerge(base: Tree, over: Tree): Tree {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const enLocale: any = deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree);
+export const enLocale: any = deepMerge(deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree), unreportedTipsEn as Tree);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const esLocale: any = deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree);
+export const esLocale: any = deepMerge(deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree), unreportedTipsEs as Tree);

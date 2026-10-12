@@ -1,0 +1,24 @@
+# Unreported tips (Form 4137) screener + knockout strings (#26, TY2026 filed in 2027).
+# Feature overlay merged onto en.yaml by locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/jobs:
+    unreported-tips: Tips not reported to your employer
+headings:
+  /heading/income/jobs/unreported-tips: Did you get tips that you didn’t report to your employer?
+  /heading/knockout/unreported-tips: This tool doesn’t yet support tips you didn’t report to your employer
+info:
+  /info/income/jobs/unreported-tips:
+    body: >-
+      Answer yes if, in any month, you got $20 or more in cash and charge tips at a job and didn’t report all of
+      those tips to your employer. Don’t count allocated tips shown in box 8 of your W-2.
+  /info/knockout/unreported-tips:
+    alertText:
+      body:
+        - p: >-
+            You owe Social Security and Medicare tax on tips you didn’t report to your employer. That tax is figured
+            on Form 4137, which this tool doesn’t support yet. You’ll need another way to file this return.
+fields:
+  /hasUnreportedTips:
+    boolean:
+      "yes": Yes, I had tips I didn’t report to my employer
+      "no": No, I reported all my tips or didn’t get tips
