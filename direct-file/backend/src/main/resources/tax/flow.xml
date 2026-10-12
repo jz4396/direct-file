@@ -117,6 +117,9 @@
           <Dependency module="cdcc" path="/flowKnockoutHouseholdEmployee" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
           <Dependency module="scheduleD" path="/flowKnockoutCapitalAssets" />
+          <Dependency module="scheduleD" path="/flowKnockoutCollectibles" />
+          <Dependency module="scheduleD" path="/flowKnockoutUnrecaptured1250Gain" />
+          <Dependency module="scheduleD" path="/flowKnockoutWashSale" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCAdditionalMedicare" />

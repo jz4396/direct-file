@@ -226,6 +226,78 @@
       </Derived>
     </Fact>
 
+    <Fact path="/soldCollectibles">
+      <Export downstreamFacts="true" />
+      <Name>Sold collectibles</Name>
+      <Description>#21: collectibles gain (coins, art, precious metals, etc.), taxed up to 28%. IRC §1(h)(4)-(5); Schedule D instr. (2025) p. D-11, Line 18 (28% Rate Gain Worksheet).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hasUnrecapturedSection1250Gain">
+      <Export downstreamFacts="true" />
+      <Name>Has unrecaptured section 1250 gain</Name>
+      <Description>#21: unrecaptured §1250 gain (e.g. depreciated rental property), taxed up to 25%. IRC §1(h)(1)(E), §1(h)(6); Schedule D instr. (2025) p. D-11, Line 19.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hasWashSaleLossDisallowed">
+      <Export downstreamFacts="true" />
+      <Name>Has wash sale loss disallowed</Name>
+      <Description>#21: a loss disallowed under the wash sale rule. IRC §1091(a); Schedule D instr. (2025) p. D-5 "Wash Sales" (Form 8949 code W, column (g)).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/flowKnockoutCollectibles">
+      <Export downstreamFacts="true" />
+      <Name>Flow knockout: collectibles</Name>
+      <Description>#21: yes to /soldCollectibles. Phase A: the Schedule D Tax Worksheet is not implemented, so a yes blocks submission instead of silently using the 0/15/20% QDCG worksheet.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/soldCollectibles" />
+          </IsComplete>
+          <Dependency path="/soldCollectibles" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutUnrecaptured1250Gain">
+      <Export downstreamFacts="true" />
+      <Name>Flow knockout: unrecaptured section 1250 gain</Name>
+      <Description>#21: yes to /hasUnrecapturedSection1250Gain. Phase A: the Schedule D Tax Worksheet is not implemented, so a yes blocks submission instead of silently using the 0/15/20% QDCG worksheet.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/hasUnrecapturedSection1250Gain" />
+          </IsComplete>
+          <Dependency path="/hasUnrecapturedSection1250Gain" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutWashSale">
+      <Export downstreamFacts="true" />
+      <Name>Flow knockout: wash sale</Name>
+      <Description>#21: yes to /hasWashSaleLossDisallowed. Code W / column (g) entry needs Form 8949 entry screens, which do not exist yet.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/hasWashSaleLossDisallowed" />
+          </IsComplete>
+          <Dependency path="/hasWashSaleLossDisallowed" />
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions">
       <Export downstreamFacts="true" />
       <Name>Form 8949 transactions</Name>
