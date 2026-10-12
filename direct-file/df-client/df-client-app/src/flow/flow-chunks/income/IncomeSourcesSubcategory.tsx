@@ -240,6 +240,18 @@ export const IncomeSourcesSubcategory = (
         <DFAlert i18nKey='/info/knockout/digital-assets' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      <Screen route='capital-assets-sold'>
+        <Heading i18nKey='/heading/income/income-sources/capital-assets-sold' />
+        <InfoDisplay i18nKey='/info/income/income-sources/capital-assets-sold' />
+        <Boolean path='/soldCapitalAssets' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='capital-assets-knockout' condition='/flowKnockoutCapitalAssets' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/capital-assets' />
+        <DFAlert i18nKey='/info/knockout/capital-assets' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
     </SubSubcategory>
     <SubSubcategory route='iras'>
       <Screen route='ira-contributions'>

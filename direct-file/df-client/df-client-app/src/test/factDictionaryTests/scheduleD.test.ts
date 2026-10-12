@@ -66,7 +66,7 @@ describe(`Schedule D / Form 8949 — no capital activity regression`, () => {
 
 describe(`Schedule D / Form 8949 — unset collection (#22)`, () => {
   // Schedule D instr. (2025): with no Form 8949 transactions, lines 7, 15 and 16 are 0; IRC §1211(b) limit not reached.
-  it(`total tax is complete and matches the empty-collection return when /form8949Transactions is unset`, ({ task }) => {
+  it(`total tax is complete and matches the empty-collection return when /form8949Transactions is unset (screener answered no)`, ({ task }) => {
     task.meta.testedFactPaths = [`/totalTax`, `/capitalGainsOrLosses`, `/scheduleDLine1b`];
     const base = {
       ...Object.fromEntries(
@@ -82,6 +82,38 @@ describe(`Schedule D / Form 8949 — unset collection (#22)`, () => {
     expect(unset.get(`/capitalGainsOrLosses` as ConcretePath).get.toString()).toBe(`0.00`);
     expect(unset.get(`/scheduleDLine1b` as ConcretePath).get.toString()).toBe(`0.00`);
     expect(unsetTax.get.toString()).toBe(empty.get(`/totalTax` as ConcretePath).get.toString());
+  });
+});
+
+describe(`Schedule D / Form 8949 — capital assets screener (#28)`, () => {
+  // Schedule D instr. (2025) p. D-1: "Use Schedule D: To figure the overall gain or loss from transactions reported on Form 8949".
+  const base = () => ({
+    ...Object.fromEntries(
+      Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(
+        ([k]) => !k.startsWith(`/formW2s`) && k !== `/soldCapitalAssets`
+      )
+    ),
+    ...baseFilerData,
+    ...makeW2Data(50000),
+  });
+  it(`unanswered screener: Schedule D line 1b and total tax stay incomplete (no silent $0)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleDLine1b`, `/totalTax`];
+    const { factGraph } = setupFactGraph(base());
+    expect(factGraph.get(`/scheduleDLine1b` as ConcretePath).complete).toBe(false);
+    expect(factGraph.get(`/totalTax` as ConcretePath).complete).toBe(false);
+  });
+  it(`answered no: $0 default applies and total tax is complete`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCapitalAssets`, `/capitalGainsOrLosses`, `/totalTax`];
+    const { factGraph } = setupFactGraph({ ...base(), '/soldCapitalAssets': createBooleanWrapper(false) });
+    expect(factGraph.get(`/flowKnockoutCapitalAssets` as ConcretePath).get).toBe(false);
+    expect(factGraph.get(`/capitalGainsOrLosses` as ConcretePath).get.toString()).toBe(`0.00`);
+    expect(factGraph.get(`/totalTax` as ConcretePath).complete).toBe(true);
+  });
+  it(`answered yes: knocked out`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCapitalAssets`, `/flowIsKnockedOut`];
+    const { factGraph } = setupFactGraph({ ...base(), '/soldCapitalAssets': createBooleanWrapper(true) });
+    expect(factGraph.get(`/flowKnockoutCapitalAssets` as ConcretePath).get).toBe(true);
+    expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
   });
 });
 
@@ -333,6 +365,7 @@ describe(`Schedule D — prior-year capital loss carryover (lines 6 / 14)`, () =
     const { factGraph } = setupFactGraph({
       ...singleFilerData,
       '/form8949Transactions': createCollectionWrapper([]),
+      '/soldCapitalAssets': createBooleanWrapper(false),
       '/writableLongTermCapitalLossCarryover': createDollarWrapper(`10000`),
     });
     expect(factGraph.get(`/requiresScheduleD` as ConcretePath).get).toBe(true);
@@ -400,6 +433,7 @@ describe(`QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) — 0% / 15% / 20%`,
       ...makeW2Data(50000),
       ...notClaimable,
       '/form8949Transactions': createCollectionWrapper([]),
+      '/soldCapitalAssets': createBooleanWrapper(false),
     });
     expect(factGraph.get(`/usesQdcgTaxWorksheet` as ConcretePath).get).toBe(false);
     expect(get(factGraph, `/tentativeTaxFromTaxableIncome`)).toBe(get(factGraph, `/taxOnTaxableIncomeRegularRates`));
