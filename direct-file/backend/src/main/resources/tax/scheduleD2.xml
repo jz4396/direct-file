@@ -13,12 +13,10 @@
       <Derived>
         <Round>
           <Switch>
-            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <!-- #22/#28: no 8949 entries count as 0 only when the filer answered no to /soldCapitalAssets -->
             <Case>
               <When>
-                <IsComplete>
-                  <Dependency module="scheduleD" path="/form8949Transactions" />
-                </IsComplete>
+                <Dependency module="scheduleD" path="/hasForm8949Transactions" />
               </When>
               <Then>
                 <CollectionSum>
@@ -28,7 +26,9 @@
             </Case>
             <Case>
               <When>
-                <True />
+                <Not>
+                  <Dependency module="scheduleD" path="/soldCapitalAssets" />
+                </Not>
               </When>
               <Then>
                 <Dollar>0</Dollar>
@@ -47,12 +47,10 @@
       <Derived>
         <Round>
           <Switch>
-            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <!-- #22/#28: no 8949 entries count as 0 only when the filer answered no to /soldCapitalAssets -->
             <Case>
               <When>
-                <IsComplete>
-                  <Dependency module="scheduleD" path="/form8949Transactions" />
-                </IsComplete>
+                <Dependency module="scheduleD" path="/hasForm8949Transactions" />
               </When>
               <Then>
                 <CollectionSum>
@@ -62,7 +60,9 @@
             </Case>
             <Case>
               <When>
-                <True />
+                <Not>
+                  <Dependency module="scheduleD" path="/soldCapitalAssets" />
+                </Not>
               </When>
               <Then>
                 <Dollar>0</Dollar>
@@ -81,12 +81,10 @@
       <Derived>
         <Round>
           <Switch>
-            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <!-- #22/#28: no 8949 entries count as 0 only when the filer answered no to /soldCapitalAssets -->
             <Case>
               <When>
-                <IsComplete>
-                  <Dependency module="scheduleD" path="/form8949Transactions" />
-                </IsComplete>
+                <Dependency module="scheduleD" path="/hasForm8949Transactions" />
               </When>
               <Then>
                 <CollectionSum>
@@ -96,7 +94,9 @@
             </Case>
             <Case>
               <When>
-                <True />
+                <Not>
+                  <Dependency module="scheduleD" path="/soldCapitalAssets" />
+                </Not>
               </When>
               <Then>
                 <Dollar>0</Dollar>
@@ -151,12 +151,10 @@
       <Derived>
         <Round>
           <Switch>
-            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <!-- #22/#28: no 8949 entries count as 0 only when the filer answered no to /soldCapitalAssets -->
             <Case>
               <When>
-                <IsComplete>
-                  <Dependency module="scheduleD" path="/form8949Transactions" />
-                </IsComplete>
+                <Dependency module="scheduleD" path="/hasForm8949Transactions" />
               </When>
               <Then>
                 <CollectionSum>
@@ -166,7 +164,9 @@
             </Case>
             <Case>
               <When>
-                <True />
+                <Not>
+                  <Dependency module="scheduleD" path="/soldCapitalAssets" />
+                </Not>
               </When>
               <Then>
                 <Dollar>0</Dollar>
@@ -185,12 +185,10 @@
       <Derived>
         <Round>
           <Switch>
-            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <!-- #22/#28: no 8949 entries count as 0 only when the filer answered no to /soldCapitalAssets -->
             <Case>
               <When>
-                <IsComplete>
-                  <Dependency module="scheduleD" path="/form8949Transactions" />
-                </IsComplete>
+                <Dependency module="scheduleD" path="/hasForm8949Transactions" />
               </When>
               <Then>
                 <CollectionSum>
@@ -200,7 +198,9 @@
             </Case>
             <Case>
               <When>
-                <True />
+                <Not>
+                  <Dependency module="scheduleD" path="/soldCapitalAssets" />
+                </Not>
               </When>
               <Then>
                 <Dollar>0</Dollar>
@@ -219,12 +219,10 @@
       <Derived>
         <Round>
           <Switch>
-            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <!-- #22/#28: no 8949 entries count as 0 only when the filer answered no to /soldCapitalAssets -->
             <Case>
               <When>
-                <IsComplete>
-                  <Dependency module="scheduleD" path="/form8949Transactions" />
-                </IsComplete>
+                <Dependency module="scheduleD" path="/hasForm8949Transactions" />
               </When>
               <Then>
                 <CollectionSum>
@@ -234,7 +232,9 @@
             </Case>
             <Case>
               <When>
-                <True />
+                <Not>
+                  <Dependency module="scheduleD" path="/soldCapitalAssets" />
+                </Not>
               </When>
               <Then>
                 <Dollar>0</Dollar>
