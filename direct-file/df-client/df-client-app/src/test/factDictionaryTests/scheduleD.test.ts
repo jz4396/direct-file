@@ -9,7 +9,7 @@ import {
 } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { makeW2Data, mfjFilerData, mfsFilerData, primaryFilerId, singleFilerData } from '../testData.js';
+import { baseFilerData, filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, mfjFilerData, mfsFilerData, primaryFilerId, singleFilerData } from '../testData.js';
 
 /**
  * Schedule D + Form 8949 — worked examples for TY2026.
@@ -61,6 +61,27 @@ describe(`Schedule D / Form 8949 — no capital activity regression`, () => {
     });
     expect(factGraph.get(`/capitalGainsOrLosses` as ConcretePath).get.toString()).toBe(`0.00`);
     expect(factGraph.get(`/requiresScheduleD` as ConcretePath).get).toBe(false);
+  });
+});
+
+describe(`Schedule D / Form 8949 — unset collection (#22)`, () => {
+  // Schedule D instr. (2025): with no Form 8949 transactions, lines 7, 15 and 16 are 0; IRC §1211(b) limit not reached.
+  it(`total tax is complete and matches the empty-collection return when /form8949Transactions is unset`, ({ task }) => {
+    task.meta.testedFactPaths = [`/totalTax`, `/capitalGainsOrLosses`, `/scheduleDLine1b`];
+    const base = {
+      ...Object.fromEntries(
+        Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+      ),
+      ...baseFilerData,
+      ...makeW2Data(50000),
+    };
+    const { factGraph: unset } = setupFactGraph(base);
+    const { factGraph: empty } = setupFactGraph({ ...base, '/form8949Transactions': createCollectionWrapper([]) });
+    const unsetTax = unset.get(`/totalTax` as ConcretePath);
+    expect(unsetTax.complete).toBe(true);
+    expect(unset.get(`/capitalGainsOrLosses` as ConcretePath).get.toString()).toBe(`0.00`);
+    expect(unset.get(`/scheduleDLine1b` as ConcretePath).get.toString()).toBe(`0.00`);
+    expect(unsetTax.get.toString()).toBe(empty.get(`/totalTax` as ConcretePath).get.toString());
   });
 });
 
