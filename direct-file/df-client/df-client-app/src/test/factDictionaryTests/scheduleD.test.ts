@@ -479,3 +479,48 @@ describe(`NIIT knockout (IRC §1411) — capital gain counts as investment incom
     expect(factGraph.get(`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh` as ConcretePath).get).toBe(false);
   });
 });
+
+describe(`Schedule D — special capital gains knockouts (#21)`, () => {
+  // Schedule D instr. (2025) p. D-11, Lines 18/19 (28% Rate Gain / Unrecaptured §1250 Gain Worksheets);
+  // Form 1099-DIV instr. (Rev. 01-2024) p. 4, boxes 2b/2d; IRC §1(h)(4)-(6).
+  const clean = () => ({
+    ...Object.fromEntries(
+      Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+    ),
+    ...baseFilerData,
+    ...makeW2Data(50000),
+    '/soldCapitalAssets': createBooleanWrapper(false),
+  });
+  const cases = [
+    [`/soldCollectibles`, `/flowKnockoutCollectibles`],
+    [`/hasUnrecapturedSection1250Gain`, `/flowKnockoutUnrecaptured1250Gain`],
+  ] as const;
+  for (const [answer, knockout] of cases) {
+    it(`${answer} = yes on a clean return knocks out and blocks submission`, ({ task }) => {
+      task.meta.testedFactPaths = [knockout, `/flowIsKnockedOut`];
+      const { factGraph } = setupFactGraph({ ...clean(), [answer]: createBooleanWrapper(true) });
+      expect(factGraph.get(knockout as ConcretePath).get).toBe(true);
+      expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+      expect(submissionBlockingFacts).toContain(knockout);
+    });
+  }
+  it(`clean return with both answered no: not knocked out, total tax complete`, ({ task }) => {
+    task.meta.testedFactPaths = [...cases.map(([, k]) => k), `/flowIsKnockedOut`, `/totalTax`];
+    const data: Record<string, unknown> = clean();
+    for (const [answer] of cases) data[answer] = createBooleanWrapper(false);
+    const { factGraph } = setupFactGraph(data);
+    for (const [, knockout] of cases) expect(factGraph.get(knockout as ConcretePath).get).toBe(false);
+    expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
+    expect(factGraph.get(`/totalTax` as ConcretePath).complete).toBe(true);
+  });
+  it(`ordinary LT stock sale still computes: line 16 = $2,000`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleDLine16`];
+    const { factGraph } = setupFactGraph({
+      ...singleFilerData,
+      '/form8949Transactions': createCollectionWrapper([tx1]),
+      ...tx(tx1, { description: `10 sh ABC`, proceeds: `5000`, costBasis: `3000`, box: `D`, holdingPeriod: `longTerm` }),
+      '/form8949TransactionsIsDone': createBooleanWrapper(true),
+    });
+    expect(factGraph.get(`/scheduleDLine16` as ConcretePath).get.toString()).toBe(`2000.00`);
+  });
+});
