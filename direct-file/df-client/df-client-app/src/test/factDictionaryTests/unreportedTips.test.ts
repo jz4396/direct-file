@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createBooleanWrapper } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithW2NoDeductionsNoCreditsBaseData } from '../testData.js';
+import { filerWithRefundDueData, filerWithW2NoDeductionsNoCreditsBaseData } from '../testData.js';
 
 /**
  * #26: knockout for cash/charge tips not reported to the employer (Form 4137, Schedule 2 line 5).
@@ -18,6 +18,24 @@ describe(`Unreported tips (Form 4137) knockout (#26)`, () => {
     });
     expect(factGraph.get(`/flowKnockoutUnreportedTips` as ConcretePath).get).toBe(true);
     expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+  });
+
+  it(`otherwise-eligible W-2-only single filer: yes flips /flowIsKnockedOut from false to true`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutUnreportedTips`, `/flowIsKnockedOut`];
+    const unanswered = setupFactGraph({ ...filerWithRefundDueData }).factGraph;
+    const no = setupFactGraph({
+      ...filerWithRefundDueData,
+      '/hasUnreportedTips': createBooleanWrapper(false),
+    }).factGraph;
+    const yes = setupFactGraph({
+      ...filerWithRefundDueData,
+      '/hasUnreportedTips': createBooleanWrapper(true),
+    }).factGraph;
+    expect(unanswered.get(`/hasW2s` as ConcretePath).get).toBe(true);
+    expect(unanswered.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
+    expect(no.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
+    expect(yes.get(`/flowKnockoutUnreportedTips` as ConcretePath).get).toBe(true);
+    expect(yes.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
   });
 
   it(`W-2 filer who answers no is not knocked out by this check`, ({ task }) => {
