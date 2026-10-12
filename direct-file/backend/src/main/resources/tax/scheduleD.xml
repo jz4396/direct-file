@@ -482,6 +482,278 @@
       </Derived>
     </Fact>
 
+    <Fact path="/form8949Transactions/*/printPartIDescription">
+      <Name>Form 8949 Part I print: description</Name>
+      <Description>#19 print-only: ../description when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../description" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIDateAcquired">
+      <Name>Form 8949 Part I print: dateAcquired</Name>
+      <Description>#19 print-only: ../dateAcquired when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../dateAcquired" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIDateSold">
+      <Name>Form 8949 Part I print: dateSold</Name>
+      <Description>#19 print-only: ../dateSold when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../dateSold" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIProceeds">
+      <Name>Form 8949 Part I print: proceeds</Name>
+      <Description>#19 print-only: ../proceeds when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../proceeds" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartICostBasis">
+      <Name>Form 8949 Part I print: costBasis</Name>
+      <Description>#19 print-only: ../costBasis when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../costBasis" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIAdjustmentCode">
+      <Name>Form 8949 Part I print: adjustmentCode</Name>
+      <Description>#19 print-only: ../adjustmentCode when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../adjustmentCode" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIAdjustment">
+      <Name>Form 8949 Part I print: adjustment</Name>
+      <Description>#19 print-only: ../adjustment when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../adjustment" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIGainOrLoss">
+      <Name>Form 8949 Part I print: gainOrLoss</Name>
+      <Description>#19 print-only: ../gainOrLoss when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isShortTerm" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIDescription">
+      <Name>Form 8949 Part II print: description</Name>
+      <Description>#19 print-only: ../description when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../description" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIDateAcquired">
+      <Name>Form 8949 Part II print: dateAcquired</Name>
+      <Description>#19 print-only: ../dateAcquired when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../dateAcquired" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIDateSold">
+      <Name>Form 8949 Part II print: dateSold</Name>
+      <Description>#19 print-only: ../dateSold when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../dateSold" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIProceeds">
+      <Name>Form 8949 Part II print: proceeds</Name>
+      <Description>#19 print-only: ../proceeds when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../proceeds" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIICostBasis">
+      <Name>Form 8949 Part II print: costBasis</Name>
+      <Description>#19 print-only: ../costBasis when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../costBasis" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIAdjustmentCode">
+      <Name>Form 8949 Part II print: adjustmentCode</Name>
+      <Description>#19 print-only: ../adjustmentCode when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../adjustmentCode" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIAdjustment">
+      <Name>Form 8949 Part II print: adjustment</Name>
+      <Description>#19 print-only: ../adjustment when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../adjustment" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIGainOrLoss">
+      <Name>Form 8949 Part II print: gainOrLoss</Name>
+      <Description>#19 print-only: ../gainOrLoss when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isLongTerm" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions/*/isShortTerm">
       <Name>Is short-term transaction</Name>
       <Derived>

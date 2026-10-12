@@ -1,17 +1,15 @@
-# Schedule D (Form 1040) — TY2024 PDFBox template expanded for TY2026 print/local (Phase A).
-# Source PDF: IRS Form Schedule D (f1040sd). Not pdf-lib.
-# Field names verified against https://www.irs.gov/pub/irs-prior/f1040sd--2024.pdf (AcroForm names).
+# Schedule D (Form 1040), PDFBox template for TY2026 print/local (Phase A).
+# Source PDF: https://www.irs.gov/pub/irs-pdf/f1040sd.pdf, the latest published revision (2025; OMB 1545-0074).
+# The TY2026 form is not published yet. Re-run ../../fetch-schedule-d-pdfs.sh and re-verify field names when it is.
+# AcroForm field names were verified with pypdf against the committed PDF (#19).
 # Column (h) only for lines 1b/2/3/8b/9/10; lines 6/14 carryover; Part III lines 16 and 21.
 # Cites: Schedule D instr. (2025) p.3 (§1211(b) $3,000); p.10 (lines 6/14); p.14 (line 21).
-# NOT yet registered in application.yaml / PdfTemplate.java: the template PDF binary must be committed
-# first (run fetch-schedule-d-pdfs.sh, commit the PDF), otherwise the backend fails to load it.
 includeWhen: /requiresScheduleD
 form:
   topmostSubform[0]:
     Page1[0]:
-      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
-      f1_02[0]: /primaryFiler/tin
-      # Part I short-term aggregates (lines 1b / 2 / 3 / 7)
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
+      f1_2[0]: /primaryFiler/tin
       Table_PartI[0]:
         Row1b[0]:
           f1_10[0]: /scheduleDLine1b
@@ -21,7 +19,6 @@ form:
           f1_18[0]: /scheduleDLine3
       f1_21[0]: /scheduleDLine6
       f1_22[0]: /scheduleDLine7
-      # Part II long-term aggregates (lines 8b / 9 / 10 / 15)
       Table_PartII[0]:
         Row8b[0]:
           f1_30[0]: /scheduleDLine8b
@@ -32,7 +29,6 @@ form:
       f1_42[0]: /scheduleDLine14
       f1_43[0]: /scheduleDLine15
     Page2[0]:
-      # Part III — line 16 combine; line 21 loss limitation (positive)
-      f2_01[0]: /scheduleDLine16
-      TagCorrectingSubform[0]:
-        f2_04[0]: /scheduleDLine21
+      # Line 16 = f2_1; line 21 (positive) = f2_4. Lines 18/19 (f2_2/f2_3) are knocked out by #21.
+      f2_1[0]: /scheduleDLine16
+      f2_4[0]: /scheduleDLine21

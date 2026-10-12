@@ -1,0 +1,44 @@
+# Form 8949, PDFBox template for TY2026 print/local (Phase A, #19).
+# Source PDF: https://www.irs.gov/pub/irs-pdf/f8949.pdf, the latest published revision (2025; OMB 1545-0074).
+# AcroForm field names were verified with pypdf against the committed PDF.
+# One Form 8949 per transaction (includeForEach), so each Part has exactly one box checked: Form 8949 instr. (2025)
+# p. 3, "Check only one box on each Part I." / p. 3, "Check only one box on each Part II."
+# Short-term rows print in Part I row 1; long-term rows print in Part II row 1.
+# The print* facts have no value for the other part, so those cells stay blank.
+# Columns: (a) f_03, (b) f_04, (c) f_05, (d) f_06, (e) f_07, (f) f_08, (g) f_09, (h) f_10.
+# Boxes G–L (digital assets, 1099-DA) are not modelled; c1_1[3..5] and c2_1[3..5] are left unchecked.
+includeForEach: /form8949Transactions
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
+      f1_02[0]: /primaryFiler/tin
+      c1_1[0]: /form8949Transactions/*/isBoxA
+      c1_1[1]: /form8949Transactions/*/isBoxB
+      c1_1[2]: /form8949Transactions/*/isBoxC
+      Table_Line1_Part1[0]:
+        Row1[0]:
+          f1_03[0]: /form8949Transactions/*/printPartIDescription
+          f1_04[0]: /form8949Transactions/*/printPartIDateAcquired
+          f1_05[0]: /form8949Transactions/*/printPartIDateSold
+          f1_06[0]: /form8949Transactions/*/printPartIProceeds
+          f1_07[0]: /form8949Transactions/*/printPartICostBasis
+          f1_08[0]: /form8949Transactions/*/printPartIAdjustmentCode
+          f1_09[0]: /form8949Transactions/*/printPartIAdjustment
+          f1_10[0]: /form8949Transactions/*/printPartIGainOrLoss
+    Page2[0]:
+      f2_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
+      f2_02[0]: /primaryFiler/tin
+      c2_1[0]: /form8949Transactions/*/isBoxD
+      c2_1[1]: /form8949Transactions/*/isBoxE
+      c2_1[2]: /form8949Transactions/*/isBoxF
+      Table_Line1_Part2[0]:
+        Row1[0]:
+          f2_03[0]: /form8949Transactions/*/printPartIIDescription
+          f2_04[0]: /form8949Transactions/*/printPartIIDateAcquired
+          f2_05[0]: /form8949Transactions/*/printPartIIDateSold
+          f2_06[0]: /form8949Transactions/*/printPartIIProceeds
+          f2_07[0]: /form8949Transactions/*/printPartIICostBasis
+          f2_08[0]: /form8949Transactions/*/printPartIIAdjustmentCode
+          f2_09[0]: /form8949Transactions/*/printPartIIAdjustment
+          f2_10[0]: /form8949Transactions/*/printPartIIGainOrLoss
