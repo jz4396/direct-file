@@ -12,9 +12,29 @@
       <ExportZero />
       <Derived>
         <Round>
-          <CollectionSum>
+          <Switch>
+            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <Case>
+              <When>
+                <IsComplete>
+                  <Dependency module="scheduleD" path="/form8949Transactions" />
+                </IsComplete>
+              </When>
+              <Then>
+                <CollectionSum>
             <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxA" />
           </CollectionSum>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
         </Round>
       </Derived>
     </Fact>
@@ -26,9 +46,29 @@
       <ExportZero />
       <Derived>
         <Round>
-          <CollectionSum>
+          <Switch>
+            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <Case>
+              <When>
+                <IsComplete>
+                  <Dependency module="scheduleD" path="/form8949Transactions" />
+                </IsComplete>
+              </When>
+              <Then>
+                <CollectionSum>
             <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxB" />
           </CollectionSum>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
         </Round>
       </Derived>
     </Fact>
@@ -40,9 +80,29 @@
       <ExportZero />
       <Derived>
         <Round>
-          <CollectionSum>
+          <Switch>
+            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <Case>
+              <When>
+                <IsComplete>
+                  <Dependency module="scheduleD" path="/form8949Transactions" />
+                </IsComplete>
+              </When>
+              <Then>
+                <CollectionSum>
             <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxC" />
           </CollectionSum>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
         </Round>
       </Derived>
     </Fact>
@@ -90,9 +150,29 @@
       <ExportZero />
       <Derived>
         <Round>
-          <CollectionSum>
+          <Switch>
+            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <Case>
+              <When>
+                <IsComplete>
+                  <Dependency module="scheduleD" path="/form8949Transactions" />
+                </IsComplete>
+              </When>
+              <Then>
+                <CollectionSum>
             <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxD" />
           </CollectionSum>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
         </Round>
       </Derived>
     </Fact>
@@ -104,9 +184,29 @@
       <ExportZero />
       <Derived>
         <Round>
-          <CollectionSum>
+          <Switch>
+            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <Case>
+              <When>
+                <IsComplete>
+                  <Dependency module="scheduleD" path="/form8949Transactions" />
+                </IsComplete>
+              </When>
+              <Then>
+                <CollectionSum>
             <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxE" />
           </CollectionSum>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
         </Round>
       </Derived>
     </Fact>
@@ -118,9 +218,29 @@
       <ExportZero />
       <Derived>
         <Round>
-          <CollectionSum>
+          <Switch>
+            <!-- #22: unset /form8949Transactions means no transactions (0), per Sch. D instr. -->
+            <Case>
+              <When>
+                <IsComplete>
+                  <Dependency module="scheduleD" path="/form8949Transactions" />
+                </IsComplete>
+              </When>
+              <Then>
+                <CollectionSum>
             <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxF" />
           </CollectionSum>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
         </Round>
       </Derived>
     </Fact>

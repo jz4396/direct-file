@@ -28,8 +28,6 @@ const completeBaseNoW2 = {
     Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s/`))
   ),
   '/formW2s': createCollectionWrapper([]),
-  // Schedule D (#4): no capital transactions
-  '/form8949Transactions': createCollectionWrapper([]),
 };
 
 const baseSingle = {
