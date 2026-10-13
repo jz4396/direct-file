@@ -227,6 +227,24 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleEProvidesSubstantialServices">
+      <Name>Provides substantial services to renters (cleaning, linens, maid service)</Name>
+      <Description>
+        Instructions for Schedule E (2026 draft) printed p. 7 (PDF p. 8), Line 3: "Generally, rental real estate
+        activity is reported on Schedule E even if it is also a trade or business activity; however, if you provided
+        significant services to the renter, such as maid service, report the rental activity on Schedule C, not on
+        Schedule E. Significant services do not include the furnishing of heat and light, cleaning of public areas,
+        trash collection, or similar services." On Schedule C the profit can be subject to self-employment tax
+        (26 U.S.C. 1401). 26 U.S.C. 1402(a)(1) excludes "rentals from real estate" from net earnings from
+        self-employment; the Schedule C routing above is what takes substantial-service rentals out of that
+        exclusion, so reporting the profit here with $0 SE tax could understate tax.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
     <Fact path="/scheduleEHasPartIIIncome">
       <Name>Has partnership, S corporation, estate, trust, or REMIC income (Schedule E Parts II-IV)</Name>
       <Description>
@@ -340,6 +358,21 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleESubstantialServices">
+      <Name>Knockout: rental with substantial services (belongs on Schedule C with SE tax)</Name>
+      <Description>
+        Belongs on Schedule C and is subject to SE tax, not Schedule E. Cites on /scheduleEProvidesSubstantialServices.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/hasScheduleEIncome" />
+          <Dependency path="/scheduleEProvidesSubstantialServices" />
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleEPartII">
       <Name>Knockout: Schedule E Parts II-IV (K-1) income</Name>
       <Description>
@@ -415,6 +448,9 @@
                 </IsComplete>
                 <IsComplete>
                   <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEProvidesSubstantialServices" />
                 </IsComplete>
               </All>
             </Then>
