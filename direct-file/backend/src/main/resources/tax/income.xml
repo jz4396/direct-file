@@ -771,6 +771,7 @@
                 <Dependency path="/hasAdjustmentsToIncome" />
                 <Dependency module="unemployment" path="/receivedUnemploymentCompensation" />
                 <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+                <Dependency module="scheduleE" path="/hasScheduleEIncome" />
               </Any>
             </When>
             <Then>
@@ -807,6 +808,8 @@
             <Dependency path="/schedule1TotalOtherIncome" />
             <!-- Schedule 1 line 3 business income (Schedule C) — § 61 / § 162; see scheduleC.xml -->
             <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
+            <!-- Schedule 1 line 5 rental real estate / royalties (Schedule E line 26/41); § 61(a)(5)-(6); see scheduleE.xml -->
+            <Dependency module="scheduleE" path="/scheduleENetIncome" />
           </Add>
         </Round>
       </Derived>
@@ -846,6 +849,7 @@
           <Dependency module="form1099Rs" path="/has1099R" />
           <Dependency module="socialSecurity" path="/hasSocialSecurityBenefits" />
           <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
         </Any>
       </Derived>
     </Fact>
