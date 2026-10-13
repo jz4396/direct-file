@@ -61,6 +61,7 @@ const w2Id = `9ba9d216-81a8-4944-81ac-9410b2fad150`;
 const sharedData = {
   ...baseFilerData,
   [`/soldCapitalAssets`]: createBooleanWrapper(false),
+  [`/scheduleAWantsToItemize`]: createBooleanWrapper(false),
   [Path.concretePath(`/filers/*/canBeClaimed`, uuid)]: createBooleanWrapper(false),
 };
 

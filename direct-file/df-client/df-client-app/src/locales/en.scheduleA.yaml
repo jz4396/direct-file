@@ -1,0 +1,79 @@
+# Schedule A MVP strings (#37). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    itemized-deductions: "Itemized deductions"
+headings:
+  /heading/credits-and-deductions/deductions/itemize-intro: "Do you want to see if itemizing your deductions lowers your tax?"
+  /heading/credits-and-deductions/deductions/itemize-unsupported: "Do any of these apply to you?"
+  /heading/credits-and-deductions/deductions/itemize-amounts: "Enter your itemized expenses for {{/taxYear}}"
+  /heading/credits-and-deductions/deductions/itemize-elect: "Do you want to itemize even if it’s less than your standard deduction?"
+  /heading/knockout/schedule-a-unsupported: "This tool doesn’t yet support those itemized deductions"
+  /heading/knockout/schedule-a-charitable-limit: "This tool doesn’t yet support cash gifts over 60% of your adjusted gross income"
+  /heading/knockout/schedule-a-overall-limit: "This tool doesn’t yet support the limit on itemized deductions at higher incomes"
+info:
+  /info/credits-and-deductions/deductions/itemize-intro:
+    body: "If your medical expenses, state and local taxes, mortgage interest, and cash gifts to charity add up to more than your standard deduction, itemizing on Schedule A can lower your tax. We’ll compare both and use the larger one."
+  /info/credits-and-deductions/deductions/itemize-unsupported:
+    body: "Mortgage debt over $750,000 ($375,000 if married filing separately) or mortgage interest not reported on Form 1098; investment interest; gifts to charity other than cash or check; charitable contribution carryovers; casualty or theft losses; other taxes or other itemized deductions such as gambling losses; or foreign income you excluded from tax."
+  /info/credits-and-deductions/deductions/itemize-amounts:
+    body: "Enter 0 for anything that doesn’t apply. State and local taxes are limited to $40,400 ($20,200 if married filing separately), less at higher incomes. Medical expenses count only above 7.5% of your adjusted gross income, and cash gifts only above 0.5% of it."
+  /info/credits-and-deductions/deductions/itemize-elect:
+    body: "Most people should answer no. Some people itemize anyway, for example if their state return requires it or a spouse filing separately itemizes."
+  /info/knockout/schedule-a-unsupported:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/schedule-a-charitable-limit:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/schedule-a-overall-limit:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /scheduleAWantsToItemize:
+    boolean:
+      "yes": "Yes, compare itemizing"
+      "no": "No, take the standard deduction"
+  /scheduleAHasUnsupportedItems:
+    boolean:
+      "yes": "Yes, one or more apply"
+      "no": "No, none of these apply"
+  /scheduleAWritableElectsToItemize:
+    boolean:
+      "yes": "Yes, itemize anyway"
+      "no": "No, use whichever is larger"
+  /scheduleAWritableMedical:
+    name: "Medical and dental expenses"
+  /scheduleAWritableStateLocalIncomeOrSalesTax:
+    name: "State and local income taxes or general sales taxes"
+  /scheduleAWritableRealEstateTaxes:
+    name: "State and local real estate taxes"
+  /scheduleAWritablePersonalPropertyTaxes:
+    name: "State and local personal property taxes"
+  /scheduleAWritableMortgageInterest:
+    name: "Home mortgage interest and points (Form 1098)"
+  /scheduleAWritableCashGifts:
+    name: "Gifts to charity by cash or check"
+checklist:
+  /flow/credits-and-deductions/deductions:
+    dataItems:
+      itemizedDeductions: "Itemized deductions: {{/scheduleALine18}}"
+dataviews:
+  /flow/credits-and-deductions/deductions:
+    /scheduleAWantsToItemize: "Do you want to see if itemizing your deductions lowers your tax?"
+    /scheduleAHasUnsupportedItems: "Do any of these apply to you?"
+    /scheduleAWritableElectsToItemize: "Do you want to itemize even if it’s less than your standard deduction?"
+    /scheduleAWritableMedical: "Medical and dental expenses"
+    /scheduleAWritableStateLocalIncomeOrSalesTax: "State and local income taxes or general sales taxes"
+    /scheduleAWritableRealEstateTaxes: "State and local real estate taxes"
+    /scheduleAWritablePersonalPropertyTaxes: "State and local personal property taxes"
+    /scheduleAWritableMortgageInterest: "Home mortgage interest and points (Form 1098)"
+    /scheduleAWritableCashGifts: "Gifts to charity by cash or check"
