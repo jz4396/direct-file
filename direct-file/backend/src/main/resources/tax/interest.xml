@@ -108,6 +108,16 @@
               <Dollar>0</Dollar>
             </Right>
           </GreaterThan>
+          <!-- Rents and royalties are net investment income: IRC §1411(c)(1)(A)(i) "gross income from interest,
+               dividends, annuities, royalties, and rents". Schedule E net income (#38). -->
+          <GreaterThan>
+            <Left>
+              <Dependency module="scheduleE" path="/scheduleENetIncome" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
         </Any>
       </Derived>
     </Fact>
