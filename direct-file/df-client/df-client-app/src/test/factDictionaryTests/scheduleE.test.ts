@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { createBooleanWrapper, createDollarWrapper } from '../persistenceWrappers.js';
+import { createBooleanWrapper, createDayWrapper, createDollarWrapper, createEnumWrapper } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithRefundDueData } from '../testData.js';
+import { baseFilerData, filerWithRefundDueData, primaryFilerId, uuid } from '../testData.js';
 
 /**
  * Schedule E Part I MVP (#38). Cites live in backend/src/main/resources/tax/scheduleE.xml:
@@ -12,6 +12,7 @@ import { filerWithRefundDueData } from '../testData.js';
 const supported = {
   '/hadScheduleEIncome': createBooleanWrapper(true),
   '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
   '/scheduleEHasPersonalUse': createBooleanWrapper(false),
   '/scheduleEHasDepreciation': createBooleanWrapper(false),
   '/scheduleEAnyPropertyLoss': createBooleanWrapper(false),
@@ -71,6 +72,11 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       `/flowKnockoutScheduleEPartII`,
       { '/scheduleEHasPartIIIncome': createBooleanWrapper(true) },
     ],
+    [
+      `substantial services (Schedule C, SE tax)`,
+      `/flowKnockoutScheduleESubstantialServices`,
+      { '/scheduleEProvidesSubstantialServices': createBooleanWrapper(true) },
+    ],
   ];
   for (const [label, ko, extra] of cases) {
     it(`knocks out ${label} on an otherwise clean return`, ({ task }) => {
@@ -82,4 +88,27 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
   }
+
+  it(`EITC-qualifying return with rental profit is knocked out (32(i)(2)(C))`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutScheduleEEitc`, `/flowIsKnockedOut`];
+    const eitcBase = {
+      ...Object.fromEntries(Object.entries(baseFilerData).filter(([k]) => !k.startsWith(`/formW2s`))),
+      '/maritalStatus': createEnumWrapper(`single`, `/maritalStatusOptions`),
+      [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+      [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(`1995-01-01`),
+      '/eitcQcOfAnother': createBooleanWrapper(false),
+      '/eitcHadImproperClaims': createBooleanWrapper(false),
+      [`/formW2s/#${uuid}/writableWages`]: createDollarWrapper(`12000`),
+      [`/formW2s/#${uuid}/writableFederalWithholding`]: createDollarWrapper(`500`),
+    };
+    const rental = { ...supported, '/scheduleEWritableRents': createDollarWrapper(`1500`), '/scheduleEWritableRoyalties': createDollarWrapper(`0`), '/scheduleEWritableExpenses': createDollarWrapper(`500`) };
+    const noRental = fg(eitcBase);
+    const g = fg({ ...eitcBase, ...rental });
+    expect(get(noRental, `/eitcQualified`).get).toBe(true);
+    expect(get(noRental, `/flowKnockoutScheduleEEitc`).get).toBe(false);
+    expect(get(g, `/scheduleENetIncome`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/eitcQualified`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEEitc`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
 });
