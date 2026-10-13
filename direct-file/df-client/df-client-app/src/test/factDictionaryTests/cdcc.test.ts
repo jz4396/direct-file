@@ -711,78 +711,43 @@ describe(`For CDCC, a filer`, () => {
       }
     );
 
-    describe.each([
-      // IF your 2022 adjusted gross income was:	 	THEN the decimal amount is:
-      // Over:	 	But not over:
-      //  $ 0	    —	$15,000	 	0.35
-      { agi: 0, decimalAmount: 0 },
-      { agi: 1, decimalAmount: 0.35 },
-      { agi: 10000, decimalAmount: 0.35 },
-      { agi: 15000, decimalAmount: 0.35 },
-      // 15,000	—	17,000	 	0.34
-      { agi: 15001, decimalAmount: 0.34 },
-      { agi: 16000, decimalAmount: 0.34 },
-      { agi: 17000, decimalAmount: 0.34 },
-      // 17,000	—	19,000	 	0.33
-      { agi: 17001, decimalAmount: 0.33 },
-      { agi: 18001, decimalAmount: 0.33 },
-      { agi: 19000, decimalAmount: 0.33 },
-      // 19,000	—	21,000	 	0.32
-      { agi: 19001, decimalAmount: 0.32 },
-      { agi: 20000, decimalAmount: 0.32 },
-      { agi: 21000, decimalAmount: 0.32 },
-      // 21,000	—	23,000	 	0.31
-      { agi: 21001, decimalAmount: 0.31 },
-      { agi: 22000, decimalAmount: 0.31 },
-      { agi: 23000, decimalAmount: 0.31 },
-      // 23,000	—	25,000	 	0.30
-      { agi: 23001, decimalAmount: 0.3 },
-      { agi: 24000, decimalAmount: 0.3 },
-      { agi: 25000, decimalAmount: 0.3 },
-      // 25,000	—	27,000	 	0.29
-      { agi: 25001, decimalAmount: 0.29 },
-      { agi: 26000, decimalAmount: 0.29 },
-      { agi: 27000, decimalAmount: 0.29 },
-      // 27,000	—	29,000	 	0.28
-      { agi: 27001, decimalAmount: 0.28 },
-      { agi: 28000, decimalAmount: 0.28 },
-      { agi: 29000, decimalAmount: 0.28 },
-      // 29,000	—	31,000	 	0.27
-      { agi: 29001, decimalAmount: 0.27 },
-      { agi: 30000, decimalAmount: 0.27 },
-      { agi: 31000, decimalAmount: 0.27 },
-      // 31,000	—	33,000	 	0.26
-      { agi: 31001, decimalAmount: 0.26 },
-      { agi: 32000, decimalAmount: 0.26 },
-      { agi: 33000, decimalAmount: 0.26 },
-      // 33,000	—	35,000	 	0.25
-      { agi: 33001, decimalAmount: 0.25 },
-      { agi: 34000, decimalAmount: 0.25 },
-      { agi: 35000, decimalAmount: 0.25 },
-      // 35,000	—	37,000	 	0.24
-      { agi: 35001, decimalAmount: 0.24 },
-      { agi: 36000, decimalAmount: 0.24 },
-      { agi: 37000, decimalAmount: 0.24 },
-      // 37,000	—	39,000	 	0.23
-      { agi: 37001, decimalAmount: 0.23 },
-      { agi: 38000, decimalAmount: 0.23 },
-      { agi: 39000, decimalAmount: 0.23 },
-      // 39,000	—	41,000	 	0.22
-      { agi: 39001, decimalAmount: 0.22 },
-      { agi: 40000, decimalAmount: 0.22 },
-      { agi: 41000, decimalAmount: 0.22 },
-      // 41,000	—	43,000	 	0.21
-      { agi: 41001, decimalAmount: 0.21 },
-      { agi: 42000, decimalAmount: 0.21 },
-      { agi: 43000, decimalAmount: 0.21 },
-      // 43,000	—	No limit	0.20
-      { agi: 43001, decimalAmount: 0.2 },
-      { agi: 44000, decimalAmount: 0.2 },
-      { agi: 45000, decimalAmount: 0.2 },
-      { agi: 50000, decimalAmount: 0.2 },
-      { agi: 100000, decimalAmount: 0.2 },
-      { agi: 150000, decimalAmount: 0.2 },
-    ])(`with an agi of $agi`, ({ agi, decimalAmount }) => {
+    // TY2026 (P.L. 119-21): IRC §21(a)(2); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule.
+    const isMfj = filingStatus === `marriedFilingJointly`;
+    describe.each(
+      isMfj
+        ? [
+            { agi: 1, decimalAmount: 0.5 },
+            { agi: 15000, decimalAmount: 0.5 },
+            { agi: 15001, decimalAmount: 0.49 },
+            { agi: 17000, decimalAmount: 0.49 },
+            { agi: 17001, decimalAmount: 0.48 },
+            { agi: 43000, decimalAmount: 0.36 },
+            { agi: 43001, decimalAmount: 0.35 },
+            { agi: 150000, decimalAmount: 0.35 },
+            { agi: 150001, decimalAmount: 0.34 },
+            { agi: 154000, decimalAmount: 0.34 },
+            { agi: 154001, decimalAmount: 0.33 },
+            { agi: 180000, decimalAmount: 0.27 },
+            { agi: 206000, decimalAmount: 0.21 },
+            { agi: 206001, decimalAmount: 0.2 },
+            { agi: 300000, decimalAmount: 0.2 },
+          ]
+        : [
+            { agi: 1, decimalAmount: 0.5 },
+            { agi: 15000, decimalAmount: 0.5 },
+            { agi: 15001, decimalAmount: 0.49 },
+            { agi: 30000, decimalAmount: 0.42 },
+            { agi: 43001, decimalAmount: 0.35 },
+            { agi: 75000, decimalAmount: 0.35 },
+            { agi: 75001, decimalAmount: 0.34 },
+            { agi: 77000, decimalAmount: 0.34 },
+            { agi: 77001, decimalAmount: 0.33 },
+            { agi: 90000, decimalAmount: 0.27 },
+            { agi: 103000, decimalAmount: 0.21 },
+            { agi: 103001, decimalAmount: 0.2 },
+            { agi: 150000, decimalAmount: 0.2 },
+          ]
+    )(`with an agi of $agi`, ({ agi, decimalAmount }) => {
       it(`has a /cdccCareExpensesDecimalAmount of ${decimalAmount}`, () => {
         const { factGraph } = setupFactGraph({
           ...baseData,
@@ -795,6 +760,14 @@ describe(`For CDCC, a filer`, () => {
           decimalAmount.toFixed(2)
         );
       });
+    });
+
+    // TY2026: IRC §129(a)(2)(A) as amended by P.L. 119-21: $7,500 ($3,750 MFS).
+    it(`has a /cdccMaximumExclusion of ${filingStatus === `marriedFilingSeparately` ? `3750.00` : `7500.00`}`, () => {
+      const { factGraph } = setupFactGraph({ ...baseData });
+      expect(factGraph.get(Path.concretePath(`/cdccMaximumExclusion`, null)).get.toString()).toBe(
+        filingStatus === `marriedFilingSeparately` ? `3750.00` : `7500.00`
+      );
     });
   });
 });
@@ -1623,9 +1596,10 @@ describe(`Special Earned Income Rule, taxpayer with a cdcc qualifying person`, (
         });
       });
       describe(`will see the knockout in neither benefits nor the credits section`, () => {
-        it(`when lower income >= 6k`, () => {
+        // TY2026: the benefits-side threshold is the §129(a)(2)(A) $7,500 exclusion (P.L. 119-21), was $5,000.
+        it(`when lower income >= 7.5k`, () => {
           const data = {
-            ...makeInitialMFJWithQpData(6000),
+            ...makeInitialMFJWithQpData(7500),
             ...makeDependentCareBenefitsFacts(),
             [`/filers/#${spouseId}/isStudent`]: createBooleanWrapper(true),
             [`/filers/#${spouseId}/cdccHasDependentCareExpenses`]: createBooleanWrapper(false),
@@ -1661,7 +1635,8 @@ describe(`Special Earned Income Rule, taxpayer with a cdcc qualifying person`, (
           expect(showInCreditsFact.get).toBe(true);
         });
 
-        it(`when they had benefits, two qualifying people, and had between 5-6k income`, () => {
+        // TY2026: $5,500 is now below the $7,500 §129 exclusion, so the benefits knockout shows and (by design) the credits one doesn't.
+        it(`when they had benefits, two qualifying people, and had between 5-6k income (TY2026: benefits knockout instead)`, () => {
           const data = {
             ...makeInitialMFJWithQpData(5500),
             // below income ensures filer with two qps (2ndaryfiler + dependent) and lower earned income between 5-6k
@@ -1684,8 +1659,8 @@ describe(`Special Earned Income Rule, taxpayer with a cdcc qualifying person`, (
           const showInCreditsFact = factGraph.get(
             Path.concretePath(`/showSpecialEarnedIncomeKnockoutFlowInCredits`, null)
           );
-          expect(showInBenefitsFact.get).toBe(false);
-          expect(showInCreditsFact.get).toBe(true);
+          expect(showInBenefitsFact.get).toBe(true);
+          expect(showInCreditsFact.get).toBe(false); // credits knockout only shows when the benefits one doesn't
         });
       });
       describe(`will not see the knockout in the credits subsection`, () => {
