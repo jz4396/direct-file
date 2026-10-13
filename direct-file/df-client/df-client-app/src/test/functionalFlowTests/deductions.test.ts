@@ -380,7 +380,7 @@ describe(`Flow tests`, () => {
     });
     expect(
       givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-    ).toRouteNextTo(`/flow/credits-and-deductions/deductions/taxable-income-summary`);
+    ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
   });
 
   describe(`knockout flows`, () => {
@@ -425,7 +425,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/taxable-income-summary`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
     });
 
     it(`MFJ - moves you to the knockout screen after taxable income summary if you exceed MFJ/QSS limit`, ({
@@ -467,7 +467,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/taxable-income-summary`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
     });
     it(`QSS - moves you to taxable income summary if you exceed MFJ/QSS limit and haven't seen entire flow`, ({
       task,
@@ -480,7 +480,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/taxable-income-summary`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
     });
 
     it(`Single - moves you to the knockout screen after taxable income summary if you exceed Single/HoH limit`, ({
@@ -519,7 +519,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/taxable-income-summary`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
     });
     it(`HoH - moves you to taxable income summary if you exceed Single/HoH limit and haven't seen entire flow`, ({
       task,
@@ -532,7 +532,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/taxable-income-summary`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
     });
   });
 
@@ -543,5 +543,36 @@ describe(`Flow tests`, () => {
     expect(
       givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/taxable-income-summary`, null, task)
     ).toRouteNextTo(`/data-view/flow/credits-and-deductions/deductions`);
+  });
+
+  describe(`#37 itemized deductions screens`, () => {
+    it(`goes from itemize-intro to taxable-income-summary when the filer takes the standard deduction`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        '/scheduleAWantsToItemize': createBooleanWrapper(false),
+      });
+      expect(
+        givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/itemize-intro`, null, task)
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/taxable-income-summary`);
+    });
+    it(`goes from itemize-intro to the unsupported-items screen when the filer wants to compare`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        '/scheduleAWantsToItemize': createBooleanWrapper(true),
+      });
+      expect(
+        givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/itemize-intro`, null, task)
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-unsupported`);
+    });
+    it(`knocks out when the filer has unsupported itemized deductions`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        '/scheduleAWantsToItemize': createBooleanWrapper(true),
+        '/scheduleAHasUnsupportedItems': createBooleanWrapper(true),
+      });
+      expect(
+        givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/itemize-unsupported`, null, task)
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-unsupported-knockout`);
+    });
   });
 });

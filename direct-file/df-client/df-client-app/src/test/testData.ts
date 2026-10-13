@@ -910,6 +910,7 @@ export const filerWithW2NoDeductionsNoCreditsBaseData = {
   [`/hasCdccCarryoverAmountFromPriorTaxYear`]: createBooleanWrapper(false),
   [`/flowKnockoutHouseholdEmployee`]: createBooleanWrapper(false),
   [`/soldCapitalAssets`]: createBooleanWrapper(false),
+  [`/scheduleAWantsToItemize`]: createBooleanWrapper(false),
   '/formW2s': { $type: `gov.irs.factgraph.persisters.CollectionWrapper`, item: { items: [uuid] } },
   [Path.concretePath(`/formW2s/*/filer`, uuid)]: createCollectionItemWrapper(uuid),
   '/socialSecurityReports': { $type: `gov.irs.factgraph.persisters.CollectionWrapper`, item: { items: [] } },
@@ -1899,6 +1900,7 @@ export function makeFilerData(
 
 export const baseFilerEdcData = {
   ...baseFilerData,
+  [`/scheduleAWantsToItemize`]: createBooleanWrapper(false),
   [`/hasCdccCarryoverAmountFromPriorTaxYear`]: createBooleanWrapper(false),
   [`/flowKnockoutHouseholdEmployee`]: createBooleanWrapper(false),
   [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
@@ -1950,6 +1952,7 @@ export const singleDisabledFilerEdcBase = {
   ...baseFilerEdcData,
   ...primaryFilerDisabilityEdcFacts,
   [`/soldCapitalAssets`]: createBooleanWrapper(false),
+  [`/scheduleAWantsToItemize`]: createBooleanWrapper(false),
   [`/filers/#${primaryFilerId}/dateOfBirth`]: getDobFromAgeDefinedByTyPlusOne(35),
 };
 
