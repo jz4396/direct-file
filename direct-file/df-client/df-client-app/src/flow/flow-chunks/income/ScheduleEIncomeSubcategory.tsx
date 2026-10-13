@@ -55,6 +55,17 @@ export const ScheduleEIncomeSubcategory = (
         <SaveAndOrContinueButton />
       </Screen>
       {knockout(`schedule-e-part-ii-knockout`, `/flowKnockoutScheduleEPartII`, `schedule-e-part-ii`)}
+      <Screen route='schedule-e-substantial-services' condition='/hasScheduleEIncome'>
+        <Heading i18nKey='/heading/income/schedule-e/substantial-services' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/substantial-services' />
+        <Boolean path='/scheduleEProvidesSubstantialServices' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      {knockout(
+        `schedule-e-substantial-services-knockout`,
+        `/flowKnockoutScheduleESubstantialServices`,
+        `schedule-e-substantial-services`
+      )}
       <Screen route='schedule-e-personal-use' condition='/hasScheduleEIncome'>
         <Heading i18nKey='/heading/income/schedule-e/personal-use' />
         <InfoDisplay i18nKey='/info/income/schedule-e/personal-use' />
