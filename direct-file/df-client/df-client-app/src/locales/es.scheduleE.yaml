@@ -12,6 +12,8 @@ headings:
   /heading/income/schedule-e/depreciation: ¿Va a reclamar depreciación, agotamiento o gastos de auto o camión?
   /heading/income/schedule-e/amounts: Anote los totales de alquiler y regalías
   /heading/income/schedule-e/any-loss: ¿Alguna propiedad tuvo más gastos que ingresos?
+  /heading/income/schedule-e/substantial-services: ¿Prestó servicios considerables a sus inquilinos, como limpieza regular, cambio de ropa de cama o servicio de limpieza?
+  /heading/knockout/schedule-e-substantial-services: Esta herramienta todavía no acepta alquileres en los que usted presta servicios considerables
   /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta ingresos del Anexo K-1
   /heading/knockout/schedule-e-personal-use: Esta herramienta todavía no acepta alquileres que también usó personalmente
   /heading/knockout/schedule-e-depreciation: Esta herramienta todavía no acepta depreciación ni gastos de vehículo
@@ -37,6 +39,14 @@ info:
       públicos. No incluya la depreciación.
   /info/income/schedule-e/any-loss:
     body: Conteste que sí si los gastos fueron mayores que los ingresos en alguna propiedad, aunque su total sea una ganancia.
+  /info/income/schedule-e/substantial-services:
+    body: >-
+      No cuente la calefacción y la luz, la limpieza de áreas comunes, la recolección de basura ni servicios similares. Los alquileres de corto plazo con limpieza y cambio de ropa de cama entre huéspedes generalmente cuentan.
+  /info/knockout/schedule-e-substantial-services:
+    alertText:
+      body:
+        - p: >-
+            Cuando presta servicios como limpieza regular, cambio de ropa de cama o servicio de limpieza, el alquiler va en el Anexo C y puede estar sujeto al impuesto sobre el trabajo por cuenta propia. Esta herramienta todavía no lo acepta. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-part-ii:
     alertText:
       body:
@@ -79,6 +89,10 @@ fields:
     boolean:
       "yes": Sí, recibí ingresos del Anexo K-1
       "no": "No"
+  /scheduleEProvidesSubstantialServices:
+    boolean:
+      "yes": Sí, presté servicios considerables
+      "no": No, no presté servicios como estos
   /scheduleEHasPersonalUse:
     boolean:
       "yes": Sí, hubo uso personal
@@ -113,3 +127,4 @@ dataviews:
     /scheduleEWritableRoyalties: Total de regalías recibidas
     /scheduleEWritableExpenses: Total de gastos (sin incluir la depreciación)
     /scheduleEAnyPropertyLoss: ¿Alguna propiedad tuvo pérdida?
+    /scheduleEProvidesSubstantialServices: ¿Prestó servicios considerables, como limpieza, ropa de cama o servicio de limpieza?
