@@ -126,6 +126,12 @@
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCAdditionalMedicare" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleESubstantialServices" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEEitc" />
         </Any>
       </Derived>
       <Placeholder>
@@ -703,6 +709,7 @@
             <Dependency module="estimatedPayments" path="/estimatedTaxesIsComplete" />
             <Dependency module="cdcc" path="/cdccSectionIsComplete" />
             <Dependency module="scheduleSE" path="/scheduleCSectionIsComplete" />
+            <Dependency module="scheduleE" path="/scheduleESectionIsComplete" />
             <IsComplete>
               <Dependency module="filingStatus" path="/isFilingStatusComplete" />
             </IsComplete>

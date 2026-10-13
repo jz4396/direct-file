@@ -1,0 +1,127 @@
+# Schedule E Part I locale strings (#38, TY2026 filed in 2027).
+# Feature overlay merged onto en.yaml by locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/schedule-e:
+    schedule-e-eligibility: Rental and royalty income
+    schedule-e-amounts: Rental and royalty amounts
+headings:
+  /heading/income/schedule-e: Rental and royalty income
+  /heading/income/schedule-e/intro: Did you have rental real estate or royalty income in {{/taxYear}}?
+  /heading/income/schedule-e/part-ii: Did you get income from a partnership, S corporation, estate, or trust (Schedule K-1)?
+  /heading/income/schedule-e/personal-use: Did you or your family use any rental property for personal purposes?
+  /heading/income/schedule-e/depreciation: Are you claiming depreciation, depletion, or car or truck expenses?
+  /heading/income/schedule-e/amounts: Enter your rental and royalty totals
+  /heading/income/schedule-e/any-loss: Did any single property have more expenses than income?
+  /heading/income/schedule-e/substantial-services: Did you provide substantial services to your tenants, such as regular cleaning, changing linens, or maid service?
+  /heading/knockout/schedule-e-substantial-services: This tool doesn’t yet support rentals where you provide substantial services
+  /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support Schedule K-1 income
+  /heading/knockout/schedule-e-personal-use: This tool doesn’t yet support rentals you also used personally
+  /heading/knockout/schedule-e-depreciation: This tool doesn’t yet support depreciation or vehicle expenses
+  /heading/knockout/schedule-e-loss: This tool doesn’t yet support rental or royalty losses
+  /heading/knockout/schedule-e-eitc: This tool can’t yet check the Earned Income Tax Credit with rental or royalty income
+info:
+  /info/income/schedule-e/intro:
+    body: >-
+      This includes rent from a house, apartment, room, or other real estate you rented out, and royalties from
+      oil, gas, or mineral properties, copyrights, or patents. It’s reported on Schedule E.
+  /info/income/schedule-e/personal-use:
+    body: >-
+      Answer yes if, on any day, you, a co-owner, or a family member used a rental home, apartment, condo, or boat
+      for personal purposes.
+  /info/income/schedule-e/depreciation:
+    body: >-
+      This includes depreciation of a building or equipment, depletion of a mineral property, and any car or truck
+      expenses (actual costs or the standard mileage rate). These need Form 4562.
+  /info/income/schedule-e/amounts:
+    body: >-
+      Add up all your properties. Enter total rents received, total royalties received, and total expenses such as
+      advertising, insurance, mortgage interest, repairs, supplies, taxes, and utilities. Don’t include depreciation.
+  /info/income/schedule-e/any-loss:
+    body: Answer yes if expenses were more than income for any one property, even if your total is a profit.
+  /info/income/schedule-e/substantial-services:
+    body: >-
+      Don’t count heat and light, cleaning of shared areas, trash collection, or similar services. Short-term rentals with cleaning and linen changes between guests usually count.
+  /info/knockout/schedule-e-substantial-services:
+    alertText:
+      body:
+        - p: >-
+            When you provide services like regular cleaning, changing linens, or maid service, the rental goes on Schedule C and may be subject to self-employment tax. This tool doesn’t support that yet. You’ll need another way to file this return.
+  /info/knockout/schedule-e-part-ii:
+    alertText:
+      body:
+        - p: >-
+            Income from a partnership, S corporation, estate, trust, or REMIC goes on Schedule E Parts II–IV, which
+            this tool doesn’t support yet. You’ll need another way to file this return.
+  /info/knockout/schedule-e-personal-use:
+    alertText:
+      body:
+        - p: >-
+            When you also use a rental for personal purposes, your expenses have to be split and may be limited. This
+            tool doesn’t do that yet. You’ll need another way to file this return.
+  /info/knockout/schedule-e-depreciation:
+    alertText:
+      body:
+        - p: >-
+            Depreciation, depletion, and car or truck expenses are figured on Form 4562, which this tool doesn’t
+            support yet. You’ll need another way to file this return.
+  /info/knockout/schedule-e-loss:
+    alertText:
+      body:
+        - p: >-
+            Rental and royalty losses can be limited by the passive activity, at-risk, and excess business loss rules
+            (Forms 8582, 6198, and 461), which this tool doesn’t support yet. You’ll need another way to file this
+            return.
+  /info/knockout/schedule-e-eitc:
+    alertText:
+      body:
+        - p: >-
+            Rental and royalty income counts toward the investment income limit for the Earned Income Tax Credit. This
+            tool doesn’t include it in that test yet. You’ll need another way to file this return.
+fields:
+  /hadScheduleEIncome:
+    boolean:
+      "yes": Yes, I had rental or royalty income
+      "no": No, I didn’t have rental or royalty income
+  /scheduleEHasPartIIIncome:
+    boolean:
+      "yes": Yes, I got Schedule K-1 income
+      "no": "No"
+  /scheduleEProvidesSubstantialServices:
+    boolean:
+      "yes": Yes, I provided substantial services
+      "no": No, I didn’t provide services like these
+  /scheduleEHasPersonalUse:
+    boolean:
+      "yes": Yes, there was personal use
+      "no": No, it was only rented out
+  /scheduleEHasDepreciation:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleEAnyPropertyLoss:
+    boolean:
+      "yes": Yes, at least one property had a loss
+      "no": No, every property had a profit or broke even
+  /scheduleEWritableRents:
+    name: Total rents received
+  /scheduleEWritableRoyalties:
+    name: Total royalties received
+  /scheduleEWritableExpenses:
+    name: Total expenses (not including depreciation)
+checklist:
+  /flow/income/schedule-e:
+    heading: Rental and royalty income (Schedule E)
+    dataItems:
+      scheduleEHasIncome: "Net income or (loss): {{/scheduleENetIncome}}"
+      scheduleENone: "None reported"
+dataviews:
+  /flow/income/schedule-e:
+    /hadScheduleEIncome: Did you have rental real estate or royalty income in {{/taxYear}}?
+    /scheduleEHasPartIIIncome: Did you get Schedule K-1 income?
+    /scheduleEHasPersonalUse: Was any rental used for personal purposes?
+    /scheduleEHasDepreciation: Are you claiming depreciation, depletion, or car or truck expenses?
+    /scheduleEWritableRents: Total rents received
+    /scheduleEWritableRoyalties: Total royalties received
+    /scheduleEWritableExpenses: Total expenses (not including depreciation)
+    /scheduleEAnyPropertyLoss: Did any single property have a loss?
+    /scheduleEProvidesSubstantialServices: Did you provide substantial services, such as cleaning, linens, or maid service?
