@@ -10,7 +10,15 @@ import {
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
 import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
-import { baseFilerData, filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, mfjFilerData, mfsFilerData, primaryFilerId, singleFilerData } from '../testData.js';
+import {
+  baseFilerData,
+  filerWithW2NoDeductionsNoCreditsBaseData,
+  makeW2Data,
+  mfjFilerData,
+  mfsFilerData,
+  primaryFilerId,
+  singleFilerData,
+} from '../testData.js';
 
 /**
  * Schedule D + Form 8949 — worked examples for TY2026.
@@ -67,7 +75,9 @@ describe(`Schedule D / Form 8949 — no capital activity regression`, () => {
 
 describe(`Schedule D / Form 8949 — unset collection (#22)`, () => {
   // Schedule D instr. (2025): with no Form 8949 transactions, lines 7, 15 and 16 are 0; IRC §1211(b) limit not reached.
-  it(`total tax is complete and matches the empty-collection return when /form8949Transactions is unset (screener answered no)`, ({ task }) => {
+  it(`total tax is complete and matches the empty-collection return when /form8949Transactions is unset (screener answered no)`, ({
+    task,
+  }) => {
     task.meta.testedFactPaths = [`/totalTax`, `/capitalGainsOrLosses`, `/scheduleDLine1b`];
     const base = {
       ...Object.fromEntries(
@@ -214,12 +224,7 @@ describe(`Schedule D / Form 8949 — mixed ST + LT`, () => {
 describe(`Schedule D / Form 8949 — §1211(b) capital loss limitation`, () => {
   it(`Net ST loss ($8,000) limited to ($3,000) for non-MFS — IRC §1211(b)`, ({ task }) => {
     // Schedule D instr. (2025) p.3: gains plus $3,000; line 21 p.14.
-    task.meta.testedFactPaths = [
-      `/scheduleDLine16`,
-      `/scheduleDLine21`,
-      `/capitalLossLimit`,
-      `/capitalGainsOrLosses`,
-    ];
+    task.meta.testedFactPaths = [`/scheduleDLine16`, `/scheduleDLine21`, `/capitalLossLimit`, `/capitalGainsOrLosses`];
     const { factGraph } = setupFactGraph({
       ...singleFilerData,
       '/form8949Transactions': createCollectionWrapper([tx1]),
@@ -369,6 +374,7 @@ describe(`Schedule D — prior-year capital loss carryover (lines 6 / 14)`, () =
       ...singleFilerData,
       '/form8949Transactions': createCollectionWrapper([]),
       '/soldCapitalAssets': createBooleanWrapper(false),
+      '/scheduleAWantsToItemize': createBooleanWrapper(false),
       '/writableLongTermCapitalLossCarryover': createDollarWrapper(`10000`),
     });
     expect(factGraph.get(`/requiresScheduleD` as ConcretePath).get).toBe(true);
@@ -380,7 +386,10 @@ describe(`Schedule D — prior-year capital loss carryover (lines 6 / 14)`, () =
 
 describe(`QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) — 0% / 15% / 20%`, () => {
   // Filer cannot be claimed so the full $16,100 standard deduction applies (Rev. Proc. 2025-32 §4.14 p.18).
-  const notClaimable = { [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false) };
+  const notClaimable = {
+    [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+    '/scheduleAWantsToItemize': createBooleanWrapper(false),
+  };
   const ltGain = (amount: number) => ({
     ...notClaimable,
     '/form8949Transactions': createCollectionWrapper([tx1]),
@@ -392,7 +401,13 @@ describe(`QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) — 0% / 15% / 20%`,
     // Taxable income $23,900 (= $40,000 − $16,100 std ded., Rev. Proc. 2025-32 §4.14 p.18).
     // Line 5 = $13,900; line 9 = $10,000 at 0% (below $49,450, Rev. Proc. 2025-32 §4.03 p.13).
     // Line 22 = Tax Table on $13,900 (midpoint $13,925): $1,240 + 12% × $1,525 = $1,423.
-    task.meta.testedFactPaths = [`/qdcgLine5`, `/qdcgLine9`, `/qdcgLine17`, `/qdcgLine20`, `/tentativeTaxFromTaxableIncome`];
+    task.meta.testedFactPaths = [
+      `/qdcgLine5`,
+      `/qdcgLine9`,
+      `/qdcgLine17`,
+      `/qdcgLine20`,
+      `/tentativeTaxFromTaxableIncome`,
+    ];
     const { factGraph } = setupFactGraph({ ...singleFilerData, ...makeW2Data(30000), ...ltGain(10000) });
     expect(get(factGraph, `/taxableIncome`)).toBe(`23900.00`);
     expect(get(factGraph, `/qdcgLine5`)).toBe(`13900.00`);
@@ -404,7 +419,13 @@ describe(`QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) — 0% / 15% / 20%`,
 
   it(`15% band: Single, wages $100,000 + LT gain $20,000 → 15% × $20,000 = $3,000`, ({ task }) => {
     // Taxable income $103,900; line 5 $83,900 ≥ $49,450 so line 9 = 0; line 17 = $20,000; line 18 = $3,000.
-    task.meta.testedFactPaths = [`/qdcgLine9`, `/qdcgLine17`, `/qdcgLine18`, `/qdcgLine21`, `/tentativeTaxFromTaxableIncome`];
+    task.meta.testedFactPaths = [
+      `/qdcgLine9`,
+      `/qdcgLine17`,
+      `/qdcgLine18`,
+      `/qdcgLine21`,
+      `/tentativeTaxFromTaxableIncome`,
+    ];
     const { factGraph } = setupFactGraph({ ...singleFilerData, ...makeW2Data(100000), ...ltGain(20000) });
     expect(get(factGraph, `/taxableIncome`)).toBe(`103900.00`);
     expect(get(factGraph, `/qdcgLine9`)).toBe(`0.00`);
@@ -437,6 +458,7 @@ describe(`QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) — 0% / 15% / 20%`,
       ...notClaimable,
       '/form8949Transactions': createCollectionWrapper([]),
       '/soldCapitalAssets': createBooleanWrapper(false),
+      '/scheduleAWantsToItemize': createBooleanWrapper(false),
     });
     expect(factGraph.get(`/usesQdcgTaxWorksheet` as ConcretePath).get).toBe(false);
     expect(get(factGraph, `/tentativeTaxFromTaxableIncome`)).toBe(get(factGraph, `/taxOnTaxableIncomeRegularRates`));
@@ -490,6 +512,7 @@ describe(`Schedule D — special capital gains knockouts (#21)`, () => {
     ...baseFilerData,
     ...makeW2Data(50000),
     '/soldCapitalAssets': createBooleanWrapper(false),
+    '/scheduleAWantsToItemize': createBooleanWrapper(false),
   });
   const cases = [
     [`/soldCollectibles`, `/flowKnockoutCollectibles`],
@@ -518,7 +541,13 @@ describe(`Schedule D — special capital gains knockouts (#21)`, () => {
     const { factGraph } = setupFactGraph({
       ...singleFilerData,
       '/form8949Transactions': createCollectionWrapper([tx1]),
-      ...tx(tx1, { description: `10 sh ABC`, proceeds: `5000`, costBasis: `3000`, box: `D`, holdingPeriod: `longTerm` }),
+      ...tx(tx1, {
+        description: `10 sh ABC`,
+        proceeds: `5000`,
+        costBasis: `3000`,
+        box: `D`,
+        holdingPeriod: `longTerm`,
+      }),
       '/form8949TransactionsIsDone': createBooleanWrapper(true),
     });
     expect(factGraph.get(`/scheduleDLine16` as ConcretePath).get.toString()).toBe(`2000.00`);

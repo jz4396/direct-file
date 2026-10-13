@@ -1,0 +1,79 @@
+# Schedule A MVP strings (#37). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    itemized-deductions: "Deducciones detalladas"
+headings:
+  /heading/credits-and-deductions/deductions/itemize-intro: "¿Quiere ver si detallar sus deducciones reduce su impuesto?"
+  /heading/credits-and-deductions/deductions/itemize-unsupported: "¿Le aplica alguna de estas situaciones?"
+  /heading/credits-and-deductions/deductions/itemize-amounts: "Anote sus gastos detallados de {{/taxYear}}"
+  /heading/credits-and-deductions/deductions/itemize-elect: "¿Quiere detallar aunque sea menos que su deducción estándar?"
+  /heading/knockout/schedule-a-unsupported: "Esta herramienta todavía no admite esas deducciones detalladas"
+  /heading/knockout/schedule-a-charitable-limit: "Esta herramienta todavía no admite donativos en efectivo de más del 60% de su ingreso bruto ajustado"
+  /heading/knockout/schedule-a-overall-limit: "Esta herramienta todavía no admite el límite de deducciones detalladas para ingresos altos"
+info:
+  /info/credits-and-deductions/deductions/itemize-intro:
+    body: "Si sus gastos médicos, impuestos estatales y locales, intereses hipotecarios y donativos en efectivo a organizaciones benéficas suman más que su deducción estándar, detallar en el Anexo A puede reducir su impuesto. Compararemos ambas y usaremos la mayor."
+  /info/credits-and-deductions/deductions/itemize-unsupported:
+    body: "Deuda hipotecaria de más de $750,000 ($375,000 si es casado que presenta por separado) o intereses hipotecarios que no aparecen en el Formulario 1098; intereses de inversión; donativos que no sean en efectivo o cheque; donativos caritativos trasladados de años anteriores; pérdidas por hechos fortuitos o robo; otros impuestos u otras deducciones detalladas, como pérdidas de juego; o ingresos del extranjero que excluyó de impuestos."
+  /info/credits-and-deductions/deductions/itemize-amounts:
+    body: "Anote 0 si algo no le aplica. Los impuestos estatales y locales tienen un límite de $40,400 ($20,200 si es casado que presenta por separado), menor con ingresos más altos. Los gastos médicos cuentan solo por encima del 7.5% de su ingreso bruto ajustado, y los donativos en efectivo solo por encima del 0.5%."
+  /info/credits-and-deductions/deductions/itemize-elect:
+    body: "La mayoría debe contestar que no. Algunas personas detallan de todos modos, por ejemplo, si su declaración estatal lo exige o si su cónyuge que presenta por separado detalla."
+  /info/knockout/schedule-a-unsupported:
+    alertText:
+      body:
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/schedule-a-charitable-limit:
+    alertText:
+      body:
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/schedule-a-overall-limit:
+    alertText:
+      body:
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /scheduleAWantsToItemize:
+    boolean:
+      "yes": "Sí, comparar si detallo"
+      "no": "No, tomar la deducción estándar"
+  /scheduleAHasUnsupportedItems:
+    boolean:
+      "yes": "Sí, me aplica una o más"
+      "no": "No, ninguna me aplica"
+  /scheduleAWritableElectsToItemize:
+    boolean:
+      "yes": "Sí, detallar de todos modos"
+      "no": "No, usar la que sea mayor"
+  /scheduleAWritableMedical:
+    name: "Gastos médicos y dentales"
+  /scheduleAWritableStateLocalIncomeOrSalesTax:
+    name: "Impuestos estatales y locales sobre el ingreso o impuestos generales sobre las ventas"
+  /scheduleAWritableRealEstateTaxes:
+    name: "Impuestos estatales y locales sobre bienes inmuebles"
+  /scheduleAWritablePersonalPropertyTaxes:
+    name: "Impuestos estatales y locales sobre bienes muebles"
+  /scheduleAWritableMortgageInterest:
+    name: "Intereses hipotecarios y puntos (Formulario 1098)"
+  /scheduleAWritableCashGifts:
+    name: "Donativos a organizaciones benéficas en efectivo o cheque"
+checklist:
+  /flow/credits-and-deductions/deductions:
+    dataItems:
+      itemizedDeductions: "Deducciones detalladas: {{/scheduleALine18}}"
+dataviews:
+  /flow/credits-and-deductions/deductions:
+    /scheduleAWantsToItemize: "¿Quiere ver si detallar sus deducciones reduce su impuesto?"
+    /scheduleAHasUnsupportedItems: "¿Le aplica alguna de estas situaciones?"
+    /scheduleAWritableElectsToItemize: "¿Quiere detallar aunque sea menos que su deducción estándar?"
+    /scheduleAWritableMedical: "Gastos médicos y dentales"
+    /scheduleAWritableStateLocalIncomeOrSalesTax: "Impuestos estatales y locales sobre el ingreso o impuestos generales sobre las ventas"
+    /scheduleAWritableRealEstateTaxes: "Impuestos estatales y locales sobre bienes inmuebles"
+    /scheduleAWritablePersonalPropertyTaxes: "Impuestos estatales y locales sobre bienes muebles"
+    /scheduleAWritableMortgageInterest: "Intereses hipotecarios y puntos (Formulario 1098)"
+    /scheduleAWritableCashGifts: "Donativos a organizaciones benéficas en efectivo o cheque"

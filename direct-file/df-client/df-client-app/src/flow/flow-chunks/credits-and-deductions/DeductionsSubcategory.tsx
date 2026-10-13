@@ -28,6 +28,10 @@ export const DeductionsSubcategory = (
         conditions: [`/wantsStandardDeduction`],
       },
       {
+        itemKey: `itemizedDeductions`,
+        conditions: [`/itemizesDeductions`],
+      },
+      {
         itemKey: `adjustment`,
         conditions: [`/hasAdjustments`],
       },
@@ -493,6 +497,55 @@ export const DeductionsSubcategory = (
           ]}
         />
         <SaveAndOrContinueButton />
+      </Screen>
+    </SubSubcategory>
+    <SubSubcategory route='itemized-deductions'>
+      <Screen route='itemize-intro'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/itemize-intro' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/itemize-intro' />
+        <Boolean path='/scheduleAWantsToItemize' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='itemize-unsupported' condition='/scheduleAWantsToItemize'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/itemize-unsupported' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/itemize-unsupported' />
+        <Boolean path='/scheduleAHasUnsupportedItems' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='itemize-unsupported-knockout' condition='/flowKnockoutScheduleAUnsupported' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/schedule-a-unsupported' />
+        <DFAlert i18nKey='/info/knockout/schedule-a-unsupported' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='itemize-amounts' condition='/scheduleAWantsToItemize'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/itemize-amounts' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/itemize-amounts' />
+        <Dollar path='/scheduleAWritableMedical' />
+        <Dollar path='/scheduleAWritableStateLocalIncomeOrSalesTax' />
+        <Dollar path='/scheduleAWritableRealEstateTaxes' />
+        <Dollar path='/scheduleAWritablePersonalPropertyTaxes' />
+        <Dollar path='/scheduleAWritableMortgageInterest' />
+        <Dollar path='/scheduleAWritableCashGifts' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='itemize-elect' condition='/scheduleAWantsToItemize'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/itemize-elect' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/itemize-elect' />
+        <Boolean path='/scheduleAWritableElectsToItemize' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='itemize-charitable-knockout' condition='/flowKnockoutScheduleACharitableLimit' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/schedule-a-charitable-limit' />
+        <DFAlert i18nKey='/info/knockout/schedule-a-charitable-limit' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='itemize-overall-limit-knockout' condition='/flowKnockoutScheduleAOverallLimit' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/schedule-a-overall-limit' />
+        <DFAlert i18nKey='/info/knockout/schedule-a-overall-limit' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
     <SubSubcategory route='taxable-income' editable={false}>

@@ -1,0 +1,497 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/scheduleAWantsToItemize">
+      <Export downstreamFacts="true" />
+      <Name>Wants to check itemized deductions</Name>
+      <Description>#37 screener: does the filer want to enter Schedule A expenses (medical, state/local taxes, mortgage interest, cash gifts) to compare itemizing with the standard deduction (IRC §63(e), https://www.law.cornell.edu/uscode/text/26/63)? Must be answered; no silent default.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleAWritableMedical">
+      <Name>Schedule A medical and dental expenses (input)</Name>
+      <Description>#37: medical and dental expenses, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleAMedical">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A medical and dental expenses</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1; $0 when the filer chose not to itemize.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleAWantsToItemize" />
+            </When>
+            <Then>
+              <Dependency path="/scheduleAWritableMedical" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleAWritableStateLocalIncomeOrSalesTax">
+      <Name>Schedule A state and local income taxes or general sales taxes (input)</Name>
+      <Description>#37: state and local income taxes or general sales taxes, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleAStateLocalIncomeOrSalesTax">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A state and local income taxes or general sales taxes</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a; $0 when the filer chose not to itemize.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleAWantsToItemize" />
+            </When>
+            <Then>
+              <Dependency path="/scheduleAWritableStateLocalIncomeOrSalesTax" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleAWritableRealEstateTaxes">
+      <Name>Schedule A state and local real estate taxes (input)</Name>
+      <Description>#37: state and local real estate taxes, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleARealEstateTaxes">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A state and local real estate taxes</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b; $0 when the filer chose not to itemize.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleAWantsToItemize" />
+            </When>
+            <Then>
+              <Dependency path="/scheduleAWritableRealEstateTaxes" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleAWritablePersonalPropertyTaxes">
+      <Name>Schedule A state and local personal property taxes (input)</Name>
+      <Description>#37: state and local personal property taxes, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleAPersonalPropertyTaxes">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A state and local personal property taxes</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c; $0 when the filer chose not to itemize.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleAWantsToItemize" />
+            </When>
+            <Then>
+              <Dependency path="/scheduleAWritablePersonalPropertyTaxes" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleAWritableMortgageInterest">
+      <Name>Schedule A home mortgage interest and points reported on Form 1098 (input)</Name>
+      <Description>#37: home mortgage interest and points reported on Form 1098, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleAMortgageInterest">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A home mortgage interest and points reported on Form 1098</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a; $0 when the filer chose not to itemize.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleAWantsToItemize" />
+            </When>
+            <Then>
+              <Dependency path="/scheduleAWritableMortgageInterest" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleAWritableCashGifts">
+      <Name>Schedule A gifts to charity by cash or check (input)</Name>
+      <Description>#37: gifts to charity by cash or check, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleACashGifts">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A gifts to charity by cash or check</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11; $0 when the filer chose not to itemize.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleAWantsToItemize" />
+            </When>
+            <Then>
+              <Dependency path="/scheduleAWritableCashGifts" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleAWritableElectsToItemize">
+      <Name>Elects to itemize</Name>
+      <Description>#37: Schedule A line 19: "If you elect to itemize deductions even though they are less than your standard deduction, check this box".</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleAHasUnsupportedItems">
+      <Export downstreamFacts="true" />
+      <Name>Has unsupported itemized deductions</Name>
+      <Description>#37 MVP scope screen: mortgage debt over $750,000 ($375,000 MFS) or interest not on Form 1098 (IRC §163(h)(3)(F), https://www.law.cornell.edu/uscode/text/26/163), investment interest (line 9), noncash gifts (line 12; Form 8283 over $500), carryovers (line 14), casualty and theft losses (line 16), other itemized deductions (line 17), other taxes (line 6), or foreign income excluded under §911/931/933 (MAGI for §164(b)(7)).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleALine4">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A line 4 medical deduction</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf p. 1, line 3 "Multiply line 2 by 7.5% (0.075)"; line 4 = line 1 minus line 3, not below zero. IRC §213(a) (https://www.law.cornell.edu/uscode/text/26/213): "to the extent that such expenses exceed 7.5 percent of adjusted gross income."</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/scheduleAMedical" />
+            </Minuend>
+            <Subtrahends>
+              <Round>
+                <Multiply>
+                  <Rational>75/1000</Rational>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Multiply>
+              </Round>
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleALine5d">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A line 5d</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5d "Add lines 5a through 5c".</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/scheduleAStateLocalIncomeOrSalesTax" />
+          <Dependency path="/scheduleARealEstateTaxes" />
+          <Dependency path="/scheduleAPersonalPropertyTaxes" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleASaltThreshold">
+      <Name>SALT MAGI threshold</Name>
+      <Description>#37: IRC §164(b)(7)(B)(ii)(II) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/164): "in the case of any taxable year beginning in calendar year 2026, $505,000"; (B)(i): "half the threshold amount in the case of a married individual filing a separate return".</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+            </When>
+            <Then>
+              <Dollar>252500</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>505000</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleASaltLimitBeforeMfsHalving">
+      <Name>SALT applicable limitation amount after phasedown</Name>
+      <Description>#37: IRC §164(b)(7)(A)(ii): "$40,400" for 2026; (B)(i): "reduced by 30 percent of the excess (if any) of the taxpayer's modified adjusted gross income over the threshold amount"; (B)(iii): "shall not result in the applicable limitation amount being less than $10,000". MAGI = AGI here (no §911/931/933 exclusions; those knock out).</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>10000</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dollar>40400</Dollar>
+            </Minuend>
+            <Subtrahends>
+              <Multiply>
+                <Rational>30/100</Rational>
+                <GreaterOf>
+                  <Dollar>0</Dollar>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency module="taxCalculations" path="/agi" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleASaltThreshold" />
+                    </Subtrahends>
+                  </Subtract>
+                </GreaterOf>
+              </Multiply>
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleASaltLimit">
+      <Export downstreamFacts="true" />
+      <Name>SALT limit</Name>
+      <Description>#37: IRC §164(b)(6)(B): "shall not exceed the applicable limitation amount (half the applicable limitation amount in the case of a married individual filing a separate return)". Gives $40,400 / $20,200 MFS (Schedule A 2026 draft line 5e) and a $10,000 / $5,000 MFS floor.</Description>
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+              </When>
+              <Then>
+                <Divide>
+                  <Dividend>
+                    <Dependency path="/scheduleASaltLimitBeforeMfsHalving" />
+                  </Dividend>
+                  <Divisors>
+                    <Int>2</Int>
+                  </Divisors>
+                </Divide>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dependency path="/scheduleASaltLimitBeforeMfsHalving" />
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleALine5e">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A line 5e SALT deduction</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf p. 1, line 5e: "Enter the smaller of line 5d or $40,400 ($20,200 if married filing separately). If Form 1040 or 1040-SR, line 11b, is more than $505,000 ($252,500 if married filing separately) ... see instructions".</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/scheduleALine5d" />
+          <Dependency path="/scheduleASaltLimit" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleALine13">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A line 13 cash gifts after 0.5% floor</Name>
+      <Description>#37: IRC §170(b)(1)(I) as added by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/170): "shall be allowed only to the extent that the aggregate of such contributions exceeds 0.5 percent of the taxpayer's contribution base". Contribution base = AGI (no NOL carryback in scope). The 60% cash limit (§170(b)(1)(G)) is a knockout.</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/scheduleACashGifts" />
+            </Minuend>
+            <Subtrahends>
+              <Round>
+                <Multiply>
+                  <Rational>5/1000</Rational>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Multiply>
+              </Round>
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleALine18">
+      <Export downstreamFacts="true" />
+      <Name>Schedule A line 18 total itemized deductions</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 18 (No branch): "Add the amounts in far-right column for lines 4 through 17z." MVP lines: 4, 5e, 8a (line 10), 13 (line 15).</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/scheduleALine4" />
+            <Dependency path="/scheduleALine5e" />
+            <Dependency path="/scheduleAMortgageInterest" />
+            <Dependency path="/scheduleALine13" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/itemizesDeductions">
+      <Export downstreamFacts="true" />
+      <Name>Itemizes deductions</Name>
+      <Description>#37: itemize when Schedule A line 18 is more than the standard deduction, or when the filer elects to (line 19). IRC §63(e) (https://www.law.cornell.edu/uscode/text/26/63). Standard deduction: Rev. Proc. 2025-32 p. 18.</Description>
+      <Derived>
+        <All>
+          <Dependency path="/scheduleAWantsToItemize" />
+          <Any>
+            <Dependency path="/scheduleAWritableElectsToItemize" />
+            <GreaterThan>
+              <Left>
+                <Dependency path="/scheduleALine18" />
+              </Left>
+              <Right>
+                <Dependency module="standardDeduction" path="/standardDeduction" />
+              </Right>
+            </GreaterThan>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleAUnsupported">
+      <Export downstreamFacts="true" />
+      <Name>Knockout: unsupported itemized deductions</Name>
+      <Description>#37: yes to /scheduleAHasUnsupportedItems.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleAWantsToItemize" />
+          <All>
+            <IsComplete>
+              <Dependency path="/scheduleAHasUnsupportedItems" />
+            </IsComplete>
+            <Dependency path="/scheduleAHasUnsupportedItems" />
+          </All>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleACharitableLimit">
+      <Export downstreamFacts="true" />
+      <Name>Knockout: cash gifts over 60% of AGI</Name>
+      <Description>#37: IRC §170(b)(1)(G)(i): cash gifts are allowed only up to "60 percent of the taxpayer's contribution base"; the limitation worksheet and carryover are out of MVP scope.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/itemizesDeductions" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="/scheduleACashGifts" />
+            </Left>
+            <Right>
+              <Multiply>
+                <Rational>60/100</Rational>
+                <Dependency module="taxCalculations" path="/agi" />
+              </Multiply>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleAOverallLimit">
+      <Export downstreamFacts="true" />
+      <Name>Knockout: §68 overall limitation</Name>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 18: "Is the amount on Form 1040 or 1040-SR, line 11b, minus the amounts on lines 13a and 13b of that form, more than $384,350? ... Yes. Your deductions may be limited." IRC §68(a) as amended (https://www.law.cornell.edu/uscode/text/26/68), 2/37 reduction. Not in MVP scope.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/itemizesDeductions" />
+          <GreaterThan>
+            <Left>
+              <Dependency module="taxCalculations" path="/agi" />
+            </Left>
+            <Right>
+              <Dollar>384350</Dollar>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

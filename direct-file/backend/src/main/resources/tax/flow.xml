@@ -117,6 +117,9 @@
           <Dependency module="cdcc" path="/knockoutCdccWorksheetA" />
           <Dependency module="cdcc" path="/flowKnockoutHouseholdEmployee" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
+          <Dependency module="scheduleA" path="/flowKnockoutScheduleAUnsupported" />
+          <Dependency module="scheduleA" path="/flowKnockoutScheduleACharitableLimit" />
+          <Dependency module="scheduleA" path="/flowKnockoutScheduleAOverallLimit" />
           <Dependency module="scheduleD" path="/flowKnockoutCapitalAssets" />
           <Dependency module="scheduleD" path="/flowKnockoutCollectibles" />
           <Dependency module="scheduleD" path="/flowKnockoutUnrecaptured1250Gain" />
@@ -476,6 +479,10 @@
       <Derived>
         <All>
           <Dependency path="/flowHasSeenDeductions" />
+          <!-- #37: itemize-vs-standard question answered (and amounts entered when itemizing) -->
+          <IsComplete>
+            <Dependency module="scheduleA" path="/itemizesDeductions" />
+          </IsComplete>
           <Any>
             <All>
               <!-- If they are not MFJ dependents and have access to deductions,

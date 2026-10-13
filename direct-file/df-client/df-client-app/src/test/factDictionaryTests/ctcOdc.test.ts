@@ -47,6 +47,7 @@ describe(`CTC and ODC amounts`, () => {
       name: `HOH filer with 3 QC (2 under 17 and one older) and limited taxes because of wages`,
       filer: {
         ...filerWithChild,
+        '/scheduleAWantsToItemize': createBooleanWrapper(false),
         ...makeW2Data(56800),
         '/familyAndHousehold': {
           $type: `gov.irs.factgraph.persisters.CollectionWrapper`,
