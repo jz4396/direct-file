@@ -1,9 +1,13 @@
 # Form 8949, PDFBox template for TY2026 print/local (Phase A, #19).
 # Source PDF: https://www.irs.gov/pub/irs-pdf/f8949.pdf, the latest published revision (2025; OMB 1545-0074).
 # AcroForm field names were verified with pypdf against the committed PDF.
-# One Form 8949 per transaction (includeForEach), so each Part has exactly one box checked: Form 8949 instr. (2025)
-# p. 3, "Check only one box on each Part I." / p. 4, "Check only one box on each Part II."
-# Short-term rows print in Part I row 1; long-term rows print in Part II row 1.
+# #40: Irs8949PdfForm packs transactions with the same box onto one form, up to 11 rows (Row1..Row11) per Part, and
+# starts a new form when the box changes or the Part is full, so each Part has exactly one box checked:
+# Form 8949 instr. (2025) p. 3, "Check only one box on each Part I." / p. 4, "Check only one box on each Part II."
+# Only Row1 is mapped here; rows 2..11 reuse the Row1 expressions with field numbers + 8 per row (f1_11..f1_90).
+# Short-term rows print in Part I; long-term rows print in Part II.
+# Line 2 totals (f1_91 d, f1_92 e, f1_94 g, f1_95 h; f1_93 is column (f), left blank) are per-form pseudo facts:
+# Form 8949 (2025) line 2, "Totals. Add the amounts in columns (d), (e), (g), and (h) (subtract negative amounts)."
 # The print* facts have no value for the other part, so those cells stay blank.
 # Columns: (a) f_03, (b) f_04, (c) f_05, (d) f_06, (e) f_07, (f) f_08, (g) f_09, (h) f_10.
 # Checkboxes use printBox* (true only for the row's own box), not isBox* (which also covers G–L for Schedule D totals).
@@ -30,6 +34,10 @@ form:
           f1_08[0]: /form8949Transactions/*/printPartIAdjustmentCode
           f1_09[0]: /form8949Transactions/*/printPartIAdjustment
           f1_10[0]: /form8949Transactions/*/printPartIGainOrLoss
+      f1_91[0]: /~form8949Line2PartIProceeds
+      f1_92[0]: /~form8949Line2PartICostBasis
+      f1_94[0]: /~form8949Line2PartIAdjustment
+      f1_95[0]: /~form8949Line2PartIGainOrLoss
     Page2[0]:
       f2_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
       f2_02[0]: /primaryFiler/tin
@@ -49,3 +57,7 @@ form:
           f2_08[0]: /form8949Transactions/*/printPartIIAdjustmentCode
           f2_09[0]: /form8949Transactions/*/printPartIIAdjustment
           f2_10[0]: /form8949Transactions/*/printPartIIGainOrLoss
+      f2_91[0]: /~form8949Line2PartIIProceeds
+      f2_92[0]: /~form8949Line2PartIICostBasis
+      f2_94[0]: /~form8949Line2PartIIAdjustment
+      f2_95[0]: /~form8949Line2PartIIGainOrLoss

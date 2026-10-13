@@ -46,7 +46,7 @@ abstract class PdfTemplate {
             new PdfForm("IRS1040SD"),
 
             // ASN 12A
-            new PdfForm("IRS8949"),
+            new Irs8949PdfForm("IRS8949"),
 
             // ASN 16
             new PdfForm("SCHEDULE_R"),
