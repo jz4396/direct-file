@@ -1,0 +1,115 @@
+# Textos del Anexo E, Parte I (#38, año tributario 2026, se presenta en 2027).
+# Superposición combinada con es.yaml en locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/schedule-e:
+    schedule-e-eligibility: Ingresos de alquiler y regalías
+    schedule-e-amounts: Cantidades de alquiler y regalías
+headings:
+  /heading/income/schedule-e: Ingresos de alquiler y regalías
+  /heading/income/schedule-e/intro: ¿Tuvo ingresos de alquiler de bienes raíces o de regalías en {{/taxYear}}?
+  /heading/income/schedule-e/part-ii: ¿Recibió ingresos de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario o fideicomiso (Anexo K-1)?
+  /heading/income/schedule-e/personal-use: ¿Usted o su familia usaron alguna propiedad de alquiler para fines personales?
+  /heading/income/schedule-e/depreciation: ¿Va a reclamar depreciación, agotamiento o gastos de auto o camión?
+  /heading/income/schedule-e/amounts: Anote los totales de alquiler y regalías
+  /heading/income/schedule-e/any-loss: ¿Alguna propiedad tuvo más gastos que ingresos?
+  /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta ingresos del Anexo K-1
+  /heading/knockout/schedule-e-personal-use: Esta herramienta todavía no acepta alquileres que también usó personalmente
+  /heading/knockout/schedule-e-depreciation: Esta herramienta todavía no acepta depreciación ni gastos de vehículo
+  /heading/knockout/schedule-e-loss: Esta herramienta todavía no acepta pérdidas de alquiler o regalías
+  /heading/knockout/schedule-e-eitc: Esta herramienta todavía no puede verificar el Crédito por Ingreso del Trabajo con ingresos de alquiler o regalías
+info:
+  /info/income/schedule-e/intro:
+    body: >-
+      Esto incluye el alquiler de una casa, apartamento, habitación u otro bien raíz que alquiló, y las regalías de
+      propiedades de petróleo, gas o minerales, derechos de autor o patentes. Se declara en el Anexo E.
+  /info/income/schedule-e/personal-use:
+    body: >-
+      Conteste que sí si, cualquier día, usted, un copropietario o un familiar usó una casa, apartamento, condominio o
+      barco de alquiler para fines personales.
+  /info/income/schedule-e/depreciation:
+    body: >-
+      Esto incluye la depreciación de un edificio o equipo, el agotamiento de una propiedad mineral y cualquier gasto
+      de auto o camión (costos reales o la tarifa estándar por milla). Estos requieren el Formulario 4562.
+  /info/income/schedule-e/amounts:
+    body: >-
+      Sume todas sus propiedades. Anote el total de alquileres recibidos, el total de regalías recibidas y el total de
+      gastos como publicidad, seguro, intereses hipotecarios, reparaciones, suministros, impuestos y servicios
+      públicos. No incluya la depreciación.
+  /info/income/schedule-e/any-loss:
+    body: Conteste que sí si los gastos fueron mayores que los ingresos en alguna propiedad, aunque su total sea una ganancia.
+  /info/knockout/schedule-e-part-ii:
+    alertText:
+      body:
+        - p: >-
+            Los ingresos de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario, fideicomiso o REMIC
+            van en las Partes II a IV del Anexo E, que esta herramienta todavía no acepta. Tendrá que usar otra manera
+            de presentar esta declaración.
+  /info/knockout/schedule-e-personal-use:
+    alertText:
+      body:
+        - p: >-
+            Cuando también usa un alquiler para fines personales, sus gastos se tienen que dividir y pueden estar
+            limitados. Esta herramienta todavía no lo hace. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-e-depreciation:
+    alertText:
+      body:
+        - p: >-
+            La depreciación, el agotamiento y los gastos de auto o camión se calculan en el Formulario 4562, que esta
+            herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-e-loss:
+    alertText:
+      body:
+        - p: >-
+            Las pérdidas de alquiler y regalías pueden estar limitadas por las reglas de actividades pasivas, de riesgo y
+            de pérdidas comerciales excesivas (Formularios 8582, 6198 y 461), que esta herramienta todavía no acepta.
+            Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-e-eitc:
+    alertText:
+      body:
+        - p: >-
+            Los ingresos de alquiler y regalías cuentan para el límite de ingresos de inversiones del Crédito por
+            Ingreso del Trabajo. Esta herramienta todavía no los incluye en esa prueba. Tendrá que usar otra manera de
+            presentar esta declaración.
+fields:
+  /hadScheduleEIncome:
+    boolean:
+      "yes": Sí, tuve ingresos de alquiler o regalías
+      "no": No, no tuve ingresos de alquiler ni regalías
+  /scheduleEHasPartIIIncome:
+    boolean:
+      "yes": Sí, recibí ingresos del Anexo K-1
+      "no": "No"
+  /scheduleEHasPersonalUse:
+    boolean:
+      "yes": Sí, hubo uso personal
+      "no": No, solo se alquiló
+  /scheduleEHasDepreciation:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleEAnyPropertyLoss:
+    boolean:
+      "yes": Sí, al menos una propiedad tuvo pérdida
+      "no": No, todas las propiedades tuvieron ganancia o quedaron a la par
+  /scheduleEWritableRents:
+    name: Total de alquileres recibidos
+  /scheduleEWritableRoyalties:
+    name: Total de regalías recibidas
+  /scheduleEWritableExpenses:
+    name: Total de gastos (sin incluir la depreciación)
+checklist:
+  /flow/income/schedule-e:
+    heading: Ingresos de alquiler y regalías (Anexo E)
+    dataItems:
+      scheduleEHasIncome: "Ingreso neto o (pérdida): {{/scheduleENetIncome}}"
+      scheduleENone: "No se declaró ninguno"
+dataviews:
+  /flow/income/schedule-e:
+    /hadScheduleEIncome: ¿Tuvo ingresos de alquiler de bienes raíces o de regalías en {{/taxYear}}?
+    /scheduleEHasPartIIIncome: ¿Recibió ingresos del Anexo K-1?
+    /scheduleEHasPersonalUse: ¿Se usó algún alquiler para fines personales?
+    /scheduleEHasDepreciation: ¿Va a reclamar depreciación, agotamiento o gastos de auto o camión?
+    /scheduleEWritableRents: Total de alquileres recibidos
+    /scheduleEWritableRoyalties: Total de regalías recibidas
+    /scheduleEWritableExpenses: Total de gastos (sin incluir la depreciación)
+    /scheduleEAnyPropertyLoss: ¿Alguna propiedad tuvo pérdida?
