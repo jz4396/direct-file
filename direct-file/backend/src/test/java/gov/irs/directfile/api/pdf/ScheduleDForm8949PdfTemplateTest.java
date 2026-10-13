@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.yaml.snakeyaml.Yaml;
@@ -47,6 +48,34 @@ class ScheduleDForm8949PdfTemplateTest {
                 } else {
                     PdfFieldHandler.setFieldInPDF(field, "1234");
                     assertEquals("1234", field.getValueAsString(), name);
+                }
+            }
+        }
+    }
+
+    /**
+     * #39: all six checkboxes per Part are mapped, each to its own printBox* fact (one box per Part, Form 8949
+     * instr. (2025) p. 3 and p. 4), in the widget order verified against the committed PDF.
+     */
+    @Test
+    void form8949CheckboxesMapOneBoxEach() throws Exception {
+        Map<String, String> fields = new LinkedHashMap<>();
+        try (InputStream in = new FileInputStream(ROOT + "IRS8949/en/configuration.yml")) {
+            Map<String, Object> yaml = new Yaml().load(in);
+            flatten("", (Map<?, ?>) yaml.get("form"), fields);
+        }
+        String[][] expected = {{"Page1[0].c1_1", "ABCGHI"}, {"Page2[0].c2_1", "DEFJKL"}};
+        try (PDDocument doc = Loader.loadPDF(new File(ROOT + "IRS8949/en/f8949.pdf"))) {
+            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            for (String[] part : expected) {
+                for (int i = 0; i < 6; i++) {
+                    String name = "topmostSubform[0]." + part[0] + "[" + i + "]";
+                    assertEquals(
+                            "/form8949Transactions/*/printBox" + part[1].charAt(i), fields.get(name), name);
+                    PDField field = form.getField(name);
+                    assertTrue(field instanceof PDCheckBox, name);
+                    PdfFieldHandler.setFieldInPDF(field, Boolean.TRUE);
+                    assertTrue(((PDCheckBox) field).isChecked(), name);
                 }
             }
         }
