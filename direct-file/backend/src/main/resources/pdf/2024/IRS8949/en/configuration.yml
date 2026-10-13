@@ -2,20 +2,24 @@
 # Source PDF: https://www.irs.gov/pub/irs-pdf/f8949.pdf, the latest published revision (2025; OMB 1545-0074).
 # AcroForm field names were verified with pypdf against the committed PDF.
 # One Form 8949 per transaction (includeForEach), so each Part has exactly one box checked: Form 8949 instr. (2025)
-# p. 3, "Check only one box on each Part I." / p. 3, "Check only one box on each Part II."
+# p. 3, "Check only one box on each Part I." / p. 4, "Check only one box on each Part II."
 # Short-term rows print in Part I row 1; long-term rows print in Part II row 1.
 # The print* facts have no value for the other part, so those cells stay blank.
 # Columns: (a) f_03, (b) f_04, (c) f_05, (d) f_06, (e) f_07, (f) f_08, (g) f_09, (h) f_10.
-# Boxes G–L (digital assets, 1099-DA) are not modelled; c1_1[3..5] and c2_1[3..5] are left unchecked.
+# Checkboxes use printBox* (true only for the row's own box), not isBox* (which also covers G–L for Schedule D totals).
+# Widget order verified with pypdf, top to bottom: c1_1[0..5] = A, B, C, G, H, I; c2_1[0..5] = D, E, F, J, K, L (#39).
 includeForEach: /form8949Transactions
 form:
   topmostSubform[0]:
     Page1[0]:
       f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
       f1_02[0]: /primaryFiler/tin
-      c1_1[0]: /form8949Transactions/*/isBoxA
-      c1_1[1]: /form8949Transactions/*/isBoxB
-      c1_1[2]: /form8949Transactions/*/isBoxC
+      c1_1[0]: /form8949Transactions/*/printBoxA
+      c1_1[1]: /form8949Transactions/*/printBoxB
+      c1_1[2]: /form8949Transactions/*/printBoxC
+      c1_1[3]: /form8949Transactions/*/printBoxG
+      c1_1[4]: /form8949Transactions/*/printBoxH
+      c1_1[5]: /form8949Transactions/*/printBoxI
       Table_Line1_Part1[0]:
         Row1[0]:
           f1_03[0]: /form8949Transactions/*/printPartIDescription
@@ -29,9 +33,12 @@ form:
     Page2[0]:
       f2_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
       f2_02[0]: /primaryFiler/tin
-      c2_1[0]: /form8949Transactions/*/isBoxD
-      c2_1[1]: /form8949Transactions/*/isBoxE
-      c2_1[2]: /form8949Transactions/*/isBoxF
+      c2_1[0]: /form8949Transactions/*/printBoxD
+      c2_1[1]: /form8949Transactions/*/printBoxE
+      c2_1[2]: /form8949Transactions/*/printBoxF
+      c2_1[3]: /form8949Transactions/*/printBoxJ
+      c2_1[4]: /form8949Transactions/*/printBoxK
+      c2_1[5]: /form8949Transactions/*/printBoxL
       Table_Line1_Part2[0]:
         Row1[0]:
           f2_03[0]: /form8949Transactions/*/printPartIIDescription
