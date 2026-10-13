@@ -12,6 +12,8 @@ headings:
   /heading/income/schedule-e/depreciation: Are you claiming depreciation, depletion, or car or truck expenses?
   /heading/income/schedule-e/amounts: Enter your rental and royalty totals
   /heading/income/schedule-e/any-loss: Did any single property have more expenses than income?
+  /heading/income/schedule-e/substantial-services: Did you provide substantial services to your tenants, such as regular cleaning, changing linens, or maid service?
+  /heading/knockout/schedule-e-substantial-services: This tool doesn’t yet support rentals where you provide substantial services
   /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support Schedule K-1 income
   /heading/knockout/schedule-e-personal-use: This tool doesn’t yet support rentals you also used personally
   /heading/knockout/schedule-e-depreciation: This tool doesn’t yet support depreciation or vehicle expenses
@@ -36,6 +38,14 @@ info:
       advertising, insurance, mortgage interest, repairs, supplies, taxes, and utilities. Don’t include depreciation.
   /info/income/schedule-e/any-loss:
     body: Answer yes if expenses were more than income for any one property, even if your total is a profit.
+  /info/income/schedule-e/substantial-services:
+    body: >-
+      Don’t count heat and light, cleaning of shared areas, trash collection, or similar services. Short-term rentals with cleaning and linen changes between guests usually count.
+  /info/knockout/schedule-e-substantial-services:
+    alertText:
+      body:
+        - p: >-
+            When you provide services like regular cleaning, changing linens, or maid service, the rental goes on Schedule C and may be subject to self-employment tax. This tool doesn’t support that yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-part-ii:
     alertText:
       body:
@@ -76,6 +86,10 @@ fields:
     boolean:
       "yes": Yes, I got Schedule K-1 income
       "no": "No"
+  /scheduleEProvidesSubstantialServices:
+    boolean:
+      "yes": Yes, I provided substantial services
+      "no": No, I didn’t provide services like these
   /scheduleEHasPersonalUse:
     boolean:
       "yes": Yes, there was personal use
@@ -110,3 +124,4 @@ dataviews:
     /scheduleEWritableRoyalties: Total royalties received
     /scheduleEWritableExpenses: Total expenses (not including depreciation)
     /scheduleEAnyPropertyLoss: Did any single property have a loss?
+    /scheduleEProvidesSubstantialServices: Did you provide substantial services, such as cleaning, linens, or maid service?
