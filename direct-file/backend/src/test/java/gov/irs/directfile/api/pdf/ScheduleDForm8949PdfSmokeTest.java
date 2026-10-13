@@ -1,6 +1,5 @@
 package gov.irs.directfile.api.pdf;
 
-import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -69,7 +68,8 @@ class ScheduleDForm8949PdfSmokeTest {
                 .get();
         PdfService pdfService = new PdfService(props, new IOLocationService(null), factGraphService);
 
-        JsonNode root = mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
+        JsonNode root =
+                mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
         Map<String, FactTypeWithItem> facts =
                 mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
         TaxReturn taxReturn = new TaxReturn();
@@ -97,6 +97,9 @@ class ScheduleDForm8949PdfSmokeTest {
             assertEquals(1, count(byName, "Table_Line1_Part2[0].Row1[0].f2_10[0]", "5000"), values::toString);
             assertEquals(1, count(byName, "Table_Line1_Part1[0].Row1[0].f1_06[0]", "10000"), values::toString);
             assertEquals(1, count(byName, "Table_Line1_Part2[0].Row1[0].f2_06[0]", "15000"), values::toString);
+            // #40: line 2 totals per form, column (h) (Form 8949 (2025) line 2).
+            assertEquals(1, count(byName, "Page1[0].f1_95[0]", "4000"), "8949 Part I line 2 (h)");
+            assertEquals(1, count(byName, "Page2[0].f2_95[0]", "5000"), "8949 Part II line 2 (h)");
             // Schedule D lines 7 / 15 / 16.
             assertEquals(1, count(byName, "Page1[0].f1_22[0]", "4000"), "Sch D line 7");
             assertEquals(1, count(byName, "Page1[0].f1_43[0]", "5000"), "Sch D line 15");
