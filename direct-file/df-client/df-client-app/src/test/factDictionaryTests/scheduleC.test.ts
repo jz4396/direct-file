@@ -251,9 +251,7 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
       expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
     });
 
-    it(`single, $150,000 Medicare wages + $50,000 profit → not knocked out (150,000 + 46,175 < 200,000)`, ({
-      task,
-    }) => {
+    it(`single, $150,000 Medicare wages + $50,000 profit → not knocked out (150,000 + 46,175 < 200,000)`, ({ task }) => {
       task.meta.testedFactPaths = [`/flowKnockoutScheduleCAdditionalMedicare`];
       const fg = mk(`single`, `150000`, `50000`);
       expect(fg.get(`/seNetEarningsFromSelfEmployment` as ConcretePath).get.toString()).toBe(`46175.00`);
