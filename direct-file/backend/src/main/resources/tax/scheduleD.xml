@@ -977,6 +977,168 @@
       </Derived>
     </Fact>
 
+    <!-- #39: one print checkbox per Form 8949 box. The isBox* facts above group G-L with A-F for the Schedule D
+         totals, so they would check box A for a box G row. Form 8949 instr. (2025) p. 3: "Check only one box on each
+         Part I."; p. 4: "Check only one box on each Part II." Each printBox* fact is true only for its own box, so exactly
+         one box per Part is checked. G/H/I and J/K/L are the Form 1099-DA digital-asset boxes (Form 8949 (2025)
+         Part I and Part II box lists). -->
+    <Fact path="/form8949Transactions/*/printBoxA">
+      <Description>Form 8949 box A checkbox; true only when this row's box is A.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">A</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxB">
+      <Description>Form 8949 box B checkbox; true only when this row's box is B.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">B</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxC">
+      <Description>Form 8949 box C checkbox; true only when this row's box is C.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">C</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxD">
+      <Description>Form 8949 box D checkbox; true only when this row's box is D.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">D</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxE">
+      <Description>Form 8949 box E checkbox; true only when this row's box is E.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">E</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxF">
+      <Description>Form 8949 box F checkbox; true only when this row's box is F.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">F</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxG">
+      <Description>Form 8949 box G checkbox; true only when this row's box is G.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">G</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxH">
+      <Description>Form 8949 box H checkbox; true only when this row's box is H.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">H</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxI">
+      <Description>Form 8949 box I checkbox; true only when this row's box is I.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">I</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxJ">
+      <Description>Form 8949 box J checkbox; true only when this row's box is J.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">J</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxK">
+      <Description>Form 8949 box K checkbox; true only when this row's box is K.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">K</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+    <Fact path="/form8949Transactions/*/printBoxL">
+      <Description>Form 8949 box L checkbox; true only when this row's box is L.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../box" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/form8949BoxOptions">L</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions/*/gainOrLossBoxA">
       <Export downstreamFacts="true" />
       <Derived>
