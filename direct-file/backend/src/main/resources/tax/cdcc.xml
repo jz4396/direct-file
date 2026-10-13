@@ -2318,19 +2318,65 @@
 
     <Fact path="/cdccCareExpensesFallOffThreshold">
       <Name>Care Expenses Fall Off Threshold</Name>
-      <Description>The threshold at which the care expenses decimal amount begins reducing</Description>
-
+      <Description>AGI above which the 50% applicable percentage starts reducing (1 point per $2,000 or fraction,
+        not below 35%). IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule. §21(a)(2)(A): "50 percent— (A) reduced (but not below 35 percent) by 1 percentage
+        point for each $2,000 or fraction thereof by which the taxpayer's adjusted gross income for the taxable year
+        exceeds $15,000"</Description>
       <Derived>
         <Dollar>15000</Dollar>
       </Derived>
     </Fact>
 
-    <Fact path="/cdccCareExpensesPlateauThreshold">
-      <Name>Care Expenses Fall Off Threshold</Name>
-      <Description>The threshold at which the care expenses decimal amount stops reducing</Description>
-
+    <Fact path="/cdccCareExpensesSecondPhaseoutThreshold">
+      <Name>Care Expenses second phaseout threshold</Name>
+      <Description>TY2026: AGI above which the 35% rate is further reduced toward 20%. IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule. §21(a)(2)(B):
+        "further reduced (but not below 20 percent) by 1 percentage point for each $2,000 ($4,000 in the case of a
+        joint return) or fraction thereof by which the taxpayer's adjusted gross income for the taxable year exceeds
+        $75,000 ($150,000 in the case of a joint return)."</Description>
       <Derived>
-        <Dollar>43000</Dollar>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dollar>150000</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>75000</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/cdccCareExpensesSecondPhaseoutStep">
+      <Name>Care Expenses second phaseout step</Name>
+      <Description>TY2026: $4,000 per point on a joint return, $2,000 otherwise. IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Rational>1/4000</Rational>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Rational>1/2000</Rational>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -2348,15 +2394,13 @@
     <Fact path="/cdccCareExpensesDecimalAmount">
       <Name>Care Expenses Decimal Amount</Name>
       <Description>
-        Care Expenses Decimal Amount
-        Form 2441, Line 8
+        Form 2441, Line 8 (TY2026). IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule.
+        Draft instr. What's New (p. 2): "the maximum percentage used to figure the credit for child and dependent care
+        expenses is increased from 35% to 50% ... For 2026, the 20% minimum percentage doesn't apply until adjusted
+        gross income exceeds $206,000 for joint filers and $103,000 for other filers."
       </Description>
       <Derived>
-        <!--
-        Note: This fact is returned as a <Dollar> because we don't have a distinct <Decimal> type currently
-        and it is important
-        that precision of these decimal values be preserved
-      -->
+        <!-- Returned as <Dollar> because there is no <Decimal> type; precision matters. -->
         <Switch>
           <Case>
             <When>
@@ -2370,29 +2414,12 @@
               </LessThanOrEqual>
             </When>
             <Then>
-              <!-- TODO: What is the correct way to handle this edge case?  Is this case necessary? -->
+              <!-- Unchanged upstream edge case. -->
               <Dollar>0.00</Dollar>
             </Then>
           </Case>
           <Case>
             <When>
-              <!-- The decimal amount never goes lower than .20 -->
-              <GreaterThan>
-                <Left>
-                  <Dependency module="taxCalculations" path="/agi" />
-                </Left>
-                <Right>
-                  <Dependency path="/cdccCareExpensesPlateauThreshold" />
-                </Right>
-              </GreaterThan>
-            </When>
-            <Then>
-              <Dollar>0.20</Dollar>
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <!-- The decimal amount never goes lower than .35 -->
               <LessThanOrEqual>
                 <Left>
                   <Dependency module="taxCalculations" path="/agi" />
@@ -2403,50 +2430,30 @@
               </LessThanOrEqual>
             </When>
             <Then>
-              <Dollar>
-                0.35
-              </Dollar>
+              <Dollar>0.50</Dollar>
             </Then>
           </Case>
           <Case>
             <When>
-              <True />
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Left>
+                <Right>
+                  <Dependency path="/cdccCareExpensesSecondPhaseoutThreshold" />
+                </Right>
+              </LessThanOrEqual>
             </When>
             <Then>
-              <!--
-            This formula is emulating the effects of this table from the form 2441 instructions:
-
-            """
-            IF your 2022 adjusted gross income was:	 	THEN the decimal amount is:
-            Over:	 	But not over:
-            $ 0	    —	$15,000	 	0.35
-            15,000	—	17,000	 	0.34
-            17,000	—	19,000	 	0.33
-            19,000	—	21,000	 	0.32
-            21,000	—	23,000	 	0.31
-            23,000	—	25,000	 	0.30
-            25,000	—	27,000	 	0.29
-            27,000	—	29,000	 	0.28
-            29,000	—	31,000	 	0.27
-            31,000	—	33,000	 	0.26
-            33,000	—	35,000	 	0.25
-            35,000	—	37,000	 	0.24
-            37,000	—	39,000	 	0.23
-            39,000	—	41,000	 	0.22
-            41,000	—	43,000	 	0.21
-            43,000	—	No limit	0.20
-            """
-
-            The decimal amount reduces by .01 for every 2K over 15,000.01.
-            -->
-              <Subtract>
-                <Minuend>
-                  <!-- The case statement above handles 15K and down, so we start from the second
-                  row -->
-                  <Dollar>0.34</Dollar>
-                </Minuend>
-                <Subtrahends>
-                  <Divide>
+              <!-- §21(a)(2)(A): .49 just over $15,000, minus .01 per further $2,000, floor .35 -->
+              <GreaterOf>
+                <Dollar>0.35</Dollar>
+                <Subtract>
+                  <Minuend>
+                    <Dollar>0.49</Dollar>
+                  </Minuend>
+                  <Subtrahends>
+                    <Divide>
                     <Dividend>
                       <StepwiseMultiply>
                         <Multiplicand>
@@ -2455,10 +2462,7 @@
                               <Dependency module="taxCalculations" path="/agi" />
                             </Minuend>
                             <Subtrahends>
-                              <!--
-                                The increment steps up at one cent over each 2K threshold,
-                                so we need to take away an extra penny to compensate
-                              -->
+                              <!-- "or fraction thereof": the next point drops one cent over each step -->
                               <Add>
                                 <Dependency path="/cdccCareExpensesFallOffThreshold" />
                                 <Dollar>0.01</Dollar>
@@ -2467,19 +2471,61 @@
                           </Subtract>
                         </Multiplicand>
                         <Rate>
-                          <Rational>1/2000</Rational>                          <!-- .01 for every whole $2,000 of income -->
+                          <Rational>1/2000</Rational>
                         </Rate>
                       </StepwiseMultiply>
                     </Dividend>
                     <Divisors>
-                      <!-- Stepwise multiple doesn't support decimal rates, so we have to convert
-                      from percent to
-                      decimal -->
                       <Int>100</Int>
                     </Divisors>
                   </Divide>
-                </Subtrahends>
-              </Subtract>
+                  </Subtrahends>
+                </Subtract>
+              </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <!-- §21(a)(2)(B): .34 just over $75,000 / $150,000 MFJ, minus .01 per further $2,000 / $4,000, floor .20 -->
+              <GreaterOf>
+                <Dollar>0.20</Dollar>
+                <Subtract>
+                  <Minuend>
+                    <Dollar>0.34</Dollar>
+                  </Minuend>
+                  <Subtrahends>
+                    <Divide>
+                    <Dividend>
+                      <StepwiseMultiply>
+                        <Multiplicand>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency module="taxCalculations" path="/agi" />
+                            </Minuend>
+                            <Subtrahends>
+                              <!-- "or fraction thereof": the next point drops one cent over each step -->
+                              <Add>
+                                <Dependency path="/cdccCareExpensesSecondPhaseoutThreshold" />
+                                <Dollar>0.01</Dollar>
+                              </Add>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiplicand>
+                        <Rate>
+                          <Dependency path="/cdccCareExpensesSecondPhaseoutStep" />
+                        </Rate>
+                      </StepwiseMultiply>
+                    </Dividend>
+                    <Divisors>
+                      <Int>100</Int>
+                    </Divisors>
+                  </Divide>
+                  </Subtrahends>
+                </Subtract>
+              </GreaterOf>
             </Then>
           </Case>
         </Switch>
@@ -3160,18 +3206,18 @@
     </Fact>
 
     <Fact path="/cdccMaximumExclusionForMFS">
-      <Description>Maximum Allowed CDCC Exclusion for MFS</Description>
+      <Description>Maximum dependent care benefits exclusion, MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."</Description>
 
       <Derived>
-        <Dollar>2500</Dollar>
+        <Dollar>3750</Dollar>
       </Derived>
     </Fact>
 
     <Fact path="/cdccMaximumExclusionForNonMFS">
-      <Description>Maximum Allowed CDCC Exclusion for MFS</Description>
+      <Description>Maximum dependent care benefits exclusion, not MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."</Description>
 
       <Derived>
-        <Dollar>5000</Dollar>
+        <Dollar>7500</Dollar>
       </Derived>
     </Fact>
 
