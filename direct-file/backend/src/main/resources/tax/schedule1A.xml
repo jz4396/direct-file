@@ -22,7 +22,11 @@
     <Fact path="/tipsOccupationConfirmed">
       <Description>§224(d)(1): "cash tips received by an individual in an occupation which customarily and regularly
         received tips on or before December 31, 2024, as provided by the Secretary." Asked when a W-2 has box 12 code TP
-        (the occupation code is in box 14b). Placeholder false: no deduction unless confirmed.</Description>
+        (the occupation code is in box 14b). Placeholder false: no deduction unless confirmed. The screen text also excludes mandatory amounts: 2026 draft
+        Form 1040 instructions, p.102: "Qualified tips do not include service charges, automatic gratuities, or any other
+        mandatory amounts automatically added to a customer's bill by the vendor or the establishment, unless the customer
+        is expressly provided an option to disregard or modify such charges, gratuities, and amounts without consequence."
+        (§224(d)(2)(A): "paid voluntarily without any consequence in the event of nonpayment").</Description>
       <Export downstreamFacts="true" />
       <Writable><Boolean /></Writable>
       <Placeholder><False /></Placeholder>

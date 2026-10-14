@@ -12,7 +12,7 @@ info:
   /info/credits-and-deductions/deductions/tips-self-employed:
     body: "For example, tips a self-employed hair stylist or rideshare driver received from customers."
   /info/credits-and-deductions/deductions/tips-occupation:
-    body: "Only tips received in an occupation on the Treasury list of occupations that customarily and regularly received tips on or before December 31, 2024, qualify. Your Form W-2, box 14b, shows the Treasury Tipped Occupation Code."
+    body: "Only tips received in an occupation on the Treasury list of occupations that customarily and regularly received tips on or before December 31, 2024, qualify. Your Form W-2, box 14b, shows the Treasury Tipped Occupation Code. Only voluntary tips count: service charges, automatic gratuities, and other mandatory amounts added to a bill don’t qualify unless the customer could freely remove or change them (Form 1040 instructions, Schedule 1-A, Part II)."
   /info/credits-and-deductions/deductions/tips-sstb:
     body: "Specified service fields include health, law, accounting, performing arts, consulting, athletics, financial services and brokerage services."
   /info/knockout/tips-self-employed:
