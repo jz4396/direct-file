@@ -380,7 +380,7 @@ describe(`Flow tests`, () => {
     });
     expect(
       givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-    ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+    ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`);
   });
 
   describe(`knockout flows`, () => {
@@ -425,7 +425,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`);
     });
 
     it(`MFJ - moves you to the knockout screen after taxable income summary if you exceed MFJ/QSS limit`, ({
@@ -467,7 +467,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`);
     });
     it(`QSS - moves you to taxable income summary if you exceed MFJ/QSS limit and haven't seen entire flow`, ({
       task,
@@ -480,7 +480,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`);
     });
 
     it(`Single - moves you to the knockout screen after taxable income summary if you exceed Single/HoH limit`, ({
@@ -519,7 +519,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`);
     });
     it(`HoH - moves you to taxable income summary if you exceed Single/HoH limit and haven't seen entire flow`, ({
       task,
@@ -532,7 +532,7 @@ describe(`Flow tests`, () => {
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/standard-deduction-intro`, null, task)
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`);
     });
   });
 
@@ -543,6 +543,35 @@ describe(`Flow tests`, () => {
     expect(
       givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/taxable-income-summary`, null, task)
     ).toRouteNextTo(`/data-view/flow/credits-and-deductions/deductions`);
+  });
+
+  describe(`#45 charitable deduction for non-itemizers screens`, () => {
+    it(`goes from the gate to itemize-intro when there were no cash gifts`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        '/nonItemizerHadCashGifts': createBooleanWrapper(false),
+      });
+      expect(
+        givenFacts(factGraph).atPath(
+          `/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`,
+          null,
+          task
+        )
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+    });
+    it(`goes from the gate to the amount screen when there were cash gifts`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        '/nonItemizerHadCashGifts': createBooleanWrapper(true),
+      });
+      expect(
+        givenFacts(factGraph).atPath(
+          `/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`,
+          null,
+          task
+        )
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-amount`);
+    });
   });
 
   describe(`#37 itemized deductions screens`, () => {
