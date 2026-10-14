@@ -197,6 +197,8 @@ subsubcategories:
   /flow/income/alaska-pfd:
     pfd-basic-info: PFD Information
 headings:
+  /heading/credits-and-deductions/deductions/overtime-other: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
+  /heading/knockout/overtime-not-on-w2-code-tt: "This tool doesn’t yet support overtime pay that isn’t reported in Form W-2 box 12, code TT"
   /heading/credits-and-deductions/deductions/overtime-flsa: "Is your code TT overtime only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
   /heading/account/reset-return: Reset draft {{/taxYear}} federal tax return
   /heading/account/remove-return: Remove draft {{/taxYear}} federal tax return information from Direct File
@@ -2737,6 +2739,14 @@ iconLists:
     payment_amount: <strong>Payment amount</strong><br />{{/balanceDue}}
     payment_method: <strong>Payment method</strong><br />Pay after I file
 info:
+  /info/credits-and-deductions/deductions/overtime-other:
+    body: "For example, overtime reported on Form 1099-NEC or 1099-MISC, or overtime premium you’d have to figure from pay stubs or payroll records."
+  /info/knockout/overtime-not-on-w2-code-tt:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/credits-and-deductions/deductions/overtime-flsa:
     body: "Only the part of overtime pay above your regular rate that the Fair Labor Standards Act requires counts, usually the “half” in time-and-a-half. Extra pay under a union contract or state law, holiday or weekend premiums, and overtime for FLSA-exempt employees don’t count."
   /info/you-and-your-family/you/intro-data-import:
@@ -18839,6 +18849,10 @@ fields:
   /formW2s/*/qualifiedOvertimeCodeTT:
     name: Amount for code TT
     name_lower: code TT
+  /overtimeNotOnW2CodeTT:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
   /overtimeFlsaConfirmed:
     boolean:
       "yes": "Yes, I’m an FLSA non-exempt employee and code TT is only the required overtime premium"
@@ -24221,6 +24235,7 @@ dataviews:
     heading: Your Forms 1095-A
     has1095: $t(dataviews./flow/credits-and-deductions/credits/1095-a.heading)
   /flow/credits-and-deductions/deductions:
+    /overtimeNotOnW2CodeTT: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
     /overtimeFlsaConfirmed: "Is your code TT overtime only the FLSA-required overtime premium?"
     /wasK12Educators: Did you work as a K–12 educator in {{/taxYear}}?
     /wasK12Educators_spouse: Did you or {{/secondaryFiler/firstName}} work as a K–12 educator in {{/taxYear}}?

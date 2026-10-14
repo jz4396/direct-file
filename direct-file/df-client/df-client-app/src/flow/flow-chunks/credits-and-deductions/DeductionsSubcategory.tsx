@@ -550,6 +550,18 @@ export const DeductionsSubcategory = (
     </SubSubcategory>
     {/* #52: No Tax on Overtime (Schedule 1-A Part III, IRC §225) */}
     <SubSubcategory route='overtime-deduction'>
+      <Screen route='overtime-other' condition='/overtimeQuestionApplies'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-other' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-other' />
+        <Boolean path='/overtimeNotOnW2CodeTT' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='overtime-other-knockout' condition='/flowKnockoutOvertimeNotOnW2CodeTT' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/overtime-not-on-w2-code-tt' />
+        <DFAlert i18nKey='/info/knockout/overtime-not-on-w2-code-tt' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='overtime-flsa' condition='/hasW2CodeTtOvertime'>
         <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-flsa' />
         <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-flsa' />

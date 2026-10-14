@@ -84,3 +84,14 @@ describe(`Schedule 1-A Part III — qualified overtime`, () => {
     expect(get(factGraph, `/schedule1ALine27`)).toBe(`0.00`);
   });
 });
+
+describe(`Schedule 1-A Part III — knockout for overtime not on W-2 code TT`, () => {
+  it(`overtime on a 1099 or from pay records: knocks out and blocks submission; clean return is not knocked out`, () => {
+    const clean = single(70000, `4000`, { '/overtimeNotOnW2CodeTT': createBooleanWrapper(false) });
+    expect(clean.get(`/flowKnockoutOvertimeNotOnW2CodeTT` as ConcretePath).get).toBe(false);
+    expect(clean.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
+    const ko = single(70000, `0`, { '/overtimeNotOnW2CodeTT': createBooleanWrapper(true) });
+    expect(ko.get(`/flowKnockoutOvertimeNotOnW2CodeTT` as ConcretePath).get).toBe(true);
+    expect(ko.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+  });
+});

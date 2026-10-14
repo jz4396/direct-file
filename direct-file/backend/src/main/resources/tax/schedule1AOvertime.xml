@@ -3,7 +3,7 @@
   #52: Schedule 1-A Part III, No Tax on Overtime, IRC §225 (P.L. 119-21 §70202). Kept in its own module so it stays
   independent of Part II (#51); schedule1A.xml line 27 reads /schedule1AOvertimeLine27.
   Source: 2026 draft Schedule 1-A lines 16-27; amounts from Form W-2 box 12 code TT (new for 2026).
-  Line 18/19 (overtime on Form 1099-NEC/MISC) is not supported and is 0.
+  Line 18/19 (overtime on Form 1099-NEC/MISC) and overtime figured from pay records are knocked out.
 -->
 <FactDictionaryModule>
   <Facts>
@@ -14,6 +14,37 @@
       <Export downstreamFacts="true" />
       <Writable><Boolean /></Writable>
       <Placeholder><False /></Placeholder>
+    </Fact>
+    <Fact path="/overtimeQuestionApplies">
+      <Description>Ask the unreported-overtime screener when the return has a W-2 or a Schedule C business.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="formW2s" path="/hasW2s" />
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/overtimeNotOnW2CodeTT">
+      <Description>#52 (Rev): qualified overtime not reported in W-2 box 12 code TT, i.e. on Form 1099-NEC/MISC
+        (Schedule 1-A lines 18-19) or figured from pay records. 2026 draft Form 1040 instructions, Schedule 1-A Part III,
+        p.106: "You may be able to claim a deduction for qualified overtime compensation paid to you in 2025 and that is
+        reported on Form W-2, Form 1099-NEC, or Form 1099-MISC", and when it "isn't separately identified … you can
+        figure your qualified overtime compensation using one of the methods described in paragraphs 1 through 5."
+        Not supported. Placeholder false.</Description>
+      <Export downstreamFacts="true" />
+      <Writable><Boolean /></Writable>
+      <Placeholder><False /></Placeholder>
+    </Fact>
+    <Fact path="/flowKnockoutOvertimeNotOnW2CodeTT">
+      <Name>Knockout: qualified overtime not reported in W-2 box 12 code TT</Name>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/overtimeQuestionApplies" />
+          <Dependency path="/overtimeNotOnW2CodeTT" />
+        </All>
+      </Derived>
     </Fact>
     <Fact path="/schedule1AOvertimeLine17">
       <Description>Line 17: add lines 16a-16e column (iii), "Qualified overtime compensation included in Form W-2, box 12,
