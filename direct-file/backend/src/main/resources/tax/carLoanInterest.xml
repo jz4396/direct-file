@@ -1,0 +1,336 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<!--
+  #53: No Tax on Car Loan Interest, Schedule 1-A (Form 1040) 2026 draft Part IV, lines 28-36
+  (irs.gov/pub/irs-dft/f1040s1a%2D%2Ddft.pdf, "Created 6/16/26", page 3 / PDF p. 4).
+  Statute: IRC 163(h)(4) (https://www.law.cornell.edu/uscode/text/26/163), P.L. 119-21; taxable years beginning after
+  December 31, 2024, and before January 1, 2029 (163(h)(4)(A)).
+  MVP scope: one vehicle, interest not deducted on Schedule C/E/F (column (ii) = 0). Anything else is a knockout.
+  MFS: allowed. 163(h)(4) has no joint-return requirement (only the $200,000 joint threshold) and no SSN requirement;
+  the draft Part IV caution has none either (unlike Part V: "If married, you must file jointly").
+  PII: the VIN is collected because 163(h)(4)(B)(iii) requires it on the return. It is a fact like the TIN: stored in
+  the encrypted tax return facts, never interpolated into headings (page titles go through redactPII), not exported
+  to MeF here, and not referenced by any analytics event.
+-->
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/carLoanHadInterest">
+      <Name>Paid interest on a car loan</Name>
+      <Description>#53 gate: paid or accrued interest in the tax year on a loan to buy a vehicle for personal use.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanHadInterestAnswered">
+      <Name>Gate answered yes</Name>
+      <Description>#53: true only when /carLoanHadInterest is answered yes; unanswered counts as no so existing returns stay complete.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/carLoanHadInterest" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/carLoanHadInterest" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanIsNewVehicle">
+      <Name>Original use began with the filer</Name>
+      <Description>#53: Schedule 1-A line 28a(1) "Did the original use of this vehicle start with you, or your spouse if married filing jointly (a used vehicle does not qualify)?" 163(h)(4)(D)(i) "the original use of which commences with the taxpayer". No: knockout (used vehicle).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanUsAssembly">
+      <Name>Final assembly in the United States</Name>
+      <Description>#53: line 28a(2) "Did final assembly of this vehicle occur within the United States". 163(h)(4)(D): "Such term shall not include any vehicle the final assembly of which did not occur within the United States." No: not QPVLI, $0.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanAfter2024">
+      <Name>Loan taken out after December 31, 2024</Name>
+      <Description>#53: 163(h)(4)(B)(i) "indebtedness incurred by the taxpayer after December 31, 2024". No: not QPVLI, $0.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanHasBusinessUse">
+      <Name>Any business use of the vehicle or interest deducted on Schedule C, E, or F</Name>
+      <Description>#53: 163(h)(4)(B)(i) "for personal use"; line 28 column (ii) "Deducted on Schedule C, Schedule E, or Schedule F". Allocation is out of MVP scope. Yes: knockout.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanIsLease">
+      <Name>Lease</Name>
+      <Description>#53: 163(h)(4)(B)(ii)(III) "Any lease financing." Yes: knockout.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanHasOtherExceptions">
+      <Name>Other cases not supported</Name>
+      <Description>#53: more than one vehicle (line 28b); not secured by a first lien (B)(i); fleet sale (B)(ii)(I); salvage title (IV); scrap or parts (V); refinanced for more than the original loan (E)(ii); loan from a related person (E)(iii); not a car, minivan, van, SUV, pickup or motorcycle, or 14,000 pounds or more (D)(iv), (vi). Yes: knockout.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanVin">
+      <Name>Vehicle identification number (PII)</Name>
+      <Description>#53: line 28 column (i). 163(h)(4)(B)(iii): "Interest shall not be treated as qualified passenger vehicle loan interest under this paragraph unless the taxpayer includes the vehicle identification number of the applicable passenger vehicle described in clause (i) on the return of tax for the taxable year." 17 characters; letters I, O and Q are never used in a VIN.</Description>
+      <Writable>
+        <String />
+        <Limit type="Match">
+          <String><![CDATA[[A-HJ-NPR-Z0-9]{17}]]></String>
+        </Limit>
+        <Limit type="MaxLength">
+          <Int>17</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/carLoanWritableInterest">
+      <Name>Interest paid on the loan</Name>
+      <Description>#53: line 28 column (iii), interest paid or accrued in the tax year (Form 1098-VLI box 1 may help).</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/flowKnockoutCarLoanUsedVehicle">
+      <Name>Knockout: used vehicle</Name>
+      <Description>#53: line 28a(1) answered no. 163(h)(4)(D)(i).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/carLoanHadInterestAnswered" />
+          <Not>
+            <Dependency path="/carLoanIsNewVehicle" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutCarLoanBusinessUse">
+      <Name>Knockout: business use</Name>
+      <Description>#53: personal-use allocation and Schedule C/E/F column (ii) are out of scope. 163(h)(4)(B)(i).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/carLoanHadInterestAnswered" />
+          <Dependency path="/carLoanHasBusinessUse" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutCarLoanLease">
+      <Name>Knockout: lease</Name>
+      <Description>#53: 163(h)(4)(B)(ii)(III).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/carLoanHadInterestAnswered" />
+          <Dependency path="/carLoanIsLease" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutCarLoanOther">
+      <Name>Knockout: other unsupported car loan cases</Name>
+      <Description>#53: see /carLoanHasOtherExceptions.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/carLoanHadInterestAnswered" />
+          <Dependency path="/carLoanHasOtherExceptions" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanQualifies">
+      <Name>Interest is QPVLI</Name>
+      <Description>#53: new vehicle, US final assembly, loan after 2024, no business use, lease or other exception. Unanswered questions leave this incomplete (no silent $0). The VIN (163(h)(4)(B)(iii)) is a required field on the amount screen; it does not enter the computation.</Description>
+      <Derived>
+        <All>
+          <Dependency path="/carLoanHadInterestAnswered" />
+          <Dependency path="/carLoanIsNewVehicle" />
+          <Dependency path="/carLoanUsAssembly" />
+          <Dependency path="/carLoanAfter2024" />
+          <Not>
+            <Dependency path="/carLoanHasBusinessUse" />
+          </Not>
+          <Not>
+            <Dependency path="/carLoanIsLease" />
+          </Not>
+          <Not>
+            <Dependency path="/carLoanHasOtherExceptions" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanLine29">
+      <Name>Schedule 1-A line 29</Name>
+      <Description>#53: line 29 "Add lines 28a and 28b, column (iii)" (one vehicle in MVP); $0 when not QPVLI.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/carLoanHadInterestAnswered" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/carLoanQualifies" />
+            </When>
+            <Then>
+              <Dependency path="/carLoanWritableInterest" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanLine30">
+      <Name>Schedule 1-A line 30</Name>
+      <Description>#53: line 30 "Enter the smaller of the amount on line 29 or $10,000". 163(h)(4)(C)(i): "shall not exceed $10,000".</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/carLoanLine29" />
+          <Dollar>10000</Dollar>
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanLine32">
+      <Name>Schedule 1-A line 32</Name>
+      <Description>#53: line 32 "Enter $100,000 ($200,000 if married filing jointly)". 163(h)(4)(C)(ii)(I).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dollar>200000</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>100000</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanLine33">
+      <Name>Schedule 1-A line 33</Name>
+      <Description>#53: line 33 "Subtract line 32 from line 31" (line 31 = line 3, MAGI), not below zero.</Description>
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency module="schedule1A" path="/schedule1ALine3" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/carLoanLine32" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanLine35">
+      <Name>Schedule 1-A lines 34-35 (phaseout)</Name>
+      <Description>
+        #53: line 34 "Divide line 33 by $1,000. If the resulting number isn't a whole number, increase the result to the
+        next higher whole number. (For example, increase 1.5 to 2, and increase 0.05 to 1.)"; line 35 "Multiply line 34
+        by $200". Matches 163(h)(4)(C)(ii)(I): "reduced (but not below zero) by $200 for each $1,000 (or portion
+        thereof) by which the modified adjusted gross income of the taxpayer for the taxable year exceeds $100,000
+        ($200,000 in the case of a joint return)". Rounding up uses the ctcOdc.xml pattern: add $999.99, then
+        StepwiseMultiply by 200/1000 (whole thousands times $200).
+      </Description>
+      <Derived>
+        <StepwiseMultiply>
+          <Multiplicand>
+            <Add>
+              <Dependency path="/carLoanLine33" />
+              <Dollar>999.99</Dollar>
+            </Add>
+          </Multiplicand>
+          <Rate>
+            <Rational>200/1000</Rational>
+          </Rate>
+        </StepwiseMultiply>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanLine36">
+      <Name>Schedule 1-A line 36</Name>
+      <Description>#53: line 36 "Qualified passenger vehicle loan interest deduction. Subtract line 35 from line 30. If zero or less, enter -0-".</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <GreaterOf>
+            <Subtract>
+              <Minuend>
+                <Dependency path="/carLoanLine30" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/carLoanLine35" />
+              </Subtrahends>
+            </Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+        </Round>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
