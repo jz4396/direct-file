@@ -1,0 +1,98 @@
+# No Tax on Car Loan Interest (#53, IRC §163(h)(4), Schedule 1-A Part IV). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    car-loan-interest: "Car loan interest"
+headings:
+  /heading/credits-and-deductions/deductions/car-loan-intro: "In {{/taxYear}}, did you pay interest on a loan to buy a car or other vehicle for personal use?"
+  /heading/credits-and-deductions/deductions/car-loan-new: "Was the vehicle new when you bought it, so that its first use started with you (or your spouse if filing jointly)?"
+  /heading/credits-and-deductions/deductions/car-loan-us-assembly: "Was the vehicle’s final assembly in the United States?"
+  /heading/credits-and-deductions/deductions/car-loan-after-2024: "Did you take out the loan after December 31, 2024?"
+  /heading/credits-and-deductions/deductions/car-loan-business-use: "Did you use the vehicle for business, or deduct any of this interest on Schedule C, E, or F?"
+  /heading/credits-and-deductions/deductions/car-loan-lease: "Is the vehicle leased?"
+  /heading/credits-and-deductions/deductions/car-loan-other: "Do any of these apply to your vehicle loan?"
+  /heading/credits-and-deductions/deductions/car-loan-amount: "Tell us about your vehicle and the interest you paid"
+  /heading/knockout/car-loan-used: "This tool doesn’t yet support used vehicles for the car loan interest deduction"
+  /heading/knockout/car-loan-business: "This tool doesn’t yet support vehicles also used for business"
+  /heading/knockout/car-loan-lease: "This tool doesn’t yet support leased vehicles"
+  /heading/knockout/car-loan-other: "This tool doesn’t yet support your vehicle loan"
+info:
+  /info/credits-and-deductions/deductions/car-loan-intro:
+    body: "You may be able to deduct up to $10,000 of interest on a loan for a new vehicle bought for personal use, whether or not you itemize. The deduction is reduced if your income is over $100,000 ($200,000 if married filing jointly)."
+  /info/credits-and-deductions/deductions/car-loan-us-assembly:
+    body: "Final assembly is where the manufacturer completed the vehicle. The vehicle’s VIN plate or the window sticker shows the final assembly location. If final assembly wasn’t in the United States, the interest doesn’t qualify."
+  /info/credits-and-deductions/deductions/car-loan-other:
+    body: "You have more than one vehicle loan; the loan isn’t secured by a lien on the vehicle; the vehicle has a salvage title or was bought for scrap or parts; the loan was from a relative or a related business, or financed a fleet purchase; you refinanced for more than the original loan; or the vehicle isn’t a car, minivan, van, SUV, pickup, or motorcycle, or weighs 14,000 pounds or more."
+  /info/credits-and-deductions/deductions/car-loan-amount:
+    body: "Your vehicle identification number (VIN) is required on your return. It’s 17 letters and numbers, and you can find it on your loan papers, registration, or Form 1098-VLI. Enter the interest you paid in {{/taxYear}}, which may be in Form 1098-VLI box 1."
+  /info/knockout/car-loan-used:
+    alertText:
+      body:
+        - p: "The deduction is only for vehicles whose first use started with you. If you bought a used vehicle, the interest doesn’t qualify, and this tool can’t confirm your situation."
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-business:
+    alertText:
+      body:
+        - p: "Interest on a vehicle used partly for business has to be split between personal and business use, which this tool doesn’t support."
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-lease:
+    alertText:
+      body:
+        - p: "Lease payments don’t qualify for this deduction, and this tool can’t handle leased vehicles."
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-other:
+    alertText:
+      body:
+        - p: "Your vehicle loan has a situation this tool doesn’t support yet."
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /carLoanHadInterest:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /carLoanIsNewVehicle:
+    boolean:
+      "yes": "Yes, it was new"
+      "no": "No, it was used"
+  /carLoanUsAssembly:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /carLoanAfter2024:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /carLoanHasBusinessUse:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /carLoanIsLease:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /carLoanHasOtherExceptions:
+    boolean:
+      "yes": "Yes, one or more apply"
+      "no": "No, none of these apply"
+  /carLoanVin:
+    name: "Vehicle identification number (VIN)"
+  /carLoanWritableInterest:
+    name: "Interest paid on the loan"
+dataviews:
+  /flow/credits-and-deductions/deductions:
+    /carLoanHadInterest: "Did you pay interest on a loan for a personal vehicle?"
+    /carLoanIsNewVehicle: "Was the vehicle new?"
+    /carLoanUsAssembly: "Was final assembly in the United States?"
+    /carLoanAfter2024: "Was the loan taken out after December 31, 2024?"
+    /carLoanHasBusinessUse: "Business use?"
+    /carLoanIsLease: "Leased?"
+    /carLoanHasOtherExceptions: "Other situations apply?"
+    /carLoanVin: "Vehicle identification number (VIN)"
+    /carLoanWritableInterest: "Interest paid on the loan"
