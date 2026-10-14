@@ -414,7 +414,7 @@
     <Fact path="/itemizesDeductions">
       <Export downstreamFacts="true" />
       <Name>Itemizes deductions</Name>
-      <Description>#37: itemize when Schedule A line 18 is more than the standard deduction, or when the filer elects to (line 19). IRC §63(e) (https://www.law.cornell.edu/uscode/text/26/63). Standard deduction: Rev. Proc. 2025-32 p. 18.</Description>
+      <Description>#37: itemize when Schedule A line 18 is more than the standard deduction, or when the filer elects to (line 19). IRC §63(e) (https://www.law.cornell.edu/uscode/text/26/63). Standard deduction: Rev. Proc. 2025-32 p. 18. #45: compared with the standard deduction plus the §170(p) line 12f amount, since that is only available without itemizing.</Description>
       <Derived>
         <All>
           <Dependency path="/scheduleAWantsToItemize" />
@@ -425,7 +425,10 @@
                 <Dependency path="/scheduleALine18" />
               </Left>
               <Right>
-                <Dependency module="standardDeduction" path="/standardDeduction" />
+                <Add>
+                  <Dependency module="standardDeduction" path="/standardDeduction" />
+                  <Dependency module="charitableNonItemizer" path="/nonItemizerCharitableIfStandard" />
+                </Add>
               </Right>
             </GreaterThan>
           </Any>

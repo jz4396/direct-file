@@ -499,6 +499,20 @@ export const DeductionsSubcategory = (
         <SaveAndOrContinueButton />
       </Screen>
     </SubSubcategory>
+    <SubSubcategory route='charitable-non-itemizer'>
+      <Screen route='charitable-non-itemizer-intro'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/charitable-non-itemizer-intro' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/charitable-non-itemizer-intro' />
+        <Boolean path='/nonItemizerHadCashGifts' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='charitable-non-itemizer-amount' condition='/nonItemizerHadCashGifts'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/charitable-non-itemizer-amount' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/charitable-non-itemizer-amount' />
+        <Dollar path='/nonItemizerWritableCashGifts' />
+        <SaveAndOrContinueButton />
+      </Screen>
+    </SubSubcategory>
     {/* #51: No Tax on Tips (Schedule 1-A Part II, IRC §224) */}
     <SubSubcategory route='tips-deduction'>
       <Screen route='tips-self-employed' condition='/hasScheduleCBusinesses'>
