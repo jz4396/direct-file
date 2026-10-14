@@ -217,6 +217,12 @@ abstract class PdfTemplate {
             return tokenValue.toString();
         }
 
+        if (tokenClass == gov.irs.factgraph.types.Day.class) {
+            // #48: Day facts print as MM/DD/YYYY. Form 8949 (2025) columns (b) "Date acquired" and (c) "Date sold or
+            // disposed of" are headed "(Mo., day, yr.)"; Form 8949 instr. (2025) p. 6, Column (b)/(c).
+            return ((gov.irs.factgraph.types.Day) tokenValue).getDate().format(dayFormatter);
+        }
+
         if (tokenClass != gov.irs.factgraph.types.Enum.class) {
             log.warn("Unexpected class type {}", tokenClass);
             return blank;
@@ -259,6 +265,9 @@ abstract class PdfTemplate {
         }
         return currencyRounder;
     }
+
+    protected static final java.time.format.DateTimeFormatter dayFormatter =
+            java.time.format.DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     protected static final Set<Class<?>> textValueClasses = Set.of(
             String.class,
