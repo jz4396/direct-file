@@ -546,7 +546,16 @@ describe(`Flow tests`, () => {
   });
 
   describe(`#45 charitable deduction for non-itemizers screens`, () => {
-    it(`goes from the gate to itemize-intro when there were no cash gifts`, ({ task }) => {
+    it(`goes from car-loan-intro to itemize-intro when there was no car loan interest`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        '/carLoanHadInterest': createBooleanWrapper(false),
+      });
+      expect(
+        givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/car-loan-intro`, null, task)
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+    });
+    it(`goes from the gate to car-loan-intro when there were no cash gifts`, ({ task }) => {
       const { factGraph } = setupFactGraph({
         ...baseFilerData,
         '/nonItemizerHadCashGifts': createBooleanWrapper(false),
@@ -557,7 +566,7 @@ describe(`Flow tests`, () => {
           null,
           task
         )
-      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/itemize-intro`);
+      ).toRouteNextTo(`/flow/credits-and-deductions/deductions/car-loan-intro`);
     });
     it(`goes from the gate to the amount screen when there were cash gifts`, ({ task }) => {
       const { factGraph } = setupFactGraph({

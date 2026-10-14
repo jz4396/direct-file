@@ -182,8 +182,8 @@
       <Derived><Dollar>0</Dollar></Derived>
     </Fact>
     <Fact path="/schedule1ALine36">
-      <Description>Schedule 1-A line 36, qualified passenger vehicle loan interest deduction (Part IV). Placeholder for #53.</Description>
-      <Derived><Dollar>0</Dollar></Derived>
+      <Description>Schedule 1-A line 36, qualified passenger vehicle loan interest deduction (Part IV). #53: computed in carLoanInterest.xml.</Description>
+      <Derived><Dependency module="carLoanInterest" path="/carLoanLine36" /></Derived>
     </Fact>
 
     <!-- Part V: Enhanced Deduction for Seniors, §151(d)(5)(C). -->

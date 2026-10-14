@@ -134,6 +134,10 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleESubstantialServices" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEEitc" />
+          <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanUsedVehicle" />
+          <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanBusinessUse" />
+          <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanLease" />
+          <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanOther" />
         </Any>
       </Derived>
       <Placeholder>
