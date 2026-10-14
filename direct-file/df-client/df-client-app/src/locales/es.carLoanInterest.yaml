@@ -1,0 +1,98 @@
+# No Tax on Car Loan Interest (#53, IRC §163(h)(4), Schedule 1-A Part IV). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    car-loan-interest: "Intereses de préstamos para vehículos"
+headings:
+  /heading/credits-and-deductions/deductions/car-loan-intro: "En {{/taxYear}}, ¿pagó intereses de un préstamo para comprar un auto u otro vehículo para uso personal?"
+  /heading/credits-and-deductions/deductions/car-loan-new: "¿El vehículo era nuevo cuando lo compró, de modo que su primer uso comenzó con usted (o su cónyuge si presentan una declaración conjunta)?"
+  /heading/credits-and-deductions/deductions/car-loan-us-assembly: "¿El ensamblaje final del vehículo fue en los Estados Unidos?"
+  /heading/credits-and-deductions/deductions/car-loan-after-2024: "¿Obtuvo el préstamo después del 31 de diciembre de 2024?"
+  /heading/credits-and-deductions/deductions/car-loan-business-use: "¿Usó el vehículo para negocios o dedujo parte de estos intereses en el Anexo C, E o F?"
+  /heading/credits-and-deductions/deductions/car-loan-lease: "¿El vehículo es arrendado?"
+  /heading/credits-and-deductions/deductions/car-loan-other: "¿Le aplica alguna de estas situaciones a su préstamo?"
+  /heading/credits-and-deductions/deductions/car-loan-amount: "Infórmenos sobre su vehículo y los intereses que pagó"
+  /heading/knockout/car-loan-used: "Esta herramienta todavía no acepta vehículos usados para la deducción de intereses de préstamos para vehículos"
+  /heading/knockout/car-loan-business: "Esta herramienta todavía no acepta vehículos que también se usan para negocios"
+  /heading/knockout/car-loan-lease: "Esta herramienta todavía no acepta vehículos arrendados"
+  /heading/knockout/car-loan-other: "Esta herramienta todavía no acepta su préstamo para vehículo"
+info:
+  /info/credits-and-deductions/deductions/car-loan-intro:
+    body: "Es posible que pueda deducir hasta $10,000 de intereses de un préstamo para un vehículo nuevo comprado para uso personal, detalle o no sus deducciones. La deducción se reduce si sus ingresos superan $100,000 ($200,000 si es casado que presenta una declaración conjunta)."
+  /info/credits-and-deductions/deductions/car-loan-us-assembly:
+    body: "El ensamblaje final es donde el fabricante terminó el vehículo. La placa del VIN o la etiqueta de la ventana muestran el lugar del ensamblaje final. Si el ensamblaje final no fue en los Estados Unidos, los intereses no califican."
+  /info/credits-and-deductions/deductions/car-loan-other:
+    body: "Tiene más de un préstamo para vehículos; el préstamo no está garantizado con un gravamen sobre el vehículo; el vehículo tiene título de salvamento o se compró para chatarra o piezas; el préstamo fue de un familiar o negocio relacionado, o financió una compra de flota; refinanció por más del préstamo original; o el vehículo no es un auto, minivan, van, SUV, camioneta o motocicleta, o pesa 14,000 libras o más."
+  /info/credits-and-deductions/deductions/car-loan-amount:
+    body: "Su número de identificación del vehículo (VIN) es obligatorio en su declaración. Tiene 17 letras y números, y lo encuentra en los documentos del préstamo, el registro o el Formulario 1098-VLI. Anote los intereses que pagó en {{/taxYear}}, que pueden aparecer en el recuadro 1 del Formulario 1098-VLI."
+  /info/knockout/car-loan-used:
+    alertText:
+      body:
+        - p: "La deducción es solo para vehículos cuyo primer uso comenzó con usted. Si compró un vehículo usado, los intereses no califican, y esta herramienta no puede confirmar su situación."
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-business:
+    alertText:
+      body:
+        - p: "Los intereses de un vehículo usado en parte para negocios se deben dividir entre uso personal y de negocios, y esta herramienta no lo acepta."
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-lease:
+    alertText:
+      body:
+        - p: "Los pagos de arrendamiento no califican para esta deducción, y esta herramienta no acepta vehículos arrendados."
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-other:
+    alertText:
+      body:
+        - p: "Su préstamo para vehículo tiene una situación que esta herramienta todavía no acepta."
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /carLoanHadInterest:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /carLoanIsNewVehicle:
+    boolean:
+      "yes": "Sí, era nuevo"
+      "no": "No, era usado"
+  /carLoanUsAssembly:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /carLoanAfter2024:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /carLoanHasBusinessUse:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /carLoanIsLease:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /carLoanHasOtherExceptions:
+    boolean:
+      "yes": "Sí, aplica una o más"
+      "no": "No, no aplica ninguna"
+  /carLoanVin:
+    name: "Número de identificación del vehículo (VIN)"
+  /carLoanWritableInterest:
+    name: "Intereses pagados del préstamo"
+dataviews:
+  /flow/credits-and-deductions/deductions:
+    /carLoanHadInterest: "¿Pagó intereses de un préstamo para un vehículo personal?"
+    /carLoanIsNewVehicle: "¿El vehículo era nuevo?"
+    /carLoanUsAssembly: "¿El ensamblaje final fue en los Estados Unidos?"
+    /carLoanAfter2024: "¿Obtuvo el préstamo después del 31 de diciembre de 2024?"
+    /carLoanHasBusinessUse: "¿Uso para negocios?"
+    /carLoanIsLease: "¿Arrendado?"
+    /carLoanHasOtherExceptions: "¿Aplican otras situaciones?"
+    /carLoanVin: "Número de identificación del vehículo (VIN)"
+    /carLoanWritableInterest: "Intereses pagados del préstamo"
