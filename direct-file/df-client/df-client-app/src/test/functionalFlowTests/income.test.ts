@@ -394,6 +394,10 @@ describe(`The \`income\` subcategory`, () => {
           field: `nonTaxableMedicaidWaiverPayments`,
           knockout: true,
         },
+        {
+          field: `cashTipsCodeTP`,
+          knockout: false,
+        },
       ]) {
         const { factGraph } = setupFactGraph({
           ...baseIncomeData,

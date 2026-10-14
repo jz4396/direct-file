@@ -21,6 +21,8 @@ import charitableNonItemizerEn from './en.charitableNonItemizer.yaml';
 import charitableNonItemizerEs from './es.charitableNonItemizer.yaml';
 import carLoanInterestEn from './en.carLoanInterest.yaml';
 import carLoanInterestEs from './es.carLoanInterest.yaml';
+import schedule1AEn from './en.schedule1A.yaml';
+import schedule1AEs from './es.schedule1A.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -40,16 +42,19 @@ export const enLocale: any = deepMerge(
     deepMerge(
       deepMerge(
         deepMerge(
-          deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree),
-          scheduleAEn as Tree
+          deepMerge(
+            deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree),
+            scheduleAEn as Tree
+          ),
+          unreportedTipsEn as Tree
         ),
-        unreportedTipsEn as Tree
+        scheduleEEn as Tree
       ),
-      scheduleEEn as Tree
+      charitableNonItemizerEn as Tree
     ),
-    charitableNonItemizerEn as Tree
+    carLoanInterestEn as Tree
   ),
-  carLoanInterestEn as Tree
+  schedule1AEn as Tree
 );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const esLocale: any = deepMerge(
@@ -57,14 +62,17 @@ export const esLocale: any = deepMerge(
     deepMerge(
       deepMerge(
         deepMerge(
-          deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree),
-          scheduleAEs as Tree
+          deepMerge(
+            deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree),
+            scheduleAEs as Tree
+          ),
+          unreportedTipsEs as Tree
         ),
-        unreportedTipsEs as Tree
+        scheduleEEs as Tree
       ),
-      scheduleEEs as Tree
+      charitableNonItemizerEs as Tree
     ),
-    charitableNonItemizerEs as Tree
+    carLoanInterestEs as Tree
   ),
-  carLoanInterestEs as Tree
+  schedule1AEs as Tree
 );

@@ -585,6 +585,39 @@ export const DeductionsSubcategory = (
         <SaveAndOrContinueButton />
       </Screen>
     </SubSubcategory>
+    {/* #51: No Tax on Tips (Schedule 1-A Part II, IRC §224) */}
+    <SubSubcategory route='tips-deduction'>
+      <Screen route='tips-self-employed' condition='/hasScheduleCBusinesses'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/tips-self-employed' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/tips-self-employed' />
+        <Boolean path='/tipsFromSelfEmployment' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='tips-self-employed-knockout' condition='/flowKnockoutSelfEmployedTips' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/tips-self-employed' />
+        <DFAlert i18nKey='/info/knockout/tips-self-employed' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='tips-occupation' condition='/hasW2CodeTpTips'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/tips-occupation' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/tips-occupation' />
+        <Boolean path='/tipsOccupationConfirmed' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='tips-sstb' condition='/hasW2CodeTpTips'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/tips-sstb' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/tips-sstb' />
+        <Boolean path='/tipsEmployerIsSstb' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='tips-sstb-knockout' condition='/flowKnockoutTipsSstb' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/tips-sstb' />
+        <DFAlert i18nKey='/info/knockout/tips-sstb' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     <SubSubcategory route='itemized-deductions'>
       <Screen route='itemize-intro'>
         <Heading i18nKey='/heading/credits-and-deductions/deductions/itemize-intro' />

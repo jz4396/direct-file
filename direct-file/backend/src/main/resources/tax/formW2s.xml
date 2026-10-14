@@ -51,6 +51,7 @@
           <String>83iIncome</String>
           <String>83iDeferrals</String>
           <String>nonTaxableMedicaidWaiverPayments</String>
+          <String>cashTipsCodeTP</String>
         </EnumOptions>
       </Derived>
     </Fact>
@@ -2070,6 +2071,9 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../taxableLifeInsuranceOver50k" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../cashTipsCodeTP" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../401kDeferrals" />
@@ -5417,6 +5421,58 @@
         <Round>
           <Dependency path="../83iDeferrals" />
         </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/cashTipsCodeTP">
+      <Name>Cash tips reported to the employer</Name>
+      <Description>#51: Box 12, code TP, new for 2026. 2026 draft General Instructions for Forms W-2 and W-3: "Code
+        TP—Total amount of cash tips reported to the employer ... You must also list an occupation code in box 14b—Treasury
+        Tipped Occupation Code(s)."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+    <Fact path="/formW2s/*/cashTipsCodeTPOrZero">
+      <Derived>
+        <Switch>
+          <Case>
+            <When><IsComplete><Dependency path="../cashTipsCodeTP" /></IsComplete></When>
+            <Then><Dependency path="../cashTipsCodeTP" /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/formW2s/*/qualifiedTipsForSchedule1A">
+      <Description>#51: code TP tips counted on Schedule 1-A line 4 column (iii), only if the W-2's filer has a valid SSN
+        (§224(e), meaning of §24(h)(7)).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency path="../filer/ssnValidForEitc" /></When>
+            <Then><Dependency path="../cashTipsCodeTPOrZero" /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/hasW2CodeTpTips">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterThan>
+          <Left><CollectionSum><Dependency path="/formW2s/*/cashTipsCodeTPOrZero" /></CollectionSum></Left>
+          <Right><Dollar>0</Dollar></Right>
+        </GreaterThan>
       </Derived>
     </Fact>
 

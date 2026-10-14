@@ -1,7 +1,7 @@
 <?xml-model href="./FactDictionaryModule.rng"?>
 <!--
   #50: Schedule 1-A (Form 1040), Additional Deductions. Reusable scaffold: Part I MAGI, Parts II-IV are
-  placeholders (lines 15/27/36) for #51 tips, #52 overtime and #53 car loan interest; Part V is the
+  placeholders (lines 27/36) for #52 overtime and #53 car loan interest; Part V is the
   enhanced deduction for seniors; Part VI line 44 flows to the 2026 draft Form 1040 line 13a.
   Source: 2026 draft Schedule 1-A (irs.gov/pub/irs-dft/f1040s1a- -dft.pdf, "Created 6/16/26").
   Statute: IRC §151(d)(5)(C) (P.L. 119-21 §70103), years beginning before Jan 1, 2029; not indexed.
@@ -17,9 +17,165 @@
       </Derived>
     </Fact>
     <!-- Parts II-IV placeholders. #51/#52/#53 replace these with their computed lines. -->
+    <!-- Part II: No Tax on Tips, IRC §224 (P.L. 119-21 §70201). #51. Employee tips from Form W-2 box 12 code TP only;
+         self-employed tips (line 6/7) and SSTB tips are knocked out. -->
+    <Fact path="/tipsOccupationConfirmed">
+      <Description>§224(d)(1): "cash tips received by an individual in an occupation which customarily and regularly
+        received tips on or before December 31, 2024, as provided by the Secretary." Asked when a W-2 has box 12 code TP
+        (the occupation code is in box 14b). Placeholder false: no deduction unless confirmed. The screen text also excludes mandatory amounts: 2026 draft
+        Form 1040 instructions, p.102: "Qualified tips do not include service charges, automatic gratuities, or any other
+        mandatory amounts automatically added to a customer's bill by the vendor or the establishment, unless the customer
+        is expressly provided an option to disregard or modify such charges, gratuities, and amounts without consequence."
+        (§224(d)(2)(A): "paid voluntarily without any consequence in the event of nonpayment").</Description>
+      <Export downstreamFacts="true" />
+      <Writable><Boolean /></Writable>
+      <Placeholder><False /></Placeholder>
+    </Fact>
+    <Fact path="/tipsEmployerIsSstb">
+      <Description>§224(d)(2)(B): tips from a specified service trade or business (§199A(d)(2)) are not qualified; an
+        employee is treated as in an SSTB if the employer is. Placeholder false.</Description>
+      <Export downstreamFacts="true" />
+      <Writable><Boolean /></Writable>
+      <Placeholder><False /></Placeholder>
+    </Fact>
+    <Fact path="/tipsFromSelfEmployment">
+      <Description>§224(c): self-employed tips count only up to net income of the trade or business (Schedule 1-A line 6).
+        Not supported. Asked when the return has a Schedule C business. Placeholder false.</Description>
+      <Export downstreamFacts="true" />
+      <Writable><Boolean /></Writable>
+      <Placeholder><False /></Placeholder>
+    </Fact>
+    <Fact path="/flowKnockoutTipsSstb">
+      <Name>Knockout: tips from a specified service trade or business</Name>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="formW2s" path="/hasW2CodeTpTips" />
+          <Dependency path="/tipsEmployerIsSstb" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutSelfEmployedTips">
+      <Name>Knockout: tips received in the filer's own trade or business</Name>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency path="/tipsFromSelfEmployment" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine5">
+      <Description>Line 5: qualified employee tips, W-2 box 12 code TP (lines 4a-4e column (iii)). Zero unless the
+        occupation is confirmed and the filer is not MFS (§224(f)). Per-W-2 valid SSN is applied in formW2s.</Description>
+      <Derived>
+        <Switch>
+          <!-- No code TP tips: complete 0 without asking (placeholder answers are incomplete). -->
+          <Case>
+            <When><Not><Dependency module="formW2s" path="/hasW2CodeTpTips" /></Not></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/tipsOccupationConfirmed" />
+                <Dependency path="/schedule1ASeniorFilingStatusAllowed" />
+              </All>
+            </When>
+            <Then>
+              <CollectionSum><Dependency module="formW2s" path="/formW2s/*/qualifiedTipsForSchedule1A" /></CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine9">
+      <Description>Line 9: "Enter the smaller of the amount on line 8 or $25,000" (line 8 = line 5 + line 7; line 7 is
+        0 because self-employed tips are knocked out). §224(b)(1): "shall not exceed $25,000." Per return, not per spouse.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schedule1ALine5" />
+          <Dollar>25000</Dollar>
+        </LesserOf>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine11">
+      <Description>Line 11: "Enter $150,000 ($300,000 if married filing jointly)". §224(b)(2)(A).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When>
+            <Then><Dollar>300000</Dollar></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>150000</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine12">
+      <Description>Line 12: line 10 (= line 3 MAGI) minus line 11, not below zero.</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend><Dependency path="/schedule1ALine3" /></Minuend>
+            <Subtrahends><Dependency path="/schedule1ALine11" /></Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine13">
+      <Description>Line 13: "Divide line 12 by $1,000. If the resulting number isn't a whole number, decrease the result
+        to the next lower whole number." §224(b)(2)(A) "$100 for each $1,000 by which" MAGI exceeds the threshold has no
+        "or fraction thereof", so a partial $1,000 is ignored. StepwiseMultiply = floor(x / 1000) x 1.</Description>
+      <Derived>
+        <StepwiseMultiply>
+          <Multiplicand><Dependency path="/schedule1ALine12" /></Multiplicand>
+          <Rate><Rational>1/1000</Rational></Rate>
+        </StepwiseMultiply>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine14">
+      <Description>Line 14: "Multiply line 13 by $100".</Description>
+      <Derived>
+        <Multiply>
+          <Rational>100/1</Rational>
+          <Dependency path="/schedule1ALine13" />
+        </Multiply>
+      </Derived>
+    </Fact>
     <Fact path="/schedule1ALine15">
-      <Description>Schedule 1-A line 15, qualified tips deduction (Part II). Placeholder for #51.</Description>
-      <Derived><Dollar>0</Dollar></Derived>
+      <Description>Line 15: "Qualified tips deduction. Subtract line 14 from line 9. If zero or less, enter -0-."</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <!-- Short-circuit so returns without code TP tips don't depend on MAGI completeness. -->
+          <Case>
+            <When><Not><Dependency module="formW2s" path="/hasW2CodeTpTips" /></Not></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend><Dependency path="/schedule1ALine9" /></Minuend>
+            <Subtrahends><Dependency path="/schedule1ALine14" /></Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
     <Fact path="/schedule1ALine27">
       <Description>Schedule 1-A line 27, qualified overtime compensation deduction (Part III). Placeholder for #52.</Description>

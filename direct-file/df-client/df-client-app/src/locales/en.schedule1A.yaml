@@ -1,0 +1,54 @@
+# Schedule 1-A Part II, No Tax on Tips (#51). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    tips-deduction: "Deduction for tips"
+headings:
+  /heading/credits-and-deductions/deductions/tips-self-employed: "Did you receive tips in your own business?"
+  /heading/credits-and-deductions/deductions/tips-occupation: "Did you receive your tips in an occupation that customarily received tips?"
+  /heading/credits-and-deductions/deductions/tips-sstb: "Is your employer in a specified service trade or business?"
+  /heading/knockout/tips-self-employed: "This tool doesn’t yet support the tips deduction for self-employed people"
+  /heading/knockout/tips-sstb: "This tool doesn’t yet support tips from a specified service trade or business"
+info:
+  /info/credits-and-deductions/deductions/tips-self-employed:
+    body: "For example, tips a self-employed hair stylist or rideshare driver received from customers."
+  /info/credits-and-deductions/deductions/tips-occupation:
+    body: "Only tips received in an occupation on the Treasury list of occupations that customarily and regularly received tips on or before December 31, 2024, qualify. Your Form W-2, box 14b, shows the Treasury Tipped Occupation Code. Only voluntary tips count: service charges, automatic gratuities, and other mandatory amounts added to a bill don’t qualify unless the customer could freely remove or change them (Form 1040 instructions, Schedule 1-A, Part II)."
+  /info/credits-and-deductions/deductions/tips-sstb:
+    body: "Specified service fields include health, law, accounting, performing arts, consulting, athletics, financial services and brokerage services."
+  /info/knockout/tips-self-employed:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/tips-sstb:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /w2Box12CodeOptions:
+    cashTipsCodeTP: TP
+  /formW2s/*/cashTipsCodeTP:
+    name: Amount for code TP
+    name_lower: code TP
+  /tipsFromSelfEmployment:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /tipsOccupationConfirmed:
+    boolean:
+      "yes": "Yes, my occupation is on the list"
+      "no": "No, or I’m not sure"
+  /tipsEmployerIsSstb:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+dataviews:
+  /flow/income/jobs:
+    /formW2s/*/cashTipsCodeTP: Code TP amount
+  /flow/credits-and-deductions/deductions:
+    /tipsFromSelfEmployment: "Did you receive tips in your own business?"
+    /tipsOccupationConfirmed: "Did you receive your tips in an occupation that customarily received tips?"
+    /tipsEmployerIsSstb: "Is your employer in a specified service trade or business?"
