@@ -1,0 +1,23 @@
+# Deducción por donaciones caritativas para quienes no detallan (#45, IRC §170(p)). Superpuesto en locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    charitable-non-itemizer: "Donaciones en efectivo a organizaciones benéficas"
+headings:
+  /heading/credits-and-deductions/deductions/charitable-non-itemizer-intro: "En {{/taxYear}}, ¿donó efectivo o cheques a una organización benéfica calificada?"
+  /heading/credits-and-deductions/deductions/charitable-non-itemizer-amount: "¿Cuánto efectivo donó a organizaciones benéficas calificadas en {{/taxYear}}?"
+info:
+  /info/credits-and-deductions/deductions/charitable-non-itemizer-intro:
+    body: "Si toma la deducción estándar, también puede deducir hasta $1,000 ($2,000 si es casado que presenta una declaración conjunta) de donaciones en efectivo a organizaciones benéficas calificadas. El efectivo incluye cheques, tarjetas de crédito y deducciones de nómina. Las donaciones de bienes o propiedades no cuentan."
+  /info/credits-and-deductions/deductions/charitable-non-itemizer-amount:
+    body: "No incluya donaciones a fondos asesorados por donantes ni a organizaciones de apoyo, donaciones a personas, ni donaciones de bienes o propiedades. Si detalla sus deducciones, anote sus donaciones en el Anexo A; esta deducción será $0."
+fields:
+  /nonItemizerHadCashGifts:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /nonItemizerWritableCashGifts:
+    name: "Donaciones en efectivo a organizaciones benéficas calificadas"
+dataviews:
+  /flow/credits-and-deductions/deductions:
+    /nonItemizerHadCashGifts: "¿Donó efectivo o cheques a una organización benéfica calificada?"
+    /nonItemizerWritableCashGifts: "Donaciones en efectivo a organizaciones benéficas calificadas"

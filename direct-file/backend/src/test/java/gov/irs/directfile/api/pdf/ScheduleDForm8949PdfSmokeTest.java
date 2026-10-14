@@ -97,6 +97,11 @@ class ScheduleDForm8949PdfSmokeTest {
             assertEquals(1, count(byName, "Table_Line1_Part2[0].Row1[0].f2_10[0]", "5000"), values::toString);
             assertEquals(1, count(byName, "Table_Line1_Part1[0].Row1[0].f1_06[0]", "10000"), values::toString);
             assertEquals(1, count(byName, "Table_Line1_Part2[0].Row1[0].f2_06[0]", "15000"), values::toString);
+            // #48: columns (b)/(c) dates print as MM/DD/YYYY (Form 8949 (2025) headings "(Mo., day, yr.)").
+            assertEquals("02/02/2026", value(byName, "Table_Line1_Part1[0].Row1[0].f1_04[0]"), values::toString);
+            assertEquals("05/05/2026", value(byName, "Table_Line1_Part1[0].Row1[0].f1_05[0]"), values::toString);
+            assertEquals("03/03/2023", value(byName, "Table_Line1_Part2[0].Row1[0].f2_04[0]"), values::toString);
+            assertEquals("06/06/2026", value(byName, "Table_Line1_Part2[0].Row1[0].f2_05[0]"), values::toString);
             // #40: line 2 totals per form, column (h) (Form 8949 (2025) line 2).
             assertEquals(1, count(byName, "Page1[0].f1_95[0]", "4000"), "8949 Part I line 2 (h)");
             assertEquals(1, count(byName, "Page2[0].f2_95[0]", "5000"), "8949 Part II line 2 (h)");
@@ -108,6 +113,18 @@ class ScheduleDForm8949PdfSmokeTest {
             assertEquals(1, count(byName, "f1_52[0]", "9000"), "1040 line 7");
             assertTrue(doc.getNumberOfPages() >= 6, "1040 (2) + Sch D (2) + 8949 x2 (4)");
         }
+    }
+
+    /** The non-blank value of the field whose name ends with the suffix (merge may rename/prefix). */
+    private static String value(Map<String, String> byName, String suffix) {
+        for (var e : byName.entrySet()) {
+            if (e.getKey().endsWith(suffix)
+                    && e.getValue() != null
+                    && !e.getValue().isEmpty()) {
+                return e.getValue();
+            }
+        }
+        return "";
     }
 
     /** Count fields whose name ends with the suffix (merge may rename/prefix) and whose value, digits only, matches. */
