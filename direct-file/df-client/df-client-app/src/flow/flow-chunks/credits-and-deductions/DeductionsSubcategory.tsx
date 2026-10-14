@@ -8,6 +8,7 @@ import {
   DFModal,
   Dollar,
   Enum,
+  GenericString,
   Heading,
   IconDisplay,
   InfoDisplay,
@@ -510,6 +511,77 @@ export const DeductionsSubcategory = (
         <Heading i18nKey='/heading/credits-and-deductions/deductions/charitable-non-itemizer-amount' />
         <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/charitable-non-itemizer-amount' />
         <Dollar path='/nonItemizerWritableCashGifts' />
+        <SaveAndOrContinueButton />
+      </Screen>
+    </SubSubcategory>
+    <SubSubcategory route='car-loan-interest'>
+      <Screen route='car-loan-intro'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-intro' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/car-loan-intro' />
+        <Boolean path='/carLoanHadInterest' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='car-loan-new' condition='/carLoanHadInterest'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-new' />
+        <Boolean path='/carLoanIsNewVehicle' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='car-loan-used-knockout' condition='/flowKnockoutCarLoanUsedVehicle' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/car-loan-used' />
+        <DFAlert i18nKey='/info/knockout/car-loan-used' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='car-loan-us-assembly' condition='/carLoanHadInterest'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-us-assembly' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/car-loan-us-assembly' />
+        <Boolean path='/carLoanUsAssembly' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='car-loan-after-2024' condition='/carLoanHadInterest'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-after-2024' />
+        <Boolean path='/carLoanAfter2024' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='car-loan-business-use' condition='/carLoanHadInterest'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-business-use' />
+        <Boolean path='/carLoanHasBusinessUse' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='car-loan-business-knockout' condition='/flowKnockoutCarLoanBusinessUse' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/car-loan-business' />
+        <DFAlert i18nKey='/info/knockout/car-loan-business' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='car-loan-lease' condition='/carLoanHadInterest'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-lease' />
+        <Boolean path='/carLoanIsLease' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='car-loan-lease-knockout' condition='/flowKnockoutCarLoanLease' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/car-loan-lease' />
+        <DFAlert i18nKey='/info/knockout/car-loan-lease' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='car-loan-other' condition='/carLoanHadInterest'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-other' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/car-loan-other' />
+        <Boolean path='/carLoanHasOtherExceptions' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='car-loan-other-knockout' condition='/flowKnockoutCarLoanOther' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/car-loan-other' />
+        <DFAlert i18nKey='/info/knockout/car-loan-other' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='car-loan-amount' condition='/carLoanHadInterest'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/car-loan-amount' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/car-loan-amount' />
+        <GenericString path='/carLoanVin' />
+        <Dollar path='/carLoanWritableInterest' />
         <SaveAndOrContinueButton />
       </Screen>
     </SubSubcategory>
