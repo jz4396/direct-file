@@ -1,0 +1,179 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<!--
+  #50: Schedule 1-A (Form 1040), Additional Deductions. Reusable scaffold: Part I MAGI, Parts II-IV are
+  placeholders (lines 15/27/36) for #51 tips, #52 overtime and #53 car loan interest; Part V is the
+  enhanced deduction for seniors; Part VI line 44 flows to the 2026 draft Form 1040 line 13a.
+  Source: 2026 draft Schedule 1-A (irs.gov/pub/irs-dft/f1040s1a- -dft.pdf, "Created 6/16/26").
+  Statute: IRC §151(d)(5)(C) (P.L. 119-21 §70103), years beginning before Jan 1, 2029; not indexed.
+-->
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/schedule1ALine3">
+      <Description>Schedule 1-A line 3 (MAGI): line 1 (1040 line 11b, AGI) plus line 2e (§911/931/933 exclusions).
+        Direct File supports none of those exclusions, so line 2e is 0 and MAGI = AGI. §151(d)(5)(C)(iii)(II).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+    <!-- Parts II-IV placeholders. #51/#52/#53 replace these with their computed lines. -->
+    <Fact path="/schedule1ALine15">
+      <Description>Schedule 1-A line 15, qualified tips deduction (Part II). Placeholder for #51.</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/schedule1ALine27">
+      <Description>Schedule 1-A line 27, qualified overtime compensation deduction (Part III). Placeholder for #52.</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/schedule1ALine36">
+      <Description>Schedule 1-A line 36, qualified passenger vehicle loan interest deduction (Part IV). Placeholder for #53.</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+
+    <!-- Part V: Enhanced Deduction for Seniors, §151(d)(5)(C). -->
+    <Fact path="/schedule1ASeniorAmount">
+      <Description>"$6,000 for each qualified individual" — §151(d)(5)(C)(i). Not inflation-indexed.</Description>
+      <Derived><Dollar>6000</Dollar></Derived>
+    </Fact>
+    <Fact path="/schedule1ALine38">
+      <Description>Line 38: "Enter $75,000 ($150,000 if married filing jointly)". §151(d)(5)(C)(iii)(I).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When>
+            <Then><Dollar>150000</Dollar></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>75000</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine39">
+      <Description>Line 39: line 37 (= line 3) minus line 38, not below zero.</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend><Dependency path="/schedule1ALine3" /></Minuend>
+            <Subtrahends><Dependency path="/schedule1ALine38" /></Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine40">
+      <Description>Line 40: line 39 x 6%. The statute ("6 percent of so much of ... MAGI as exceeds") has no
+        rounding step or $1,000 increments, unlike line 34 for car loan interest.</Description>
+      <Derived>
+        <Multiply>
+          <Rational>6/100</Rational>
+          <Dependency path="/schedule1ALine39" />
+        </Multiply>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine41">
+      <Description>Line 41: $6,000 minus line 40; if zero or less, -0-. "(but not below zero)".</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend><Dependency path="/schedule1ASeniorAmount" /></Minuend>
+            <Subtrahends><Dependency path="/schedule1ALine40" /></Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ASeniorFilingStatusAllowed">
+      <Description>§151(d)(5)(C)(v): a married individual (§7703) qualifies only on a joint return. MFS gets 0.
+        HOH filers are treated as unmarried under §7703(b); Single/QSS are unmarried.</Description>
+      <Derived>
+        <Not><Dependency module="filingStatus" path="/isFilingStatusMFS" /></Not>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1APrimaryQualifies">
+      <Description>Line 42a test: valid SSN (§151(d)(5)(C)(iv), §24(h)(7)) and age 65 by year end (born before
+        January 2, 1962; age65OrOlder uses the day-before-birthday rule).</Description>
+      <Derived>
+        <All>
+          <Dependency path="/schedule1ASeniorFilingStatusAllowed" />
+          <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/primaryFiler/ssnValidForEitc" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ASpouseQualifies">
+      <Description>Line 42b test: MFJ only, spouse valid SSN and age 65 by year end.</Description>
+      <Derived>
+        <All>
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/secondaryFiler/ssnValidForEitc" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine42a">
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency path="/schedule1APrimaryQualifies" /></When>
+            <Then><Dependency path="/schedule1ALine41" /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine42b">
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency path="/schedule1ASpouseQualifies" /></When>
+            <Then><Dependency path="/schedule1ALine41" /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1ALine43">
+      <Description>Line 43: enhanced deduction for seniors, lines 42a + 42b.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/schedule1ALine42a" />
+          <Dependency path="/schedule1ALine42b" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <!-- Part VI -->
+    <Fact path="/schedule1ALine44">
+      <Description>Line 44: "Add lines 15, 27, 36, and 43. Enter here and on Form 1040, 1040-SR, or 1040-NR,
+        line 13a". Below the line: allowed with the standard deduction or itemizing.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/schedule1ALine15" />
+            <Dependency path="/schedule1ALine27" />
+            <Dependency path="/schedule1ALine36" />
+            <Dependency path="/schedule1ALine43" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/requiresSchedule1A">
+      <Derived>
+        <GreaterThan>
+          <Left><Dependency path="/schedule1ALine44" /></Left>
+          <Right><Dollar>0</Dollar></Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
