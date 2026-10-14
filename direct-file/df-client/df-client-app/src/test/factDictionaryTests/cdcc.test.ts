@@ -176,6 +176,9 @@ describe(`For CDCC, a filer`, () => {
           description: `with earned income`,
           eligibilityDatum: {
             ...baseData,
+            // #50: baseFilerData DOB 0001-01-01 makes this filer 65+; the $6,000 senior deduction would zero tax on
+            // $20,000 (so no CDCC). Use a non-senior DOB so this case stays about CDCC eligibility.
+            [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(`1987-06-06`),
             ...makeW2Data(20_000, w2Id),
             '/formW2s': createCollectionWrapper([w2Id]),
           },
