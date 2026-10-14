@@ -1,0 +1,136 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<!--
+  #52: Schedule 1-A Part III, No Tax on Overtime, IRC §225 (P.L. 119-21 §70202). Kept in its own module so it stays
+  independent of Part II (#51); schedule1A.xml line 27 reads /schedule1AOvertimeLine27.
+  Source: 2026 draft Schedule 1-A lines 16-27; amounts from Form W-2 box 12 code TT (new for 2026).
+  Line 18/19 (overtime on Form 1099-NEC/MISC) is not supported and is 0.
+-->
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/overtimeFlsaConfirmed">
+      <Description>§225(c)(1): "overtime compensation paid to an individual required under section 7 of the Fair Labor
+        Standards Act of 1938 that is in excess of the regular rate". Asked when a W-2 has code TT. Placeholder false: no
+        deduction unless confirmed.</Description>
+      <Export downstreamFacts="true" />
+      <Writable><Boolean /></Writable>
+      <Placeholder><False /></Placeholder>
+    </Fact>
+    <Fact path="/schedule1AOvertimeLine17">
+      <Description>Line 17: add lines 16a-16e column (iii), "Qualified overtime compensation included in Form W-2, box 12,
+        code TT". Zero unless confirmed and not MFS (§225(e)). Per-W-2 valid SSN is applied in formW2s.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="formW2s" path="/hasW2CodeTtOvertime" /></Not></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/overtimeFlsaConfirmed" />
+                <Dependency module="schedule1A" path="/schedule1ASeniorFilingStatusAllowed" />
+              </All>
+            </When>
+            <Then>
+              <CollectionSum><Dependency module="formW2s" path="/formW2s/*/qualifiedOvertimeForSchedule1A" /></CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1AOvertimeLine21">
+      <Description>Line 21: "Enter the smaller of the amount on line 20 or $12,500 ($25,000 if married filing jointly)".
+        Line 20 = line 17 + line 19 (0). §225(b)(1).</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schedule1AOvertimeLine17" />
+          <Switch>
+            <Case>
+              <When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When>
+              <Then><Dollar>25000</Dollar></Then>
+            </Case>
+            <Case>
+              <When><True /></When>
+              <Then><Dollar>12500</Dollar></Then>
+            </Case>
+          </Switch>
+        </LesserOf>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1AOvertimeLine23">
+      <Description>Line 23: "Enter $150,000 ($300,000 if married filing jointly)". §225(b)(2)(A).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When>
+            <Then><Dollar>300000</Dollar></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>150000</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1AOvertimeLine24">
+      <Description>Line 24: line 22 (= line 3 MAGI) minus line 23, not below zero.</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend><Dependency module="schedule1A" path="/schedule1ALine3" /></Minuend>
+            <Subtrahends><Dependency path="/schedule1AOvertimeLine23" /></Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1AOvertimeLine25">
+      <Description>Line 25: "Divide line 24 by $1,000. If the resulting number isn't a whole number, decrease the result to
+        the next lower whole number." StepwiseMultiply = floor(x / 1000) x 1.</Description>
+      <Derived>
+        <StepwiseMultiply>
+          <Multiplicand><Dependency path="/schedule1AOvertimeLine24" /></Multiplicand>
+          <Rate><Rational>1/1000</Rational></Rate>
+        </StepwiseMultiply>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1AOvertimeLine26">
+      <Description>Line 26: "Multiply line 25 by $100".</Description>
+      <Derived>
+        <Multiply>
+          <Rational>100/1</Rational>
+          <Dependency path="/schedule1AOvertimeLine25" />
+        </Multiply>
+      </Derived>
+    </Fact>
+    <Fact path="/schedule1AOvertimeLine27">
+      <Description>Line 27: "Qualified overtime compensation deduction. Subtract line 26 from line 21. If zero or less,
+        enter -0-". Complete 0 when no W-2 has code TT.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Not><Dependency module="formW2s" path="/hasW2CodeTtOvertime" /></Not></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Subtract>
+                  <Minuend><Dependency path="/schedule1AOvertimeLine21" /></Minuend>
+                  <Subtrahends><Dependency path="/schedule1AOvertimeLine26" /></Subtrahends>
+                </Subtract>
+              </GreaterOf>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

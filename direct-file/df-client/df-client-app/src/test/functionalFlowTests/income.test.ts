@@ -279,6 +279,10 @@ describe(`The \`income\` subcategory`, () => {
           knockout: true,
         },
         {
+          field: `qualifiedOvertimeCodeTT`,
+          knockout: false,
+        },
+        {
           field: `uncollectedMedicareTaxOnTips`,
           knockout: true,
         },

@@ -23,7 +23,7 @@
     </Fact>
     <Fact path="/schedule1ALine27">
       <Description>Schedule 1-A line 27, qualified overtime compensation deduction (Part III). Placeholder for #52.</Description>
-      <Derived><Dollar>0</Dollar></Derived>
+      <Derived><Dependency module="schedule1AOvertime" path="/schedule1AOvertimeLine27" /></Derived>
     </Fact>
     <Fact path="/schedule1ALine36">
       <Description>Schedule 1-A line 36, qualified passenger vehicle loan interest deduction (Part IV). Placeholder for #53.</Description>

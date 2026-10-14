@@ -96,6 +96,8 @@ button:
   giveUsFeedback: Compartir tus opiniones
   yesThisIsCorrect: Sí, está correcta
 info:
+  /info/credits-and-deductions/deductions/overtime-flsa:
+    body: "Solo cuenta la parte del pago de horas extras por encima de tu tarifa regular que exige la Ley de Normas Justas de Trabajo, por lo general la “mitad” de tiempo y medio. No cuentan los pagos adicionales por un contrato sindical o ley estatal, las primas por días festivos o fines de semana ni las horas extras de empleados exentos de la FLSA."
   /info/income/w2/add:
     helpText:
       modals:
@@ -17805,6 +17807,7 @@ fields:
     socialSecurityBenefit: Beneficio de Seguro Social
     railroadRetirementBoardBenefit: Beneficio de la Junta de Jubilación Ferroviaria
   /w2Box12CodeOptions:
+    qualifiedOvertimeCodeTT: TT
     uncollectedOasdiTaxOnTips: A
     uncollectedMedicareTaxOnTips: B
     taxableLifeInsuranceOver50k: C
@@ -18028,6 +18031,13 @@ fields:
     itin: Número de Identificación Personal del Contribuyente
     atin: Número de Identificación del Contribuyente para Adopciones
     none: Ninguno
+  /formW2s/*/qualifiedOvertimeCodeTT:
+    name: La cantidad del código TT
+    name_lower: código TT
+  /overtimeFlsaConfirmed:
+    boolean:
+      "yes": "Sí, soy un empleado no exento de la FLSA y el código TT es solo la prima de horas extras requerida"
+      "no": "No, o no estoy seguro"
   /formW2s/*/uncollectedOasdiTaxOnTips:
     name: La cantidad del código A
     name_lower: código A
@@ -19570,6 +19580,7 @@ afterDeadlineBanner:
     ¿Aún necesitas enviar tu declaración del impuesto federal? <LinkEFileOptions>Encuentra otra manera de
     enviarla</LinkEFileOptions>
 headings:
+  /heading/credits-and-deductions/deductions/overtime-flsa: "¿Tus horas extras con el código TT son solo la “mitad” adicional de tiempo y medio que exige la ley federal (FLSA)?"
   /heading/you-and-your-family/about-you/intro: En esta sección, te haremos algunas preguntas sobre ti.
   /heading/you-and-your-family/about-you/basic-info: Comparte alguna información básica sobre ti
   /heading/you-and-your-family/about-you/contact-info: Comparte tu información de contacto
@@ -22399,6 +22410,7 @@ dataviews:
     /flow/credits-and-deductions/care-providers:
       care-providers-info: Proveedores de cuidados
   /flow/credits-and-deductions/deductions:
+    /overtimeFlsaConfirmed: "¿Tus horas extras con el código TT son solo la prima requerida por la FLSA?"
     assertions:
       /taxableIncome: Tu ingreso tributable es de {{/taxableIncome}}.
       /standardDeduction: >-
@@ -23232,6 +23244,7 @@ dataviews:
     /formW2s/*/hasRRTACodes: >-
       ¿Tienes algún código relacionado con la Ley de Jubilación de Empleados Ferroviarios (RRTA) en la <strong>Casilla
       14</strong>?
+    /formW2s/*/qualifiedOvertimeCodeTT: Cantidad del código TT
     /formW2s/*/uncollectedOasdiTaxOnTips: Cantidad del código A
     /formW2s/*/uncollectedMedicareTaxOnTips: Cantidad del código B
     /formW2s/*/taxableLifeInsuranceOver50k: Cantidad del código C
@@ -25041,6 +25054,7 @@ subsubcategories:
     care-providers-tax-id__errorLinkTextOverride: Identificación tributaria
     care-providers-amount-paid__errorLinkTextOverride: Cantidad pagada
   /flow/credits-and-deductions/deductions:
+    overtime-deduction: Deducción por horas extras
     taxable-income: Ingreso tributable
     standard-deduction: Deducción estándar
     student-loan-int-deduction: Deducción de los intereses de los préstamos estudiantiles

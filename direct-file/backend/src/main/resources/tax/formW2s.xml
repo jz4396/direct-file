@@ -21,6 +21,7 @@
       <Description>Options for form type</Description>
       <Derived>
         <EnumOptions>
+          <String>qualifiedOvertimeCodeTT</String>
           <String>uncollectedOasdiTaxOnTips</String>
           <String>uncollectedMedicareTaxOnTips</String>
           <String>taxableLifeInsuranceOver50k</String>
@@ -2063,6 +2064,9 @@
       <Derived>
         <Any>
           <IsComplete>
+            <Dependency path="../qualifiedOvertimeCodeTT" />
+          </IsComplete>
+          <IsComplete>
             <Dependency path="../uncollectedOasdiTaxOnTips" />
           </IsComplete>
           <IsComplete>
@@ -2278,6 +2282,57 @@
         <Round>
           <Dependency path="../uncollectedMedicareTaxOnTips" />
         </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/qualifiedOvertimeCodeTT">
+      <Name>Qualified overtime compensation</Name>
+      <Description>#52: Box 12, code TT, new for 2026. 2026 draft General Instructions for Forms W-2 and W-3: "Code
+        TT—Total amount of qualified overtime compensation."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+    <Fact path="/formW2s/*/qualifiedOvertimeCodeTTOrZero">
+      <Derived>
+        <Switch>
+          <Case>
+            <When><IsComplete><Dependency path="../qualifiedOvertimeCodeTT" /></IsComplete></When>
+            <Then><Dependency path="../qualifiedOvertimeCodeTT" /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/formW2s/*/qualifiedOvertimeForSchedule1A">
+      <Description>#52: code TT counted on Schedule 1-A line 16 column (iii), only if the W-2's filer has a valid SSN
+        (§225(d), meaning of §24(h)(7)).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When><Dependency path="../filer/ssnValidForEitc" /></When>
+            <Then><Dependency path="../qualifiedOvertimeCodeTTOrZero" /></Then>
+          </Case>
+          <Case>
+            <When><True /></When>
+            <Then><Dollar>0</Dollar></Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/hasW2CodeTtOvertime">
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterThan>
+          <Left><CollectionSum><Dependency path="/formW2s/*/qualifiedOvertimeCodeTTOrZero" /></CollectionSum></Left>
+          <Right><Dollar>0</Dollar></Right>
+        </GreaterThan>
       </Derived>
     </Fact>
 
