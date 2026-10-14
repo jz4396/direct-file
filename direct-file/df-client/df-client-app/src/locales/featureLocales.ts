@@ -17,6 +17,8 @@ import unreportedTipsEn from './en.unreportedTips.yaml';
 import unreportedTipsEs from './es.unreportedTips.yaml';
 import scheduleEEn from './en.scheduleE.yaml';
 import scheduleEEs from './es.scheduleE.yaml';
+import schedule1AEn from './en.schedule1A.yaml';
+import schedule1AEs from './es.schedule1A.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -33,16 +35,28 @@ export function deepMerge(base: Tree, over: Tree): Tree {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const enLocale: any = deepMerge(
   deepMerge(
-    deepMerge(deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree), scheduleAEn as Tree),
-    unreportedTipsEn as Tree
+    deepMerge(
+      deepMerge(
+        deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree),
+        scheduleAEn as Tree
+      ),
+      unreportedTipsEn as Tree
+    ),
+    scheduleEEn as Tree
   ),
-  scheduleEEn as Tree
+  schedule1AEn as Tree
 );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const esLocale: any = deepMerge(
   deepMerge(
-    deepMerge(deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree), scheduleAEs as Tree),
-    unreportedTipsEs as Tree
+    deepMerge(
+      deepMerge(
+        deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree),
+        scheduleAEs as Tree
+      ),
+      unreportedTipsEs as Tree
+    ),
+    scheduleEEs as Tree
   ),
-  scheduleEEs as Tree
+  schedule1AEs as Tree
 );

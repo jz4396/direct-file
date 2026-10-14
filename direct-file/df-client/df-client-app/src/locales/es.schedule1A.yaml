@@ -1,0 +1,54 @@
+# Anexo 1-A Parte II, deducción por propinas (#51). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    tips-deduction: "Deducción por propinas"
+headings:
+  /heading/credits-and-deductions/deductions/tips-self-employed: "¿Recibiste propinas en tu propio negocio?"
+  /heading/credits-and-deductions/deductions/tips-occupation: "¿Recibiste tus propinas en una ocupación que habitualmente recibía propinas?"
+  /heading/credits-and-deductions/deductions/tips-sstb: "¿Está tu empleador en una ocupación o negocio de servicios especificados?"
+  /heading/knockout/tips-self-employed: "Esta herramienta todavía no admite la deducción por propinas para trabajadores por cuenta propia"
+  /heading/knockout/tips-sstb: "Esta herramienta todavía no admite propinas de una ocupación o negocio de servicios especificados"
+info:
+  /info/credits-and-deductions/deductions/tips-self-employed:
+    body: "Por ejemplo, propinas que recibió de clientes un estilista o conductor de transporte por cuenta propia."
+  /info/credits-and-deductions/deductions/tips-occupation:
+    body: "Solo califican las propinas recibidas en una ocupación de la lista del Tesoro de ocupaciones que habitual y regularmente recibían propinas el 31 de diciembre de 2024 o antes. El Formulario W-2, casilla 14b, muestra el código de ocupación con propinas del Tesoro."
+  /info/credits-and-deductions/deductions/tips-sstb:
+    body: "Los campos de servicios especificados incluyen salud, derecho, contabilidad, artes escénicas, consultoría, atletismo, servicios financieros y de corretaje."
+  /info/knockout/tips-self-employed:
+    alertText:
+      body:
+        - p: <Link1>Encuentra otras maneras de presentar tus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/es/filing/individuals/how-to-file
+  /info/knockout/tips-sstb:
+    alertText:
+      body:
+        - p: <Link1>Encuentra otras maneras de presentar tus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/es/filing/individuals/how-to-file
+fields:
+  /w2Box12CodeOptions:
+    cashTipsCodeTP: TP
+  /formW2s/*/cashTipsCodeTP:
+    name: La cantidad del código TP
+    name_lower: código TP
+  /tipsFromSelfEmployment:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /tipsOccupationConfirmed:
+    boolean:
+      "yes": "Sí, mi ocupación está en la lista"
+      "no": "No, o no estoy seguro"
+  /tipsEmployerIsSstb:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+dataviews:
+  /flow/income/jobs:
+    /formW2s/*/cashTipsCodeTP: Cantidad del código TP
+  /flow/credits-and-deductions/deductions:
+    /tipsFromSelfEmployment: "¿Recibiste propinas en tu propio negocio?"
+    /tipsOccupationConfirmed: "¿Recibiste tus propinas en una ocupación que habitualmente recibía propinas?"
+    /tipsEmployerIsSstb: "¿Está tu empleador en una ocupación o negocio de servicios especificados?"
