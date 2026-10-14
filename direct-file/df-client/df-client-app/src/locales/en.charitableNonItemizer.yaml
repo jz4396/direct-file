@@ -1,0 +1,23 @@
+# Charitable deduction for non-itemizers (#45, IRC §170(p)). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/credits-and-deductions/deductions:
+    charitable-non-itemizer: "Cash gifts to charity"
+headings:
+  /heading/credits-and-deductions/deductions/charitable-non-itemizer-intro: "In {{/taxYear}}, did you give cash or checks to a qualifying charity?"
+  /heading/credits-and-deductions/deductions/charitable-non-itemizer-amount: "How much cash did you give to qualifying charities in {{/taxYear}}?"
+info:
+  /info/credits-and-deductions/deductions/charitable-non-itemizer-intro:
+    body: "If you take the standard deduction, you can also deduct up to $1,000 ($2,000 if married filing jointly) of cash gifts to qualifying charities. Cash includes checks, credit cards, and payroll deductions. Gifts of goods or property don’t count."
+  /info/credits-and-deductions/deductions/charitable-non-itemizer-amount:
+    body: "Don’t include gifts to donor-advised funds or to supporting organizations, gifts to individuals, or gifts of goods or property. If you itemize, enter your gifts on Schedule A instead; this deduction will be $0."
+fields:
+  /nonItemizerHadCashGifts:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /nonItemizerWritableCashGifts:
+    name: "Cash gifts to qualifying charities"
+dataviews:
+  /flow/credits-and-deductions/deductions:
+    /nonItemizerHadCashGifts: "Did you give cash or checks to a qualifying charity?"
+    /nonItemizerWritableCashGifts: "Cash gifts to qualifying charities"
