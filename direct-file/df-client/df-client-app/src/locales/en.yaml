@@ -171,6 +171,7 @@ subsubcategories:
     care-providers-amount-paid__errorLinkTextOverride: Amount paid
     savers-qualified-outcomes: Your Saver’s Credit
   /flow/credits-and-deductions/deductions:
+    overtime-deduction: Deduction for overtime
     hsa-deduction: Health Savings Account (HSA) deduction
     educator-expenses-deduction: Educator expense deduction
     student-loan-int-deduction: Student loan interest deduction
@@ -196,6 +197,9 @@ subsubcategories:
   /flow/income/alaska-pfd:
     pfd-basic-info: PFD Information
 headings:
+  /heading/credits-and-deductions/deductions/overtime-other: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
+  /heading/knockout/overtime-not-on-w2-code-tt: "This tool doesn’t yet support overtime pay that isn’t reported in Form W-2 box 12, code TT"
+  /heading/credits-and-deductions/deductions/overtime-flsa: "Is your code TT overtime only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
   /heading/account/reset-return: Reset draft {{/taxYear}} federal tax return
   /heading/account/remove-return: Remove draft {{/taxYear}} federal tax return information from Direct File
   /heading/account/reset-success: "{{/taxYear}} federal tax return reset"
@@ -2735,6 +2739,16 @@ iconLists:
     payment_amount: <strong>Payment amount</strong><br />{{/balanceDue}}
     payment_method: <strong>Payment method</strong><br />Pay after I file
 info:
+  /info/credits-and-deductions/deductions/overtime-other:
+    body: "For example, overtime reported on Form 1099-NEC or 1099-MISC, or overtime premium you’d have to figure from pay stubs or payroll records."
+  /info/knockout/overtime-not-on-w2-code-tt:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/credits-and-deductions/deductions/overtime-flsa:
+    body: "Only the part of overtime pay above your regular rate that the Fair Labor Standards Act requires counts, usually the “half” in time-and-a-half. Extra pay under a union contract or state law, holiday or weekend premiums, and overtime for FLSA-exempt employees don’t count."
   /info/you-and-your-family/you/intro-data-import:
     body:
       - p: We’ll fill in some of your basic information that the IRS already has on file.
@@ -18073,6 +18087,7 @@ fields:
     socialSecurityBenefit: Social Security Benefit
     railroadRetirementBoardBenefit: Railroad Retirement Board Benefit
   /w2Box12CodeOptions:
+    qualifiedOvertimeCodeTT: TT
     uncollectedOasdiTaxOnTips: A
     uncollectedMedicareTaxOnTips: B
     taxableLifeInsuranceOver50k: C
@@ -18831,6 +18846,17 @@ fields:
     delete: Remove {{code}}
     add: Add box 14 code
     blank: No codes in Box 14
+  /formW2s/*/qualifiedOvertimeCodeTT:
+    name: Amount for code TT
+    name_lower: code TT
+  /overtimeNotOnW2CodeTT:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /overtimeFlsaConfirmed:
+    boolean:
+      "yes": "Yes, I’m an FLSA non-exempt employee and code TT is only the required overtime premium"
+      "no": "No, or I’m not sure"
   /formW2s/*/uncollectedOasdiTaxOnTips:
     name: Amount for code A
     name_lower: code A
@@ -23387,6 +23413,7 @@ dataviews:
     /formW2s/*/hasRRTACodes: Do you have any codes related to the Railroad Retirement Tax Act (RRTA) listed in box 14? # CONTENT REVIEW
     /formW2s/*/paidUnionDues: Does box 14 have any codes related to dues you paid for union membership?
     /formW2s/*/writableUnionDuesAmount: Union membership dues amount
+    /formW2s/*/qualifiedOvertimeCodeTT: Code TT amount
     /formW2s/*/uncollectedOasdiTaxOnTips: Code A amount
     /formW2s/*/uncollectedMedicareTaxOnTips: Code B amount
     /formW2s/*/taxableLifeInsuranceOver50k: Code C amount
@@ -24208,6 +24235,8 @@ dataviews:
     heading: Your Forms 1095-A
     has1095: $t(dataviews./flow/credits-and-deductions/credits/1095-a.heading)
   /flow/credits-and-deductions/deductions:
+    /overtimeNotOnW2CodeTT: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
+    /overtimeFlsaConfirmed: "Is your code TT overtime only the FLSA-required overtime premium?"
     /wasK12Educators: Did you work as a K–12 educator in {{/taxYear}}?
     /wasK12Educators_spouse: Did you or {{/secondaryFiler/firstName}} work as a K–12 educator in {{/taxYear}}?
     /primaryEducatorExpensesWritable: Amount of your own money spent on job expenses
