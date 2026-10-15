@@ -139,6 +139,7 @@
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanBusinessUse" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanLease" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanOther" />
+          <Dependency module="scheduleD" path="/flowKnockoutForm8949DateAcquiredVariousOrInherited" />
         </Any>
       </Derived>
       <Placeholder>
