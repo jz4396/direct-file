@@ -33,14 +33,25 @@ const made168kIncomeData = {
   [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(`168000.00`),
 };
 
+const made178kIncomeData = {
+  ...baseIncomeData,
+  [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(`178000.00`),
+};
+
+const made88kIncomeData = {
+  ...baseIncomeData,
+  [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(`88000.00`),
+};
+
 const made190kIncomeData = {
   ...baseIncomeData,
   [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(`190000.00`),
 };
 
-const made200kIncomeData = {
+// TY2026: over the $205,000 joint "completely phased out" amount (Rev. Proc. 2025-32 §3.29 p. 23)
+const made210kIncomeData = {
   ...baseIncomeData,
-  [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(`200000.00`),
+  [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(`210000.00`),
 };
 
 const studentLoanEligibleData = {
@@ -68,7 +79,7 @@ describe(`student loan deduction related facts`, () => {
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
         ...studentLoanEligibleData,
-        ...made200kIncomeData,
+        ...made210kIncomeData,
         [`/studentLoanInterestAmount`]: createDollarWrapper(`500.00`),
       });
       expect(factGraph.get(Path.concretePath(`/studentLoanInterestAdjustmentAmount`, null)).get.toString()).toBe(
@@ -81,13 +92,14 @@ describe(`student loan deduction related facts`, () => {
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
         ...studentLoanEligibleData,
-        ...made168kIncomeData,
+        ...made178kIncomeData,
         [`/studentLoanInterestAmount`]: createDollarWrapper(`500.00`),
       });
 
-      // The /studentLoanPhaseOutStartMfj is $165,000 and /studentLoanPhaseOutCompleteMfj is $195,000.
-      // The filer’s income of $168,000 is $3,000 above the $165,000 threshold.
-      // The /studentLoanPhaseOutRange is $195,000 - $165,000 = $30,000.
+      // TY2026 (Rev. Proc. 2025-32 §3.29 p. 23): /studentLoanPhaseOutStartMfj is $175,000 and
+      // /studentLoanPhaseOutCompleteMfj is $205,000.
+      // The filer’s income of $178,000 is $3,000 above the $175,000 threshold.
+      // The /studentLoanPhaseOutRangeMfj is $205,000 - $175,000 = $30,000.
       // Their /studentLoanInterestAmount is $500.00
       // $3000 / $30,000 * 500 = 50 is phased out
       // 500 - 50 = 450
@@ -105,7 +117,7 @@ describe(`student loan deduction related facts`, () => {
         [`/studentLoanInterestAmount`]: createDollarWrapper(`500.00`),
       });
 
-      // The /studentLoanPhaseOutStartMfj is $165,000 and /studentLoanPhaseOutCompleteMfj is $195,000.
+      // TY2026: /studentLoanPhaseOutStartMfj is $175,000 and /studentLoanPhaseOutCompleteMfj is $205,000.
       // The filer’s income of $83,000 is below the threshold
       // Their /studentLoanInterestAmount is $500.00 and is below the $2500 limit
       // They get the full amount
@@ -123,7 +135,7 @@ describe(`student loan deduction related facts`, () => {
         [`/studentLoanInterestAmount`]: createDollarWrapper(`3000.00`),
       });
 
-      // The /studentLoanPhaseOutStartMfj is $165,000 and /studentLoanPhaseOutCompleteMfj is $195,000.
+      // TY2026: /studentLoanPhaseOutStartMfj is $175,000 and /studentLoanPhaseOutCompleteMfj is $205,000.
       // The filer’s income of $83,000 is below the threshold
       // Their /studentLoanInterestAmount is $3000 which is above the $2500 limit
       // They get the limit of $2500
@@ -150,18 +162,18 @@ describe(`student loan deduction related facts`, () => {
       // 3. lines 11 through 20, and 23 and 25 = /adjustmentsToIncomeExcludingStudentLoanInterest = $6000
       // due to HSA contributions
       // 4. /magiForStudentLoanInterestDeduction = $184,000
-      // 5. /studentLoanPhaseOutStartMfj = $165,000 (worksheet hasn't updated for 2024 yet and has this as $155,000)
-      // 6. is 4 more than 5? Yes =  $184,000 - $165,000 = $19,000
-      // 7. $19,000 / 30,000 = 0.633
-      // 8. 0.633 * $2500 = $1582.5
-      // 9. $2500 - $1582.5 = $917.5 (rounded to $918)
+      // 5. /studentLoanPhaseOutStartMfj = $175,000 (TY2026, Rev. Proc. 2025-32 §3.29 p. 23)
+      // 6. is 4 more than 5? Yes =  $184,000 - $175,000 = $9,000
+      // 7. $9,000 / 30,000 = 0.300
+      // 8. 0.300 * $2500 = $750
+      // 9. $2500 - $750 = $1750
 
       expect(factGraph.get(Path.concretePath(`/hsaTotalDeductibleAmount`, null)).get.toString()).toBe(`6000.00`);
       expect(
         factGraph.get(Path.concretePath(`/adjustmentsToIncomeExcludingStudentLoanInterest`, null)).get.toString()
       ).toBe(`6000.00`);
       expect(factGraph.get(Path.concretePath(`/studentLoanInterestAdjustmentAmount`, null)).get.toString()).toBe(
-        `918.00`
+        `1750.00`
       );
     });
 
@@ -170,7 +182,7 @@ describe(`student loan deduction related facts`, () => {
 
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
-        ...made200kIncomeData,
+        ...made210kIncomeData,
       });
       expect(factGraph.get(Path.concretePath(`/cannotDeductStudentLoanInterest`, null)).get).toBe(true);
     });
@@ -195,12 +207,11 @@ describe(`student loan deduction related facts`, () => {
       const { factGraph } = setupFactGraph({
         ...singleFilerData,
         ...studentLoanEligibleData,
-        ...made83kIncomeData,
+        ...made88kIncomeData,
         [`/studentLoanInterestAmount`]: createDollarWrapper(`500.00`),
       });
       expect(factGraph.get(Path.concretePath(`/studentLoanInterestAdjustmentAmount`, null)).get.toString()).toBe(
-        // This number has been verified against manually doing the work on form 1040 instructions.
-        // But it will change when we update for TY2023!
+        // TY2026: $88,000 is $3,000 over $85,000; $3,000 / $15,000 = 0.200; 0.200 * $500 = $100; $500 - $100 = $400
         `400.00`
       );
     });
