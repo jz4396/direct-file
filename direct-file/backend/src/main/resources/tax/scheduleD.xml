@@ -366,6 +366,36 @@
       </Writable>
     </Fact>
 
+    <Fact path="/form8949Transactions/*/dateAcquiredIsVariousOrInherited">
+      <Name>Date acquired is VARIOUS or INHERITED</Name>
+      <Description>#60: Form 8949 instr. (2025) p. 6, column (b): "Enter "INHERITED" in column (b)" for inherited property, and for a block "acquired through several different purchases, you may report the sale on one row and enter "VARIOUS" in column (b)." Our ../dateAcquired is a single Day, so phase A stops instead of printing a made-up date.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+      <Placeholder>
+        <False />
+      </Placeholder>
+    </Fact>
+
+    <Fact path="/flowKnockoutForm8949DateAcquiredVariousOrInherited">
+      <Name>Knockout: Form 8949 date acquired VARIOUS or INHERITED</Name>
+      <Description>#60: any 8949 row whose date acquired is VARIOUS or INHERITED (Form 8949 instr. (2025) p. 6, column (b)) blocks submission until column (b) can carry those values.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Count>
+              <Dependency path="/form8949Transactions/*/dateAcquiredIsVariousOrInherited" />
+            </Count>
+          </Left>
+          <Right>
+            <Int>0</Int>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions/*/dateSold">
       <Name>Date sold or disposed of</Name>
       <Description>Form 8949 column (c) — Date sold or disposed of (Form 8949 instr. (2025) p.6).</Description>
