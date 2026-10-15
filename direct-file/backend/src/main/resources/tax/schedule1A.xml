@@ -45,13 +45,44 @@
       <Writable><Boolean /></Writable>
       <Placeholder><False /></Placeholder>
     </Fact>
+    <Fact path="/tipsSstbInterimRuleApplies">
+      <Name>§224 SSTB interim rule (draft Form 1040 instructions p.102)</Name>
+      <Description>#57. Draft Form 1040 instructions (https://www.irs.gov/pub/irs-dft/i1040gi--dft.pdf), Schedule 1-A
+        Part II, p.102: "Until the issuance of final regulations determining whether a trade or business is an SSTB for
+        purposes of this deduction, and for taxable years beginning before the date the final regulations are published,
+        the IRS will treat employees and self-employed individuals as having received tips in the course of a trade or
+        business that is not an SSTB if the employee is in an occupation that customarily and regularly received tips on
+        or before December 31, 2024." (transition relief: Notice 2025-69). IRC §224(d)(2)(B)
+        (https://www.law.cornell.edu/uscode/text/26/224). True while no final SSTB regulations for §224 have been
+        published; set to false when they are, which restores the SSTB question and stop below.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><True /></Derived>
+    </Fact>
+    <Fact path="/flowShowTipsSstbQuestion">
+      <Name>Ask the SSTB question</Name>
+      <Description>#57. Asked only when code TP tips are present, the filer confirmed a listed tipped occupation (otherwise
+        line 5 is $0 and the SSTB answer cannot change the return), and the p.102 interim rule no longer applies. While it
+        applies, a confirmed listed occupation is treated as not from an SSTB.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency module="formW2s" path="/hasW2CodeTpTips" />
+          <Dependency path="/tipsOccupationConfirmed" />
+          <Not><Dependency path="/tipsSstbInterimRuleApplies" /></Not>
+        </All>
+      </Derived>
+    </Fact>
     <Fact path="/flowKnockoutTipsSstb">
       <Name>Knockout: tips from a specified service trade or business</Name>
+      <Description>§224(d)(2)(B): tips from an SSTB (§199A(d)(2)) are not qualified tips. #57: under the p.102 interim
+        rule a filer in a confirmed listed tipped occupation is treated as not in an SSTB, so this stop fires only when the
+        interim rule no longer applies (/flowShowTipsSstbQuestion) and the filer answers that the employer is an SSTB.
+        Wired into /flowIsKnockedOut in flow.xml.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
-          <Dependency module="formW2s" path="/hasW2CodeTpTips" />
+          <Dependency path="/flowShowTipsSstbQuestion" />
           <Dependency path="/tipsEmployerIsSstb" />
         </All>
       </Derived>

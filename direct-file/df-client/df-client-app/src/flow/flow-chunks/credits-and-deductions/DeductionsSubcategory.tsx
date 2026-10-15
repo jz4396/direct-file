@@ -618,7 +618,7 @@ export const DeductionsSubcategory = (
         <Boolean path='/tipsOccupationConfirmed' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='tips-sstb' condition='/hasW2CodeTpTips'>
+      <Screen route='tips-sstb' condition='/flowShowTipsSstbQuestion'>
         <Heading i18nKey='/heading/credits-and-deductions/deductions/tips-sstb' />
         <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/tips-sstb' />
         <Boolean path='/tipsEmployerIsSstb' />
