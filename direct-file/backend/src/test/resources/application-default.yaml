@@ -114,6 +114,14 @@ direct-file:
         configuration-location: "src/main/resources/pdf/2024/IRS1040S3/es/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
+      - name: IRS1040SA
+        year: 2024
+        language-code: en
+        location: "src/main/resources/pdf/2026/IRS1040SA/en/f1040sa--dft.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/IRS1040SA/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
       - name: IRS1040SB
         year: 2024
         language-code: en

@@ -168,6 +168,14 @@ direct-file:
         configuration-location: pdf/2024/IRS1040S3/es/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: IRS1040SA
+        year: 2024
+        language-code: en
+        location: pdf/2026/IRS1040SA/en/f1040sa--dft.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/IRS1040SA/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: IRS1040SB
         year: 2024
         language-code: en
