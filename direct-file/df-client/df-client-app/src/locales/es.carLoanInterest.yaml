@@ -2,6 +2,7 @@
 subsubcategories:
   /flow/credits-and-deductions/deductions:
     car-loan-interest: "Intereses de préstamos para vehículos"
+    car-loan-vehicle: "Préstamo de vehículo"
 headings:
   /heading/credits-and-deductions/deductions/car-loan-intro: "En {{/taxYear}}, ¿pagó intereses de un préstamo para comprar un auto u otro vehículo para uso personal?"
   /heading/credits-and-deductions/deductions/car-loan-new: "¿El vehículo era nuevo cuando lo compró, de modo que su primer uso comenzó con usted (o su cónyuge si presentan una declaración conjunta)?"
@@ -21,7 +22,7 @@ info:
   /info/credits-and-deductions/deductions/car-loan-us-assembly:
     body: "El ensamblaje final es donde el fabricante terminó el vehículo. La placa del VIN o la etiqueta de la ventana muestran el lugar del ensamblaje final. Si el ensamblaje final no fue en los Estados Unidos, los intereses no califican."
   /info/credits-and-deductions/deductions/car-loan-other:
-    body: "Tiene más de un préstamo para vehículos; el préstamo no está garantizado con un gravamen sobre el vehículo; el vehículo tiene título de salvamento o se compró para chatarra o piezas; el préstamo fue de un familiar o negocio relacionado, o financió una compra de flota; refinanció por más del préstamo original; o el vehículo no es un auto, minivan, van, SUV, camioneta o motocicleta, o pesa 14,000 libras o más."
+    body: "El préstamo no está garantizado con un gravamen sobre el vehículo; el vehículo tiene título de salvamento o se compró para chatarra o piezas; el préstamo fue de un familiar o negocio relacionado, o financió una compra de flota; refinanció por más del préstamo original; o el vehículo no es un auto, minivan, van, SUV, camioneta o motocicleta, o pesa 14,000 libras o más."
   /info/credits-and-deductions/deductions/car-loan-amount:
     body: "Su número de identificación del vehículo (VIN) es obligatorio en su declaración. Tiene 17 letras y números, y lo encuentra en los documentos del préstamo, el registro o el Formulario 1098-VLI. Anote los intereses que pagó en {{/taxYear}}, que pueden aparecer en el recuadro 1 del Formulario 1098-VLI."
   /info/knockout/car-loan-used:
@@ -53,46 +54,66 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
 fields:
+  /carLoans:
+    controls:
+      add: Agregar un vehículo
+      complete_zero: No tengo un vehículo para agregar
+      complete: Terminé de agregar vehículos
+      back: Ir a la lista de vehículos
+    collectionListing:
+      itemHeading1: Préstamo de vehículo
+      itemHeading2: Vehículo incompleto
+      label1: Intereses
+      value1: <strong>{{/carLoans/*/writableInterest}}</strong>
+    deleteControl:
+      text: <LinkModal1>Eliminar vehículo</LinkModal1>
+      LinkModal1:
+        header: ¿Está seguro de que desea eliminar este vehículo?
+        body:
+          - p: Esto no se puede deshacer.
+        controls:
+          confirm: Eliminar este vehículo
+          cancel: Cancelar
   /carLoanHadInterest:
     boolean:
       "yes": "Sí"
       "no": "No"
-  /carLoanIsNewVehicle:
+  /carLoans/*/isNewVehicle:
     boolean:
       "yes": "Sí, era nuevo"
       "no": "No, era usado"
-  /carLoanUsAssembly:
+  /carLoans/*/usAssembly:
     boolean:
       "yes": "Sí"
       "no": "No"
-  /carLoanAfter2024:
+  /carLoans/*/after2024:
     boolean:
       "yes": "Sí"
       "no": "No"
-  /carLoanHasBusinessUse:
+  /carLoans/*/hasBusinessUse:
     boolean:
       "yes": "Sí"
       "no": "No"
-  /carLoanIsLease:
+  /carLoans/*/isLease:
     boolean:
       "yes": "Sí"
       "no": "No"
-  /carLoanHasOtherExceptions:
+  /carLoans/*/hasOtherExceptions:
     boolean:
       "yes": "Sí, aplica una o más"
       "no": "No, no aplica ninguna"
-  /carLoanVin:
+  /carLoans/*/vin:
     name: "Número de identificación del vehículo (VIN)"
-  /carLoanWritableInterest:
+  /carLoans/*/writableInterest:
     name: "Intereses pagados del préstamo"
 dataviews:
   /flow/credits-and-deductions/deductions:
     /carLoanHadInterest: "¿Pagó intereses de un préstamo para un vehículo personal?"
-    /carLoanIsNewVehicle: "¿El vehículo era nuevo?"
-    /carLoanUsAssembly: "¿El ensamblaje final fue en los Estados Unidos?"
-    /carLoanAfter2024: "¿Obtuvo el préstamo después del 31 de diciembre de 2024?"
-    /carLoanHasBusinessUse: "¿Uso para negocios?"
-    /carLoanIsLease: "¿Arrendado?"
-    /carLoanHasOtherExceptions: "¿Aplican otras situaciones?"
-    /carLoanVin: "Número de identificación del vehículo (VIN)"
-    /carLoanWritableInterest: "Intereses pagados del préstamo"
+    /carLoans/*/isNewVehicle: "¿El vehículo era nuevo?"
+    /carLoans/*/usAssembly: "¿El ensamblaje final fue en los Estados Unidos?"
+    /carLoans/*/after2024: "¿Obtuvo el préstamo después del 31 de diciembre de 2024?"
+    /carLoans/*/hasBusinessUse: "¿Uso para negocios?"
+    /carLoans/*/isLease: "¿Arrendado?"
+    /carLoans/*/hasOtherExceptions: "¿Aplican otras situaciones?"
+    /carLoans/*/vin: "Número de identificación del vehículo (VIN)"
+    /carLoans/*/writableInterest: "Intereses pagados del préstamo"
