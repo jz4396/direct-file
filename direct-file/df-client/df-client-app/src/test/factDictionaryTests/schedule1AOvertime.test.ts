@@ -102,7 +102,9 @@ describe(`Schedule 1-A Part III — qualified overtime`, () => {
  * 4 total double-time pay x 1/4 (Example 3: $20,000 → $5,000); 5 regular rate x hours over 40, x 1/2.
  * §225(c)(1) (https://www.law.cornell.edu/uscode/text/26/225): "in excess of the regular rate".
  */
+const switchOn = { '/overtimeAlternativeMethodsApply': createBooleanWrapper(true) };
 const selfFigured = (method: string, amount: string, extra: Record<string, unknown> = {}) => ({
+  ...switchOn,
   '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
   '/overtimeOnForm1099': createBooleanWrapper(false),
   '/overtimeSpecialSection7Rule': createBooleanWrapper(false),
@@ -114,7 +116,7 @@ const selfFigured = (method: string, amount: string, extra: Record<string, unkno
 const noTT = (wages: number, extra: Record<string, unknown>, base: Record<string, unknown> = singleFilerData) =>
   setupFactGraph({ ...baseFilerData, ...base, ...makeW2Data(wages), ...extra }).factGraph;
 
-describe(`Schedule 1-A Part III — overtime figured from records (#68)`, () => {
+describe(`Schedule 1-A Part III — overtime figured from records, switch ON (#68)`, () => {
   const methods: [string, string, string][] = [
     [`statementPremium`, `5000`, `5000.00`], // paragraph 1
     [`statementTotalTimeAndHalf`, `15000`, `5000.00`], // paragraph 2, Example 1: $15,000 / 3
@@ -188,6 +190,7 @@ describe(`Schedule 1-A Part III — overtime figured from records (#68)`, () => 
   it(`answered yes but no method yet: line 27 is incomplete, not a silent $0`, ({ task }) => {
     task.meta.testedFactPaths = [`/schedule1ALine27`];
     const fg = noTT(70000, {
+      ...switchOn,
       '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
       '/overtimeOnForm1099': createBooleanWrapper(false),
       '/overtimeSpecialSection7Rule': createBooleanWrapper(false),
@@ -228,6 +231,7 @@ describe(`Schedule 1-A Part III — stop for overtime that can't be computed (#6
   it(`1099 overtime alone (no W-2 overtime question needed): knocks out`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutOvertimeNotComputable`];
     const fg = noTT(70000, {
+      ...switchOn,
       '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
       '/overtimeOnForm1099': createBooleanWrapper(true),
     });
@@ -237,5 +241,48 @@ describe(`Schedule 1-A Part III — stop for overtime that can't be computed (#6
   it(`the stop is a submission-blocking fact and the #59 stop is gone`, () => {
     expect(submissionBlockingFacts).toContain(`/flowKnockoutOvertimeNotComputable`);
     expect(submissionBlockingFacts).not.toContain(`/flowKnockoutOvertimeNotOnW2CodeTT`);
+  });
+});
+
+describe(`Schedule 1-A Part III — TY2026 default: alternative methods switch OFF (#68, Rev)`, () => {
+  it(`the switch defaults to off`, ({ task }) => {
+    task.meta.testedFactPaths = [`/overtimeAlternativeMethodsApply`];
+    expect(noTT(70000, {}).get(`/overtimeAlternativeMethodsApply` as ConcretePath).get).toBe(false);
+  });
+
+  it(`overtime not on code TT: stop fires, method questions not asked, nothing computed`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutOvertimeNotComputable`, `/flowIsKnockedOut`, `/flowAskOvertimeMethod`];
+    const fg = noTT(70000, { '/overtimeNotOnW2CodeTT': createBooleanWrapper(true) });
+    expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(true);
+    expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+    expect(fg.get(`/flowAskOvertimeSpecialRule` as ConcretePath).get).toBe(false);
+    expect(fg.get(`/flowAskOvertimeMethod` as ConcretePath).get).toBe(false);
+    expect(get(fg, `/overtimeSelfFiguredAmount`)).toBe(`0.00`);
+  });
+
+  it(`1099 overtime: stop fires`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutOvertimeNotComputable`];
+    const fg = noTT(70000, {
+      '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
+      '/overtimeOnForm1099': createBooleanWrapper(true),
+    });
+    expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(true);
+  });
+
+  it(`even with method answers present, switch off computes $0 and stops; code TT still counts`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1AOvertimeLine17`, `/flowKnockoutOvertimeNotComputable`];
+    const answers = selfFigured(`statementPremium`, `3000`, {
+      '/overtimeAlternativeMethodsApply': createBooleanWrapper(false),
+    });
+    const fg = single(70000, `4000`, answers);
+    expect(get(fg, `/schedule1AOvertimeLine17`)).toBe(`4000.00`);
+    expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(true);
+  });
+
+  it(`code-TT-only return with the switch off: not stopped`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutOvertimeNotComputable`, `/schedule1ALine27`];
+    const fg = single(70000, `4000`, { '/overtimeNotOnW2CodeTT': createBooleanWrapper(false) });
+    expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(false);
+    expect(get(fg, `/schedule1ALine27`)).toBe(`4000.00`);
   });
 });

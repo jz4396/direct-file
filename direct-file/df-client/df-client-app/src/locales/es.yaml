@@ -101,7 +101,7 @@ info:
   /info/knockout/overtime-not-computable:
     alertText:
       body:
-        - p: "Esta herramienta puede calcular las horas extras con los registros de tu empleador cuando se pagan a tiempo y medio o al doble. No admite horas extras declaradas en el Formulario 1099-NEC o 1099-MISC, reglas especiales de horas extras para algunos empleadores públicos, otras tarifas de horas extras, ni una declaración en la que un declarante no tenga un número de Seguro Social válido."
+        - p: "Esta herramienta solo puede usar las horas extras calificadas que aparecen en el Formulario W-2, casilla 12, con el código TT. Todavía no admite horas extras calculadas con registros de pago ni declaradas en el Formulario 1099-NEC o 1099-MISC."
         - p: <Link1>Encuentra otras maneras de presentar tus impuestos federales.</Link1>
       urls:
         Link1: https://www.irs.gov/es/filing/individuals/how-to-file

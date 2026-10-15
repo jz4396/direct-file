@@ -83,9 +83,24 @@
         <Limit type="Min"><Dollar>0</Dollar></Limit>
       </Writable>
     </Fact>
+    <Fact path="/overtimeAlternativeMethodsApply">
+      <Name>Switch: draft 1040 instructions p.106 alternative overtime methods</Name>
+      <Description>#68, Rev's ruling for TY2026: OFF. The p.106 methods are headed "Determining the amount of qualified
+        overtime compensation for 2025. Because no changes have been made to Form W-2, Form 1099-NEC, or Form 1099-MISC to
+        account for a separate accounting of qualified overtime compensation ..." (transition relief, Notice 2025-69), and
+        §225(a) (https://www.law.cornell.edu/uscode/text/26/225) allows the deduction for overtime "included on statements
+        furnished to the individual pursuant to section 6041(d)(4) or 6051(a)(19)". With the switch off, any qualified
+        overtime not on W-2 code TT (including Form 1099 overtime) hits /flowKnockoutOvertimeNotComputable. Same role as
+        /tipsSstbInterimRuleApplies. Placeholder false; no screen writes it (writable only so tests can turn it on). Turn on
+        only if the TY2026 instructions keep the p.106 methods.</Description>
+      <Export downstreamFacts="true" />
+      <Writable><Boolean /></Writable>
+      <Placeholder><False /></Placeholder>
+    </Fact>
     <Fact path="/flowAskOvertimeSpecialRule">
       <Derived>
         <All>
+          <Dependency path="/overtimeAlternativeMethodsApply" />
           <Dependency path="/overtimeQuestionApplies" />
           <Dependency path="/overtimeNotOnW2CodeTT" />
           <Not><Dependency path="/overtimeOnForm1099" /></Not>
@@ -160,7 +175,7 @@
     </Fact>
     <Fact path="/flowKnockoutOvertimeNotComputable">
       <Name>Knockout: qualified overtime this tool can't compute</Name>
-      <Description>#68 replaces #59's stop for all overtime not on code TT. Still stopped: overtime on Form 1099-NEC/MISC,
+      <Description>#68 replaces #59's stop for all overtime not on code TT. Stopped: everything while /overtimeAlternativeMethodsApply is off (TY2026); with it on, overtime on Form 1099-NEC/MISC,
         a special FLSA section 7 rule, a premium rate or method other than the p.106 paragraphs modeled, or a filer without
         a valid SSN. Wired into /flowIsKnockedOut in flow.xml.</Description>
       <Export downstreamFacts="true" />
@@ -170,6 +185,7 @@
           <Dependency path="/overtimeQuestionApplies" />
           <Dependency path="/overtimeNotOnW2CodeTT" />
           <Any>
+            <Not><Dependency path="/overtimeAlternativeMethodsApply" /></Not>
             <Dependency path="/overtimeOnForm1099" />
             <Dependency path="/overtimeSpecialSection7Rule" />
             <Dependency path="/overtimeMethodIsOther" />

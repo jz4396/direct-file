@@ -2744,7 +2744,7 @@ info:
   /info/knockout/overtime-not-computable:
     alertText:
       body:
-        - p: "This tool can figure overtime from your employer’s records when it’s time-and-a-half or double time. It can’t handle overtime reported on Form 1099-NEC or 1099-MISC, special overtime rules for some public employers, other overtime rates, or a return where a filer doesn’t have a valid Social Security number."
+        - p: "This tool can only use qualified overtime shown on Form W-2 in box 12 with code TT. It can’t yet handle overtime figured from pay records or reported on Form 1099-NEC or 1099-MISC."
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
