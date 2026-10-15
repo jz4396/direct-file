@@ -2,6 +2,7 @@
 subsubcategories:
   /flow/credits-and-deductions/deductions:
     car-loan-interest: "Car loan interest"
+    car-loan-vehicle: "Vehicle loan"
 headings:
   /heading/credits-and-deductions/deductions/car-loan-intro: "In {{/taxYear}}, did you pay interest on a loan to buy a car or other vehicle for personal use?"
   /heading/credits-and-deductions/deductions/car-loan-new: "Was the vehicle new when you bought it, so that its first use started with you (or your spouse if filing jointly)?"
@@ -21,7 +22,7 @@ info:
   /info/credits-and-deductions/deductions/car-loan-us-assembly:
     body: "Final assembly is where the manufacturer completed the vehicle. The vehicle’s VIN plate or the window sticker shows the final assembly location. If final assembly wasn’t in the United States, the interest doesn’t qualify."
   /info/credits-and-deductions/deductions/car-loan-other:
-    body: "You have more than one vehicle loan; the loan isn’t secured by a lien on the vehicle; the vehicle has a salvage title or was bought for scrap or parts; the loan was from a relative or a related business, or financed a fleet purchase; you refinanced for more than the original loan; or the vehicle isn’t a car, minivan, van, SUV, pickup, or motorcycle, or weighs 14,000 pounds or more."
+    body: "The loan isn’t secured by a lien on the vehicle; the vehicle has a salvage title or was bought for scrap or parts; the loan was from a relative or a related business, or financed a fleet purchase; you refinanced for more than the original loan; or the vehicle isn’t a car, minivan, van, SUV, pickup, or motorcycle, or weighs 14,000 pounds or more."
   /info/credits-and-deductions/deductions/car-loan-amount:
     body: "Your vehicle identification number (VIN) is required on your return. It’s 17 letters and numbers, and you can find it on your loan papers, registration, or Form 1098-VLI. Enter the interest you paid in {{/taxYear}}, which may be in Form 1098-VLI box 1."
   /info/knockout/car-loan-used:
@@ -53,46 +54,66 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
 fields:
+  /carLoans:
+    controls:
+      add: Add a vehicle
+      complete_zero: I don’t have a vehicle to add
+      complete: I’m done adding vehicles
+      back: Go to vehicle list
+    collectionListing:
+      itemHeading1: Vehicle loan
+      itemHeading2: Incomplete vehicle
+      label1: Interest
+      value1: <strong>{{/carLoans/*/writableInterest}}</strong>
+    deleteControl:
+      text: <LinkModal1>Remove vehicle</LinkModal1>
+      LinkModal1:
+        header: Are you sure you want to remove this vehicle?
+        body:
+          - p: This can’t be undone.
+        controls:
+          confirm: Remove this vehicle
+          cancel: Cancel
   /carLoanHadInterest:
     boolean:
       "yes": "Yes"
       "no": "No"
-  /carLoanIsNewVehicle:
+  /carLoans/*/isNewVehicle:
     boolean:
       "yes": "Yes, it was new"
       "no": "No, it was used"
-  /carLoanUsAssembly:
+  /carLoans/*/usAssembly:
     boolean:
       "yes": "Yes"
       "no": "No"
-  /carLoanAfter2024:
+  /carLoans/*/after2024:
     boolean:
       "yes": "Yes"
       "no": "No"
-  /carLoanHasBusinessUse:
+  /carLoans/*/hasBusinessUse:
     boolean:
       "yes": "Yes"
       "no": "No"
-  /carLoanIsLease:
+  /carLoans/*/isLease:
     boolean:
       "yes": "Yes"
       "no": "No"
-  /carLoanHasOtherExceptions:
+  /carLoans/*/hasOtherExceptions:
     boolean:
       "yes": "Yes, one or more apply"
       "no": "No, none of these apply"
-  /carLoanVin:
+  /carLoans/*/vin:
     name: "Vehicle identification number (VIN)"
-  /carLoanWritableInterest:
+  /carLoans/*/writableInterest:
     name: "Interest paid on the loan"
 dataviews:
   /flow/credits-and-deductions/deductions:
     /carLoanHadInterest: "Did you pay interest on a loan for a personal vehicle?"
-    /carLoanIsNewVehicle: "Was the vehicle new?"
-    /carLoanUsAssembly: "Was final assembly in the United States?"
-    /carLoanAfter2024: "Was the loan taken out after December 31, 2024?"
-    /carLoanHasBusinessUse: "Business use?"
-    /carLoanIsLease: "Leased?"
-    /carLoanHasOtherExceptions: "Other situations apply?"
-    /carLoanVin: "Vehicle identification number (VIN)"
-    /carLoanWritableInterest: "Interest paid on the loan"
+    /carLoans/*/isNewVehicle: "Was the vehicle new?"
+    /carLoans/*/usAssembly: "Was final assembly in the United States?"
+    /carLoans/*/after2024: "Was the loan taken out after December 31, 2024?"
+    /carLoans/*/hasBusinessUse: "Business use?"
+    /carLoans/*/isLease: "Leased?"
+    /carLoans/*/hasOtherExceptions: "Other situations apply?"
+    /carLoans/*/vin: "Vehicle identification number (VIN)"
+    /carLoans/*/writableInterest: "Interest paid on the loan"

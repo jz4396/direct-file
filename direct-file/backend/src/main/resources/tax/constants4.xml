@@ -2,27 +2,24 @@
 <FactDictionaryModule>
   <Facts>
     <Fact path="/hdhpMinAnnualDeductibleFamily">
-      <Description>High Deductible Health Plan (HDHP) minimum annual deductible for family coverage (source
-        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
-      <TaxYear>2024</TaxYear>
+      <Description>HDHP minimum annual deductible, family coverage. Rev. Proc. 2025-19 §2.01, p. 2 (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): a high deductible health plan is defined "as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage." IRC §223(c)(2) (https://www.law.cornell.edu/uscode/text/26/223).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>3200</Dollar>
+        <Dollar>3400</Dollar>
       </Derived>
     </Fact>
     <Fact path="/hdhpMaxOOPExpensesSelf">
-      <Description>High Deductible Health Plan (HDHP) maximum out-of-pocket expenses for self-only coverage (source
-        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
-      <TaxYear>2024</TaxYear>
+      <Description>HDHP maximum out-of-pocket expenses, self-only coverage. Rev. Proc. 2025-19 §2.01, p. 2 (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): a high deductible health plan is defined "as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage." IRC §223(c)(2) (https://www.law.cornell.edu/uscode/text/26/223).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>8050</Dollar>
+        <Dollar>8500</Dollar>
       </Derived>
     </Fact>
     <Fact path="/hdhpMaxOOPExpensesFamily">
-      <Description>High Deductible Health Plan (HDHP) maximum out-of-pocket expenses for family coverage (source
-        https://www.irs.gov/pub/irs-drop/rp-23-23.pdf)</Description>
-      <TaxYear>2024</TaxYear>
+      <Description>HDHP maximum out-of-pocket expenses, family coverage. Rev. Proc. 2025-19 §2.01, p. 2 (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): a high deductible health plan is defined "as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage." IRC §223(c)(2) (https://www.law.cornell.edu/uscode/text/26/223).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>16100</Dollar>
+        <Dollar>17000</Dollar>
       </Derived>
     </Fact>
     <Fact path="/hsaForm5498DueDate">
