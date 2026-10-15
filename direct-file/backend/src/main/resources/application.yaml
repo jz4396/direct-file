@@ -219,9 +219,9 @@ direct-file:
       - name: IRS1040
         year: 2024
         language-code: en
-        location: pdf/2024/IRS1040/en/f1040.pdf
+        location: pdf/2026/IRS1040/en/f1040--dft.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS1040/en/configuration.yml
+        configuration-location: pdf/2026/IRS1040/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS1040

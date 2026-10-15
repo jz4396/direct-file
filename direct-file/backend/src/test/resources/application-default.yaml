@@ -157,9 +157,9 @@ direct-file:
       - name: IRS1040
         year: 2024
         language-code: en
-        location: "src/main/resources/pdf/2024/IRS1040/en/f1040.pdf"
+        location: "src/main/resources/pdf/2026/IRS1040/en/f1040--dft.pdf"
         location-type: directory
-        configuration-location: "src/main/resources/pdf/2024/IRS1040/en/configuration.yml"
+        configuration-location: "src/main/resources/pdf/2026/IRS1040/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
       - name: IRS1040
