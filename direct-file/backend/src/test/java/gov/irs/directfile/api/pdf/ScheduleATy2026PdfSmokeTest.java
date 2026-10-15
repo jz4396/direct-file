@@ -40,8 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ScheduleATy2026PdfSmokeTest {
 
-    private static final String P2 = "topmostSubform[0].Page2[0].";
-
     static byte[] generate(Map<String, String> extraFactsJson) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         GenericApplicationContext ctx = new GenericApplicationContext();
@@ -157,6 +155,8 @@ class ScheduleATy2026PdfSmokeTest {
             long l15 = cents(value(f, "form1[0].Page2[0].f2_05[0]"));
             long l18 = cents(value(f, "form1[0].Page2[0].f2_19[0]"));
             assertEquals(l4 + 1500000 + 1200000 + l15, l18, "18 = 4 + 7 + 10 + 15");
+            // Issue #67: Schedule A total (2026 draft line 18; older forms called this line 17) equals Form 1040 line 12e.
+            assertEquals(l18, cents(value(f, "f1_57[0]")), "Sch A line 18 == 1040 line 12 (/standardOrItemizedDeductions)");
             String no = value(f, "form1[0].Page2[0].c2_1[0]");
             assertFalse(no.isEmpty() || "Off".equals(no), "line 18 No box checked");
             // Unsupported lines stay blank, not a silent 0.
