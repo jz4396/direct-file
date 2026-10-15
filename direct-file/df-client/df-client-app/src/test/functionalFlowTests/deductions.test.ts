@@ -225,7 +225,9 @@ describe(`Flow tests`, () => {
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
         [`/wasK12Educators`]: createEnumWrapper(`neither`, `/k12EducatorOptions`),
-        ...made200kIncomeData,
+        // TY2026 MFJ student loan interest phaseout is $175,000–$205,000 (Rev. Proc. 2025-32, p. 23);
+        // $200k is now a partial deduction, so use income above $205k to be fully phased out.
+        ...made210kIncomeData,
       });
       expect(
         givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/eligible-educator`, null, task)
@@ -265,7 +267,9 @@ describe(`Flow tests`, () => {
       it(`because of income for MFJ filing status`, ({ task }) => {
         const { factGraph } = setupFactGraph({
           ...mfjFilerData,
-          ...made200kIncomeData,
+          // TY2026 MFJ student loan interest phaseout is $175,000–$205,000 (Rev. Proc. 2025-32, p. 23);
+          // $200k is now a partial deduction, so use income above $205k to be fully phased out.
+          ...made210kIncomeData,
         });
         expect(
           givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/educator-expenses-summary`, null, task)
