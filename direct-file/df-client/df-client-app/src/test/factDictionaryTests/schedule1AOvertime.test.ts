@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
-import { createBooleanWrapper, createDollarWrapper } from '../persistenceWrappers.js';
+import { createBooleanWrapper, createDollarWrapper, createEnumWrapper } from '../persistenceWrappers.js';
+import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 import { baseFilerData, makeW2Data, mfjFilerData, mfsFilerData, singleFilerData } from '../testData.js';
 
@@ -17,7 +18,8 @@ type FG = ReturnType<typeof setupFactGraph>['factGraph'];
 const get = (fg: FG, p: string) => fg.get(p as ConcretePath).get.toString();
 const complete = (fg: FG, p: string) => fg.get(p as ConcretePath).complete;
 const single = (wages: number, amt: string, extra = {}) =>
-  setupFactGraph({ ...baseFilerData, ...singleFilerData, ...makeW2Data(wages), ...tt(amt), ...yes, ...extra }).factGraph;
+  setupFactGraph({ ...baseFilerData, ...singleFilerData, ...makeW2Data(wages), ...tt(amt), ...yes, ...extra })
+    .factGraph;
 const mfj = (wages: number, amt: string) =>
   setupFactGraph({ ...baseFilerData, ...mfjFilerData, ...makeW2Data(wages), ...tt(amt), ...yes }).factGraph;
 
@@ -36,7 +38,9 @@ describe(`Schedule 1-A Part III — qualified overtime`, () => {
   });
 
   it(`FLSA premium not confirmed: $0`, () => {
-    expect(get(single(70000, `4000`, { '/overtimeFlsaConfirmed': createBooleanWrapper(false) }), `/schedule1ALine27`)).toBe(`0.00`);
+    expect(
+      get(single(70000, `4000`, { '/overtimeFlsaConfirmed': createBooleanWrapper(false) }), `/schedule1ALine27`)
+    ).toBe(`0.00`);
   });
 
   it(`cap: $20,000 of code TT → line 21 $12,500 (single)`, () => {
@@ -80,18 +84,158 @@ describe(`Schedule 1-A Part III — qualified overtime`, () => {
   });
 
   it(`MFS: married must file jointly → $0 (§225(e))`, () => {
-    const { factGraph } = setupFactGraph({ ...baseFilerData, ...mfsFilerData, ...makeW2Data(60000), ...tt(`5000`), ...yes });
+    const { factGraph } = setupFactGraph({
+      ...baseFilerData,
+      ...mfsFilerData,
+      ...makeW2Data(60000),
+      ...tt(`5000`),
+      ...yes,
+    });
     expect(get(factGraph, `/schedule1ALine27`)).toBe(`0.00`);
   });
 });
 
-describe(`Schedule 1-A Part III — knockout for overtime not on W-2 code TT`, () => {
-  it(`overtime on a 1099 or from pay records: knocks out and blocks submission; clean return is not knocked out`, () => {
+/**
+ * #68: overtime not on W-2 code TT, figured with the draft Form 1040 instructions p.106 methods
+ * (https://www.irs.gov/pub/irs-dft/i1040gi--dft.pdf): 1 premium shown (x1); 2 total time-and-a-half pay
+ * "divide the total amount by three (3)"; 3 double-time premium x 1/2 (Example 2: $10,000 → $5,000);
+ * 4 total double-time pay x 1/4 (Example 3: $20,000 → $5,000); 5 regular rate x hours over 40, x 1/2.
+ * §225(c)(1) (https://www.law.cornell.edu/uscode/text/26/225): "in excess of the regular rate".
+ */
+const selfFigured = (method: string, amount: string, extra: Record<string, unknown> = {}) => ({
+  '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
+  '/overtimeOnForm1099': createBooleanWrapper(false),
+  '/overtimeSpecialSection7Rule': createBooleanWrapper(false),
+  '/overtimeMethod': createEnumWrapper(method, `/overtimeMethodOptions`),
+  '/overtimeStatementAmount': createDollarWrapper(amount),
+  ...yes,
+  ...extra,
+});
+const noTT = (wages: number, extra: Record<string, unknown>, base: Record<string, unknown> = singleFilerData) =>
+  setupFactGraph({ ...baseFilerData, ...base, ...makeW2Data(wages), ...extra }).factGraph;
+
+describe(`Schedule 1-A Part III — overtime figured from records (#68)`, () => {
+  const methods: [string, string, string][] = [
+    [`statementPremium`, `5000`, `5000.00`], // paragraph 1
+    [`statementTotalTimeAndHalf`, `15000`, `5000.00`], // paragraph 2, Example 1: $15,000 / 3
+    [`statementPremiumDoubleTime`, `10000`, `5000.00`], // paragraph 3, Example 2
+    [`statementTotalDoubleTime`, `20000`, `5000.00`], // paragraph 4, Example 3
+    [`regularPayForOvertimeHours`, `10000`, `5000.00`], // paragraph 5: $25/hr x 400 hrs over 40, x 1/2
+  ];
+  methods.forEach(([method, amount, expected]) => {
+    it(`${method}: ${amount} → ${expected} on line 17 and line 27, no knockout`, ({ task }) => {
+      task.meta.testedFactPaths = [`/overtimeSelfFiguredAmount`, `/schedule1AOvertimeLine17`, `/schedule1ALine27`];
+      const fg = noTT(70000, selfFigured(method, amount));
+      expect(get(fg, `/overtimeSelfFiguredAmount`)).toBe(expected);
+      expect(get(fg, `/schedule1AOvertimeLine17`)).toBe(expected);
+      expect(get(fg, `/schedule1ALine27`)).toBe(expected);
+      expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(false);
+      expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
+    });
+  });
+
+  it(`combined with code TT: $4,000 TT + $3,000 premium = $7,000`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1AOvertimeLine17`, `/schedule1ALine27`];
+    const fg = single(70000, `4000`, selfFigured(`statementPremium`, `3000`));
+    expect(get(fg, `/schedule1AOvertimeLine17`)).toBe(`7000.00`);
+    expect(get(fg, `/schedule1ALine27`)).toBe(`7000.00`);
+  });
+
+  it(`cap applies to the combined total: $10,000 TT + $3,000 → $12,500 (single), $12,501 total edge`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1AOvertimeLine21`];
+    expect(get(single(70000, `10000`, selfFigured(`statementPremium`, `2500`)), `/schedule1AOvertimeLine21`)).toBe(
+      `12500.00`
+    );
+    expect(get(single(70000, `10000`, selfFigured(`statementPremium`, `2501`)), `/schedule1AOvertimeLine21`)).toBe(
+      `12500.00`
+    );
+    expect(get(single(70000, `10000`, selfFigured(`statementPremium`, `3000`)), `/schedule1ALine27`)).toBe(`12500.00`);
+  });
+
+  it(`self-figured only, over the cap: $40,000 total time-and-a-half pay → $13,333.33 → $12,500`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1AOvertimeLine21`];
+    expect(get(noTT(90000, selfFigured(`statementTotalTimeAndHalf`, `40000`)), `/schedule1AOvertimeLine21`)).toBe(
+      `12500.00`
+    );
+  });
+
+  it(`phaseout applies: $10,000 premium at MAGI $175,500 → $7,500`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1ALine27`];
+    expect(get(noTT(175500, selfFigured(`statementPremium`, `10000`)), `/schedule1ALine27`)).toBe(`7500.00`);
+  });
+
+  it(`MFJ cap $25,000 applies to the self-figured amount`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1AOvertimeLine21`];
+    expect(get(noTT(120000, selfFigured(`statementPremium`, `30000`), mfjFilerData), `/schedule1AOvertimeLine21`)).toBe(
+      `25000.00`
+    );
+  });
+
+  it(`FLSA premium not confirmed: $0`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1ALine27`];
+    const fg = noTT(
+      70000,
+      selfFigured(`statementPremium`, `5000`, { '/overtimeFlsaConfirmed': createBooleanWrapper(false) })
+    );
+    expect(get(fg, `/schedule1ALine27`)).toBe(`0.00`);
+  });
+
+  it(`MFS: $0 (§225(e))`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1ALine27`];
+    expect(get(noTT(60000, selfFigured(`statementPremium`, `5000`), mfsFilerData), `/schedule1ALine27`)).toBe(`0.00`);
+  });
+
+  it(`answered yes but no method yet: line 27 is incomplete, not a silent $0`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1ALine27`];
+    const fg = noTT(70000, {
+      '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
+      '/overtimeOnForm1099': createBooleanWrapper(false),
+      '/overtimeSpecialSection7Rule': createBooleanWrapper(false),
+    });
+    expect(complete(fg, `/schedule1ALine27`)).toBe(false);
+  });
+});
+
+describe(`Schedule 1-A Part III — stop for overtime that can't be computed (#68)`, () => {
+  it(`clean return and code-TT-only return are not knocked out`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutOvertimeNotComputable`, `/flowIsKnockedOut`];
     const clean = single(70000, `4000`, { '/overtimeNotOnW2CodeTT': createBooleanWrapper(false) });
-    expect(clean.get(`/flowKnockoutOvertimeNotOnW2CodeTT` as ConcretePath).get).toBe(false);
+    expect(clean.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(false);
     expect(clean.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
-    const ko = single(70000, `0`, { '/overtimeNotOnW2CodeTT': createBooleanWrapper(true) });
-    expect(ko.get(`/flowKnockoutOvertimeNotOnW2CodeTT` as ConcretePath).get).toBe(true);
-    expect(ko.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+    const none = noTT(70000, {});
+    expect(none.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(false);
+  });
+
+  const stops: [string, Record<string, unknown>][] = [
+    [`1099 contractor overtime`, { '/overtimeOnForm1099': createBooleanWrapper(true) }],
+    [`special FLSA section 7 rule`, { '/overtimeSpecialSection7Rule': createBooleanWrapper(true) }],
+    [`other rate or method`, { '/overtimeMethod': createEnumWrapper(`other`, `/overtimeMethodOptions`) }],
+  ];
+  stops.forEach(([label, override]) => {
+    it(`${label}: knocks out, blocks submission, and adds nothing to line 27`, ({ task }) => {
+      task.meta.testedFactPaths = [
+        `/flowKnockoutOvertimeNotComputable`,
+        `/flowIsKnockedOut`,
+        `/overtimeSelfFiguredAmount`,
+      ];
+      const fg = noTT(70000, selfFigured(`statementPremium`, `5000`, override));
+      expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(true);
+      expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+      expect(get(fg, `/overtimeSelfFiguredAmount`)).toBe(`0.00`);
+    });
+  });
+
+  it(`1099 overtime alone (no W-2 overtime question needed): knocks out`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutOvertimeNotComputable`];
+    const fg = noTT(70000, {
+      '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
+      '/overtimeOnForm1099': createBooleanWrapper(true),
+    });
+    expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(true);
+  });
+
+  it(`the stop is a submission-blocking fact and the #59 stop is gone`, () => {
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutOvertimeNotComputable`);
+    expect(submissionBlockingFacts).not.toContain(`/flowKnockoutOvertimeNotOnW2CodeTT`);
   });
 });

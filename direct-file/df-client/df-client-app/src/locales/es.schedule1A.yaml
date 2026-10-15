@@ -8,6 +8,10 @@ headings:
   /heading/credits-and-deductions/deductions/tips-sstb: "¿Está tu empleador en una ocupación o negocio de servicios especificados?"
   /heading/knockout/tips-self-employed: "Esta herramienta todavía no admite la deducción por propinas para trabajadores por cuenta propia"
   /heading/knockout/tips-sstb: "Esta herramienta todavía no admite propinas de una ocupación o negocio de servicios especificados"
+  /heading/credits-and-deductions/deductions/overtime-1099: "¿Se te pagó alguna de estas horas extras como contratista independiente y se declaró en el Formulario 1099-NEC o 1099-MISC?"
+  /heading/credits-and-deductions/deductions/overtime-special-rule: "¿Tu empleador usa una regla especial de horas extras de la FLSA en lugar de la semana laboral habitual de 40 horas?"
+  /heading/credits-and-deductions/deductions/overtime-method: "¿Qué muestran tus registros de pago sobre tus horas extras?"
+  /heading/credits-and-deductions/deductions/overtime-amount: "Ingresa la cantidad de horas extras de tus registros"
 info:
   /info/credits-and-deductions/deductions/tips-self-employed:
     body: "Por ejemplo, propinas que recibió de clientes un estilista o conductor de transporte por cuenta propia."
@@ -27,6 +31,14 @@ info:
         - p: <Link1>Encuentra otras maneras de presentar tus impuestos federales.</Link1>
       urls:
         Link1: https://www.irs.gov/es/filing/individuals/how-to-file
+  /info/credits-and-deductions/deductions/overtime-1099:
+    body: "Contesta que sí si un negocio para el que trabajaste (no tu empleador) declaró las horas extras en el Formulario 1099-NEC o 1099-MISC."
+  /info/credits-and-deductions/deductions/overtime-special-rule:
+    body: "Por ejemplo, periodos de trabajo de protección contra incendios o de agentes del orden público en el sector público, o recibir tiempo libre compensatorio en lugar de pago en efectivo por horas extras."
+  /info/credits-and-deductions/deductions/overtime-method:
+    body: "Usa la declaración de tu empleador, tus talones de pago o registros de nómina. Aquí solo cuentan las horas extras de tu trabajo como empleado. Guarda los registros que uses."
+  /info/credits-and-deductions/deductions/overtime-amount:
+    body: "Ingresa la cantidad para la opción que elegiste. Calcularemos la parte deducible: toda la prima de horas extras de la FLSA, 1/3 del pago total a tiempo y medio, 1/2 de una prima de pago doble, 1/4 del pago total doble, o 1/2 de tu pago regular por las horas que pasan de 40."
 fields:
   /w2Box12CodeOptions:
     cashTipsCodeTP: TP
@@ -45,6 +57,24 @@ fields:
     boolean:
       "yes": "Sí"
       "no": "No"
+  /overtimeOnForm1099:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /overtimeSpecialSection7Rule:
+    boolean:
+      "yes": "Sí, o no estoy seguro"
+      "no": "No"
+  /overtimeMethodOptions:
+    statementPremium: "Muestran por separado la prima de horas extras de la FLSA (la “mitad” adicional)"
+    statementTotalTimeAndHalf: "Muestran mi pago total por horas extras, pagadas a tiempo y medio"
+    statementPremiumDoubleTime: "Me pagan el doble, y muestran el pago por encima de mi tarifa regular por las horas extras"
+    statementTotalDoubleTime: "Me pagan el doble, y muestran mi pago total por las horas extras"
+    regularPayForOvertimeHours: "No muestran el pago de horas extras, pero sé mi tarifa regular por hora y mis horas por encima de 40 cada semana"
+    other: "Ninguna de estas, o me pagan otra tarifa de horas extras"
+  /overtimeStatementAmount:
+    name: Cantidad de horas extras
+    name_lower: cantidad de horas extras
 dataviews:
   /flow/income/jobs:
     /formW2s/*/cashTipsCodeTP: Cantidad del código TP
@@ -52,3 +82,7 @@ dataviews:
     /tipsFromSelfEmployment: "¿Recibiste propinas en tu propio negocio?"
     /tipsOccupationConfirmed: "¿Recibiste tus propinas en una ocupación que habitualmente recibía propinas?"
     /tipsEmployerIsSstb: "¿Está tu empleador en una ocupación o negocio de servicios especificados?"
+    /overtimeOnForm1099: "¿Se declararon horas extras en el Formulario 1099-NEC o 1099-MISC?"
+    /overtimeSpecialSection7Rule: "¿Tu empleador usa una regla especial de horas extras de la FLSA?"
+    /overtimeMethod: "¿Qué muestran tus registros de pago sobre tus horas extras?"
+    /overtimeStatementAmount: "Cantidad de horas extras de tus registros"
