@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
-import { createBooleanWrapper, createDollarWrapper, createStringWrapper } from '../persistenceWrappers.js';
+import {
+  createBooleanWrapper,
+  createCollectionWrapper,
+  createDollarWrapper,
+  createStringWrapper,
+} from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 import {
   baseFilerData,
@@ -24,17 +29,26 @@ const noW2 = Object.fromEntries(
 const build = (status: Record<string, unknown>, wages: number, extra: Record<string, unknown> = {}) =>
   setupFactGraph({ ...noW2, ...baseFilerData, ...status, ...makeW2Data(wages), ...extra }).factGraph;
 const VIN = `1HGCM82633A004352`;
-const loan = (interest: string, o: Record<string, boolean> = {}) => ({
-  '/carLoanHadInterest': createBooleanWrapper(true),
-  '/carLoanIsNewVehicle': createBooleanWrapper(o.isNew ?? true),
-  '/carLoanUsAssembly': createBooleanWrapper(o.us ?? true),
-  '/carLoanAfter2024': createBooleanWrapper(o.after2024 ?? true),
-  '/carLoanHasBusinessUse': createBooleanWrapper(o.business ?? false),
-  '/carLoanIsLease': createBooleanWrapper(o.lease ?? false),
-  '/carLoanHasOtherExceptions': createBooleanWrapper(o.other ?? false),
-  '/carLoanVin': createStringWrapper(VIN),
-  '/carLoanWritableInterest': createDollarWrapper(interest),
+const V1 = `c1111111-1111-4111-8111-111111111111`;
+const V2 = `c2222222-2222-4222-8222-222222222222`;
+// Synthetic VINs only (17 chars, no I/O/Q).
+const VINS: Record<string, string> = { [V1]: VIN, [V2]: `2T1BR32E54C000001` };
+const vehicle = (id: string, interest: string, o: Record<string, boolean> = {}) => ({
+  [`/carLoans/#${id}/isNewVehicle`]: createBooleanWrapper(o.isNew ?? true),
+  [`/carLoans/#${id}/usAssembly`]: createBooleanWrapper(o.us ?? true),
+  [`/carLoans/#${id}/after2024`]: createBooleanWrapper(o.after2024 ?? true),
+  [`/carLoans/#${id}/hasBusinessUse`]: createBooleanWrapper(o.business ?? false),
+  [`/carLoans/#${id}/isLease`]: createBooleanWrapper(o.lease ?? false),
+  [`/carLoans/#${id}/hasOtherExceptions`]: createBooleanWrapper(o.other ?? false),
+  [`/carLoans/#${id}/vin`]: createStringWrapper(VINS[id]),
+  [`/carLoans/#${id}/writableInterest`]: createDollarWrapper(interest),
 });
+const vehicles = (...vs: Record<string, unknown>[]) => ({
+  '/carLoanHadInterest': createBooleanWrapper(true),
+  '/carLoans': createCollectionWrapper([V1, V2].slice(0, vs.length)),
+  ...Object.assign({}, ...vs),
+});
+const loan = (interest: string, o: Record<string, boolean> = {}) => vehicles(vehicle(V1, interest, o));
 const line36 = (fg: Fg) => get(fg, `/schedule1ALine36`).get.toString();
 
 describe(`§163(h)(4) car loan interest (#53)`, () => {
@@ -116,5 +130,57 @@ describe(`§163(h)(4) car loan interest (#53)`, () => {
     const fg = build(singleFilerData, 60000, loan(`4000`, o));
     expect(get(fg, ko).get).toBe(true);
     expect(get(fg, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  describe(`#69 multiple vehicles (cap and phaseout per return)`, () => {
+    it(`gate yes with an empty vehicle list stays incomplete (no silent $0)`, ({ task }) => {
+      task.meta.testedFactPaths = [`/carLoanLine29`, `/schedule1ALine36`];
+      const fg = build(singleFilerData, 60000, {
+        '/carLoanHadInterest': createBooleanWrapper(true),
+        '/carLoans': createCollectionWrapper([]),
+      });
+      expect(get(fg, `/carLoanLine29`).complete).toBe(false);
+      expect(get(fg, `/schedule1ALine36`).complete).toBe(false);
+    });
+
+    it(`two vehicles sum on line 29`, ({ task }) => {
+      task.meta.testedFactPaths = [`/carLoanLine29`, `/schedule1ALine36`];
+      const fg = build(singleFilerData, 60000, vehicles(vehicle(V1, `3000`), vehicle(V2, `2500`)));
+      expect(get(fg, `/carLoanLine29`).get.toString()).toBe(`5500.00`);
+      expect(line36(fg)).toBe(`5500.00`);
+    });
+
+    it(`two vehicles over the cap: $10,000 per return, not per vehicle`, ({ task }) => {
+      task.meta.testedFactPaths = [`/carLoanLine29`, `/carLoanLine30`, `/schedule1ALine36`];
+      const fg = build(singleFilerData, 60000, vehicles(vehicle(V1, `7000`), vehicle(V2, `6000`)));
+      expect(get(fg, `/carLoanLine29`).get.toString()).toBe(`13000.00`);
+      expect(line36(fg)).toBe(`10000.00`);
+    });
+
+    it(`phaseout applies once to the combined amount`, ({ task }) => {
+      task.meta.testedFactPaths = [`/carLoanLine35`, `/schedule1ALine36`];
+      // MAGI $110,500: 10.5 -> 11 x $200 = $2,200 off min($4,000 + $3,000, $10,000) = $7,000.
+      const fg = build(singleFilerData, 110500, vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`)));
+      expect(get(fg, `/carLoanLine35`).get.toString()).toBe(`2200.00`);
+      expect(line36(fg)).toBe(`4800.00`);
+    });
+
+    it(`one eligible vehicle and one non-QPVLI vehicle: only the eligible interest counts`, ({ task }) => {
+      task.meta.testedFactPaths = [`/schedule1ALine36`, `/flowIsKnockedOut`];
+      const fg = build(singleFilerData, 60000, vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`, { us: false })));
+      expect(line36(fg)).toBe(`4000.00`);
+      expect(get(fg, `/flowIsKnockedOut`).get).toBe(false);
+    });
+
+    it.each([
+      [`used vehicle`, `/flowKnockoutCarLoanUsedVehicle`, { isNew: false }],
+      [`business use`, `/flowKnockoutCarLoanBusinessUse`, { business: true }],
+      [`lease`, `/flowKnockoutCarLoanLease`, { lease: true }],
+      [`other exception`, `/flowKnockoutCarLoanOther`, { other: true }],
+    ])(`one eligible vehicle and one stopped (%s): the return is knocked out`, (_label, ko, o) => {
+      const fg = build(singleFilerData, 60000, vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`, o)));
+      expect(get(fg, ko).get).toBe(true);
+      expect(get(fg, `/flowIsKnockedOut`).get).toBe(true);
+    });
   });
 });
