@@ -86,3 +86,11 @@ dataviews:
     /overtimeSpecialSection7Rule: "¿Tu empleador usa una regla especial de horas extras de la FLSA?"
     /overtimeMethod: "¿Qué muestran tus registros de pago sobre tus horas extras?"
     /overtimeStatementAmount: "Cantidad de horas extras de tus registros"
+    enums:
+      /overtimeMethodOptions:
+        statementPremium: $t(fields./overtimeMethodOptions.statementPremium)
+        statementTotalTimeAndHalf: $t(fields./overtimeMethodOptions.statementTotalTimeAndHalf)
+        statementPremiumDoubleTime: $t(fields./overtimeMethodOptions.statementPremiumDoubleTime)
+        statementTotalDoubleTime: $t(fields./overtimeMethodOptions.statementTotalDoubleTime)
+        regularPayForOvertimeHours: $t(fields./overtimeMethodOptions.regularPayForOvertimeHours)
+        other: $t(fields./overtimeMethodOptions.other)

@@ -86,3 +86,11 @@ dataviews:
     /overtimeSpecialSection7Rule: "Does your employer use a special FLSA overtime rule?"
     /overtimeMethod: "What do your pay records show about your overtime?"
     /overtimeStatementAmount: "Overtime amount from your records"
+    enums:
+      /overtimeMethodOptions:
+        statementPremium: $t(fields./overtimeMethodOptions.statementPremium)
+        statementTotalTimeAndHalf: $t(fields./overtimeMethodOptions.statementTotalTimeAndHalf)
+        statementPremiumDoubleTime: $t(fields./overtimeMethodOptions.statementPremiumDoubleTime)
+        statementTotalDoubleTime: $t(fields./overtimeMethodOptions.statementTotalDoubleTime)
+        regularPayForOvertimeHours: $t(fields./overtimeMethodOptions.regularPayForOvertimeHours)
+        other: $t(fields./overtimeMethodOptions.other)
