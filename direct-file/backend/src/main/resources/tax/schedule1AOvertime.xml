@@ -4,7 +4,8 @@
   independent of Part II (#51); schedule1A.xml line 27 reads /schedule1AOvertimeLine27.
   Source: 2026 draft Schedule 1-A lines 16-27; amounts from Form W-2 box 12 code TT (new for 2026).
   Line 18/19 (overtime on Form 1099-NEC/MISC) is knocked out. #68: W-2 overtime not on code TT is figured with the
-  draft 1040 instructions p.106 methods; anything else is knocked out (/flowKnockoutOvertimeNotComputable).
+  draft 1040 instructions p.106 methods when /overtimeAlternativeMethodsApply is on; otherwise knock out.
+  /flowAskOvertime1099 gates the 1099 screen so stop-only users skip it (Rev polish).
 -->
 <FactDictionaryModule>
   <Facts>
@@ -96,6 +97,15 @@
       <Export downstreamFacts="true" />
       <Writable><Boolean /></Writable>
       <Placeholder><False /></Placeholder>
+    </Fact>
+    <Fact path="/flowAskOvertime1099">
+      <Description>#68 polish (Rev): ask the Form 1099-NEC/MISC overtime question only when /overtimeAlternativeMethodsApply is on. Stop-only users (switch off for TY2026) already hit /flowKnockoutOvertimeNotComputable from /overtimeNotOnW2CodeTT alone via /flowIsKnockedOut, so they skip this screen. Draft Form 1040 instructions (https://www.irs.gov/pub/irs-dft/i1040gi--dft.pdf) p.106 alternative methods.</Description>
+      <Derived>
+        <All>
+          <Dependency path="/overtimeAlternativeMethodsApply" />
+          <Dependency path="/overtimeNotOnW2CodeTT" />
+        </All>
+      </Derived>
     </Fact>
     <Fact path="/flowAskOvertimeSpecialRule">
       <Derived>
