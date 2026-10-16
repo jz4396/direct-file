@@ -270,7 +270,7 @@ describe(`The about you section`, () => {
       ).toRouteNextTo(`/flow/you-and-your-family/about-you/about-you-state-income-form`);
     });
 
-    it(`from state residency goes to ko if more than one is chosen`, ({ task }) => {
+    it(`from state residency asks about a PA/FL move if more than one is chosen (#80)`, ({ task }) => {
       const { factGraph } = setupFactGraph({
         ...baseFilerData,
         [`/filerResidenceAndIncomeState`]: createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
@@ -281,6 +281,17 @@ describe(`The about you section`, () => {
           primaryFilerId,
           task
         )
+      ).toRouteNextTo(`/flow/you-and-your-family/about-you/pa-part-year-move`);
+    });
+
+    it(`goes to ko if more than one is chosen and the move wasn't between PA and FL (#80)`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        [`/filerResidenceAndIncomeState`]: createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+        '/paPartYearMove': createEnumWrapper(`other`, `/paPartYearMoveOptions`),
+      });
+      expect(
+        givenFacts(factGraph).atPath(`/flow/you-and-your-family/about-you/pa-part-year-move`, primaryFilerId, task)
       ).toRouteNextTo(`/flow/you-and-your-family/about-you/about-you-state-income-scope-ko`);
     });
 

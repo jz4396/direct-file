@@ -5649,10 +5649,14 @@
 
     <Fact path="/formW2s/*/hasKnockoutBox15IncomeFromDifferentState">
       <Name>Has Knockout recieved Income from a Different State</Name>
-      <Description>Checks to see if their income is from a different state.</Description>
+      <Description>Checks to see if their income is from a different state. #80: not used for a PA/FL part-year resident, whose W-2 state is asked
+        separately (/formW2s/*/paPartYearW2State).</Description>
 
       <Derived>
         <All>
+          <Not>
+            <Dependency module="paPit" path="/paPartYearSupported" />
+          </Not>
           <IsComplete>
             <Dependency path="../writableState" />
           </IsComplete>
@@ -5723,6 +5727,34 @@
 
       <Derived>
         <Switch>
+          <!-- #80: PA/FL part-year resident: box 15 state from /formW2s/*/paPartYearW2State (other knocks out). -->
+          <Case>
+            <When>
+              <All>
+                <Dependency module="paPit" path="/paPartYearSupported" />
+                <IsComplete>
+                  <Dependency path="../paPartYearW2State" />
+                </IsComplete>
+                <Not>
+                  <Equal>
+                    <Left>
+                      <Dependency path="../paPartYearW2State" />
+                    </Left>
+                    <Right>
+                      <Enum optionsPath="/paPartYearW2StateOptions">other</Enum>
+                    </Right>
+                  </Equal>
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <ToUpper>
+                <AsString>
+                  <Dependency path="../paPartYearW2State" />
+                </AsString>
+              </ToUpper>
+            </Then>
+          </Case>
           <Case>
             <When>
               <All>
@@ -5821,14 +5853,56 @@
 
     <Fact path="/formW2s/*/paMissingStateWages">
       <Name>PA: W-2 has wages but no box 16 state wages</Name>
-      <Description>#78: PA-40 IN (2025) p. 10, LINE 1a: PA compensation is "usually" W-2 box 16. A W-2 with box 1 wages and no box 16 amount can't be classified, so it knocks out (paPit /flowKnockoutPaUnsupportedIncome).</Description>
+      <Description>#78: PA-40 IN (2025) p. 10, LINE 1a: PA compensation is "usually" W-2 box 16. A W-2 with box 1 wages and no box 16 amount can't be classified, so it knocks out (paPit /flowKnockoutPaUnsupportedIncome). #80: a part-year resident's FL W-2 has no PA box 16 and uses the filer's allocation instead.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <All>
           <GreaterThan><Left><Dependency path="../wages" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan>
           <Equal><Left><Dependency path="../stateWages" /></Left><Right><Dollar>0</Dollar></Right></Equal>
+          <Not><Dependency path="../paPartYearIsFlW2" /></Not>
         </All>
       </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/paPartYearW2State">
+      <Name>PA part-year: state in W-2 box 15</Name>
+      <Description>#80: for a PA/FL part-year resident, which state this W-2 reports (box 15): pa, fl, or other (knocks out via paPit /flowKnockoutPaPartYear).</Description>
+      <Writable>
+        <Enum optionsPath="/paPartYearW2StateOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/formW2s/*/paPartYearIsFlW2">
+      <Name>PA part-year: this is a Florida W-2</Name>
+      <Derived><All><Dependency module="paPit" path="/paPartYearSupported" /><IsComplete><Dependency path="../paPartYearW2State" /></IsComplete><Equal><Left><Dependency path="../paPartYearW2State" /></Left><Right><Enum optionsPath="/paPartYearW2StateOptions">fl</Enum></Right></Equal></All></Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/paPartYearResidentPeriodWages">
+      <Name>PA part-year: PA-taxable wages on this FL W-2 earned while a PA resident</Name>
+      <Description>#80: PA-40 IN (2025) p. 6: part-year residents are taxed "on all income from all sources while a PA resident". A FL employer reports no PA wages in box 16, so the filer allocates the compensation earned during the PA residency period (issue #80: "the PA box 16 amount or the filer's own allocation").</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/formW2s/*/paCompensation">
+      <Name>PA-40 line 1a amount from this W-2</Name>
+      <Description>#78: box 16 (PA-40 IN (2025) p. 10, LINE 1a). #80 part-year: a PA W-2 uses box 16, which covers PA-source compensation for both periods (p. 6: "all income (loss) earned, received, and realized from PA sources when not a resident"; p. 43: "Your PA employer should report and withhold PA tax from the exact amount of your PA-taxable compensation."). A FL W-2 uses /formW2s/*/paPartYearResidentPeriodWages. A W-2 from another state knocks out.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Not><Dependency module="paPit" path="/paPartYearSupported" /></Not></When><Then><Dependency path="../stateWages" /></Then></Case><Case><When><All><IsComplete><Dependency path="../paPartYearW2State" /></IsComplete><Equal><Left><Dependency path="../paPartYearW2State" /></Left><Right><Enum optionsPath="/paPartYearW2StateOptions">pa</Enum></Right></Equal></All></When><Then><Dependency path="../stateWages" /></Then></Case><Case><When><All><Dependency path="../paPartYearIsFlW2" /><IsComplete><Dependency path="../paPartYearResidentPeriodWages" /></IsComplete></All></When><Then><Dependency path="../paPartYearResidentPeriodWages" /></Then></Case><Case><When><All><IsComplete><Dependency path="../paPartYearW2State" /></IsComplete><Equal><Left><Dependency path="../paPartYearW2State" /></Left><Right><Enum optionsPath="/paPartYearW2StateOptions">other</Enum></Right></Equal></All></When><Then><Dollar>0</Dollar></Then></Case></Switch></Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/paWithholding">
+      <Name>PA-40 line 13 amount from this W-2</Name>
+      <Description>#78: box 17 (PA-40 IN (2025) p. 21, LINE 13: "Enter your total PA tax withheld from Box 17 of your federal Form(s) W2."). #80 part-year: only a PA W-2's box 17 is PA tax; a FL W-2 with box 17 knocks out.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Not><Dependency module="paPit" path="/paPartYearSupported" /></Not></When><Then><Dependency path="../stateWithholding" /></Then></Case><Case><When><All><IsComplete><Dependency path="../paPartYearW2State" /></IsComplete><Equal><Left><Dependency path="../paPartYearW2State" /></Left><Right><Enum optionsPath="/paPartYearW2StateOptions">pa</Enum></Right></Equal></All></When><Then><Dependency path="../stateWithholding" /></Then></Case><Case><When><IsComplete><Dependency path="../paPartYearW2State" /></IsComplete></When><Then><Dollar>0</Dollar></Then></Case></Switch></Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/paPartYearUnsupportedW2">
+      <Name>PA part-year: W-2 not supported</Name>
+      <Description>#80: a W-2 from a state other than PA or FL (that state's return isn't supported), or a FL W-2 with box 17 state tax withheld (Florida has no personal income tax, Fla. Const. art. VII, §5(a), so box 17 would be another state's tax).</Description>
+      <Derived><All><Dependency module="paPit" path="/paPartYearSupported" /><IsComplete><Dependency path="../paPartYearW2State" /></IsComplete><Any><Equal><Left><Dependency path="../paPartYearW2State" /></Left><Right><Enum optionsPath="/paPartYearW2StateOptions">other</Enum></Right></Equal><All><Equal><Left><Dependency path="../paPartYearW2State" /></Left><Right><Enum optionsPath="/paPartYearW2StateOptions">fl</Enum></Right></Equal><GreaterThan><Left><Dependency path="../stateWithholding" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan></All></Any></All></Derived>
     </Fact>
 
     <Fact path="/formW2s/*/hasStateWagesWithoutStateCode">

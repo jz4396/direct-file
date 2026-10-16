@@ -279,6 +279,19 @@ export const AboutYouSubcategory = (
         <Enum path='/filerResidenceAndIncomeState' />
         <SaveAndOrContinueButton />
       </Screen>
+      {/* #80 PA part-year residency: moves between Pennsylvania and Florida. */}
+      <Screen route='pa-part-year-move' condition='/paPartYearAsked'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/pa-part-year-move' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/pa-part-year-move' />
+        <Enum path='/paPartYearMove' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-part-year-move-date' condition='/paPartYearSupported'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/pa-part-year-move-date' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/pa-part-year-move-date' />
+        <DatePicker path='/paPartYearMoveDate' lockYearTo='/taxYear' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen
         route='about-you-state-income-form'
         condition={{ operator: `isFalse`, condition: `/filerResidenceOrIncomeStateOutOfScope` }}

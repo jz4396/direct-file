@@ -4,6 +4,7 @@ import {
   BigContent,
   Boolean,
   DFAlert,
+  Dollar,
   IconDisplay,
   KnockoutButton,
   ContextHeading,
@@ -20,11 +21,24 @@ export const AmountSubcategory = (
   <Subcategory route='amount' completeIf='/flowHasSeenAmount'>
     {/* #78 PA-40 core: full-year PA residents. */}
     <SubSubcategory route='pa-40'>
-      <Screen route='pa-unsupported-items' condition='/stateReturnIsPa'>
+      <Screen route='pa-unsupported-items' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />
         <Boolean path='/paHasUnsupportedItems' />
         <SaveAndOrContinueButton />
+      </Screen>
+      {/* #80 PA part-year residency. */}
+      <Screen route='pa-part-year-interest' condition='/paPartYearHasInterest'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-part-year-interest' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-part-year-interest' />
+        <Dollar path='/paPartYearResidentInterest' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-part-year-knockout' condition='/flowKnockoutPaPartYear' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-part-year' />
+        <DFAlert i18nKey='/info/knockout/pa-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
       </Screen>
       <Screen route='pa-unsupported-items-knockout' condition='/flowKnockoutPaUnsupportedItems' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
