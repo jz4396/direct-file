@@ -50,7 +50,12 @@
       <Description>#78 state framework: any knockout of the computed state return. Each state adds All(/stateReturnIs{XX}, its knockouts). Wired into flow.xml /flowIsKnockedOut.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
-      <Derived><Any><All><Dependency path="/stateReturnIsPa" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaTaxForgiveness" /></Any></All></Any></Derived>
+      <Derived><Any><All><Dependency path="/stateReturnIsPa" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" /></Any></All></Any></Derived>
+    </Fact>
+    <Fact path="/flowShowPaSpQuestion">
+      <Name>Show the PA Tax Forgiveness nontaxable income question</Name>
+      <Description>#79: PA return and Eligibility Income so far could still qualify for Schedule SP.</Description>
+      <Derived><All><Dependency path="/stateReturnIsPa" /><Dependency module="paPit" path="/paSpCouldQualify" /></All></Derived>
     </Fact>
   </Facts>
 </FactDictionaryModule>

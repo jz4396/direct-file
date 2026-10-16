@@ -14,6 +14,8 @@ import {
   baseFilerData,
   filerWithW2NoDeductionsNoCreditsBaseData,
   makeInterestReportData,
+  makeChildData,
+  makeQualifyingPersonNonChild,
   makeW2Data,
   mfjFilerData,
   primaryFilerId,
@@ -73,7 +75,7 @@ const sale = (proceeds: number, basis: number) => ({
   [`/form8949Transactions/#${txId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
   '/form8949TransactionsIsDone': createBooleanWrapper(true),
 });
-const KOS = [`/flowKnockoutPaUnsupportedItems`, `/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutPaTaxForgiveness`];
+const KOS = [`/flowKnockoutPaUnsupportedItems`, `/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutPaSpUnsupported`];
 
 describe(`PA-40 core (#78)`, () => {
   it(`compensation only: line 1a = W-2 box 16 (not box 1); 3.07%; refund`, ({ task }) => {
@@ -174,17 +176,127 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       `/flowKnockoutPaUnsupportedIncome`
     );
   });
-  it(`possible Tax Forgiveness (Schedule SP, #79): single line 11 ≤ $8,750 blocks; $8,751 does not`, ({ task }) => {
-    task.meta.testedFactPaths = [`/paTaxForgivenessCeiling`, `/flowKnockoutPaTaxForgiveness`];
-    const lo = build(singleFilerData, w2(8750, 8750, 0));
-    expect(val(lo, `/paTaxForgivenessCeiling`)).toBe(`8750.00`);
-    blocks(lo, `/flowKnockoutPaTaxForgiveness`);
-    expect(get(build(singleFilerData, w2(8751, 8751, 0)), `/flowKnockoutPaTaxForgiveness`).get).toBe(false);
+});
+
+/**
+ * #79 Schedule SP (PA-40 line 21). PA-40 IN (2025) pp. 36-39; p. 39 Eligibility Income Tables:
+ * Table 1 (unmarried) YOU "$6,500" … 10% at $8,750, Table 2 (married) "$13,000" … 10% at $15,250,
+ * +$9,500 per dependent child, 10% steps every $250. Line 16 = line 14 × line 15 → PA-40 line 21.
+ */
+const kidIds = [
+  `c1111111-1111-4111-8111-111111111111`,
+  `c2222222-2222-4222-8222-222222222222`,
+  `c3333333-3333-4333-8333-333333333333`,
+];
+const kids = (n: number, nonChild = false) => {
+  const ids = kidIds.slice(0, n);
+  return Object.assign(
+    { '/familyAndHousehold': createCollectionWrapper(ids) },
+    ...ids.map((id, i) => (nonChild && i === 0 ? makeQualifyingPersonNonChild(id) : makeChildData(id)))
+  );
+};
+const sp = (status: Record<string, unknown>, income: number, extra: Record<string, unknown> = {}) =>
+  build(status, { ...w2(income, income, 0), '/paHasSpNontaxableIncome': createBooleanWrapper(false), ...extra });
+
+describe(`PA Schedule SP Tax Forgiveness (#79)`, () => {
+  const rows: [string, Record<string, unknown>, number, Record<string, unknown>, string, string][] = [
+    // label, status, income, extra, expected line 15, expected base
+    [`single $6,500 → 100%`, singleFilerData, 6500, {}, `1/1`, `6500.00`],
+    [`single $6,501 → 90%`, singleFilerData, 6501, {}, `9/10`, `6500.00`],
+    [`single $6,750 → 90%`, singleFilerData, 6750, {}, `9/10`, `6500.00`],
+    [`single $6,751 → 80%`, singleFilerData, 6751, {}, `8/10`, `6500.00`],
+    [`single $7,750 → 50%`, singleFilerData, 7750, {}, `5/10`, `6500.00`],
+    [`single $8,750 → 10%`, singleFilerData, 8750, {}, `1/10`, `6500.00`],
+    [`single $8,751 → 0%`, singleFilerData, 8751, {}, `0/1`, `6500.00`],
+    [`single + 1 child $16,000 → 100%`, singleFilerData, 16000, kids(1), `1/1`, `16000.00`],
+    [`single + 1 child $18,250 → 10%`, singleFilerData, 18250, kids(1), `1/10`, `16000.00`],
+    [`single + 1 child $18,251 → 0%`, singleFilerData, 18251, kids(1), `0/1`, `16000.00`],
+    [`single + 3 children $35,000 → 100%`, singleFilerData, 35000, kids(3), `1/1`, `35000.00`],
+    [`single + 3 children $36,000 → 60%`, singleFilerData, 36000, kids(3), `6/10`, `35000.00`],
+    [`single + non-child dependent does not count`, singleFilerData, 6500, kids(1, true), `1/1`, `6500.00`],
+    [`MFJ $13,000 → 100%`, mfjFilerData, 13000, {}, `1/1`, `13000.00`],
+    [`MFJ $13,250 → 90%`, mfjFilerData, 13250, {}, `9/10`, `13000.00`],
+    [`MFJ $15,250 → 10%`, mfjFilerData, 15250, {}, `1/10`, `13000.00`],
+    [`MFJ $15,251 → 0%`, mfjFilerData, 15251, {}, `0/1`, `13000.00`],
+    [`MFJ + 2 children $32,000 → 100%`, mfjFilerData, 32000, kids(2), `1/1`, `32000.00`],
+    [`MFJ + 2 children $34,250 → 10%`, mfjFilerData, 34250, kids(2), `1/10`, `32000.00`],
+    [`MFJ + 2 children $34,251 → 0%`, mfjFilerData, 34251, kids(2), `0/1`, `32000.00`],
+  ];
+  for (const [label, status, income, extra, pct, base] of rows) {
+    it(label, ({ task }) => {
+      task.meta.testedFactPaths = [`/paSpLine11`, `/paSpTableBase`, `/paSpLine15`, `/paSpLine16`, `/paLine21`];
+      const g = sp(status, income, extra);
+      expect(val(g, `/paSpLine11`)).toBe(`${income}.00`);
+      expect(val(g, `/paSpTableBase`)).toBe(base);
+      expect(val(g, `/paSpLine15`)).toBe(pct);
+      expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    });
+  }
+  it(`credit = line 12 × line 15 flows to line 21, 24 and the refund`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSpLine14`, `/paLine21`, `/paLine24`, `/paLine29`];
+    // $7,750 single: line 12 = 237.925 → 237.93 (cents); 50% credit; withheld 200
+    const g = build(singleFilerData, {
+      ...w2(7750, 7750, 200),
+      '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+    });
+    expect(val(g, `/paLine12`)).toBe(val(g, `/paSpLine14`));
+    expect(val(g, `/paSpLine15`)).toBe(`5/10`);
+    expect(Number(val(g, `/paLine21`))).toBeCloseTo(Number(val(g, `/paLine12`)) * 0.5, 2);
+    expect(Number(val(g, `/paLine24`))).toBeCloseTo(200 + Number(val(g, `/paLine21`)), 2);
+    expect(Number(val(g, `/paLine29`))).toBeCloseTo(Number(val(g, `/paLine24`)) - Number(val(g, `/paLine12`)), 2);
   });
-  it(`married ceiling is $15,250`, () => {
-    const g = build(mfjFilerData, w2(15250, 15250, 0));
-    expect(val(g, `/paTaxForgivenessCeiling`)).toBe(`15250.00`);
-    expect(get(g, `/flowKnockoutPaTaxForgiveness`).get).toBe(true);
-    expect(get(build(mfjFilerData, w2(15251, 15251, 0)), `/flowKnockoutPaTaxForgiveness`).get).toBe(false);
+  it(`100% forgiveness refunds all PA withholding`, () => {
+    const g = build(singleFilerData, {
+      ...w2(6000, 6000, 184),
+      '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+    });
+    expect(val(g, `/paLine12`)).toBe(`184.20`);
+    expect(val(g, `/paLine21`)).toBe(`184.20`);
+    expect(val(g, `/paLine29`)).toBe(`184.00`); // 184 withheld + 184.20 credit − 184.20 tax
+    expect(val(g, `/stateRefund`)).toBe(`184.00`);
+  });
+  it(`eligibility income adds U.S. obligation interest (line 2), not just PA line 9`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSpLine1`, `/paSpLine2`];
+    const g = sp(singleFilerData, 6000, interest(0, 600));
+    expect(val(g, `/paLine11`)).toBe(`6000.00`);
+    expect(val(g, `/paSpLine2`)).toBe(`600.00`);
+    expect(val(g, `/paSpLine11`)).toBe(`6600.00`);
+    expect(val(g, `/paSpLine15`)).toBe(`9/10`);
+  });
+});
+
+describe(`PA Schedule SP knockouts (#79)`, () => {
+  const blocks = (g: Fg) => {
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaSpUnsupported`);
+  };
+  it(`nontaxable Section III income while possibly eligible`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSpCouldQualify`, `/flowKnockoutPaSpUnsupported`];
+    blocks(sp(singleFilerData, 7000, { '/paHasSpNontaxableIncome': createBooleanWrapper(true) }));
+  });
+  it(`nontaxable income does not matter once eligibility income is past the 10% column`, () => {
+    const g = sp(singleFilerData, 8751, { '/paHasSpNontaxableIncome': createBooleanWrapper(true) });
+    expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+  });
+  it(`married filing separately while possibly eligible`, () => {
+    blocks(
+      sp(
+        { ...mfjFilerData, '/filingStatus': createEnumWrapper(`marriedFilingSeparately`, `/filingStatusOptions`) },
+        7000
+      )
+    );
+  });
+  it(`filer claimed as a dependent while possibly eligible`, () => {
+    blocks(
+      sp(singleFilerData, 5000, {
+        [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(true),
+        [`/filers/#${primaryFilerId}/willBeClaimed`]: createBooleanWrapper(true),
+        [`/filers/#${primaryFilerId}/potentialClaimerMustFile`]: createBooleanWrapper(true),
+      })
+    );
   });
 });
