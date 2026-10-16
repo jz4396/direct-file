@@ -491,6 +491,19 @@
       </Writable>
     </Fact>
 
+    <Fact path="/form8949Transactions/*/paSoldWhilePaResident">
+      <Name>PA part-year: sold during the PA residency period</Name>
+      <Description>#80: moved PA to FL: sold before the move date; moved FL to PA: sold on or after it.</Description>
+      <Derived><Switch><Case><When><Dependency module="paPit" path="/paPartYearMovedOut" /></When><Then><LessThan><Left><Dependency path="../dateSold" /></Left><Right><Dependency module="paPit" path="/paPartYearMoveDate" /></Right></LessThan></Then></Case><Case><When><True /></When><Then><Not><LessThan><Left><Dependency path="../dateSold" /></Left><Right><Dependency module="paPit" path="/paPartYearMoveDate" /></Right></LessThan></Not></Then></Case></Switch></Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/paGainOrLoss">
+      <Name>PA-40 line 5 amount from this sale</Name>
+      <Description>#78: column (h). #80 part-year: only sales in the PA residency period; PA-40 IN (2025) p. 43, a nonresident does not pay PA tax on "any gain you realize on the sale, exchange, or disposition of intangible personal property, such as stocks and bonds."</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Not><Dependency module="paPit" path="/paPartYearSupported" /></Not></When><Then><Dependency path="../gainOrLoss" /></Then></Case><Case><When><Dependency path="../paSoldWhilePaResident" /></When><Then><Dependency path="../gainOrLoss" /></Then></Case><Case><When><True /></When><Then><Dollar>0</Dollar></Then></Case></Switch></Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions/*/gainOrLoss">
       <Name>Gain or loss</Name>
       <Description>Form 8949 column (h): column (d) − column (e) ± column (g)

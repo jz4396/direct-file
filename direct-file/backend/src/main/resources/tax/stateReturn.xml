@@ -1,0 +1,68 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #78 Minimal state-return framework (reuse for #80 PA part-year, #81 FL).
+      - /stateReturnIs{XX}: which state's return is computed (from /filerResidenceAndIncomeState).
+      - /stateReturnComputed: Any of the computed states.
+      - /stateTaxLiability, /stateTaxWithheld, /stateRefund, /stateAmountOwed: Switch per state onto that state's module.
+      - /flowKnockoutStateReturn: Any of All(/stateReturnIs{XX}, that state's knockouts); BlockSubmissionOnTrue, in /flowIsKnockedOut.
+      A no-income-tax state (FL) needs only /stateReturnIsFl and the UI note; it adds nothing to the Switches.
+    -->
+    <Fact path="/stateReturnIsPa">
+      <Name>State return: Pennsylvania</Name>
+      <Description>#78 state framework: the filer chose Pennsylvania as the one state they lived in and earned income in (full-year). Add /stateReturnIs{XX} per state (e.g. #81 FL).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><All><IsComplete><Dependency module="filers" path="/filerResidenceAndIncomeState" /></IsComplete><Equal><Left><Dependency module="filers" path="/filerResidenceAndIncomeState" /></Left><Right><Enum optionsPath="/scopedStateOptions">pa</Enum></Right></Equal></All></Derived>
+    </Fact>
+    <Fact path="/stateReturnIsPaPartYear">
+      <Name>State return: Pennsylvania part-year resident</Name>
+      <Description>#80: lived in PA for part of the year and in FL for the rest (paPit /paPartYearSupported). PA-40 IN (2025) p. 6, (P) Part-Year Resident.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Dependency module="paPit" path="/paPartYearSupported" /></Derived>
+    </Fact>
+    <Fact path="/stateReturnPaFiled">
+      <Name>State return: Pennsylvania (full-year or part-year)</Name>
+      <Description>#80: a PA-40 is computed, either as a full-year resident (#78) or a PA/FL part-year resident.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Any><Dependency path="/stateReturnIsPa" /><Dependency path="/stateReturnIsPaPartYear" /></Any></Derived>
+    </Fact>
+    <Fact path="/stateReturnComputed">
+      <Name>State return computed by this tool</Name>
+      <Description>#78 state framework: true when this tool computes the resident state return. Add each computed state to the Any.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Any><Dependency path="/stateReturnPaFiled" /></Any></Derived>
+    </Fact>
+    <Fact path="/stateTaxLiability">
+      <Name>stateTaxLiability</Name>
+      <Description>#78 state framework: State tax liability (PA-40 line 12). Undefined when no state return is computed.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine12" /></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/stateTaxWithheld">
+      <Name>stateTaxWithheld</Name>
+      <Description>#78 state framework: State tax withheld (PA-40 line 13). Undefined when no state return is computed.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine13" /></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/stateRefund">
+      <Name>stateRefund</Name>
+      <Description>#78 state framework: State overpayment (PA-40 line 29). Undefined when no state return is computed.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine29" /></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/stateAmountOwed">
+      <Name>stateAmountOwed</Name>
+      <Description>#78 state framework: State tax due (PA-40 line 26). Undefined when no state return is computed.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine26" /></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/flowKnockoutStateReturn">
+      <Name>Flow knockout: state return items not supported</Name>
+      <Description>#78 state framework: any knockout of the computed state return. Each state adds All(/stateReturnIs{XX}, its knockouts). Wired into flow.xml /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><Any><All><Dependency path="/stateReturnPaFiled" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaTaxForgiveness" /><Dependency module="paPit" path="/flowKnockoutPaPartYear" /></Any></All></Any></Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

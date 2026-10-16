@@ -1,0 +1,244 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #78 Pennsylvania PA-40 core, full-year residents (TY2026 return; 2025 booklet until the 2026 one is published).
+      Instructions: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+      Form: PA-40 (2025). Statute: 72 P.S. §7302 (3.07%), §7303 (classes of income).
+      Full-year residency: /filerResidenceAndIncomeState = pa ("I lived in more than 1 state" is a separate option that knocks out).
+      Wired through stateReturn.xml (state framework).
+    -->
+    <Fact path="/paLine1a">
+      <Name>PA-40 line 1a gross compensation</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 10, LINE 1a: "The amount your employer reports in Box 16 of your Form W-2 usually shows your PA-taxable compensation if the W-2 includes PA withholding in Box 17." 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(1) Compensation. Sum of W-2 box 16 (all W-2s are PA: a different-state W-2 knocks out via /flowKnockoutBox15IncomeFromDifferentState). #80 part-year: per-W-2 /formW2s/*/paCompensation (PA W-2: box 16; FL W-2: the filer's PA-residency-period allocation).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><CollectionSum><Dependency module="formW2s" path="/formW2s/*/paCompensation" /></CollectionSum></Derived>
+    </Fact>
+    <Fact path="/paLine1b">
+      <Name>PA-40 line 1b unreimbursed employee business expenses</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 1b. Not modeled (PA Schedule UE): $0; claiming it is covered by /flowKnockoutPaUnsupportedItems.</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine1c">
+      <Name>PA-40 line 1c net compensation</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 1c: "Net Compensation. Subtract Line 1b from Line 1a."</Description>
+      <Derived><Subtract><Minuend><Dependency path="/paLine1a" /></Minuend><Subtrahends><Dependency path="/paLine1b" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/paLine2">
+      <Name>PA-40 line 2 interest income</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 14, LINE 2: "Report all PA-taxable interest income received or credited during the year." and "Interest income from direct obligations of the U.S. government, the Commonwealth of Pennsylvania, and political subdivisions of Pennsylvania is tax exempt." Federal taxable interest minus 1099-INT box 3 (U.S. Savings Bonds and Treasury obligations). Box 8 tax-exempt interest knocks out (PA vs other-state munis not distinguished). 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(6). #80 part-year: only the PA-residency-period interest (see /paInterestFullYear).</Description>
+      <Derived><Switch><Case><When><Not><Dependency path="/paPartYearSupported" /></Not></When><Then><Dependency path="/paInterestFullYear" /></Then></Case><Case><When><Not><Dependency path="/paPartYearHasInterest" /></Not></When><Then><Dollar>0</Dollar></Then></Case><Case><When><IsComplete><Dependency path="/paPartYearResidentInterest" /></IsComplete></When><Then><LesserOf><Dependency path="/paInterestFullYear" /><GreaterOf><Dollar>0</Dollar><Dependency path="/paPartYearResidentInterest" /></GreaterOf></LesserOf></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/paInterestFullYear">
+      <Name>PA-taxable interest for the whole year</Name>
+      <Description>#78 line 2 rule for the whole year: federal taxable interest minus 1099-INT box 3. #80: a part-year resident reports only the PA-residency-period part (/paPartYearResidentInterest, capped at this amount); PA-40 IN (2025) p. 43, nonresidents "do not pay PA income tax on ordinary interest".</Description>
+      <Export downstreamFacts="true" />
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><CollectionSum><Dependency module="interest" path="/interestReports/*/taxableInterest" /></CollectionSum></Minuend><Subtrahends><CollectionSum><Dependency module="interest" path="/interestReports/*/interestOnGovernmentBonds" /></CollectionSum></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/paLine3">
+      <Name>PA-40 line 3 dividends</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 15, LINE 3: "Report all dividend income received or credited during 2025." Dividends are out of scope in this app (/ordinaryDividends = $0). 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(5).</Description>
+      <Derived><Dependency module="income" path="/ordinaryDividends" /></Derived>
+    </Fact>
+    <Fact path="/paLine4">
+      <Name>PA-40 line 4 net business income</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 4. Schedule C businesses knock out (/flowKnockoutPaUnsupportedIncome), so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(2).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine5">
+      <Name>PA-40 line 5 net gain or loss from property</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 17, LINE 5: "Report your gain (loss) from the sale, exchange, or disposition of any kind of intangible property and any real or tangible property." and "PA law does not distinguish between long-term and short term gains (losses)". Sum of Form 8949 column (h); no federal $3,000 loss limit or carryover. May be negative (a net loss) — line 9 then ignores it. #80 part-year: only sales dated in the PA residency period (/form8949Transactions/*/paGainOrLoss); PA-40 IN (2025) p. 43, nonresidents do not pay PA tax on "any gain you realize on the sale, exchange, or disposition of intangible personal property, such as stocks and bonds. You cannot use the loss from such sales against other taxable gains." 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(3).</Description>
+      <Derived><CollectionSum><Dependency module="scheduleD" path="/form8949Transactions/*/paGainOrLoss" /></CollectionSum></Derived>
+    </Fact>
+    <Fact path="/paLine6">
+      <Name>PA-40 line 6 rents, royalties, patents, copyrights</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 6. Schedule E income knocks out, so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(4).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine7">
+      <Name>PA-40 line 7 estate or trust income</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 7. Covered by /flowKnockoutPaUnsupportedItems, so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(8).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine8">
+      <Name>PA-40 line 8 gambling and lottery winnings</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 8. Covered by /flowKnockoutPaUnsupportedItems, so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(7).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine9">
+      <Name>PA-40 line 9 total PA taxable income</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 20, LINE 9: "Add only the positive income amounts from Lines 1c through 8. Do not add, subtract, or take losses into consideration." A net loss in one class never offsets another class.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Add><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine1c" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine2" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine3" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine4" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine5" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine6" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine7" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine8" /></GreaterOf></Add></Derived>
+    </Fact>
+    <Fact path="/paLine10">
+      <Name>PA-40 line 10 other deductions</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 20, LINE 10 (MSA, HSA, 529, 529A ABLE; p. 1 notes the new Schedule O student loan interest deduction). Not modeled: $0; claiming any is covered by /flowKnockoutPaUnsupportedItems.</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine11">
+      <Name>PA-40 line 11 adjusted PA taxable income</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 21, LINE 11: "Subtract Line 10 from Line 9."</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Subtract><Minuend><Dependency path="/paLine9" /></Minuend><Subtrahends><Dependency path="/paLine10" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/paLine12">
+      <Name>PA-40 line 12 PA tax liability</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 21, LINE 12: "Multiply Line 11 by 3.07 percent (0.0307)." 72 P.S. §7302(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7302/): "a tax upon each dollar of income received by that resident during that resident's taxable year at the rate of three and seven hundredths per cent."</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Multiply><Rational>307/10000</Rational><Dependency path="/paLine11" /></Multiply></Derived>
+    </Fact>
+    <Fact path="/paLine13">
+      <Name>PA-40 line 13 total PA tax withheld</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 21, LINE 13: "Enter your total PA tax withheld from Box 17 of your federal Form(s) W2." 1099-INT state withholding knocks out (/flowKnockoutStateTaxWithheld); 1099-R/1099-MISC/W-2G knock out for PA. #80 part-year: box 17 of PA W-2s only (/formW2s/*/paWithholding); a FL W-2 with box 17 knocks out (/flowKnockoutPaPartYear).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><CollectionSum><Dependency module="formW2s" path="/formW2s/*/paWithholding" /></CollectionSum></Derived>
+    </Fact>
+    <Fact path="/paLine24">
+      <Name>PA-40 line 24 total payments and credits</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 23, LINE 24: "Add Lines 13, 18, 21, 22, and 23." Lines 18 (estimated/extension payments, prior-year credit), 21 (Schedule SP), 22 (Schedule G-L resident credit) and 23 (Schedules OC/DC) are not modeled and are $0; each is a knockout.</Description>
+      <Derived><Dependency path="/paLine13" /></Derived>
+    </Fact>
+    <Fact path="/paLine26">
+      <Name>PA-40 line 26 tax due</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 23, LINE 26: "If the total of Line 12 and Line 25 is more than Line 24, enter the tax you owe." Line 25 use tax is $0 (knockout).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/paLine12" /></Minuend><Subtrahends><Dependency path="/paLine24" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/paLine29">
+      <Name>PA-40 line 29 overpayment</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 24, LINE 29: "Subtract Line 12 (and subtract Lines 25 and 27, if you entered amounts on these lines) from Line 24, and enter the difference here."</Description>
+      <Export downstreamFacts="true" />
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/paLine24" /></Minuend><Subtrahends><Dependency path="/paLine12" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/paHasUnsupportedItems">
+      <Name>Has PA-40 items this tool doesn't support</Name>
+      <Description>#78: PA-40 (2025) line 1b (Schedule UE unreimbursed employee expenses), line 7 (estate/trust, Schedule J), line 8 (gambling/lottery, Schedule T), line 10 (MSA/HSA/529/ABLE/Schedule O deductions), lines 14-16 (prior-year credit, estimated and extension payments), line 22 (Schedule G-L credit for taxes paid to another state), line 23 (Schedules OC/DC credits), line 25 (use tax).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutPaUnsupportedItems">
+      <Name>Flow knockout: unsupported PA-40 items</Name>
+      <Description>#78: yes to /paHasUnsupportedItems.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><IsComplete><Dependency path="/paHasUnsupportedItems" /></IsComplete><Dependency path="/paHasUnsupportedItems" /></All></Derived>
+    </Fact>
+    <Fact path="/flowKnockoutPaUnsupportedIncome">
+      <Name>Flow knockout: income PA-40 core does not classify</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 17 (LINE 4 business, PA Schedule C), p. 17-19 (LINE 6 rents, Schedule E), pp. 13-14 (1099-R: PA taxability depends on plan/age/code), 1099-MISC (must be classified), box 8 tax-exempt interest (PA taxes other states' obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with property sales (p. 7: "You may not offset the income of the taxpayer with a loss from the spouse and vice versa", not modeled).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><Any><Dependency module="scheduleC" path="/hasScheduleCBusinesses" /><Dependency module="scheduleE" path="/hasScheduleEIncome" /><GreaterThan><Left><CollectionSize><Dependency module="form1099Rs" path="/form1099Rs" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan><GreaterThan><Left><CollectionSize><Dependency module="form1099Misc" path="/form1099Miscs" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan><GreaterThan><Left><Dependency module="interest" path="/taxExemptInterest" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan><GreaterThan><Left><Count><Dependency module="formW2s" path="/formW2s/*/paMissingStateWages" /></Count></Left><Right><Int>0</Int></Right></GreaterThan><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><GreaterThan><Left><CollectionSize><Dependency module="scheduleD" path="/form8949Transactions" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan></All></Any></Derived>
+    </Fact>
+    <Fact path="/paTaxForgivenessCeiling">
+      <Name>Highest Schedule SP eligibility income that gets any forgiveness</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 39, Eligibility Income Table 1 (Unmarried): 100% at "$6,500" stepping by $250 to 10% at $8,750, and each dependent child adds $9,500 (1 child: "$16,000" at 100%, $18,250 at 10%). Table 2 (Married): 100% at $13,000 up to 10% at $15,250, +$9,500 per child (1 child "$22,500" at 100%).</Description>
+      <Derived><Add><Switch><Case><When><Dependency module="filers" path="/isMarried" /></When><Then><Dollar>15250</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>8750</Dollar></Then></Case></Switch><Multiply><Dollar>9500</Dollar><Dependency module="familyAndHousehold" path="/claimedDependentsCount" /></Multiply></Add></Derived>
+    </Fact>
+    <Fact path="/flowKnockoutPaTaxForgiveness">
+      <Name>Flow knockout: may qualify for PA Tax Forgiveness (Schedule SP)</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf pp. 36-39: Schedule SP (line 21) is not computed until #79. Eligibility income includes PA-taxable income, so if line 11 is at or below the highest table amount the filer could qualify; block rather than overstate tax.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><IsComplete><Dependency path="/paLine11" /></IsComplete><LessThanOrEqual><Left><Dependency path="/paLine11" /></Left><Right><Dependency path="/paTaxForgivenessCeiling" /></Right></LessThanOrEqual></All></Derived>
+    </Fact>
+    <!--
+      #80 PA part-year residency (moves between PA and FL). Stacked on #101 (PA-40 core).
+      PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+      p. 6, (P) Part-Year Resident: "PA law taxes part-year residents on all income from all sources while a PA resident, and all income (loss) earned, received, and realized from PA sources when not a resident of Pennsylvania."
+      p. 42: "Part-Year Resident of Pennsylvania - You must report all taxable income you earned, received, and realized from all sources for the time you were a PA resident, and report the PA-taxable income you earned, received, and realized from sources within Pennsylvania for the time you were not a PA resident."
+      72 P.S. §7302(a) (residents) and §7302(b) (nonresidents: "each of the classes of income hereinafter enumerated in section 303 from sources within this Commonwealth"); §7301(p) "Resident individual", §7301(m) "Nonresident individual".
+      Florida has no personal income tax (Fla. Const. art. VII, §5(a)), so there is no PA-40 line 22 resident credit (Schedule G-L) for the FL period.
+    -->
+    <Fact path="/paPartYearMoveOptions">
+      <Name>PA part-year move options</Name>
+      <Description>#80: the supported moves are between Pennsylvania and Florida. Any other state stops the return.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>paToFl</String>
+          <String>flToPa</String>
+          <String>other</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/paPartYearMove">
+      <Name>Which move the filer made during the year</Name>
+      <Description>#80: asked only when the filer answered "I lived in more than 1 state" (/filerResidenceAndIncomeState = moreThanOne). PA-40 IN (2025) p. 6: "If you moved into Pennsylvania during 2025, fill in this oval even though you were a PA resident at the end of 2025. If you moved from Pennsylvania during 2025, fill in this oval even though you were not a PA resident at the end of 2025."</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Enum optionsPath="/paPartYearMoveOptions" />
+      </Writable>
+    </Fact>
+    <Fact path="/paPartYearMoveDate">
+      <Name>Date the filer started living in the new state</Name>
+      <Description>#80: the first day of residence in the new state. Moving PA to FL: PA residency period is Jan. 1 through the day before this date. Moving FL to PA: PA residency period is this date through Dec. 31. PA-40 IN (2025) p. 6 describes a residency period by its "earliest starting date if you moved into Pennsylvania and latest ending date if you moved out of Pennsylvania" (said of spouses electing one residency period for a joint return).</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Day />
+      </Writable>
+    </Fact>
+    <Fact path="/paPartYearAsked">
+      <Name>Ask about a move between PA and FL</Name>
+      <Description>#80: the filer said they lived in more than one state.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><All><IsComplete><Dependency module="filers" path="/filerResidenceAndIncomeState" /></IsComplete><Equal><Left><Dependency module="filers" path="/filerResidenceAndIncomeState" /></Left><Right><Enum optionsPath="/scopedStateOptions">moreThanOne</Enum></Right></Equal></All></Derived>
+    </Fact>
+    <Fact path="/paPartYearMovedOut">
+      <Name>Moved from PA to FL</Name>
+      <Export downstreamFacts="true" />
+      <Derived><Equal><Left><Dependency path="/paPartYearMove" /></Left><Right><Enum optionsPath="/paPartYearMoveOptions">paToFl</Enum></Right></Equal></Derived>
+    </Fact>
+    <Fact path="/paPartYearSupported">
+      <Name>PA part-year resident whose other state is Florida</Name>
+      <Description>#80: lived in more than one state and the move was PA to FL or FL to PA. A move involving any other state ("other") is not supported and stays knocked out by /flowKnockoutUnsupportedState (filers /hasIncomeInScope).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><All><Dependency path="/paPartYearAsked" /><IsComplete><Dependency path="/paPartYearMove" /></IsComplete><Any><Equal><Left><Dependency path="/paPartYearMove" /></Left><Right><Enum optionsPath="/paPartYearMoveOptions">paToFl</Enum></Right></Equal><Equal><Left><Dependency path="/paPartYearMove" /></Left><Right><Enum optionsPath="/paPartYearMoveOptions">flToPa</Enum></Right></Equal></Any></All></Derived>
+    </Fact>
+    <Fact path="/paResidencyStatusPartYear">
+      <Name>PA-40 Residency Status oval (P) Part-Year Resident</Name>
+      <Description>#80: PA-40 IN (2025) p. 6, "(P) Part-Year Resident". True for a supported PA/FL part-year return; false for a full-year (R) resident.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Dependency module="stateReturn" path="/stateReturnIsPaPartYear" /></Derived>
+    </Fact>
+    <Fact path="/paPartYearW2StateOptions">
+      <Name>W-2 box 15 state for a PA part-year resident</Name>
+      <Derived>
+        <EnumOptions>
+          <String>pa</String>
+          <String>fl</String>
+          <String>other</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+    <Fact path="/paPartYearFirstDay">
+      <Name>Earliest move date that makes a part-year return</Name>
+      <Description>#80: a move on Jan. 1 is a full year in the new state; the date must fall in the tax year.</Description>
+      <Derived><Day>2026-01-02</Day></Derived>
+    </Fact>
+    <Fact path="/paPartYearLastDay">
+      <Name>Latest move date in the tax year</Name>
+      <Derived><Day>2026-12-31</Day></Derived>
+    </Fact>
+    <Fact path="/paPartYearHasInterest">
+      <Name>PA part-year filer has PA-taxable interest for the whole year</Name>
+      <Export downstreamFacts="true" />
+      <Derived><All><Dependency path="/paPartYearSupported" /><GreaterThan><Left><Dependency path="/paInterestFullYear" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan></All></Derived>
+    </Fact>
+    <Fact path="/paPartYearResidentInterest">
+      <Name>Interest received while a PA resident</Name>
+      <Description>#80: PA-40 IN (2025) p. 43: "As a nonresident, you do not pay PA income tax on ordinary interest, ordinary dividends, and any gain you realize on the sale, exchange, or disposition of intangible personal property, such as stocks and bonds." So only interest received during the PA residency period is PA-taxable. 1099-INTs carry no dates, so the filer allocates.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutPaPartYear">
+      <Name>Flow knockout: PA part-year case not supported</Name>
+      <Description>#80. (1) Joint return: PA-40 IN (2025) p. 7, spouses "must file separate returns if: ... 2. Your taxable years begin on different dates for part-year residents; ... 5. One of you is a PA resident and the other is not", and joint part-year filing requires electing the same residency period (p. 6); the spouse's residency isn't collected. (2) Move date outside Jan. 2 - Dec. 31 of the tax year. (3) A W-2 from a state other than PA or FL, or a FL W-2 with box 17 state tax withheld (some other state's tax).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><Dependency path="/paPartYearSupported" /><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><All><IsComplete><Dependency path="/paPartYearMoveDate" /></IsComplete><Any><LessThan><Left><Dependency path="/paPartYearMoveDate" /></Left><Right><Dependency path="/paPartYearFirstDay" /></Right></LessThan><GreaterThan><Left><Dependency path="/paPartYearMoveDate" /></Left><Right><Dependency path="/paPartYearLastDay" /></Right></GreaterThan></Any></All><GreaterThan><Left><Count><Dependency module="formW2s" path="/formW2s/*/paPartYearUnsupportedW2" /></Count></Left><Right><Int>0</Int></Right></GreaterThan></Any></All></Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

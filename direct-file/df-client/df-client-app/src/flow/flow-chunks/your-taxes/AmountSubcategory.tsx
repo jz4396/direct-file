@@ -1,7 +1,12 @@
 /* eslint-disable max-len */
-import { Screen, Subcategory } from '../../flowDeclarations.js';
+import { Screen, Subcategory, SubSubcategory } from '../../flowDeclarations.js';
 import {
   BigContent,
+  Boolean,
+  DFAlert,
+  Dollar,
+  IconDisplay,
+  KnockoutButton,
   ContextHeading,
   DFModal,
   Heading,
@@ -14,6 +19,46 @@ import {
 
 export const AmountSubcategory = (
   <Subcategory route='amount' completeIf='/flowHasSeenAmount'>
+    {/* #78 PA-40 core: full-year PA residents. */}
+    <SubSubcategory route='pa-40'>
+      <Screen route='pa-unsupported-items' condition='/stateReturnPaFiled'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />
+        <Boolean path='/paHasUnsupportedItems' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      {/* #80 PA part-year residency. */}
+      <Screen route='pa-part-year-interest' condition='/paPartYearHasInterest'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-part-year-interest' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-part-year-interest' />
+        <Dollar path='/paPartYearResidentInterest' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-part-year-knockout' condition='/flowKnockoutPaPartYear' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-part-year' />
+        <DFAlert i18nKey='/info/knockout/pa-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-unsupported-items-knockout' condition='/flowKnockoutPaUnsupportedItems' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-unsupported-items' />
+        <DFAlert i18nKey='/info/knockout/pa-unsupported-items' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-unsupported-income-knockout' condition='/flowKnockoutPaUnsupportedIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-unsupported-income' />
+        <DFAlert i18nKey='/info/knockout/pa-unsupported-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-tax-forgiveness-knockout' condition='/flowKnockoutPaTaxForgiveness' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-tax-forgiveness' />
+        <DFAlert i18nKey='/info/knockout/pa-tax-forgiveness' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     <Screen route='tax-amount-intro'>
       <ContextHeading displayOnlyOn='edit' i18nKey='/heading/your-taxes/amount/tax-amount' />
       <Heading i18nKey='/heading/your-taxes/amount/tax-amount-intro' />

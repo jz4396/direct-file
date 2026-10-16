@@ -1,0 +1,135 @@
+# Textos del PA-40 (#78). Superpuesto por locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    pa-40: Declaración de Pensilvania
+dataviews:
+  /flow/you-and-your-family/about-you:
+    /paPartYearMove: Mudanza entre Pensilvania y Florida
+    /paPartYearMoveDate: Fecha en que comenzó a vivir en su nuevo estado
+    enums:
+      /paPartYearMoveOptions:
+        paToFl: Se mudó de Pensilvania a Florida
+        flToPa: Se mudó de Florida a Pensilvania
+        other: Vivió en otro estado
+  /flow/income/jobs:
+    /formW2s/*/paPartYearW2State: Encasillado 15 - Estado (residente de Pensilvania parte del año)
+    /formW2s/*/paPartYearResidentPeriodWages:
+      Salarios sujetos a impuestos de Pensilvania ganados mientras era residente de Pensilvania
+    enums:
+      /paPartYearW2StateOptions:
+        pa: Pensilvania
+        fl: Florida
+        other: Otro estado
+  /flow/your-taxes/amount:
+    /paPartYearResidentInterest: Intereses recibidos mientras era residente de Pensilvania
+    /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
+headings:
+  /heading/your-taxes/amount/pa-unsupported-items:
+    "Para su declaración de Pensilvania de {{/taxYear}}, ¿le corresponde alguno de estos casos?"
+  /heading/knockout/pa-unsupported-items: Esta herramienta aún no admite estas partidas de impuestos de Pensilvania
+  /heading/knockout/pa-unsupported-income:
+    Esta herramienta aún no admite parte de sus ingresos en una declaración de Pensilvania
+  /heading/knockout/pa-tax-forgiveness:
+    Es posible que reúna los requisitos para la Condonación de Impuestos de Pensilvania, que esta herramienta aún no
+    admite
+  /heading/you-and-your-family/about-you/pa-part-year-move:
+    "¿Cuál de estas opciones describe dónde vivió en {{/taxYear}}?"
+  /heading/you-and-your-family/about-you/pa-part-year-move-date:
+    ¿Cuál fue el primer día en que vivió en su nuevo estado?
+  /heading/income/jobs/w2-pa-part-year-state: ¿Qué estado aparece en el encasillado 15 de este Formulario W-2?
+  /heading/income/jobs/w2-pa-part-year-resident-wages:
+    ¿Qué parte del pago de este Formulario W-2 ganó mientras vivía en Pensilvania?
+  /heading/your-taxes/amount/pa-part-year-interest: ¿Qué parte de sus intereses recibió mientras vivía en Pensilvania?
+  /heading/knockout/pa-part-year:
+    Esta herramienta aún no admite su declaración de Pensilvania como residente parte del año
+info:
+  /info/your-taxes/amount/pa-unsupported-items:
+    body:
+      - p:
+          "Gastos de negocio no reembolsados como empleado (Anexo UE de PA); aportaciones a una cuenta de ahorros
+          médicos, cuenta de ahorros para la salud, plan 529 o ABLE, o intereses de préstamos estudiantiles que desea
+          deducir; ingresos de un caudal hereditario o fideicomiso; ganancias de juegos de azar o lotería; pagos
+          estimados o de prórroga de Pensilvania, o un reembolso del año pasado aplicado a este año; crédito por
+          impuestos pagados a otro estado; otros créditos de Pensilvania (Anexos OC o DC); o impuesto sobre el uso que
+          adeuda."
+      - p:
+          Esta herramienta no calcula el impuesto local sobre ingresos del trabajo. Preséntelo ante su recaudador de
+          impuestos local.
+  /info/knockout/pa-unsupported-items:
+    alertText:
+      body:
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-unsupported-income:
+    alertText:
+      body:
+        - p:
+            Esto incluye ingresos de negocio o de alquiler, distribuciones de jubilación, ingresos del Formulario
+            1099-MISC, intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania en el encasillado
+            16 o ventas de bienes en una declaración conjunta.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-tax-forgiveness:
+    alertText:
+      body:
+        - p:
+            Según sus ingresos y dependientes, es posible que pueda reducir o eliminar su impuesto de Pensilvania con el
+            Anexo SP.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/you-and-your-family/about-you/pa-part-year-move:
+    body:
+      - p:
+          Si se mudó entre Pensilvania y Florida, puede presentar aquí una declaración de Pensilvania como residente
+          parte del año. Pensilvania grava todos sus ingresos del tiempo en que vivió allí, más los ingresos de fuentes
+          de Pensilvania (como el pago por trabajo en Pensilvania) del resto del año.
+      - p:
+          Florida no tiene impuesto estatal sobre los ingresos, así que no hay una declaración de Florida que presentar.
+  /info/you-and-your-family/about-you/pa-part-year-move-date:
+    body:
+      - p:
+          Ingrese la fecha en que comenzó a vivir en Florida (si se mudó de Pensilvania) o en Pensilvania (si se mudó
+          allí). La mudanza debe ser posterior al 1 de enero y en {{/taxYear}}.
+  /info/income/jobs/w2-pa-part-year-resident-wages:
+    body:
+      - p:
+          Este Formulario W-2 no indica salarios de Pensilvania. Ingrese la parte de su pago que ganó mientras vivía en
+          Pensilvania. Pensilvania grava este pago aunque sea de un empleador de Florida.
+      - p:
+          Pensilvania no le permite restar de su pago las aportaciones a planes de jubilación (como las aportaciones a
+          un plan 401(k)), así que incluya esas cantidades. Ingrese 0 si ganó todo este pago mientras vivía en Florida.
+  /info/your-taxes/amount/pa-part-year-interest:
+    body:
+      - p:
+          Pensilvania grava los intereses que recibió mientras vivía allí. No grava los intereses que recibió mientras
+          vivía en Florida. No incluya intereses de bonos de ahorro de EE. UU. ni de obligaciones del Tesoro.
+  /info/knockout/pa-part-year:
+    alertText:
+      body:
+        - p:
+            "Esto incluye: una declaración conjunta, una fecha de mudanza que no sea posterior al 1 de enero y en
+            {{/taxYear}}, un Formulario W-2 de un estado que no sea Pensilvania ni Florida, o un Formulario W-2 de
+            Florida con impuesto estatal sobre los ingresos retenido en el encasillado 17."
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+fields:
+  /paPartYearMoveOptions:
+    paToFl: Me mudé de Pensilvania a Florida
+    flToPa: Me mudé de Florida a Pensilvania
+    other: Viví en otro estado (no solo Pensilvania y Florida)
+  /paPartYearMoveDate:
+    name: Fecha en que comenzó a vivir en su nuevo estado
+  /paPartYearW2StateOptions:
+    pa: Pensilvania
+    fl: Florida
+    other: Otro estado
+  /formW2s/*/paPartYearResidentPeriodWages:
+    name: Pago ganado mientras vivía en Pensilvania
+  /paPartYearResidentInterest:
+    name: Intereses recibidos mientras vivía en Pensilvania
