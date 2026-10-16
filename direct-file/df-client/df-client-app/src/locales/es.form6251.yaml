@@ -1,0 +1,27 @@
+# Cadenas del Formulario 6251 (AMT) (#77). Se combinan en locales/featureLocales.ts.
+headings:
+  /heading/income/income-sources/amt-preference-items: "En {{/taxYear}}, ¿ejerció opciones de compra de acciones de incentivo, tuvo intereses exentos de impuestos de bonos de actividad privada o tuvo algún otro ajuste del impuesto mínimo alternativo?"
+  /heading/knockout/amt-preference-items: Esta herramienta todavía no admite estas partidas del impuesto mínimo alternativo
+  /heading/knockout/amt-mfs-add-back: Esta herramienta todavía no admite el impuesto mínimo alternativo para sus ingresos si es casado que presenta la declaración por separado
+  /heading/knockout/amt-kiddie-tax: Esta herramienta todavía no admite el límite del impuesto mínimo alternativo para dependientes
+info:
+  /info/income/income-sources/amt-preference-items:
+    body: Esto incluye las opciones de compra de acciones de incentivo que ejerció y conservó (Formulario 3921), los intereses de bonos de actividad privada (casilla 9 del Formulario 1099-INT o casilla 13 del Formulario 1099-DIV), las diferencias de depreciación u otras diferencias de negocio para el impuesto mínimo alternativo, las pérdidas netas de operación y el crédito por impuestos extranjeros del impuesto mínimo alternativo.
+  /info/knockout/amt-preference-items:
+    alertText:
+      body:
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/amt-mfs-add-back:
+    alertText:
+      body:
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/amt-kiddie-tax:
+    alertText:
+      body:
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
