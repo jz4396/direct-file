@@ -4,7 +4,7 @@
     <!--
       #77 Form 6251 Alternative Minimum Tax—Individuals (TY2026).
       Line numbers: Form 6251 (2026) draft (Created 5/26/26), https://www.irs.gov/pub/irs-dft/f6251--dft.pdf
-      Dollar amounts: Rev. Proc. 2025-32 §4.10 pp. 16-17, §4.11 p. 17, §4.03 p. 13, https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
+      Dollar amounts: Rev. Proc. 2025-32 §4.10 p. 16 (exemption, 28% breakpoint) and p. 17 (phaseout), §4.11 p. 17, §4.03 p. 13, https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
       Statute: IRC §55 https://www.law.cornell.edu/uscode/text/26/55, §56 https://www.law.cornell.edu/uscode/text/26/56
     -->
     <Fact path="/form6251ExemptionAmount">
@@ -14,7 +14,7 @@
     </Fact>
     <Fact path="/form6251PhaseoutThreshold">
       <Name>AMT exemption phaseout threshold</Name>
-      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, pp. 16-17: "the amounts used under § 55(d)(2) to determine the phaseout of the exemption amounts are: Joint Returns or Surviving Spouses $1,000,000 [complete phaseout $1,280,400]; Unmarried Individuals (other than Surviving Spouses) $500,000 [$680,200]; Married Individuals Filing Separate Returns $500,000 [$640,200]". IRC §55(d)(2), (d)(4)(A)(ii)(I)-(II).</Description>
+      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 17: "the amounts used under § 55(d)(2) to determine the phaseout of the exemption amounts are: Joint Returns or Surviving Spouses $1,000,000 [complete phaseout $1,280,400]; Unmarried Individuals (other than Surviving Spouses) $500,000 [$680,200]; Married Individuals Filing Separate Returns $500,000 [$640,200]". IRC §55(d)(2), (d)(4)(A)(ii)(I)-(II).</Description>
       <Derived><Switch><Case><When><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><Dependency module="filingStatus" path="/isFilingStatusQSS" /></Any></When><Then><Dollar>1000000</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>500000</Dollar></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/form6251RateBreakpoint">

@@ -25,7 +25,7 @@ import {
 /**
  * #77 Form 6251 (AMT) — TY2026.
  * Line numbers: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf
- * Rev. Proc. 2025-32 §4.10 pp. 16–17 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf):
+ * Rev. Proc. 2025-32 §4.10 (exemption and 28% breakpoint p. 16; phaseout p. 17) (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf):
  *   p. 16 "the exemption amounts under § 55(d)(1) are: Joint Returns or Surviving Spouses $140,200 ...
  *   Unmarried Individuals (other than Surviving Spouses) $90,100 ... Married Individuals Filing Separate Returns $70,100"
  *   p. 16 "the excess taxable income above which the 28 percent tax rate applies is: Married Individuals Filing
@@ -89,7 +89,7 @@ const hohFilerData = {
 const KOS = [`/flowKnockoutAmtPreferenceItems`, `/flowKnockoutAmtMfsAddBack`, `/flowKnockoutAmtKiddieTax`];
 const noAmtKnockouts = (g: Fg) => KOS.forEach((k) => expect(get(g, k).get).toBe(false));
 
-describe(`Form 6251 constants — Rev. Proc. 2025-32 §4.10 pp. 16-17`, () => {
+describe(`Form 6251 constants — Rev. Proc. 2025-32 §4.10 pp. 16 (exemption), 17 (phaseout)`, () => {
   for (const [l, s, ex, th, bp, off] of [
     [`single`, singleFilerData, `90100.00`, `500000.00`, `244500.00`, `4890.00`],
     [`HoH`, hohFilerData, `90100.00`, `500000.00`, `244500.00`, `4890.00`],
