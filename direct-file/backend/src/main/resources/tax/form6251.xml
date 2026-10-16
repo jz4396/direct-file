@@ -14,7 +14,7 @@
     </Fact>
     <Fact path="/form6251PhaseoutThreshold">
       <Name>AMT exemption phaseout threshold</Name>
-      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 17: "the amounts used under § 55(d)(2) to determine the phaseout of the exemption amounts are: Joint Returns or Surviving Spouses $1,000,000 [complete phaseout $1,280,400]; Unmarried Individuals (other than Surviving Spouses) $500,000 [$680,200]; Married Individuals Filing Separate Returns $500,000 [$640,200]". IRC §55(d)(2), (d)(4)(A)(ii)(I)-(II).</Description>
+      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 17: "[Filing status / Threshold Phaseout Amount / Complete Phaseout Amount] Joint Returns or Surviving Spouses $1,000,000 [complete phaseout $1,280,400]; Unmarried Individuals (other than Surviving Spouses) $500,000 [$680,200]; Married Individuals Filing Separate Returns $500,000 [$640,200]". IRC §55(d)(2), (d)(4)(A)(ii)(I)-(II).</Description>
       <Derived><Switch><Case><When><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><Dependency module="filingStatus" path="/isFilingStatusQSS" /></Any></When><Then><Dollar>1000000</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>500000</Dollar></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/form6251RateBreakpoint">
