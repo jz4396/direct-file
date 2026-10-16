@@ -122,7 +122,7 @@ describe(`The \`income\` subcategory`, () => {
         );
       });
     });
-    // Medicare wages knockout tests
+    // Medicare wages over the Additional Medicare Tax threshold (#82: computed on Form 8959, no knockout)
     for (const incomeFilingStatusCombo of [
       {
         filingStatus: `single`,
@@ -133,7 +133,7 @@ describe(`The \`income\` subcategory`, () => {
       {
         filingStatus: `single`,
         writableMedicareWages: `200001`,
-        knockout: true,
+        knockout: false,
         isCredit: false,
       },
       {
@@ -147,14 +147,14 @@ describe(`The \`income\` subcategory`, () => {
         filingStatus: `marriedFilingJointly`,
         writableMedicareWages: `200000`,
         spouseWritableMedicareWages: `50001`,
-        knockout: true,
+        knockout: false,
         isCredit: false,
       },
       {
         filingStatus: `marriedFilingJointly`,
         writableMedicareWages: `200001`,
         spouseWritableMedicareWages: `10000`,
-        knockout: true,
+        knockout: false,
         isCredit: true,
       },
       {
@@ -166,7 +166,7 @@ describe(`The \`income\` subcategory`, () => {
       {
         filingStatus: `headOfHousehold`,
         writableMedicareWages: `200001`,
-        knockout: true,
+        knockout: false,
         isCredit: false,
       },
       {
@@ -178,7 +178,7 @@ describe(`The \`income\` subcategory`, () => {
       {
         filingStatus: `qualifiedSurvivingSpouse`,
         writableMedicareWages: `200001`,
-        knockout: true,
+        knockout: false,
         isCredit: false,
       },
       {
@@ -190,7 +190,7 @@ describe(`The \`income\` subcategory`, () => {
       {
         filingStatus: `marriedFilingSeparately`,
         writableMedicareWages: `1250001`,
-        knockout: true,
+        knockout: false,
         isCredit: false,
       },
     ]) {
@@ -200,7 +200,8 @@ describe(`The \`income\` subcategory`, () => {
           ? `primary filer has an income of ${incomeFilingStatusCombo.writableMedicareWages}`
           : `primary filer has an income of ${incomeFilingStatusCombo.writableMedicareWages} and secondary ` +
             `filer has income of ${incomeFilingStatusCombo.spouseWritableMedicareWages}`;
-      describe(`The medicare knockout, when a ${incomeFilingStatusCombo.filingStatus} ${description}`, () => {
+      // #82: Form 8959 now computes Additional Medicare Tax, so Medicare wages over the threshold no longer knock out.
+      describe(`Medicare wages vs. the Form 8959 threshold, when a ${incomeFilingStatusCombo.filingStatus} ${description}`, () => {
         const factData = {
           ...baseIncomeData,
           [`/filingStatus`]: createEnumWrapper(incomeFilingStatusCombo.filingStatus, `/filingStatusOptions`),
