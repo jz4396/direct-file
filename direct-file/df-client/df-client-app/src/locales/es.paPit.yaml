@@ -1,0 +1,38 @@
+# Textos del PA-40 (#78). Superpuesto por locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    pa-40: Declaración de Pensilvania
+dataviews:
+  /flow/your-taxes/amount:
+    /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
+headings:
+  /heading/your-taxes/amount/pa-unsupported-items: "Para su declaración de Pensilvania de {{/taxYear}}, ¿le corresponde alguno de estos casos?"
+  /heading/knockout/pa-unsupported-items: Esta herramienta aún no admite estas partidas de impuestos de Pensilvania
+  /heading/knockout/pa-unsupported-income: Esta herramienta aún no admite parte de sus ingresos en una declaración de Pensilvania
+  /heading/knockout/pa-tax-forgiveness: Es posible que reúna los requisitos para la Condonación de Impuestos de Pensilvania, que esta herramienta aún no admite
+info:
+  /info/your-taxes/amount/pa-unsupported-items:
+    body:
+      - p: "Gastos de negocio no reembolsados como empleado (Anexo UE de PA); aportaciones a una cuenta de ahorros médicos, cuenta de ahorros para la salud, plan 529 o ABLE, o intereses de préstamos estudiantiles que desea deducir; ingresos de un caudal hereditario o fideicomiso; ganancias de juegos de azar o lotería; pagos estimados o de prórroga de Pensilvania, o un reembolso del año pasado aplicado a este año; crédito por impuestos pagados a otro estado; otros créditos de Pensilvania (Anexos OC o DC); o impuesto sobre el uso que adeuda."
+      - p: Esta herramienta no calcula el impuesto local sobre ingresos del trabajo. Preséntelo ante su recaudador de impuestos local.
+  /info/knockout/pa-unsupported-items:
+    alertText:
+      body:
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-unsupported-income:
+    alertText:
+      body:
+        - p: Esto incluye ingresos de negocio o de alquiler, distribuciones de jubilación, ingresos del Formulario 1099-MISC, intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania en el encasillado 16 o ventas de bienes en una declaración conjunta.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-tax-forgiveness:
+    alertText:
+      body:
+        - p: Según sus ingresos y dependientes, es posible que pueda reducir o eliminar su impuesto de Pensilvania con el Anexo SP.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html

@@ -126,6 +126,7 @@
           <Dependency module="scheduleD" path="/flowKnockoutCapitalAssets" />
           <Dependency module="scheduleD" path="/flowKnockoutCollectibles" />
           <Dependency module="scheduleD" path="/flowKnockoutUnrecaptured1250Gain" />
+          <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCAdditionalMedicare" />
