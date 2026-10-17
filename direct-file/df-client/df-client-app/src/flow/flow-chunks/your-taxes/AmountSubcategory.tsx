@@ -41,10 +41,16 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-unsupported-income' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      <Screen route='pa-tax-forgiveness-knockout' condition='/flowKnockoutPaTaxForgiveness' isKnockout={true}>
+      <Screen route='pa-sp-nontaxable-income' condition='/flowShowPaSpQuestion'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-sp-nontaxable-income' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-sp-nontaxable-income' />
+        <Boolean path='/paHasSpNontaxableIncome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-sp-unsupported-knockout' condition='/flowKnockoutPaSpUnsupported' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
-        <Heading i18nKey='/heading/knockout/pa-tax-forgiveness' />
-        <DFAlert i18nKey='/info/knockout/pa-tax-forgiveness' headingLevel='h3' type='warning' />
+        <Heading i18nKey='/heading/knockout/pa-sp-unsupported' />
+        <DFAlert i18nKey='/info/knockout/pa-sp-unsupported' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
