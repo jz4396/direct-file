@@ -5819,6 +5819,18 @@
       </Derived>
     </Fact>
 
+    <Fact path="/formW2s/*/paMissingStateWages">
+      <Name>PA: W-2 has wages but no box 16 state wages</Name>
+      <Description>#78: PA-40 IN (2025) p. 10, LINE 1a: PA compensation is "usually" W-2 box 16. A W-2 with box 1 wages and no box 16 amount can't be classified, so it knocks out (paPit /flowKnockoutPaUnsupportedIncome).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <GreaterThan><Left><Dependency path="../wages" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan>
+          <Equal><Left><Dependency path="../stateWages" /></Left><Right><Dollar>0</Dollar></Right></Equal>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/formW2s/*/hasStateWagesWithoutStateCode">
       <Description>Whether the form lists state wages but is missing the associated state code. Corresponds with a
         validation alert since the TP should always have a state code when they have state information</Description>
