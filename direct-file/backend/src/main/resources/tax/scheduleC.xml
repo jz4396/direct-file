@@ -185,44 +185,6 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutScheduleCAdditionalMedicare">
-      <Name>Knockout: Additional Medicare Tax (Form 8959) on wages plus self-employment income</Name>
-      <Description>
-        26 U.S.C. 1401(b)(2)(A): "a tax equal to 0.9 percent of the self-employment income for such
-        taxable year which is in excess of" $250,000 (joint return), 1/2 of that (MFS), or $200,000
-        (any other case). 1401(b)(2)(B) (Coordination with FICA): those amounts "shall be reduced (but
-        not below zero) by the amount of wages taken into account in determining the tax imposed under
-        section 3121(b)(2) with respect to the taxpayer." (text as rendered by LII)
-        https://www.law.cornell.edu/uscode/text/26/1401#b_2
-        Equivalent test: W-2 Medicare wages (box 5) + net earnings from self-employment (92.35% figure,
-        floored at 0) &gt; threshold. The wage-only check (formW2s /knockoutMedicareWages) misses
-        e.g. single, $150,000 wages + $100,000 profit: 150,000 + 92,350 &gt; 200,000, so about $381 of
-        Additional Medicare Tax would be owed. Form 8959 is not supported in this slice, so knock out.
-        Gated on /seTaxApplies: below $400 there is no self-employment income (26 U.S.C. 1402(b)).
-        Reuses the existing threshold fact formW2s /medicareWagesAdditionalTaxThreshhold (spelling as-is).
-      </Description>
-      <BlockSubmissionOnTrue />
-      <Export downstreamFacts="true" />
-      <Derived>
-        <All>
-          <Dependency module="scheduleSE" path="/seTaxApplies" />
-          <GreaterThan>
-            <Left>
-              <Add>
-                <Dependency module="formW2s" path="/formW2totalMedicareWages" />
-                <GreaterOf>
-                  <Dependency module="scheduleSE" path="/seNetEarningsFromSelfEmployment" />
-                  <Dollar>0</Dollar>
-                </GreaterOf>
-              </Add>
-            </Left>
-            <Right>
-              <Dependency module="formW2s" path="/medicareWagesAdditionalTaxThreshhold" />
-            </Right>
-          </GreaterThan>
-        </All>
-      </Derived>
-    </Fact>
 
     <!-- ========== Per-business facts ========== -->
 

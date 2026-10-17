@@ -38,7 +38,7 @@
           <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
           <Dependency module="formW2s" path="/flowKnockoutFloridaStateWithholding" />
           <Dependency module="formW2s" path="/flowKnockoutNonQualifiedPlans" />
-          <Dependency module="formW2s" path="/knockoutMedicareWages" />
+          <Dependency module="form8959" path="/flowKnockoutForm8959Unsupported" />
           <Dependency module="formW2s" path="/hasABox14NYRRTAValueWeKnockout" />
           <Dependency module="formW2s" path="/anyFilerExceedsMaxOasdiWages" />
           <Dependency module="formW2s" path="/flowKnockoutHasRRTACodesInBox14NotInNY" />
@@ -132,7 +132,6 @@
           <Dependency module="form6251" path="/flowKnockoutAmtKiddieTax" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
-          <Dependency module="scheduleC" path="/flowKnockoutScheduleCAdditionalMedicare" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
