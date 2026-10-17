@@ -597,6 +597,15 @@ export const DeductionsSubcategory = (
           </Screen>
         </SubSubcategory>
       </CollectionLoop>
+      {/* #66: Schedule 1-A line 28 has two VIN rows; more than two vehicles is a stop (IRC §163(h)(4)(B)(iii)). */}
+      <SubSubcategory route='car-loan-vehicles-limit'>
+        <Screen route='car-loan-more-than-two-knockout' condition='/flowKnockoutCarLoanMoreThanTwoVins' isKnockout={true}>
+          <IconDisplay name='ErrorOutline' size={9} isCentered />
+          <Heading i18nKey='/heading/knockout/car-loan-more-than-two' />
+          <DFAlert i18nKey='/info/knockout/car-loan-more-than-two' headingLevel='h3' type='warning' />
+          <KnockoutButton i18nKey='button.knockout' />
+        </Screen>
+      </SubSubcategory>
     </Gate>
     {/* #51: No Tax on Tips (Schedule 1-A Part II, IRC §224) */}
     <SubSubcategory route='tips-deduction'>

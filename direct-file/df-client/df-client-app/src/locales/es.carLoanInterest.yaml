@@ -3,6 +3,7 @@ subsubcategories:
   /flow/credits-and-deductions/deductions:
     car-loan-interest: "Intereses de préstamos para vehículos"
     car-loan-vehicle: "Préstamo de vehículo"
+    car-loan-vehicles-limit: "Límite de vehículos"
 headings:
   /heading/credits-and-deductions/deductions/car-loan-intro: "En {{/taxYear}}, ¿pagó intereses de un préstamo para comprar un auto u otro vehículo para uso personal?"
   /heading/credits-and-deductions/deductions/car-loan-new: "¿El vehículo era nuevo cuando lo compró, de modo que su primer uso comenzó con usted (o su cónyuge si presentan una declaración conjunta)?"
@@ -16,6 +17,7 @@ headings:
   /heading/knockout/car-loan-business: "Esta herramienta todavía no acepta vehículos que también se usan para negocios"
   /heading/knockout/car-loan-lease: "Esta herramienta todavía no acepta vehículos arrendados"
   /heading/knockout/car-loan-other: "Esta herramienta todavía no acepta su préstamo para vehículo"
+  /heading/knockout/car-loan-more-than-two: "Esta herramienta todavía no acepta más de dos vehículos para la deducción de intereses de préstamos para vehículos"
 info:
   /info/credits-and-deductions/deductions/car-loan-intro:
     body: "Es posible que pueda deducir hasta $10,000 de intereses de un préstamo para un vehículo nuevo comprado para uso personal, detalle o no sus deducciones. La deducción se reduce si sus ingresos superan $100,000 ($200,000 si es casado que presenta una declaración conjunta)."
@@ -50,6 +52,13 @@ info:
     alertText:
       body:
         - p: "Su préstamo para vehículo tiene una situación que esta herramienta todavía no acepta."
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-more-than-two:
+    alertText:
+      body:
+        - p: "Su declaración debe incluir el número de identificación del vehículo (VIN) de cada vehículo que reclame, y el Anexo 1-A solo tiene espacio para dos. Esta herramienta todavía no puede agregar los vehículos adicionales."
         - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
