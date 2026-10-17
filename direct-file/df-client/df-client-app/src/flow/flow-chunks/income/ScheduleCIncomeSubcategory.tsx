@@ -52,11 +52,7 @@ export const ScheduleCIncomeSubcategory = (
         <SaveAndOrContinueButton />
       </Screen>
 
-      <Screen
-        route='schedule-c-qbi-knockout'
-        condition='/flowKnockoutScheduleCQbi'
-        isKnockout={true}
-      >
+      <Screen route='schedule-c-qbi-knockout' condition='/flowKnockoutScheduleCQbi' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/schedule-c-qbi' />
         <DFAlert i18nKey='/info/knockout/schedule-c-qbi' headingLevel='h2' type='warning' />

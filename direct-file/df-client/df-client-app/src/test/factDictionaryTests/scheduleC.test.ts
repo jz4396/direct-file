@@ -217,7 +217,8 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     expect(mk(primaryFilerId).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(false);
   });
 
-  describe(`Form 8959 Part IV (#82, 2026 draft lines 13-18): Additional Medicare Tax on SE income, threshold reduced by Medicare wages`, () => {
+  // Additional Medicare Tax on SE income; the threshold is reduced by Medicare wages.
+  describe(`Form 8959 Part IV (#82, 2026 draft lines 13-18)`, () => {
     // 26 U.S.C. 1401(b)(2)(A): 0.9% on SE income above $200,000 (single) / $250,000 (MFJ) / $125,000 (MFS);
     // 1401(b)(2)(B): threshold reduced (not below zero) by FICA wages.
     // https://www.law.cornell.edu/uscode/text/26/1401#b_2

@@ -201,7 +201,8 @@ describe(`The \`income\` subcategory`, () => {
           : `primary filer has an income of ${incomeFilingStatusCombo.writableMedicareWages} and secondary ` +
             `filer has income of ${incomeFilingStatusCombo.spouseWritableMedicareWages}`;
       // #82: Form 8959 now computes Additional Medicare Tax, so Medicare wages over the threshold no longer knock out.
-      describe(`Medicare wages vs. the Form 8959 threshold, when a ${incomeFilingStatusCombo.filingStatus} ${description}`, () => {
+      const { filingStatus } = incomeFilingStatusCombo;
+      describe(`Medicare wages vs. the Form 8959 threshold, when a ${filingStatus} ${description}`, () => {
         const factData = {
           ...baseIncomeData,
           [`/filingStatus`]: createEnumWrapper(incomeFilingStatusCombo.filingStatus, `/filingStatusOptions`),
