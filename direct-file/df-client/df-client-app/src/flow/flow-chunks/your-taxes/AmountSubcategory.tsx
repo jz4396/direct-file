@@ -7,9 +7,12 @@ import {
   IconDisplay,
   KnockoutButton,
   ContextHeading,
+  DFAlert,
   DFModal,
   Heading,
+  IconDisplay,
   InfoDisplay,
+  KnockoutButton,
   SaveAndOrContinueButton,
   SetFactAction,
   SummaryTable,
@@ -45,6 +48,19 @@ export const AmountSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
+    {/* #77 Form 6251 cases this tool doesn't compute */}
+    <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/amt-mfs-add-back' />
+      <DFAlert i18nKey='/info/knockout/amt-mfs-add-back' headingLevel='h3' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
+    <Screen route='amt-kiddie-tax-knockout' condition='/flowKnockoutAmtKiddieTax' isKnockout={true}>
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/amt-kiddie-tax' />
+      <DFAlert i18nKey='/info/knockout/amt-kiddie-tax' headingLevel='h3' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
     <Screen route='tax-amount-intro'>
       <ContextHeading displayOnlyOn='edit' i18nKey='/heading/your-taxes/amount/tax-amount' />
       <Heading i18nKey='/heading/your-taxes/amount/tax-amount-intro' />

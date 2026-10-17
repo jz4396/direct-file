@@ -132,6 +132,15 @@ describe(`PA-40 core (#78)`, () => {
     const g = build(singleFilerData, { ...w2(50000, 50000, 1535), ...sale(14000, 10000) });
     expect(val(g, `/paLine9`)).toBe(`54000.00`);
   });
+  it(`Florida resident (#103): framework marks FL, computes no state return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/stateReturnIsFl`, `/stateReturnComputed`];
+    const g = build(singleFilerData, { ...w2(50000, 50000, 0), ...pa(`fl`) });
+    expect(get(g, `/stateReturnIsFl`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPa`).get).toBe(false);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/stateTaxLiability`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+  });
   it(`non-PA resident: no PA return, state facts undefined, no PA knockouts`, () => {
     const g = build(singleFilerData, { ...w2(50000, 50000, 0), ...pa(`nj`) });
     expect(get(g, `/stateReturnIsPa`).get).toBe(false);

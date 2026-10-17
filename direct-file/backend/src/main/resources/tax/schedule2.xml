@@ -11,6 +11,14 @@
           </IsComplete>
           <GreaterThan>
             <Left>
+              <Dependency module="form6251" path="/amt" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
               <Dependency module="scheduleSE" path="/selfEmploymentTax" />
             </Left>
             <Right>
@@ -21,9 +29,9 @@
       </Derived>
     </Fact>
 
-    <Fact path="/totalAdditionalTaxesOwed">
-      <Description>Line 3 of schedule 2 for line 17 of form 1040</Description>
-      <Export mef="true" downstreamFacts="true" />
+    <Fact path="/schedule2Line1z">
+      <Description>#77: Schedule 2 line 1z (excess advance premium tax credit repayment, the only Part I line 1 item in scope). Form 6251 line 10 adds "Schedule 2 (Form 1040), line 1z".</Description>
+      <Export downstreamFacts="true" />
       <Derived>
         <Switch>
           <Case>
@@ -45,6 +53,27 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule2Line2">
+      <Description>#77: Schedule 2 line 2, alternative minimum tax. Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, line 11: "Enter here and on Schedule 2 (Form 1040), line 2".</Description>
+      <Export mef="true" />
+      <Derived>
+        <Dependency module="form6251" path="/amt" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/totalAdditionalTaxesOwed">
+      <Description>Line 3 of schedule 2 for line 17 of form 1040. #77: line 3 = line 1z + line 2 (AMT).</Description>
+      <Export mef="true" downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/schedule2Line1z" />
+            <Dependency path="/schedule2Line2" />
+          </Add>
+        </Round>
       </Derived>
     </Fact>
   </Facts>

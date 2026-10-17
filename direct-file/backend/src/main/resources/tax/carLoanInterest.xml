@@ -77,6 +77,16 @@
       </Writable>
     </Fact>
 
+    <Fact path="/carLoans/*/notUsAssembly">
+      <Name>Final assembly not in the United States (PDF)</Name>
+      <Description>#66: Schedule 1-A line 28a(2)/28b(2) "No" checkbox. Complement of ../usAssembly; incomplete while that is unanswered (no silent false).</Description>
+      <Derived>
+        <Not>
+          <Dependency path="../usAssembly" />
+        </Not>
+      </Derived>
+    </Fact>
+
     <Fact path="/carLoans/*/after2024">
       <Name>Loan taken out after December 31, 2024</Name>
       <Description>#53: 163(h)(4)(B)(i) "indebtedness incurred by the taxpayer after December 31, 2024". No: not QPVLI, $0.</Description>
@@ -256,6 +266,28 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutCarLoanMoreThanTwoVins">
+      <Name>Knockout: more than two vehicles</Name>
+      <Description>#66: draft 2026 Schedule 1-A line 28 has rows for two vehicles only ("Applicable passenger vehicle (see instructions). If more than two VINs, see instructions."), and 163(h)(4)(B)(iii) disallows the interest unless each VIN is on the return. Until a continuation statement exists, a gate-yes return with more than 2 entries in /carLoans is stopped.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/carLoanHadInterestAnswered" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency path="/carLoans" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>2</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/carLoans/*/qualifies">
       <Name>This vehicle's interest is QPVLI</Name>
       <Description>#53/#69 (per vehicle): new vehicle, US final assembly, loan after 2024, no business use, lease or other exception. Unanswered questions leave this incomplete (no silent $0). The VIN (163(h)(4)(B)(iii)) is a required field per vehicle on the amount screen; it does not enter the computation.</Description>
@@ -425,6 +457,24 @@
           </Subtract>
           <Dollar>0</Dollar>
         </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/carLoanLine34">
+      <Name>Schedule 1-A line 34</Name>
+      <Description>#66: printed value of line 34 "Divide line 33 by $1,000. If the resulting number isn't a whole number, increase the result to the next higher whole number." Same rounding as /carLoanLine35 (add $999.99, then whole thousands), rate 1/1000 instead of 200/1000, so line 35 = line 34 x $200.</Description>
+      <Derived>
+        <StepwiseMultiply>
+          <Multiplicand>
+            <Add>
+              <Dependency path="/carLoanLine33" />
+              <Dollar>999.99</Dollar>
+            </Add>
+          </Multiplicand>
+          <Rate>
+            <Rational>1/1000</Rational>
+          </Rate>
+        </StepwiseMultiply>
       </Derived>
     </Fact>
 
