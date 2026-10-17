@@ -5627,6 +5627,44 @@
     </Fact>
 
 
+    <Fact path="/flowKnockoutFloridaStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a Florida resident's W-2</Name>
+      <Description>Florida has no personal income tax (Fla. Const. art. VII, sec. 5(a)), so a Florida
+        resident's W-2 should show $0 in box 17. A nonzero box 17 means tax was withheld for some state, and
+        that state's return is not supported, so we stop rather than silently ignore it. Issue #81.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInFl" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/hasStateWithholding">
+      <Name>W-2 box 17 is greater than zero</Name>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../stateWithholding" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutBox15IncomeFromDifferentState">
       <Name>Flow Knockout Income from Unsupported State</Name>
       <Description>Used to control a knockout for if the filer recieved income from an unsupported

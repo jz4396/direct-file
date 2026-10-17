@@ -291,6 +291,7 @@ headings:
     Thanks for letting us know.
   /heading/you-and-your-family/about-you/state-income-1099-misc-pfd:
     In {{/taxYear}}, did you receive an Alaska Permanent Fund Dividend (PFD)?
+  /heading/you-and-your-family/about-you/state-breather-fl: Florida has no state income tax return.
   /heading/you-and-your-family/about-you/state-breather-nj:
     You said you lived in {{/filerResidenceAndIncomeState}} for all of {{/taxYear}}, and earned all your income there,
     too.
@@ -2650,6 +2651,8 @@ headings:
     Direct File doesn’t support reporting unemployment compensation in all U.S. states and territories yet.
   /heading/knockout/income/jobs/w2-part-year-yonkers-ko:
     New York’s free filing tool doesn’t support your tax situation yet.
+  /heading/knockout/income/jobs/w2-fl-state-withholding-ko:
+    Direct File doesn’t support W-2s with state income tax withheld for Florida residents yet.
   /heading/knockout/income/jobs/w2-other-state-ko:
     Direct File doesn’t support the reporting of employment income in all U.S. states and territories yet.
   /heading/knockout/forms-missing/net-investment: Direct File doesn’t yet support the amount of income you received.
@@ -2835,6 +2838,10 @@ info:
           If you don’t have a child’s PFD to report, you can continue using Direct File to file your federal tax return.
     urls:
       Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/you-and-your-family/about-you/state-breather-fl-info:
+    body: >-
+      Florida doesn’t tax the income of individuals, so you don’t need to file a Florida state income tax return.
+      You only need to file your federal return.
   /info/you-and-your-family/about-you/state-breather-nj-info:
     body: Direct File supports simple tax needs for taxpayers in {{/filerResidenceAndIncomeState}}.
   /info/you-and-your-family/about-you/state-breather-nj-alert:
@@ -12530,6 +12537,10 @@ info:
       unemployment compensation over {{/maximumRepaymentUnemploymentCompensation}}.
   /info/knockout/income/unemployment/1099g-other-state-ko:
     body: You can only report unemployment compensation from {{/filerResidenceAndIncomeState}} within Direct File.
+  /info/knockout/income/jobs/w2-fl-state-withholding-ko:
+    body: >-
+      Florida has no state income tax, but one of your W-2s shows state income tax withheld in box 17. You may
+      need to file a return in another state, which Direct File doesn’t support yet.
   /info/knockout/income/jobs/w2-other-state-ko:
     body: You can only report employment income from {{/filerResidenceAndIncomeState}} within Direct File.
   /info/knockout/income/jobs/w2-part-year-yonkers-ko:

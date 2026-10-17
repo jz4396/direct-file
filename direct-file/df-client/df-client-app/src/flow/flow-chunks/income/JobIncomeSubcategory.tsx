@@ -947,6 +947,13 @@ export const JobIncomeSubcategory = (
           <KnockoutButton i18nKey='button.knockout' />
         </Screen>
       </SubSubcategory>
+      <Screen route='w2-fl-state-withholding-ko' condition='/flowKnockoutFloridaStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-fl-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-fl-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='w2-other-state-ko' condition='/flowKnockoutBox15IncomeFromDifferentState' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/income/jobs/w2-other-state-ko' />
