@@ -111,3 +111,37 @@ describe(`Itemized vs. standard deduction`, () => {
     expect(submissionBlockingFacts).toContain(knockout);
   });
 });
+
+describe(`#67 printed-only Schedule A lines (2026 draft)`, () => {
+  const itemizer = (wages: number) =>
+    setupFactGraph({
+      ...Object.fromEntries(
+        Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+      ),
+      ...baseFilerData,
+      ...singleFilerData,
+      ...makeW2Data(wages),
+      '/scheduleAWantsToItemize': createBooleanWrapper(true),
+      '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
+      '/scheduleAWritableMedical': createDollarWrapper(`9000`),
+      '/scheduleAWritableStateLocalIncomeOrSalesTax': createDollarWrapper(`9000`),
+      '/scheduleAWritableRealEstateTaxes': createDollarWrapper(`6000`),
+      '/scheduleAWritablePersonalPropertyTaxes': createDollarWrapper(`0`),
+      '/scheduleAWritableMortgageInterest': createDollarWrapper(`12000`),
+      '/scheduleAWritableCashGifts': createDollarWrapper(`800`),
+      '/scheduleAWritableElectsToItemize': createBooleanWrapper(false),
+    }).factGraph;
+
+  it(`line 3 = 7.5% of AGI (line 2), and line 4 = line 1 - line 3`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleALine3`, `/scheduleALine4`];
+    const fg = itemizer(100000);
+    expect(get(fg, `/scheduleALine3`).get.toString()).toBe(`7500.00`);
+    expect(get(fg, `/scheduleALine4`).get.toString()).toBe(`1500.00`);
+  });
+
+  it(`line 18 "No" box is checked unless the §68 stop applies`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleALine18AnswerNo`];
+    expect(get(itemizer(100000), `/scheduleALine18AnswerNo`).get).toBe(true);
+    expect(get(itemizer(400000), `/scheduleALine18AnswerNo`).get).toBe(false);
+  });
+});

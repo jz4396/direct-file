@@ -1,0 +1,242 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #77 Form 6251 Alternative Minimum Tax—Individuals (TY2026).
+      Line numbers: Form 6251 (2026) draft (Created 5/26/26), https://www.irs.gov/pub/irs-dft/f6251--dft.pdf
+      Dollar amounts: Rev. Proc. 2025-32 §4.10 p. 16 (exemption, 28% breakpoint) and p. 17 (phaseout), §4.11 p. 17, §4.03 p. 13, https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
+      Statute: IRC §55 https://www.law.cornell.edu/uscode/text/26/55, §56 https://www.law.cornell.edu/uscode/text/26/56
+    -->
+    <Fact path="/form6251ExemptionAmount">
+      <Name>AMT exemption amount (before phaseout)</Name>
+      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 16: "For taxable years beginning in 2026, the exemption amounts under § 55(d)(1) are: Joint Returns or Surviving Spouses $140,200; Unmarried Individuals (other than Surviving Spouses) $90,100; Married Individuals Filing Separate Returns $70,100". IRC §55(d)(1) https://www.law.cornell.edu/uscode/text/26/55. Same figures on Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf line 5.</Description>
+      <Derived><Switch><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFS" /></When><Then><Dollar>70100</Dollar></Then></Case><Case><When><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><Dependency module="filingStatus" path="/isFilingStatusQSS" /></Any></When><Then><Dollar>140200</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>90100</Dollar></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/form6251PhaseoutThreshold">
+      <Name>AMT exemption phaseout threshold</Name>
+      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 17: "[Filing status / Threshold Phaseout Amount / Complete Phaseout Amount] Joint Returns or Surviving Spouses $1,000,000 [complete phaseout $1,280,400]; Unmarried Individuals (other than Surviving Spouses) $500,000 [$680,200]; Married Individuals Filing Separate Returns $500,000 [$640,200]". IRC §55(d)(2), (d)(4)(A)(ii)(I)-(II).</Description>
+      <Derived><Switch><Case><When><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><Dependency module="filingStatus" path="/isFilingStatusQSS" /></Any></When><Then><Dollar>1000000</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>500000</Dollar></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/form6251RateBreakpoint">
+      <Name>AMT 28% rate breakpoint</Name>
+      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 16: "under § 55(b)(1), the excess taxable income above which the 28 percent tax rate applies is: Married Individuals Filing Separate Returns $122,250; All Other Taxpayers $244,500". IRC §55(b)(1)(A)(i), (b)(1)(C).</Description>
+      <Derived><Switch><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFS" /></When><Then><Dollar>122250</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>244500</Dollar></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/form6251RateOffset">
+      <Name>AMT 28% rate offset</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 7: "Otherwise, multiply line 6 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately) from the result." ($4,890 = 2% x $244,500; $2,445 = 2% x $122,250.)</Description>
+      <Derived><Switch><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFS" /></When><Then><Dollar>2445</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>4890</Dollar></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/form6251Line1a">
+      <Name>Form 6251 line 1a</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 1a: "Subtract Schedule 1-A (Form 1040), line 43, from Form 1040, 1040-SR, or 1040-NR, line 14". Schedule 1-A line 43 is the enhanced deduction for seniors, which AMT does not allow; Schedule 1-A lines 15/27/36 stay deducted.</Description>
+      <Derived><Subtract><Minuend><Dependency module="taxCalculations" path="/totalDeductions" /></Minuend><Subtrahends><Dependency module="schedule1A" path="/schedule1ALine43" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/form6251Line1b">
+      <Name>Form 6251 line 1b</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 1b: "Subtract line 1a from Form 1040, 1040-SR, or 1040-NR, line 11b (if less than zero, enter as a negative amount)". Form 1040 (2026 draft) line 11b = AGI (/agi).</Description>
+      <Derived><Subtract><Minuend><Dependency module="taxCalculations" path="/agi" /></Minuend><Subtrahends><Dependency path="/form6251Line1a" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/form6251Line2a">
+      <Name>Form 6251 line 2a</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 2a: "If filing Schedule A (Form 1040), enter the taxes from Schedule A, line 7; otherwise, enter the amount from Form 1040 or 1040-SR, line 12e". IRC §56(b)(1)(A)(ii) (no deduction for taxes in §164(a)) and §56(b)(1)(E) (no standard deduction), https://www.law.cornell.edu/uscode/text/26/56. Schedule A line 7 = line 5e + line 6; this app supports only line 5e (line 6 other taxes = $0 in scope).</Description>
+      <Derived><Switch><Case><When><Dependency module="taxCalculations" path="/wantsStandardDeduction" /></When><Then><Dependency module="taxCalculations" path="/standardOrItemizedDeductions" /></Then></Case><Case><When><True /></When><Then><Dependency module="scheduleA" path="/scheduleALine5e" /></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/form6251Line4">
+      <Name>Form 6251 line 4 AMTI</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 4: "Alternative minimum taxable income. Combine lines 1b through 3." Lines 2b-3 are $0 in scope: Schedule 1 line 1/8z refunds and NOLs are not supported; other adjustments and preferences (2c-2t, 3) block via /flowKnockoutAmtPreferenceItems. IRC §55(b)(2).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Round><Add><Dependency path="/form6251Line1b" /><Dependency path="/form6251Line2a" /></Add></Round></Derived>
+    </Fact>
+    <Fact path="/form6251ExemptionReduction">
+      <Name>AMT exemption phaseout reduction</Name>
+      <Description>#77: IRC §55(d)(2) "The exemption amount of any taxpayer shall be reduced (but not below zero) by an amount equal to 25 percent of the amount by which the alternative minimum taxable income of the taxpayer exceeds" the threshold, with §55(d)(4)(A)(ii)(IV) (as amended by P.L. 119-21 §70107) "by substituting '50 percent' for '25 percent'", https://www.law.cornell.edu/uscode/text/26/55. Consistent with Rev. Proc. 2025-32 p. 17 complete-phaseout amounts (threshold + 2 x exemption).</Description>
+      <Derived><Multiply><Rational>50/100</Rational><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/form6251Line4" /></Minuend><Subtrahends><Dependency path="/form6251PhaseoutThreshold" /></Subtrahends></Subtract></GreaterOf></Multiply></Derived>
+    </Fact>
+    <Fact path="/form6251Line5">
+      <Name>Form 6251 line 5 exemption</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 5 (Exemption chart; "If line 4 is over the amount shown above for your filing status, see instructions") with the §55(d)(2)/(d)(4) 50% phaseout. MFS add-back above $640,200 and the §59(j) kiddie-tax limit are knockouts.</Description>
+      <Derived><Round><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/form6251ExemptionAmount" /></Minuend><Subtrahends><Dependency path="/form6251ExemptionReduction" /></Subtrahends></Subtract></GreaterOf></Round></Derived>
+    </Fact>
+    <Fact path="/form6251Line6">
+      <Name>Form 6251 line 6</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 6: "Subtract line 5 from line 4. If more than zero, go to line 7. If zero or less, enter -0-". IRC §55(b)(1)(B) taxable excess.</Description>
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/form6251Line4" /></Minuend><Subtrahends><Dependency path="/form6251Line5" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/form6251UsesPartIII">
+      <Name>Form 6251 uses Part III</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 7: complete Part III if "you reported qualified dividends on Form 1040 or 1040-SR, line 3a; or you had a gain on both lines 15 and 16 of Schedule D" (capital gain distributions on 1040 line 7a are not supported). Same trigger as the regular-tax QDCG worksheet. IRC §55(b)(3).</Description>
+      <Derived><Dependency module="scheduleD3" path="/usesQdcgTaxWorksheet" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line12">
+      <Name>Form 6251 line 12</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 12: "Enter the amount from Form 6251, line 6."</Description>
+      <Derived><Dependency path="/form6251Line6" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line13">
+      <Name>Form 6251 line 13</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 13: "Enter the amount from line 4 of the Qualified Dividends and Capital Gain Tax Worksheet". No AMT refiguring needed in scope (no AMT basis adjustments).</Description>
+      <Derived><Dependency module="scheduleD3" path="/qdcgLine4" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line15">
+      <Name>Form 6251 line 15</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 15: "If you did not complete a Schedule D Tax Worksheet for the regular tax or the AMT, enter the amount from line 13." (Line 14, Schedule D line 19, is $0: unrecaptured §1250 gain knocks out.)</Description>
+      <Derived><Dependency path="/form6251Line13" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line16">
+      <Name>Form 6251 line 16</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 16: "Enter the smaller of line 12 or line 15".</Description>
+      <Derived><LesserOf><Dependency path="/form6251Line12" /><Dependency path="/form6251Line15" /></LesserOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line17">
+      <Name>Form 6251 line 17</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 17: "Subtract line 16 from line 12".</Description>
+      <Derived><Subtract><Minuend><Dependency path="/form6251Line12" /></Minuend><Subtrahends><Dependency path="/form6251Line16" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/form6251Line18">
+      <Name>Form 6251 line 18</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 18: "If line 17 is $244,500 or less ($122,250 or less if married filing separately), multiply line 17 by 26% (0.26). Otherwise, multiply line 17 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately)". IRC §55(b)(3)(A).</Description>
+      <Derived><Switch><Case><When><LessThanOrEqual><Left><Dependency path="/form6251Line17" /></Left><Right><Dependency path="/form6251RateBreakpoint" /></Right></LessThanOrEqual></When><Then><Multiply><Rational>26/100</Rational><Dependency path="/form6251Line17" /></Multiply></Then></Case><Case><When><True /></When><Then><Subtract><Minuend><Multiply><Rational>28/100</Rational><Dependency path="/form6251Line17" /></Multiply></Minuend><Subtrahends><Dependency path="/form6251RateOffset" /></Subtrahends></Subtract></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/form6251Line19">
+      <Name>Form 6251 line 19</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 19: "$98,900 if married filing jointly or qualifying surviving spouse, $49,450 if single or married filing separately, or $66,200 if head of household" = Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.03 p. 13 maximum zero rate amounts (via /capGainsZeroRateAmount).</Description>
+      <Derived><Dependency module="scheduleD" path="/capGainsZeroRateAmount" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line20">
+      <Name>Form 6251 line 20</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 20: "Enter the amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet".</Description>
+      <Derived><Dependency module="scheduleD3" path="/qdcgLine5" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line21">
+      <Name>Form 6251 line 21</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 21: "Subtract line 20 from line 19. If zero or less, enter -0-".</Description>
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/form6251Line19" /></Minuend><Subtrahends><Dependency path="/form6251Line20" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line22">
+      <Name>Form 6251 line 22</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 22: "Enter the smaller of line 12 or line 13".</Description>
+      <Derived><LesserOf><Dependency path="/form6251Line12" /><Dependency path="/form6251Line13" /></LesserOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line23">
+      <Name>Form 6251 line 23</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 23: "Enter the smaller of line 21 or line 22. This amount is taxed at 0%". IRC §55(b)(3)(B).</Description>
+      <Derived><LesserOf><Dependency path="/form6251Line21" /><Dependency path="/form6251Line22" /></LesserOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line24">
+      <Name>Form 6251 line 24</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 24: "Subtract line 23 from line 22".</Description>
+      <Derived><Subtract><Minuend><Dependency path="/form6251Line22" /></Minuend><Subtrahends><Dependency path="/form6251Line23" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/form6251Line25">
+      <Name>Form 6251 line 25</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 25: "$545,500 if single, $306,850 if married filing separately, $613,700 if married filing jointly or qualifying surviving spouse, or $579,600 if head of household" = Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.03 p. 13 maximum 15% rate amounts (via /capGains15RateAmount).</Description>
+      <Derived><Dependency module="scheduleD" path="/capGains15RateAmount" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line27">
+      <Name>Form 6251 line 27</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 27: "Enter the amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet".</Description>
+      <Derived><Dependency module="scheduleD3" path="/qdcgLine5" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line28">
+      <Name>Form 6251 line 28</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 28: "Add line 26 and line 27" (line 26 = line 21).</Description>
+      <Derived><Add><Dependency path="/form6251Line21" /><Dependency path="/form6251Line27" /></Add></Derived>
+    </Fact>
+    <Fact path="/form6251Line29">
+      <Name>Form 6251 line 29</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 29: "Subtract line 28 from line 25. If zero or less, enter -0-".</Description>
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/form6251Line25" /></Minuend><Subtrahends><Dependency path="/form6251Line28" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line30">
+      <Name>Form 6251 line 30</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 30: "Enter the smaller of line 24 or line 29".</Description>
+      <Derived><LesserOf><Dependency path="/form6251Line24" /><Dependency path="/form6251Line29" /></LesserOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line31">
+      <Name>Form 6251 line 31</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 31: "Multiply line 30 by 15% (0.15)". IRC §55(b)(3)(C).</Description>
+      <Derived><Multiply><Rational>15/100</Rational><Dependency path="/form6251Line30" /></Multiply></Derived>
+    </Fact>
+    <Fact path="/form6251Line32">
+      <Name>Form 6251 line 32</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 32: "Add lines 23 and 30".</Description>
+      <Derived><Add><Dependency path="/form6251Line23" /><Dependency path="/form6251Line30" /></Add></Derived>
+    </Fact>
+    <Fact path="/form6251Line33">
+      <Name>Form 6251 line 33</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 33: "Subtract line 32 from line 22".</Description>
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/form6251Line22" /></Minuend><Subtrahends><Dependency path="/form6251Line32" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line34">
+      <Name>Form 6251 line 34</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 34: "Multiply line 33 by 20% (0.20)". IRC §55(b)(3)(D). Lines 35-37 skipped: "If line 14 is zero or blank, skip lines 35 through 37".</Description>
+      <Derived><Multiply><Rational>20/100</Rational><Dependency path="/form6251Line33" /></Multiply></Derived>
+    </Fact>
+    <Fact path="/form6251Line38">
+      <Name>Form 6251 line 38</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 38: "Add lines 18, 31, 34, and 37" (line 37 = 0).</Description>
+      <Derived><Add><Dependency path="/form6251Line18" /><Dependency path="/form6251Line31" /><Dependency path="/form6251Line34" /></Add></Derived>
+    </Fact>
+    <Fact path="/form6251Line39">
+      <Name>Form 6251 line 39</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 39: same 26%/28% computation on line 12.</Description>
+      <Derived><Switch><Case><When><LessThanOrEqual><Left><Dependency path="/form6251Line12" /></Left><Right><Dependency path="/form6251RateBreakpoint" /></Right></LessThanOrEqual></When><Then><Multiply><Rational>26/100</Rational><Dependency path="/form6251Line12" /></Multiply></Then></Case><Case><When><True /></When><Then><Subtract><Minuend><Multiply><Rational>28/100</Rational><Dependency path="/form6251Line12" /></Multiply></Minuend><Subtrahends><Dependency path="/form6251RateOffset" /></Subtrahends></Subtract></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/form6251Line40">
+      <Name>Form 6251 line 40</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 40: "Enter the smaller of line 38 or line 39 here and on line 7".</Description>
+      <Derived><LesserOf><Dependency path="/form6251Line38" /><Dependency path="/form6251Line39" /></LesserOf></Derived>
+    </Fact>
+    <Fact path="/form6251Line7">
+      <Name>Form 6251 line 7</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 7: Part III line 40 when line 7 requires it; "All others: If line 6 is $244,500 or less ($122,250 or less if married filing separately), multiply line 6 by 26% (0.26). Otherwise, multiply line 6 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately)". IRC §55(b)(1)(A).</Description>
+      <Derived><Round><Switch><Case><When><Dependency path="/form6251UsesPartIII" /></When><Then><Dependency path="/form6251Line40" /></Then></Case><Case><When><True /></When><Then><Switch><Case><When><LessThanOrEqual><Left><Dependency path="/form6251Line6" /></Left><Right><Dependency path="/form6251RateBreakpoint" /></Right></LessThanOrEqual></When><Then><Multiply><Rational>26/100</Rational><Dependency path="/form6251Line6" /></Multiply></Then></Case><Case><When><True /></When><Then><Subtract><Minuend><Multiply><Rational>28/100</Rational><Dependency path="/form6251Line6" /></Multiply></Minuend><Subtrahends><Dependency path="/form6251RateOffset" /></Subtrahends></Subtract></Then></Case></Switch></Then></Case></Switch></Round></Derived>
+    </Fact>
+    <Fact path="/form6251Line9">
+      <Name>Form 6251 line 9 tentative minimum tax</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 9: "Tentative minimum tax. Subtract line 8 from line 7." Line 8 (AMT foreign tax credit) is $0: foreign tax paid knocks out (/flowKnockoutHasForeignTaxPaid).</Description>
+      <Derived><Dependency path="/form6251Line7" /></Derived>
+    </Fact>
+    <Fact path="/form6251Line10">
+      <Name>Form 6251 line 10</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 10: "Add Form 1040 or 1040-SR, line 16 (minus any tax from Form 4972), and Schedule 2 (Form 1040), line 1z. Subtract from the result Schedule 3 (Form 1040), line 1 ... If zero or less, enter -0-." Form 4972, Schedule 3 line 1 and Form 8978 are not supported ($0). IRC §55(c).</Description>
+      <Derived><GreaterOf><Dollar>0</Dollar><Add><Dependency module="scheduleD3" path="/tentativeTaxFromTaxableIncome" /><Dependency module="schedule2" path="/schedule2Line1z" /></Add></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/amt">
+      <Name>Alternative minimum tax (Form 6251 line 11)</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 11: "AMT. Subtract line 10 from line 9. If zero or less, enter -0-. Enter here and on Schedule 2 (Form 1040), line 2". IRC §55(a).</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <ExportZero />
+      <Derived><Round><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/form6251Line9" /></Minuend><Subtrahends><Dependency path="/form6251Line10" /></Subtrahends></Subtract></GreaterOf></Round></Derived>
+    </Fact>
+    <Fact path="/hasAmtPreferenceItems">
+      <Name>Has unsupported AMT adjustments or preference items</Name>
+      <Description>#77: Form 6251 (2026) draft lines 2c-2t and 3 (e.g., line 2i "Exercise of incentive stock options", line 2g "Interest from specified private activity bonds exempt from the regular tax", line 2l depreciation, line 2e/2f NOLs) and line 8 AMT foreign tax credit. IRC §56, §57, §58.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutAmtPreferenceItems">
+      <Name>Flow knockout: unsupported AMT items</Name>
+      <Description>#77: yes to /hasAmtPreferenceItems. Form 6251 lines 2c-2t / 3 / 8 are not computed, so a yes blocks submission instead of under-reporting AMT.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><IsComplete><Dependency path="/hasAmtPreferenceItems" /></IsComplete><Dependency path="/hasAmtPreferenceItems" /></All></Derived>
+    </Fact>
+    <Fact path="/flowKnockoutAmtMfsAddBack">
+      <Name>Flow knockout: MFS AMTI over $640,200</Name>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 4: "(If married filing separately and line 4 is more than $640,200, see instructions.)" IRC §55(d)(2) last sentence (MFS AMTI add-back) is not implemented. $640,200 = Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) p. 17 MFS complete phaseout amount.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><Dependency module="filingStatus" path="/isFilingStatusMFS" /><IsComplete><Dependency path="/form6251Line4" /></IsComplete><GreaterThan><Left><Dependency path="/form6251Line4" /></Left><Right><Dollar>640200</Dollar></Right></GreaterThan></All></Derived>
+    </Fact>
+    <Fact path="/flowKnockoutAmtKiddieTax">
+      <Name>Flow knockout: AMT exemption limit for a child (kiddie tax)</Name>
+      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.11, p. 17: "for a child to whom the § 1(g) 'kiddie tax' applies, the exemption amount under §§ 55(d) and 59(j) ... may not exceed the sum of (1) the child's earned income for the taxable year, plus (2) $9,750." Knocks out a filer who can be claimed as a dependent when AMTI exceeds earned income + $9,750 (the only case where the §59(j) limit can change the result).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><Dependency module="filers" path="/eitherFilerIsClaimedAsDependent" /><IsComplete><Dependency path="/form6251Line4" /></IsComplete><GreaterThan><Left><Dependency path="/form6251Line4" /></Left><Right><Add><Dependency module="income" path="/earnedIncomeWithAllCombatPay" /><Dollar>9750</Dollar></Add></Right></GreaterThan></All></Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
