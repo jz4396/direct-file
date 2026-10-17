@@ -198,8 +198,8 @@ subsubcategories:
     pfd-basic-info: PFD Information
 headings:
   /heading/credits-and-deductions/deductions/overtime-other: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
-  /heading/knockout/overtime-not-on-w2-code-tt: "This tool doesn’t yet support overtime pay that isn’t reported in Form W-2 box 12, code TT"
-  /heading/credits-and-deductions/deductions/overtime-flsa: "Is your code TT overtime only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
+  /heading/knockout/overtime-not-computable: "This tool doesn’t yet support your overtime pay"
+  /heading/credits-and-deductions/deductions/overtime-flsa: "Is your overtime amount only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
   /heading/account/reset-return: Reset draft {{/taxYear}} federal tax return
   /heading/account/remove-return: Remove draft {{/taxYear}} federal tax return information from Direct File
   /heading/account/reset-success: "{{/taxYear}} federal tax return reset"
@@ -2740,10 +2740,11 @@ iconLists:
     payment_method: <strong>Payment method</strong><br />Pay after I file
 info:
   /info/credits-and-deductions/deductions/overtime-other:
-    body: "For example, overtime reported on Form 1099-NEC or 1099-MISC, or overtime premium you’d have to figure from pay stubs or payroll records."
-  /info/knockout/overtime-not-on-w2-code-tt:
+    body: "For example, your employer didn’t use code TT, so you’d figure the overtime premium from pay stubs, payroll records, or a statement from your employer, or your overtime was reported on Form 1099-NEC or 1099-MISC."
+  /info/knockout/overtime-not-computable:
     alertText:
       body:
+        - p: "This tool can only use qualified overtime shown on Form W-2 in box 12 with code TT. It can’t yet handle overtime figured from pay records or reported on Form 1099-NEC or 1099-MISC."
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
@@ -18834,7 +18835,7 @@ fields:
       "no": "No"
   /overtimeFlsaConfirmed:
     boolean:
-      "yes": "Yes, I’m an FLSA non-exempt employee and code TT is only the required overtime premium"
+      "yes": "Yes, I’m an FLSA non-exempt employee and the amount is only the required overtime premium"
       "no": "No, or I’m not sure"
   /formW2s/*/uncollectedOasdiTaxOnTips:
     name: Amount for code A
@@ -24215,7 +24216,7 @@ dataviews:
     has1095: $t(dataviews./flow/credits-and-deductions/credits/1095-a.heading)
   /flow/credits-and-deductions/deductions:
     /overtimeNotOnW2CodeTT: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
-    /overtimeFlsaConfirmed: "Is your code TT overtime only the FLSA-required overtime premium?"
+    /overtimeFlsaConfirmed: "Is your overtime amount only the FLSA-required overtime premium?"
     /wasK12Educators: Did you work as a K–12 educator in {{/taxYear}}?
     /wasK12Educators_spouse: Did you or {{/secondaryFiler/firstName}} work as a K–12 educator in {{/taxYear}}?
     /primaryEducatorExpensesWritable: Amount of your own money spent on job expenses

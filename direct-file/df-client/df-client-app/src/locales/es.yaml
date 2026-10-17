@@ -97,10 +97,11 @@ button:
   yesThisIsCorrect: Sí, está correcta
 info:
   /info/credits-and-deductions/deductions/overtime-other:
-    body: "Por ejemplo, horas extras declaradas en el Formulario 1099-NEC o 1099-MISC, o la prima por horas extras que tendrías que calcular con tus talones de pago o registros de nómina."
-  /info/knockout/overtime-not-on-w2-code-tt:
+    body: "Por ejemplo, tu empleador no usó el código TT, así que calcularías la prima por horas extras con tus talones de pago, registros de nómina o una declaración de tu empleador, o tus horas extras se declararon en el Formulario 1099-NEC o 1099-MISC."
+  /info/knockout/overtime-not-computable:
     alertText:
       body:
+        - p: "Esta herramienta solo puede usar las horas extras calificadas que aparecen en el Formulario W-2, casilla 12, con el código TT. Todavía no admite horas extras calculadas con registros de pago ni declaradas en el Formulario 1099-NEC o 1099-MISC."
         - p: <Link1>Encuentra otras maneras de presentar tus impuestos federales.</Link1>
       urls:
         Link1: https://www.irs.gov/es/filing/individuals/how-to-file
@@ -18028,7 +18029,7 @@ fields:
       "no": "No"
   /overtimeFlsaConfirmed:
     boolean:
-      "yes": "Sí, soy un empleado no exento de la FLSA y el código TT es solo la prima de horas extras requerida"
+      "yes": "Sí, soy un empleado no exento de la FLSA y la cantidad es solo la prima de horas extras requerida"
       "no": "No, o no estoy seguro"
   /formW2s/*/uncollectedOasdiTaxOnTips:
     name: La cantidad del código A
@@ -19573,8 +19574,8 @@ afterDeadlineBanner:
     enviarla</LinkEFileOptions>
 headings:
   /heading/credits-and-deductions/deductions/overtime-other: "¿Tuviste pago de horas extras calificadas que no aparece en un Formulario W-2, casilla 12, con el código TT?"
-  /heading/knockout/overtime-not-on-w2-code-tt: "Esta herramienta todavía no admite pagos de horas extras que no se declaran en el Formulario W-2, casilla 12, código TT"
-  /heading/credits-and-deductions/deductions/overtime-flsa: "¿Tus horas extras con el código TT son solo la “mitad” adicional de tiempo y medio que exige la ley federal (FLSA)?"
+  /heading/knockout/overtime-not-computable: "Esta herramienta todavía no admite tu pago de horas extras"
+  /heading/credits-and-deductions/deductions/overtime-flsa: "¿Tu cantidad de horas extras es solo la “mitad” adicional de tiempo y medio que exige la ley federal (FLSA)?"
   /heading/you-and-your-family/about-you/intro: En esta sección, te haremos algunas preguntas sobre ti.
   /heading/you-and-your-family/about-you/basic-info: Comparte alguna información básica sobre ti
   /heading/you-and-your-family/about-you/contact-info: Comparte tu información de contacto
@@ -22405,7 +22406,7 @@ dataviews:
       care-providers-info: Proveedores de cuidados
   /flow/credits-and-deductions/deductions:
     /overtimeNotOnW2CodeTT: "¿Tuviste pago de horas extras calificadas que no aparece en un Formulario W-2, casilla 12, con el código TT?"
-    /overtimeFlsaConfirmed: "¿Tus horas extras con el código TT son solo la prima requerida por la FLSA?"
+    /overtimeFlsaConfirmed: "¿Tu cantidad de horas extras es solo la prima requerida por la FLSA?"
     assertions:
       /taxableIncome: Tu ingreso tributable es de {{/taxableIncome}}.
       /standardDeduction: >-
