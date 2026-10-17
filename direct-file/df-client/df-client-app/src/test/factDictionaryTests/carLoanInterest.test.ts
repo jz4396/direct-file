@@ -31,8 +31,9 @@ const build = (status: Record<string, unknown>, wages: number, extra: Record<str
 const VIN = `1HGCM82633A004352`;
 const V1 = `c1111111-1111-4111-8111-111111111111`;
 const V2 = `c2222222-2222-4222-8222-222222222222`;
+const V3 = `c3333333-3333-4333-8333-333333333333`;
 // Synthetic VINs only (17 chars, no I/O/Q).
-const VINS: Record<string, string> = { [V1]: VIN, [V2]: `2T1BR32E54C000001` };
+const VINS: Record<string, string> = { [V1]: VIN, [V2]: `2T1BR32E54C000001`, [V3]: `3VWFE21C04M000002` };
 const vehicle = (id: string, interest: string, o: Record<string, boolean> = {}) => ({
   [`/carLoans/#${id}/isNewVehicle`]: createBooleanWrapper(o.isNew ?? true),
   [`/carLoans/#${id}/usAssembly`]: createBooleanWrapper(o.us ?? true),
@@ -45,7 +46,7 @@ const vehicle = (id: string, interest: string, o: Record<string, boolean> = {}) 
 });
 const vehicles = (...vs: Record<string, unknown>[]) => ({
   '/carLoanHadInterest': createBooleanWrapper(true),
-  '/carLoans': createCollectionWrapper([V1, V2].slice(0, vs.length)),
+  '/carLoans': createCollectionWrapper([V1, V2, V3].slice(0, vs.length)),
   ...Object.assign({}, ...vs),
 });
 const loan = (interest: string, o: Record<string, boolean> = {}) => vehicles(vehicle(V1, interest, o));
@@ -181,6 +182,49 @@ describe(`§163(h)(4) car loan interest (#53)`, () => {
       const fg = build(singleFilerData, 60000, vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`, o)));
       expect(get(fg, ko).get).toBe(true);
       expect(get(fg, `/flowIsKnockedOut`).get).toBe(true);
+    });
+  });
+
+  describe(`#66 more than two VINs (Schedule 1-A line 28 has two rows; §163(h)(4)(B)(iii))`, () => {
+    it(`two vehicles: no stop`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutCarLoanMoreThanTwoVins`, `/flowIsKnockedOut`];
+      const fg = build(singleFilerData, 60000, vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`)));
+      expect(get(fg, `/flowKnockoutCarLoanMoreThanTwoVins`).get).toBe(false);
+      expect(get(fg, `/flowIsKnockedOut`).get).toBe(false);
+    });
+
+    it(`three vehicles: stop, even when every vehicle qualifies`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutCarLoanMoreThanTwoVins`, `/flowIsKnockedOut`];
+      const fg = build(
+        singleFilerData,
+        60000,
+        vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`), vehicle(V3, `1000`))
+      );
+      expect(get(fg, `/flowKnockoutCarLoanMoreThanTwoVins`).get).toBe(true);
+      expect(get(fg, `/flowIsKnockedOut`).get).toBe(true);
+    });
+
+    it(`three vehicles entered but gate answered no: no stop`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutCarLoanMoreThanTwoVins`];
+      const fg = build(singleFilerData, 60000, {
+        ...vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`), vehicle(V3, `1000`)),
+        '/carLoanHadInterest': createBooleanWrapper(false),
+      });
+      expect(get(fg, `/flowKnockoutCarLoanMoreThanTwoVins`).get).toBe(false);
+    });
+
+    it(`line 34 prints whole thousands rounded up; line 35 = line 34 x $200`, ({ task }) => {
+      task.meta.testedFactPaths = [`/carLoanLine34`, `/carLoanLine35`];
+      const fg = build(singleFilerData, 110500, loan(`4000`));
+      expect(get(fg, `/carLoanLine34`).get.toString()).toBe(`11.00`);
+      expect(get(fg, `/carLoanLine35`).get.toString()).toBe(`2200.00`);
+    });
+
+    it(`28a(2) "No" box is the complement of usAssembly`, ({ task }) => {
+      task.meta.testedFactPaths = [`/carLoans/*/notUsAssembly`];
+      const fg = build(singleFilerData, 60000, vehicles(vehicle(V1, `4000`), vehicle(V2, `3000`, { us: false })));
+      expect(get(fg, `/carLoans/#${V1}/notUsAssembly`).get).toBe(false);
+      expect(get(fg, `/carLoans/#${V2}/notUsAssembly`).get).toBe(true);
     });
   });
 });

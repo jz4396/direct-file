@@ -1,0 +1,27 @@
+# Form 6251 (AMT) strings (#77). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/income/income-sources/amt-preference-items: "In {{/taxYear}}, did you exercise incentive stock options, have tax-exempt interest from private activity bonds, or have any other alternative minimum tax adjustments?"
+  /heading/knockout/amt-preference-items: This tool doesn’t yet support these alternative minimum tax items
+  /heading/knockout/amt-mfs-add-back: This tool doesn’t yet support the alternative minimum tax at your income if you’re married filing separately
+  /heading/knockout/amt-kiddie-tax: This tool doesn’t yet support the alternative minimum tax limit for dependents
+info:
+  /info/income/income-sources/amt-preference-items:
+    body: This includes incentive stock options you exercised and kept (Form 3921), private activity bond interest (Form 1099-INT box 9 or Form 1099-DIV box 13), depreciation or other business differences for the alternative minimum tax, net operating losses, and the alternative minimum tax foreign tax credit.
+  /info/knockout/amt-preference-items:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/amt-mfs-add-back:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/amt-kiddie-tax:
+    alertText:
+      body:
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file

@@ -57,6 +57,7 @@ class PdfForm extends PdfTemplate {
                     && computePseudoFacts(facts, null, pdfConfig)) {
                 newPdfDocument = Loader.loadPDF(pdfTemplateBytes);
                 populateFormFields(newPdfDocument.getDocumentCatalog().getAcroForm(), formMap, facts, language, null);
+                skipLeadingPages(newPdfDocument, pdfConfig);
                 results.add(newPdfDocument);
             }
 
@@ -71,6 +72,7 @@ class PdfForm extends PdfTemplate {
                             newPdfDocument = Loader.loadPDF(pdfTemplateBytes);
                             populateFormFields(
                                     newPdfDocument.getDocumentCatalog().getAcroForm(), formMap, facts, language, id);
+                            skipLeadingPages(newPdfDocument, pdfConfig);
                             results.add(newPdfDocument);
                         }
                     }
@@ -80,6 +82,31 @@ class PdfForm extends PdfTemplate {
             throw new PdfCreationException("Could not load PDF form template input stream", e);
         }
         return results;
+    }
+
+    /*
+     * IRS early-release drafts (irs.gov/pub/irs-dft) start with a "Caution: DRAFT—NOT FOR FILING" cover page that has
+     * no form fields. Templates are committed byte-identical to irs.gov, so the cover page is dropped here instead:
+     * `customMaps: { template: { skipLeadingPages: "1" } }` in the template's configuration.yml removes that many
+     * leading pages after the fields are filled. Absent key = 0 (no change for existing templates).
+     */
+    static int leadingPagesToSkip(final PdfConfiguration pdfConfig) {
+        final Map<String, Map<String, String>> custom = pdfConfig.getCustomData();
+        if (custom == null || custom.get("template") == null) {
+            return 0;
+        }
+        final String value = custom.get("template").get("skipLeadingPages");
+        return value == null ? 0 : Integer.parseInt(value.trim());
+    }
+
+    static void skipLeadingPages(final PDDocument document, final PdfConfiguration pdfConfig) {
+        final int skip = leadingPagesToSkip(pdfConfig);
+        if (skip >= document.getNumberOfPages()) {
+            throw new IllegalStateException("skipLeadingPages would remove every page of the template");
+        }
+        for (int i = 0; i < skip; i++) {
+            document.removePage(0);
+        }
     }
 
     private void populateFormFields(

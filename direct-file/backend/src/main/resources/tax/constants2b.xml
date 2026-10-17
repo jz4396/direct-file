@@ -128,6 +128,15 @@
               <Dependency module="filers" path="/filerResidenceAndIncomeState" />
             </Right>
           </Equal>
+          <!-- Florida: Fla. Const. art. VII, sec. 5(a) bars a state tax on the income of natural persons (#81). -->
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">fl</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
         </Any>
       </Derived>
     </Fact>

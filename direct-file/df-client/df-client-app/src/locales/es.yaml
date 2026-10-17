@@ -8131,23 +8131,6 @@ info:
       {{/maxOasdiWagesOnMultipleW2sForOnePerson}} en salarios del Seguro Social de más de un empleador, ya que es
       posible que este contribuyente haya pagado demasiados impuestos del Seguro Social.
     heading: Casilla 3 - Salarios del Seguro Social
-  /info/knockout/medicare-wages:
-    body: >-
-      Recibiste {{/formW2totalMedicareWages}} en salarios de Medicare. Esta herramienta aún no permite salarios de
-      Medicare de más de {{/medicareWagesAdditionalTaxThreshhold}} para tu estado civil tributario de
-      {{/filingStatusCapitalized}}, ya que es posible que debas pagar un impuesto adicional de Medicare.
-    heading: Casilla 5 - Salarios y propinas sujetos al impuesto de Medicare
-  /info/knockout/medicare-wages-mfj:
-    body: >-
-      Recibieron {{/formW2totalMedicareWages}} en salarios de Medicare. Esta herramienta aún no permite salarios de
-      Medicare de más de {{/medicareWagesAdditionalTaxThreshhold}} para el estado civil tributario de
-      {{/filingStatusCapitalized}}, ya que es posible que debas pagar un impuesto adicional de Medicare.
-  /info/knockout/medicare-wages-credit:
-    body: >-
-      Tú o tu cónyuge recibieron {{/maxMedicareWagesForAnyFilerOnReturn}} en salarios de Medicare. Esta herramienta aún
-      no permite salarios de Medicare de más de {{/maxIndividualMedicareWages}} para el estado civil tributario de
-      {{/filingStatusCapitalized}}, ya que podrías ser elegible para un crédito para cualquier impuesto adicional de
-      Medicare retenido.
   /info/knockout/income-sources-supported:
     alertText:
       body:
@@ -8763,6 +8746,24 @@ info:
   /info/your-taxes/amount/tax-amount-has-changed:
     alertText:
       body: Editaste información que cambió algunos de los números en esta página.
+  /info/knockout/form-8959-unsupported:
+    body: >-
+      Uno de tus formularios W-2 muestra compensación de jubilación ferroviaria (RRTA) en la casilla 14, y es posible
+      que tus ingresos sean lo bastante altos como para deber el impuesto adicional de Medicare sobre ella, o que se te
+      haya retenido ese impuesto. Esta herramienta calcula el impuesto adicional de Medicare sobre salarios de Medicare
+      e ingresos del trabajo por cuenta propia, pero no sobre compensación RRTA.
+  /info/knockout/form-8959-unsupported-accordion:
+    heading: Casilla 14 - Compensación de jubilación ferroviaria (RRTA)
+    body:
+      - p: Direct File aún no acepta compensación de jubilación ferroviaria (RRTA) con tu nivel de ingresos.
+      - p: >-
+          Esta herramienta calcula el impuesto adicional de Medicare sobre salarios de Medicare e ingresos del trabajo
+          por cuenta propia, pero no sobre compensación RRTA.
+  /info/knockout/income/jobs/w2-fl-state-withholding-ko:
+    body: >-
+      Florida no tiene impuesto estatal sobre los ingresos, pero uno de tus formularios W-2 muestra impuestos
+      estatales retenidos en la casilla 17. Es posible que tengas que presentar una declaración en otro estado, lo
+      cual Direct File aún no acepta.
   /info/knockout/income/jobs/w2-other-state-ko:
     body: >-
       Con Direct File, sólo puedes declarar ingresos del trabajo de {{/filerResidenceAndIncomeState}}.
@@ -10230,6 +10231,10 @@ info:
         - p: >-
             Si tú o {{/secondaryFiler/firstName}} quieren ser reclamados como dependiente, <LinkChoice>puedes actualizar
             tu elección</LinkChoice>.
+  /info/you-and-your-family/about-you/state-breather-fl-info:
+    body: >-
+      Florida no cobra impuestos sobre los ingresos de las personas, así que no necesitas presentar una declaración
+      estatal de impuestos sobre los ingresos de Florida. Solo necesitas presentar tu declaración federal.
   /info/you-and-your-family/about-you/state-breather-nj-info:
     body:
       Direct File acepta situaciones tributarias sencillas para los contribuyentes en {{/filerResidenceAndIncomeState}}.
@@ -14658,31 +14663,6 @@ info:
   /info/knockout/social-security-wages-accordion:
     heading: Casilla 3 - Salarios del Seguro Social
     body: Direct File aún no permite la cantidad de ingresos que recibiste.
-  /info/knockout/medicare-wages-accordion-mfs:
-    heading: Casilla 5 - Salarios y propinas sujetos al impuesto de Medicare
-    body:
-      - p: Direct File aún no permite la cantidad de ingresos que recibiste.
-      - p: >-
-          Recibiste {{/formW2totalMedicareWages}} en salarios sujetos al impuesto de Medicare. Esta herramienta todavía
-          no acepta esos salarios Medicare mayores de $125,000 para tu estado civil tributario de ’Casado que presenta
-          una declaración por separado’, ya que es posible que se te requiera pagar un impuesto adicional de Medicare.
-  /info/knockout/medicare-wages-accordion-mfj:
-    heading: Casilla 5 - Salarios y propinas sujetos al impuesto de Medicare
-    body:
-      - p: >-
-          Direct File aún no permite la cantidad de ingresos que tú y tu cónyuge recibieron.
-      - p: >-
-          Recibieron {{/formW2totalMedicareWages}} en salarios sujetos al impuesto de Medicare. Esta herramienta todavía
-          no acepta esos salarios Medicare mayores de $250,000 para tu estado civil tributario de ’Casado que presenta
-          una declaración conjunta’, ya que es posible que se te requiera pagar un impuesto adicional de Medicare.
-  /info/knockout/medicare-wages-accordion-single:
-    heading: Casilla 5 - Salarios y propinas sujetos al impuesto de Medicare
-    body:
-      - p: Direct File aún no permite la cantidad de ingresos que recibiste.
-      - p: >-
-          Recibiste {{/formW2totalMedicareWages}} en salarios sujetos al impuesto de Medicare. Esta herramienta todavía
-          no acepta esos salarios Medicare mayores de $200,000 para tu estado civil tributario de ’{{/filingStatus}}’,
-          ya que es posible que se te requiera pagar un impuesto adicional de Medicare.
   /info/knockout/allocated-tips-primary-filer-accordion:
     heading: Casilla 8 - Propinas asignadas
     body:
@@ -20717,11 +20697,6 @@ headings:
   /heading/knockout/forms-missing/w2-box-14-with-rrta-codes-not-in-ny-ko: >-
     Direct File aún no permite los formularios requeridos para declarar la compensación de la Ley de Jubilación de
     Empleados Ferroviarios (RRTA, por sus siglas en inglés).
-  /heading/knockout/medicare-wages-mfj: >-
-    Direct File aún no permite la cantidad de ingresos que tú y tu cónyuge recibieron.
-  /heading/knockout/medicare-wages: Direct File aún no permite la cantidad de ingresos que recibiste.
-  /heading/knockout/medicare-wages-credit: >-
-    Direct File aún no permite la cantidad de ingresos que tú o tu cónyuge recibieron.
   /heading/knockout/income-sources-supported: >-
     Direct File no permite todos los formularios necesarios para declarar todos los tipos de ingresos.
   /heading/knockout/forms-missing/allocated-tips: >-
@@ -20812,6 +20787,10 @@ headings:
   /heading/your-taxes/payment-method/payment-paper-path-assertion: >-
     Estás llenando una declaración de impuestos en papel. Estas son tus opciones de pago.
   /heading/your-taxes/payment-method/payment-method-choice-autocorrect: Cambiamos tu elección de método de pago.
+  /heading/knockout/form-8959-unsupported: >-
+    Direct File aún no acepta compensación de jubilación ferroviaria (RRTA) con tu nivel de ingresos.
+  /heading/knockout/income/jobs/w2-fl-state-withholding-ko: >-
+    Direct File aún no acepta formularios W-2 con impuestos estatales retenidos para residentes de Florida.
   /heading/knockout/income/jobs/w2-other-state-ko: >-
     Direct File aún no permite declarar ingresos del trabajo de todos los estados y territorios estadounidenses.
   /heading/knockout/forms-missing/third-party-sick-pay: >-
@@ -21222,6 +21201,7 @@ headings:
     ¿Tu cónyuge recibió el Dividendo del Fondo Permanente de Alaska (PFD) en el {{taxYear}}?
   /heading/you-and-your-family/about-you/state-income-1099-misc-pfd: >-
     ¿Recibiste el Dividendo del Fondo Permanente de Alaska (PFD) en el {{/taxYear}}?
+  /heading/you-and-your-family/about-you/state-breather-fl: Florida no tiene declaración estatal de impuestos sobre los ingresos.
   /heading/you-and-your-family/about-you/state-breather-nj:
     Dijiste que viviste en {{/filerResidenceAndIncomeState}} todo el {{/taxYear}} y que ganaste todos tus ingresos ahí.
   /heading/you-and-your-family/spouse/will-be-claimed: >-

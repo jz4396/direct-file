@@ -33,11 +33,17 @@ abstract class PdfTemplate {
             // ASN 01
             new PdfForm("IRS1040S1"),
 
+            // ASN 1A (#66: 2026 draft Schedule 1-A)
+            new PdfForm("IRS1040S1A"),
+
             // ASN 02
             new PdfForm("IRS1040S2"),
 
             // ASN 03
             new PdfForm("IRS1040S3"),
+
+            // ASN 07 (#67: 2026 draft Schedule A)
+            new PdfForm("IRS1040SA"),
 
             // ASN 08
             new PdfForm("IRS1040SB"),

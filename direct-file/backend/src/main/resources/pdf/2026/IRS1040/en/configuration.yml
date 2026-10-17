@@ -1,0 +1,164 @@
+# #65: 2026 Form 1040, early-release draft (https://www.irs.gov/pub/irs-dft/f1040--dft.pdf), committed byte-identical
+# to irs.gov. Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; customMaps.template.skipLeadingPages
+# drops it after filling (PdfForm.skipLeadingPages). Field captions quoted from the PDF's own tooltips.
+includeWhen: /pdfNotOver65SRIndicator
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_14[0]: /primaryFiler/firstNameAndInitial
+      f1_15[0]: /primaryFiler/lastName
+      f1_16[0]: /primaryFiler/tin
+      f1_17[0]: /pdfSecondaryFiler/firstNameAndInitial
+      f1_18[0]: /pdfSecondaryFiler/lastName
+      f1_19[0]: /pdfSpouseTin
+      Address_ReadOrder[0]:
+        f1_20[0]: /address/streetAddress space /address/streetAddressLine2
+        f1_22[0]: /address/city
+        f1_23[0]: /address/stateOrProvence
+        f1_24[0]: /address/postalCode
+      c1_6[0]: /primaryFiler/potusElection
+      c1_7[0]: /pdfSecondaryFiler/potusElection
+      c1_8[0]: /isFilingStatusSingle
+      c1_8[1]: /isFilingStatusMFJ
+      c1_8[2]: /isFilingStatusMFS
+      # "Enter spouse's SSN above and full name here:" (MFS). The 2024 form shared one field with the HOH/QSS child
+      # name; 2026 splits them (f1_28 / f1_29). See PR open question.
+      f1_28[0]: /mfsSpouseOrQSSAndHOHNotDependentChild space space /xmlNraLiteralCd
+      HOH-QSS_ReadOrder[0]:
+        c1_8[0]: /isFilingStatusHOH
+        c1_8[1]: /isFilingStatusQSS
+      c1_10[1]: /notDigitalAssets
+      Dependents_ReadOrder[0]:
+        c1_13[0]: /claimingMoreThan4Dependents
+      Table_Dependents[0]:
+        Row1[0]:
+          f1_31[0]: /claimedDependentsCollection/[0]/firstName
+          f1_32[0]: /claimedDependentsCollection/[1]/firstName
+          f1_33[0]: /claimedDependentsCollection/[2]/firstName
+          f1_34[0]: /claimedDependentsCollection/[3]/firstName
+        Row2[0]:
+          f1_35[0]: /claimedDependentsCollection/[0]/lastName
+          f1_36[0]: /claimedDependentsCollection/[1]/lastName
+          f1_37[0]: /claimedDependentsCollection/[2]/lastName
+          f1_38[0]: /claimedDependentsCollection/[3]/lastName
+        Row3[0]:
+          f1_39[0]: /claimedDependentsCollection/[0]/tin
+          f1_40[0]: /claimedDependentsCollection/[1]/tin
+          f1_41[0]: /claimedDependentsCollection/[2]/tin
+          f1_42[0]: /claimedDependentsCollection/[3]/tin
+        Row4[0]:
+          f1_43[0]: /claimedDependentsCollection/[0]/relationship
+          f1_44[0]: /claimedDependentsCollection/[1]/relationship
+          f1_45[0]: /claimedDependentsCollection/[2]/relationship
+          f1_46[0]: /claimedDependentsCollection/[3]/relationship
+        Row7[0]:
+          Dependent1[0]:
+            c1_30[0]: /claimedDependentsCollection/[0]/isClaimedForCTC
+            c1_30[1]: /claimedDependentsCollection/[0]/isClaimedForODC
+          Dependent2[0]:
+            c1_31[0]: /claimedDependentsCollection/[1]/isClaimedForCTC
+            c1_31[1]: /claimedDependentsCollection/[1]/isClaimedForODC
+          Dependent3[0]:
+            c1_32[0]: /claimedDependentsCollection/[2]/isClaimedForCTC
+            c1_32[1]: /claimedDependentsCollection/[2]/isClaimedForODC
+          Dependent4[0]:
+            c1_33[0]: /claimedDependentsCollection/[3]/isClaimedForCTC
+            c1_33[1]: /claimedDependentsCollection/[3]/isClaimedForODC
+      f1_47[0]: /wages # 1a
+      f1_48[0]: /unreportedHouseholdWages # 1b
+      f1_49[0]: /unreportedTipIncome # 1c
+      f1_50[0]: /medicareWaiverPayments # 1d
+      f1_51[0]: /taxableDependentCare # 1e
+      f1_52[0]: /employerProvidedAdoptionBenefits # 1f
+      f1_53[0]: /wagesFrom8919 # 1g
+      f1_55[0]: /otherEarnedIncome # 1h amount
+      f1_56[0]: /combatPayAmount # 1i
+      f1_57[0]: /employerIncomeSubtotal # 1z
+      f1_58[0]: /taxExemptInterest # 2a
+      f1_59[0]: /interestIncome # 2b
+      f1_60[0]: /qualifiedDividends # 3a
+      f1_61[0]: /ordinaryDividends # 3b
+      f1_62[0]: /iraDistributions # 4a
+      f1_63[0]: /taxableIraDistributions # 4b
+      f1_65[0]: /pensionsAndAnnuities # 5a
+      f1_66[0]: /taxablePensionsAndAnnuitiesDisplay # 5b
+      f1_68[0]: ~positiveSocialSecurityBenefitsOrEmpty # 6a
+      f1_69[0]: /taxableSocialSecurityBenefits # 6b
+      c1_43[0]: /socialSecurityLumpSum # 6c
+      f1_70[0]: /capitalGainsOrLosses # 7a
+      c1_45[0]: /capitalGainsScheduleDNotRequired # 7b
+      f1_72[0]: /otherIncome # 8
+      f1_73[0]: /totalIncome # 9
+      f1_74[0]: /adjustmentsToIncome # 10
+      f1_75[0]: /agi # 11a
+    Page2[0]:
+      f2_01[0]: /agi # 11b "Amount from line 11a (adjusted gross income)."
+      c2_1[0]: /primarySomeoneCanClaimForTaxBenefits # 12a
+      c2_2[0]: /secondarySomeoneCanClaimForTaxBenefits # 12a
+      c2_5[0]: /primaryFiler/age65OrOlder # 12d "Were born before January 2, 1962."
+      c2_6[0]: /primaryFiler/isBlind
+      c2_7[0]: /isSpouse65OrOlder
+      c2_8[0]: /secondaryFilerIsBlindIndicatorXml
+      f2_02[0]: /standardOrItemizedDeductions # 12e "Standard deduction or itemized deductions (from Schedule A)."
+      f2_03[0]: /nonItemizerCharitableDeduction # 12f "Charitable contribution deduction for non-itemizers"; IRC 170(p)
+      f2_04[0]: /schedule1ALine44 # 13a "Additional deductions from Schedule 1-A, line 44."
+      f2_05[0]: /qualifiedBusinessIncomeDeduction # 13b "Qualified business income deduction from Form 8995 or Form 8995-A"
+      f2_06[0]: /totalDeductions # 14 "Add lines 12e, 12f, 13a, and 13b."
+      f2_07[0]: /taxableIncome # 15
+      c2_9[0]: /form8814Included # 16 (1)
+      c2_10[0]: /form4972Included # 16 (2)
+      c2_11[0]: /formOtherIncluded # 16 (3)
+      f2_08[0]: /otherFormName
+      f2_09[0]: /tentativeTaxFromTaxableIncome # 16
+      f2_10[0]: /totalAdditionalTaxesOwed # 17
+      f2_11[0]: /totalTentativeTax # 18
+      f2_12[0]: /totalCtcAndOdc # 19
+      f2_13[0]: /line8OfSchedule3 # 20
+      f2_14[0]: /nonRefundableCredits # 21
+      f2_15[0]: /taxLessNonRefundableCredits # 22
+      f2_16[0]: /line21OfSchedule2 # 23
+      f2_17[0]: /totalTax # 24a
+      f2_19[0]: /totalTax # 24c "Add lines 24a and 24b." (24b, Form 1062, not supported; see PR)
+      Line25_ReadOrder[0]:
+        f2_20[0]: /formW2Withholding # 25a
+      f2_21[0]: /form1099Withholding # 25b
+      f2_22[0]: /otherFormWithholding # 25c
+      f2_23[0]: /totalWithholding # 25d
+      f2_24[0]: /estimatedAndFromLastYear # 26
+      f2_26[0]: /earnedIncomeCredit # 27a
+      f2_27[0]: /additionalCtc # 28
+      f2_28[0]: /americanOpportunityCredit # 29
+      Line31-32_ReadOrder[0]:
+        f2_30[0]: /otherPaymentsAndRefundableCreditsTotal # 31
+        f2_31[0]: /totalOtherPaymentsRefundableCredits # 32a
+      f2_33[0]: /totalOtherPaymentsRefundableCredits # 32c (32b, Schedule 3-A, see PR open question)
+      f2_34[0]: /totalPayments # 33
+      f2_35[0]: /overpayment # 34
+      c2_14[0]: /form8888Attached
+      f2_36[0]: /overpayment # 35a
+      RoutingNo[0]:
+        f2_37[0]: ~pdfRoutingNumberOrXs
+      c2_15[0]: /refundAccountIsChecking
+      c2_15[1]: /refundAccountIsSavings
+      AccountNo[0]:
+        f2_38[0]: ~pdfAccountNumberOrXs
+      f2_39[0]: /appliedToNextYearEstimated # 36
+      f2_40[0]: /balanceDue # 37
+      c2_16[0]: /wantsThirdPartyDesignee
+      c2_16[1]: /wantsThirdPartyDesigneeNo
+      f2_42[0]: /pdfThirdPartyDesigneeFullName
+      f2_43[0]: /pdfThirdPartyDesigneePhone
+      f2_44[0]: /pdfThirdPartyDesigneePin
+      f2_45[0]: /primaryFiler/mefOccupation
+      f2_46[0]: /primaryFiler/identityPin
+      f2_47[0]: /pdfSecondaryFiler/mefOccupation
+      f2_48[0]: /pdfSecondaryFiler/identityPin
+      f2_49[0]: /phone
+      f2_50[0]: /email
+otherRequiredFacts:
+  - /dueRefund
+  - /xmlRefundBankAccount
+  - /socialSecurityBenefits
