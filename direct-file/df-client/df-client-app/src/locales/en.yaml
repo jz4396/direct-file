@@ -2655,6 +2655,8 @@ headings:
     Direct File doesn’t support W-2s with state income tax withheld for Florida residents yet.
   /heading/knockout/income/jobs/w2-other-state-ko:
     Direct File doesn’t support the reporting of employment income in all U.S. states and territories yet.
+  /heading/knockout/form-8959-unsupported:
+    Direct File doesn’t support railroad retirement (RRTA) compensation at your income level yet.
   /heading/knockout/forms-missing/net-investment: Direct File doesn’t yet support the amount of income you received.
   /heading/knockout/income-sources-supported: Direct File doesn’t support the forms required to report all income types.
   /heading/knockout/digital-assets: Direct File doesn’t yet support the forms required to report digital assets.
@@ -2690,11 +2692,6 @@ headings:
     the Presidential Election Campaign Fund?
   /heading/other-preferences/create-self-select-pin: Create a Self-Select PIN to confirm your identity next year.
   /heading/federal-tax-return: "{{/taxYear}} federal tax return details"
-  /heading/knockout/medicare-wages: Direct File doesn’t yet support the amount of income you received.
-  /heading/knockout/medicare-wages-mfj:
-    Direct File doesn’t yet support the amount of income you and your spouse received.
-  /heading/knockout/medicare-wages-credit:
-    Direct File doesn’t yet support the amount of income you or your spouse received.
   /heading/knockout/add-person-born-died-no-tin: Direct File doesn’t support this yet
   /heading/knockout/no-payments-or-credit:
     Based on your responses, you don’t need to file a federal tax return for {{/taxYear}}.
@@ -12543,50 +12540,21 @@ info:
       need to file a return in another state, which Direct File doesn’t support yet.
   /info/knockout/income/jobs/w2-other-state-ko:
     body: You can only report employment income from {{/filerResidenceAndIncomeState}} within Direct File.
+  /info/knockout/form-8959-unsupported:
+    body: >-
+      One of your W-2s shows railroad retirement (RRTA) compensation in box 14, and your income may be high enough
+      that you owe Additional Medicare Tax on it, or that tax may have been withheld. This tool figures Additional
+      Medicare Tax on Medicare wages and self-employment income, but not on RRTA compensation.
+  /info/knockout/form-8959-unsupported-accordion:
+    heading: Box 14 - Railroad retirement (RRTA) compensation
+    body:
+      - p: Direct File doesn’t support railroad retirement (RRTA) compensation at your income level yet.
+      - p: >-
+          This tool figures Additional Medicare Tax on Medicare wages and self-employment income, but not on RRTA
+          compensation.
   /info/knockout/income/jobs/w2-part-year-yonkers-ko:
     body: >-
       You earned income in Yonkers but didn’t live in Yonkers, or you lived in Yonkers for only part of {{/taxYear}}.
-  /info/knockout/medicare-wages:
-    heading: Box 5 - Medicare wages and tips
-    body: >-
-      You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages over
-      {{/medicareWagesAdditionalTaxThreshhold}} for your filing status of {{/filingStatusCapitalized}}, as you may be
-      required to pay Additional Medicare Tax.
-  /info/knockout/medicare-wages-accordion-mfs:
-    heading: Box 5 - Medicare wages and tips
-    body:
-      - p: Direct File doesn’t yet support the amount of income you received.
-      - p:
-          You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages
-          over $125,000 for your filing status of Married Filing Separately, as you may be required to pay Additional
-          Medicare Tax.
-  /info/knockout/medicare-wages-mfj:
-    body: >-
-      You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages over
-      {{/medicareWagesAdditionalTaxThreshhold}} for your filing status of {{/filingStatusCapitalized}}, as you may be
-      required to pay Additional Medicare Tax.
-  /info/knockout/medicare-wages-accordion-mfj:
-    heading: Box 5 - Medicare wages and tips
-    body:
-      - p: Direct File doesn’t yet support the amount of income you and your spouse received.
-      - p:
-          You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages
-          over $250,000 for your filing status of Married Filing Jointly, as you may be required to pay Additional
-          Medicare Tax.
-  /info/knockout/medicare-wages-accordion-single:
-    heading: Box 5 - Medicare wages and tips
-    body:
-      - p: Direct File doesn’t yet support the amount of income you received.
-      - p:
-          You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages
-          over $200,000 for your filing status of {{/filingStatus}}, as you may be required to pay Additional Medicare
-          Tax.
-
-  /info/knockout/medicare-wages-credit:
-    body: >-
-      You or your spouse received {{/maxMedicareWagesForAnyFilerOnReturn}}. This tool doesn’t yet support Medicare wages
-      over {{/maxIndividualMedicareWages}} for 1 person for your filing status of {{/filingStatusCapitalized}} as you
-      may be eligible for a credit for any withheld Additional Medicare Tax.
   /info/knockout/retirement/1099-r-allocable-irr:
     body:
       - p:
