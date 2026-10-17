@@ -527,7 +527,7 @@
       <Derived>
         <Any>
           <Dependency module="formW2s" path="/anyFilerExceedsMaxOasdiWages" />
-          <Dependency module="formW2s" path="/knockoutMedicareWages" />
+          <Dependency module="form8959" path="/flowKnockoutForm8959Unsupported" />
           <Dependency module="formW2s" path="/flowKnockoutAllocatedTips" />
           <Dependency module="formW2s" path="/flowKnockoutNonQualifiedPlans" />
           <Dependency module="formW2s" path="/knockoutForBox12Value" />

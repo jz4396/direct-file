@@ -303,6 +303,11 @@ export const AboutYouSubcategory = (
         <Boolean path='/receivedAlaskaPfd' batches={[`alaska-permanent-fund-0`]} />
         <SaveAndOrContinueButton />
       </Screen>
+      <Screen route='state-breather-fl' condition='/livedInFl'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-fl' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-fl-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='state-breather-nj' condition='/livedInNj'>
         <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-nj' />
         <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-nj-info' />

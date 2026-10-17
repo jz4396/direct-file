@@ -1,0 +1,71 @@
+# #66: 2026 Schedule 1-A (Form 1040), early-release draft (https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf),
+# committed byte-identical to irs.gov. Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet;
+# customMaps.template.skipLeadingPages drops it after filling (PdfForm.skipLeadingPages, same as #65).
+# Field names and captions read from the PDF's own AcroForm tooltips (pypdf). Every mapping cites its form line.
+# Not mapped (left blank, never a silent 0): lines 2a-2d (§911/931/933 exclusions are unsupported; 2e = 0 is printed
+# via line 3 = line 1), per-W-2 rows 4a-4e / 16a-16e and 1099 rows 6a-6e / 18a-18e (no per-row facts yet; totals print
+# on lines 5 and 17), column (ii) of 28a/28b (Schedule C/E/F interest is a knockout, /flowKnockoutCarLoanBusinessUse).
+# PII: the VIN (line 28a/28b column (i)) is printed here and nowhere else; see carLoanInterest.xml header.
+# More than two vehicles is a stop (/flowKnockoutCarLoanMoreThanTwoVins), so rows 28a and 28b are always enough.
+includeWhen: /requiresSchedule1A
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  form1[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on Form 1040"
+      f1_02[0]: /primaryFiler/tin # "Your social security number"
+      f1_03[0]: /agi # 1 "Enter the amount from Form 1040 ... line 11b"
+      f1_09[0]: /schedule1ALine3 # 3 "Add lines 1 and 2e"
+      f1_35[0]: /schedule1ALine5 # 5 "Add lines 4a through 4e, column (v)"
+      f1_103[0]: /schedule1ALine9 # 9 "Enter the smaller of the amount on line 8 or $25,000"
+      f1_104[0]: /schedule1ALine3 # 10 "Enter the amount from line 3"
+      f1_105[0]: /schedule1ALine11 # 11 "Enter $150,000 ($300,000 if married filing jointly)"
+      f1_106[0]: /schedule1ALine12 # 12
+      f1_107[0]: /schedule1ALine13 # 13
+      f1_108[0]: /schedule1ALine14 # 14
+      f1_109[0]: /schedule1ALine15 # 15 "Qualified tips deduction"
+    Page2[0]:
+      f2_16[0]: /schedule1AOvertimeLine17 # 17 "Add lines 16a through 16e, column (iii)"
+      f2_39[0]: /schedule1AOvertimeLine21 # 21
+      f2_40[0]: /schedule1ALine3 # 22 "Enter the amount from line 3"
+      f2_41[0]: /schedule1AOvertimeLine23 # 23
+      f2_42[0]: /schedule1AOvertimeLine24 # 24
+      f2_43[0]: /schedule1AOvertimeLine25 # 25
+      f2_44[0]: /schedule1AOvertimeLine26 # 26
+      f2_45[0]: /schedule1ALine27 # 27 "Qualified overtime compensation deduction" (the value line 44 adds)
+    Page3[0]:
+      Table_Line28a[0]:
+        Line28a[0]:
+          VIN-1_Comb[0]:
+            f3_01[0]: /carLoans/[0]/vin # 28a column (i) "Vehicle identification number (VIN)"; §163(h)(4)(B)(iii)
+          f3_03[0]: /carLoans/[0]/line28Interest # 28a column (iii) "Schedule 1-A"
+      c3_1[0]: /carLoans/[0]/isNewVehicle # 28a(1) Yes (No is a knockout, /flowKnockoutCarLoanUsedVehicle)
+      c3_2[0]: /carLoans/[0]/usAssembly # 28a(2) Yes
+      c3_2[1]: /carLoans/[0]/notUsAssembly # 28a(2) No
+      Table_Line28b[0]:
+        Line28b[0]:
+          VIN-2_Comb[0]:
+            f3_04[0]: /carLoans/[1]/vin # 28b column (i)
+          f3_06[0]: /carLoans/[1]/line28Interest # 28b column (iii)
+      c3_3[0]: /carLoans/[1]/isNewVehicle # 28b(1) Yes
+      c3_4[0]: /carLoans/[1]/usAssembly # 28b(2) Yes
+      c3_4[1]: /carLoans/[1]/notUsAssembly # 28b(2) No
+      f3_07[0]: /carLoanLine29 # 29 "Add lines 28a and 28b, column (iii)"
+      f3_08[0]: /carLoanLine30 # 30 "Enter the smaller of the amount on line 29 or $10,000"
+      f3_09[0]: /schedule1ALine3 # 31 "Enter the amount from line 3"
+      f3_10[0]: /carLoanLine32 # 32 "Enter $100,000 ($200,000 if married filing jointly)"
+      f3_11[0]: /carLoanLine33 # 33
+      f3_12[0]: /carLoanLine34 # 34 (rounded up to whole thousands)
+      f3_13[0]: /carLoanLine35 # 35 "Multiply line 34 by $200"
+      f3_14[0]: /carLoanLine36 # 36 "Qualified passenger vehicle loan interest deduction"
+      f3_15[0]: /schedule1ALine3 # 37 "Enter the amount from line 3"
+      f3_16[0]: /schedule1ALine38 # 38
+      f3_17[0]: /schedule1ALine39 # 39
+      f3_18[0]: /schedule1ALine40 # 40
+      f3_19[0]: /schedule1ALine41 # 41
+      f3_20[0]: /schedule1ALine42a # 42a
+      f3_21[0]: /schedule1ALine42b # 42b
+      f3_22[0]: /schedule1ALine43 # 43 "Enhanced deduction for seniors"
+      f3_23[0]: /schedule1ALine44 # 44 "Add lines 15, 27, 36, and 43" -> Form 1040 line 13a

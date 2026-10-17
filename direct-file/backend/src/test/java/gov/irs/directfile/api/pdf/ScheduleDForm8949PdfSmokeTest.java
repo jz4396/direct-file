@@ -109,8 +109,8 @@ class ScheduleDForm8949PdfSmokeTest {
             assertEquals(1, count(byName, "Page1[0].f1_22[0]", "4000"), "Sch D line 7");
             assertEquals(1, count(byName, "Page1[0].f1_43[0]", "5000"), "Sch D line 15");
             assertEquals(1, count(byName, "Page2[0].f2_1[0]", "9000"), "Sch D line 16");
-            // Form 1040 line 7.
-            assertEquals(1, count(byName, "f1_52[0]", "9000"), "1040 line 7");
+            // Form 1040 line 7a (#65: 2026 draft layout, field f1_70).
+            assertEquals(1, count(byName, "Page1[0].f1_70[0]", "9000"), "1040 line 7a");
             assertTrue(doc.getNumberOfPages() >= 6, "1040 (2) + Sch D (2) + 8949 x2 (4)");
         }
     }

@@ -136,6 +136,14 @@ direct-file:
         configuration-location: pdf/2024/IRS1040S1/es/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: IRS1040S1A
+        year: 2024
+        language-code: en
+        location: pdf/2026/IRS1040S1A/en/f1040s1a--dft.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/IRS1040S1A/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: IRS1040S2
         year: 2024
         language-code: en
@@ -166,6 +174,14 @@ direct-file:
         location: pdf/2024/IRS1040S3/es/f1040s3s.pdf
         location-type: classpath
         configuration-location: pdf/2024/IRS1040S3/es/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
+      - name: IRS1040SA
+        year: 2024
+        language-code: en
+        location: pdf/2026/IRS1040SA/en/f1040sa--dft.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/IRS1040SA/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS1040SB
@@ -219,9 +235,9 @@ direct-file:
       - name: IRS1040
         year: 2024
         language-code: en
-        location: pdf/2024/IRS1040/en/f1040.pdf
+        location: pdf/2026/IRS1040/en/f1040--dft.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS1040/en/configuration.yml
+        configuration-location: pdf/2026/IRS1040/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS1040
