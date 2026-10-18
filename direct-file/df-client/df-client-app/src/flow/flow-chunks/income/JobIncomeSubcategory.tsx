@@ -885,6 +885,18 @@ export const JobIncomeSubcategory = (
           <LimitingString path='/formW2s/*/writableLocality' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
+        {/* #80 PA part-year residency: which state is on this W-2, and the PA-period share of a FL W-2. */}
+        <Screen route='w2-pa-part-year-state' condition='/paPartYearSupported'>
+          <Heading i18nKey='/heading/income/jobs/w2-pa-part-year-state' />
+          <Enum path='/formW2s/*/paPartYearW2State' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='w2-pa-part-year-resident-wages' condition='/formW2s/*/paPartYearIsFlW2'>
+          <Heading i18nKey='/heading/income/jobs/w2-pa-part-year-resident-wages' />
+          <InfoDisplay i18nKey='/info/income/jobs/w2-pa-part-year-resident-wages' />
+          <Dollar path='/formW2s/*/paPartYearResidentPeriodWages' />
+          <SaveAndOrContinueButton />
+        </Screen>
         <Screen route='w2-missing-state-income' condition='/formW2s/*/missingStateIncome'>
           <ContextHeading
             displayOnlyOn='edit'

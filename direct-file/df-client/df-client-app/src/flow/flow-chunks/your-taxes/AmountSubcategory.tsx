@@ -4,6 +4,7 @@ import {
   BigContent,
   Boolean,
   DFAlert,
+  Dollar,
   IconDisplay,
   KnockoutButton,
   ContextHeading,
@@ -24,7 +25,7 @@ export const AmountSubcategory = (
     {/* #78 PA-40 core: full-year PA residents. */}
     <SubSubcategory route='pa-40'>
       {/* #102 PA-40 line 1b (PA Schedule UE) isn't computed: ask, and knock out on yes. */}
-      <Screen route='pa-unreimbursed-employee-expenses' condition='/stateReturnIsPa'>
+      <Screen route='pa-unreimbursed-employee-expenses' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unreimbursed-employee-expenses' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unreimbursed-employee-expenses' />
         <Boolean path='/paHasUnreimbursedEmployeeExpenses' />
@@ -40,11 +41,24 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-unreimbursed-employee-expenses' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      <Screen route='pa-unsupported-items' condition='/stateReturnIsPa'>
+      <Screen route='pa-unsupported-items' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />
         <Boolean path='/paHasUnsupportedItems' />
         <SaveAndOrContinueButton />
+      </Screen>
+      {/* #80 PA part-year residency. */}
+      <Screen route='pa-part-year-interest' condition='/paPartYearHasInterest'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-part-year-interest' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-part-year-interest' />
+        <Dollar path='/paPartYearResidentInterest' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-part-year-knockout' condition='/flowKnockoutPaPartYear' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-part-year' />
+        <DFAlert i18nKey='/info/knockout/pa-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
       </Screen>
       <Screen route='pa-unsupported-items-knockout' condition='/flowKnockoutPaUnsupportedItems' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />

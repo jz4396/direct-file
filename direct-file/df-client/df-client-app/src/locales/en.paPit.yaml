@@ -3,21 +3,54 @@ subsubcategories:
   /flow/your-taxes/amount:
     pa-40: Pennsylvania return
 dataviews:
+  /flow/you-and-your-family/about-you:
+    /paPartYearMove: Move between Pennsylvania and Florida
+    /paPartYearMoveDate: Date you started living in your new state
+    enums:
+      /paPartYearMoveOptions:
+        paToFl: Moved from Pennsylvania to Florida
+        flToPa: Moved from Florida to Pennsylvania
+        other: Lived in another state
+  /flow/income/jobs:
+    /formW2s/*/paPartYearW2State: Box 15 - State (Pennsylvania part-year)
+    /formW2s/*/paPartYearResidentPeriodWages: Pennsylvania-taxable wages earned while a Pennsylvania resident
+    enums:
+      /paPartYearW2StateOptions:
+        pa: Pennsylvania
+        fl: Florida
+        other: Another state
   /flow/your-taxes/amount:
     /paHasSpNontaxableIncome: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
-    /paHasUnreimbursedEmployeeExpenses: Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
+    /paPartYearResidentInterest: Interest received while a Pennsylvania resident
+    /paHasUnreimbursedEmployeeExpenses:
+      Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
     /paHasUnsupportedItems: Do any Pennsylvania items this tool doesn’t support apply to you?
 headings:
-  /heading/your-taxes/amount/pa-unreimbursed-employee-expenses: "For your {{/taxYear}} Pennsylvania return, do you want to deduct unreimbursed employee business expenses?"
-  /heading/knockout/pa-unreimbursed-employee-expenses: This tool doesn’t yet support unreimbursed employee business expenses on a Pennsylvania return
-  /heading/your-taxes/amount/pa-unsupported-items: "For your {{/taxYear}} Pennsylvania return, do any of these apply to you?"
+  /heading/your-taxes/amount/pa-unreimbursed-employee-expenses:
+    "For your {{/taxYear}} Pennsylvania return, do you want to deduct unreimbursed employee business expenses?"
+  /heading/knockout/pa-unreimbursed-employee-expenses:
+    This tool doesn’t yet support unreimbursed employee business expenses on a Pennsylvania return
+  /heading/your-taxes/amount/pa-unsupported-items:
+    "For your {{/taxYear}} Pennsylvania return, do any of these apply to you?"
   /heading/knockout/pa-unsupported-items: This tool doesn’t yet support these Pennsylvania tax items
   /heading/knockout/pa-unsupported-income: This tool doesn’t yet support some of your income on a Pennsylvania return
   /heading/knockout/pa-sp-unsupported: This tool doesn’t yet support Pennsylvania Tax Forgiveness for your situation
-  /heading/your-taxes/amount/pa-sp-nontaxable-income: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
+  /heading/your-taxes/amount/pa-sp-nontaxable-income:
+    Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
+  /heading/you-and-your-family/about-you/pa-part-year-move: "Which of these describes where you lived in {{/taxYear}}?"
+  /heading/you-and-your-family/about-you/pa-part-year-move-date: What was the first day you lived in your new state?
+  /heading/income/jobs/w2-pa-part-year-state: Which state is listed in box 15 of this W-2?
+  /heading/income/jobs/w2-pa-part-year-resident-wages:
+    How much of the pay on this W-2 did you earn while you lived in Pennsylvania?
+  /heading/your-taxes/amount/pa-part-year-interest:
+    How much of your interest did you receive while you lived in Pennsylvania?
+  /heading/knockout/pa-part-year: This tool doesn’t yet support your Pennsylvania part-year resident return
 info:
   /info/your-taxes/amount/pa-unreimbursed-employee-expenses:
-    body: These are costs you paid to do your job that your employer didn’t pay you back for, claimed on PA Schedule UE. Pennsylvania allows only expenses required to do your job. Answer no if your employer reimbursed you exactly or gave you an allowance it didn’t include in your wages.
+    body:
+      These are costs you paid to do your job that your employer didn’t pay you back for, claimed on PA Schedule UE.
+      Pennsylvania allows only expenses required to do your job. Answer no if your employer reimbursed you exactly or
+      gave you an allowance it didn’t include in your wages.
   /info/knockout/pa-unreimbursed-employee-expenses:
     alertText:
       body:
@@ -27,7 +60,11 @@ info:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/your-taxes/amount/pa-unsupported-items:
     body:
-      - p: "Medical savings account, health savings account, 529 or ABLE contributions, or student loan interest you want to deduct; income from an estate or trust; gambling or lottery winnings; Pennsylvania estimated or extension payments, or a refund from last year applied to this year; credit for tax paid to another state; other Pennsylvania credits (Schedules OC or DC); or use tax you owe."
+      - p:
+          "Medical savings account, health savings account, 529 or ABLE contributions, or student loan interest you want
+          to deduct; income from an estate or trust; gambling or lottery winnings; Pennsylvania estimated or extension
+          payments, or a refund from last year applied to this year; credit for tax paid to another state; other
+          Pennsylvania credits (Schedules OC or DC); or use tax you owe."
       - p: This tool doesn’t figure local earned income tax. File that with your local tax collector.
   /info/knockout/pa-unsupported-items:
     alertText:
@@ -39,16 +76,76 @@ info:
   /info/knockout/pa-unsupported-income:
     alertText:
       body:
-        - p: This includes business or rental income, retirement distributions, Form 1099-MISC income, tax-exempt interest, a Form W-2 without Pennsylvania wages in box 16, or sales of property on a joint return.
+        - p:
+            This includes business or rental income, retirement distributions, Form 1099-MISC income, tax-exempt
+            interest, a Form W-2 without Pennsylvania wages in box 16, or sales of property on a joint return.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/your-taxes/amount/pa-sp-nontaxable-income:
-    body: This includes alimony, life insurance proceeds or inheritances, gifts, awards or prizes, nontaxable military pay, gain you excluded on the sale of your home, nontaxable scholarships or grants, cash or support from people outside your household, nontaxable sickness, disability or strike benefits from a cafeteria plan, foster care payments, and unemployment compensation. Don’t include Social Security or eligible retirement benefits.
+    body:
+      This includes alimony, life insurance proceeds or inheritances, gifts, awards or prizes, nontaxable military pay,
+      gain you excluded on the sale of your home, nontaxable scholarships or grants, cash or support from people outside
+      your household, nontaxable sickness, disability or strike benefits from a cafeteria plan, foster care payments,
+      and unemployment compensation. Don’t include Social Security or eligible retirement benefits.
   /info/knockout/pa-sp-unsupported:
     alertText:
       body:
-        - p: You may qualify for Tax Forgiveness (Schedule SP), but this tool can’t figure it if you’re separated or filing separately, someone can claim you as a dependent, you have more than 9 dependent children, you received unemployment compensation, or you have other nontaxable income that counts toward eligibility.
+        - p:
+            You may qualify for Tax Forgiveness (Schedule SP), but this tool can’t figure it if you’re separated or
+            filing separately, someone can claim you as a dependent, you have more than 9 dependent children, you
+            received unemployment compensation, you lived in Pennsylvania for only part of the year, or you have other
+            nontaxable income that counts toward eligibility.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/you-and-your-family/about-you/pa-part-year-move:
+    body:
+      - p:
+          If you moved between Pennsylvania and Florida, you can file a Pennsylvania part-year resident return here.
+          Pennsylvania taxes all of your income from the time you lived there, plus income from Pennsylvania sources
+          (such as pay for work in Pennsylvania) from the rest of the year.
+      - p: Florida doesn’t have a state income tax, so there’s no Florida return to file.
+  /info/you-and-your-family/about-you/pa-part-year-move-date:
+    body:
+      - p:
+          Enter the date you started living in Florida (if you moved out of Pennsylvania) or in Pennsylvania (if you
+          moved in). The move must be after January 1 and in {{/taxYear}}.
+  /info/income/jobs/w2-pa-part-year-resident-wages:
+    body:
+      - p:
+          This W-2 doesn’t list Pennsylvania wages. Enter the part of your pay that you earned while you lived in
+          Pennsylvania. Pennsylvania taxes this pay even though it was from a Florida employer.
+      - p:
+          Pennsylvania doesn’t let you subtract retirement plan contributions (like 401(k) contributions) from your pay,
+          so include those amounts. Enter 0 if you earned all of this pay while you lived in Florida.
+  /info/your-taxes/amount/pa-part-year-interest:
+    body:
+      - p:
+          Pennsylvania taxes interest you received while you lived there. It doesn’t tax interest you received while you
+          lived in Florida. Don’t include interest from U.S. savings bonds or Treasury obligations.
+  /info/knockout/pa-part-year:
+    alertText:
+      body:
+        - p:
+            "This includes: a joint return, a move date that isn’t after January 1 and in {{/taxYear}}, a W-2 from a
+            state other than Pennsylvania or Florida, or a Florida W-2 with state income tax withheld in box 17."
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+fields:
+  /paPartYearMoveOptions:
+    paToFl: I moved from Pennsylvania to Florida
+    flToPa: I moved from Florida to Pennsylvania
+    other: I lived in another state (not only Pennsylvania and Florida)
+  /paPartYearMoveDate:
+    name: Date you started living in your new state
+  /paPartYearW2StateOptions:
+    pa: Pennsylvania
+    fl: Florida
+    other: Another state
+  /formW2s/*/paPartYearResidentPeriodWages:
+    name: Pay earned while living in Pennsylvania
+  /paPartYearResidentInterest:
+    name: Interest received while living in Pennsylvania
