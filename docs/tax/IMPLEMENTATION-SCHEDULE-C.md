@@ -2,7 +2,6 @@
 
 **Implements:** [GAP-SCHEDULE-C.md](./GAP-SCHEDULE-C.md) / gap PR [#3](https://github.com/jz4396/direct-file/pull/3)
 **Tax year:** TY2026, filed in 2027
-**Author:** Cod (secondary developer)
 **Blast radius:** **high** — total income / AGI, ACTC earned income, Schedule 1 line 15 (§ 164(f)) adjustment, Schedule 2 line 21 / Form 1040 line 23–24 (SE tax).
 
 ## What this slice ships
@@ -86,4 +85,4 @@ locale.
 
 ## Review
 
-Rev compliance writeup → Feat merge. Keep cites intact.
+Compliance review before merge. Keep cites intact.

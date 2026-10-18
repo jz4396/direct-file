@@ -5,7 +5,7 @@
   Source: 2026 draft Schedule 1-A lines 16-27; amounts from Form W-2 box 12 code TT (new for 2026).
   Line 18/19 (overtime on Form 1099-NEC/MISC) is knocked out. #68: W-2 overtime not on code TT is figured with the
   draft 1040 instructions p.106 methods when /overtimeAlternativeMethodsApply is on; otherwise knock out.
-  /flowAskOvertime1099 gates the 1099 screen so stop-only users skip it (Rev polish).
+  /flowAskOvertime1099 gates the 1099 screen so stop-only users skip it (polish).
 -->
 <FactDictionaryModule>
   <Facts>
@@ -86,7 +86,7 @@
     </Fact>
     <Fact path="/overtimeAlternativeMethodsApply">
       <Name>Switch: draft 1040 instructions p.106 alternative overtime methods</Name>
-      <Description>#68, Rev's ruling for TY2026: OFF. The p.106 methods are headed "Determining the amount of qualified
+      <Description>#68, ruling for TY2026: OFF. The p.106 methods are headed "Determining the amount of qualified
         overtime compensation for 2025. Because no changes have been made to Form W-2, Form 1099-NEC, or Form 1099-MISC to
         account for a separate accounting of qualified overtime compensation ..." (transition relief, Notice 2025-69), and
         §225(a) (https://www.law.cornell.edu/uscode/text/26/225) allows the deduction for overtime "included on statements
@@ -99,7 +99,7 @@
       <Placeholder><False /></Placeholder>
     </Fact>
     <Fact path="/flowAskOvertime1099">
-      <Description>#68 polish (Rev): ask the Form 1099-NEC/MISC overtime question only when /overtimeAlternativeMethodsApply is on. Stop-only users (switch off for TY2026) already hit /flowKnockoutOvertimeNotComputable from /overtimeNotOnW2CodeTT alone via /flowIsKnockedOut, so they skip this screen. Draft Form 1040 instructions (https://www.irs.gov/pub/irs-dft/i1040gi--dft.pdf) p.106 alternative methods.</Description>
+      <Description>#68 polish: ask the Form 1099-NEC/MISC overtime question only when /overtimeAlternativeMethodsApply is on. Stop-only users (switch off for TY2026) already hit /flowKnockoutOvertimeNotComputable from /overtimeNotOnW2CodeTT alone via /flowIsKnockedOut, so they skip this screen. Draft Form 1040 instructions (https://www.irs.gov/pub/irs-dft/i1040gi--dft.pdf) p.106 alternative methods.</Description>
       <Derived>
         <All>
           <Dependency path="/overtimeAlternativeMethodsApply" />
