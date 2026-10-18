@@ -23,6 +23,10 @@ import carLoanInterestEn from './en.carLoanInterest.yaml';
 import carLoanInterestEs from './es.carLoanInterest.yaml';
 import schedule1AEn from './en.schedule1A.yaml';
 import schedule1AEs from './es.schedule1A.yaml';
+import form6251En from './en.form6251.yaml';
+import form6251Es from './es.form6251.yaml';
+import paPitEn from './en.paPit.yaml';
+import paPitEs from './es.paPit.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -43,18 +47,24 @@ export const enLocale: any = deepMerge(
       deepMerge(
         deepMerge(
           deepMerge(
-            deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree),
-            scheduleAEn as Tree
+            deepMerge(
+              deepMerge(
+                deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree),
+                scheduleAEn as Tree
+              ),
+              unreportedTipsEn as Tree
+            ),
+            scheduleEEn as Tree
           ),
-          unreportedTipsEn as Tree
+          charitableNonItemizerEn as Tree
         ),
-        scheduleEEn as Tree
+        carLoanInterestEn as Tree
       ),
-      charitableNonItemizerEn as Tree
+      schedule1AEn as Tree
     ),
-    carLoanInterestEn as Tree
+    form6251En as Tree
   ),
-  schedule1AEn as Tree
+  paPitEn as Tree
 );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const esLocale: any = deepMerge(
@@ -63,16 +73,22 @@ export const esLocale: any = deepMerge(
       deepMerge(
         deepMerge(
           deepMerge(
-            deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree),
-            scheduleAEs as Tree
+            deepMerge(
+              deepMerge(
+                deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree),
+                scheduleAEs as Tree
+              ),
+              unreportedTipsEs as Tree
+            ),
+            scheduleEEs as Tree
           ),
-          unreportedTipsEs as Tree
+          charitableNonItemizerEs as Tree
         ),
-        scheduleEEs as Tree
+        carLoanInterestEs as Tree
       ),
-      charitableNonItemizerEs as Tree
+      schedule1AEs as Tree
     ),
-    carLoanInterestEs as Tree
+    form6251Es as Tree
   ),
-  schedule1AEs as Tree
+  paPitEs as Tree
 );

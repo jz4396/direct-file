@@ -1,0 +1,201 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #78 Pennsylvania PA-40 core and #79 Schedule SP Tax Forgiveness, full-year residents (TY2026 return; 2025 booklet until the 2026 one is published).
+      Instructions: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+      Form: PA-40 (2025). Statute: 72 P.S. §7302 (3.07%), §7303 (classes of income).
+      Full-year residency: /filerResidenceAndIncomeState = pa ("I lived in more than 1 state" is a separate option that knocks out).
+      Wired through stateReturn.xml (state framework).
+    -->
+    <Fact path="/paLine1a">
+      <Name>PA-40 line 1a gross compensation</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 10, LINE 1a: "The amount your employer reports in Box 16 of your Form W-2 usually shows your PA-taxable compensation if the W-2 includes PA withholding in Box 17." 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(1) Compensation. Sum of W-2 box 16 (all W-2s are PA: a different-state W-2 knocks out via /flowKnockoutBox15IncomeFromDifferentState).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><CollectionSum><Dependency module="formW2s" path="/formW2s/*/stateWages" /></CollectionSum></Derived>
+    </Fact>
+    <Fact path="/paLine1b">
+      <Name>PA-40 line 1b unreimbursed employee business expenses</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 1b. Not modeled (PA Schedule UE): $0; claiming it is covered by /flowKnockoutPaUnsupportedItems.</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine1c">
+      <Name>PA-40 line 1c net compensation</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 1c: "Net Compensation. Subtract Line 1b from Line 1a."</Description>
+      <Derived><Subtract><Minuend><Dependency path="/paLine1a" /></Minuend><Subtrahends><Dependency path="/paLine1b" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/paLine2">
+      <Name>PA-40 line 2 interest income</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 14, LINE 2: "Report all PA-taxable interest income received or credited during the year." and "Interest income from direct obligations of the U.S. government, the Commonwealth of Pennsylvania, and political subdivisions of Pennsylvania is tax exempt." Federal taxable interest minus 1099-INT box 3 (U.S. Savings Bonds and Treasury obligations). Box 8 tax-exempt interest knocks out (PA vs other-state munis not distinguished). 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(6).</Description>
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><CollectionSum><Dependency module="interest" path="/interestReports/*/taxableInterest" /></CollectionSum></Minuend><Subtrahends><CollectionSum><Dependency module="interest" path="/interestReports/*/interestOnGovernmentBonds" /></CollectionSum></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/paLine3">
+      <Name>PA-40 line 3 dividends</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 15, LINE 3: "Report all dividend income received or credited during 2025." Dividends are out of scope in this app (/ordinaryDividends = $0). 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(5).</Description>
+      <Derived><Dependency module="income" path="/ordinaryDividends" /></Derived>
+    </Fact>
+    <Fact path="/paLine4">
+      <Name>PA-40 line 4 net business income</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 4. Schedule C businesses knock out (/flowKnockoutPaUnsupportedIncome), so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(2).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine5">
+      <Name>PA-40 line 5 net gain or loss from property</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 17, LINE 5: "Report your gain (loss) from the sale, exchange, or disposition of any kind of intangible property and any real or tangible property." and "PA law does not distinguish between long-term and short term gains (losses)". Sum of Form 8949 column (h); no federal $3,000 loss limit or carryover. May be negative (a net loss) — line 9 then ignores it. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(3).</Description>
+      <Derived><CollectionSum><Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLoss" /></CollectionSum></Derived>
+    </Fact>
+    <Fact path="/paLine6">
+      <Name>PA-40 line 6 rents, royalties, patents, copyrights</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 6. Schedule E income knocks out, so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(4).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine7">
+      <Name>PA-40 line 7 estate or trust income</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 7. Covered by /flowKnockoutPaUnsupportedItems, so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(8).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine8">
+      <Name>PA-40 line 8 gambling and lottery winnings</Name>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 8. Covered by /flowKnockoutPaUnsupportedItems, so $0. 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(7).</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine9">
+      <Name>PA-40 line 9 total PA taxable income</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 20, LINE 9: "Add only the positive income amounts from Lines 1c through 8. Do not add, subtract, or take losses into consideration." A net loss in one class never offsets another class.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Add><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine1c" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine2" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine3" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine4" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine5" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine6" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine7" /></GreaterOf><GreaterOf><Dollar>0</Dollar><Dependency path="/paLine8" /></GreaterOf></Add></Derived>
+    </Fact>
+    <Fact path="/paLine10">
+      <Name>PA-40 line 10 other deductions</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 20, LINE 10 (MSA, HSA, 529, 529A ABLE; p. 1 notes the new Schedule O student loan interest deduction). Not modeled: $0; claiming any is covered by /flowKnockoutPaUnsupportedItems.</Description>
+      <Derived><Dollar>0</Dollar></Derived>
+    </Fact>
+    <Fact path="/paLine11">
+      <Name>PA-40 line 11 adjusted PA taxable income</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 21, LINE 11: "Subtract Line 10 from Line 9."</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Subtract><Minuend><Dependency path="/paLine9" /></Minuend><Subtrahends><Dependency path="/paLine10" /></Subtrahends></Subtract></Derived>
+    </Fact>
+    <Fact path="/paLine12">
+      <Name>PA-40 line 12 PA tax liability</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 21, LINE 12: "Multiply Line 11 by 3.07 percent (0.0307)." 72 P.S. §7302(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7302/): "a tax upon each dollar of income received by that resident during that resident's taxable year at the rate of three and seven hundredths per cent."</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Multiply><Rational>307/10000</Rational><Dependency path="/paLine11" /></Multiply></Derived>
+    </Fact>
+    <Fact path="/paLine13">
+      <Name>PA-40 line 13 total PA tax withheld</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 21, LINE 13: "Enter your total PA tax withheld from Box 17 of your federal Form(s) W2." 1099-INT state withholding knocks out (/flowKnockoutStateTaxWithheld); 1099-R/1099-MISC/W-2G knock out for PA.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><CollectionSum><Dependency module="formW2s" path="/formW2s/*/stateWithholding" /></CollectionSum></Derived>
+    </Fact>
+    <Fact path="/paLine21">
+      <Name>PA-40 line 21 Tax Forgiveness credit</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, Schedule SP line 16: "Tax Forgiveness Credit. Multiply Line 14 by the decimal on Line 15, and enter on your PA-40, Line 21." 72 P.S. §7304 (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7304/).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Dependency path="/paSpLine16" /></Derived>
+    </Fact>
+    <Fact path="/paLine24">
+      <Name>PA-40 line 24 total payments and credits</Name>
+      <Description>#78/#79: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 23, LINE 24: "Add Lines 13, 18, 21, 22, and 23." Lines 18, 22 and 23 are not modeled ($0, knockouts); line 21 is Schedule SP.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Add><Dependency path="/paLine13" /><Dependency path="/paLine21" /></Add></Derived>
+    </Fact>
+    <Fact path="/paLine26">
+      <Name>PA-40 line 26 tax due</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 23, LINE 26: "If the total of Line 12 and Line 25 is more than Line 24, enter the tax you owe." Line 25 use tax is $0 (knockout).</Description>
+      <Export downstreamFacts="true" />
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/paLine12" /></Minuend><Subtrahends><Dependency path="/paLine24" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/paLine29">
+      <Name>PA-40 line 29 overpayment</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 24, LINE 29: "Subtract Line 12 (and subtract Lines 25 and 27, if you entered amounts on these lines) from Line 24, and enter the difference here."</Description>
+      <Export downstreamFacts="true" />
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/paLine24" /></Minuend><Subtrahends><Dependency path="/paLine12" /></Subtrahends></Subtract></GreaterOf></Derived>
+    </Fact>
+    <Fact path="/paHasUnsupportedItems">
+      <Name>Has PA-40 items this tool doesn't support</Name>
+      <Description>#78: PA-40 (2025) line 1b (Schedule UE unreimbursed employee expenses), line 7 (estate/trust, Schedule J), line 8 (gambling/lottery, Schedule T), line 10 (MSA/HSA/529/ABLE/Schedule O deductions), lines 14-16 (prior-year credit, estimated and extension payments), line 22 (Schedule G-L credit for taxes paid to another state), line 23 (Schedules OC/DC credits), line 25 (use tax).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutPaUnsupportedItems">
+      <Name>Flow knockout: unsupported PA-40 items</Name>
+      <Description>#78: yes to /paHasUnsupportedItems.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><IsComplete><Dependency path="/paHasUnsupportedItems" /></IsComplete><Dependency path="/paHasUnsupportedItems" /></All></Derived>
+    </Fact>
+    <Fact path="/flowKnockoutPaUnsupportedIncome">
+      <Name>Flow knockout: income PA-40 core does not classify</Name>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 17 (LINE 4 business, PA Schedule C), p. 17-19 (LINE 6 rents, Schedule E), pp. 13-14 (1099-R: PA taxability depends on plan/age/code), 1099-MISC (must be classified), box 8 tax-exempt interest (PA taxes other states' obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with property sales (p. 7: "You may not offset the income of the taxpayer with a loss from the spouse and vice versa", not modeled).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><Any><Dependency module="scheduleC" path="/hasScheduleCBusinesses" /><Dependency module="scheduleE" path="/hasScheduleEIncome" /><GreaterThan><Left><CollectionSize><Dependency module="form1099Rs" path="/form1099Rs" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan><GreaterThan><Left><CollectionSize><Dependency module="form1099Misc" path="/form1099Miscs" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan><GreaterThan><Left><Dependency module="interest" path="/taxExemptInterest" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan><GreaterThan><Left><Count><Dependency module="formW2s" path="/formW2s/*/paMissingStateWages" /></Count></Left><Right><Int>0</Int></Right></GreaterThan><All><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><GreaterThan><Left><CollectionSize><Dependency module="scheduleD" path="/form8949Transactions" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan></All></Any></Derived>
+    </Fact>
+    <Fact path="/paSpLine1">
+      <Name>Schedule SP line 1 PA taxable income</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, Section III: "1. PA Taxable Income. Enter your total PA Taxable Income amount from Line 9 of your PA-40 form."</Description>
+      <Derived><Dependency path="/paLine9" /></Derived>
+    </Fact>
+    <Fact path="/paSpLine2">
+      <Name>Schedule SP line 2 nontaxable interest, dividends, gains</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, line 2: "Include the tax-exempt interest … as well as any exempt gains from investments in direct obligations of the federal government, Pennsylvania, and political subdivisions of Pennsylvania." Supported source: 1099-INT box 3 (U.S. obligation interest excluded from PA-40 line 2). Box 8 tax-exempt interest already knocks out (#78).</Description>
+      <Derived><CollectionSum><Dependency module="interest" path="/interestReports/*/interestOnGovernmentBonds" /></CollectionSum></Derived>
+    </Fact>
+    <Fact path="/paSpLine11">
+      <Name>Schedule SP line 11 Eligibility Income</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, line 11: "Eligibility Income is the total amount of your PA-taxable and nontaxable income that you use to determine your percentage of Tax Forgiveness." Lines 3–10 (alimony, insurance/inheritances, gifts/awards, non-PA income, nontaxable military, excluded home-sale gain, nontaxable educational assistance, cash support from outside the home) are not collected; a yes to /paHasSpNontaxableIncome knocks out (/flowKnockoutPaSpUnsupported). Line 6 non-PA income is always $0 for full-year residents. Married: p. 37: "you must determine your total (your Eligibility Income plus your spouse’s Eligibility Income) joint Eligibility Income" — MFJ facts already cover both spouses.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Add><Dependency path="/paSpLine1" /><Dependency path="/paSpLine2" /></Add></Derived>
+    </Fact>
+    <Fact path="/paSpDependentChildCount">
+      <Name>Schedule SP Section II line 2 dependent children</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 37, Section II: "A dependent is a minor or adult child claimed as a dependent on a 2025 federal income tax return." "child includes the natural child, adopted child, or step-child of a parent. Child also includes a grandchild of a grandparent and a foster child of a foster parent." "You cannot claim any other adult as a dependent". Counts claimed dependents whose relationship is biological/adopted/foster/stepchild or grandchild.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Count><Dependency module="familyAndHousehold" path="/familyAndHousehold/*/paSpDependentChild" /></Count></Derived>
+    </Fact>
+    <Fact path="/paSpTableBase">
+      <Name>Schedule SP: highest Eligibility Income for 100% forgiveness</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 39, ELIGIBILITY INCOME TABLE 1 (Unmarried, Separated and Deceased Claimants): YOU "$6,500"; 1 dependent child "$16,000", 2 "$25,500" … 9 "$92,000" (+$9,500 each). TABLE 2 (Married Claimants, even if filing separately): YOU &amp; SPOUSE "$13,000"; 1 child "$22,500" … 9 "$98,500". 72 P.S. §7304 (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7304/)(a)-(b).</Description>
+      <Derived><Add><Switch><Case><When><Dependency module="filers" path="/isMarried" /></When><Then><Dollar>13000</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>6500</Dollar></Then></Case></Switch><Multiply><Dollar>9500</Dollar><Dependency path="/paSpDependentChildCount" /></Multiply></Add></Derived>
+    </Fact>
+    <Fact path="/paSpLine15">
+      <Name>Schedule SP line 15 percentage of Tax Forgiveness</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, line 15: "Find your percentage using your dependents from Section II, Line 2, and your Eligibility Income from Section III, Line 11, and the appropriate Eligibility Income Table." p. 39 tables: "If your Eligibility Income from PA Schedule SP, Line 11, does not exceed:" the column amount, "Then your Percentage of Tax Forgiveness and the Decimal Equivalent is:" 100% "1.0", 90% ".90" … 10% ".10" in $250 columns (Table 1 YOU: $6,500 … $8,750; Table 2: $13,000 … $15,250). Above the 10% column: 0.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>0</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>1/1</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>250</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>9/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>500</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>8/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>750</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>7/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>1000</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>6/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>1250</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>5/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>1500</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>4/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>1750</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>3/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>2000</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>2/10</Rational></Then></Case><Case><When><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>2250</Dollar></Add></Right></LessThanOrEqual></When><Then><Rational>1/10</Rational></Then></Case><Case><When><True /></When><Then><Rational>0/1</Rational></Then></Case></Switch></Derived>
+    </Fact>
+    <Fact path="/paSpLine14">
+      <Name>Schedule SP line 14 net PA tax liability</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38: "12. PA Tax Liability. Enter the amount of your tax due from your PA40, Line 12." "13. Less Resident Credit. Enter your credit from your PA-40, Line 22." "14. Net PA Tax Liability. Subtract Line 13 from Line 12." PA-40 line 22 (Schedule G-L) is $0 (knockout).</Description>
+      <Derived><Dependency path="/paLine12" /></Derived>
+    </Fact>
+    <Fact path="/paSpLine16">
+      <Name>Schedule SP line 16 Tax Forgiveness credit</Name>
+      <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38: "16. Tax Forgiveness Credit. Multiply Line 14 by the decimal on Line 15". When an unsupported case applies, /flowKnockoutPaSpUnsupported blocks submission.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Multiply><Dependency path="/paSpLine14" /><Dependency path="/paSpLine15" /></Multiply></Derived>
+    </Fact>
+    <Fact path="/paSpCouldQualify">
+      <Name>Schedule SP: Eligibility Income so far is within the 10% column</Name>
+      <Description>#79: line 11 can only rise from items not yet collected (lines 3–10), so if lines 1+2 already exceed the 10% column (p. 39) no forgiveness is possible and the unsupported-case checks are moot.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><All><IsComplete><Dependency path="/paSpLine11" /></IsComplete><LessThanOrEqual><Left><Dependency path="/paSpLine11" /></Left><Right><Add><Dependency path="/paSpTableBase" /><Dollar>2250</Dollar></Add></Right></LessThanOrEqual></All></Derived>
+    </Fact>
+    <Fact path="/paHasSpNontaxableIncome">
+      <Name>Has nontaxable income counted for PA Tax Forgiveness</Name>
+      <Description>#79: PA-40 IN (2025) p. 38, Schedule SP Section III lines 2–10 nontaxable income other than U.S. obligation interest: alimony, life insurance or inheritances (1099-R code 4/7), gifts/awards/prizes, nontaxable military pay, excluded home-sale gain, nontaxable scholarships/grants, support or cash from outside the household, nontaxable cafeteria-plan sickness/disability/supplemental unemployment/strike benefits, foster care payments, and unemployment compensation.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutPaSpUnsupported">
+      <Name>Flow knockout: PA Tax Forgiveness case not supported</Name>
+      <Description>#79: only when /paSpCouldQualify. (1) Separated / married filing separately: PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 37 "Separated means: • Separated and living apart at all times during the last six months of 2025; or • Separated pursuant to a written separation agreement." (uses Table 1) and "When filing separately, the taxpayer and spouse must combine their eligibility incomes" (spouse data not collected). (2) A filer claimed as a dependent: p. 36 eligible only if "You are not a dependent on another person's federal tax return" and p. 37 a dependent child qualifies only "If that child’s parents qualify for Tax Forgiveness" (parents' data not collected). (3) More than 9 dependent children: p. 39 "If claiming more than nine (9) dependent children, go to the PA Personal Income Tax Guide". (4) Nontaxable Section III income (/paHasSpNontaxableIncome). (5) Any Form 1099-G (unemployment): its Eligibility Income treatment is not modeled.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><Dependency path="/paSpCouldQualify" /><Any><All><Dependency module="filers" path="/isMarried" /><Any><Not><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></Not><All><IsComplete><Dependency module="filers" path="/livedApartLastSixMonths" /></IsComplete><Dependency module="filers" path="/livedApartLastSixMonths" /></All><All><IsComplete><Dependency module="filers" path="/separationAgreement" /></IsComplete><Dependency module="filers" path="/separationAgreement" /></All></Any></All><Dependency module="filers" path="/eitherFilerIsClaimedAsDependent" /><GreaterThan><Left><Dependency path="/paSpDependentChildCount" /></Left><Right><Int>9</Int></Right></GreaterThan><All><IsComplete><Dependency path="/paHasSpNontaxableIncome" /></IsComplete><Dependency path="/paHasSpNontaxableIncome" /></All><GreaterThan><Left><CollectionSize><Dependency module="unemployment" path="/form1099Gs" /></CollectionSize></Left><Right><Int>0</Int></Right></GreaterThan></Any></All></Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

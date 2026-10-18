@@ -217,7 +217,8 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     expect(mk(primaryFilerId).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(false);
   });
 
-  describe(`Additional Medicare Tax (Form 8959) knockout: W-2 Medicare wages + net SE earnings`, () => {
+  // Additional Medicare Tax on SE income; the threshold is reduced by Medicare wages.
+  describe(`Form 8959 Part IV (#82, 2026 draft lines 13-18)`, () => {
     // 26 U.S.C. 1401(b)(2)(A): 0.9% on SE income above $200,000 (single) / $250,000 (MFJ) / $125,000 (MFS);
     // 1401(b)(2)(B): threshold reduced (not below zero) by FICA wages.
     // https://www.law.cornell.edu/uscode/text/26/1401#b_2
@@ -240,31 +241,36 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
         '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
       }).factGraph;
 
-    it(`single, $150,000 Medicare wages + $100,000 profit → knocked out (150,000 + 92,350 > 200,000)`, ({ task }) => {
-      task.meta.testedFactPaths = [`/flowKnockoutScheduleCAdditionalMedicare`, `/flowIsKnockedOut`];
+    it(`single, $150,000 Medicare wages + $100,000 profit → $381 (0.9% of 92,350 − 50,000)`, ({ task }) => {
+      task.meta.testedFactPaths = [`/form8959Line13`, `/form8959Line16`, `/form8959Line17`, `/form8959Line18`];
       const fg = mk(`single`, `150000`, `100000`);
       expect(fg.get(`/seNetEarningsFromSelfEmployment` as ConcretePath).get.toString()).toBe(`92350.00`);
-      // The wage-only W-2 check does not fire on its own...
-      expect(fg.get(`/knockoutMedicareWages` as ConcretePath).get).toBe(false);
-      // ...so the combined wages + SE check must.
-      expect(fg.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(true);
-      expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+      expect(fg.get(`/form8959Line13` as ConcretePath).get.toString()).toBe(`92350.00`);
+      expect(fg.get(`/form8959Line16` as ConcretePath).get.toString()).toBe(`50000.00`);
+      expect(fg.get(`/form8959Line17` as ConcretePath).get.toString()).toBe(`42350.00`);
+      // 42,350 × 0.009 = 381.15 → 381
+      expect(fg.get(`/form8959Line18` as ConcretePath).get.toString()).toBe(`381.00`);
+      expect(fg.get(`/line11AdditionalMedicareTax` as ConcretePath).get.toString()).toBe(`381.00`);
+      expect(fg.get(`/flowKnockoutForm8959Unsupported` as ConcretePath).get).toBe(false);
     });
 
-    it(`single, $150,000 Medicare wages + $50,000 profit → not knocked out (150,000 + 46,175 < 200,000)`, ({ task }) => {
-      task.meta.testedFactPaths = [`/flowKnockoutScheduleCAdditionalMedicare`];
+    it(`single, $150,000 Medicare wages + $50,000 profit → $0 (150,000 + 46,175 < 200,000)`, ({ task }) => {
+      task.meta.testedFactPaths = [`/form8959Line18`];
       const fg = mk(`single`, `150000`, `50000`);
       expect(fg.get(`/seNetEarningsFromSelfEmployment` as ConcretePath).get.toString()).toBe(`46175.00`);
-      expect(fg.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(false);
+      expect(fg.get(`/form8959Line18` as ConcretePath).get.toString()).toBe(`0.00`);
     });
 
-    it(`MFJ uses the $250,000 threshold: $150,000 wages + $100,000 profit (242,350) → not knocked out`, ({ task }) => {
-      task.meta.testedFactPaths = [`/flowKnockoutScheduleCAdditionalMedicare`];
+    it(`MFJ uses the $250,000 threshold: $150,000 wages + $100,000 profit → $0; + $120,000 profit → $97`, ({
+      task,
+    }) => {
+      task.meta.testedFactPaths = [`/form8959Line18`];
       const under = mk(`marriedFilingJointly`, `150000`, `100000`);
-      expect(under.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(false);
-      // $150,000 + round(120,000 × 0.9235) = 150,000 + 110,820 = 260,820 > 250,000 → knocked out
+      expect(under.get(`/form8959Line18` as ConcretePath).get.toString()).toBe(`0.00`);
+      // 150,000 + round(120,000 × 0.9235) = 150,000 + 110,820; line 12 = 110,820 − 100,000 = 10,820; × 0.009 = 97.38
       const over = mk(`marriedFilingJointly`, `150000`, `120000`);
-      expect(over.get(`/flowKnockoutScheduleCAdditionalMedicare` as ConcretePath).get).toBe(true);
+      expect(over.get(`/form8959Line17` as ConcretePath).get.toString()).toBe(`10820.00`);
+      expect(over.get(`/form8959Line18` as ConcretePath).get.toString()).toBe(`97.00`);
     });
   });
 

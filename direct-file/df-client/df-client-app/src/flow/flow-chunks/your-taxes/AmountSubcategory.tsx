@@ -1,11 +1,18 @@
 /* eslint-disable max-len */
-import { Screen, Subcategory } from '../../flowDeclarations.js';
+import { Screen, Subcategory, SubSubcategory } from '../../flowDeclarations.js';
 import {
   BigContent,
+  Boolean,
+  DFAlert,
+  IconDisplay,
+  KnockoutButton,
   ContextHeading,
+  DFAlert,
   DFModal,
   Heading,
+  IconDisplay,
   InfoDisplay,
+  KnockoutButton,
   SaveAndOrContinueButton,
   SetFactAction,
   SummaryTable,
@@ -14,6 +21,52 @@ import {
 
 export const AmountSubcategory = (
   <Subcategory route='amount' completeIf='/flowHasSeenAmount'>
+    {/* #78 PA-40 core: full-year PA residents. */}
+    <SubSubcategory route='pa-40'>
+      <Screen route='pa-unsupported-items' condition='/stateReturnIsPa'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />
+        <Boolean path='/paHasUnsupportedItems' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-unsupported-items-knockout' condition='/flowKnockoutPaUnsupportedItems' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-unsupported-items' />
+        <DFAlert i18nKey='/info/knockout/pa-unsupported-items' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-unsupported-income-knockout' condition='/flowKnockoutPaUnsupportedIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-unsupported-income' />
+        <DFAlert i18nKey='/info/knockout/pa-unsupported-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-sp-nontaxable-income' condition='/flowShowPaSpQuestion'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-sp-nontaxable-income' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-sp-nontaxable-income' />
+        <Boolean path='/paHasSpNontaxableIncome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-sp-unsupported-knockout' condition='/flowKnockoutPaSpUnsupported' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-sp-unsupported' />
+        <DFAlert i18nKey='/info/knockout/pa-sp-unsupported' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
+    {/* #77 Form 6251 cases this tool doesn't compute */}
+    <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/amt-mfs-add-back' />
+      <DFAlert i18nKey='/info/knockout/amt-mfs-add-back' headingLevel='h3' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
+    <Screen route='amt-kiddie-tax-knockout' condition='/flowKnockoutAmtKiddieTax' isKnockout={true}>
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/amt-kiddie-tax' />
+      <DFAlert i18nKey='/info/knockout/amt-kiddie-tax' headingLevel='h3' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
     <Screen route='tax-amount-intro'>
       <ContextHeading displayOnlyOn='edit' i18nKey='/heading/your-taxes/amount/tax-amount' />
       <Heading i18nKey='/heading/your-taxes/amount/tax-amount-intro' />

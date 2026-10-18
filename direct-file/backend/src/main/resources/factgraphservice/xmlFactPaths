@@ -158,6 +158,7 @@ Lines that do not have / in column 1 are comments.
 /flowAskOvertimeSpecialRule
 /flowKnockoutOvertimeNotComputable
 /flowShowOvertimeFlsa
+/flowShowTipsSstbQuestion
 /form1099Gs/*/federalTaxWithheld
 /form1099Gs/*/payer/tin
 /form1099Miscs/*/federalIncomeTaxWithheldRounded
@@ -678,6 +679,7 @@ Lines that do not have / in column 1 are comments.
 /thirdPartyDesigneePhone
 /thirdPartyDesigneePin
 /threeOrMoreCtcEligibleDependents
+/tipsSstbInterimRuleApplies
 /totalAdditionalTaxesOwed
 /totalAnnualAptcAmount
 /totalAnnualSlcspPremium

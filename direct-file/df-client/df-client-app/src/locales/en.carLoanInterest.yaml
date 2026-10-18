@@ -3,6 +3,7 @@ subsubcategories:
   /flow/credits-and-deductions/deductions:
     car-loan-interest: "Car loan interest"
     car-loan-vehicle: "Vehicle loan"
+    car-loan-vehicles-limit: "Vehicle limit"
 headings:
   /heading/credits-and-deductions/deductions/car-loan-intro: "In {{/taxYear}}, did you pay interest on a loan to buy a car or other vehicle for personal use?"
   /heading/credits-and-deductions/deductions/car-loan-new: "Was the vehicle new when you bought it, so that its first use started with you (or your spouse if filing jointly)?"
@@ -16,6 +17,7 @@ headings:
   /heading/knockout/car-loan-business: "This tool doesn’t yet support vehicles also used for business"
   /heading/knockout/car-loan-lease: "This tool doesn’t yet support leased vehicles"
   /heading/knockout/car-loan-other: "This tool doesn’t yet support your vehicle loan"
+  /heading/knockout/car-loan-more-than-two: "This tool doesn’t yet support more than two vehicles for the car loan interest deduction"
 info:
   /info/credits-and-deductions/deductions/car-loan-intro:
     body: "You may be able to deduct up to $10,000 of interest on a loan for a new vehicle bought for personal use, whether or not you itemize. The deduction is reduced if your income is over $100,000 ($200,000 if married filing jointly)."
@@ -50,6 +52,13 @@ info:
     alertText:
       body:
         - p: "Your vehicle loan has a situation this tool doesn’t support yet."
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/car-loan-more-than-two:
+    alertText:
+      body:
+        - p: "Your return has to list the vehicle identification number (VIN) of every vehicle you claim, and Schedule 1-A only has room for two. This tool can’t add the extra vehicles yet."
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file

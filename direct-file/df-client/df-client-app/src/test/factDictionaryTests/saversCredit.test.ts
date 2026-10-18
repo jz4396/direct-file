@@ -15,7 +15,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
-        ...makeW2Data(46000.49),
+        ...makeW2Data(48500.49),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`fifty`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(5);
@@ -31,7 +31,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
-        ...makeW2Data(46000.5),
+        ...makeW2Data(48500.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`twenty`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(2);
@@ -39,7 +39,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph: factGraph2 } = setupFactGraph({
         ...mfjFilerData,
-        ...makeW2Data(50000.49),
+        ...makeW2Data(52500.49),
       });
       expect(factGraph2.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`twenty`);
       expect(factGraph2.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(2);
@@ -55,7 +55,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
-        ...makeW2Data(50000.5),
+        ...makeW2Data(52500.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`ten`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(1);
@@ -63,7 +63,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph: factGraph2 } = setupFactGraph({
         ...mfjFilerData,
-        ...makeW2Data(76500.49),
+        ...makeW2Data(80500.49),
       });
       expect(factGraph2.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`ten`);
       expect(factGraph2.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(1);
@@ -79,7 +79,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
-        ...makeW2Data(76500.5),
+        ...makeW2Data(80500.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`zero`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(0);
@@ -98,7 +98,7 @@ describe(`Saver's credit multiplier`, () => {
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
         [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
-        ...makeW2Data(34500.49),
+        ...makeW2Data(36375.49),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`fifty`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(5);
@@ -115,7 +115,7 @@ describe(`Saver's credit multiplier`, () => {
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
         [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
-        ...makeW2Data(34500.5),
+        ...makeW2Data(36375.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`twenty`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(2);
@@ -124,7 +124,7 @@ describe(`Saver's credit multiplier`, () => {
       const { factGraph: factGraph2 } = setupFactGraph({
         ...mfjFilerData,
         [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
-        ...makeW2Data(37500.49),
+        ...makeW2Data(39375.49),
       });
       expect(factGraph2.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`twenty`);
       expect(factGraph2.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(2);
@@ -141,7 +141,7 @@ describe(`Saver's credit multiplier`, () => {
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
         [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
-        ...makeW2Data(37500.5),
+        ...makeW2Data(39375.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`ten`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(1);
@@ -150,7 +150,7 @@ describe(`Saver's credit multiplier`, () => {
       const { factGraph: factGraph2 } = setupFactGraph({
         ...mfjFilerData,
         [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
-        ...makeW2Data(57375.49),
+        ...makeW2Data(60375.49),
       });
       expect(factGraph2.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`ten`);
       expect(factGraph2.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(1);
@@ -167,7 +167,7 @@ describe(`Saver's credit multiplier`, () => {
       const { factGraph } = setupFactGraph({
         ...mfjFilerData,
         [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
-        ...makeW2Data(57375.5),
+        ...makeW2Data(60375.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`zero`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(0);
@@ -185,7 +185,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...singleFilerData,
-        ...makeW2Data(23000.49),
+        ...makeW2Data(24250.49),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`fifty`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(5);
@@ -201,7 +201,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...singleFilerData,
-        ...makeW2Data(23000.5),
+        ...makeW2Data(24250.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`twenty`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(2);
@@ -209,7 +209,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph: factGraph2 } = setupFactGraph({
         ...singleFilerData,
-        ...makeW2Data(25000.49),
+        ...makeW2Data(26250.49),
       });
       expect(factGraph2.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`twenty`);
       expect(factGraph2.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(2);
@@ -225,7 +225,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...singleFilerData,
-        ...makeW2Data(25000.5),
+        ...makeW2Data(26250.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`ten`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(1);
@@ -233,7 +233,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph: factGraph2 } = setupFactGraph({
         ...singleFilerData,
-        ...makeW2Data(38250.49),
+        ...makeW2Data(40250.49),
       });
       expect(factGraph2.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`ten`);
       expect(factGraph2.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(1);
@@ -249,7 +249,7 @@ describe(`Saver's credit multiplier`, () => {
 
       const { factGraph } = setupFactGraph({
         ...singleFilerData,
-        ...makeW2Data(38250.5),
+        ...makeW2Data(40250.5),
       });
       expect(factGraph.get(Path.concretePath(`/saversCreditMultiplier`, null)).get.getValue()).toBe(`zero`);
       expect(factGraph.get(Path.concretePath(`/pdfSaversCreditMultiplierAsInt`, null)).get).toBe(0);

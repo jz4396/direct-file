@@ -231,6 +231,27 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleALine3">
+      <Name>Schedule A line 3 (PDF)</Name>
+      <Description>#67: printed value of Schedule A (Form 1040) 2026 draft line 3 "Multiply line 2 by 7.5% (0.075)", line 2 = Form 1040 line 11b (AGI). Same expression /scheduleALine4 subtracts; IRC §213(a).</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Rational>75/1000</Rational>
+            <Dependency module="taxCalculations" path="/agi" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleALine18AnswerNo">
+      <Name>Schedule A line 18 "No" box (PDF)</Name>
+      <Description>#67: line 18 "Is the amount on Form 1040 or 1040-SR, line 11b, minus the amounts on lines 13a and 13b of that form, more than $384,350?" The Yes branch (IRC §68) is the /flowKnockoutScheduleAOverallLimit stop, so a printable itemized return always answers No.</Description>
+      <Derived>
+        <Not>
+          <Dependency path="/flowKnockoutScheduleAOverallLimit" />
+        </Not>
+      </Derived>
+    </Fact>
     <Fact path="/scheduleALine4">
       <Export downstreamFacts="true" />
       <Name>Schedule A line 4 medical deduction</Name>

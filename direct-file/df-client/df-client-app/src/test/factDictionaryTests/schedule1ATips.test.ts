@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { createBooleanWrapper, createCollectionWrapper, createDollarWrapper } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
+import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 import { baseFilerData, makeW2Data, mfjFilerData, mfsFilerData, singleFilerData } from '../testData.js';
 
 /**
@@ -15,7 +16,8 @@ const tips = (amt: string) => ({ [`/formW2s/#${W2}/cashTipsCodeTP`]: createDolla
 const yes = { '/tipsOccupationConfirmed': createBooleanWrapper(true) };
 const get = (fg: ReturnType<typeof setupFactGraph>['factGraph'], p: string) => fg.get(p as ConcretePath).get.toString();
 const single = (wages: number, tp: string, extra = {}) =>
-  setupFactGraph({ ...baseFilerData, ...singleFilerData, ...makeW2Data(wages), ...tips(tp), ...yes, ...extra }).factGraph;
+  setupFactGraph({ ...baseFilerData, ...singleFilerData, ...makeW2Data(wages), ...tips(tp), ...yes, ...extra })
+    .factGraph;
 
 describe(`Schedule 1-A Part II — qualified tips`, () => {
   it(`tips below the cap, MAGI below threshold: full amount; flows to line 44 and total deductions`, () => {
@@ -66,25 +68,38 @@ describe(`Schedule 1-A Part II — qualified tips`, () => {
   });
 
   it(`MFJ: threshold $300,000; $10,000 tips at MAGI $310,000 → $9,000`, () => {
-    const { factGraph } = setupFactGraph({ ...baseFilerData, ...mfjFilerData, ...makeW2Data(310000), ...tips(`10000`), ...yes });
+    const { factGraph } = setupFactGraph({
+      ...baseFilerData,
+      ...mfjFilerData,
+      ...makeW2Data(310000),
+      ...tips(`10000`),
+      ...yes,
+    });
     expect(get(factGraph, `/schedule1ALine11`)).toBe(`300000.00`);
     expect(get(factGraph, `/schedule1ALine15`)).toBe(`9000.00`);
   });
 
   it(`MFS: married must file jointly → $0 (§224(f))`, () => {
-    const { factGraph } = setupFactGraph({ ...baseFilerData, ...mfsFilerData, ...makeW2Data(40000), ...tips(`5000`), ...yes });
+    const { factGraph } = setupFactGraph({
+      ...baseFilerData,
+      ...mfsFilerData,
+      ...makeW2Data(40000),
+      ...tips(`5000`),
+      ...yes,
+    });
     expect(get(factGraph, `/schedule1ALine15`)).toBe(`0.00`);
   });
 });
 
 describe(`Schedule 1-A Part II — knockouts`, () => {
-  it(`SSTB employer: knocks out and blocks submission; clean return is not knocked out`, () => {
+  it(`SSTB answer with a confirmed listed occupation: no knockout under the p.102 interim rule (#57)`, () => {
     const clean = single(60000, `8000`);
     expect(clean.get(`/flowKnockoutTipsSstb` as ConcretePath).get).toBe(false);
     expect(clean.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
-    const ko = single(60000, `8000`, { '/tipsEmployerIsSstb': createBooleanWrapper(true) });
-    expect(ko.get(`/flowKnockoutTipsSstb` as ConcretePath).get).toBe(true);
-    expect(ko.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+    const sstb = single(60000, `8000`, { '/tipsEmployerIsSstb': createBooleanWrapper(true) });
+    expect(sstb.get(`/flowKnockoutTipsSstb` as ConcretePath).get).toBe(false);
+    expect(sstb.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
+    expect(get(sstb, `/schedule1ALine15`)).toBe(`8000.00`);
   });
 
   it(`self-employed tips with a Schedule C business: knocks out`, () => {
@@ -94,5 +109,58 @@ describe(`Schedule 1-A Part II — knockouts`, () => {
     const ko = single(60000, `0`, { ...biz, '/tipsFromSelfEmployment': createBooleanWrapper(true) });
     expect(ko.get(`/flowKnockoutSelfEmployedTips` as ConcretePath).get).toBe(true);
     expect(ko.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+  });
+});
+
+/**
+ * #57: §224(d)(2)(B) SSTB interim rule. Draft Form 1040 instructions (https://www.irs.gov/pub/irs-dft/i1040gi--dft.pdf),
+ * Schedule 1-A Part II, p.102: "Until the issuance of final regulations determining whether a trade or business is an
+ * SSTB for purposes of this deduction, and for taxable years beginning before the date the final regulations are
+ * published, the IRS will treat employees and self-employed individuals as having received tips in the course of a
+ * trade or business that is not an SSTB if the employee is in an occupation that customarily and regularly received
+ * tips on or before December 31, 2024."
+ */
+describe(`Schedule 1-A Part II — SSTB interim rule (#57)`, () => {
+  it(`interim rule applies; the SSTB question is not asked`, ({ task }) => {
+    task.meta.testedFactPaths = [`/tipsSstbInterimRuleApplies`, `/flowShowTipsSstbQuestion`];
+    const fg = single(60000, `8000`);
+    expect(fg.get(`/tipsSstbInterimRuleApplies` as ConcretePath).get).toBe(true);
+    expect(fg.get(`/flowShowTipsSstbQuestion` as ConcretePath).get).toBe(false);
+  });
+
+  it(`SSTB yes + listed occupation: full deduction, at the $25,000 cap edge`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1ALine15`, `/flowKnockoutTipsSstb`];
+    const sstb = { '/tipsEmployerIsSstb': createBooleanWrapper(true) };
+    expect(get(single(100000, `25000`, sstb), `/schedule1ALine15`)).toBe(`25000.00`);
+    expect(get(single(100000, `25001`, sstb), `/schedule1ALine15`)).toBe(`25000.00`);
+    expect(single(100000, `25001`, sstb).get(`/flowKnockoutTipsSstb` as ConcretePath).get).toBe(false);
+  });
+
+  it(`SSTB yes + occupation not confirmed: $0 and no knockout (tips aren't qualified anyway)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/schedule1ALine15`, `/flowKnockoutTipsSstb`, `/flowIsKnockedOut`];
+    const fg = single(60000, `8000`, {
+      '/tipsOccupationConfirmed': createBooleanWrapper(false),
+      '/tipsEmployerIsSstb': createBooleanWrapper(true),
+    });
+    expect(get(fg, `/schedule1ALine15`)).toBe(`0.00`);
+    expect(fg.get(`/flowShowTipsSstbQuestion` as ConcretePath).get).toBe(false);
+    expect(fg.get(`/flowKnockoutTipsSstb` as ConcretePath).get).toBe(false);
+    expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
+  });
+
+  it(`no code TP tips: question hidden, no knockout`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowShowTipsSstbQuestion`, `/flowKnockoutTipsSstb`];
+    const { factGraph } = setupFactGraph({
+      ...baseFilerData,
+      ...singleFilerData,
+      ...makeW2Data(60000),
+      '/tipsEmployerIsSstb': createBooleanWrapper(true),
+    });
+    expect(factGraph.get(`/flowShowTipsSstbQuestion` as ConcretePath).get).toBe(false);
+    expect(factGraph.get(`/flowKnockoutTipsSstb` as ConcretePath).get).toBe(false);
+  });
+
+  it(`the SSTB stop is still a submission-blocking fact for when the interim rule ends`, () => {
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutTipsSstb`);
   });
 });

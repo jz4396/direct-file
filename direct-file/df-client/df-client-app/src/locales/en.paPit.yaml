@@ -1,0 +1,42 @@
+# PA-40 core strings (#78). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    pa-40: Pennsylvania return
+dataviews:
+  /flow/your-taxes/amount:
+    /paHasSpNontaxableIncome: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
+    /paHasUnsupportedItems: Do any Pennsylvania items this tool doesn’t support apply to you?
+headings:
+  /heading/your-taxes/amount/pa-unsupported-items: "For your {{/taxYear}} Pennsylvania return, do any of these apply to you?"
+  /heading/knockout/pa-unsupported-items: This tool doesn’t yet support these Pennsylvania tax items
+  /heading/knockout/pa-unsupported-income: This tool doesn’t yet support some of your income on a Pennsylvania return
+  /heading/knockout/pa-sp-unsupported: This tool doesn’t yet support Pennsylvania Tax Forgiveness for your situation
+  /heading/your-taxes/amount/pa-sp-nontaxable-income: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
+info:
+  /info/your-taxes/amount/pa-unsupported-items:
+    body:
+      - p: "Unreimbursed employee business expenses (PA Schedule UE); medical savings account, health savings account, 529 or ABLE contributions, or student loan interest you want to deduct; income from an estate or trust; gambling or lottery winnings; Pennsylvania estimated or extension payments, or a refund from last year applied to this year; credit for tax paid to another state; other Pennsylvania credits (Schedules OC or DC); or use tax you owe."
+      - p: This tool doesn’t figure local earned income tax. File that with your local tax collector.
+  /info/knockout/pa-unsupported-items:
+    alertText:
+      body:
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-unsupported-income:
+    alertText:
+      body:
+        - p: This includes business or rental income, retirement distributions, Form 1099-MISC income, tax-exempt interest, a Form W-2 without Pennsylvania wages in box 16, or sales of property on a joint return.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/your-taxes/amount/pa-sp-nontaxable-income:
+    body: This includes alimony, life insurance proceeds or inheritances, gifts, awards or prizes, nontaxable military pay, gain you excluded on the sale of your home, nontaxable scholarships or grants, cash or support from people outside your household, nontaxable sickness, disability or strike benefits from a cafeteria plan, foster care payments, and unemployment compensation. Don’t include Social Security or eligible retirement benefits.
+  /info/knockout/pa-sp-unsupported:
+    alertText:
+      body:
+        - p: You may qualify for Tax Forgiveness (Schedule SP), but this tool can’t figure it if you’re separated or filing separately, someone can claim you as a dependent, you have more than 9 dependent children, you received unemployment compensation, or you have other nontaxable income that counts toward eligibility.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
