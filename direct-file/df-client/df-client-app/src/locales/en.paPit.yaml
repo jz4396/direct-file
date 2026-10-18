@@ -77,8 +77,8 @@ info:
         - p:
             You may qualify for Tax Forgiveness (Schedule SP), but this tool can’t figure it if you’re separated or
             filing separately, someone can claim you as a dependent, you have more than 9 dependent children, you
-            received unemployment compensation, you lived in Pennsylvania for only part of the year, or you have other
-            nontaxable income that counts toward eligibility.
+            received unemployment compensation, you had a net loss from sales while you lived outside Pennsylvania, or
+            you have other nontaxable income that counts toward eligibility.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html

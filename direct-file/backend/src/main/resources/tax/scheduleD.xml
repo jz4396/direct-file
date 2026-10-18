@@ -504,6 +504,13 @@
       <Derived><Switch><Case><When><Not><Dependency module="paPit" path="/paPartYearSupported" /></Not></When><Then><Dependency path="../gainOrLoss" /></Then></Case><Case><When><Dependency path="../paSoldWhilePaResident" /></When><Then><Dependency path="../gainOrLoss" /></Then></Case><Case><When><True /></When><Then><Dollar>0</Dollar></Then></Case></Switch></Derived>
     </Fact>
 
+    <Fact path="/form8949Transactions/*/paSpNonPaPeriodGainOrLoss">
+      <Name>PA Schedule SP line 6: gain or loss from this sale while living outside PA</Name>
+      <Description>#107: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, line 6: "6. Non-PA income. Part-year residents and nonresidents must complete this line. Enter the total of all income, not already reported on this schedule, that you (and your spouse, if applicable) earned, received or realized while residing outside Pennsylvania." A part-year resident's sale dated outside the PA residency period (not /form8949Transactions/*/paSoldWhilePaResident) is not on PA-40 line 5, so its column (h) amount goes to line 6. Full-year residents and PA-period sales: $0.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Switch><Case><When><Not><Dependency module="paPit" path="/paPartYearSupported" /></Not></When><Then><Dollar>0</Dollar></Then></Case><Case><When><Dependency path="../paSoldWhilePaResident" /></When><Then><Dollar>0</Dollar></Then></Case><Case><When><True /></When><Then><Dependency path="../gainOrLoss" /></Then></Case></Switch></Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions/*/gainOrLoss">
       <Name>Gain or loss</Name>
       <Description>Form 8949 column (h): column (d) − column (e) ± column (g)
