@@ -23,42 +23,54 @@
         <Dependency module="filers" path="/livedInFl" />
       </Derived>
     </Fact>
+    <Fact path="/stateReturnIsPaPartYear">
+      <Name>State return: Pennsylvania part-year resident</Name>
+      <Description>#80: lived in PA for part of the year and in FL for the rest (paPit /paPartYearSupported). PA-40 IN (2025) p. 6, (P) Part-Year Resident.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Dependency module="paPit" path="/paPartYearSupported" /></Derived>
+    </Fact>
+    <Fact path="/stateReturnPaFiled">
+      <Name>State return: Pennsylvania (full-year or part-year)</Name>
+      <Description>#80: a PA-40 is computed, either as a full-year resident (#78) or a PA/FL part-year resident.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Any><Dependency path="/stateReturnIsPa" /><Dependency path="/stateReturnIsPaPartYear" /></Any></Derived>
+    </Fact>
     <Fact path="/stateReturnComputed">
       <Name>State return computed by this tool</Name>
       <Description>#78 state framework: true when this tool computes the resident state return. Add each computed state to the Any.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Any><Dependency path="/stateReturnIsPa" /></Any></Derived>
+      <Derived><Any><Dependency path="/stateReturnPaFiled" /></Any></Derived>
     </Fact>
     <Fact path="/stateTaxLiability">
       <Name>stateTaxLiability</Name>
       <Description>#78 state framework: State tax liability (PA-40 line 12). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnIsPa" /></When><Then><Dependency module="paPit" path="/paLine12" /></Then></Case></Switch></Derived>
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine12" /></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/stateTaxWithheld">
       <Name>stateTaxWithheld</Name>
       <Description>#78 state framework: State tax withheld (PA-40 line 13). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnIsPa" /></When><Then><Dependency module="paPit" path="/paLine13" /></Then></Case></Switch></Derived>
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine13" /></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/stateRefund">
       <Name>stateRefund</Name>
       <Description>#78 state framework: State overpayment (PA-40 line 29). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnIsPa" /></When><Then><Dependency module="paPit" path="/paLine29" /></Then></Case></Switch></Derived>
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine29" /></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/stateAmountOwed">
       <Name>stateAmountOwed</Name>
       <Description>#78 state framework: State tax due (PA-40 line 26). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnIsPa" /></When><Then><Dependency module="paPit" path="/paLine26" /></Then></Case></Switch></Derived>
+      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine26" /></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/flowKnockoutStateReturn">
       <Name>Flow knockout: state return items not supported</Name>
       <Description>#78 state framework: any knockout of the computed state return. Each state adds All(/stateReturnIs{XX}, its knockouts). Wired into flow.xml /flowIsKnockedOut.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
-      <Derived><Any><All><Dependency path="/stateReturnIsPa" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" /></Any></All></Any></Derived>
+      <Derived><Any><All><Dependency path="/stateReturnPaFiled" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" /><Dependency module="paPit" path="/flowKnockoutPaPartYear" /></Any></All></Any></Derived>
     </Fact>
     <Fact path="/flowShowPaSpQuestion">
       <Name>Show the PA Tax Forgiveness nontaxable income question</Name>
