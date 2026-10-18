@@ -240,45 +240,123 @@ describe(`PA part-year stops (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
 });
 
 /**
- * #106 + #105: Schedule SP (Tax Forgiveness) for a part-year resident. PA-40 IN (2025) p. 37, "Nonresidents and
- * Part-Year Residents": "Such taxpayers must include in their eligibility income all income as described whether
- * earned within or outside Pennsylvania." Line 6 (non-PA income, p. 38) is not computed yet (#107), so a part-year
- * filer who could still qualify on residency-period income is stopped, never credited.
+ * #107: Schedule SP whole-year Eligibility Income for a part-year resident. PA-40 IN (2025):
+ * p. 37, "Nonresidents and Part-Year Residents": "Such taxpayers must include in their eligibility income all income
+ * as described whether earned within or outside Pennsylvania."
+ * p. 38, line 6: "6. Non-PA income. Part-year residents and nonresidents must complete this line. Enter the total of
+ * all income, not already reported on this schedule, that you (and your spouse, if applicable) earned, received or
+ * realized while residing outside Pennsylvania."
+ * p. 39, Table 1 (unmarried, no dependents): 100% up to "$6,500", then 90% ... 10% in $250 columns up to $8,750.
+ * p. 21, LINE 12: "Multiply Line 11 by 3.07 percent (0.0307)."
  */
-describe(`PA part-year Schedule SP stop (/flowKnockoutPaSpUnsupported)`, () => {
-  it(`PA -> FL with low PA-period income: could qualify, so the SP stop fires`, ({ task }) => {
-    task.meta.testedFactPaths = [`/paSpCouldQualify`, `/flowKnockoutPaSpUnsupported`, `/flowKnockoutStateReturn`];
-    const g = build(singleFilerData, {
-      ...move(`paToFl`, `2026-03-01`),
-      ...w2s(
-        { id: paW2, wages: 6000, state: `pa`, box16: 6000, box17: 184 },
-        { id: flW2, wages: 40000, state: `fl`, resWages: 0 }
-      ),
-    });
-    expect(val(g, `/paSpLine11`)).toBe(`6000.00`); // PA-period income only; FL wages are not in line 11
-    expect(get(g, `/paSpCouldQualify`).get).toBe(true);
-    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
-    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(true);
-    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
-    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
-    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaSpUnsupported`);
-  });
-  it(`PA-period income already above the 10% column: no forgiveness possible, no SP stop`, () => {
-    const g = build(singleFilerData, {
+describe(`PA part-year Schedule SP: whole-year Eligibility Income (line 6, #107)`, () => {
+  const noSpIncome = { '/paHasSpNontaxableIncome': createBooleanWrapper(false) };
+  const paLow = (box: number) => ({ id: paW2, wages: box, state: `pa`, box16: box, box17: 0 } as const);
+  const sp = (flWages: number, paWages = 4000) =>
+    build(singleFilerData, {
       ...move(`paToFl`),
-      ...w2s({ id: paW2, wages: 30000, state: `pa`, box16: 30000, box17: 921 }),
+      ...noSpIncome,
+      ...w2s(paLow(paWages), { id: flW2, wages: flWages, state: `fl`, resWages: 0 }),
     });
+
+  it(`PA-period income under the table, whole-year income over it: no forgiveness and no stop`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSpLine6`, `/paSpLine11`, `/paSpCouldQualify`, `/paLine21`];
+    const g = sp(40000, 5000);
+    expect(val(g, `/paSpLine1`)).toBe(`5000.00`);
+    expect(val(g, `/paSpLine6`)).toBe(`40000.00`); // FL wages earned after the move
+    expect(val(g, `/paSpLine11`)).toBe(`45000.00`);
     expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(val(g, `/paSpLine15`)).toBe(`0/1`);
+    expect(val(g, `/paLine21`)).toBe(`0.00`);
     expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
     notStopped(g);
   });
-  it(`full-year PA resident with the same low income is not stopped by the part-year case`, () => {
+
+  it(`under the table for the whole year: 100% forgiveness is computed`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSpLine15`, `/paSpLine16`, `/flowShowPaSpQuestion`];
+    const g = sp(2000);
+    expect(get(g, `/flowShowPaSpQuestion`).get).toBe(true); // part-year filers now get the nontaxable-income question
+    expect(val(g, `/paSpLine6`)).toBe(`2000.00`);
+    expect(val(g, `/paSpLine11`)).toBe(`6000.00`);
+    expect(val(g, `/paLine12`)).toBe(`122.80`); // 4,000 x 0.0307
+    expect(val(g, `/paSpLine15`)).toBe(`1/1`);
+    expect(val(g, `/paLine21`)).toBe(`122.80`);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+    notStopped(g);
+  });
+
+  it(`table boundaries with line 6 > 0 ($6,750 -> 90%, $6,751 -> 80%, $8,750 -> 10%, $8,751 -> 0)`, () => {
+    const at = (fl: number) => sp(fl);
+    expect(val(at(2750), `/paSpLine11`)).toBe(`6750.00`);
+    expect(val(at(2750), `/paSpLine15`)).toBe(`9/10`);
+    expect(val(at(2750), `/paLine21`)).toBe(`110.52`); // 122.80 x 0.90
+    expect(val(at(2751), `/paSpLine15`)).toBe(`8/10`);
+    expect(val(at(4750), `/paSpLine15`)).toBe(`1/10`);
+    expect(val(at(4750), `/paLine21`)).toBe(`12.28`);
+    expect(val(at(4751), `/paSpLine15`)).toBe(`0/1`);
+    expect(get(at(4751), `/paSpCouldQualify`).get).toBe(false);
+  });
+
+  it(`line 6 adds FL-period interest and FL-period sales; PA-period amounts stay on line 1`, () => {
+    const g = build(singleFilerData, {
+      ...move(`paToFl`),
+      ...noSpIncome,
+      ...w2s(paLow(3000)),
+      ...interest(1000),
+      '/paPartYearResidentInterest': createDollarWrapper(`400`),
+      ...sales([12000, 10000], [15000, 10000]),
+    });
+    expect(val(g, `/paLine9`)).toBe(`5400.00`); // 3,000 + 400 interest + 2,000 March sale
+    expect(val(g, `/paSpNonPaPeriodInterest`)).toBe(`600.00`);
+    expect(val(g, `/paSpNonPaPeriodGainOrLoss`)).toBe(`5000.00`); // October sale
+    expect(val(g, `/paSpLine6`)).toBe(`5600.00`);
+    expect(val(g, `/paSpLine11`)).toBe(`11000.00`);
+  });
+
+  it(`FL W-2 compensation is measured with elective deferrals (PA-40 IN p. 12)`, () => {
+    const g = build(singleFilerData, {
+      ...move(`paToFl`),
+      ...noSpIncome,
+      ...w2s(paLow(3000), { id: flW2, wages: 3000, state: `fl`, resWages: 500 }),
+      [`/formW2s/#${flW2}/401kDeferrals`]: createDollarWrapper(`1000`),
+    });
+    expect(val(g, `/paLine1a`)).toBe(`3500.00`); // 500 allocated to the PA period
+    expect(val(g, `/paSpLine6`)).toBe(`3500.00`); // 3,000 + 1,000 deferral - 500
+  });
+
+  it(`a PA W-2 with box 1 above box 16 adds the difference to line 6`, () => {
+    const g = build(singleFilerData, {
+      ...move(`paToFl`),
+      ...noSpIncome,
+      ...w2s({ id: paW2, wages: 10000, state: `pa`, box16: 6000, box17: 0 }),
+    });
+    expect(val(g, `/paLine1a`)).toBe(`6000.00`);
+    expect(val(g, `/paSpLine6`)).toBe(`4000.00`);
+  });
+
+  it(`a net loss from FL-period sales stops the return when forgiveness is possible`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSpNonPaPeriodGainOrLoss`, `/flowKnockoutPaSpUnsupported`];
+    const g = build(singleFilerData, {
+      ...move(`paToFl`),
+      ...noSpIncome,
+      ...w2s(paLow(3000)),
+      ...sales([10000, 10000], [5000, 8000]),
+    });
+    expect(val(g, `/paSpNonPaPeriodGainOrLoss`)).toBe(`-3000.00`);
+    expect(val(g, `/paSpLine6`)).toBe(`0.00`);
+    expect(get(g, `/paSpCouldQualify`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`full-year PA resident: line 6 is $0`, () => {
     const g = build(singleFilerData, {
       '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
-      '/paHasSpNontaxableIncome': createBooleanWrapper(false),
-      ...w2s({ id: paW2, wages: 6000, state: `pa`, box16: 6000, box17: 184 }),
+      ...noSpIncome,
+      ...w2s({ id: paW2, wages: 10000, state: `pa`, box16: 6000, box17: 0 }),
     });
-    expect(get(g, `/paSpCouldQualify`).get).toBe(true);
-    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+    expect(val(g, `/paSpLine6`)).toBe(`0.00`);
+    expect(val(g, `/paSpLine11`)).toBe(`6000.00`);
   });
 });
