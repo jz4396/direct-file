@@ -295,7 +295,7 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
         '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
       }).factGraph;
 
-    it(`Rev's case: $150,000 box 3 + $20,000 box 7 + $40,000 profit → SS portion $1,798 (was $4,278)`, ({ task }) => {
+    it(`Review case: $150,000 box 3 + $20,000 box 7 + $40,000 profit → SS portion $1,798 (was $4,278)`, ({ task }) => {
       task.meta.testedFactPaths = [
         `/primaryFilerOasdiTipsTotal`,
         `/seRemainingSocialSecurityWageBase`,

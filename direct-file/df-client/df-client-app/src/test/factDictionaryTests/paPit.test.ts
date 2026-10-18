@@ -179,6 +179,35 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
     });
     blocks(g, `/flowKnockoutPaUnsupportedIncome`);
   });
+  describe(`Schedule C income: PA-only knockout (gated on /stateReturnPaFiled)`, () => {
+    const bizId = `a59c03d1-af4a-447f-96aa-d19397048a77`;
+    // Synthetic Schedule C business, $10,000 receipts, $2,000 expenses; no W-2s.
+    const schC = {
+      '/formW2s': createCollectionWrapper([]),
+      '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/scheduleCBusinesses': createCollectionWrapper([bizId]),
+      [`/scheduleCBusinesses/#${bizId}/businessName`]: createStringWrapper(`Synthetic Business`),
+      [`/scheduleCBusinesses/#${bizId}/writableGrossReceipts`]: createDollarWrapper(`10000`),
+      [`/scheduleCBusinesses/#${bizId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
+      '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+    };
+    it(`non-PA (FL) filer: PA knockout false and it does not knock out the return`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+      const g = build(singleFilerData, { ...schC, ...pa(`fl`) });
+      expect(get(g, `/hasScheduleCBusinesses`).get).toBe(true);
+      expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+      expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+      expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    });
+    it(`PA filer, same income: PA knockout true and /flowIsKnockedOut true`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+      const g = build(singleFilerData, schC);
+      expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+      blocks(g, `/flowKnockoutPaUnsupportedIncome`);
+    });
+  });
   it(`joint return with property sales (spouse losses can't offset, p. 7)`, () => {
     blocks(
       build(mfjFilerData, { ...w2(80000, 80000, 2456), ...sale(14000, 10000) }),
@@ -285,6 +314,27 @@ describe(`PA Schedule SP knockouts (#79)`, () => {
   it(`nontaxable Section III income while possibly eligible`, ({ task }) => {
     task.meta.testedFactPaths = [`/paSpCouldQualify`, `/flowKnockoutPaSpUnsupported`];
     blocks(sp(singleFilerData, 7000, { '/paHasSpNontaxableIncome': createBooleanWrapper(true) }));
+  });
+  describe(`PA-only knockout (gated on /stateReturnPaFiled)`, () => {
+    // Synthetic married-filing-separately return, $7,000 W-2 wages: within the Schedule SP 10% column.
+    const mfs = {
+      ...mfjFilerData,
+      '/filingStatus': createEnumWrapper(`marriedFilingSeparately`, `/filingStatusOptions`),
+    };
+    it(`non-PA (FL) filer: SP knockout false and it does not knock out the return`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutPaSpUnsupported`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+      const g = sp(mfs, 7000, pa(`fl`));
+      expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+      expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+      expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    });
+    it(`PA filer, same inputs: SP knockout true and /flowIsKnockedOut true`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutPaSpUnsupported`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+      const g = sp(mfs, 7000);
+      expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+      blocks(g);
+    });
   });
   it(`nontaxable income does not matter once eligibility income is past the 10% column`, () => {
     const g = sp(singleFilerData, 8751, { '/paHasSpNontaxableIncome': createBooleanWrapper(true) });
