@@ -125,7 +125,7 @@ describe(`Schedule D / Form 8949 — capital assets screener (#28)`, () => {
     const { factGraph } = setupFactGraph({ ...base(), '/soldCapitalAssets': createBooleanWrapper(true) });
     expect(factGraph.get(`/flowKnockoutCapitalAssets` as ConcretePath).get).toBe(true);
     expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
-    // Rev (#29): blocks submission, not just the flow
+    // #29: blocks submission, not just the flow
     expect(submissionBlockingFacts).toContain(`/flowKnockoutCapitalAssets`);
   });
 });
