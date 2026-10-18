@@ -21,17 +21,16 @@ dataviews:
         fl: Florida
         other: Otro estado
   /flow/your-taxes/amount:
+    /paHasSpNontaxableIncome: ¿Tiene ingresos no tributables que cuentan para la Condonación de Impuestos de Pensilvania?
     /paPartYearResidentInterest: Intereses recibidos mientras era residente de Pensilvania
     /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
 headings:
   /heading/your-taxes/amount/pa-unsupported-items:
     "Para su declaración de Pensilvania de {{/taxYear}}, ¿le corresponde alguno de estos casos?"
   /heading/knockout/pa-unsupported-items: Esta herramienta aún no admite estas partidas de impuestos de Pensilvania
-  /heading/knockout/pa-unsupported-income:
-    Esta herramienta aún no admite parte de sus ingresos en una declaración de Pensilvania
-  /heading/knockout/pa-tax-forgiveness:
-    Es posible que reúna los requisitos para la Condonación de Impuestos de Pensilvania, que esta herramienta aún no
-    admite
+  /heading/knockout/pa-unsupported-income: Esta herramienta aún no admite parte de sus ingresos en una declaración de Pensilvania
+  /heading/knockout/pa-sp-unsupported: Esta herramienta aún no admite la Condonación de Impuestos de Pensilvania para su situación
+  /heading/your-taxes/amount/pa-sp-nontaxable-income: ¿Tiene ingresos no tributables que cuentan para la Condonación de Impuestos de Pensilvania?
   /heading/you-and-your-family/about-you/pa-part-year-move:
     "¿Cuál de estas opciones describe dónde vivió en {{/taxYear}}?"
   /heading/you-and-your-family/about-you/pa-part-year-move-date:
@@ -72,12 +71,12 @@ info:
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
-  /info/knockout/pa-tax-forgiveness:
+  /info/your-taxes/amount/pa-sp-nontaxable-income:
+    body: Esto incluye pensión alimenticia, pagos de seguros de vida o herencias, regalos, premios o galardones, paga militar no tributable, ganancia excluida por la venta de su vivienda, becas o subvenciones no tributables, dinero o manutención de personas fuera de su hogar, beneficios no tributables por enfermedad, discapacidad o huelga de un plan cafetería, pagos por cuidado de crianza y compensación por desempleo. No incluya el Seguro Social ni los beneficios de jubilación elegibles.
+  /info/knockout/pa-sp-unsupported:
     alertText:
       body:
-        - p:
-            Según sus ingresos y dependientes, es posible que pueda reducir o eliminar su impuesto de Pensilvania con el
-            Anexo SP.
+        - p: Es posible que reúna los requisitos para la Condonación de Impuestos (Anexo SP), pero esta herramienta no puede calcularla si está separado o presenta por separado, alguien puede reclamarlo como dependiente, tiene más de 9 hijos dependientes, recibió compensación por desempleo o tiene otros ingresos no tributables que cuentan para la elegibilidad.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html

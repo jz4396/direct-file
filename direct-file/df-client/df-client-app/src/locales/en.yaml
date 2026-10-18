@@ -198,8 +198,8 @@ subsubcategories:
     pfd-basic-info: PFD Information
 headings:
   /heading/credits-and-deductions/deductions/overtime-other: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
-  /heading/knockout/overtime-not-on-w2-code-tt: "This tool doesn’t yet support overtime pay that isn’t reported in Form W-2 box 12, code TT"
-  /heading/credits-and-deductions/deductions/overtime-flsa: "Is your code TT overtime only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
+  /heading/knockout/overtime-not-computable: "This tool doesn’t yet support your overtime pay"
+  /heading/credits-and-deductions/deductions/overtime-flsa: "Is your overtime amount only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
   /heading/account/reset-return: Reset draft {{/taxYear}} federal tax return
   /heading/account/remove-return: Remove draft {{/taxYear}} federal tax return information from Direct File
   /heading/account/reset-success: "{{/taxYear}} federal tax return reset"
@@ -291,6 +291,7 @@ headings:
     Thanks for letting us know.
   /heading/you-and-your-family/about-you/state-income-1099-misc-pfd:
     In {{/taxYear}}, did you receive an Alaska Permanent Fund Dividend (PFD)?
+  /heading/you-and-your-family/about-you/state-breather-fl: Florida has no state income tax return.
   /heading/you-and-your-family/about-you/state-breather-nj:
     You said you lived in {{/filerResidenceAndIncomeState}} for all of {{/taxYear}}, and earned all your income there,
     too.
@@ -2650,8 +2651,12 @@ headings:
     Direct File doesn’t support reporting unemployment compensation in all U.S. states and territories yet.
   /heading/knockout/income/jobs/w2-part-year-yonkers-ko:
     New York’s free filing tool doesn’t support your tax situation yet.
+  /heading/knockout/income/jobs/w2-fl-state-withholding-ko:
+    Direct File doesn’t support W-2s with state income tax withheld for Florida residents yet.
   /heading/knockout/income/jobs/w2-other-state-ko:
     Direct File doesn’t support the reporting of employment income in all U.S. states and territories yet.
+  /heading/knockout/form-8959-unsupported:
+    Direct File doesn’t support railroad retirement (RRTA) compensation at your income level yet.
   /heading/knockout/forms-missing/net-investment: Direct File doesn’t yet support the amount of income you received.
   /heading/knockout/income-sources-supported: Direct File doesn’t support the forms required to report all income types.
   /heading/knockout/digital-assets: Direct File doesn’t yet support the forms required to report digital assets.
@@ -2687,11 +2692,6 @@ headings:
     the Presidential Election Campaign Fund?
   /heading/other-preferences/create-self-select-pin: Create a Self-Select PIN to confirm your identity next year.
   /heading/federal-tax-return: "{{/taxYear}} federal tax return details"
-  /heading/knockout/medicare-wages: Direct File doesn’t yet support the amount of income you received.
-  /heading/knockout/medicare-wages-mfj:
-    Direct File doesn’t yet support the amount of income you and your spouse received.
-  /heading/knockout/medicare-wages-credit:
-    Direct File doesn’t yet support the amount of income you or your spouse received.
   /heading/knockout/add-person-born-died-no-tin: Direct File doesn’t support this yet
   /heading/knockout/no-payments-or-credit:
     Based on your responses, you don’t need to file a federal tax return for {{/taxYear}}.
@@ -2740,10 +2740,11 @@ iconLists:
     payment_method: <strong>Payment method</strong><br />Pay after I file
 info:
   /info/credits-and-deductions/deductions/overtime-other:
-    body: "For example, overtime reported on Form 1099-NEC or 1099-MISC, or overtime premium you’d have to figure from pay stubs or payroll records."
-  /info/knockout/overtime-not-on-w2-code-tt:
+    body: "For example, your employer didn’t use code TT, so you’d figure the overtime premium from pay stubs, payroll records, or a statement from your employer, or your overtime was reported on Form 1099-NEC or 1099-MISC."
+  /info/knockout/overtime-not-computable:
     alertText:
       body:
+        - p: "This tool can only use qualified overtime shown on Form W-2 in box 12 with code TT. It can’t yet handle overtime figured from pay records or reported on Form 1099-NEC or 1099-MISC."
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
@@ -2835,6 +2836,10 @@ info:
           If you don’t have a child’s PFD to report, you can continue using Direct File to file your federal tax return.
     urls:
       Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/you-and-your-family/about-you/state-breather-fl-info:
+    body: >-
+      Florida doesn’t tax the income of individuals, so you don’t need to file a Florida state income tax return.
+      You only need to file your federal return.
   /info/you-and-your-family/about-you/state-breather-nj-info:
     body: Direct File supports simple tax needs for taxpayers in {{/filerResidenceAndIncomeState}}.
   /info/you-and-your-family/about-you/state-breather-nj-alert:
@@ -12530,52 +12535,27 @@ info:
       unemployment compensation over {{/maximumRepaymentUnemploymentCompensation}}.
   /info/knockout/income/unemployment/1099g-other-state-ko:
     body: You can only report unemployment compensation from {{/filerResidenceAndIncomeState}} within Direct File.
+  /info/knockout/income/jobs/w2-fl-state-withholding-ko:
+    body: >-
+      Florida has no state income tax, but one of your W-2s shows state income tax withheld in box 17. You may
+      need to file a return in another state, which Direct File doesn’t support yet.
   /info/knockout/income/jobs/w2-other-state-ko:
     body: You can only report employment income from {{/filerResidenceAndIncomeState}} within Direct File.
+  /info/knockout/form-8959-unsupported:
+    body: >-
+      One of your W-2s shows railroad retirement (RRTA) compensation in box 14, and your income may be high enough
+      that you owe Additional Medicare Tax on it, or that tax may have been withheld. This tool figures Additional
+      Medicare Tax on Medicare wages and self-employment income, but not on RRTA compensation.
+  /info/knockout/form-8959-unsupported-accordion:
+    heading: Box 14 - Railroad retirement (RRTA) compensation
+    body:
+      - p: Direct File doesn’t support railroad retirement (RRTA) compensation at your income level yet.
+      - p: >-
+          This tool figures Additional Medicare Tax on Medicare wages and self-employment income, but not on RRTA
+          compensation.
   /info/knockout/income/jobs/w2-part-year-yonkers-ko:
     body: >-
       You earned income in Yonkers but didn’t live in Yonkers, or you lived in Yonkers for only part of {{/taxYear}}.
-  /info/knockout/medicare-wages:
-    heading: Box 5 - Medicare wages and tips
-    body: >-
-      You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages over
-      {{/medicareWagesAdditionalTaxThreshhold}} for your filing status of {{/filingStatusCapitalized}}, as you may be
-      required to pay Additional Medicare Tax.
-  /info/knockout/medicare-wages-accordion-mfs:
-    heading: Box 5 - Medicare wages and tips
-    body:
-      - p: Direct File doesn’t yet support the amount of income you received.
-      - p:
-          You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages
-          over $125,000 for your filing status of Married Filing Separately, as you may be required to pay Additional
-          Medicare Tax.
-  /info/knockout/medicare-wages-mfj:
-    body: >-
-      You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages over
-      {{/medicareWagesAdditionalTaxThreshhold}} for your filing status of {{/filingStatusCapitalized}}, as you may be
-      required to pay Additional Medicare Tax.
-  /info/knockout/medicare-wages-accordion-mfj:
-    heading: Box 5 - Medicare wages and tips
-    body:
-      - p: Direct File doesn’t yet support the amount of income you and your spouse received.
-      - p:
-          You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages
-          over $250,000 for your filing status of Married Filing Jointly, as you may be required to pay Additional
-          Medicare Tax.
-  /info/knockout/medicare-wages-accordion-single:
-    heading: Box 5 - Medicare wages and tips
-    body:
-      - p: Direct File doesn’t yet support the amount of income you received.
-      - p:
-          You received {{/formW2totalMedicareWages}} in Medicare wages. This tool doesn’t yet support Medicare wages
-          over $200,000 for your filing status of {{/filingStatus}}, as you may be required to pay Additional Medicare
-          Tax.
-
-  /info/knockout/medicare-wages-credit:
-    body: >-
-      You or your spouse received {{/maxMedicareWagesForAnyFilerOnReturn}}. This tool doesn’t yet support Medicare wages
-      over {{/maxIndividualMedicareWages}} for 1 person for your filing status of {{/filingStatusCapitalized}} as you
-      may be eligible for a credit for any withheld Additional Medicare Tax.
   /info/knockout/retirement/1099-r-allocable-irr:
     body:
       - p:
@@ -18855,7 +18835,7 @@ fields:
       "no": "No"
   /overtimeFlsaConfirmed:
     boolean:
-      "yes": "Yes, I’m an FLSA non-exempt employee and code TT is only the required overtime premium"
+      "yes": "Yes, I’m an FLSA non-exempt employee and the amount is only the required overtime premium"
       "no": "No, or I’m not sure"
   /formW2s/*/uncollectedOasdiTaxOnTips:
     name: Amount for code A
@@ -24236,7 +24216,7 @@ dataviews:
     has1095: $t(dataviews./flow/credits-and-deductions/credits/1095-a.heading)
   /flow/credits-and-deductions/deductions:
     /overtimeNotOnW2CodeTT: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
-    /overtimeFlsaConfirmed: "Is your code TT overtime only the FLSA-required overtime premium?"
+    /overtimeFlsaConfirmed: "Is your overtime amount only the FLSA-required overtime premium?"
     /wasK12Educators: Did you work as a K–12 educator in {{/taxYear}}?
     /wasK12Educators_spouse: Did you or {{/secondaryFiler/firstName}} work as a K–12 educator in {{/taxYear}}?
     /primaryEducatorExpensesWritable: Amount of your own money spent on job expenses

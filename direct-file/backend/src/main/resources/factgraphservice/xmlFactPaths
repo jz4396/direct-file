@@ -154,6 +154,10 @@ Lines that do not have / in column 1 are comments.
 /filersRequiredToFileForm8889/*/tin
 /filersRequiredToFileForm8889/*/totalHsaDistributions
 /filingStatus
+/flowAskOvertimeMethod
+/flowAskOvertimeSpecialRule
+/flowKnockoutOvertimeNotComputable
+/flowShowOvertimeFlsa
 /flowShowTipsSstbQuestion
 /form1099Gs/*/federalTaxWithheld
 /form1099Gs/*/payer/tin
@@ -541,6 +545,16 @@ Lines that do not have / in column 1 are comments.
 /otherIncome
 /otherPaymentsAndRefundableCreditsTotal
 /overpayment
+/overtimeAlternativeMethodsApply
+/overtimeMethod
+/overtimeMethodIsOther
+/overtimeMethodOptions
+/overtimeOnForm1099
+/overtimeSelfFiguredAmount
+/overtimeSelfFiguredApplies
+/overtimeSelfFiguredSsnValid
+/overtimeSpecialSection7Rule
+/overtimeStatementAmount
 /pensionsAndAnnuities
 /phone
 /primaryFiler/age65OrOlder

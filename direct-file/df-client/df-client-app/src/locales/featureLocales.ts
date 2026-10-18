@@ -23,6 +23,8 @@ import carLoanInterestEn from './en.carLoanInterest.yaml';
 import carLoanInterestEs from './es.carLoanInterest.yaml';
 import schedule1AEn from './en.schedule1A.yaml';
 import schedule1AEs from './es.schedule1A.yaml';
+import form6251En from './en.form6251.yaml';
+import form6251Es from './es.form6251.yaml';
 import paPitEn from './en.paPit.yaml';
 import paPitEs from './es.paPit.yaml';
 
@@ -46,18 +48,21 @@ export const enLocale: any = deepMerge(
         deepMerge(
           deepMerge(
             deepMerge(
-              deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree),
-              scheduleAEn as Tree
+              deepMerge(
+                deepMerge(deepMerge(englishBase as Tree, scheduleCEn as Tree), scheduleDEn as Tree),
+                scheduleAEn as Tree
+              ),
+              unreportedTipsEn as Tree
             ),
-            unreportedTipsEn as Tree
+            scheduleEEn as Tree
           ),
-          scheduleEEn as Tree
+          charitableNonItemizerEn as Tree
         ),
-        charitableNonItemizerEn as Tree
+        carLoanInterestEn as Tree
       ),
-      carLoanInterestEn as Tree
+      schedule1AEn as Tree
     ),
-    schedule1AEn as Tree
+    form6251En as Tree
   ),
   paPitEn as Tree
 );
@@ -69,18 +74,21 @@ export const esLocale: any = deepMerge(
         deepMerge(
           deepMerge(
             deepMerge(
-              deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree),
-              scheduleAEs as Tree
+              deepMerge(
+                deepMerge(deepMerge(spanishBase as Tree, scheduleCEs as Tree), scheduleDEs as Tree),
+                scheduleAEs as Tree
+              ),
+              unreportedTipsEs as Tree
             ),
-            unreportedTipsEs as Tree
+            scheduleEEs as Tree
           ),
-          scheduleEEs as Tree
+          charitableNonItemizerEs as Tree
         ),
-        charitableNonItemizerEs as Tree
+        carLoanInterestEs as Tree
       ),
-      carLoanInterestEs as Tree
+      schedule1AEs as Tree
     ),
-    schedule1AEs as Tree
+    form6251Es as Tree
   ),
   paPitEs as Tree
 );

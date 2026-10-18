@@ -8,6 +8,10 @@ headings:
   /heading/credits-and-deductions/deductions/tips-sstb: "Is your employer in a specified service trade or business?"
   /heading/knockout/tips-self-employed: "This tool doesn’t yet support the tips deduction for self-employed people"
   /heading/knockout/tips-sstb: "This tool doesn’t yet support tips from a specified service trade or business"
+  /heading/credits-and-deductions/deductions/overtime-1099: "Was any of this overtime paid to you as an independent contractor and reported on Form 1099-NEC or 1099-MISC?"
+  /heading/credits-and-deductions/deductions/overtime-special-rule: "Does your employer use a special FLSA overtime rule instead of the usual 40-hour workweek?"
+  /heading/credits-and-deductions/deductions/overtime-method: "What do your pay records show about your overtime?"
+  /heading/credits-and-deductions/deductions/overtime-amount: "Enter the overtime amount from your records"
 info:
   /info/credits-and-deductions/deductions/tips-self-employed:
     body: "For example, tips a self-employed hair stylist or rideshare driver received from customers."
@@ -27,6 +31,14 @@ info:
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/credits-and-deductions/deductions/overtime-1099:
+    body: "Answer yes if a business you worked for (not your employer) reported the overtime on Form 1099-NEC or 1099-MISC."
+  /info/credits-and-deductions/deductions/overtime-special-rule:
+    body: "For example, public-sector fire protection or law enforcement work periods, or getting compensatory time off instead of cash overtime."
+  /info/credits-and-deductions/deductions/overtime-method:
+    body: "Use your employer’s statement, your pay stubs, or payroll records. Only overtime from your job as an employee counts here. Keep the records you use."
+  /info/credits-and-deductions/deductions/overtime-amount:
+    body: "Enter the amount for the choice you picked. We’ll figure the deductible part: all of an FLSA overtime premium, 1/3 of total time-and-a-half pay, 1/2 of a double-time premium, 1/4 of total double-time pay, or 1/2 of your regular pay for hours over 40."
 fields:
   /w2Box12CodeOptions:
     cashTipsCodeTP: TP
@@ -45,6 +57,24 @@ fields:
     boolean:
       "yes": "Yes"
       "no": "No"
+  /overtimeOnForm1099:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /overtimeSpecialSection7Rule:
+    boolean:
+      "yes": "Yes, or I’m not sure"
+      "no": "No"
+  /overtimeMethodOptions:
+    statementPremium: "They show the FLSA overtime premium (the extra “half”) separately"
+    statementTotalTimeAndHalf: "They show my total pay for overtime hours, paid at time-and-a-half"
+    statementPremiumDoubleTime: "I’m paid double time, and they show the pay above my regular rate for overtime hours"
+    statementTotalDoubleTime: "I’m paid double time, and they show my total pay for overtime hours"
+    regularPayForOvertimeHours: "They don’t show overtime pay, but I know my regular hourly rate and my hours over 40 each week"
+    other: "None of these, or I’m paid a different overtime rate"
+  /overtimeStatementAmount:
+    name: Overtime amount
+    name_lower: overtime amount
 dataviews:
   /flow/income/jobs:
     /formW2s/*/cashTipsCodeTP: Code TP amount
@@ -52,3 +82,15 @@ dataviews:
     /tipsFromSelfEmployment: "Did you receive tips in your own business?"
     /tipsOccupationConfirmed: "Did you receive your tips in an occupation that customarily received tips?"
     /tipsEmployerIsSstb: "Is your employer in a specified service trade or business?"
+    /overtimeOnForm1099: "Was any overtime reported on Form 1099-NEC or 1099-MISC?"
+    /overtimeSpecialSection7Rule: "Does your employer use a special FLSA overtime rule?"
+    /overtimeMethod: "What do your pay records show about your overtime?"
+    /overtimeStatementAmount: "Overtime amount from your records"
+    enums:
+      /overtimeMethodOptions:
+        statementPremium: $t(fields./overtimeMethodOptions.statementPremium)
+        statementTotalTimeAndHalf: $t(fields./overtimeMethodOptions.statementTotalTimeAndHalf)
+        statementPremiumDoubleTime: $t(fields./overtimeMethodOptions.statementPremiumDoubleTime)
+        statementTotalDoubleTime: $t(fields./overtimeMethodOptions.statementTotalDoubleTime)
+        regularPayForOvertimeHours: $t(fields./overtimeMethodOptions.regularPayForOvertimeHours)
+        other: $t(fields./overtimeMethodOptions.other)

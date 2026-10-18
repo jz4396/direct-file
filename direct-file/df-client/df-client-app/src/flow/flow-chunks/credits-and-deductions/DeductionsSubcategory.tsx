@@ -597,6 +597,15 @@ export const DeductionsSubcategory = (
           </Screen>
         </SubSubcategory>
       </CollectionLoop>
+      {/* #66: Schedule 1-A line 28 has two VIN rows; more than two vehicles is a stop (IRC §163(h)(4)(B)(iii)). */}
+      <SubSubcategory route='car-loan-vehicles-limit'>
+        <Screen route='car-loan-more-than-two-knockout' condition='/flowKnockoutCarLoanMoreThanTwoVins' isKnockout={true}>
+          <IconDisplay name='ErrorOutline' size={9} isCentered />
+          <Heading i18nKey='/heading/knockout/car-loan-more-than-two' />
+          <DFAlert i18nKey='/info/knockout/car-loan-more-than-two' headingLevel='h3' type='warning' />
+          <KnockoutButton i18nKey='button.knockout' />
+        </Screen>
+      </SubSubcategory>
     </Gate>
     {/* #51: No Tax on Tips (Schedule 1-A Part II, IRC §224) */}
     <SubSubcategory route='tips-deduction'>
@@ -688,13 +697,37 @@ export const DeductionsSubcategory = (
         <Boolean path='/overtimeNotOnW2CodeTT' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='overtime-other-knockout' condition='/flowKnockoutOvertimeNotOnW2CodeTT' isKnockout={true}>
+      <Screen route='overtime-1099' condition='/overtimeNotOnW2CodeTT'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-1099' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-1099' />
+        <Boolean path='/overtimeOnForm1099' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='overtime-special-rule' condition='/flowAskOvertimeSpecialRule'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-special-rule' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-special-rule' />
+        <Boolean path='/overtimeSpecialSection7Rule' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='overtime-method' condition='/flowAskOvertimeMethod'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-method' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-method' />
+        <Enum path='/overtimeMethod' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='overtime-amount' condition='/overtimeSelfFiguredApplies'>
+        <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-amount' />
+        <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-amount' />
+        <Dollar path='/overtimeStatementAmount' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='overtime-not-computable-knockout' condition='/flowKnockoutOvertimeNotComputable' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
-        <Heading i18nKey='/heading/knockout/overtime-not-on-w2-code-tt' />
-        <DFAlert i18nKey='/info/knockout/overtime-not-on-w2-code-tt' headingLevel='h3' type='warning' />
+        <Heading i18nKey='/heading/knockout/overtime-not-computable' />
+        <DFAlert i18nKey='/info/knockout/overtime-not-computable' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      <Screen route='overtime-flsa' condition='/hasW2CodeTtOvertime'>
+      <Screen route='overtime-flsa' condition='/flowShowOvertimeFlsa'>
         <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-flsa' />
         <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-flsa' />
         <Boolean path='/overtimeFlsaConfirmed' />

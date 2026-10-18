@@ -4981,6 +4981,21 @@
       </Derived>
     </Fact>
 
+    <Fact path="/familyAndHousehold/*/paSpDependentChild">
+      <Name>PA Schedule SP dependent child</Name>
+      <Description>#79: PA-40 IN (2025) p. 37: a claimed dependent who is a natural, adopted, step- or foster child, or a grandchild ("grandChildOrOtherDescendantOfChild").</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="../isClaimedDependent" />
+          <Any>
+            <Dependency path="../isBiologicalAdoptedFosterOrStepchild" />
+            <Equal><Left><Dependency module="dependentsRelationship" path="../relationship" /></Left><Right><Enum optionsPath="/relationshipOptions">grandChildOrOtherDescendantOfChild</Enum></Right></Equal>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/familyAndHousehold/*/isBiologicalAdoptedFosterOrStepchild">
       <Name>Is Biological, Adopted, Foster, or Stepchild</Name>
       <Description>Is biological, adopted, foster, or stepchild</Description>

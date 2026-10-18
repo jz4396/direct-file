@@ -550,6 +550,41 @@
       </Derived>
     </Fact>
 
+    <Fact path="/formW2s/*/hasRRTACodesForForm8959">
+      <Name>W-2 has RRTA codes in box 14 (complete-safe)</Name>
+      <Description>#82: false (not incomplete) when the RRTA question hasn't been answered, so the Form
+        8959 stop never goes incomplete.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../hasRRTACodes" />
+          </IsComplete>
+          <Dependency path="../hasRRTACodes" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/rrtaW2OverLowestForm8959Threshold">
+      <Name>RRTA W-2 that could reach a Form 8959 Part III threshold</Name>
+      <Description>#82: a W-2 with RRTA codes in box 14 whose box 1 wages exceed $125,000, the lowest
+        Additional Medicare Tax threshold (MFS; i8959 (2026) p.1 threshold chart, 26 U.S.C.
+        3101(b)(2)(B)). RRTA compensation itself is not collected, so box 1 is used as a conservative
+        proxy. Feeds form8959 /flowKnockoutForm8959Unsupported.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasRRTACodesForForm8959" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="../wages" />
+            </Left>
+            <Right>
+              <Dependency path="/maxMFSMedicareWages" />
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutHasRRTACodesInBox14NotInNY">
       <Name>Knockout Due to having RRTA codes in Box 14</Name>
       <Description>Knockout Due to having RRTA codes in Box 14</Description>
@@ -611,27 +646,6 @@
       </Derived>
     </Fact>
 
-    <Fact path="/knockoutMedicareWages">
-      <Name>Knockout if Medicare Wages Great Than Max for filing status</Name>
-      <Description>Knockout the filer if their total medicare wages are above the limit for their
-        filing status that
-        might necessitate form 8959</Description>
-      <Export downstreamFacts="true" />
-
-      <Derived>
-        <Any>
-          <Dependency path="/anyFilerExceedsEligibleForMedicareWagesCredit" />
-          <GreaterThan>
-            <Left>
-              <Dependency path="/formW2totalMedicareWages" />
-            </Left>
-            <Right>
-              <Dependency path="/medicareWagesAdditionalTaxThreshhold" />
-            </Right>
-          </GreaterThan>
-        </Any>
-      </Derived>
-    </Fact>
 
 
     <Fact path="/primaryFilerExceedsMaxOasdiWages">
@@ -1387,59 +1401,7 @@
     </Fact>
 
 
-    <Fact path="/anyFilerExceedsEligibleForMedicareWagesCredit">
-      <Description>Is any filer on the return over the limit that would qualify them for a credit
-        for their medicare
-        payments. Note this would only trigger if the filers are MFJ, since for non-MFJ filers, the
-        limit would trigger
-        anyway</Description>
-      <Derived>
-        <All>
-          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
-          <Any>
-            <GreaterThan>
-              <Left>
-                <Dependency path="/primaryFilerMedicareWages" />
-              </Left>
-              <Right>
-                <Dependency path="/maxIndividualMedicareWages" />
-              </Right>
-            </GreaterThan>
-            <GreaterThan>
-              <Left>
-                <Dependency path="/secondaryFilerMedicareWages" />
-              </Left>
-              <Right>
-                <Dependency path="/maxIndividualMedicareWages" />
-              </Right>
-            </GreaterThan>
-          </Any>
-        </All>
-      </Derived>
-    </Fact>
 
-    <Fact path="/anyFilerRequiredToPayExtraMedicareTax">
-      <Description>
-        Is any filer over the medicare tax threshhold such that they'd qualify for a refund of some
-        of the
-        medicare tax they paid.
-      </Description>
-      <Derived>
-        <All>
-          <Dependency path="/knockoutMedicareWages" />
-          <Any>
-            <Not>
-              <IsComplete>
-                <Dependency path="/anyFilerExceedsEligibleForMedicareWagesCredit" />
-              </IsComplete>
-            </Not>
-            <Not>
-              <Dependency path="/anyFilerExceedsEligibleForMedicareWagesCredit" />
-            </Not>
-          </Any>
-        </All>
-      </Derived>
-    </Fact>
 
     <Fact path="/maxMedicareWagesForAnyFilerOnReturn">
       <Description>The highest medicare wages a single person on the return recieved</Description>
@@ -5626,6 +5588,44 @@
 
     </Fact>
 
+
+    <Fact path="/flowKnockoutFloridaStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a Florida resident's W-2</Name>
+      <Description>Florida has no personal income tax (Fla. Const. art. VII, sec. 5(a)), so a Florida
+        resident's W-2 should show $0 in box 17. A nonzero box 17 means tax was withheld for some state, and
+        that state's return is not supported, so we stop rather than silently ignore it. Issue #81.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInFl" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/hasStateWithholding">
+      <Name>W-2 box 17 is greater than zero</Name>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../stateWithholding" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
 
     <Fact path="/flowKnockoutBox15IncomeFromDifferentState">
       <Name>Flow Knockout Income from Unsupported State</Name>

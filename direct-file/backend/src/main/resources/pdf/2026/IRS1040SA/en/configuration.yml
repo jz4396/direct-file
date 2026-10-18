@@ -1,0 +1,38 @@
+# #67: 2026 Schedule A (Form 1040), early-release draft (https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf),
+# committed byte-identical to irs.gov. Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet;
+# customMaps.template.skipLeadingPages drops it after filling (PdfForm.skipLeadingPages, same as #65/#66).
+# Field names and captions read from the PDF's own AcroForm tooltips (pypdf). Every mapping cites its form line.
+# MVP scope (#37): lines 1-4, 5a-5e, 8a, 11, 13, 18, 19. Out of scope and left blank, never a silent 0, because each is
+# a /flowKnockoutScheduleAUnsupported stop or unsupported: 5a sales-tax box, 6, 8b-8d, 9, 12, 14, 16, 17a-17z.
+# Lines that only repeat an in-scope total (7 = 5e + 6, 8e/10 = 8a, 15 = 13 + 14) print that total.
+includeWhen: /itemizesDeductions
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  form1[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on Form 1040"
+      f1_02[0]: /primaryFiler/tin # "Your social security number"
+      f1_03[0]: /scheduleAMedical # 1 "Medical and dental expenses"
+      f1_04[0]: /agi # 2 "Enter amount from Form 1040 or 1040-SR, line 11b"
+      f1_05[0]: /scheduleALine3 # 3 "Multiply line 2 by 7.5% (0.075)"
+      f1_06[0]: /scheduleALine4 # 4 "Subtract line 3 from line 1"
+      f1_07[0]: /scheduleAStateLocalIncomeOrSalesTax # 5a (income taxes; sales-tax election box c1_1 not supported)
+      f1_08[0]: /scheduleARealEstateTaxes # 5b
+      f1_09[0]: /scheduleAPersonalPropertyTaxes # 5c
+      f1_10[0]: /scheduleALine5d # 5d "Add lines 5a through 5c"
+      f1_11[0]: /scheduleALine5e # 5e "Enter the smaller of line 5d or $40,400 ($20,200 if MFS)" with the 5e phase-down
+      f1_14[0]: /scheduleALine5e # 7 "Add lines 5e and 6" (line 6 other taxes unsupported)
+      f1_15[0]: /scheduleAMortgageInterest # 8a "Home mortgage interest and points reported to you on Form 1098"
+      f1_20[0]: /scheduleAMortgageInterest # 8e "Add lines 8a through 8d" (8b-8d unsupported)
+      f1_22[0]: /scheduleAMortgageInterest # 10 "Add lines 8e and 9" (9 investment interest unsupported)
+    Page2[0]:
+      Line11_ReadOrder[0]:
+        f2_01[0]: /scheduleACashGifts # 11 "Gifts by cash or check"
+      f2_03[0]: /scheduleALine13 # 13 "Enter the amount from line 6 of the Charitable Contribution Limitation Worksheet"
+      f2_05[0]: /scheduleALine13 # 15 "Add lines 13 and 14" (14 carryover unsupported)
+      c2_1[0]: /scheduleALine18AnswerNo # 18 No (Yes = §68 stop, /flowKnockoutScheduleAOverallLimit)
+      f2_19[0]: /scheduleALine18 # 18 amount -> Form 1040 line 12e
+      Line19_ReadOrder[0]:
+        c2_2[0]: /scheduleAWritableElectsToItemize # 19 "If you elect to itemize ... check this box"

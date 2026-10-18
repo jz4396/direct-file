@@ -7,13 +7,21 @@
       - /stateReturnComputed: Any of the computed states.
       - /stateTaxLiability, /stateTaxWithheld, /stateRefund, /stateAmountOwed: Switch per state onto that state's module.
       - /flowKnockoutStateReturn: Any of All(/stateReturnIs{XX}, that state's knockouts); BlockSubmissionOnTrue, in /flowIsKnockedOut.
-      A no-income-tax state (FL) needs only /stateReturnIsFl and the UI note; it adds nothing to the Switches.
+      A no-income-tax state (FL, #103) has only /stateReturnIsFl; it adds nothing to the Switches or /stateReturnComputed.
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
       <Description>#78 state framework: the filer chose Pennsylvania as the one state they lived in and earned income in (full-year). Add /stateReturnIs{XX} per state (e.g. #81 FL).</Description>
       <Export downstreamFacts="true" />
       <Derived><All><IsComplete><Dependency module="filers" path="/filerResidenceAndIncomeState" /></IsComplete><Equal><Left><Dependency module="filers" path="/filerResidenceAndIncomeState" /></Left><Right><Enum optionsPath="/scopedStateOptions">pa</Enum></Right></Equal></All></Derived>
+    </Fact>
+    <Fact path="/stateReturnIsFl">
+      <Name>State: Florida (no state income tax return)</Name>
+      <Description>#78/#81 state framework: Florida resident (filers /livedInFl, #103). Florida levies no personal income tax (Fla. Const. art. VII, sec. 5(a)), so there is no state return: Florida is not in /stateReturnComputed or the Switches. Its existing W-2 box 17 stop (/flowKnockoutFloridaStateWithholding, formW2s) stays wired directly into /flowIsKnockedOut, unchanged.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInFl" />
+      </Derived>
     </Fact>
     <Fact path="/stateReturnIsPaPartYear">
       <Name>State return: Pennsylvania part-year resident</Name>
@@ -62,7 +70,12 @@
       <Description>#78 state framework: any knockout of the computed state return. Each state adds All(/stateReturnIs{XX}, its knockouts). Wired into flow.xml /flowIsKnockedOut.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
-      <Derived><Any><All><Dependency path="/stateReturnPaFiled" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaTaxForgiveness" /><Dependency module="paPit" path="/flowKnockoutPaPartYear" /></Any></All></Any></Derived>
+      <Derived><Any><All><Dependency path="/stateReturnPaFiled" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" /><Dependency module="paPit" path="/flowKnockoutPaPartYear" /></Any></All></Any></Derived>
+    </Fact>
+    <Fact path="/flowShowPaSpQuestion">
+      <Name>Show the PA Tax Forgiveness nontaxable income question</Name>
+      <Description>#79: PA return and Eligibility Income so far could still qualify for Schedule SP.</Description>
+      <Derived><All><Dependency path="/stateReturnIsPa" /><Dependency module="paPit" path="/paSpCouldQualify" /></All></Derived>
     </Fact>
   </Facts>
 </FactDictionaryModule>
