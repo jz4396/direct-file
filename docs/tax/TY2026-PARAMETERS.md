@@ -1,6 +1,6 @@
 # TY2026 tax parameters — compliance spec
 
-**Status:** Implementation in progress on this branch (Dev). Spec retained for audit.
+**Status:** Implemented. Spec retained for audit.
 **Tax year:** 2026 (returns filed in calendar 2027)
 **Upstream baseline:** Fact dictionary / interview logic as of Tax Year 2024.
 
@@ -72,7 +72,7 @@ Upstream Direct File hardcodes TY2024 amounts. Shipping TY2026 without refreshin
 - Year-config framework (PM #2)
 - Non-enacted bills
 
-## Acceptance criteria (Rev review gate)
+## Acceptance criteria (review gate)
 
 - [x] Each changed amount cites Rev. Proc. 2025-32 **page + quote** (or IRC HTML §)
 - [x] `/taxYear` === 2026
@@ -85,4 +85,4 @@ Upstream Direct File hardcodes TY2024 amounts. Shipping TY2026 without refreshin
 
 ## Reviewer notes
 
-High blast radius. @Feat merges only after Rev compliance writeup + proof.
+High blast radius. Merge only after the compliance review writeup + proof.

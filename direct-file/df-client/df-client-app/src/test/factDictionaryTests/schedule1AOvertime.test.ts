@@ -259,14 +259,14 @@ describe(`Schedule 1-A Part III — stop for overtime that can't be computed (#6
   });
 });
 
-describe(`Schedule 1-A Part III — TY2026 default: alternative methods switch OFF (#68, Rev)`, () => {
+describe(`Schedule 1-A Part III — TY2026 default: alternative methods switch OFF (#68)`, () => {
   it(`the switch defaults to off`, ({ task }) => {
     task.meta.testedFactPaths = [`/overtimeAlternativeMethodsApply`];
     expect(noTT(70000, {}).get(`/overtimeAlternativeMethodsApply` as ConcretePath).get).toBe(false);
   });
 
   it(`overtime not on code TT: stop fires, 1099 and method screens skipped, nothing computed`, ({ task }) => {
-    // Rev polish: /flowAskOvertime1099 gates the 1099 screen so stop-only users skip it.
+    // Polish: /flowAskOvertime1099 gates the 1099 screen so stop-only users skip it.
     task.meta.testedFactPaths = [
       `/flowKnockoutOvertimeNotComputable`,
       `/flowIsKnockedOut`,

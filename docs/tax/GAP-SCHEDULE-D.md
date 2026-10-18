@@ -1,6 +1,6 @@
 # Gap: Schedule D + Form 8949 (capital gains/losses)
 
-**Status:** Implementation on this branch (Dev). Spec retained for audit.
+**Status:** Implemented. Spec retained for audit.
 **Tax year target:** 2026
 
 ## Audit sources (required on every claim)
@@ -46,7 +46,7 @@ Manual transactions → 8949 boxes → Schedule D → 1040; apply § 1211(b); ap
 
 Land **TY2026 parameters** (#2) first where possible — ordinary brackets + this p. 13 table share one source PDF.
 
-## Acceptance criteria (Rev review gate)
+## Acceptance criteria (review gate)
 
 - [x] Breakpoints cite Rev. Proc. 2025-32 **p. 13**
 - [x] Loss limit cites § 1211(b)
@@ -57,10 +57,10 @@ Land **TY2026 parameters** (#2) first where possible — ordinary brackets + thi
 
 ## Reviewer notes
 
-High blast radius. Feat merges only after Rev writeup.
+High blast radius. Merge only after the tax + security review writeup.
 
 
-## Implementation notes (Dev)
+## Implementation notes
 
 - Fact modules: `tax/scheduleD.xml` (Form 8949 collection, boxes A–L, §1211(b) limit, carryover inputs, breakpoint selectors),
   `tax/scheduleD2.xml` (Schedule D lines 1b–21, Form 1040 line 7), `tax/scheduleD3.xml` (QDCG Tax Worksheet → Form 1040 line 16).

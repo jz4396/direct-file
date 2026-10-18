@@ -1,6 +1,6 @@
 # Gap: Schedule C + self-employment tax
 
-**Status:** Gap PR (spec + acceptance criteria). Implementation by Cod (secondary to Dev).
+**Status:** Gap PR (spec + acceptance criteria). Implementation in a follow-up PR.
 **Tax year target:** TY2026, filed in 2027
 
 ## Audit sources (required on every claim)
@@ -42,7 +42,7 @@ Source: [26 U.S.C. § 164(f)](https://www.law.cornell.edu/uscode/text/26/164#f).
 5. Schedule SE + deductible half under § 164(f)
 6. QBI § 199A: implement simple case **or** explicit non-support (no silent zero)
 
-## Acceptance criteria (Rev review gate)
+## Acceptance criteria (review gate)
 
 - [ ] Every formula cites IRC § or Schedule C/SE instructions **PDF page**
 - [ ] W-2-only regression unchanged
@@ -54,4 +54,4 @@ Source: [26 U.S.C. § 164(f)](https://www.law.cornell.edu/uscode/text/26/164#f).
 
 ## Reviewer notes
 
-High blast radius on AGI/credits. Feat merges only after Rev writeup.
+High blast radius on AGI/credits. Merge only after the tax + security review writeup.
