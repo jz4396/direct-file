@@ -105,8 +105,8 @@ info:
         - p:
             Es posible que reúna los requisitos para la Condonación de Impuestos (Anexo SP), pero esta herramienta no
             puede calcularla si está separado o presenta por separado, alguien puede reclamarlo como dependiente, tiene
-            más de 9 hijos dependientes, recibió compensación por desempleo, vivió en Pensilvania solo parte del año o
-            tiene otros ingresos no tributables que cuentan para la elegibilidad.
+            más de 9 hijos dependientes, recibió compensación por desempleo, tuvo una pérdida neta por ventas mientras
+            vivía fuera de Pensilvania o tiene otros ingresos no tributables que cuentan para la elegibilidad.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html

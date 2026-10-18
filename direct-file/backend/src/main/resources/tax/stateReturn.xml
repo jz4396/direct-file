@@ -74,8 +74,8 @@
     </Fact>
     <Fact path="/flowShowPaSpQuestion">
       <Name>Show the PA Tax Forgiveness nontaxable income question</Name>
-      <Description>#79: PA return and Eligibility Income so far could still qualify for Schedule SP.</Description>
-      <Derived><All><Dependency path="/stateReturnIsPa" /><Dependency module="paPit" path="/paSpCouldQualify" /></All></Derived>
+      <Description>#79: PA return and Eligibility Income so far could still qualify for Schedule SP. #107: full-year or PA/FL part-year return (/stateReturnPaFiled); part-year Eligibility Income includes line 6.</Description>
+      <Derived><All><Dependency path="/stateReturnPaFiled" /><Dependency module="paPit" path="/paSpCouldQualify" /></All></Derived>
     </Fact>
   </Facts>
 </FactDictionaryModule>
