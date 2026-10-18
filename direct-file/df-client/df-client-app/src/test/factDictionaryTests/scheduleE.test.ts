@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { createBooleanWrapper, createDayWrapper, createDollarWrapper, createEnumWrapper } from '../persistenceWrappers.js';
+import {
+  createBooleanWrapper,
+  createDayWrapper,
+  createDollarWrapper,
+  createEnumWrapper,
+} from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
 import { baseFilerData, filerWithRefundDueData, primaryFilerId, uuid } from '../testData.js';
@@ -47,7 +52,11 @@ describe(`Schedule E Part I MVP (#38)`, () => {
     expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
     // filerWithRefundDueData is not EITC-qualified, so the 32(i)(2)(C) knockout stays off.
     expect(get(g, `/flowKnockoutScheduleEEitc`).get).toBe(false);
-    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    // #83: AGI here is $208,500 (single), over the $200,000 §1411(b)(3) threshold
+    // (https://www.law.cornell.edu/uscode/text/26/1411). Form 8960 doesn't model Schedule E rents
+    // (§1411(c)(1)(A)(i) trade-or-business and passive rules), so the NIIT knockout is the only stop.
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
   });
 
   const cases: [string, string, Record<string, unknown>][] = [
@@ -101,7 +110,12 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       [`/formW2s/#${uuid}/writableWages`]: createDollarWrapper(`12000`),
       [`/formW2s/#${uuid}/writableFederalWithholding`]: createDollarWrapper(`500`),
     };
-    const rental = { ...supported, '/scheduleEWritableRents': createDollarWrapper(`1500`), '/scheduleEWritableRoyalties': createDollarWrapper(`0`), '/scheduleEWritableExpenses': createDollarWrapper(`500`) };
+    const rental = {
+      ...supported,
+      '/scheduleEWritableRents': createDollarWrapper(`1500`),
+      '/scheduleEWritableRoyalties': createDollarWrapper(`0`),
+      '/scheduleEWritableExpenses': createDollarWrapper(`500`),
+    };
     const noRental = fg(eitcBase);
     const g = fg({ ...eitcBase, ...rental });
     expect(get(noRental, `/eitcQualified`).get).toBe(true);
