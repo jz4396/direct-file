@@ -697,7 +697,7 @@ export const DeductionsSubcategory = (
         <Boolean path='/overtimeNotOnW2CodeTT' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='overtime-1099' condition='/overtimeNotOnW2CodeTT'>
+      <Screen route='overtime-1099' condition='/flowAskOvertime1099'>
         <Heading i18nKey='/heading/credits-and-deductions/deductions/overtime-1099' />
         <InfoDisplay i18nKey='/info/credits-and-deductions/deductions/overtime-1099' />
         <Boolean path='/overtimeOnForm1099' />
