@@ -29,7 +29,8 @@ headings:
   /heading/knockout/pa-unsupported-items: This tool doesn’t yet support these Pennsylvania tax items
   /heading/knockout/pa-unsupported-income: This tool doesn’t yet support some of your income on a Pennsylvania return
   /heading/knockout/pa-sp-unsupported: This tool doesn’t yet support Pennsylvania Tax Forgiveness for your situation
-  /heading/your-taxes/amount/pa-sp-nontaxable-income: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
+  /heading/your-taxes/amount/pa-sp-nontaxable-income:
+    Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
   /heading/you-and-your-family/about-you/pa-part-year-move: "Which of these describes where you lived in {{/taxYear}}?"
   /heading/you-and-your-family/about-you/pa-part-year-move-date: What was the first day you lived in your new state?
   /heading/income/jobs/w2-pa-part-year-state: Which state is listed in box 15 of this W-2?
@@ -65,11 +66,19 @@ info:
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/your-taxes/amount/pa-sp-nontaxable-income:
-    body: This includes alimony, life insurance proceeds or inheritances, gifts, awards or prizes, nontaxable military pay, gain you excluded on the sale of your home, nontaxable scholarships or grants, cash or support from people outside your household, nontaxable sickness, disability or strike benefits from a cafeteria plan, foster care payments, and unemployment compensation. Don’t include Social Security or eligible retirement benefits.
+    body:
+      This includes alimony, life insurance proceeds or inheritances, gifts, awards or prizes, nontaxable military pay,
+      gain you excluded on the sale of your home, nontaxable scholarships or grants, cash or support from people outside
+      your household, nontaxable sickness, disability or strike benefits from a cafeteria plan, foster care payments,
+      and unemployment compensation. Don’t include Social Security or eligible retirement benefits.
   /info/knockout/pa-sp-unsupported:
     alertText:
       body:
-        - p: You may qualify for Tax Forgiveness (Schedule SP), but this tool can’t figure it if you’re separated or filing separately, someone can claim you as a dependent, you have more than 9 dependent children, you received unemployment compensation, or you have other nontaxable income that counts toward eligibility.
+        - p:
+            You may qualify for Tax Forgiveness (Schedule SP), but this tool can’t figure it if you’re separated or
+            filing separately, someone can claim you as a dependent, you have more than 9 dependent children, you
+            received unemployment compensation, you lived in Pennsylvania for only part of the year, or you have other
+            nontaxable income that counts toward eligibility.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html

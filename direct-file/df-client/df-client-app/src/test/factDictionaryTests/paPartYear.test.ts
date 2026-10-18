@@ -238,3 +238,47 @@ describe(`PA part-year stops (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     blocks(build(singleFilerData, { ...move(`flToPa`, `2027-02-01`), ...w2s(ok) }));
   });
 });
+
+/**
+ * #106 + #105: Schedule SP (Tax Forgiveness) for a part-year resident. PA-40 IN (2025) p. 37, "Nonresidents and
+ * Part-Year Residents": "Such taxpayers must include in their eligibility income all income as described whether
+ * earned within or outside Pennsylvania." Line 6 (non-PA income, p. 38) is not computed yet (#107), so a part-year
+ * filer who could still qualify on residency-period income is stopped, never credited.
+ */
+describe(`PA part-year Schedule SP stop (/flowKnockoutPaSpUnsupported)`, () => {
+  it(`PA -> FL with low PA-period income: could qualify, so the SP stop fires`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSpCouldQualify`, `/flowKnockoutPaSpUnsupported`, `/flowKnockoutStateReturn`];
+    const g = build(singleFilerData, {
+      ...move(`paToFl`, `2026-03-01`),
+      ...w2s(
+        { id: paW2, wages: 6000, state: `pa`, box16: 6000, box17: 184 },
+        { id: flW2, wages: 40000, state: `fl`, resWages: 0 }
+      ),
+    });
+    expect(val(g, `/paSpLine11`)).toBe(`6000.00`); // PA-period income only; FL wages are not in line 11
+    expect(get(g, `/paSpCouldQualify`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaSpUnsupported`);
+  });
+  it(`PA-period income already above the 10% column: no forgiveness possible, no SP stop`, () => {
+    const g = build(singleFilerData, {
+      ...move(`paToFl`),
+      ...w2s({ id: paW2, wages: 30000, state: `pa`, box16: 30000, box17: 921 }),
+    });
+    expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+    notStopped(g);
+  });
+  it(`full-year PA resident with the same low income is not stopped by the part-year case`, () => {
+    const g = build(singleFilerData, {
+      '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+      '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+      ...w2s({ id: paW2, wages: 6000, state: `pa`, box16: 6000, box17: 184 }),
+    });
+    expect(get(g, `/paSpCouldQualify`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+  });
+});
