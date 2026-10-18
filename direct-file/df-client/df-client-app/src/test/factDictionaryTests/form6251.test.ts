@@ -217,7 +217,10 @@ describe(`Form 6251 Part III — capital gain rates`, () => {
     expect(val(g, `/amt`)).toBe(`12824.00`);
     expect(val(g, `/schedule2Line2`)).toBe(`12824.00`);
     expect(val(g, `/totalAdditionalTaxesOwed`)).toBe(`12824.00`);
-    expect(val(g, `/totalTax`)).toBe(`202920.00`);
+    // #83: Form 8960 NIIT now also applies: NII $1,000,000 vs MAGI excess $1,100,000 − $200,000 = $900,000;
+    // 3.8% × $900,000 = $34,200 on Schedule 2 line 6 (IRC §1411(a)(1)). Total tax 202,920 + 34,200 = 237,120.
+    expect(val(g, `/schedule2Line6NetInvestmentIncomeTax`)).toBe(`34200.00`);
+    expect(val(g, `/totalTax`)).toBe(`237120.00`);
     expect(get(g, `/requiresSchedule2`).get).toBe(true);
   });
   it(`MFJ, $200,000 wages + $1,000,000 LTCG: mid-phaseout exemption $40,200, line 7 $219,253, AMT $15,208`, ({

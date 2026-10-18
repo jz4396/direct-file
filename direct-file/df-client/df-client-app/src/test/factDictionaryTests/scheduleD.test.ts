@@ -465,7 +465,7 @@ describe(`QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) — 0% / 15% / 20%`,
   });
 });
 
-describe(`NIIT knockout (IRC §1411) — capital gain counts as investment income`, () => {
+describe(`NIIT (IRC §1411) — capital gain counts as investment income (#83: computed on Form 8960, no longer a stop)`, () => {
   // IRC §1411(b): thresholds $250,000 MFJ/QSS, $125,000 MFS, $200,000 other; §1411(c)(1)(A)(iii) net gain.
   // https://www.law.cornell.edu/uscode/text/26/1411
   const niitFacts = (wages: number, gain: number) => ({
@@ -473,31 +473,39 @@ describe(`NIIT knockout (IRC §1411) — capital gain counts as investment incom
     ...makeW2Data(wages),
     [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
     '/flowHasSeenDeductions': createBooleanWrapper(true),
+    '/scheduleAWantsToItemize': createBooleanWrapper(false),
     '/form8949Transactions': createCollectionWrapper([tx1]),
     ...tx(tx1, { description: `LT`, proceeds: `${gain}`, costBasis: `0`, box: `D`, holdingPeriod: `longTerm` }),
     '/form8949TransactionsIsDone': createBooleanWrapper(true),
   });
 
-  it(`Single, no interest, $150,000 wages + $100,000 LT gain (AGI $250,000 > $200,000) → knocked out`, ({ task }) => {
+  it(`Single, no interest, $150,000 wages + $100,000 LT gain (AGI $250,000 > $200,000) → NIIT 3.8% × $50,000 = $1,900, not knocked out`, ({
+    task,
+  }) => {
     task.meta.testedFactPaths = [
       `/hasInterestOrCapitalGainForNiit`,
       `/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh`,
+      `/form8960Line5a`,
+      `/form8960Line17`,
       `/flowIsKnockedOut`,
     ];
     const { factGraph } = setupFactGraph(niitFacts(150000, 100000));
     expect(get(factGraph, `/interestIncome`)).toBe(`0.00`);
     expect(get(factGraph, `/agi`)).toBe(`250000.00`);
     expect(factGraph.get(`/hasInterestOrCapitalGainForNiit` as ConcretePath).get).toBe(true);
-    expect(factGraph.get(`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh` as ConcretePath).get).toBe(true);
-    expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+    expect(get(factGraph, `/form8960Line5a`)).toBe(`100000.00`);
+    expect(get(factGraph, `/form8960Line17`)).toBe(`1900.00`);
+    expect(factGraph.get(`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh` as ConcretePath).get).toBe(false);
+    expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(false);
   });
 
-  it(`Single, no interest, $50,000 wages + $100,000 LT gain (AGI $150,000 ≤ $200,000) → not knocked out`, ({
+  it(`Single, no interest, $50,000 wages + $100,000 LT gain (AGI $150,000 ≤ $200,000) → no NIIT, not knocked out`, ({
     task,
   }) => {
-    task.meta.testedFactPaths = [`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh`];
+    task.meta.testedFactPaths = [`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh`, `/form8960Line17`];
     const { factGraph } = setupFactGraph(niitFacts(50000, 100000));
     expect(get(factGraph, `/agi`)).toBe(`150000.00`);
+    expect(get(factGraph, `/form8960Line17`)).toBe(`0.00`);
     expect(factGraph.get(`/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh` as ConcretePath).get).toBe(false);
   });
 });

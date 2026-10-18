@@ -66,6 +66,7 @@
           <Dependency module="interest" path="/hasInterestIncomeAndAgiAboveThresholdForMfs" />
           <Dependency module="interest" path="/hasInterestIncomeAndAgiAboveThresholdForMfjOrQss" />
           <Dependency module="interest" path="/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh" />
+          <Dependency module="form8960" path="/flowKnockoutForm8960Unsupported" />
           <Dependency module="interest" path="/flowKnockoutTaxExemptInterest" />
           <Dependency module="estimatedPayments" path="/knockoutPaidEstimatedTaxesUnderDifferentLastName" />
           <Dependency module="familyAndHousehold" path="/knockoutHohQpHasNoTin" />
