@@ -310,3 +310,24 @@ describe(`Form 8960 NIIT (#83): stops instead of zeros (BlockSubmissionOnTrue, /
     });
   });
 });
+
+describe(`Form 8960 NIIT (#83): line 10 guard for Schedule 1 line 18 (early withdrawal penalty)`, () => {
+  // i8960 (2026 draft) p. 13 (PDF p. 14): "The early withdrawal penalty reported on Schedule 1 (Form 1040), line 18,
+  // is reported on Form 8960, line 10." Treas. Reg. 1.1411-4(f)(2)(iii) (section 62(a)(9) penalty is properly
+  // allocable): https://www.law.cornell.edu/cfr/text/26/1.1411-4
+  // The app doesn't populate Schedule 1 line 18: a 1099-INT box 2 penalty knocks out, so line 10 stays $0.
+  // If this test starts failing because the penalty is now supported, wire Schedule 1 line 18 into Form 8960 line 10.
+  it(`1099-INT box 2 penalty over the threshold: knocked out, never a $0 line 10`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8960Line11`, `/flowKnockoutHasEarlyWithdrawlPenalty`, `/flowIsKnockedOut`];
+    const g = graph(status(`single`), 260000, 10000, {
+      [`/interestReports/#${intId}/writableEarlyWithdrawlPenaltyAmount`]: createDollarWrapper(`150`),
+    });
+    expect(val(g, `/flowKnockoutHasEarlyWithdrawlPenalty`)).toBe(true);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(true);
+    expect(dollars(g, `/form8960Line11`)).toBe(`0.00`);
+  });
+  it(`no penalty: not knocked out by the penalty stop`, () => {
+    const g = graph(status(`single`), 260000, 10000);
+    expect(val(g, `/flowKnockoutHasEarlyWithdrawlPenalty`)).toBe(false);
+  });
+});

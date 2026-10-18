@@ -153,11 +153,21 @@
         modifications. Add lines 9d and 10." i8960 (2026 draft) p. 18 (PDF p. 19), Line 9a: "Enter on Form 8960,
         line 9a, the interest expense you paid or accrued during the tax year deducted on Schedule A (Form 1040),
         line 9." Line 9b: "Include state, local, and foreign income taxes you paid for the tax year that are
-        attributable to NII ... See the Instructions for Schedule A (Form 1040)". These are itemized deductions; a
-        filer who takes the standard deduction (taxCalculations /wantsStandardDeduction) has no such deduction
-        allowed in computing taxable income, so lines 9a-9d and 10 are $0. An itemizer over the threshold is
-        stopped by /flowKnockoutForm8960Unsupported (the allocation and the Lines 9 and 10 Section 68 Limitation
-        Worksheet, i8960 p. 19, are not modeled).
+        attributable to NII ... See the Instructions for Schedule A (Form 1040)". 1411(c)(1)(B) is not limited to
+        itemized deductions. Treas. Reg. 1.1411-4(f) (https://www.law.cornell.edu/cfr/text/26/1.1411-4): (f)(1)(i)
+        "only properly allocable deductions described in this paragraph (f) may be taken into account"; (f)(2)
+        "Properly allocable deductions described in section 62" are section 62(a)(4) deductions allocable to rents
+        and royalties, section 62(a)(1) deductions of a 1.1411-5 trade or business, (f)(2)(iii) "Penalty on early
+        withdrawal of savings. Deductions described in section 62(a)(9) are taken into account in determining net
+        investment income", and the (f)(2)(iv) section 1411 NOL amount. Lines 9a-9c come from Schedule A, so for a
+        filer who takes the standard deduction (taxCalculations /wantsStandardDeduction) lines 9a-9d are $0.
+        Line 10: i8960 (2026 draft) p. 13 (PDF p. 14): "The early withdrawal penalty reported on Schedule 1 (Form
+        1040), line 18, is reported on Form 8960, line 10." The app never populates Schedule 1 line 18: any
+        1099-INT box 2 penalty knocks out (interest /flowKnockoutHasEarlyWithdrawlPenalty, in /flowIsKnockedOut).
+        The 62(a)(4) and 62(a)(1) items only arise with Schedule E or Schedule C, which are stopped above the
+        threshold, and there is no NOL deduction in the app. So line 10 is $0. When Schedule 1 line 18 is wired,
+        line 10 must carry it (guarded by form8960.test.ts). An itemizer over the threshold is stopped by /flowKnockoutForm8960Unsupported (the
+        allocation and the Lines 9 and 10 Section 68 Limitation Worksheet, i8960 p. 19, are not modeled).
       </Description>
       <Export mef="true" />
       <Derived>
@@ -346,7 +356,7 @@
         rules and the 469 passive-loss interaction aren't modeled. (Parts II-IV K-1 income from partnerships, S
         corporations, estates and trusts is already stopped by scheduleE /flowKnockoutScheduleEPartII.)
         (3) itemized deductions (scheduleA /itemizesDeductions): Part II lines 9a-9c and 10 allocations (1411(c)(1)(B)
-        "properly allocable") and the i8960 Section 68 worksheet aren't modeled.
+        "properly allocable"; Treas. Reg. 1.1411-4(f)) and the i8960 Section 68 worksheet aren't modeled.
         At or under the threshold, line 15 is $0, so line 17 is $0 whatever line 12 is, and nothing is stopped.
       </Description>
       <BlockSubmissionOnTrue />
