@@ -3085,15 +3085,27 @@
       <Derived>
         <Not>
           <Any>
-            <Dependency path="/filerResidenceOrIncomeStateOutOfScope" />
-            <Equal>
-              <Left>
-                <Dependency path="/allPrimaryFilerIncomeFormsInScopedState" />
-              </Left>
-              <Right>
-                <Enum optionsPath="/primaryFilerW2And1099IntStateOptions">anotherState</Enum>
-              </Right>
-            </Equal>
+            <!-- #80: a PA/FL part-year resident ("moreThanOne" + paPit /paPartYearSupported) is in scope;
+                 their forms' states are asked per W-2 (formW2s /formW2s/*/paPartYearW2State). -->
+            <All>
+              <Dependency path="/filerResidenceOrIncomeStateOutOfScope" />
+              <Not>
+                <Dependency module="paPit" path="/paPartYearSupported" />
+              </Not>
+            </All>
+            <All>
+              <Not>
+                <Dependency module="paPit" path="/paPartYearSupported" />
+              </Not>
+              <Equal>
+                <Left>
+                  <Dependency path="/allPrimaryFilerIncomeFormsInScopedState" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/primaryFilerW2And1099IntStateOptions">anotherState</Enum>
+                </Right>
+              </Equal>
+            </All>
 
             <All>
               <IsComplete>
@@ -3146,9 +3158,18 @@
 
     <Fact path="/filingStateOrProvince">
       <Name>The state(s) in which the taxpayer should file state taxes</Name>
-      <Description>The sole fact used to determine where the taxpayer should file state taxes</Description>
+      <Description>The sole fact used to determine where the taxpayer should file state taxes. #80: a PA/FL part-year
+        resident files in PA (Florida has no state income tax return).</Description>
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <Dependency module="paPit" path="/paPartYearSupported" />
+            </When>
+            <Then>
+              <Enum optionsPath="/scopedStateOptions">pa</Enum>
+            </Then>
+          </Case>
           <Case>
             <When>
               <Equal>

@@ -197,6 +197,21 @@ describe(`Schedule 1-A Part III — overtime figured from records, switch ON (#6
     });
     expect(complete(fg, `/schedule1ALine27`)).toBe(false);
   });
+
+  it(`switch on: 1099 screen is available; answering no lets methods compute`, ({ task }) => {
+    // Draft Form 1040 instructions p.106 alternative methods — only when the switch is on.
+    task.meta.testedFactPaths = [`/flowAskOvertime1099`, `/flowAskOvertimeMethod`, `/overtimeSelfFiguredAmount`];
+    const asked = noTT(70000, {
+      ...switchOn,
+      '/overtimeNotOnW2CodeTT': createBooleanWrapper(true),
+    });
+    expect(asked.get(`/flowAskOvertime1099` as ConcretePath).get).toBe(true);
+    const fg = noTT(70000, selfFigured(`statementPremium`, `3000`));
+    expect(fg.get(`/flowAskOvertime1099` as ConcretePath).get).toBe(true);
+    expect(fg.get(`/flowAskOvertimeMethod` as ConcretePath).get).toBe(true);
+    expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(false);
+    expect(get(fg, `/overtimeSelfFiguredAmount`)).toBe(`3000.00`);
+  });
 });
 
 describe(`Schedule 1-A Part III — stop for overtime that can't be computed (#68)`, () => {
@@ -250,11 +265,18 @@ describe(`Schedule 1-A Part III — TY2026 default: alternative methods switch O
     expect(noTT(70000, {}).get(`/overtimeAlternativeMethodsApply` as ConcretePath).get).toBe(false);
   });
 
-  it(`overtime not on code TT: stop fires, method questions not asked, nothing computed`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutOvertimeNotComputable`, `/flowIsKnockedOut`, `/flowAskOvertimeMethod`];
+  it(`overtime not on code TT: stop fires, 1099 and method screens skipped, nothing computed`, ({ task }) => {
+    // Rev polish: /flowAskOvertime1099 gates the 1099 screen so stop-only users skip it.
+    task.meta.testedFactPaths = [
+      `/flowKnockoutOvertimeNotComputable`,
+      `/flowIsKnockedOut`,
+      `/flowAskOvertime1099`,
+      `/flowAskOvertimeMethod`,
+    ];
     const fg = noTT(70000, { '/overtimeNotOnW2CodeTT': createBooleanWrapper(true) });
     expect(fg.get(`/flowKnockoutOvertimeNotComputable` as ConcretePath).get).toBe(true);
     expect(fg.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+    expect(fg.get(`/flowAskOvertime1099` as ConcretePath).get).toBe(false);
     expect(fg.get(`/flowAskOvertimeSpecialRule` as ConcretePath).get).toBe(false);
     expect(fg.get(`/flowAskOvertimeMethod` as ConcretePath).get).toBe(false);
     expect(get(fg, `/overtimeSelfFiguredAmount`)).toBe(`0.00`);
