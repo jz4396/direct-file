@@ -53,6 +53,7 @@ const build = (status: Record<string, unknown>, extra: Record<string, unknown>) 
     [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
     '/livedTogetherAllYearWithSpouse': createBooleanWrapper(true),
     '/soldCapitalAssets': createBooleanWrapper(false),
+    '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
     ...pa(),
     ...extra,
@@ -75,7 +76,12 @@ const sale = (proceeds: number, basis: number) => ({
   [`/form8949Transactions/#${txId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
   '/form8949TransactionsIsDone': createBooleanWrapper(true),
 });
-const KOS = [`/flowKnockoutPaUnsupportedItems`, `/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutPaSpUnsupported`];
+const KOS = [
+  `/flowKnockoutPaUnreimbursedEmployeeExpenses`,
+  `/flowKnockoutPaUnsupportedItems`,
+  `/flowKnockoutPaUnsupportedIncome`,
+  `/flowKnockoutPaSpUnsupported`,
+];
 
 describe(`PA-40 core (#78)`, () => {
   it(`compensation only: line 1a = W-2 box 16 (not box 1); 3.07%; refund`, ({ task }) => {
@@ -160,6 +166,37 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
     expect(submissionBlockingFacts).toContain(k);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutStateReturn`);
   };
+  it(`line 1b unreimbursed employee business expenses (PA Schedule UE) = yes (#102)`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaUnreimbursedEmployeeExpenses`,
+      `/flowKnockoutStateReturn`,
+      `/flowIsKnockedOut`,
+    ];
+    // PA-40 IN (2025) p. 27: Schedule UE isn't computed, so a yes knocks out rather than leaving line 1b at $0.
+    blocks(
+      build(singleFilerData, {
+        ...w2(50000, 50000, 1535),
+        '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(true),
+      }),
+      `/flowKnockoutPaUnreimbursedEmployeeExpenses`
+    );
+  });
+  it(`line 1b = no: line 1b $0, line 1c = line 1a, no knockout (#102)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine1b`, `/paLine1c`];
+    const g = build(singleFilerData, w2(50000, 50000, 1535));
+    expect(val(g, `/paLine1b`)).toBe(`0.00`);
+    expect(val(g, `/paLine1c`)).toBe(`50000.00`);
+    expect(get(g, `/flowKnockoutPaUnreimbursedEmployeeExpenses`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+  });
+  it(`line 1b yes for a non-PA resident doesn't block (#102)`, () => {
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 0),
+      ...pa(`nj`),
+      '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(true),
+    });
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+  });
   it(`unsupported PA items (UE, Line 10 deductions, G-L, OC/DC, estimates, use tax, Sch J/T) = yes`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedItems`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
     blocks(
