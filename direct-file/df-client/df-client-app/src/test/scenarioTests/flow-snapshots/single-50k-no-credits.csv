@@ -33,6 +33,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=058e9967-140e-4cde-8978-a9a015e9fb41
@@ -52,7 +54,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=058e9967-140e-4cde-8978-a9a015e9fb41
 /flow/income/jobs/w2-missing-state-income?%2FformW2s=058e9967-140e-4cde-8978-a9a015e9fb41
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=058e9967-140e-4cde-8978-a9a015e9fb41
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=058e9967-140e-4cde-8978-a9a015e9fb41
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 Subcategory: /flow/income/dependent-care
 /flow/income/dependent-care/dep-care-intro
@@ -76,6 +82,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/student-loan-interest-amount
 /flow/credits-and-deductions/deductions/student-loan-interest-summary
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -88,7 +98,12 @@ Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-y-n
+/flow/your-taxes/amount/pa-unsupported-income-knockout
+/flow/your-taxes/amount/tax-amount-intro
+/flow/your-taxes/amount/tax-amount-number
+/flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/amount
+/flow/your-taxes/amount/pa-unsupported-income-knockout
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation

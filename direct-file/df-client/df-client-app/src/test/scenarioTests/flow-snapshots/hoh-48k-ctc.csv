@@ -58,6 +58,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=00aab96a-d7d3-4bbc-801b-6d7fd71e37c5
@@ -76,7 +78,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=00aab96a-d7d3-4bbc-801b-6d7fd71e37c5
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=00aab96a-d7d3-4bbc-801b-6d7fd71e37c5
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=00aab96a-d7d3-4bbc-801b-6d7fd71e37c5
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=00aab96a-d7d3-4bbc-801b-6d7fd71e37c5
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 /flow/income/interest/int-income-loop-intro?%2FinterestReports=e4ac6962-a8b6-48af-8327-6e14c73d9712
 /flow/income/interest/add-int-income?%2FinterestReports=e4ac6962-a8b6-48af-8327-6e14c73d9712
@@ -109,6 +115,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -122,20 +132,25 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/ctc-intro
 /flow/credits-and-deductions/credits/ctc-improper-claims
 /flow/credits-and-deductions/credits/ctc-qualified
-/flow/credits-and-deductions/credits/credit-summary-qualified
+/flow/credits-and-deductions/credits/eitc-breather
+/flow/credits-and-deductions/credits/eitc-taxpayer-qc-of-another
 Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-y-n
+/flow/your-taxes/amount/pa-unsupported-income-knockout
+/flow/your-taxes/amount/tax-amount-intro
+/flow/your-taxes/amount/tax-amount-number
+/flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/amount
+/flow/your-taxes/amount/pa-unsupported-income-knockout
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/refund-intro
-/flow/your-taxes/payment-method/refund-method-choice
-/flow/your-taxes/payment-method/refund-direct-deposit
-/flow/your-taxes/payment-method/refund-outro
+/flow/your-taxes/payment-method/payment-intro
+/flow/your-taxes/payment-method/payment-method-choice
+/flow/your-taxes/payment-method/payment-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice

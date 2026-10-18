@@ -12,6 +12,7 @@ Subcategory: /flow/you-and-your-family/about-you
 /flow/you-and-your-family/about-you/about-you-state-residency-scope?%2FprimaryFiler=4fe185d4-3cd1-46bf-befb-3627a41c215b
 /flow/you-and-your-family/about-you/about-you-state-income-form?%2FprimaryFiler=4fe185d4-3cd1-46bf-befb-3627a41c215b
 /flow/you-and-your-family/about-you/about-you-state-income-1099-misc-pfd?%2FprimaryFiler=4fe185d4-3cd1-46bf-befb-3627a41c215b
+/flow/you-and-your-family/about-you/state-breather-fl?%2FprimaryFiler=4fe185d4-3cd1-46bf-befb-3627a41c215b
 /flow/you-and-your-family/about-you/about-you-tin?%2FprimaryFiler=4fe185d4-3cd1-46bf-befb-3627a41c215b
 /flow/you-and-your-family/about-you/about-you-ssn-valid-for-work?%2FprimaryFiler=4fe185d4-3cd1-46bf-befb-3627a41c215b
 /flow/you-and-your-family/about-you/about-you-ip-pin-input-review?%2FprimaryFiler=4fe185d4-3cd1-46bf-befb-3627a41c215b
@@ -33,25 +34,20 @@ Subcategory: /flow/you-and-your-family/dependents
 /flow/you-and-your-family/dependents/add-person-basic-info?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-relationship-category?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-relationship-type-child?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
-/flow/you-and-your-family/dependents/add-person-student?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-disability?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-self-care?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-lived-with-you?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
-/flow/you-and-your-family/dependents/add-person-lived-with-you-in-us?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-tin?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-acknowledge-tin?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
-/flow/you-and-your-family/dependents/add-person-qc-support?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
+/flow/you-and-your-family/dependents/add-person-qr-support?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
+/flow/you-and-your-family/dependents/add-person-qr-gross-income?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-married?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 /flow/you-and-your-family/dependents/add-person-us-citizen?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
-/flow/you-and-your-family/dependents/add-person-qc-of-another?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
-/flow/you-and-your-family/dependents/qualified-dependent-tin-input?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
-/flow/you-and-your-family/dependents/qualified-dependent-ip-pin-choice?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
-/flow/you-and-your-family/dependents/qualified-dependent-confirmation?%2FfamilyAndHousehold=04282192-cc89-47a6-8728-07bc050b580f
 Subcategory: /flow/you-and-your-family/filing-status
 /flow/you-and-your-family/filing-status/filing-status-override
 /flow/you-and-your-family/filing-status/filing-status-error-manual-fix
 /flow/you-and-your-family/filing-status/incomplete-family-information
-/flow/you-and-your-family/filing-status/hoh-qp-name
+/flow/you-and-your-family/filing-status/hoh-qp-selection
 Category: /flow/income
 Subcategory: /flow/income/income-sources
 /flow/income/income-sources/income-sources-intro
@@ -64,6 +60,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=1896d5e3-ddc6-4f39-9040-d63c74a2e62b
@@ -81,8 +79,13 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-add-box-13-options?%2FformW2s=1896d5e3-ddc6-4f39-9040-d63c74a2e62b
 /flow/income/jobs/w2-has-box-14?%2FformW2s=1896d5e3-ddc6-4f39-9040-d63c74a2e62b
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=1896d5e3-ddc6-4f39-9040-d63c74a2e62b
+/flow/income/jobs/w2-fl-state-withholding-ko?%2FformW2s=1896d5e3-ddc6-4f39-9040-d63c74a2e62b
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=1896d5e3-ddc6-4f39-9040-d63c74a2e62b
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=1896d5e3-ddc6-4f39-9040-d63c74a2e62b
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 /flow/income/interest/int-income-loop-intro?%2FinterestReports=68174ec8-8788-4a90-92bf-0ac5ca8f7160
 /flow/income/interest/add-int-income?%2FinterestReports=68174ec8-8788-4a90-92bf-0ac5ca8f7160
@@ -119,6 +122,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -126,9 +133,6 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/marketplace-breather
 /flow/credits-and-deductions/credits/qualified-marketplace-plan
 /flow/credits-and-deductions/credits/ptc-not-qualified-no-aptc
-/flow/credits-and-deductions/credits/odc-improper-claims
-/flow/credits-and-deductions/credits/odc-qualified
-/flow/credits-and-deductions/credits/credit-summary-qualified
 Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
@@ -141,11 +145,6 @@ Subcategory: /flow/your-taxes/amount
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
-Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/refund-intro
-/flow/your-taxes/payment-method/refund-method-choice
-/flow/your-taxes/payment-method/refund-direct-deposit
-/flow/your-taxes/payment-method/refund-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice
@@ -155,7 +154,6 @@ Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/comms-different-language-input
 /flow/your-taxes/other-preferences/comms-different-format-choice
 /flow/your-taxes/other-preferences/comms-different-format-input
-/flow/your-taxes/other-preferences/presidential-fund
 Category: /flow/complete
 Subcategory: /flow/complete/review
 /flow/complete/review/review

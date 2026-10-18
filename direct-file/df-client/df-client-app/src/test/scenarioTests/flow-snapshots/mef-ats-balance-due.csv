@@ -9,6 +9,7 @@ Subcategory: /flow/you-and-your-family/about-you
 /flow/you-and-your-family/about-you/about-you-state-residency-scope?%2FprimaryFiler=45058e1f-2caf-4345-afcc-c9b788932df1
 /flow/you-and-your-family/about-you/about-you-state-income-form?%2FprimaryFiler=45058e1f-2caf-4345-afcc-c9b788932df1
 /flow/you-and-your-family/about-you/about-you-state-income-1099-misc-pfd?%2FprimaryFiler=45058e1f-2caf-4345-afcc-c9b788932df1
+/flow/you-and-your-family/about-you/state-breather-fl?%2FprimaryFiler=45058e1f-2caf-4345-afcc-c9b788932df1
 /flow/you-and-your-family/about-you/about-you-tin?%2FprimaryFiler=45058e1f-2caf-4345-afcc-c9b788932df1
 /flow/you-and-your-family/about-you/about-you-ip-pin-input-review?%2FprimaryFiler=45058e1f-2caf-4345-afcc-c9b788932df1
 /flow/you-and-your-family/about-you/about-you-blind?%2FprimaryFiler=45058e1f-2caf-4345-afcc-c9b788932df1
@@ -33,6 +34,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=392313c0-d066-4f74-8f69-2832ddd68960
@@ -51,7 +54,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=392313c0-d066-4f74-8f69-2832ddd68960
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=392313c0-d066-4f74-8f69-2832ddd68960
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=392313c0-d066-4f74-8f69-2832ddd68960
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=392313c0-d066-4f74-8f69-2832ddd68960
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 /flow/income/interest/int-income-loop-intro?%2FinterestReports=ce8e6b4e-3583-4363-9b79-af6c92793813
 /flow/income/interest/add-int-income?%2FinterestReports=ce8e6b4e-3583-4363-9b79-af6c92793813
@@ -76,6 +83,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/student-loan-interest-not-qualified
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -88,7 +99,12 @@ Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-y-n
+/flow/your-taxes/amount/pa-unsupported-income-knockout
+/flow/your-taxes/amount/tax-amount-intro
+/flow/your-taxes/amount/tax-amount-number
+/flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/amount
+/flow/your-taxes/amount/pa-unsupported-income-knockout
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation

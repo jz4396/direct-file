@@ -77,6 +77,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=746f4e90-9835-42f2-b71f-9c385e4a3185
@@ -95,6 +97,7 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=746f4e90-9835-42f2-b71f-9c385e4a3185
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=746f4e90-9835-42f2-b71f-9c385e4a3185
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=746f4e90-9835-42f2-b71f-9c385e4a3185
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=746f4e90-9835-42f2-b71f-9c385e4a3185
 Subcategory: /flow/income/unemployment
 /flow/income/unemployment/unemployment-loop-intro?%2Fform1099Gs=41e78cff-0e1f-419f-84c1-1699ca36a52e
 /flow/income/unemployment/add-1099-g?%2Fform1099Gs=41e78cff-0e1f-419f-84c1-1699ca36a52e
@@ -103,6 +106,9 @@ Subcategory: /flow/income/unemployment
 /flow/income/unemployment/1099-g-repay-options?%2Fform1099Gs=41e78cff-0e1f-419f-84c1-1699ca36a52e
 /flow/income/unemployment/1099-g-withholding?%2Fform1099Gs=41e78cff-0e1f-419f-84c1-1699ca36a52e
 /flow/income/unemployment/1099-g-state-info?%2Fform1099Gs=41e78cff-0e1f-419f-84c1-1699ca36a52e
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 Subcategory: /flow/income/dependent-care
 /flow/income/dependent-care/dep-care-intro
@@ -123,6 +129,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -145,7 +155,12 @@ Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-y-n
+/flow/your-taxes/amount/pa-unsupported-income-knockout
+/flow/your-taxes/amount/tax-amount-intro
+/flow/your-taxes/amount/tax-amount-number
+/flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/amount
+/flow/your-taxes/amount/pa-unsupported-income-knockout
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
