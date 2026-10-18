@@ -127,10 +127,10 @@
     </Fact>
     <Fact path="/flowKnockoutPaUnreimbursedEmployeeExpenses">
       <Name>Flow knockout: PA-40 line 1b (PA Schedule UE)</Name>
-      <Description>#102: yes to /paHasUnreimbursedEmployeeExpenses. Line 1b needs PA Schedule UE (PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 27: "PA law only permits expenses required to perform the duties of a job or profession."), which this tool doesn't compute; knocked out rather than using $0. 72 P.S. §7303(a)(1) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Description>#102: yes to /paHasUnreimbursedEmployeeExpenses. Line 1b needs PA Schedule UE (PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 27: "PA law only permits expenses required to perform the duties of a job or profession."), which this tool doesn't compute; knocked out rather than using $0. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(1) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
-      <Derived><All><IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></All></Derived>
+      <Derived><All><Dependency module="stateReturn" path="/stateReturnPaFiled" /><IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></All></Derived>
     </Fact>
     <Fact path="/paHasUnsupportedItems">
       <Name>Has PA-40 items this tool doesn't support</Name>

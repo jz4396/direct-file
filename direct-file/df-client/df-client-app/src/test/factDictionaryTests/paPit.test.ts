@@ -195,9 +195,11 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       ...pa(`nj`),
       '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(true),
     });
+    expect(get(g, `/flowKnockoutPaUnreimbursedEmployeeExpenses`).get).toBe(false);
     expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
-  it(`unsupported PA items (UE, Line 10 deductions, G-L, OC/DC, estimates, use tax, Sch J/T) = yes`, ({ task }) => {
+  it(`unsupported PA items (Line 10 deductions, G-L, OC/DC, estimates, use tax, Sch J/T) = yes`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedItems`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
     blocks(
       build(singleFilerData, { ...w2(50000, 50000, 1535), '/paHasUnsupportedItems': createBooleanWrapper(true) }),
