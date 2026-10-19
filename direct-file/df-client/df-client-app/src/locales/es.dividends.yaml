@@ -26,8 +26,6 @@ headings:
   /heading/income/dividends/nominee: ¿Recibió alguno de estos dividendos para otra persona (como nominatario)?
   /heading/knockout/dividends-holding-period:
     Esta herramienta aún no admite dividendos del encasillado 1b que no son calificados
-  /heading/knockout/dividends-capital-gain-distributions:
-    Esta herramienta aún no admite distribuciones de ganancias de capital
   /heading/knockout/dividends-nondividend-over-basis:
     Esta herramienta aún no admite distribuciones que no son dividendos mayores que su base
   /heading/knockout/dividends-section-199a: Esta herramienta aún no admite dividendos de la sección 199A
@@ -128,13 +126,6 @@ info:
             Los dividendos que no cumplen con las reglas del período de tenencia tributan como dividendos ordinarios, no
             como dividendos calificados. Esta herramienta aún no puede separarlos. Necesitará otra manera de presentar
             esta declaración.
-  /info/knockout/dividends-capital-gain-distributions:
-    alertText:
-      body:
-        - p:
-            Las distribuciones de ganancias de capital se declaran en el Anexo D o en la línea 7 del Formulario 1040 y
-            tributan a las tasas de ganancias de capital. Esta herramienta aún no lo calcula. Necesitará otra manera de
-            presentar esta declaración.
   /info/knockout/dividends-nondividend-over-basis:
     alertText:
       body:

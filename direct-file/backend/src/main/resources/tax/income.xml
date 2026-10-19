@@ -785,25 +785,35 @@
 
     <Fact path="/capitalGainsScheduleDNotRequired">
       <Name>Capital Gains Schedule D Not Required</Name>
-      <Description>1040 checkbox when *nonzero* gain/loss is exempt from Schedule D.
-        Always false in scope: capital gain distributions (1099-DIV box 2a) stop the return
-        (dividends /flowKnockoutCapitalGainDistributions), and every
-        Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p.11).
-      </Description>
+      <Description>Form 1040 line 7b "Schedule D not required" box. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33, Line 7b: "If Exception 1 applies, check the "Schedule D not required" box on line 7b." Exception 1 (p. 31) is dividends /capitalGainDistributionsWithoutScheduleD; every Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p. 11).</Description>
+      <Export mef="true" />
       <Derived>
-        <False />
+        <Dependency module="dividends" path="/capitalGainDistributionsWithoutScheduleD" />
       </Derived>
     </Fact>
 
     <Fact path="/capitalGainsOrLosses">
       <Name>Capital Gains or Losses</Name>
-      <Description>Total capital gains or losses for Form 1040 line 7 from Schedule D
+      <Description>Form 1040 line 7a. #86b: under line 7a Exception 1 (dividends
+        /capitalGainDistributionsWithoutScheduleD), Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33: "If Exception 1 applies, enter
+        your total capital gain distributions (from box 2a of Form(s) 1099-DIV) on line 7a" (whole dollars, p. 23).
+        Otherwise total capital gains or losses from Schedule D
         (after IRC §1211(b) limitation). See scheduleD module /capitalGainsOrLossesFor1040.
         Preferential 0/15/20% tax on net capital gain: QDCG Tax Worksheet in scheduleD3.xml
         (breakpoints Rev. Proc. 2025-32 §4.03 p.13).</Description>
-      <Export downstreamFacts="true" />
+      <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <Dependency module="dividends" path="/capitalGainDistributionsWithoutScheduleD" />
+            </When>
+            <Then>
+              <Round>
+                <Dependency module="dividends" path="/totalCapitalGainDistributions" />
+              </Round>
+            </Then>
+          </Case>
           <Case>
             <When>
               <IsComplete>
