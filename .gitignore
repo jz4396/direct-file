@@ -66,3 +66,6 @@ direct-file/scripts/*.csv
 # files created when building sbom.json files
 sbom.json
 
+
+# local Docker stack (scripts/local-docker.sh)
+/direct-file/.local-docker.env

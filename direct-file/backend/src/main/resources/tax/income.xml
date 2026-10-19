@@ -509,23 +509,29 @@
 
     <Fact path="/qualifiedDividends">
       <Name>Qualified Dividends</Name>
-      <Description>Qualified dividend income to report on line 3a of Form 1040.
-
-        OUT OF SCOPE</Description>
-
+      <Description>Qualified dividend income to report on line 3a of Form 1040. #86: total of Form 1099-DIV box 1b
+        (dividends /totalQualifiedDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        p. 25, Line 3a: "Enter your total qualified dividends on line 3a. ... Generally, these dividends are shown in
+        box 1b of Form(s) 1099-DIV." Taxed through the QDCG Tax Worksheet (scheduleD3 /qdcgLine2).</Description>
+      <Export downstreamFacts="true" mef="true" />
       <Derived>
-        <Dollar>0</Dollar>
+        <Round>
+          <Dependency module="dividends" path="/totalQualifiedDividends" />
+        </Round>
       </Derived>
     </Fact>
 
     <Fact path="/ordinaryDividends">
       <Name>Ordinary dividends</Name>
-      <Description>Ordinary dividend income to report on line 3b of Form 1040.
-        OUT OF SCOPE</Description>
-      <Export downstreamFacts="true" />
-
+      <Description>Ordinary dividend income to report on line 3b of Form 1040. #86: total of Form 1099-DIV box 1a
+        (dividends /totalOrdinaryDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        p. 26, Line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
+        Form(s) 1099-DIV." 26 U.S.C. 61(a)(7) (https://www.law.cornell.edu/uscode/text/26/61).</Description>
+      <Export downstreamFacts="true" mef="true" />
       <Derived>
-        <Dollar>0</Dollar>
+        <Round>
+          <Dependency module="dividends" path="/totalOrdinaryDividends" />
+        </Round>
       </Derived>
     </Fact>
 
@@ -707,26 +713,107 @@
       </Derived>
     </Fact>
 
+    <Fact path="/form8615UnearnedIncome">
+      <Name>Unearned income for the Form 8615 test</Name>
+      <Description>Instructions for Form 8615 (2026 draft) https://www.irs.gov/pub/irs-dft/i8615--dft.pdf, Unearned Income: "It includes taxable interest, dividends, capital gains (including capital gain distributions), rents, royalties, pension and annuity income, taxable scholarship and fellowship grants not reported on Form W-2, unemployment compensation, alimony, the taxable part of social security and pension payments". In scope: Form 1040 lines 2b, 3b, 4b, 5b, 6b, 7 (gains only) and Schedule 1 lines 5 (rents and royalties, gains only), 7 and 8 (other income, such as the Alaska PFD).</Description>
+      <Derived>
+        <Add>
+          <Dependency module="interest" path="/interestIncome" />
+          <Dependency path="/ordinaryDividends" />
+          <Dependency path="/taxableIraDistributions" />
+          <Dependency path="/taxablePensionsAndAnnuities" />
+          <Dependency module="socialSecurity" path="/taxableSocialSecurityBenefits" />
+          <GreaterOf>
+            <Dependency path="/capitalGainsOrLosses" />
+            <Dollar>0</Dollar>
+          </GreaterOf>
+          <GreaterOf>
+            <Dependency module="scheduleE" path="/scheduleENetIncome" />
+            <Dollar>0</Dollar>
+          </GreaterOf>
+          <Dependency module="unemployment" path="/unemploymentCompensation" />
+          <Dependency path="/schedule1TotalOtherIncome" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutForm8615">
+      <Name>Knockout: tax for certain children who have unearned income (Form 8615)</Name>
+      <Description>Form 8615 is not supported. Instructions for Form 8615 (2026 draft) https://www.irs.gov/pub/irs-dft/i8615--dft.pdf, Who Must File: "1. The child had more than $2,700 of unearned income. 2. The child is required to file a tax return. 3. The child either: a. Was under age 18 at the end of 2026, b. Was age 18 at the end of 2026 and didn't have earned income that was more than half of the child's support, or c. Was a full-time student at least age 19 and under age 24 at the end of 2026 and didn't have earned income that was more than half of the child's support." and the child doesn't file a joint return. TY2026 figure: $2,700 = 2 x $1,350. Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.02, p. 12: "For taxable years beginning in 2026, the amount in § 1(g)(4)(A)(ii)(I), which is used to reduce the net unearned income reported on the child's return that is subject to the "kiddie tax," is $1,350." 26 U.S.C. 1(g)(4)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/1) subtracts that amount plus "the greater of the amount described in subclause (I)" or connected itemized deductions, so net unearned income is more than $0 only above 2 x $1,350; the 2026 draft instructions (title "2026 Instructions for Form 8615") state the same $2,700. 26 U.S.C. 1(g)(2)(A)(ii) brings in an 18-year-old, and a full-time student under 24, only when "earned income ... does not exceed one-half of the amount of the individual's support"; support isn't asked, so an 18-year-old always stops, even with wages. Support and whether a parent was alive aren't asked, so this stops every return that could meet the test: not filing jointly, unearned income (/form8615UnearnedIncome) over $2,700, and the primary filer under 24 at the end of the year, unless 19 or older and answered no to being a student. Form 8814 (a parent's election to report a child's interest and dividends) is optional, so a parent who does not make it files without it.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Not>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Not>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/form8615UnearnedIncome" />
+            </Left>
+            <Right>
+              <Dollar>2700</Dollar>
+            </Right>
+          </GreaterThan>
+          <LessThan>
+            <Left>
+              <Dependency module="filers" path="/primaryFiler/age" />
+            </Left>
+            <Right>
+              <Int>24</Int>
+            </Right>
+          </LessThan>
+          <Any>
+            <LessThanOrEqual>
+              <Left>
+                <Dependency module="filers" path="/primaryFiler/age" />
+              </Left>
+              <Right>
+                <Int>18</Int>
+              </Right>
+            </LessThanOrEqual>
+            <Not>
+              <IsComplete>
+                <Dependency module="filers" path="/primaryFiler/isStudent" />
+              </IsComplete>
+            </Not>
+            <Dependency module="filers" path="/primaryFiler/isStudent" />
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/capitalGainsScheduleDNotRequired">
       <Name>Capital Gains Schedule D Not Required</Name>
-      <Description>1040 checkbox when *nonzero* gain/loss is exempt from Schedule D.
-        Always false in scope: capital gain distributions (1099-DIV box 2a) are not supported, and every
-        Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p.11).
-      </Description>
+      <Description>Form 1040 line 7b "Schedule D not required" box. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33, Line 7b: "If Exception 1 applies, check the "Schedule D not required" box on line 7b." Exception 1 (p. 31) is dividends /capitalGainDistributionsWithoutScheduleD; every Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p. 11).</Description>
+      <Export mef="true" />
       <Derived>
-        <False />
+        <Dependency module="dividends" path="/capitalGainDistributionsWithoutScheduleD" />
       </Derived>
     </Fact>
 
     <Fact path="/capitalGainsOrLosses">
       <Name>Capital Gains or Losses</Name>
-      <Description>Total capital gains or losses for Form 1040 line 7 from Schedule D
+      <Description>Form 1040 line 7a. #86b: under line 7a Exception 1 (dividends
+        /capitalGainDistributionsWithoutScheduleD), Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33: "If Exception 1 applies, enter
+        your total capital gain distributions (from box 2a of Form(s) 1099-DIV) on line 7a" (whole dollars, p. 23).
+        Otherwise total capital gains or losses from Schedule D
         (after IRC §1211(b) limitation). See scheduleD module /capitalGainsOrLossesFor1040.
         Preferential 0/15/20% tax on net capital gain: QDCG Tax Worksheet in scheduleD3.xml
         (breakpoints Rev. Proc. 2025-32 §4.03 p.13).</Description>
-      <Export downstreamFacts="true" />
+      <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <Dependency module="dividends" path="/capitalGainDistributionsWithoutScheduleD" />
+            </When>
+            <Then>
+              <Round>
+                <Dependency module="dividends" path="/totalCapitalGainDistributions" />
+              </Round>
+            </Then>
+          </Case>
           <Case>
             <When>
               <IsComplete>

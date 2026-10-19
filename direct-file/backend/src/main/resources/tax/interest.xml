@@ -1040,14 +1040,20 @@
       <Name>Schedule B required because of taxable interest</Name>
       <Description>Whether total taxable interest is over $1,500. Instructions for Schedule B (Form 1040)
         (2025) p. 1: "You had over $1,500 of taxable interest or ordinary dividends." "Over" is a strict
-        comparison, so exactly $1,500 does not require Schedule B.</Description>
+        comparison, so exactly $1,500 does not require Schedule B. Compared in whole dollars, the same way as
+        /requiresScheduleBForOrdinaryDividends (income /ordinaryDividends): Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23, Rounding Off to Whole Dollars: "If you have to add
+        two or more amounts to figure the amount to enter on a line, include cents when adding the amounts and
+        round off only the total."</Description>
 
       <Derived>
         <GreaterThan>
           <Left>
-            <CollectionSum>
-              <Dependency path="/interestReports/*/taxableInterest" />
-            </CollectionSum>
+            <Round>
+              <CollectionSum>
+                <Dependency path="/interestReports/*/taxableInterest" />
+              </CollectionSum>
+            </Round>
           </Left>
           <Right>
             <Dependency path="/maximumTaxableInterestIncomeBeforeScheduleB" />
@@ -1062,8 +1068,9 @@
         Instructions for Schedule B (Form 1040) (2025) p. 1: "You had over $1,500 of taxable interest or
         ordinary dividends." Instructions for Schedule B (2025) p. 2, Line 5: "Report on line 5 all of your
         ordinary dividends. This amount should be shown in box 1a of your Forms 1099-DIV or substitute
-        statements." Reads the income module's ordinary dividends total, so it applies once that total is
-        populated from Form 1099-DIV.</Description>
+        statements." Reads income /ordinaryDividends, the whole-dollar total of Form 1099-DIV box 1a (Form 1040
+        instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23: "include cents when adding the amounts
+        and round off only the total"), the same rounding as /requiresScheduleBForInterest.</Description>
 
       <Derived>
         <GreaterThan>

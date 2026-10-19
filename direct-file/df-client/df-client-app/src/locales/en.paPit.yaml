@@ -25,7 +25,11 @@ dataviews:
     /paHasUnreimbursedEmployeeExpenses:
       Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
     /paHasUnsupportedItems: Do any Pennsylvania items this tool doesn’t support apply to you?
+    /paHasExemptObligationDividends: Do any of your dividends come from U.S. government or Pennsylvania obligations?
 headings:
+  /heading/your-taxes/amount/pa-exempt-obligation-dividends:
+    Do any of your dividends come from U.S. government or Pennsylvania obligations?
+  /heading/knockout/pa-dividends: This tool doesn’t yet support some of your dividends on a Pennsylvania return
   /heading/your-taxes/amount/pa-unreimbursed-employee-expenses:
     "For your {{/taxYear}} Pennsylvania return, do you want to deduct unreimbursed employee business expenses?"
   /heading/knockout/pa-unreimbursed-employee-expenses:
@@ -46,6 +50,21 @@ headings:
     How much of your interest did you receive while you lived in Pennsylvania?
   /heading/knockout/pa-part-year: This tool doesn’t yet support your Pennsylvania part-year resident return
 info:
+  /info/your-taxes/amount/pa-exempt-obligation-dividends:
+    body:
+      Pennsylvania doesn’t tax dividends that a mutual fund or money market fund pays from direct obligations of the
+      U.S. government (Treasury bonds, notes, bills, and savings bonds), Pennsylvania, or Pennsylvania local
+      governments. Your fund’s year-end statement shows this. Answer yes if any part of your dividends is from these.
+  /info/knockout/pa-dividends:
+    alertText:
+      body:
+        - p:
+            Your Pennsylvania dividends need an adjustment on PA Schedule B, such as dividends from U.S. or Pennsylvania
+            obligations or dividends received while you lived outside Pennsylvania. This tool doesn’t figure those yet.
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/your-taxes/amount/pa-unreimbursed-employee-expenses:
     body:
       These are costs you paid to do your job that your employer didn’t pay you back for, claimed on PA Schedule UE.

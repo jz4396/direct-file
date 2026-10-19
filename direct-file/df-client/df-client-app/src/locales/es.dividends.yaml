@@ -1,0 +1,233 @@
+# Form 1099-DIV strings (#86 part a). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/dividends:
+    div-income-basic-info: Información de dividendos
+    div-income-amounts: Cantidades de dividendos
+    div-income-tax-withheld: Impuesto federal sobre el ingreso retenido
+    div-income-other-boxes: Otros encasillados
+headings:
+  /heading/knockout/form-8615:
+    Esta herramienta aún no admite el impuesto sobre los ingresos no derivados del trabajo de un hijo (Formulario 8615)
+  /heading/income/dividends/box-7-election:
+    ¿Se cumplen todas estas condiciones para el impuesto extranjero de sus Formularios 1099-DIV?
+  /heading/income/dividends: Dividendos
+  /heading/income/dividends/intro: ¿Recibió dividendos en {{/taxYear}}?
+  /heading/income/dividends/add-whose: ¿De quién es el Formulario 1099-DIV?
+  /heading/income/dividends/payer: Ingrese el nombre del pagador que aparece en su Formulario 1099-DIV.
+  /heading/income/dividends/boxes-1a-1b: Ingrese las cantidades de los <strong>encasillados 1a y 1b</strong>.
+  /heading/income/dividends/holding-period: ¿Hay dividendos del encasillado 1b que en realidad no son calificados?
+  /heading/income/dividends/box-2a: Ingrese la cantidad del <strong>encasillado 2a</strong>, si la hay.
+  /heading/income/dividends/box-3: Ingrese la cantidad del <strong>encasillado 3</strong>, si la hay.
+  /heading/income/dividends/box-3-basis: ¿La cantidad del encasillado 3 es mayor que su costo (base) en las acciones?
+  /heading/income/dividends/box-4: Ingrese la cantidad del <strong>encasillado 4</strong>, si la hay.
+  /heading/income/dividends/box-5: Ingrese la cantidad del <strong>encasillado 5</strong>, si la hay.
+  /heading/income/dividends/box-7: Ingrese la cantidad del <strong>encasillado 7</strong>, si la hay.
+  /heading/income/dividends/unsupported-boxes: ¿Este Formulario 1099-DIV muestra algo en algún otro encasillado?
+  /heading/income/dividends/nominee: ¿Recibió alguno de estos dividendos para otra persona (como nominatario)?
+  /heading/knockout/dividends-holding-period:
+    Esta herramienta aún no admite dividendos del encasillado 1b que no son calificados
+  /heading/knockout/dividends-nondividend-over-basis:
+    Esta herramienta aún no admite distribuciones que no son dividendos mayores que su base
+  /heading/knockout/dividends-section-199a: Esta herramienta aún no admite dividendos de la sección 199A
+  /heading/knockout/dividends-amounts-inconsistent: Verifique las cantidades que ingresó de este Formulario 1099-DIV
+  /heading/knockout/dividends-foreign-tax:
+    Esta herramienta aún no admite impuestos extranjeros que requieren el Formulario 1116
+  /heading/knockout/dividends-unsupported-boxes:
+    Esta herramienta aún no admite algunos encasillados de su Formulario 1099-DIV
+  /heading/knockout/dividends-nominee: Esta herramienta aún no admite dividendos recibidos como nominatario
+info:
+  /info/knockout/form-8615:
+    alertText:
+      body:
+        - p:
+            Si tenía menos de 24 años al final del año y más de $2,700 de intereses, dividendos y otros ingresos no
+            derivados del trabajo, parte de ellos puede tributar a la tasa de sus padres en el Formulario 8615. Esta
+            herramienta aún no lo calcula.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/income/dividends/box-7-election:
+    body:
+      - ul:
+          - li:
+              Todos sus ingresos de fuentes fuera de EE. UU. fueron intereses y dividendos declarados en los Formularios
+              1099-INT o 1099-DIV.
+          - li: Tuvo las acciones al menos 16 días y no tenía que pagar estos dividendos a otra persona.
+          - li: No presenta el Formulario 4563 ni excluye ingresos de fuentes en Puerto Rico.
+          - li:
+              El impuesto extranjero se debía legalmente, no era elegible para un reembolso ni para una tasa reducida
+              por tratado y se pagó a un país reconocido por los Estados Unidos que no apoya el terrorismo.
+      - p:
+          Si se cumplen todas estas condiciones y su impuesto extranjero total es de $300 o menos ($600 o menos si son
+          casados que presentan una declaración conjunta), puede reclamarlo como crédito en el Anexo 3 sin el Formulario
+          1116.
+  /info/income/dividends/intro:
+    body:
+      - p:
+          Agregue cada Formulario 1099-DIV que recibió en {{/taxYear}}. Las casas de corretaje, los fondos mutuos y las
+          compañías que le pagaron dividendos envían este formulario.
+  /info/income/dividends/payer:
+    body: El nombre del pagador está en la esquina superior izquierda del formulario.
+  /info/income/dividends/boxes-1a-1b:
+    body:
+      - p:
+          El encasillado 1a es el total de dividendos ordinarios. El encasillado 1b es la parte del encasillado 1a que
+          puede ser dividendos calificados. Deje el encasillado 1b en blanco si está vacío en su formulario.
+  /info/income/dividends/holding-period:
+    body:
+      - p:
+          Los dividendos del encasillado 1b no son calificados si tuvo las acciones 60 días o menos durante el período
+          de 121 días que comenzó 60 días antes de la fecha ex dividendo (90 días o menos en un período de 181 días para
+          algunas acciones preferentes), o si tuvo que hacer pagos relacionados, como por una venta en corto. Responda
+          sí si le corresponde alguna de estas situaciones.
+  /info/income/dividends/box-2a:
+    body:
+      El encasillado 2a es el total de distribuciones de ganancias de capital de un fondo mutuo o de un fideicomiso de
+      inversión en bienes raíces.
+  /info/income/dividends/box-3:
+    body:
+      El encasillado 3 es una devolución de capital (distribuciones que no son dividendos). No es ingreso hasta que
+      sobrepasa su costo.
+  /info/income/dividends/box-3-basis:
+    body:
+      - p:
+          Su costo (base) es lo que pagó por las acciones, menos cualquier distribución anterior que no fue dividendo.
+          Responda sí si la cantidad del encasillado 3 de este año es mayor que lo que queda de su costo.
+  /info/income/dividends/box-4:
+    body: El encasillado 4 es el impuesto federal sobre el ingreso retenido (retención adicional).
+  /info/income/dividends/box-5:
+    body:
+      El encasillado 5 es dividendos de la sección 199A, que pueden calificar para la deducción por ingreso calificado
+      de negocios.
+  /info/income/dividends/box-7:
+    body: El encasillado 7 es el impuesto extranjero pagado sobre estos dividendos.
+  /info/income/dividends/unsupported-boxes:
+    body:
+      - p:
+          "Responda sí si su formulario muestra una cantidad en el encasillado 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 12, 13, 14,
+          15 o 16, un país en el encasillado 8 o una marca en el encasillado 11 (requisito de declaración de FATCA)."
+  /info/income/dividends/nominee:
+    body:
+      - p:
+          Usted es nominatario si el formulario incluye dividendos que en realidad pertenecen a otra persona, como un
+          familiar que comparte la cuenta.
+  /info/income/dividends/secondary-filer-income-without-mfj:
+    alertText:
+      heading: Elimine los dividendos de {{/secondaryFiler/firstName}} para continuar
+      body:
+        - p: >-
+            Cambió su estado civil para efectos de la declaración de Casado que presenta una declaración conjunta a
+            {{/filingStatusCapitalized}}. Tiene que eliminar los dividendos de {{/secondaryFiler/firstName}} de su
+            declaración de impuestos para continuar.
+  /info/knockout/dividends-holding-period:
+    alertText:
+      body:
+        - p:
+            Los dividendos que no cumplen con las reglas del período de tenencia tributan como dividendos ordinarios, no
+            como dividendos calificados. Esta herramienta aún no puede separarlos. Necesitará otra manera de presentar
+            esta declaración.
+  /info/knockout/dividends-nondividend-over-basis:
+    alertText:
+      body:
+        - p:
+            Las distribuciones que no son dividendos y que sobrepasan su costo son una ganancia de capital que se
+            declara en el Formulario 8949. Esta herramienta aún no lo admite. Necesitará otra manera de presentar esta
+            declaración.
+  /info/knockout/dividends-section-199a:
+    alertText:
+      body:
+        - p:
+            Los dividendos de la sección 199A se declaran en el Formulario 8995 para la deducción por ingreso calificado
+            de negocios, que esta herramienta aún no admite. Necesitará otra manera de presentar esta declaración.
+  /info/knockout/dividends-amounts-inconsistent:
+    alertText:
+      body:
+        - p:
+            Los encasillados 1b y 5 son partes del encasillado 1a, así que ninguno puede ser mayor que el encasillado
+            1a. Regrese y verifique las cantidades que ingresó. Si coinciden con su formulario, necesitará otra manera
+            de presentar esta declaración.
+  /info/knockout/dividends-foreign-tax:
+    alertText:
+      body:
+        - p:
+            Su impuesto extranjero necesita el Formulario 1116 para reclamarse como crédito, y esta herramienta aún no
+            lo admite. Necesitará otra manera de presentar esta declaración.
+  /info/knockout/dividends-unsupported-boxes:
+    alertText:
+      body:
+        - p:
+            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 3, 4, 5 y 7 del Formulario 1099-DIV. Necesitará
+            otra manera de presentar esta declaración.
+  /info/knockout/dividends-nominee:
+    alertText:
+      body:
+        - p:
+            Los dividendos de nominatario se restan en el Anexo B, que esta herramienta aún no admite para dividendos.
+            Necesitará otra manera de presentar esta declaración.
+fields:
+  /dividendReports:
+    controls:
+      add: Agregar un Formulario 1099-DIV
+      complete_zero: No tengo Formularios 1099-DIV que agregar
+      complete: Terminé de agregar los Formularios 1099-DIV
+      back: Ir a la lista de dividendos
+    collectionListing:
+      itemHeading1: "{{/dividendReports/*/payer}}"
+      itemHeading2: Los dividendos de {{/dividendReports/*/filer/fullName}}
+      label1: Pagado a {{/dividendReports/*/filer/fullName}}
+      label2: Dividendos ordinarios
+      value2: <strong>{{/dividendReports/*/ordinaryDividends}}</strong>
+    deleteControl:
+      text: <LinkModal1>Eliminar Formulario 1099-DIV</LinkModal1>
+      LinkModal1:
+        header: ¿Está seguro de que quiere eliminar este Formulario 1099-DIV de su declaración de impuestos?
+        body:
+          - p:
+              Esto no se puede deshacer. Si cambia de opinión más tarde, tendrá que volver a ingresar toda la
+              información.
+        controls:
+          confirm: Eliminar este Formulario 1099-DIV de mi declaración de impuestos
+          cancel: Cancelar
+  /dividendReports/*/filer:
+    item: "{{/filers/*/firstName}} {{/filers/*/lastName}}"
+  /dividendReports/*/payer:
+    name: Nombre del pagador
+  /dividendReports/*/ordinaryDividends:
+    name: <strong>Encasillado 1a</strong> - Total de dividendos ordinarios
+  /dividendReports/*/writableQualifiedDividends:
+    name: <strong>Encasillado 1b</strong> - Dividendos calificados
+  /dividendReports/*/writableCapitalGainDistributions:
+    name: <strong>Encasillado 2a</strong> - Total de distribuciones de ganancias de capital
+  /dividendReports/*/writableNondividendDistributions:
+    name: <strong>Encasillado 3</strong> - Distribuciones que no son dividendos
+  /dividendReports/*/writableFederalTaxWithheld:
+    name: <strong>Encasillado 4</strong> - Impuesto federal sobre el ingreso retenido
+  /dividendReports/*/writableSection199ADividends:
+    name: <strong>Encasillado 5</strong> - Dividendos de la sección 199A
+  /dividendReports/*/writableForeignTaxPaid:
+    name: <strong>Encasillado 7</strong> - Impuesto extranjero pagado
+checklist:
+  /flow/income/dividends:
+    heading: Dividendos (Formulario 1099-DIV)
+    dataItems:
+      dividendsTaxable: "Dividendos ordinarios: {{/ordinaryDividends}}"
+      dividendsNone: Ninguno reportado
+dataviews:
+  /flow/income/dividends:
+    /dividendReports/*/filer/fullName: ¿De quién es el Formulario 1099-DIV?
+    /dividendReports/*/payer: Nombre del pagador
+    /dividendReports/*/ordinaryDividends: Encasillado 1a - Total de dividendos ordinarios
+    /dividendReports/*/writableQualifiedDividends: Encasillado 1b - Dividendos calificados
+    /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet: ¿Hay dividendos del encasillado 1b que no son calificados?
+    /dividendReports/*/writableCapitalGainDistributions:
+      Encasillado 2a - Total de distribuciones de ganancias de capital
+    /dividendReports/*/writableNondividendDistributions: Encasillado 3 - Distribuciones que no son dividendos
+    /dividendReports/*/nondividendDistributionsExceedBasis: ¿El encasillado 3 es mayor que su base?
+    /dividendReports/*/writableFederalTaxWithheld: Encasillado 4 - Impuesto federal sobre el ingreso retenido
+    /dividendReports/*/writableSection199ADividends: Encasillado 5 - Dividendos de la sección 199A
+    /dividendReports/*/writableForeignTaxPaid: Encasillado 7 - Impuesto extranjero pagado
+    /dividendReports/*/foreignTaxElectionRequirementsMet: ¿Se cumplen todas las condiciones del impuesto extranjero?
+    /dividendReports/*/hasUnsupportedBoxes: ¿Este Formulario 1099-DIV muestra algo en otro encasillado?
+    /dividendReports/*/receivedAsNominee: ¿Recibió alguno de estos dividendos como nominatario?
+    primaryFiler: Sus dividendos
+    secondaryFiler: Los dividendos de su cónyuge

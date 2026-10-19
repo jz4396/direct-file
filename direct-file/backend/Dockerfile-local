@@ -6,7 +6,7 @@
 # For this step to work, you must define `factgraph-repo` in either your
 # docker-compose.yaml's `additional_contexts` or from the command line with
 # `docker buildx build --build-context factgraph-repo=/some/path [other args]`
-FROM sbtscala/scala-sbt:eclipse-temurin-alpine-21.0.2_13_1.9.9_3.3.3 AS factgraph-builder
+FROM sbtscala/scala-sbt:eclipse-temurin-alpine-21.0.2_13_1.9.9_3.3.3@sha256:3e8a36e9286f48cdaa4aa7b2c347321ae7271144ea3cadf718e6c6c905c10361 AS factgraph-builder
 WORKDIR /build/
 COPY --from=factgraph-repo js/src/ js/src/
 COPY --from=factgraph-repo jvm/src/ jvm/src/
@@ -16,7 +16,7 @@ COPY --from=factgraph-repo build.sbt .
 RUN sbt compile package publishM2
 
 # 2. build shared dependencies
-FROM eclipse-temurin:21-jdk-alpine AS shared-dependencies-builder
+FROM eclipse-temurin:21-jdk-alpine@sha256:0bfc69a4758a86710e5c474032d28400a8bd00874766f9e8b1642ac2fd293159 AS shared-dependencies-builder
 COPY --from=factgraph-builder /root/.m2/repository/gov/irs/factgraph/fact-graph_3/ /root/.m2/repository/gov/irs/factgraph/fact-graph_3/
 ARG MAVEN_OPTS=""
 WORKDIR /build/
@@ -43,10 +43,17 @@ COPY pom.xml ./
 RUN ./mvnw dependency:resolve
 # copy source tree after dependency resolution so source changes don't force re-download of all dependencies
 COPY src/ /build/src/
-RUN ./mvnw package
+# SKIP_CHECKS=true (set only by docker-compose.local.yaml) builds the jar
+# without running tests or the spotless check; every other build runs both.
+ARG SKIP_CHECKS=false
+RUN if [ "$SKIP_CHECKS" = "true" ]; then \
+      ./mvnw package -DskipTests -Dspotless.check.skip=true; \
+    else \
+      ./mvnw package; \
+    fi
 
 # 6. bundle backend api jar into runnable image
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre-alpine@sha256:51ab5e3302e7141ce665ca3ea85e8b5cd648eafbc3c0c90dd79d6537684e4555
 ENV SPRING_PROFILES_ACTIVE=development
 COPY --from=api-builder /build/target/directfile-api-0.0.1-SNAPSHOT.jar /app.jar
 RUN adduser --system --no-create-home jar-runner
