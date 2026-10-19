@@ -239,6 +239,23 @@ describe(`Form 6251 Part III — capital gain rates`, () => {
   });
 });
 
+describe(`#122 Form 6251 attached to the PDF — i6251 (2025) p. 1 "Who Must File" item 1: line 7 > line 10`, () => {
+  it(`AMT $12,824 (line 7 $202,920 > line 10 $190,096): Form 6251 required`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form6251Required`];
+    const g = fg({ ...clean(singleFilerData, 100000), ...ltGain(1000000) });
+    expect(val(g, `/amt`)).toBe(`12824.00`);
+    expect(get(g, `/form6251Required`).get).toBe(true);
+  });
+  it(`line 7 ≤ line 10 (AMT $0): not required, including when line 6 > 0`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form6251Required`];
+    expect(get(fg(clean(singleFilerData, 50000)), `/form6251Required`).get).toBe(false);
+    // MFJ $300,000 with $40,000 SALT: line 6 $159,800 > 0 and line 7 $41,548 < line 10 $47,596
+    const g = fg({ ...clean(mfjFilerData, 300000), ...salt(40000) });
+    expect(val(g, `/form6251Line6`)).toBe(`159800.00`);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+  });
+});
+
 describe(`Form 6251 knockouts (BlockSubmissionOnTrue, wired into /flowIsKnockedOut)`, () => {
   it(`unsupported AMT items (ISOs, PAB interest, depreciation, NOL, AMTFTC) = yes knocks out`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutAmtPreferenceItems`, `/flowIsKnockedOut`];

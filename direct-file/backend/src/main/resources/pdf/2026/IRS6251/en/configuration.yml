@@ -1,0 +1,97 @@
+# #122(a): 2026 Form 6251, Alternative Minimum Tax—Individuals. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f6251--dft.pdf (early-release draft, "Created 5/26/26"), committed
+# byte-identical to irs.gov; SHA-256 a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc
+# (pinned in pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Every field name and line
+# caption below comes from this draft's AcroForm tooltips (pypdf). When the final 2026 Form 6251 is released, re-download
+# it, re-hash it, and re-verify every field name and line number here before swapping it in (#124).
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+#
+# Included when /form6251Required: Instructions for Form 6251 (2025), p. 1, "Who Must File", item 1 (line 7 is greater
+# than line 10). Items 2-4 cannot apply in scope (no Form 3800, 8834, 8911 or 8801; lines 2c-3 are a stop).
+#
+# Part III (lines 12-40) prints only when line 7 requires it (/form6251UsesPartIII); Irs6251PdfForm fills the
+# ~form6251PartIIILineNN pseudo-facts from /form6251LineNN in that case and leaves them blank otherwise.
+#
+# Not mapped, left blank (never a silent 0), because a nonzero amount is a stop that blocks submission:
+#   2b  Schedule 1 line 1 / 8z tax refund: Form 1099-G box 2 refunds and 8z income are unsupported income sources
+#       (/incomeSourcesSupported = false is part of /flowIsKnockedOut); the app has no Schedule 1 line 1 or 8z input.
+#   2c-2t, 3  AMT adjustments and preferences: /flowKnockoutAmtPreferenceItems (/hasAmtPreferenceItems). Line 2g
+#       (private activity bond interest, 1099-INT box 9) is also /flowKnockoutHasBonds.
+#   8   AMT foreign tax credit: 1099-INT foreign tax /flowKnockoutHasForeignTaxPaid; 1099-DIV foreign tax
+#       /flowKnockoutDividendForeignTaxPaid whenever line 7 > $0 (always true when this form prints).
+#   14  Schedule D line 19 (unrecaptured §1250 gain): /flowKnockoutUnrecaptured1250Gain.
+#   35-37  "If line 14 is zero or blank, skip lines 35 through 37" (line 37 is 0 in line 38).
+#   33-34  blank when "lines 32 and 12 are the same, skip lines 33 through 37" (Irs6251PdfForm).
+# $0 amounts print blank (FactGraphService zero suppression) except where the form says "enter -0-": lines 6, 7, 9,
+# 10, 11, 21 (and 26 = 21) and 29, whose facts carry <ExportZero />.
+includeWhen: /form6251Required
+customMaps:
+  template:
+    skipLeadingPages: "1"
+otherRequiredFacts:
+  - /form6251UsesPartIII
+  - /form6251Line12
+  - /form6251Line13
+  - /form6251Line15
+  - /form6251Line16
+  - /form6251Line17
+  - /form6251Line18
+  - /form6251Line19
+  - /form6251Line20
+  - /form6251Line21
+  - /form6251Line22
+  - /form6251Line23
+  - /form6251Line24
+  - /form6251Line25
+  - /form6251Line27
+  - /form6251Line28
+  - /form6251Line29
+  - /form6251Line30
+  - /form6251Line31
+  - /form6251Line32
+  - /form6251Line33
+  - /form6251Line34
+  - /form6251Line38
+  - /form6251Line39
+  - /form6251Line40
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on Form 1040, 1040-SR, or 1040-NR"
+      f1_2[0]: /primaryFiler/tin # "Your social security number"
+      f1_3[0]: /form6251Line1a # 1a "Subtract Schedule 1-A (Form 1040), line 43, from Form 1040 ... line 14"
+      f1_4[0]: /form6251Line1b # 1b "Subtract line 1a from Form 1040 ... line 11b (if less than zero, enter as a negative amount)"
+      f1_5[0]: /form6251Line2a # 2a "If filing Schedule A ... taxes from Schedule A, line 7; otherwise ... line 12e"
+      f1_26[0]: /form6251Line4 # 4 "Alternative minimum taxable income. Combine lines 1b through 3"
+      f1_27[0]: /form6251Line5 # 5 "Exemption" (chart amount, phased out per instructions / IRC §55(d)(2))
+      f1_28[0]: /form6251Line6 # 6 "Subtract line 5 from line 4 ... If zero or less, enter 0"
+      f1_29[0]: /form6251Line7 # 7 Part III line 40 when required, otherwise 26% / 28% of line 6
+      f1_31[0]: /form6251Line9 # 9 "Tentative minimum tax. Subtract line 8 from line 7" (line 8 blank, see header)
+      f1_32[0]: /form6251Line10 # 10 "Add Form 1040 ... line 16 ... and Schedule 2 (Form 1040), line 1z ... If zero or less, enter 0"
+      f1_33[0]: /amt # 11 "AMT. Subtract line 10 from line 9 ... Enter here and on Schedule 2 (Form 1040), line 2"
+    Page2[0]:
+      f2_1[0]: ~form6251PartIIILine12 # 12 "Enter the amount from Form 6251, line 6"
+      f2_2[0]: ~form6251PartIIILine13 # 13 "Enter the amount from line 4 of the Qualified Dividends and Capital Gain Tax Worksheet"
+      f2_4[0]: ~form6251PartIIILine15 # 15 "If you did not complete a Schedule D Tax Worksheet ... enter the amount from line 13"
+      f2_5[0]: ~form6251PartIIILine16 # 16 "Enter the smaller of line 12 or line 15"
+      f2_6[0]: ~form6251PartIIILine17 # 17 "Subtract line 16 from line 12"
+      f2_7[0]: ~form6251PartIIILine18 # 18 "If line 17 is $244,500 or less ($122,250 ... MFS), multiply line 17 by 26% ..."
+      f2_8[0]: ~form6251PartIIILine19 # 19 "$98,900 if MFJ or QSS, $49,450 if single or MFS, or $66,200 if HOH"
+      f2_9[0]: ~form6251PartIIILine20 # 20 "Enter the amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet"
+      f2_10[0]: ~form6251PartIIILine21 # 21 "Subtract line 20 from line 19. If zero or less, enter 0"
+      f2_11[0]: ~form6251PartIIILine22 # 22 "Enter the smaller of line 12 or line 13"
+      f2_12[0]: ~form6251PartIIILine23 # 23 "Enter the smaller of line 21 or line 22. This amount is taxed at 0%"
+      f2_13[0]: ~form6251PartIIILine24 # 24 "Subtract line 23 from line 22"
+      f2_14[0]: ~form6251PartIIILine25 # 25 "$545,500 if single, $306,850 if MFS, $613,700 if MFJ or QSS, or $579,600 if HOH"
+      f2_15[0]: ~form6251PartIIILine26 # 26 "Enter the amount from line 21" (= /form6251Line21)
+      f2_16[0]: ~form6251PartIIILine27 # 27 "Enter the amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet"
+      f2_17[0]: ~form6251PartIIILine28 # 28 "Add line 26 and line 27"
+      f2_18[0]: ~form6251PartIIILine29 # 29 "Subtract line 28 from line 25. If zero or less, enter 0"
+      f2_19[0]: ~form6251PartIIILine30 # 30 "Enter the smaller of line 24 or line 29"
+      f2_20[0]: ~form6251PartIIILine31 # 31 "Multiply line 30 by 15% (0.15)"
+      f2_21[0]: ~form6251PartIIILine32 # 32 "Add lines 23 and 30"
+      f2_22[0]: ~form6251PartIIILine33 # 33 "Subtract line 32 from line 22" (skipped when lines 32 and 12 are the same)
+      f2_23[0]: ~form6251PartIIILine34 # 34 "Multiply line 33 by 20% (0.20)"
+      f2_27[0]: ~form6251PartIIILine38 # 38 "Add lines 18, 31, 34, and 37"
+      f2_28[0]: ~form6251PartIIILine39 # 39 "If line 12 is $244,500 or less ... multiply line 12 by 26% ... Otherwise ... 28% ... subtract $4,890"
+      f2_29[0]: ~form6251PartIIILine40 # 40 "Enter the smaller of line 38 or line 39 here and on line 7"

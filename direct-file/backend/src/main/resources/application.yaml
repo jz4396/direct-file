@@ -408,6 +408,14 @@ direct-file:
         configuration-location: pdf/2024/IRS2441_DUE_DILIGENCE_STATEMENT/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: IRS6251
+        year: 2024
+        language-code: en
+        location: pdf/2026/IRS6251/en/f6251--dft.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/IRS6251/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: DF1099R
         year: 2024
         language-code: en
