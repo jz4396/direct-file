@@ -37,11 +37,17 @@ COPY --from=backend /src/main/resources/dataimportservice/mocks ./df-client-app/
 COPY --from=backend /src/test/resources/scenarios ./df-client-app/src/test/scenarioTests/jsonScenarios
 
 # do a production build with the development configuration
-# (generate the fact dictionary, then bundle with vite; type checking is a
-# separate `npm run build:ts` step and does not gate the local image)
-WORKDIR /build/df-client-app
-RUN npm run generate-fact-dictionary && npx --no-install vite build --mode=development
-WORKDIR /build
+# SKIP_CHECKS=true (set only by docker-compose.local.yaml) generates the fact
+# dictionary and bundles with vite without the type check; every other build
+# runs the full build:development script, type check included.
+ARG SKIP_CHECKS=false
+RUN if [ "$SKIP_CHECKS" = "true" ]; then \
+      cd df-client-app \
+      && npm run generate-fact-dictionary \
+      && npx --no-install vite build --mode=development; \
+    else \
+      npm run build:development --base="${DF_CLIENT_PUBLIC_PATH}"; \
+    fi
 
 # 2. serve static build with nginx.  config here to avoid file clutter
 FROM nginx:1.31.7@sha256:bc4cad49969aaf95eb4eecec5572846f86e59f1e8332aba36ed64b91aff8b724

@@ -43,9 +43,14 @@ COPY pom.xml ./
 RUN ./mvnw dependency:resolve
 # copy source tree after dependency resolution so source changes don't force re-download of all dependencies
 COPY src/ /build/src/
-# tests and format checks run in the normal test workflow; the local image
-# only needs the jar
-RUN ./mvnw package -DskipTests -Dspotless.check.skip=true
+# SKIP_CHECKS=true (set only by docker-compose.local.yaml) builds the jar
+# without running tests or the spotless check; every other build runs both.
+ARG SKIP_CHECKS=false
+RUN if [ "$SKIP_CHECKS" = "true" ]; then \
+      ./mvnw package -DskipTests -Dspotless.check.skip=true; \
+    else \
+      ./mvnw package; \
+    fi
 
 # 6. bundle backend api jar into runnable image
 FROM eclipse-temurin:21-jre-alpine@sha256:51ab5e3302e7141ce665ca3ea85e8b5cd648eafbc3c0c90dd79d6537684e4555

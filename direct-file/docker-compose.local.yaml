@@ -12,6 +12,8 @@
 # - the CSP simulator reaches the API and client over the compose network
 # - the client container is enabled, runs nginx as a non-root user
 # - API gets a health check, so `--wait` returns once it is serving
+# - API and client images build with SKIP_CHECKS=true (no tests, spotless or
+#   type check in the image build); without the overlay they run as usual
 services:
   db:
     image: postgres:15@sha256:c961aa287d8698297cb26cdfadfbe9fd2cbaf77e53cfffe9636e8d8a1e4d842c
@@ -49,6 +51,9 @@ services:
       - ./state-api/docker/localstack/fakestate_expired.cer:/etc/localstack/init/ready.d/fakestate_expired.cer:ro
 
   api:
+    build:
+      args:
+        SKIP_CHECKS: "true"
     environment:
       LOCAL_WRAPPING_KEY: "${LOCAL_WRAPPING_KEY:?set LOCAL_WRAPPING_KEY (scripts/local-docker.sh generates one)}"
     healthcheck:
@@ -80,6 +85,7 @@ services:
         DF_API_PUBLIC_PATH: "/df/file/api"
         DF_API_PORT: "${DF_CSPSIM_PORT:-5000}"
         ENABLE_EGAIN_CHAT: "0"
+        SKIP_CHECKS: "true"
     user: "101:101"
     read_only: true
     tmpfs:
