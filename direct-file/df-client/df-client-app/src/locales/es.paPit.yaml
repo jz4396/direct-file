@@ -28,7 +28,13 @@ dataviews:
     /paHasUnreimbursedEmployeeExpenses:
       ¿Desea deducir gastos de negocio no reembolsados como empleado en su declaración de Pensilvania?
     /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
+    /paHasExemptObligationDividends:
+      ¿Alguno de sus dividendos proviene de obligaciones del gobierno de EE. UU. o de Pensilvania?
 headings:
+  /heading/your-taxes/amount/pa-exempt-obligation-dividends:
+    ¿Alguno de sus dividendos proviene de obligaciones del gobierno de EE. UU. o de Pensilvania?
+  /heading/knockout/pa-dividends:
+    Esta herramienta aún no admite algunos de sus dividendos en una declaración de Pensilvania
   /heading/your-taxes/amount/pa-unreimbursed-employee-expenses:
     "Para su declaración de Pensilvania de {{/taxYear}}, ¿desea deducir gastos de negocio no reembolsados como empleado?"
   /heading/knockout/pa-unreimbursed-employee-expenses:
@@ -58,6 +64,23 @@ headings:
   /heading/knockout/pa-schedule-b: Esta herramienta aún no admite el Anexo B de PA para sus ingresos de dividendos
   /heading/knockout/pa-schedule-d: Esta herramienta aún no admite ventas de bienes en una declaración de Pensilvania
 info:
+  /info/your-taxes/amount/pa-exempt-obligation-dividends:
+    body:
+      Pensilvania no grava los dividendos que un fondo mutuo o fondo del mercado monetario paga de obligaciones directas
+      del gobierno de EE. UU. (bonos, pagarés, letras y bonos de ahorro del Tesoro), de Pensilvania o de los gobiernos
+      locales de Pensilvania. El estado de cuenta de fin de año de su fondo lo indica. Responda sí si alguna parte de
+      sus dividendos proviene de estas obligaciones.
+  /info/knockout/pa-dividends:
+    alertText:
+      body:
+        - p:
+            Sus dividendos de Pensilvania necesitan un ajuste en el Anexo B de Pensilvania, como dividendos de
+            obligaciones de EE. UU. o de Pensilvania o dividendos recibidos mientras vivía fuera de Pensilvania. Esta
+            herramienta aún no calcula esos ajustes.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/your-taxes/amount/pa-unreimbursed-employee-expenses:
     body:
       Son gastos que pagó para realizar su trabajo y que su empleador no le reembolsó, y se declaran en el Anexo UE de

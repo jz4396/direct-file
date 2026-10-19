@@ -4398,10 +4398,11 @@ info:
       - ul: $t(info./info/income/income-supported-list)
   /info/income/income-supported-list:
     <li>Income made as an employee in {{/filerResidenceAndIncomeState}} (Form W-2)</li> <li>Unemployment compensation
-    from {{/filerResidenceAndIncomeState}} (Form 1099-G)</li> <li>Interest income (Form 1099-INT)</li> <li>Health
-    Savings Account (HSA) contributions and distributions (Form 1099-SA)</li> <li>Social Security benefits (Form
-    SSA-1099)</li> <li>Alaska Permanent Fund Dividend (PFD)</li> <li> Distributions from employer-sponsored retirement
-    plans, like a 401(k), pension, annuity, 403(b), or governmental 457(b) (Form 1099-R)</li>
+    from {{/filerResidenceAndIncomeState}} (Form 1099-G)</li> <li>Interest income (Form 1099-INT)</li> <li>Dividends
+    (Form 1099-DIV)</li> <li>Health Savings Account (HSA) contributions and distributions (Form 1099-SA)</li> <li>Social
+    Security benefits (Form SSA-1099)</li> <li>Alaska Permanent Fund Dividend (PFD)</li> <li> Distributions from
+    employer-sponsored retirement plans, like a 401(k), pension, annuity, 403(b), or governmental 457(b) (Form
+    1099-R)</li>
   /info/income/income-sources/not-supported-intro-1:
     body:
       - p: "You <strong>can’t</strong> use Direct File if you have any other types of income."
@@ -4420,7 +4421,6 @@ info:
           - li: Gifts of more than $100,000 from foreign estates or nonresidents
       - h3: Investment
       - ul:
-          - li: Dividends (Form 1099-DIV)
           - li: Capital gains and losses (Forms 1099-B and 1099-S)
           - li: Original issue discount (Form 1099-OID)
           - li: Estates and trusts
