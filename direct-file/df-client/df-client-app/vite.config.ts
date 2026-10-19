@@ -1,4 +1,5 @@
 import { UserConfig, defineConfig } from 'vitest/config';
+import type { Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { JSON_SCHEMA } from 'js-yaml';
@@ -7,6 +8,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 import autoprefixer from 'autoprefixer';
 import path from 'path';
 import { createRequire } from 'module';
+import { buildContentSecurityPolicy } from './src/saveState/contentSecurityPolicy';
 
 // @trussworks/react-uswds 8 publishes an `exports` map without its stylesheet, so the
 // `@trussworks/react-uswds/lib/index.css` specifier must be resolved to the file directly.
@@ -15,10 +17,31 @@ const reactUswdsCss = path.join(
   'index.css'
 );
 
+// Build-only CSP <meta> (see src/saveState/contentSecurityPolicy.ts).
+function contentSecurityPolicy(): Plugin {
+  let backendUrl: string | undefined;
+  return {
+    name: 'df-content-security-policy',
+    apply: 'build',
+    configResolved(config) {
+      backendUrl = config.env.VITE_BACKEND_URL;
+    },
+    transformIndexHtml() {
+      return [
+        {
+          tag: 'meta',
+          attrs: { 'http-equiv': 'Content-Security-Policy', content: buildContentSecurityPolicy(backendUrl) },
+          injectTo: 'head-prepend',
+        },
+      ];
+    },
+  };
+}
+
 export const configOptions: UserConfig = {
   base: process.env.DF_CLIENT_PUBLIC_PATH || '/df/file',
   assetsInclude: ['**/*.svg'],
-  plugins: [react(), viteTsconfigPaths(), ViteYaml({ schema: JSON_SCHEMA })],
+  plugins: [react(), viteTsconfigPaths(), ViteYaml({ schema: JSON_SCHEMA }), contentSecurityPolicy()],
   css: {
     devSourcemap: true,
     modules: {

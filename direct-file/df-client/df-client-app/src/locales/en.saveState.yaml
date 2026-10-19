@@ -1,0 +1,60 @@
+# Browser save-state: export / import / save on this device / clear (#126).
+# Feature overlay merged onto en.yaml by locales/featureLocales.ts.
+account:
+  deviceData:
+    link: Save, export, or clear your return on this device
+    title: Your return on this device
+    intro: >-
+      These tools work only in this browser. Your answers are not sent anywhere when you export, import, save, or clear
+      them here.
+    passphrase: Passphrase
+    passphraseOptional: Passphrase (optional, encrypts the file)
+    sharedComputer:
+      heading: Using a shared or public computer?
+      body: >-
+        Don’t save your return on this device. When you’re done, select “Clear all data on this device,” sign out, close
+        every browser window, and delete any file you exported from the Downloads folder.
+    export:
+      heading: Export a save file
+      body: >-
+        Download your answers as a file you can import later. Enter a passphrase of at least {{minLength}} characters to
+        encrypt the file. Without the passphrase, an encrypted file can’t be opened, and it can’t be recovered.
+      plaintextWarning: >-
+        Without a passphrase, the file is not encrypted. Anyone who can open it can read your Social Security numbers,
+        income, and bank details.
+      plaintextAck: I understand this file will not be encrypted
+      button: Download save file
+      doneEncrypted: Your encrypted save file was downloaded.
+      donePlain: Your save file was downloaded. It is not encrypted, so keep it somewhere safe.
+    import:
+      heading: Import a save file
+      body: Choose a save file you exported earlier. It replaces the answers currently open in this browser.
+      fileLabel: Save file
+      button: Import save file
+      done: Your save file was imported.
+    device:
+      heading: Save on this device
+      body: >-
+        Keep an encrypted copy in this browser so you can continue later. Choose a passphrase of at least {{minLength}}
+        characters; it is never stored. Signing out removes the saved copy.
+      saveButton: Save on this device
+      loadButton: Load saved copy
+      saved: Your return was saved on this device.
+      loaded: Your saved copy was loaded.
+    clear:
+      heading: Clear all data on this device
+      body: >-
+        Removes saved copies, browser storage, and caches for this site. Files you exported are not affected.
+      button: Clear all data on this device
+      done: All data for this site was cleared from this browser.
+    errors:
+      invalid-file: That file isn’t a save file from this tool.
+      unsupported-version: That save file was made by a newer version of this tool.
+      invalid-facts: That save file is damaged and can’t be used.
+      passphrase-required: Enter the passphrase for this file.
+      passphrase-too-short: Use a passphrase of at least {{minLength}} characters.
+      decrypt-failed: That passphrase didn’t work, or the file was changed.
+      unsupported-encryption: That save file uses encryption settings this tool doesn’t support.
+      crypto-unavailable: This browser can’t encrypt files. Update your browser and try again.
+      storage-unavailable: This browser doesn’t allow saving data for this site.
+      no-device-save: There is no saved copy on this device.

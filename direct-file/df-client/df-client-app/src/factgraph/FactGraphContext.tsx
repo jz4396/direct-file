@@ -5,7 +5,7 @@ import { InterceptingFactGraph } from './InterceptingFactGraph.js';
 import { FactGraph } from '@irs/js-factgraph-scala';
 import { TaxReturnSubmission, TaxReturnSubmissionStatus } from '../types/core.js';
 import { FEDERAL_RETURN_STATUS } from '../constants/taxConstants.js';
-import { useFlow } from '../flow/flowConfig.js';
+import { FlowConfig, useFlow } from '../flow/flowConfig.js';
 import { CompleteFactGraphResult } from '@irs/js-factgraph-scala/src/typings/FactGraph.js';
 import { TaxReturnsContext } from '../context/TaxReturnsContext.js';
 import { is1099RFeatureFlagEnabled } from '../constants/pageConstants.js';
@@ -117,7 +117,16 @@ export const FactGraphContextProvider = ({
   return <FactGraphContext.Provider value={instance}>{children}</FactGraphContext.Provider>;
 };
 
+/**
+ * Replace the in-memory fact graph with facts loaded in the browser (save file or device save). Runs entirely
+ * client-side; providers pick up the new instance on their next render.
+ */
+export const replaceFactGraphWithFacts = (facts: object, flow?: FlowConfig) => {
+  const factGraph = new InterceptingFactGraph(facts, flow);
+  instance = { factGraph };
+  return factGraph;
+};
+
 export const useFactGraph = () => {
   return useContext(FactGraphContext);
 };
-

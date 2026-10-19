@@ -27,6 +27,8 @@ import form6251En from './en.form6251.yaml';
 import form6251Es from './es.form6251.yaml';
 import paPitEn from './en.paPit.yaml';
 import paPitEs from './es.paPit.yaml';
+import saveStateEn from './en.saveState.yaml';
+import saveStateEs from './es.saveState.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -92,3 +94,11 @@ export const esLocale: any = deepMerge(
   ),
   paPitEs as Tree
 );
+
+// Later overlays are merged onto the exported trees in place, so adding one doesn't re-nest the chains above.
+for (const [locale, overlay] of [
+  [enLocale, saveStateEn],
+  [esLocale, saveStateEs],
+] as const) {
+  Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
+}

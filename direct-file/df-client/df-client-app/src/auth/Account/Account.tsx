@@ -107,6 +107,14 @@ export const AccountContent = () => {
             </IconListContent>
           </IconListItem>
         )}
+        <IconListItem key={4}>
+          <IconListIcon>
+            <Icon.Save aria-hidden='true' />
+          </IconListIcon>
+          <IconListContent>
+            <RouterLink to='device-data'>{t(`account.deviceData.link`)}</RouterLink>
+          </IconListContent>
+        </IconListItem>
         <IconListItem key={3}>
           <IconListIcon>
             <Icon.Logout aria-hidden='true' />

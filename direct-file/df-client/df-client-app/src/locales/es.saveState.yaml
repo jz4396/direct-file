@@ -1,0 +1,63 @@
+# Browser save-state: export / import / save on this device / clear (#126).
+# Feature overlay merged onto es.yaml by locales/featureLocales.ts.
+account:
+  deviceData:
+    link: Guardar, exportar o borrar su declaración en este dispositivo
+    title: Su declaración en este dispositivo
+    intro: >-
+      Estas herramientas funcionan solo en este navegador. Sus respuestas no se envían a ningún lugar cuando las
+      exporta, importa, guarda o borra aquí.
+    passphrase: Frase de contraseña
+    passphraseOptional: Frase de contraseña (opcional, cifra el archivo)
+    sharedComputer:
+      heading: ¿Usa una computadora compartida o pública?
+      body: >-
+        No guarde su declaración en este dispositivo. Cuando termine, seleccione “Borrar todos los datos en este
+        dispositivo”, cierre la sesión, cierre todas las ventanas del navegador y elimine de la carpeta Descargas
+        cualquier archivo que haya exportado.
+    export:
+      heading: Exportar un archivo guardado
+      body: >-
+        Descargue sus respuestas en un archivo que podrá importar más tarde. Ingrese una frase de contraseña de al menos
+        {{minLength}} caracteres para cifrar el archivo. Sin la frase de contraseña, un archivo cifrado no se puede
+        abrir ni recuperar.
+      plaintextWarning: >-
+        Sin una frase de contraseña, el archivo no está cifrado. Cualquier persona que pueda abrirlo podrá leer sus
+        números de Seguro Social, sus ingresos y sus datos bancarios.
+      plaintextAck: Entiendo que este archivo no estará cifrado
+      button: Descargar archivo guardado
+      doneEncrypted: Se descargó su archivo guardado cifrado.
+      donePlain: Se descargó su archivo guardado. No está cifrado, así que guárdelo en un lugar seguro.
+    import:
+      heading: Importar un archivo guardado
+      body: Elija un archivo guardado que haya exportado antes. Reemplaza las respuestas abiertas en este navegador.
+      fileLabel: Archivo guardado
+      button: Importar archivo guardado
+      done: Se importó su archivo guardado.
+    device:
+      heading: Guardar en este dispositivo
+      body: >-
+        Conserve una copia cifrada en este navegador para continuar más tarde. Elija una frase de contraseña de al menos
+        {{minLength}} caracteres; nunca se almacena. Al cerrar la sesión se elimina la copia guardada.
+      saveButton: Guardar en este dispositivo
+      loadButton: Cargar copia guardada
+      saved: Su declaración se guardó en este dispositivo.
+      loaded: Se cargó su copia guardada.
+    clear:
+      heading: Borrar todos los datos en este dispositivo
+      body: >-
+        Elimina las copias guardadas, el almacenamiento del navegador y la caché de este sitio. Los archivos que exportó
+        no se ven afectados.
+      button: Borrar todos los datos en este dispositivo
+      done: Se borraron de este navegador todos los datos de este sitio.
+    errors:
+      invalid-file: Ese archivo no es un archivo guardado de esta herramienta.
+      unsupported-version: Ese archivo guardado se creó con una versión más nueva de esta herramienta.
+      invalid-facts: Ese archivo guardado está dañado y no se puede usar.
+      passphrase-required: Ingrese la frase de contraseña de este archivo.
+      passphrase-too-short: Use una frase de contraseña de al menos {{minLength}} caracteres.
+      decrypt-failed: Esa frase de contraseña no funcionó o el archivo fue modificado.
+      unsupported-encryption: Ese archivo guardado usa una configuración de cifrado que esta herramienta no admite.
+      crypto-unavailable: Este navegador no puede cifrar archivos. Actualice su navegador e inténtelo de nuevo.
+      storage-unavailable: Este navegador no permite guardar datos de este sitio.
+      no-device-save: No hay ninguna copia guardada en este dispositivo.
