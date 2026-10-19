@@ -130,6 +130,48 @@
       </Derived>
     </Fact>
 
+    <Fact path="/schedule2Line4">
+      <Name>Schedule 2 line 4: Self-employment tax</Name>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 1 (PDF p. 2), Part II Section A, line 4: "Self-employment tax. Attach Schedule SE". Same amount as scheduleSE /selfEmploymentTax (26 U.S.C. 1401). Printed without ExportZero so a return with no Schedule SE leaves line 4 blank. The line 4 exemption checkboxes (Forms 4361 and 4029, "3 (specify)") are not printed: the interview doesn't offer either exemption.</Description>
+      <Derived>
+        <Dependency module="scheduleSE" path="/selfEmploymentTax" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule2Line15">
+      <Name>Schedule 2 line 15</Name>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 15: "Add lines 4 through 11 and line 14". In scope: line 4 (/schedule2Line4), line 6 (/schedule2Line6NetInvestmentIncomeTax) and line 11 (/line11AdditionalMedicareTax). Lines 5, 7-10 and 13a-13z (so line 14) have no input or stop the return (see pdf/2026/IRS1040S2/en/configuration.yml), so they are $0.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/schedule2Line4" />
+            <Dependency path="/schedule2Line6NetInvestmentIncomeTax" />
+            <Dependency path="/line11AdditionalMedicareTax" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule2Line17d">
+      <Name>Schedule 2 line 17d</Name>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 17d: "Total other employment taxes. Add lines 17a through 17c". Only line 17b (/line17bAdditionalMedicareTax) is in scope: 17a household employment taxes (Schedule H) stop the return when the household employee question, asked in the dependent care sections, is yes (cdcc /flowKnockoutHouseholdEmployee) and 17c uncollected tax from W-2 box 12 codes A, B, M and N stops it too (formW2s /knockoutForBox12Value).</Description>
+      <Derived>
+        <Round>
+          <Dependency path="/line17bAdditionalMedicareTax" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule2Line20">
+      <Name>Schedule 2 line 20</Name>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 20: "Total additional employment and other taxes. Add lines 16c, 17d, 18, and 19c". Line 16c (Forms 4137 and 8919), line 18 (Form 5329 excess contributions) and line 19c (Form 8621) have no input or stop the return, so line 20 = line 17d.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/schedule2Line17d" />
+      </Derived>
+    </Fact>
+
     <Fact path="/totalAdditionalTaxesOwed">
       <Description>Line 3 of schedule 2 for line 17 of form 1040. #77: line 3 = line 1z + line 2 (AMT).</Description>
       <Export mef="true" downstreamFacts="true" />
