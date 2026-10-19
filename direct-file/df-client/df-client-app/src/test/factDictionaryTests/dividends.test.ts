@@ -412,6 +412,20 @@ describe(`#86 dividends in downstream computations`, () => {
     );
   });
 
+  it(`Form 8615: an 18-year-old non-student with wages still stops; support isn't asked (26 U.S.C. 1(g)(2)(A)(ii))`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutForm8615`];
+    // build() includes $40,000 of W-2 wages, which may or may not be more than half of support.
+    const g = build({ ...divs({ box1a: 2701 }), ...young(`2008-12-31`, false) }); // 18 at the end of 2026
+    expect(get(g, `/flowKnockoutForm8615`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    // TY2026 threshold is $2,700 = 2 x $1,350 (Rev. Proc. 2025-32 sec. 4.02, p. 12)
+    expect(get(build({ ...divs({ box1a: 2700 }), ...young(`2008-12-31`, false) }), `/flowKnockoutForm8615`).get).toBe(
+      false
+    );
+  });
+
   it(`Form 8615: ages 19 to 23 stop only as students; 24 and over, and joint returns, never stop`, () => {
     const ko = (x: Record<string, unknown>, s?: Record<string, unknown>) =>
       get(build({ ...divs({ box1a: 3000 }), ...x }, s), `/flowKnockoutForm8615`).get;
