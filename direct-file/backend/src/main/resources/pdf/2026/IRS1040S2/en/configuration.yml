@@ -1,0 +1,63 @@
+# #119: 2026 Schedule 2 (Form 1040), Additional Taxes. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf (early-release draft, "Created 4/27/26"), committed
+# byte-identical to irs.gov; SHA-256 0e3d4faa4b96f692bc31119d2c86189c3d8b9263e8f3aaaf7c3da371887ebc56 (pinned in
+# pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Field names and line captions come from
+# this draft's AcroForm tooltips (pypdf), and each field's position was checked against the printed line number beside
+# it. Form page 1 = PDF p. 2, form page 2 = PDF p. 3. No 2026 Schedule 2 instructions draft is posted yet; the captions
+# quoted below are from the form itself. When the final 2026 Schedule 2 is released (#124), re-download it, re-hash it
+# and re-verify every field name and line number here before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+#
+# 2026 renumbering (Part II): line 4 SE tax, 5 Form 5329 additional tax, 6 NIIT (Form 8960), 11 Additional Medicare
+# Tax on SE income (Form 8959 line 18), 13c HSA distribution additional tax, 15 = lines 4-11 + 14, 16a Form 4137,
+# 17b Additional Medicare tax on wages (Form 8959 line 12), 17d, 20 = 16c + 17d + 18 + 19c, 21 = 15 + 20 to Form 1040
+# line 23. The 2024 map (pdf/2024/IRS1040S2/en) printed only line 1a, line 3 and a duplicate of line 3; lines 4-21
+# were not printed at all.
+#
+# Not mapped, left blank (never a silent 0); each has no input in this tool, or stops the return:
+#   1b-1y  no input (Forms 8936 Schedule A, 4255); so 1z = 1a.
+#   4 checkboxes (Forms 4361, 4029, "3"): no SE tax exemption is offered.
+#   5  Form 5329 additional tax: a Form 1099-R code 1 early distribution stops the return
+#      (form1099Rs /flowKnockoutRetirementQualifiedEarlyDistribution); HSA additional taxes are line 13c/13d.
+#   7-10, 12, 13a, 13b, 13e-13o, 13z  no input. 13k golden parachute: W-2 box 12 code K stops the return
+#      (formW2s /knockoutForBox12Value). 13h/13i: W-2 box 11 nonqualified plan amounts stop the return
+#      (formW2s /flowKnockoutNonQualifiedPlans).
+#   13c, 13d  HSA distributions not used for medical expenses and testing-period failures stop the return
+#      (hsa /flowKnockoutHsaUnqualifiedDistributions, /flowKnockoutHsaTestingPeriodAdditionalIncomeYes). So 14 = 0.
+#   16a  Form 4137 unreported tips stop the return (unreportedTips /flowKnockoutUnreportedTips). 16b Form 8919: no
+#      input (income /wagesFrom8919 is $0). So 16c = 0.
+#   17a  Schedule H: a household employee stops the return (cdcc /flowKnockoutHouseholdEmployee).
+#   17c  W-2 box 12 codes A, B, M and N stop the return (formW2s /knockoutForBox12Value).
+#   18  Form 5329 excess contributions: IRA contributions and HSA excess contributions stop the return
+#      (income /madeIraContributions, hsa /flowKnockoutHsaExcessContributions).
+#   19a-19c  Form 8621: no input.
+# $0 amounts print blank (FactGraphService zero suppression), except line 21 (/line21OfSchedule2 has <ExportZero />
+# for MeF). /schedule2Line4 exists so line 4 stays blank when there is no Schedule SE.
+includeWhen: /requiresSchedule2
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  form1[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on Form 1040, 1040-SR, or 1040-NR"
+      f1_02[0]: /primaryFiler/tin # "Your social security number"
+      # Part I, Tax
+      Line1_ReadOrder[0]:
+        f1_03[0]: /lesserOfNetPtcAmountAndRepaymentLimitation # 1a "Excess advance premium tax credit repayment. Attach Form 8962"
+      f1_11[0]: /schedule2Line1z # 1z "Add lines 1a through 1y"
+      f1_12[0]: /schedule2Line2 # 2 "Alternative minimum tax. Attach Form 6251"
+      f1_13[0]: /totalAdditionalTaxesOwed # 3 "Add lines 1z and 2. Enter here and on Form 1040, 1040-SR, or 1040-NR, line 17"
+      # Part II, Additional Taxes; Section A, Additional Income Taxes
+      f1_15[0]: /schedule2Line4 # 4 "Self-employment tax. Attach Schedule SE"
+      f1_17[0]: /schedule2Line6NetInvestmentIncomeTax # 6 "Net investment income tax. Attach Form 8960"
+      f1_22[0]: /line11AdditionalMedicareTax # 11 "Additional Medicare Tax on self-employment income. Attach Form 8959"
+    Page2[0]:
+      f2_07[0]: /schedule2Line15 # 15 "Add lines 4 through 11 and line 14"
+      # Section B, Additional Employment and Other Taxes
+      # 17a Schedule H (Line17_ReadOrder[0].f2_11[0]): not mapped (see above)
+      f2_12[0]: /line17bAdditionalMedicareTax # 17b "Additional Medicare tax on Medicare wages and RRTA compensation. Attach Form 8959"
+      f2_14[0]: /schedule2Line17d # 17d "Total other employment taxes. Add lines 17a through 17c"
+      f2_19[0]: /schedule2Line20 # 20 "Total additional employment and other taxes. Add lines 16c, 17d, 18, and 19c"
+      # Section C, Total Additional Taxes
+      f2_20[0]: /line21OfSchedule2 # 21 "Add lines 15 and 20. These are your total additional taxes. Enter here and on Form 1040 or 1040-SR, line 23"
