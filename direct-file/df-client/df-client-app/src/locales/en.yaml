@@ -4241,7 +4241,7 @@ info:
             - ul:
                 - li: Estimating your total income
                 - li: >-
-                    Subtracting the educator expenses adjustment, if you think you might qualify (maximum $300 per
+                    Subtracting the educator expenses adjustment, if you think you might qualify (maximum $350 per
                     taxpayer)
                 - li: >-
                     Subtracting the student loan interest deduction, if you think you might qualify (maximum $2,500
@@ -5151,7 +5151,7 @@ info:
             - ul:
                 - li:
                     <strong>The payer submitted your 1099-INT information to the federal government, but the IRS didn’t
-                    get it yet</strong>. Most payers have until March 31, 2025, to send your 1099-INT information to the
+                    get it yet</strong>. Most payers have until March 31, 2027, to send your 1099-INT information to the
                     IRS.
                 - li:
                     <strong>You made less than $10 in interest in {{/taxYear}}</strong>, so the payer isn’t required to
@@ -5171,7 +5171,7 @@ info:
                     your spouse’s 1099-INTs later on.
                 - li:
                     <strong>The payer submitted your 1099-INT information to the federal government, but the IRS didn’t
-                    get it yet</strong>. Most payers have until March 31, 2025, to send your 1099-INT information to the
+                    get it yet</strong>. Most payers have until March 31, 2027, to send your 1099-INT information to the
                     IRS.
                 - li:
                     <strong>You made less than $10 in interest in {{/taxYear}}</strong>, so the payer isn’t required to
@@ -5987,8 +5987,8 @@ info:
           header: I have a child’s Permanent Fund Dividend (PFD) from Alaska. Why can’t I report it in Direct File?
           body:
             - p:
-                The {{/taxYear}} PFD is for {{/alaskaPfdAmount}}. Because this amount is more than $1,300, a child’s PFD
-                is taxable as unearned income.
+                The {{/taxYear}} PFD is for {{/alaskaPfdAmount}}. A child’s PFD is the child’s unearned income, and it is
+                taxable.
             - p: Direct File doesn’t currently support <Link1>reporting children’s unearned income</Link1>.
             - p:
                 You’ll need to file using another tool. You must report all of your income to the IRS, even if you’re
@@ -20544,7 +20544,7 @@ taxReturnDetails:
               You’ll need to find another way to file your federal taxes. Be sure to address your tax return errors
               before filing.
       resubmitDeadline:
-        heading: The deadline to resubmit is April 20, 2025 at 11:59 PM in your timezone
+        heading: The deadline to resubmit is April 20, 2027 at 11:59 PM in your timezone
         body:
           - p: If you need more time, you may <LinkExtension>apply for an extension</LinkExtension>.
           - p:
@@ -21408,7 +21408,7 @@ taxReturnDetails:
             LinkExtension: https://www.irs.gov/forms-pubs/extension-of-time-to-file-your-tax-return
           body:
             - p: >-
-                If you need more time, <LinkExtension>apply for an extension</LinkExtension> by April 15, 2025.
+                If you need more time, <LinkExtension>apply for an extension</LinkExtension> by April 15, 2027.
       findOtherWaysToFileButtonText: Find other ways to file your federal taxes
     paperReturnModal:
       preResubmitDeadline:
@@ -21514,7 +21514,7 @@ paperPathStatusAlert:
 reminderTaxReturnCard:
   heading: Deadline
   additionalInfo: >-
-    The <strong>federal tax filing deadline is April 15, 2025 at 11:59PM in your timezone.</strong>
+    The <strong>federal tax filing deadline is April 15, 2027 at 11:59PM in your timezone.</strong>
   body:
     - ul:
         - li: If you need more time, you may <LinkExtension>apply for an extension</LinkExtension>.
@@ -21545,7 +21545,7 @@ reminderTaxReturnCardQuestions:
     LinkOnlineAccount: https://www.irs.gov/payments/your-online-account
 pastYearTaxReturnCard:
   heading: Past federal tax returns
-  button: Download my 2023 federal tax return (Form 1040, PDF)
+  button: Download my 2025 federal tax return (Form 1040, PDF)
   pdfTextTitle: How to get other tax records
   body:
     - p:
@@ -21573,7 +21573,7 @@ taxReturnCard:
         beforeEndOfPerfectionPeriod:
           body:
             - p: >-
-                Review and fix any errors, and then resubmit with Direct File through <strong>April 20, 2025 at 11:59 PM
+                Review and fix any errors, and then resubmit with Direct File through <strong>April 20, 2027 at 11:59 PM
                 in your timezone</strong>. Your deadline may be postponed if you were <LinkDisaster>affected by a
                 disaster situation</LinkDisaster>).
           urls:
@@ -21597,7 +21597,7 @@ taxReturnCard:
         heading: Find another way to file
         body:
           - p: You’ll need to find another way to file your federal taxes.
-          - p: If you need more time, <LinkExtension>apply for an extension</LinkExtension> by April 15, 2025.
+          - p: If you need more time, <LinkExtension>apply for an extension</LinkExtension> by April 15, 2027.
         urls:
           LinkExtension: https://www.irs.gov/forms-pubs/extension-of-time-to-file-your-tax-return
         taxReturnDetailsButton: Rejected tax return details
@@ -22300,7 +22300,7 @@ banner:
       The federal tax filing deadline was April 15. Your deadline may be postponed if you were <LinkDisaster>affected by
       a disaster situation</LinkDisaster>).
     headingResubmissionDeadline:
-      The deadline to resubmit with Direct File is April 15, 2025 at 11:59 PM in your timezone. Your deadline may be
+      The deadline to resubmit with Direct File is April 15, 2027 at 11:59 PM in your timezone. Your deadline may be
       postponed if you were <LinkDisaster>affected by a disaster situation</LinkDisaster>).
     headingClosed: Direct File is now closed
     contentBase:
@@ -22309,7 +22309,7 @@ banner:
       LinkDisaster: https://www.irs.gov/newsroom/tax-relief-in-disaster-situations
   closingSoon:
     name: Tax filing deadline banner
-    header: "The deadline to resubmit is April 15, 2025 at 11:59 PM in your timezone"
+    header: "The deadline to resubmit is April 15, 2027 at 11:59 PM in your timezone"
     body:
       - p: Your deadline may be postponed if you were <LinkDisaster>affected by a disaster situation</LinkDisaster>).
     urls:
@@ -22320,7 +22320,7 @@ surveyBanner:
     The IRS would like to learn about your experience using Direct File. If you’d like to get an email with a survey
     asking about your experience, agree to share your email address by checking the box below. Survey responses won’t be
     connected to your tax return.
-  para2: We will send an email with the survey to some users after April 15, 2025.
+  para2: We will send an email with the survey to some users after April 15, 2027.
   para3: Email address
   accordion:
     heading: Privacy Act Statement
@@ -22345,7 +22345,7 @@ surveyBanner:
   shareEmailButton: Share my email
   noThanksButton: No, thanks
   shareEmailHeading: Your email has been shared.
-  shareEmailText: We will send an email with the survey to some users after April 15, 2025.
+  shareEmailText: We will send an email with the survey to some users after April 15, 2027.
   noThanksHeading: Your email has not been shared.
 afterDeadlineBanner:
   heading: The Direct File pilot is now closed
@@ -23489,7 +23489,7 @@ dataviews:
     /formW2s/*/BOX14_NJ_FLI: FLI
     /formW2s/*/BOX14_NJ_UIHCWD: UI/HC/WD
     /formW2s/*/BOX14_NJ_UIWFSWF: UI/WF/SWF
-    /partYearYonkersResident: Did you live outside of Yonkers for any part of 2024?
+    /partYearYonkersResident: Did you live outside of Yonkers for any part of {{/taxYear}}?
     /formW2s/*/nonstandardOrCorrectedChoice: W-2 nonstandard or corrected
     enums:
       /incomeFormStateOptions:

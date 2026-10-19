@@ -113,6 +113,7 @@
           <Dependency module="ptc" path="/selfReportedHasMultiple1095As" />
           <Dependency module="ptc" path="/hasImmigrationStatusNotEligibleForMarketplace" />
           <Dependency module="ptc" path="/wantsToUseAltCalculations" />
+          <Dependency module="ptc" path="/flowKnockoutPtcTy2026RulesNotImplemented" />
           <Dependency path="/saversCreditKnockouts" />
           <Dependency module="cdcc" path="/knockoutStudentOrDisabled" />
           <Not>

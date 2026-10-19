@@ -3884,7 +3884,7 @@ info:
             - ul:
                 - li: Estimando el total de tus ingresos
                 - li: >-
-                    Restando el ajuste por los gastos de educador, si crees que podrías calificar (máximo de $300 por
+                    Restando el ajuste por los gastos de educador, si crees que podrías calificar (máximo de $350 por
                     contribuyente)
                 - li: >-
                     Restando la deducción de los intereses sobre el préstamo estudiantil, si crees que podrías calificar
@@ -10103,8 +10103,8 @@ info:
             Tengo un PFD de Alaska de un hijo(a). ¿Por qué no lo puedo declarar en Direct File?
           body:
             - p: >-
-                El PFD del {{/taxYear}} es de {{/alaskaPfdAmount}}. Como esta cantidad es mayor de $1,300, el PFD de un
-                hijo(a) es tributable como ’ingresos no derivados del trabajo’.
+                El PFD del {{/taxYear}} es de {{/alaskaPfdAmount}}. El PFD de un hijo(a) se considera
+                ’ingresos no derivados del trabajo’ del hijo(a) y es tributable.
             - p: >-
                 Direct File actualmente no acepta <Link1>reportar los ingresos no derivados del trabajo de hijos (en
                 inglés)</Link1>.
@@ -15238,7 +15238,7 @@ info:
             - ul:
                 - li:
                     <strong>El pagador le envió tu información de 1099-INT al gobierno federal, pero el IRS aún no lo ha
-                    recibido</strong>. La mayoría de los pagadores tienen hasta el 31 de marzo del 2025 para enviar la
+                    recibido</strong>. La mayoría de los pagadores tienen hasta el 31 de marzo del 2027 para enviar la
                     información de tu 1099-INT al IRS.
                 - li:
                     <strong>Ganaste menos de $10 en intereses en el {{/taxYear}}</strong>, así que no se le requiere al
@@ -15258,7 +15258,7 @@ info:
                     manualmente más adelante.
                 - li:
                     <strong>El pagador le envió tu información de 1099-INT al gobierno federal, pero el IRS aún no lo ha
-                    recibido</strong>. La mayoría de los pagadores tienen hasta el 31 de marzo del 2025 para enviar la
+                    recibido</strong>. La mayoría de los pagadores tienen hasta el 31 de marzo del 2027 para enviar la
                     información de tu 1099-INT al IRS.
                 - li:
                     <strong>Ganaste menos de $10 en intereses en el {{/taxYear}}</strong>, así que no se le requiere al
@@ -19507,7 +19507,7 @@ banner:
       La fecha límite para enviar la declaración del impuesto federal era el 15 de abril. Tu fecha límite se podría
       posponer si te <LinkDisaster>afectó alguna situación de desastre</LinkDisaster>.
     headingResubmissionDeadline: >-
-      La fecha límite para reenviar una declaración con Direct File es el 15 de abril del 2025 a las 11:59 PM de tu zona
+      La fecha límite para reenviar una declaración con Direct File es el 15 de abril del 2027 a las 11:59 PM de tu zona
       horaria. Tu fecha límite se podría posponer si te <LinkDisaster>afectó alguna situación de
       desastre</LinkDisaster>.
     headingClosed: El programa piloto de Direct File ha cerrado.
@@ -19537,7 +19537,7 @@ surveyBanner:
     Al IRS le gustaría saber sobre tu experiencia usando Direct File. Si te gustaría recibir una encuesta por email
     acerca de tu experiencia, selecciona la casilla a continuación para autorizar compartir tu dirección de email. Las
     respuestas de la encuesta no se asociarán con tu declaración del impuesto federal.
-  para2: Si te eligen para participar, el IRS te enviará la encuesta por email después del 15 de abril del 2025.
+  para2: Si te eligen para participar, el IRS te enviará la encuesta por email después del 15 de abril del 2027.
   para3: Dirección de email
   accordion:
     heading: Declaración de la Ley de Privacidad
@@ -19562,7 +19562,7 @@ surveyBanner:
   shareEmailButton: Compartir mi dirección de email
   noThanksButton: No, gracias
   shareEmailHeading: Se compartió tu dirección de email.
-  shareEmailText: Enviaremos un email con la encuesta a algunos participantes después del 15 de abril del 2025.
+  shareEmailText: Enviaremos un email con la encuesta a algunos participantes después del 15 de abril del 2027.
   noThanksHeading: No se compartió tu dirección de email.
 afterDeadlineBanner:
   heading: El programa piloto de Direct File ha cerrado.
@@ -21480,7 +21480,7 @@ headings:
     En el {{/taxYear}}, ¿Tú o {{/secondaryFiler/firstName}} estuvieron inscritos en un plan de salud calificado del
     Mercado y no fueron eligibles para Medicaid debido al estatus migratorio?
   /heading/credits-and-deductions/credits/ptc-below-100-fed-poverty-line-mfj-with-deps:
-    En el 2024, ¿Tú, {{/secondaryFiler/firstName}}, o tus dependientes estuvieron inscritos en un plan de salud
+    En el {{/taxYear}}, ¿Tú, {{/secondaryFiler/firstName}}, o tus dependientes estuvieron inscritos en un plan de salud
     calificado del Mercado y no fueron eligibles para Medicaid debido al estatus migratorio?
   /heading/credits-and-deductions/credits/ptc-mfs-exception-past-use: >-
     ¿El {{/taxYear}} será el cuarto año seguido que reclamas el Crédito tributario de prima y usas el estado civil de
@@ -23080,7 +23080,7 @@ dataviews:
       del {{/taxYear}}?
     /filers/*/isStudent: $t(headings./heading/you-and-your-family/spouse/isStudent)
     /filers/*/isDisabled:
-      En cualquier momento del 2024, ¿{{/secondaryFiler/firstName}} no pudo cuidar de si mismo(a) debido a una
+      En cualquier momento del {{/taxYear}}, ¿{{/secondaryFiler/firstName}} no pudo cuidar de si mismo(a) debido a una
       discapacidad física o mental?
     /spouseLivedTogetherMonths: >-
       $t(headings./heading/you-and-your-family/spouse/spouse-live-together-months)
@@ -23279,7 +23279,7 @@ dataviews:
     /formW2s/*/nonstandardOrCorrectedChoice: W-2 no estándar o corregido
     primaryFilerW2s: Tus Formularios W-2
     secondaryFilerW2s: Los Formularios W-2 de tu cónyuge
-    /partYearYonkersResident: ¿Viviste fuera de Yonkers por una parte del 2024?
+    /partYearYonkersResident: ¿Viviste fuera de Yonkers por una parte del {{/taxYear}}?
     /formW2s/*/writableUnionDuesAmount: Cantidad de la cuota sindical por membresía
     /formW2s/*/writableBox14CodeMd: Casilla 14 - otros códigos
     /formW2s/*/writableBox14CodeNj: Casilla 14 - otros códigos
@@ -25226,7 +25226,7 @@ taxReturnCard:
           body:
             - p: >-
                 Revisa y corrige los errores, y reenvía tu declaración con Direct File hasta <strong>el 20 de abril del
-                2025 a las 11:59 PM en tu zona horaria</strong>. Tu fecha límite se podría posponer si te <LinkDisaster>
+                2027 a las 11:59 PM en tu zona horaria</strong>. Tu fecha límite se podría posponer si te <LinkDisaster>
                 afectó alguna situación de desastre</LinkDisaster>.
           urls:
             LinkDisaster: $t(taxReturnCard.status.rejected.remediation.urls.LinkDisaster)
@@ -25252,7 +25252,7 @@ taxReturnCard:
           - p: Tendrás que encontrar otra forma de presentar tus impuestos.
           - p: >-
               Si necesitas más tiempo, <LinkExtension>aplica a una extensión</LinkExtension> hasta el 15 de abril del
-              2025.
+              2027.
         urls:
           LinkExtension: >-
             https://www.irs.gov/es/forms-pubs/extension-of-time-to-file-your-tax-return
@@ -25623,7 +25623,7 @@ reminderTaxReturnCard:
   heading: Fecha límite
   additionalInfo: >-
     Puedes enviar tu declaración con Direct File hasta la <strong>fecha límite federal para declarar impuestos del 15 de
-    abril del 2025 a las 11:59 PM.</strong>
+    abril del 2027 a las 11:59 PM.</strong>
   body:
     - ul:
         - li: Si necesitas más tiempo puedes <LinkExtension>aplicar para una extensión</LinkExtension>.
@@ -25660,7 +25660,7 @@ reminderTaxReturnCardQuestions:
     LinkOnlineAccount: https://www.irs.gov/es/payments/your-online-account
 pastYearTaxReturnCard:
   heading: Declaraciones federales pasadas
-  button: Descargar mi declaración federal del 2023 (Formulario 1040, PDF)
+  button: Descargar mi declaración federal del 2025 (Formulario 1040, PDF)
   pdfTextTitle: Cómo obtener otros registros de impuestos
   body:
     - p: >-
@@ -26559,7 +26559,7 @@ taxReturnDetails:
                     Para completar el Formulario 8962, <CreditsDataViewInternalLink> actualiza la información de tu
                     cobertura de salud del Mercado</CreditsDataViewInternalLink>. A menos que otra persona esté
                     reclamando como dependientes a los miembros de tu familia que están inscritos, necesitarás completar
-                    el Formulario 8962 al preparar tu declaración del impuesto federal del 2024.
+                    el Formulario 8962 al preparar tu declaración del impuesto federal del {{/taxYear}}.
                 - p: >-
                     Si piensas que no tienes requerido completar el Formulario 8962, puedes proveer una explicación
                     escrita con las razones por las que crees que no debes completar el formulario. Adjunta el documento
@@ -26617,7 +26617,7 @@ taxReturnDetails:
               declaración antes de enviarla.
       resubmitDeadline:
         heading: >-
-          La fecha límite para reenviar tu declaración es el 20 de abril del 2025 a las 11:59 PM de tu zona horaria
+          La fecha límite para reenviar tu declaración es el 20 de abril del 2027 a las 11:59 PM de tu zona horaria
         urls:
           LinkExtension: >-
             https://www.irs.gov/es/filing/get-an-extension-to-file-your-tax-return
@@ -26625,7 +26625,7 @@ taxReturnDetails:
         body:
           - p: >-
               Si necesitas más tiempo, <LinkExtension>solicita una prórroga o extensión de tiempo</LinkExtension> para
-              el 15 de abril del 2025.
+              el 15 de abril del 2027.
           - p: >-
               Tu fecha límite se podría extender si <LinkDisaster>te afectó una situación de desastre.</LinkDisaster>.
       editReturnButtonText: Editar mi declaración de impuestos federales del {{taxYear}}
@@ -26668,7 +26668,7 @@ taxReturnDetails:
           body:
             - p: >-
                 Si necesitas más tiempo, <LinkExtension>solicita una prórroga o extensión de tiempo</LinkExtension> para
-                el 15 de abril del 2025.
+                el 15 de abril del 2027.
       findOtherWaysToFileButtonText: Encuentra otras maneras de presentar tus impuestos federales
     paperReturnModal:
       preResubmitDeadline:
