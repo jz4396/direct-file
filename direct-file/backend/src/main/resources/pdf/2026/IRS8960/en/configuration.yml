@@ -1,0 +1,51 @@
+# 2026 Form 8960, Net Investment Income Tax—Individuals, Estates, and Trusts. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f8960--dft.pdf (early-release draft, "Created 6/1/26"), committed
+# byte-identical to irs.gov; SHA-256 2306f4f334a8b3b1ed73fd5045dec86eed194902923462bf485431c756f66982
+# (pinned in pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Field names and line captions
+# come from this draft's AcroForm tooltips (pypdf), and each field's position was checked against the printed line
+# number beside it. When the final 2026 Form 8960 is released, re-download it, re-hash it and re-verify every field
+# name and line number here before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+#
+# Included when /requiresForm8960 (MAGI over the threshold; Instructions for Form 8960 (2026 draft) p. 1, Who Must
+# File).
+#
+# Draft line numbers checked: line 10 is "Additional modifications (see instructions)" and line 11 is "Total
+# deductions and modifications. Add lines 9d and 10", matching /form8960Line10 and /form8960Line11.
+#
+# Not mapped, left blank (never a silent 0):
+#   Part I election checkboxes (section 6013(g), 6013(h), Regulations section 1.1411-10(g)): not offered.
+#   4b, 5b, 5c, 6, 7, 9a-9c  stops when they could apply (/flowKnockoutForm8960Unsupported, scheduleE
+#       /flowKnockoutScheduleEPartII); 9d (the sum of 9a-9c) is therefore $0.
+#   18a-21  estates and trusts; this return is an individual Form 1040.
+# Lines that only repeat an in-scope amount print it: 4c = 4a, 5d = 5a (see /form8960Line4c, /form8960Line5a).
+# $0 amounts print blank (FactGraphService zero suppression) except where the form says "enter -0-": lines 12 and
+# 15, whose facts carry <ExportZero />.
+includeWhen: /requiresForm8960
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on your tax return"
+      f1_2[0]: /primaryFiler/tin # "Your social security number or EIN"
+      # Part I, Investment Income
+      f1_3[0]: /form8960Line1 # 1 "Taxable interest"
+      f1_4[0]: /form8960Line2 # 2 "Ordinary dividends"
+      f1_5[0]: /form8960Line3 # 3 "Annuities"
+      f1_6[0]: /form8960Line4a # 4a "Rental real estate, royalties, partnerships, S corporations, trusts, etc."
+      f1_8[0]: /form8960Line4c # 4c "Combine lines 4a and 4b"
+      f1_9[0]: /form8960Line5a # 5a "Net gain or loss from disposition of property"
+      f1_12[0]: /form8960Line5a # 5d "Combine lines 5a through 5c"
+      f1_15[0]: /form8960Line8 # 8 "Total investment income. Combine lines 1, 2, 3, 4c, 5d, 6, and 7"
+      # Part II, Investment Expenses Allocable to Investment Income and Modifications
+      f1_20[0]: /form8960Line10 # 10 "Additional modifications"
+      f1_21[0]: /form8960Line11 # 11 "Total deductions and modifications. Add lines 9d and 10"
+      # Part III, Tax Computation
+      f1_22[0]: /form8960Line12 # 12 "Net investment income. Subtract Part II, line 11, from Part I, line 8"
+      f1_23[0]: /form8960Line13 # 13 "Modified adjusted gross income"
+      f1_24[0]: /form8960Line14 # 14 "Threshold based on filing status"
+      f1_25[0]: /form8960Line15 # 15 "Subtract line 14 from line 13. If zero or less, enter -0-"
+      f1_26[0]: /form8960Line16 # 16 "Enter the smaller of line 12 or line 15"
+      f1_27[0]: /form8960Line17 # 17 "Net investment income tax for individuals. Multiply line 16 by 3.8% (0.038)"
