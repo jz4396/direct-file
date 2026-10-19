@@ -48,6 +48,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=be95e535-e60f-47a2-ae4b-937e2ded60fb
@@ -68,6 +70,7 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=be95e535-e60f-47a2-ae4b-937e2ded60fb
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=be95e535-e60f-47a2-ae4b-937e2ded60fb
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=be95e535-e60f-47a2-ae4b-937e2ded60fb
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=be95e535-e60f-47a2-ae4b-937e2ded60fb
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=07c0b7c2-a6f5-4ee2-ba5e-29a50fb211df
 /flow/income/jobs/jobs-data-import-breather-check?%2FformW2s=07c0b7c2-a6f5-4ee2-ba5e-29a50fb211df
 /flow/income/jobs/jobs-data-import?%2FformW2s=07c0b7c2-a6f5-4ee2-ba5e-29a50fb211df
@@ -85,7 +88,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=07c0b7c2-a6f5-4ee2-ba5e-29a50fb211df
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=07c0b7c2-a6f5-4ee2-ba5e-29a50fb211df
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=07c0b7c2-a6f5-4ee2-ba5e-29a50fb211df
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=07c0b7c2-a6f5-4ee2-ba5e-29a50fb211df
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 Subcategory: /flow/income/dependent-care
 /flow/income/dependent-care/dep-care-intro
@@ -145,6 +152,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -162,10 +173,9 @@ Subcategory: /flow/your-taxes/amount
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/refund-intro
-/flow/your-taxes/payment-method/refund-method-choice
-/flow/your-taxes/payment-method/refund-mailing-address
-/flow/your-taxes/payment-method/refund-outro
+/flow/your-taxes/payment-method/payment-intro
+/flow/your-taxes/payment-method/payment-method-choice
+/flow/your-taxes/payment-method/payment-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice

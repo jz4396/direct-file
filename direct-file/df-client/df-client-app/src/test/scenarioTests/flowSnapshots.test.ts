@@ -52,7 +52,12 @@ describe(`Flow snapshot tests`, () => {
   const ERO_SCENARIO_FOLDER = `./src/test/factDictionaryTests/backend-scenarios-ero`;
   const FLOW_SNAPSHOTS_FOLDER = `./src/test/scenarioTests/flow-snapshots`;
   const files = fs.readdirSync(SCENARIO_FOLDER);
-  const eroFiles = fs.readdirSync(ERO_SCENARIO_FOLDER);
+  // #108: `backend-scenarios-ero` is a symlink to backend/src/test/resources/scenarios-ero, which IRS-Public/direct-file
+  // never published (the symlink, the `ero-*.csv` snapshots, migrateScenarios.ts and the pom.xml includes reference it,
+  // but the folder is absent upstream). A missing folder used to throw ENOENT at collection time, so none of the
+  // non-ERO scenario snapshots below ran either. Treat a missing ERO folder as "no ERO scenarios"; if the folder is
+  // restored, its scenarios are picked up again with no code change.
+  const eroFiles = fs.existsSync(ERO_SCENARIO_FOLDER) ? fs.readdirSync(ERO_SCENARIO_FOLDER) : [];
   const jsons = files.filter((f) => f.endsWith(`.json`) && !f.endsWith(`.expected.json`));
   const eroJsons = eroFiles.filter((f) => f.endsWith(`.json`) && !f.endsWith(`.expected.json`));
 

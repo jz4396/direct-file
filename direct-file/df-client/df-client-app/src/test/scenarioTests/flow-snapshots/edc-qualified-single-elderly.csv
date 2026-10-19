@@ -9,6 +9,7 @@ Subcategory: /flow/you-and-your-family/about-you
 /flow/you-and-your-family/about-you/about-you-state-residency-scope?%2FprimaryFiler=21c742ca-8fef-4b5b-b2ff-169185154a2b
 /flow/you-and-your-family/about-you/about-you-state-income-form?%2FprimaryFiler=21c742ca-8fef-4b5b-b2ff-169185154a2b
 /flow/you-and-your-family/about-you/about-you-state-income-1099-misc-pfd?%2FprimaryFiler=21c742ca-8fef-4b5b-b2ff-169185154a2b
+/flow/you-and-your-family/about-you/state-breather-fl?%2FprimaryFiler=21c742ca-8fef-4b5b-b2ff-169185154a2b
 /flow/you-and-your-family/about-you/about-you-tin?%2FprimaryFiler=21c742ca-8fef-4b5b-b2ff-169185154a2b
 /flow/you-and-your-family/about-you/about-you-ip-pin-input-review?%2FprimaryFiler=21c742ca-8fef-4b5b-b2ff-169185154a2b
 /flow/you-and-your-family/about-you/about-you-blind?%2FprimaryFiler=21c742ca-8fef-4b5b-b2ff-169185154a2b
@@ -33,6 +34,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=8db590e7-c4a2-4be1-b5d6-9ae534b5e79f
@@ -51,7 +54,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=8db590e7-c4a2-4be1-b5d6-9ae534b5e79f
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=8db590e7-c4a2-4be1-b5d6-9ae534b5e79f
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=8db590e7-c4a2-4be1-b5d6-9ae534b5e79f
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=8db590e7-c4a2-4be1-b5d6-9ae534b5e79f
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 Subcategory: /flow/income/dependent-care
 /flow/income/dependent-care/dep-care-intro
@@ -72,6 +79,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -96,10 +107,9 @@ Subcategory: /flow/your-taxes/amount
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/refund-intro
-/flow/your-taxes/payment-method/refund-method-choice
-/flow/your-taxes/payment-method/refund-mailing-address
-/flow/your-taxes/payment-method/refund-outro
+/flow/your-taxes/payment-method/payment-intro
+/flow/your-taxes/payment-method/payment-method-choice
+/flow/your-taxes/payment-method/payment-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice

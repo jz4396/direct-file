@@ -58,6 +58,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=a4be1823-af9f-4895-ad95-4a99a3b2ea56
@@ -77,6 +79,7 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=a4be1823-af9f-4895-ad95-4a99a3b2ea56
 /flow/income/jobs/w2-missing-state-income?%2FformW2s=a4be1823-af9f-4895-ad95-4a99a3b2ea56
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=a4be1823-af9f-4895-ad95-4a99a3b2ea56
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=a4be1823-af9f-4895-ad95-4a99a3b2ea56
 Subcategory: /flow/income/unemployment
 /flow/income/unemployment/unemployment-loop-intro?%2Fform1099Gs=7b5f5d5e-2523-4b6e-9d08-b853a617f395
 /flow/income/unemployment/add-1099-g?%2Fform1099Gs=7b5f5d5e-2523-4b6e-9d08-b853a617f395
@@ -85,6 +88,9 @@ Subcategory: /flow/income/unemployment
 /flow/income/unemployment/1099-g-repay-options?%2Fform1099Gs=7b5f5d5e-2523-4b6e-9d08-b853a617f395
 /flow/income/unemployment/1099-g-withholding?%2Fform1099Gs=7b5f5d5e-2523-4b6e-9d08-b853a617f395
 /flow/income/unemployment/1099-g-state-info?%2Fform1099Gs=7b5f5d5e-2523-4b6e-9d08-b853a617f395
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 /flow/income/interest/int-income-loop-intro?%2FinterestReports=e8eb438d-5bed-4f00-9478-e4fdbf675fa1
 /flow/income/interest/add-int-income?%2FinterestReports=e8eb438d-5bed-4f00-9478-e4fdbf675fa1
@@ -117,6 +123,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -124,6 +134,12 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/marketplace-breather
 /flow/credits-and-deductions/credits/qualified-marketplace-plan
 /flow/credits-and-deductions/credits/ptc-not-qualified-no-aptc
+/flow/credits-and-deductions/credits/cdcc-intro
+/flow/credits-and-deductions/credits/cdcc-gating
+/flow/credits-and-deductions/credits/cdcc-not-qualified
+/flow/credits-and-deductions/credits/edc-breather
+/flow/credits-and-deductions/credits/edc-disability-intro-screen
+/flow/credits-and-deductions/credits/edc-permanent-total-disability
 /flow/credits-and-deductions/credits/ctc-intro
 /flow/credits-and-deductions/credits/ctc-improper-claims
 /flow/credits-and-deductions/credits/ctc-qualified
@@ -131,7 +147,6 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/eitc-taxpayer-qc-of-another
 /flow/credits-and-deductions/credits/eitc-improper-claims
 /flow/credits-and-deductions/credits/eitc-qualified
-/flow/credits-and-deductions/credits/credit-summary-qualified
 Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro

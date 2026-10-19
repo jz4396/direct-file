@@ -33,6 +33,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=2ae39874-222a-5890-b737-70052c1751f3
@@ -54,6 +56,7 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=2ae39874-222a-5890-b737-70052c1751f3
 /flow/income/jobs/w2-missing-state-income?%2FformW2s=2ae39874-222a-5890-b737-70052c1751f3
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=2ae39874-222a-5890-b737-70052c1751f3
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=2ae39874-222a-5890-b737-70052c1751f3
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=4342b28a-1acd-44e3-9ab0-008310703768
 /flow/income/jobs/jobs-data-import-breather-check?%2FformW2s=4342b28a-1acd-44e3-9ab0-008310703768
 /flow/income/jobs/jobs-data-import?%2FformW2s=4342b28a-1acd-44e3-9ab0-008310703768
@@ -71,7 +74,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=4342b28a-1acd-44e3-9ab0-008310703768
 /flow/income/jobs/w2-missing-state-income?%2FformW2s=4342b28a-1acd-44e3-9ab0-008310703768
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=4342b28a-1acd-44e3-9ab0-008310703768
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=4342b28a-1acd-44e3-9ab0-008310703768
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 Subcategory: /flow/income/dependent-care
 /flow/income/dependent-care/dep-care-intro
@@ -92,6 +99,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits

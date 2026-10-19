@@ -22,7 +22,8 @@ describe(`The CDCC credit`, () => {
   });
 
   const dob = {
-    under13: `2012-01-01`,
+    // #108: under 13 at the end of TY2026 (IRC §21(b)(1)(A) "has not attained age 13"); 2012-01-01 is 14 in 2026.
+    under13: `2015-01-01`,
     adult: `1987-01-01`,
   };
   const childDependentId = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d48`;
@@ -48,6 +49,11 @@ describe(`The CDCC credit`, () => {
     '/cdccCareProviders': createCollectionWrapper([careProviderId]),
     [`/cdccCareProviders/#${careProviderId}/writableIsOrganization`]: createBooleanWrapper(true),
     [`/cdccCareProviders/#${careProviderId}/isEmployerFurnished`]: createBooleanWrapper(true),
+    // #108: the Schedule A (#37) and capital-assets (#28) screeners must be answered, or /standardOrItemizedDeductions,
+    // /tentativeTaxFromTaxableIncome and /totalTentativeTax stay incomplete and the describe-level expects below read
+    // placeholder values (same minimal set as testData filerWithW2NoDeductionsNoCreditsBaseData).
+    [`/scheduleAWantsToItemize`]: createBooleanWrapper(false),
+    [`/soldCapitalAssets`]: createBooleanWrapper(false),
   };
 
   const filerWithChildOneW2DepCareBenefits = {
@@ -600,9 +606,14 @@ describe(`The CDCC credit`, () => {
     });
 
     describe(`When CDCC zeroes out tax liability`, () => {
+      // #108: TY2026 amounts. baseFilerData's 0001-01-01 birth date makes the filer 65+, so a single filer gets
+      // $16,100 + $2,050 = $18,150 standard deduction (Rev. Proc. 2025-32 §4.14, p. 18) plus the $6,000 Schedule 1-A
+      // senior deduction (IRC §151(d)(5)(C)). At the old $17,500 wages taxable income is $0, so there is no tax for the
+      // CDCC to zero out. $25,000 wages: $25,000 - $18,150 - $6,000 = $850 taxable, $85 tax at 10%, which the $500 of
+      // expenses times the CDCC rate (never below 20%, IRC §21(a)(2)) covers in full.
       const filerWithSmallTaxBill = {
         ...filerWithQualifyingExpenses,
-        ...makeW2Data(17500, w2Id),
+        ...makeW2Data(25000, w2Id),
       };
       const { factGraph } = setupFactGraph(filerWithSmallTaxBill);
 
