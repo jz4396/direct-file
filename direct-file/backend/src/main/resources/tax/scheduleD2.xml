@@ -256,6 +256,35 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleDLine13">
+      <Name>Schedule D line 13 — capital gain distributions</Name>
+      <Description>#86b: Schedule D Part II line 13. Schedule D instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2, Capital Gain Distributions: "Enter on Schedule D, line 13, the total capital gain distributions paid to you during the year, regardless of how long you held your investment. This amount is shown in box 2a of Form 1099-DIV." p. 11, Line 13: "See Capital Gain Distributions, earlier." Total 1099-DIV box 2a in whole dollars (dividends /totalCapitalGainDistributions), only when Schedule D is filed; otherwise box 2a goes directly on Form 1040 line 7a (dividends /capitalGainDistributionsWithoutScheduleD). Form 2439 box 1a is not supported.</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="scheduleD" path="/requiresScheduleD" />
+            </When>
+            <Then>
+              <Round>
+                <Dependency module="dividends" path="/totalCapitalGainDistributions" />
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleDLine15">
       <Name>Schedule D line 15 — net long-term capital gain or loss</Name>
       <Description>Schedule D Part II line 15: combine lines 8a through 14 (lines 8a/11/12/13 = $0 in scope;
@@ -270,6 +299,7 @@
                 <Dependency path="/scheduleDLine8b" />
                 <Dependency path="/scheduleDLine9" />
                 <Dependency path="/scheduleDLine10" />
+            <Dependency path="/scheduleDLine13" />
               </Add>
             </Minuend>
             <Subtrahends>

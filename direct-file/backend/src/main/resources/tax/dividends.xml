@@ -1,9 +1,9 @@
 <?xml-model href="./FactDictionaryModule.rng"?>
 <!--
-  Form 1099-DIV, Dividends and Distributions: interview and Form 1040 lines 3a, 3b and 25b (#86, part a).
+  Form 1099-DIV, Dividends and Distributions: interview and Form 1040 lines 3a, 3b, 7a and 25b (#86 parts a and b).
   Sources (fetched from irs.gov 2026-10-19; page numbers are printed pages):
     Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf (TY2025 final; no TY2026 Form 1040 instructions draft is posted yet,
-      the posted i1040gi draft is still TAX YEAR 2025). Line 3a p. 25-26, line 3b p. 26, line 7a p. 31,
+      the posted i1040gi draft is still TAX YEAR 2025). Line 3a p. 25-26, line 3b p. 26, line 7a p. 31-33, line 16 p. 36, QDCG Tax Worksheet p. 38,
       line 25b p. 39, Schedule 3 line 1 p. 115.
     Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient (irs.gov/pub/irs-dft, file f1099div dft; sha256 eed4f9db...)
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
@@ -18,10 +18,12 @@
   Computed: Form 1040 line 3b = total box 1a (income /ordinaryDividends), line 3a = total box 1b
     (income /qualifiedDividends; taxed through the existing QDCG worksheet, scheduleD3.xml), line 25b
     includes total box 4 (taxCalculations /form1099Withholding), Schedule 3 line 1 = box 7 under the
-    904(j) election (/dividendForeignTaxCredit, schedule3 /sched3Line1).
+    904(j) election (/dividendForeignTaxCredit, schedule3 /sched3Line1). Box 2a (#86b): Form 1040 line 7a
+    with the line 7b "Schedule D not required" box under line 7a Exception 1 (/capitalGainDistributionsWithoutScheduleD,
+    income /capitalGainsOrLosses), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13); either way it reaches
+    QDCG worksheet line 3 (scheduleD3 /qdcgLine3). PA-40 stops on box 2a (paPit /flowKnockoutPaDividends).
   Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut), never zeroed:
     boxes 2b-2f, 6, 8-16                         -> /flowKnockoutDividendUnsupportedBoxes
-    box 2a capital gain distributions            -> /flowKnockoutCapitalGainDistributions
     box 3 above the stock's basis                -> /flowKnockoutNondividendDistributionsOverBasis
     box 1b not meeting the holding period        -> /flowKnockoutQualifiedDividendsHoldingPeriod
     box 5 section 199A dividends                 -> /flowKnockoutSection199ADividends
@@ -683,7 +685,8 @@
 
     <Fact path="/totalCapitalGainDistributions">
       <Name>Total capital gain distributions (1099-DIV box 2a)</Name>
-      <Description>Not on Form 1040 in this module; see /flowKnockoutCapitalGainDistributions.</Description>
+      <Description>Form 1099-DIV box 2a total. Form 1040 line 7a when line 7a Exception 1 applies (/capitalGainDistributionsWithoutScheduleD), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13). Schedule D instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2, Capital Gain Distributions: "Enter on Schedule D, line 13, the total capital gain distributions paid to you during the year, regardless of how long you held your investment. This amount is shown in box 2a of Form 1099-DIV."</Description>
+      <Export downstreamFacts="true" />
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
         <Switch>
@@ -893,20 +896,24 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutCapitalGainDistributions">
-      <Name>Knockout: 1099-DIV box 2a capital gain distributions</Name>
-      <Description>Box 2a goes to Schedule D line 13, or straight to Form 1040 line 7a under Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1 ("You have no capital losses, and your only capital gains are capital gain distributions from Form(s) 1099-DIV, box 2a"), and is taxed through the QDCG worksheet line 3. Neither path is computed in this module, so any amount stops the return instead of being left off line 7.</Description>
-      <BlockSubmissionOnTrue />
+    <Fact path="/capitalGainDistributionsWithoutScheduleD">
+      <Name>Capital gain distributions go directly on Form 1040 line 7a</Name>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1: "You don't have to file Form 8949 or Schedule D if you aren't deferring any capital gain by investing in a qualified opportunity fund and both of the following apply. 1. You have no capital losses, and your only capital gains are capital gain distributions from Form(s) 1099-DIV, box 2a (or substitute statements); and 2. None of the Form(s) 1099-DIV (or substitute statements) have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or box 2d (collectibles (28%) gain)." p. 33: "If Exception 1 applies, enter your total capital gain distributions (from box 2a of Form(s) 1099-DIV) on line 7a and check the box "Schedule D not required" on line 7b." True when box 2a is more than $0 and Schedule D isn't otherwise required (scheduleD /requiresScheduleD: no Form 8949 transaction, which also covers qualified opportunity fund deferral, and no capital loss carryover). Boxes 2b-2d stop the return (/flowKnockoutDividendUnsupportedBoxes) and so does a nominee (/flowKnockoutDividendNominee), so condition 2 and the nominee rule always hold on a supported return. When Schedule D is required, box 2a goes on Schedule D line 13 instead (scheduleD2 /scheduleDLine13).</Description>
       <Export downstreamFacts="true" />
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Dependency path="/totalCapitalGainDistributions" />
-          </Left>
-          <Right>
-            <Dollar>0</Dollar>
-          </Right>
-        </GreaterThan>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/totalCapitalGainDistributions" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Not>
+            <Dependency module="scheduleD" path="/requiresScheduleD" />
+          </Not>
+        </All>
       </Derived>
     </Fact>
 

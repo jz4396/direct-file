@@ -15,7 +15,9 @@ Lines that do not have / in column 1 are comments.
 /balanceDue
 /capGains15RateAmount
 /capGainsZeroRateAmount
+/capitalGainsOrLosses
 /capitalGainsOrLossesFor1040
+/capitalGainsScheduleDNotRequired
 /capitalLossLimit
 /cdccAdjustedDependentCareBenefitsAmount
 /cdccCareProviders/*/address/city
@@ -608,6 +610,7 @@ Lines that do not have / in column 1 are comments.
 /sched8812CreditLimit
 /schedule1TotalOtherIncome
 /scheduleDLine10
+/scheduleDLine13
 /scheduleDLine14
 /scheduleDLine15
 /scheduleDLine16

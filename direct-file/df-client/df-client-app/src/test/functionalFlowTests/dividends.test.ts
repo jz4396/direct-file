@@ -50,12 +50,12 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
     });
     expect(at(g, `1099-div-holding-period`, task)).toRouteNextTo(`${path}/1099-div-holding-period-knockout`);
   });
-  it(`box 2a > 0 routes to the capital gain distributions knockout`, ({ task }) => {
+  it(`box 2a > 0 continues to box 3 (#86b: Form 1040 line 7a or Schedule D line 13, no knockout)`, ({ task }) => {
     const g = base(`single`, {
       [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`),
       [`/dividendReports/#${id}/writableCapitalGainDistributions`]: createDollarWrapper(`10`),
     });
-    expect(at(g, `1099-div-box-2a`, task)).toRouteNextTo(`${path}/1099-div-box-2a-knockout`);
+    expect(at(g, `1099-div-box-2a`, task)).toRouteNextTo(`${path}/1099-div-box-3`);
   });
   it(`box 3 asks about basis, and above basis routes to its knockout`, ({ task }) => {
     const box3 = { [`/dividendReports/#${id}/writableNondividendDistributions`]: createDollarWrapper(`50`) };

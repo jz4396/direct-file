@@ -19,8 +19,8 @@ import {
 } from '../../ContentDeclarations.js';
 
 /**
- * Form 1099-DIV interview (#86 part a): boxes 1a, 1b, 2a, 3, 4, 5 and 7.
- * Form 1040 line 3b = box 1a, line 3a = box 1b, line 25b includes box 4. Every other box, and every case that can't
+ * Form 1099-DIV interview (#86 parts a and b): boxes 1a, 1b, 2a, 3, 4, 5 and 7.
+ * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4. Every other box, and every case that can't
  * be computed yet, stops the return. Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: string, key: string) => (
@@ -135,11 +135,6 @@ export const DividendIncomeSubcategory = (
           <Dollar path='/dividendReports/*/writableCapitalGainDistributions' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
-        {knockout(
-          `1099-div-box-2a-knockout`,
-          `/flowKnockoutCapitalGainDistributions`,
-          `dividends-capital-gain-distributions`
-        )}
         <Screen route='1099-div-box-3'>
           <Heading i18nKey='/heading/income/dividends/box-3' />
           <InfoDisplay i18nKey='/info/income/dividends/box-3' />
