@@ -232,7 +232,12 @@
 
     <Fact path="/maximumTaxableInterestIncomeBeforeScheduleB">
       <Name>Maximum Taxable Interest Income Before Schedule B</Name>
-      <Description>The maximum interest income allowed before Schedule B is required.</Description>
+      <Description>The amount of taxable interest, and separately of ordinary dividends, above which Schedule B
+        is required. Instructions for Schedule B (Form 1040) (2025) p. 1, General Instructions (same text in the
+        2026 draft, p. 1): "Use Schedule B (Form 1040) if any of the following applies. You had over $1,500 of
+        taxable interest or ordinary dividends." Schedule B (Form 1040) (2026 draft), notes under lines 4 and 6:
+        "If line 4 is over $1,500, you must complete Part III." / "If line 6 is over $1,500, you must complete
+        Part III."</Description>
 
       <Derived>
         <Dollar>1500</Dollar>
@@ -1031,21 +1036,62 @@
       </Derived>
     </Fact>
 
+    <Fact path="/requiresScheduleBForInterest">
+      <Name>Schedule B required because of taxable interest</Name>
+      <Description>Whether total taxable interest is over $1,500. Instructions for Schedule B (Form 1040)
+        (2025) p. 1: "You had over $1,500 of taxable interest or ordinary dividends." "Over" is a strict
+        comparison, so exactly $1,500 does not require Schedule B.</Description>
+
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <CollectionSum>
+              <Dependency path="/interestReports/*/taxableInterest" />
+            </CollectionSum>
+          </Left>
+          <Right>
+            <Dependency path="/maximumTaxableInterestIncomeBeforeScheduleB" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/requiresScheduleBForOrdinaryDividends">
+      <Name>Schedule B required because of ordinary dividends</Name>
+      <Description>Whether ordinary dividends (Form 1040 line 3b; Form 1099-DIV box 1a) are over $1,500.
+        Instructions for Schedule B (Form 1040) (2025) p. 1: "You had over $1,500 of taxable interest or
+        ordinary dividends." Instructions for Schedule B (2025) p. 2, Line 5: "Report on line 5 all of your
+        ordinary dividends. This amount should be shown in box 1a of your Forms 1099-DIV or substitute
+        statements." Reads the income module's ordinary dividends total, so it applies once that total is
+        populated from Form 1099-DIV.</Description>
+
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="income" path="/ordinaryDividends" />
+          </Left>
+          <Right>
+            <Dependency path="/maximumTaxableInterestIncomeBeforeScheduleB" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
     <Fact path="/requiresScheduleB">
-      <Description>Whether TP requires schedule B</Description>
+      <Description>Whether Schedule B (Form 1040) is required. Instructions for Schedule B (Form 1040) (2025)
+        p. 1, General Instructions: "You had over $1,500 of taxable interest or ordinary dividends." and "You
+        had a financial interest in, or signature authority over, a financial account in a foreign country or you
+        received a distribution from, or were a grantor of, or transferor to, a foreign trust." Schedule B (2026
+        draft) Part III: "You must complete this part if you (a) had over $1,500 of taxable interest or ordinary
+        dividends; (b) had a foreign account; or (c) received a distribution from, or were a grantor of, or a
+        transferor to, a foreign trust." The other listed triggers (seller-financed mortgage interest, accrued
+        interest, OID or bond premium adjustments, Form 8815 exclusion, nominee amounts) are not reported in
+        this return.</Description>
       <Export mef="true" />
       <Derived>
         <Any>
-          <GreaterThan>
-            <Left>
-              <CollectionSum>
-                <Dependency path="/interestReports/*/taxableInterest" />
-              </CollectionSum>
-            </Left>
-            <Right>
-              <Dependency path="/maximumTaxableInterestIncomeBeforeScheduleB" />
-            </Right>
-          </GreaterThan>
+          <Dependency path="/requiresScheduleBForInterest" />
+          <Dependency path="/requiresScheduleBForOrdinaryDividends" />
           <Dependency module="income" path="/hasForeignAccountsOrTrusts" />
         </Any>
       </Derived>

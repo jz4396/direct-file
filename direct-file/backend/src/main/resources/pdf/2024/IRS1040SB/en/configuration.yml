@@ -35,7 +35,7 @@ form:
       f1_30[0]: /interestReports/[13]/roundedTaxableInterest
       f1_31[0]: /interestIncome
       # f1_32[0]:
-      f1_33[0]: /interestIncome # temporary solution while the above line (line 3 is not supported)
+      f1_33[0]: /interestIncome # line 4 = line 2 - line 3; line 3 (Form 8815 exclusion) is not claimed, so line 4 = line 2
       ReadOrderControl[0]:
         # f1_34[0]:
       # f1_35[0]:
@@ -67,7 +67,7 @@ form:
       # f1_61[0]:
       # f1_62[0]:
       # f1_63[0]:
-      # f1_64[0]:
+      f1_64[0]: /ordinaryDividends # line 6, same amount as Form 1040 line 3b
       TagcorrectingSubform[0]:
         c1_1[0]: /hasForeignAccounts
         c1_1[1]: /doesNotHaveForeignAccounts
