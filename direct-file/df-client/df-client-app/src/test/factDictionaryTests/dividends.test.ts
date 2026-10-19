@@ -253,6 +253,16 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     expect(val(g, `/dividendReports/#${d1}/payer`)).toBe(`Index Fund Co`);
     noKnockouts(g);
   });
+  it(`Schedule B: ordinary dividends over $1,500 on the whole-dollar total, same rounding as interest`, ({ task }) => {
+    task.meta.testedFactPaths = [`/requiresScheduleBForOrdinaryDividends`, `/requiresScheduleB`];
+    const under = build(divs({ box1a: 1000.25 }, { box1a: 500.24 })); // $1,500.49 -> $1,500
+    expect(get(under, `/requiresScheduleBForOrdinaryDividends`).get).toBe(false);
+    expect(get(under, `/requiresScheduleB`).get).toBe(false);
+    const over = build(divs({ box1a: 1000.25 }, { box1a: 500.25 })); // $1,500.50 -> $1,501
+    expect(get(over, `/requiresScheduleBForOrdinaryDividends`).get).toBe(true);
+    expect(get(over, `/requiresScheduleB`).get).toBe(true);
+    noKnockouts(over);
+  });
   it(`an incomplete 1099-DIV blocks submission`, ({ task }) => {
     task.meta.testedFactPaths = [`/hasIncompleteDividendReports`];
     const g = build({

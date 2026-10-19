@@ -68,9 +68,16 @@ describe(`Schedule B required: over $1,500 of taxable interest or ordinary divid
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
   });
 
-  it(`taxable interest $1,500.01: Schedule B required`, ({ task }) => {
+  it(`taxable interest $1,500.49 rounds to $1,500 (i1040 (2025) p. 23): Schedule B not required`, ({ task }) => {
     task.meta.testedFactPaths = [`/requiresScheduleBForInterest`, `/requiresScheduleB`];
-    const fg = graph(oneReport(1500.01));
+    const fg = graph(oneReport(1500.49));
+    expect(val(fg, `/requiresScheduleBForInterest`)).toBe(false);
+    expect(val(fg, `/requiresScheduleB`)).toBe(false);
+  });
+
+  it(`taxable interest $1,500.50 rounds to $1,501: Schedule B required`, ({ task }) => {
+    task.meta.testedFactPaths = [`/requiresScheduleBForInterest`, `/requiresScheduleB`];
+    const fg = graph(oneReport(1500.5));
     expect(val(fg, `/requiresScheduleBForInterest`)).toBe(true);
     expect(val(fg, `/requiresScheduleB`)).toBe(true);
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
