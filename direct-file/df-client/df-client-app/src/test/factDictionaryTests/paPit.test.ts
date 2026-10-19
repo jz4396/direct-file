@@ -431,3 +431,116 @@ describe(`PA Schedule SP knockouts (#79)`, () => {
     );
   });
 });
+
+/**
+ * #123 PA schedules this tool doesn't produce. PA-40 IN (2025):
+ * p. 31, PA SCHEDULE A: "If there are any amounts (taxpayer, spouse and/or joint) for any of the Lines 2 through 15
+ * (not including subtotal Lines 4 and 10) of PA Schedule A, you must complete and submit PA Schedule A with your
+ * PA-40." p. 32, PA SCHEDULE B: "If there are any amounts (taxpayer, spouse, and/or joint) for any of the Lines 2
+ * through 10 (not including subtotal Line 6) of PA Schedule B, you must complete and submit PA Schedule B with your
+ * PA-40." p. 17, LINE 5: "Report your total net gains (losses) on PA Schedule D."; PA Schedule D (2025) instructions:
+ * "PA-40 Schedule D must be completed even if the only transaction is to report a loss."
+ */
+describe(`PA Schedules A, B and D knockouts (#123)`, () => {
+  const blocks = (g: Fg, k: string) => {
+    expect(get(g, k).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(k);
+  };
+  const clear = (g: Fg) => {
+    [`/flowKnockoutPaScheduleA`, `/flowKnockoutPaScheduleB`, `/flowKnockoutPaScheduleD`].forEach((k) =>
+      expect(get(g, k).get).toBe(false)
+    );
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+  };
+  it(`Schedule A: 1099-INT box 3 U.S. obligation interest is a Schedule A line 7 amount`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleA`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+    blocks(build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(100, 50) }), `/flowKnockoutPaScheduleA`);
+  });
+  it(`Schedule A: PA-taxable interest over $2,500`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleA`, `/paScheduleAThreshold`];
+    const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(2501) });
+    expect(val(g, `/paLine2`)).toBe(`2501.00`);
+    blocks(g, `/flowKnockoutPaScheduleA`);
+  });
+  it(`Schedule A: $2,500 of ordinary interest, equal to federal, needs no schedule`, () => {
+    const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(2500) });
+    expect(val(g, `/paLine2`)).toBe(`2500.00`);
+    clear(g);
+  });
+  it(`Schedule B: dividends are $0 in this app (no 1099-DIV yet), so no Schedule B line has an amount`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleB`, `/paScheduleBThreshold`];
+    const g = build(singleFilerData, w2(40000, 40000, 1228));
+    expect(val(g, `/paLine3`)).toBe(`0.00`);
+    expect(val(g, `/paScheduleBThreshold`)).toBe(`2500.00`);
+    expect(get(g, `/flowKnockoutPaScheduleB`).get).toBe(false);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaScheduleB`);
+  });
+  it(`Schedule D: a net gain`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleD`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+    blocks(build(singleFilerData, { ...w2(50000, 50000, 1535), ...sale(14000, 10000) }), `/flowKnockoutPaScheduleD`);
+  });
+  it(`Schedule D: a net loss (Schedule D is required even for a loss)`, () => {
+    const g = build(singleFilerData, { ...w2(50000, 50000, 1535), ...sale(4000, 10000) });
+    expect(val(g, `/paLine5`)).toBe(`-6000.00`);
+    blocks(g, `/flowKnockoutPaScheduleD`);
+  });
+  it(`Schedule D: a sale at exactly $0 gain is still a transaction`, () => {
+    const g = build(singleFilerData, { ...w2(50000, 50000, 1535), ...sale(10000, 10000) });
+    expect(val(g, `/paLine5`)).toBe(`0.00`);
+    blocks(g, `/flowKnockoutPaScheduleD`);
+  });
+  it(`wages only: none of the three`, () => {
+    clear(build(singleFilerData, w2(50000, 50000, 1535)));
+  });
+  it(`non-PA (FL) filer with box 3 interest, $3,000 interest and a sale: no PA schedule knockouts`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaScheduleA`,
+      `/flowKnockoutPaScheduleB`,
+      `/flowKnockoutPaScheduleD`,
+      `/flowKnockoutStateReturn`,
+    ];
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 0),
+      ...interest(3000, 400),
+      ...sale(4000, 10000),
+      ...pa(`fl`),
+    });
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    clear(g);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+});
+
+describe(`PA-40 school district code (#123, PA-40 IN (2025) pp. 5-6, 46-47)`, () => {
+  const code = (c: string) => ({ '/paSchoolDistrictCode': createStringWrapper(c) });
+  it(`full-year resident is asked; the entered code prints`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paAskSchoolDistrictCode`, `/paSchoolCode`, `/paSchoolDistrictCode`];
+    const g = build(singleFilerData, { ...w2(50000, 50000, 1535), ...code(`22275`) });
+    expect(get(g, `/paAskSchoolDistrictCode`).get).toBe(true);
+    expect(val(g, `/paSchoolCode`)).toBe(`22275`);
+  });
+  it(`not answered yet: the code is incomplete`, () => {
+    const g = build(singleFilerData, w2(50000, 50000, 1535));
+    expect(get(g, `/paSchoolCode`).complete).toBe(false);
+  });
+  it(`accepts codes from the booklet list and rejects anything else`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paSchoolDistrictCode`];
+    // Limits are checked when the graph is saved, as the interview does.
+    const valid = (c: string) => {
+      const g = build(singleFilerData, w2(50000, 50000, 1535));
+      g.set(`/paSchoolDistrictCode` as ConcretePath, c);
+      // eslint-disable-next-line df-rules/no-factgraph-save
+      return g.save().valid;
+    };
+    // Bermudian Springs (first on p. 46), Harrisburg City, York Suburban (last on p. 47)
+    [`01110`, `22275`, `67940`].forEach((c) => expect(valid(c), c).toBe(true));
+    // 99999 is filled in for movers out, not entered; 12345 and 22276 are not districts; wrong lengths and letters
+    [`99999`, `12345`, `22276`, `2227`, `222750`, `2227A`, ` 22275`].forEach((c) => expect(valid(c), c).toBe(false));
+  });
+  it(`non-PA filer is not asked`, () => {
+    const g = build(singleFilerData, { ...w2(50000, 50000, 0), ...pa(`nj`) });
+    expect(get(g, `/paAskSchoolDistrictCode`).get).toBe(false);
+  });
+});
