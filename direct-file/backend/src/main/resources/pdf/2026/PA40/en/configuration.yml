@@ -1,0 +1,108 @@
+# #123: PA-40, Pennsylvania Personal Income Tax Return. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026
+# TEMPLATE. The PA Department of Revenue has not published the 2026 PA-40 yet, so the 2025 form stands in (#124 swaps it).
+# Source: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf
+# committed byte-identical as 2025_pa-40.pdf; SHA-256 fcd7648601f3ce5a7a258be49c54aa1c604e1c61c1fe9175351451ac6087d8b3
+# (pinned in pdf/2026/state-interim-pdf-sha256.txt). When the 2026 form is published: download it, hash it, re-check
+# every field name, export value and line number below against it, then replace the file and the manifest row.
+#
+# Field names are the PDF's own fully qualified AcroForm names (PDFBox). Each mapped box was checked against the printed
+# line caption beside it, and the filled pages were rendered. Page cites ("p.") are to the PA-40 IN (2025) booklet,
+# https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+# Pa40PdfForm fills the ~pa40* pseudo-facts (upper case, ovals, part-year dates, line 5 loss oval, lines 19a-20).
+# Amounts: whole dollars rounded half-up (p. 4), written as the form shows them (1,234.00); $0 prints blank.
+#
+# Included when stateReturn /stateReturnPaFiled (full-year resident, #78, or PA/FL part-year resident, #80).
+#
+# Not mapped, left blank. Each is either never entered on a supported return or is a stop that keeps the return
+# from reaching print (wired into /flowIsKnockedOut through stateReturn /flowKnockoutStateReturn):
+#   1b                  unreimbursed employee business expenses: /flowKnockoutPaUnreimbursedEmployeeExpenses (#102).
+#   4, 6 (and ovals)    business and rents: /paLine4 and /paLine6 are $0 (Schedule C businesses are
+#                       /flowKnockoutPaUnsupportedIncome; Schedule E income is a stop).
+#   7, 8                estate/trust, gambling/lottery: /flowKnockoutPaUnsupportedItems.
+#   10 and Code         other deductions (Schedule O, 529, ABLE, MSA/HSA): /flowKnockoutPaUnsupportedItems.
+#   14-16, REV-459B     prior-year credit, estimated and extension payments: /flowKnockoutPaUnsupportedItems.
+#   17, 18              nonresident tax withheld (PA Schedule NRK-1, from partnership or S corporation income, which is
+#                       a stop) and the line 14-17 total, $0.
+#   22, 23              resident credit (Schedule G-L) and other credits: /flowKnockoutPaUnsupportedItems. A PA/FL
+#                       part-year return has no G-L credit (Florida levies no income tax), so part-year printing needs
+#                       only the Residency Status oval and the from/to dates below.
+#   25                  use tax: /flowKnockoutPaUnsupportedItems.
+#   27, Code, REV-1630  penalties and interest: not computed; p. 23 says to enter penalties owed, which the department
+#                       otherwise bills. Line 28 therefore equals line 26.
+#   31-36               credit forward and refund donations: not offered; p. 24, "If you do not enter amounts on Lines
+#                       30 through 36 ... you will receive a refund check", and line 30 = line 29.
+#   N (Nonresident), Extension, Amended, Final Return (F), Deceased, Farmers, dates of death, Country Code, School
+#   District name, signature date, preparer and E-File Opt Out boxes: not collected or out of scope.
+#   School Code: printed only as 99999 for a PA-to-FL mover (p. 6); otherwise not collected (see Pa40PdfForm).
+includeWhen: /stateReturnPaFiled
+otherRequiredFacts:
+  - /isMarried
+  - /isFilingStatusMFJ
+  - /address
+  - /primaryFiler/firstName
+  - /primaryFiler/lastName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/suffix
+  - /primaryFiler/fullName
+  - /primaryFiler/occupation
+  - /secondaryFiler/firstName
+  - /secondaryFiler/lastName
+  - /secondaryFiler/middleInitial
+  - /secondaryFiler/suffix
+  - /secondaryFiler/fullName
+  - /secondaryFiler/occupation
+  - /secondaryFiler/tin
+  - /paResidencyStatusPartYear
+  - /paPartYearMovedOut
+  - /paPartYearMoveDate
+  - /paLine5
+  - /paSpLine11
+  - /paSpLine16
+  - /paSpDependentChildCount
+form:
+  # Header, page 1 (pp. 5-7).
+  "Enter SSN shown first without dashes or spaces": /primaryFiler/tin # also prints in the page 2 SSN box (same field)
+  "Enter SSN of spouse without dashes or spaces": ~pa40SpouseSsn # p. 7, required even if filing separately
+  "Use all caps to enter taxpayer's last name": ~pa40LastName
+  "Use all caps to enter suffixes such as JR, SR, III": ~pa40Suffix
+  "Use all caps to enter taxpayer's first name": ~pa40FirstName
+  "Use Cap For Your Middle Initial": ~pa40MiddleInitial
+  "Use all caps to enter spouse's first name": ~pa40SpouseFirstName
+  "Use Cap For Your Spouse's Middle Initial": ~pa40SpouseMiddleInitial
+  "Use all caps to enter spouse's last name if different from above": ~pa40SpouseLastName
+  "Use all caps to enter spouse's suffixes such as JR, SR, III": ~pa40SpouseSuffix
+  "Use all caps to enter First Line of Address": ~pa40Address1
+  "Use all caps to enter Second Line of Address": ~pa40Address2
+  "Use all caps to enter City or Post Office": ~pa40City
+  "Use all caps to enter two character State abbreviation": ~pa40State
+  "Enter five digit Zip Code": ~pa40Zip
+  "Enter Daytime Telephone Number without parenthesis, dashes or spaces": /phone # p. 5
+  "Enter five digit School Code from list on pags 42 & 43": ~pa40SchoolCode # p. 6, 99999 for a PA-to-FL mover
+  "Residency Status": ~pa40Residency # p. 6: 1 = R, 3 = P
+  "Part Year Resident from": ~pa40PartYearFrom # P oval "from MM/DD"
+  "Part year resident to": ~pa40PartYearTo # "to MM/DD"
+  "Filing Status": ~pa40FilingStatus # pp. 6-7: 1 = S, 2 = J, 3 = M
+  "Your Occupation": ~pa40Occupation
+  "Spouse's occupation": ~pa40SpouseOccupation
+  # Lines 1a-11, page 1.
+  "1a. Gross Compensation": /paLine1a # p. 10, LINE 1a (W-2 box 16)
+  "1c. Net Compensation": /paLine1c # 1a minus 1b
+  "2. Interest Income": /paLine2 # p. 14, LINE 2
+  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3
+  "5. Loss": ~pa40Line5Loss # p. 15, "If entering a loss, fill in the oval next to the line"
+  "5. Net Gain or Loss from Sale, etc. of Property": ~pa40Line5 # p. 17, LINE 5 (size of a loss; see the oval)
+  "9. Total PA Taxable Income": /paLine9 # p. 20, LINE 9 (losses are not added)
+  "11. Adjusted PA Taxable Income": /paLine11 # p. 21, LINE 11 (9 minus 10)
+  # Lines 12-30, page 2.
+  "Name(s)": ~pa40Names
+  "12. PA Tax Liability. Multiply Line 11 by 3.07%": /paLine12 # p. 21, LINE 12 (72 P.S. §7302 rate)
+  "13. Total PA Tax Withheld": /paLine13 # p. 21, LINE 13 (W-2 box 17)
+  "Tax Forgiveness": ~pa40TaxForgivenessStatus # p. 22, LINE 19a: 1 = Unmarried or Separated, 2 = Married
+  "Dependents": ~pa40DependentChildren # p. 22, LINE 19b (Schedule SP Section II line 2)
+  "20. Total Eligibility Income": ~pa40EligibilityIncome # p. 22, LINE 20 (Schedule SP line 11)
+  "21. Tax Forgiveness Credit": /paLine21 # p. 22, LINE 21 (Schedule SP line 16, 72 P.S. §7304)
+  "24. Total Payments and Credits": /paLine24 # p. 23, LINE 24 (13 + 18 + 21 + 22 + 23)
+  "26. TAX DUE": /paLine26 # p. 23, LINE 26
+  "28. TOTAL PAYMENT": /paLine26 # p. 24, LINE 28 "Add Lines 26 and 27" (27 not computed)
+  "29. OVERPAYMENT": /paLine29 # p. 24, LINE 29
+  "30. Refund": /paLine29 # p. 24, LINE 30 (all of line 29; lines 31-36 not offered)

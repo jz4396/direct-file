@@ -36,6 +36,15 @@ public class PdfFieldHandler {
                     var positiveValue = p.getOnValue();
                     p.setValue(positiveValue);
                 }
+            } else if (factGraphValue instanceof String exportValue) {
+                // A check box whose widgets carry different export values acts as a group of ovals (e.g. the PA-40
+                // Residency Status ovals R/N/P are one field with export values 1/2/3). Select the widget whose export
+                // value is given; an unknown value is a mapping error.
+                if (!p.getOnValues().contains(exportValue)) {
+                    throw new PdfCreationException(
+                            "Export value " + exportValue + " not on check box " + p.getFullyQualifiedName());
+                }
+                p.setValue(exportValue);
             } else {
                 throw new PdfCreationException("Non-boolean field applied to boolean value");
             }

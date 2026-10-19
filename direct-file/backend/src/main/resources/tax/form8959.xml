@@ -3,9 +3,9 @@
   Form 8959, Additional Medicare Tax (#82). Replaces the old formW2s /knockoutMedicareWages
   high-wage knockout with a computation of Parts I, II, IV and V.
   TY2026 layout (2026 drafts; Part II is now RRTA and Part IV is SE income). Sources fetched from irs.gov 2026-10-16:
-    Form 8959 (2026) draft, Created 5/27/26   https://www.irs.gov/pub/irs-dft/f8959--dft.pdf (sha256 8f663b2c...870d2f)
-    Instructions for Form 8959 (2026) draft    https://www.irs.gov/pub/irs-dft/i8959--dft.pdf (sha256 c5b1661e...bbaf1)
-    Schedule 2 (Form 1040) 2026 draft          https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf (sha256 0e3d4faa...ebc56)
+    Form 8959 (2026) draft, Created 5/27/26   https://www.irs.gov/pub/irs-dft/f8959%2D%2Ddft.pdf (sha256 8f663b2c...870d2f)
+    Instructions for Form 8959 (2026) draft    https://www.irs.gov/pub/irs-dft/i8959%2D%2Ddft.pdf (sha256 c5b1661e...bbaf1)
+    Schedule 2 (Form 1040) 2026 draft          https://www.irs.gov/pub/irs-dft/f1040s2%2D%2Ddft.pdf (sha256 0e3d4faa...ebc56)
     i8959 (2026) p.1 What's New: "For 2026, report the Additional Medicare Tax on Medicare wages and RRTA
     compensation from Form 8959, line 12, on Schedule 2 (Form 1040), line 17b ... Report the Additional Medicare
     Tax on self-employment income from Form 8959, line 18, on Schedule 2 (Form 1040), line 11".

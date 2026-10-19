@@ -58,6 +58,7 @@ class PdfForm extends PdfTemplate {
                 newPdfDocument = Loader.loadPDF(pdfTemplateBytes);
                 populateFormFields(newPdfDocument.getDocumentCatalog().getAcroForm(), formMap, facts, language, null);
                 skipLeadingPages(newPdfDocument, pdfConfig);
+                skipTrailingPages(newPdfDocument, pdfConfig);
                 results.add(newPdfDocument);
             }
 
@@ -73,6 +74,7 @@ class PdfForm extends PdfTemplate {
                             populateFormFields(
                                     newPdfDocument.getDocumentCatalog().getAcroForm(), formMap, facts, language, id);
                             skipLeadingPages(newPdfDocument, pdfConfig);
+                            skipTrailingPages(newPdfDocument, pdfConfig);
                             results.add(newPdfDocument);
                         }
                     }
@@ -106,6 +108,30 @@ class PdfForm extends PdfTemplate {
         }
         for (int i = 0; i < skip; i++) {
             document.removePage(0);
+        }
+    }
+
+    /*
+     * Some state forms are published as one file with the form pages followed by instruction pages (PA-40 Schedule SP
+     * (2025): pages 1-2 are the schedule, pages 3-8 its instructions). `customMaps: { template: { skipTrailingPages:
+     * "6" } }` removes that many trailing pages after the fields are filled. Absent key = 0.
+     */
+    static int trailingPagesToSkip(final PdfConfiguration pdfConfig) {
+        final Map<String, Map<String, String>> custom = pdfConfig.getCustomData();
+        if (custom == null || custom.get("template") == null) {
+            return 0;
+        }
+        final String value = custom.get("template").get("skipTrailingPages");
+        return value == null ? 0 : Integer.parseInt(value.trim());
+    }
+
+    static void skipTrailingPages(final PDDocument document, final PdfConfiguration pdfConfig) {
+        final int skip = trailingPagesToSkip(pdfConfig);
+        if (skip >= document.getNumberOfPages()) {
+            throw new IllegalStateException("skipTrailingPages would remove every page of the template");
+        }
+        for (int i = 0; i < skip; i++) {
+            document.removePage(document.getNumberOfPages() - 1);
         }
     }
 

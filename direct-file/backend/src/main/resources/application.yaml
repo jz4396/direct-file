@@ -400,6 +400,22 @@ direct-file:
         configuration-location: pdf/2024/DF1099R/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: PA40
+        year: 2024
+        language-code: en
+        location: pdf/2026/PA40/en/2025_pa-40.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/PA40/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
+      - name: PA40SP
+        year: 2024
+        language-code: en
+        location: pdf/2026/PA40SP/en/2025_pa-40sp.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/PA40SP/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: DF1099R
         year: 2024
         language-code: es

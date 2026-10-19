@@ -1,0 +1,111 @@
+# #123: PA-40 Schedule SP, Special Tax Forgiveness. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026
+# TEMPLATE. The PA Department of Revenue has not published the 2026 Schedule SP yet, so the 2025 form stands in (#124
+# swaps it).
+# Source: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40sp.pdf
+# committed byte-identical as 2025_pa-40sp.pdf; SHA-256 cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b
+# (pinned in pdf/2026/state-interim-pdf-sha256.txt). When the 2026 form is published: download it, hash it, re-check
+# every field name, export value and line number below against it, then replace the file and the manifest row.
+# The file is the two-page schedule followed by six pages of instructions; skipTrailingPages drops the instructions.
+#
+# Field names are the PDF's own fully qualified AcroForm names (PDFBox). Each mapped box was checked against the printed
+# line caption beside it, and the filled pages were rendered. CAUTION: in Section III the field names (tooltips) of
+# lines 2 and 3 are swapped relative to the printed lines. The box on printed line 2, "Nontaxable interest, dividends and
+# gains, and/or annualized income", is the field named "2. – ... alimony ..."; the box on printed line 3, "Alimony", is
+# the field named "3. - ... nontaxable interest ...". The map follows the printed lines.
+# Page cites ("p.") are to the PA-40 IN (2025) booklet,
+# https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+# pp. 36-39 (Schedule SP instructions and Eligibility Income Tables). PaScheduleSpPdfForm fills the ~paSp* pseudo-facts.
+# Amounts: whole dollars rounded half-up (p. 4), written as the form shows them (1,234.00); $0 prints blank.
+#
+# Included when stateReturn /stateReturnPaFiled and the return claims the credit (PA-40 line 21 = line 16 above $0;
+# p. 22, "If you claim a credit for Tax Forgiveness on Line 21, you must complete and include PA Schedule SP").
+#
+# Only Column A is printed. Not mapped, left blank, because each case is a stop (/flowKnockoutPaSpUnsupported, wired
+# into /flowIsKnockedOut through stateReturn /flowKnockoutStateReturn):
+#   Question 2, line 1b (claimed as a dependent), oval 2 (separated), ovals 3b-3d and Certification (separate returns,
+#   dependent spouse, separated less than six months), Columns B and C and their lines 11-16: (1) and (2) in that fact.
+#   Section III lines 3-5 and 7-10 (alimony, insurance and inheritances, gifts, military pay, excluded home-sale gain,
+#   educational assistance, foster care / cash support): /paHasSpNontaxableIncome. Line 2 prints U.S. obligation interest
+#   (/paSpLine2); any other line 2 item is also /paHasSpNontaxableIncome.
+#   Oval 4 (deceased) and its description: deceased filers are not supported.
+#   Line 13 (resident credit from PA-40 line 22): line 22 is /flowKnockoutPaUnsupportedItems, so line 14 = line 12.
+includeWhen: /stateReturnPaFiled
+customMaps:
+  template:
+    skipTrailingPages: "6"
+otherRequiredFacts:
+  - /isMarried
+  - /primaryFiler/fullName
+  - /secondaryFiler/fullName
+  - /secondaryFiler/tin
+  - /paSpLine15
+  - /paSpLine16
+  - /paSpDependentChildCount
+  - /familyAndHousehold
+  - /familyAndHousehold/*/paSpDependentChild
+  - /familyAndHousehold/*/fullName
+  - /familyAndHousehold/*/age
+  - /familyAndHousehold/*/relationship
+  - /familyAndHousehold/*/tin
+form:
+  # Page 1 header and Eligibility Questions.
+  "Enter the name of the taxpayer claiming Tax Forgiveness": ~paSpName # "use name shown first on the PA-40"
+  "Enter the Social Security number shown first on the return": /primaryFiler/tin
+  "Enter the spouse’s name (even if filing separately)": ~paSpSpouseName
+  "Enter the spouse’s Social Security number": ~paSpSpouseSsn
+  "1. – Enter: Yes, if a dependent on another taxpayer’s federal tax return; or, No, if not a dependent on another taxpayer’s federal return": ~paSpQuestion1 # p. 36, always No in scope
+  # Section I, p. 37 (export values 1 Unmarried / 3 Married; sub-ovals 1 = 1a, 3 = 3a).
+  "Click on the appropriate filing status of: unmarried; separated; married; or, deceased. See the instructions": ~paSpStatus
+  "Click on the appropriate status of: single/unmarried/divorced; or, single and claimed as a dependent on another taxpayer’s return. See the instructions": ~paSpUnmarriedStatus
+  "Click on the appropriate status of: married; married filing separately; married with spouse who is a dependent on another’s return; or, separated and lived apart for less than six months. See the instructions": ~paSpMarriedStatus
+  # Section II, p. 37: dependent children (rows i-ix) and line 2.
+  "1i.- Enter the dependent’s first and last name": ~paSpDependent1Name
+  "1i. – Enter the dependent’s age": ~paSpDependent1Age
+  "1i. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent1Relationship
+  "1i. – Enter the dependent’s Social Security number": ~paSpDependent1Ssn
+  "1ii.- Enter the dependent’s first and last name": ~paSpDependent2Name
+  "1ii. – Enter the dependent’s age": ~paSpDependent2Age
+  "1ii. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent2Relationship
+  "1ii. – Enter the dependent’s Social Security number": ~paSpDependent2Ssn
+  "1iii.- Enter the dependent’s first and last name": ~paSpDependent3Name
+  "1iii. – Enter the dependent’s age": ~paSpDependent3Age
+  "1iii. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent3Relationship
+  "1iii. – Enter the dependent’s Social Security number": ~paSpDependent3Ssn
+  "1iv.- Enter the dependent’s first and last name": ~paSpDependent4Name
+  "1iv. – Enter the dependent’s age": ~paSpDependent4Age
+  "1iv. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent4Relationship
+  "1iv. – Enter the dependent’s Social Security number": ~paSpDependent4Ssn
+  "1v.- Enter the dependent’s first and last name": ~paSpDependent5Name
+  "1v. – Enter the dependent’s age": ~paSpDependent5Age
+  "1v. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent5Relationship
+  "1v. – Enter the dependent’s Social Security number": ~paSpDependent5Ssn
+  "1vi.- Enter the dependent’s first and last name": ~paSpDependent6Name
+  "1vi. – Enter the dependent’s age": ~paSpDependent6Age
+  "1vi. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent6Relationship
+  "1vi. – Enter the dependent’s Social Security number": ~paSpDependent6Ssn
+  "1vii.- Enter the dependent’s first and last name": ~paSpDependent7Name
+  "1vii. – Enter the dependent’s age": ~paSpDependent7Age
+  "1vii. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent7Relationship
+  "1vii. – Enter the dependent’s Social Security number": ~paSpDependent7Ssn
+  "1viii.- Enter the dependent’s first and last name": ~paSpDependent8Name
+  "1viii. – Enter the dependent’s age": ~paSpDependent8Age
+  "1viii. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent8Relationship
+  "1viii. – Enter the dependent’s Social Security number": ~paSpDependent8Ssn
+  "1ix.- Enter the dependent’s first and last name": ~paSpDependent9Name
+  "1ix. – Enter the dependent’s age": ~paSpDependent9Age
+  "1ix. – Enter the dependent’s relationship (child, step-child, foster child, adopted child or grandchild) to the taxpayer. See the instructions": ~paSpDependent9Relationship
+  "1ix. – Enter the dependent’s Social Security number": ~paSpDependent9Ssn
+  "Enter the total number of dependents listed on Line 1": ~paSpDependentChildren # line 2, also PA-40 line 19b
+  # Page 2 header.
+  "Enter the taxpayer’s name (name shown first)": ~paSpName
+  "Enter the taxpayer’s Social Security number": /primaryFiler/tin
+  # Section III, Column A, p. 38.
+  "1. – Enter the total taxable income from Line 9 of the PA-40 return when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I": /paSpLine1 # line 1, PA-40 line 9
+  "2. – Enter the total amount of any alimony received when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I. See the instructions": /paSpLine2 # printed line 2, nontaxable interest (see CAUTION)
+  "6. – If a nonresident or part-year resident, enter the total amount of any non-PA income received when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I. See the instructions": /paSpLine6 # line 6, non-PA income (#107)
+  "11 – Add the Column A amounts for Lines 1 through 10 and enter the result here": /paSpLine11 # line 11, also PA-40 line 20
+  # Section IV, left (Column A) boxes, pp. 38-39.
+  "12. – Enter the PA tax liability from Line 12 of the PA-40 return when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I": /paLine12 # line 12
+  "14. – Subtract Line 13 from Line 12 and enter the result here when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I": /paSpLine14 # line 14 = 12 - 13 (13 is blank)
+  "15 – Enter the appropriate percentage of Tax Forgiveness as a decimal from the appropriate eligibility income table found on Page 4 of the instructions  for this form while using the total number of dependents from Section II, Line 2": ~paSpLine15 # line 15, p. 39 table decimal
+  "16 – Multiply Line 14 by the decimal on Line 15 and enter the result here and on Line 21 of the PA-40 return when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I": /paSpLine16 # line 16, PA-40 line 21 (72 P.S. §7304)

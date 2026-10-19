@@ -329,6 +329,22 @@ direct-file:
         configuration-location: "src/main/resources/pdf/2024/DF1099R/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
+      - name: PA40
+        year: 2024
+        language-code: en
+        location: "src/main/resources/pdf/2026/PA40/en/2025_pa-40.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/PA40/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
+      - name: PA40SP
+        year: 2024
+        language-code: en
+        location: "src/main/resources/pdf/2026/PA40SP/en/2025_pa-40sp.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/PA40SP/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
       - name: DF1099R
         year: 2024
         language-code: es

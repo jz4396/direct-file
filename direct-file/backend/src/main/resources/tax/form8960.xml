@@ -4,9 +4,9 @@
   (interest /hasInterestIncomeAndAgiAboveThreshold*) with a computation of Parts I-III, lines 1-17.
   Sources (fetched from irs.gov 2026-10-18; page numbers are the printed page, PDF page in parentheses):
     26 U.S.C. 1411                       https://www.law.cornell.edu/uscode/text/26/1411
-    Form 8960 (2026) draft, Created 6/1/26  https://www.irs.gov/pub/irs-dft/f8960--dft.pdf (sha256 2306f4f3...)
-    Instructions for Form 8960 (2026) draft https://www.irs.gov/pub/irs-dft/i8960--dft.pdf (sha256 e0af7d34...)
-    Schedule 2 (Form 1040) 2026 draft, Created 4/27/26 https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf (sha256 0e3d4faa...)
+    Form 8960 (2026) draft, Created 6/1/26  https://www.irs.gov/pub/irs-dft/f8960%2D%2Ddft.pdf (sha256 2306f4f3...)
+    Instructions for Form 8960 (2026) draft https://www.irs.gov/pub/irs-dft/i8960%2D%2Ddft.pdf (sha256 e0af7d34...)
+    Schedule 2 (Form 1040) 2026 draft, Created 4/27/26 https://www.irs.gov/pub/irs-dft/f1040s2%2D%2Ddft.pdf (sha256 0e3d4faa...)
   Thresholds are statutory (26 U.S.C. 1411(b)) and are not inflation-indexed: 1411(b) states fixed dollar
   amounts and, unlike 1411(a)(2)(B)(ii) for estates and trusts (which points to the indexed 1(e) bracket),
   contains no cost-of-living adjustment. They are not taken from Rev. Proc. 2025-32.
