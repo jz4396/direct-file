@@ -69,7 +69,7 @@ const AggregateSummaryAlert = ({
           const linkTextKey = overrideKeyExists ? `${s.i18nKey}__errorLinkTextOverride` : s.i18nKey;
           return (
             <li key={index}>
-              <a href={``} data-path={s.path} onClick={(e) => scrollToInvalidElement(e, refs, prefersReducedMotion)}>
+              <a href={`#`} data-path={s.path} onClick={(e) => scrollToInvalidElement(e, refs, prefersReducedMotion)}>
                 <Translation i18nKey={linkTextKey} collectionId={null} />
               </a>
             </li>

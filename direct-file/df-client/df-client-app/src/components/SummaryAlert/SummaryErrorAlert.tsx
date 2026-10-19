@@ -70,7 +70,7 @@ const SummaryErrorAlert = ({ factValidity, factRefs, id }: SummaryErrorAlertProp
           return (
             <li key={fact.path}>
               <a
-                href={``}
+                href={`#`}
                 onClick={(e) => scrollToInvalidElement(e, factRefs, prefersReducedMotion)}
                 data-path={fact.path}
               >
