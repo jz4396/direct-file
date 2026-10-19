@@ -147,7 +147,7 @@
     </Fact>
     <Fact path="/alaskaPfdAmount">
       <Description>Total value of the Alaska Permanent Fund</Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Add>
           <Dependency path="/alaskaPfdAmountDividendPortion" />
@@ -156,17 +156,17 @@
       </Derived>
     </Fact>
     <Fact path="/alaskaPfdAmountDividendPortion">
-      <Description>Portion of the Alaska Permanent Fund that was the normal dividend distribution</Description>
-      <TaxYear>2024</TaxYear>
+      <Description>Portion of the Alaska Permanent Fund that was the normal dividend distribution. #91: 2026 PFD. Alaska Department of Revenue press release 26-004 (Sept. 18, 2026), https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf: "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>1403.83</Dollar>
+        <Dollar>1000.00</Dollar>
       </Derived>
     </Fact>
     <Fact path="/alaskaPfdAmountEnergyReliefPaymentPortion">
-      <Description>Portion of the Alaska Permanent Fund that was a one-time engergy relief payment</Description>
-      <TaxYear>2024</TaxYear>
+      <Description>Portion of the Alaska Permanent Fund that was a one-time energy relief payment. #91: 2026 PFD. Alaska Department of Revenue press release 26-004 (Sept. 18, 2026), https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf: "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>298.17</Dollar>
+        <Dollar>200.00</Dollar>
       </Derived>
     </Fact>
     <Fact path="/hdhpMinAnnualDeductibleSelf">

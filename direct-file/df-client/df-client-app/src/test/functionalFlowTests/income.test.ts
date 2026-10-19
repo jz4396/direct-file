@@ -431,9 +431,9 @@ describe(`The \`income\` subcategory`, () => {
       }
     });
     describe(`The social security wages knockout`, () => {
-      // Threshold for 2024 is 168600
+      // #91: TY2026 threshold is the 2026 OASDI wage base, $184,500 (https://www.ssa.gov/oact/cola/cbb.html)
       // Always have one W-2
-      const oasdiWagesThreshold = 168600;
+      const oasdiWagesThreshold = 184500;
       const w2Id2 = `5c154be1-ea2d-4afa-aae4-29d412bca27e`;
       const baseIncomeDataForKnockout = {
         ...baseFilerData,

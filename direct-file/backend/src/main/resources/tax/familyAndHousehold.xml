@@ -568,7 +568,8 @@
       <Writable>
         <Day />
         <Limit type="Max">
-          <Day>2025-01-01</Day>
+          <!-- #91: TY2026 window (upstream TY2024 value 2025-01-01 shifted by two years to match /taxYear 2026). -->
+          <Day>2027-01-01</Day>
         </Limit>
       </Writable>
     </Fact>
@@ -2665,12 +2666,13 @@
       <Name>Gross income limit</Name>
       <Description>The gross income limit for purposes of the qualifying relative gross income test referenced in
         §152(d)(1)(B).
-        Rev Proc .24 Gross Income Limitation for a Qualifying Relative §152(d)(1)(B)
+        #91: TY2026 $5,300. Rev. Proc. 2025-32 sec. 4.23, p. 20 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf):
+        "For taxable years beginning in 2026, the exemption amount referred to in sec. 152(d)(1)(B) is $5,300."
       </Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
-        <Dollar>5050</Dollar>
+        <Dollar>5300</Dollar>
       </Derived>
     </Fact>
 

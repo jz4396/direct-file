@@ -102,18 +102,18 @@
 
     <Fact path="/maxIndividualEducatorExpensesLimit">
       <Name>Maximum Deduction for educator expenses</Name>
-      <Description>The maximum deduction an individual can take for educator expense</Description>
-      <TaxYear>2024</TaxYear>
+      <Description>The maximum deduction an individual can take for educator expense. #91: TY2026 $350. Rev. Proc. 2025-32 sec. 4.12, p. 17 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "For taxable years beginning in 2026, under sec. 62(a)(2)(D), the amount of the deduction allowed under sec. 162 that consists of expenses paid or incurred by an eligible educator ... is $350."</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
-        <Dollar>300</Dollar>
+        <Dollar>350</Dollar>
       </Derived>
     </Fact>
 
     <Fact path="/primaryEducatorExpensesWritable">
       <Name>Primary educator expenses writable</Name>
       <Description>Expenses the TP spent as a k12 educator. May deduct up to the maxIndividualEducatorExpensesLimit.</Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
 
       <Writable>
         <Dollar />
@@ -121,7 +121,8 @@
           <!-- We'll want to update this reference to maxIndividualEducatorExpensesLimit so we don't
           need to update this manually for every tax year. Additional info in ticket:
           https://git.irslabs.org/irslabs-prototypes/direct-file/-/issues/3405 -->
-          <Dollar>300</Dollar>
+          <!-- #91: TY2026 $350, Rev. Proc. 2025-32 sec. 4.12, p. 17. -->
+          <Dollar>350</Dollar>
         </Limit>
       </Writable>
     </Fact>
@@ -159,7 +160,7 @@
     <Fact path="/secondaryEducatorExpensesWritable">
       <Name>Secondary educator expenses writable</Name>
       <Description>Expenses the TP spent as a k12 educator. May deduct up to the maxIndividualEducatorExpensesLimit.</Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
 
       <Writable>
         <Dollar />
@@ -167,7 +168,8 @@
           <!-- We'll want to update this reference to maxIndividualEducatorExpensesLimit so we don't
           need to update this manually for every tax year. Additional info in ticket:
           https://git.irslabs.org/irslabs-prototypes/direct-file/-/issues/3405 -->
-          <Dollar>300</Dollar>
+          <!-- #91: TY2026 $350, Rev. Proc. 2025-32 sec. 4.12, p. 17. -->
+          <Dollar>350</Dollar>
         </Limit>
       </Writable>
     </Fact>

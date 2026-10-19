@@ -23,11 +23,11 @@
       </Derived>
     </Fact>
     <Fact path="/hsaForm5498DueDate">
-      <Description>The last day that form 5498s can be sent to the TP</Description>
-      <TaxYear>2024</TaxYear>
+      <Description>The last day that form 5498s can be sent to the TP. #91: TY2026 Form 5498-SA is furnished by May 31, 2027 (Instructions for Forms 1099-SA and 5498-SA, https://www.irs.gov/instructions/i1099sa); May 31, 2027 is Memorial Day (5 U.S.C. 6103(a), https://www.law.cornell.edu/uscode/text/5/6103), so under IRC sec. 7503 (https://www.law.cornell.edu/uscode/text/26/7503) the date is the next business day, Tuesday June 1, 2027. Upstream TY2024 value was 2025-06-02 (May 31, 2025 was a Saturday).</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
-        <Day>2025-06-02</Day>
+        <Day>2027-06-01</Day>
       </Derived>
     </Fact>
     <Fact path="/capGainsZeroRateMFJ">

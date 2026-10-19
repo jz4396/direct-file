@@ -53,7 +53,8 @@
       <Writable>
         <Day />
         <Limit type="Max">
-          <Day>2024-01-01</Day>
+          <!-- #91: TY2026 window (upstream TY2024 value 2024-01-01 shifted by two years to match /taxYear 2026). -->
+          <Day>2026-01-01</Day>
         </Limit>
       </Writable>
     </Fact>
