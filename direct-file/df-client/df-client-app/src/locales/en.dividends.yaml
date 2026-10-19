@@ -6,6 +6,7 @@ subsubcategories:
     div-income-tax-withheld: Federal income tax withheld
     div-income-other-boxes: Other boxes
 headings:
+  /heading/income/dividends/box-7-election: Do all of these apply to the foreign tax on your Forms 1099-DIV?
   /heading/income/dividends: Dividends
   /heading/income/dividends/intro: Did you receive any dividends in {{/taxYear}}?
   /heading/income/dividends/add-whose: Whose 1099-DIV is it?
@@ -26,10 +27,24 @@ headings:
     This tool doesn’t yet support nondividend distributions above your basis
   /heading/knockout/dividends-section-199a: This tool doesn’t yet support section 199A dividends
   /heading/knockout/dividends-amounts-inconsistent: Check the amounts you entered from this 1099-DIV
-  /heading/knockout/dividends-foreign-tax: This tool doesn’t yet support foreign tax paid on dividends
+  /heading/knockout/dividends-foreign-tax: This tool doesn’t yet support foreign tax that needs Form 1116
   /heading/knockout/dividends-unsupported-boxes: This tool doesn’t yet support some boxes on your 1099-DIV
   /heading/knockout/dividends-nominee: This tool doesn’t yet support dividends received as a nominee
 info:
+  /info/income/dividends/box-7-election:
+    body:
+      - ul:
+          - li:
+              All of your income from outside the U.S. was interest and dividends reported on Forms 1099-INT or
+              1099-DIV.
+          - li: You held the shares for at least 16 days and didn’t have to pay these dividends to someone else.
+          - li: You aren’t filing Form 4563 or excluding income from sources in Puerto Rico.
+          - li:
+              The foreign tax was legally owed, wasn’t eligible for a refund or lower treaty rate, and was paid to a
+              country recognized by the United States.
+      - p:
+          If all of these apply and your total foreign tax is $300 or less ($600 or less if married filing jointly), you
+          can claim it as a credit on Schedule 3 without Form 1116.
   /info/income/dividends/intro:
     body:
       - p:
@@ -114,8 +129,8 @@ info:
     alertText:
       body:
         - p:
-            Foreign tax paid is claimed as a credit on Schedule 3 or Form 1116, which this tool doesn’t support yet.
-            You’ll need another way to file this return.
+            Your foreign tax needs Form 1116 to be claimed as a credit, which this tool doesn’t support yet. You’ll need
+            another way to file this return.
   /info/knockout/dividends-unsupported-boxes:
     alertText:
       body:
@@ -187,6 +202,7 @@ dataviews:
     /dividendReports/*/writableFederalTaxWithheld: Box 4 - Federal income tax withheld
     /dividendReports/*/writableSection199ADividends: Box 5 - Section 199A dividends
     /dividendReports/*/writableForeignTaxPaid: Box 7 - Foreign tax paid
+    /dividendReports/*/foreignTaxElectionRequirementsMet: Do all of the foreign tax requirements apply?
     /dividendReports/*/hasUnsupportedBoxes: Does this 1099-DIV show anything in another box?
     /dividendReports/*/receivedAsNominee: Did you receive any of these dividends as a nominee?
     primaryFiler: Your dividends

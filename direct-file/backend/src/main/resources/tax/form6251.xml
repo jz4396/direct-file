@@ -191,17 +191,18 @@
     <Fact path="/form6251Line7">
       <Name>Form 6251 line 7</Name>
       <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 7: Part III line 40 when line 7 requires it; "All others: If line 6 is $244,500 or less ($122,250 or less if married filing separately), multiply line 6 by 26% (0.26). Otherwise, multiply line 6 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately)". IRC §55(b)(1)(A).</Description>
+      <Export downstreamFacts="true" />
       <Derived><Round><Switch><Case><When><Dependency path="/form6251UsesPartIII" /></When><Then><Dependency path="/form6251Line40" /></Then></Case><Case><When><True /></When><Then><Switch><Case><When><LessThanOrEqual><Left><Dependency path="/form6251Line6" /></Left><Right><Dependency path="/form6251RateBreakpoint" /></Right></LessThanOrEqual></When><Then><Multiply><Rational>26/100</Rational><Dependency path="/form6251Line6" /></Multiply></Then></Case><Case><When><True /></When><Then><Subtract><Minuend><Multiply><Rational>28/100</Rational><Dependency path="/form6251Line6" /></Multiply></Minuend><Subtrahends><Dependency path="/form6251RateOffset" /></Subtrahends></Subtract></Then></Case></Switch></Then></Case></Switch></Round></Derived>
     </Fact>
     <Fact path="/form6251Line9">
       <Name>Form 6251 line 9 tentative minimum tax</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 9: "Tentative minimum tax. Subtract line 8 from line 7." Line 8 (AMT foreign tax credit) is $0: foreign tax paid knocks out (/flowKnockoutHasForeignTaxPaid).</Description>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 9: "Tentative minimum tax. Subtract line 8 from line 7." Line 8 (AMT foreign tax credit) is $0: 1099-INT foreign tax knocks out (interest /flowKnockoutHasForeignTaxPaid), and 1099-DIV foreign tax knocks out whenever line 7 is more than $0 (dividends /flowKnockoutDividendForeignTaxPaid).</Description>
       <Derived><Dependency path="/form6251Line7" /></Derived>
     </Fact>
     <Fact path="/form6251Line10">
       <Name>Form 6251 line 10</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 10: "Add Form 1040 or 1040-SR, line 16 (minus any tax from Form 4972), and Schedule 2 (Form 1040), line 1z. Subtract from the result Schedule 3 (Form 1040), line 1 ... If zero or less, enter -0-." Form 4972, Schedule 3 line 1 and Form 8978 are not supported ($0). IRC §55(c).</Description>
-      <Derived><GreaterOf><Dollar>0</Dollar><Add><Dependency module="scheduleD3" path="/tentativeTaxFromTaxableIncome" /><Dependency module="schedule2" path="/schedule2Line1z" /></Add></GreaterOf></Derived>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 10: "Add Form 1040 or 1040-SR, line 16 (minus any tax from Form 4972), and Schedule 2 (Form 1040), line 1z. Subtract from the result Schedule 3 (Form 1040), line 1 ... If zero or less, enter -0-." Form 4972 and Form 8978 are not supported ($0). #86: Schedule 3 line 1 is the foreign tax credit without Form 1116 (schedule3 /sched3Line1); when it is more than $0 the return stops unless line 7 is $0 (dividends /flowKnockoutDividendForeignTaxPaid), so line 8 stays $0 on every supported return. IRC §55(c).</Description>
+      <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Add><Dependency module="scheduleD3" path="/tentativeTaxFromTaxableIncome" /><Dependency module="schedule2" path="/schedule2Line1z" /></Add></Minuend><Subtrahends><Dependency module="schedule3" path="/sched3Line1" /></Subtrahends></Subtract></GreaterOf></Derived>
     </Fact>
     <Fact path="/amt">
       <Name>Alternative minimum tax (Form 6251 line 11)</Name>

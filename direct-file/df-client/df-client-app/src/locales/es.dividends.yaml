@@ -6,6 +6,8 @@ subsubcategories:
     div-income-tax-withheld: Impuesto federal sobre el ingreso retenido
     div-income-other-boxes: Otros encasillados
 headings:
+  /heading/income/dividends/box-7-election:
+    ¿Se cumplen todas estas condiciones para el impuesto extranjero de sus Formularios 1099-DIV?
   /heading/income/dividends: Dividendos
   /heading/income/dividends/intro: ¿Recibió dividendos en {{/taxYear}}?
   /heading/income/dividends/add-whose: ¿De quién es el Formulario 1099-DIV?
@@ -28,11 +30,27 @@ headings:
     Esta herramienta aún no admite distribuciones que no son dividendos mayores que su base
   /heading/knockout/dividends-section-199a: Esta herramienta aún no admite dividendos de la sección 199A
   /heading/knockout/dividends-amounts-inconsistent: Verifique las cantidades que ingresó de este Formulario 1099-DIV
-  /heading/knockout/dividends-foreign-tax: Esta herramienta aún no admite impuestos extranjeros pagados sobre dividendos
+  /heading/knockout/dividends-foreign-tax:
+    Esta herramienta aún no admite impuestos extranjeros que requieren el Formulario 1116
   /heading/knockout/dividends-unsupported-boxes:
     Esta herramienta aún no admite algunos encasillados de su Formulario 1099-DIV
   /heading/knockout/dividends-nominee: Esta herramienta aún no admite dividendos recibidos como nominatario
 info:
+  /info/income/dividends/box-7-election:
+    body:
+      - ul:
+          - li:
+              Todos sus ingresos de fuentes fuera de EE. UU. fueron intereses y dividendos declarados en los Formularios
+              1099-INT o 1099-DIV.
+          - li: Tuvo las acciones al menos 16 días y no tenía que pagar estos dividendos a otra persona.
+          - li: No presenta el Formulario 4563 ni excluye ingresos de fuentes en Puerto Rico.
+          - li:
+              El impuesto extranjero se debía legalmente, no era elegible para un reembolso ni para una tasa reducida
+              por tratado y se pagó a un país reconocido por los Estados Unidos.
+      - p:
+          Si se cumplen todas estas condiciones y su impuesto extranjero total es de $300 o menos ($600 o menos si son
+          casados que presentan una declaración conjunta), puede reclamarlo como crédito en el Anexo 3 sin el Formulario
+          1116.
   /info/income/dividends/intro:
     body:
       - p:
@@ -129,8 +147,8 @@ info:
     alertText:
       body:
         - p:
-            El impuesto extranjero pagado se reclama como crédito en el Anexo 3 o en el Formulario 1116, que esta
-            herramienta aún no admite. Necesitará otra manera de presentar esta declaración.
+            Su impuesto extranjero necesita el Formulario 1116 para reclamarse como crédito, y esta herramienta aún no
+            lo admite. Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-unsupported-boxes:
     alertText:
       body:
@@ -205,6 +223,7 @@ dataviews:
     /dividendReports/*/writableFederalTaxWithheld: Encasillado 4 - Impuesto federal sobre el ingreso retenido
     /dividendReports/*/writableSection199ADividends: Encasillado 5 - Dividendos de la sección 199A
     /dividendReports/*/writableForeignTaxPaid: Encasillado 7 - Impuesto extranjero pagado
+    /dividendReports/*/foreignTaxElectionRequirementsMet: ¿Se cumplen todas las condiciones del impuesto extranjero?
     /dividendReports/*/hasUnsupportedBoxes: ¿Este Formulario 1099-DIV muestra algo en otro encasillado?
     /dividendReports/*/receivedAsNominee: ¿Recibió alguno de estos dividendos como nominatario?
     primaryFiler: Sus dividendos

@@ -224,7 +224,7 @@
               <Dependency module="taxCalculations" path="/totalTentativeTax" />
             </Minuend>
             <Subtrahends>
-              <Dependency module="schedule3" path="/sched3Line1" /> <!-- PLACEHOLDER -->
+              <Dependency module="schedule3" path="/sched3Line1" />
               <Dependency module="cdcc" path="/cdccTotalCredit" />
               <Dependency module="schedule3" path="/sched3Line3" /> <!-- PLACEHOLDER -->
               <Dependency module="saversCredits" path="/qualifiedSaverCreditAmount" />

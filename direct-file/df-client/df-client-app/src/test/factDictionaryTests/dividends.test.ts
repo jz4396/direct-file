@@ -52,6 +52,7 @@ type Div = {
   overBasis?: boolean;
   otherBoxes?: boolean;
   nominee?: boolean;
+  ftcOk?: boolean;
 };
 const opt = (id: string, name: string, v: number | undefined) =>
   v === undefined ? {} : { [`/dividendReports/#${id}/writable${name}`]: createDollarWrapper(`${v}`) };
@@ -73,6 +74,9 @@ const divItem = (f: Div) => {
             f.holdingNotMet ?? false
           ),
         }
+      : {}),
+    ...(f.box7
+      ? { [`/dividendReports/#${id}/foreignTaxElectionRequirementsMet`]: createBooleanWrapper(f.ftcOk ?? true) }
       : {}),
     ...(f.box3
       ? { [`/dividendReports/#${id}/nondividendDistributionsExceedBasis`]: createBooleanWrapper(f.overBasis ?? false) }
@@ -228,9 +232,48 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     task.meta.testedFactPaths = [`/flowKnockoutSection199ADividends`, `/totalSection199ADividends`];
     blocks(build(divs({ box1a: 500, box5: 50 })), `/flowKnockoutSection199ADividends`);
   });
-  it(`box 7 foreign tax paid > 0, including within the §904(j) $300 limit`, ({ task }) => {
+  it(`box 7 within the 26 U.S.C. 904(j) election goes to Schedule 3 line 1 (i1040 (2025) p. 115)`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/foreignTaxElectionRequirementsMet`,
+      `/dividendForeignTaxElectionLimit`,
+      `/dividendForeignTaxCredit`,
+      `/sched3Line1`,
+      `/hasSchedule3`,
+      `/flowKnockoutDividendForeignTaxPaid`,
+    ];
+    const g = build(divs({ box1a: 500, box7: 12.4, ftcOk: true }));
+    expect(val(g, `/totalDividendForeignTaxPaid`)).toBe(`12.40`);
+    expect(val(g, `/dividendForeignTaxElectionLimit`)).toBe(`300.00`);
+    expect(val(g, `/sched3Line1`)).toBe(`12.00`); // smaller of total foreign tax or line 16 + Sch 2 line 1a
+    expect(get(g, `/hasSchedule3`).get).toBe(true);
+    const lessCredit =
+      Number(val(build(divs({ box1a: 500 })), `/taxLessNonRefundableCredits`)) -
+      Number(val(g, `/taxLessNonRefundableCredits`));
+    expect(lessCredit).toBe(12);
+    noKnockouts(g);
+  });
+  it(`box 7: no to the 904(j) requirements, or over $300 ($600 MFJ), needs Form 1116 and stops the return`, ({
+    task,
+  }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendForeignTaxPaid`, `/totalDividendForeignTaxPaid`];
-    blocks(build(divs({ box1a: 500, box7: 12 })), `/flowKnockoutDividendForeignTaxPaid`);
+    blocks(build(divs({ box1a: 500, box7: 12, ftcOk: false })), `/flowKnockoutDividendForeignTaxPaid`);
+    blocks(build(divs({ box1a: 5000, box7: 300.01, ftcOk: true })), `/flowKnockoutDividendForeignTaxPaid`);
+    expect(get(build(divs({ box1a: 5000, box7: 300, ftcOk: true })), `/flowKnockoutDividendForeignTaxPaid`).get).toBe(
+      false
+    );
+    const mfj = build(divs({ box1a: 5000, box7: 600, ftcOk: true }), mfjFilerData);
+    expect(val(mfj, `/dividendForeignTaxElectionLimit`)).toBe(`600.00`);
+    expect(get(mfj, `/flowKnockoutDividendForeignTaxPaid`).get).toBe(false);
+    blocks(
+      build(divs({ box1a: 5000, box7: 600.01, ftcOk: true }), mfjFilerData),
+      `/flowKnockoutDividendForeignTaxPaid`
+    );
+  });
+  it(`box 7 credit is limited to Form 1040 line 16 plus Schedule 2 line 1a`, () => {
+    const g = build({ ...divs({ box1a: 500, box7: 250, ftcOk: true }), ...paW2(14000) });
+    const line16 = Number(val(g, `/tentativeTaxFromTaxableIncome`));
+    expect(line16).toBeLessThan(250);
+    expect(Number(val(g, `/sched3Line1`))).toBe(line16);
   });
   it(`box 1b or box 5 larger than box 1a`, ({ task }) => {
     task.meta.testedFactPaths = [`/dividendReports/*/amountsInconsistent`, `/flowKnockoutDividendAmountsInconsistent`];

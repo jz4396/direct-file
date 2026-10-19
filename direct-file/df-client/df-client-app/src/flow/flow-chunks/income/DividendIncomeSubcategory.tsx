@@ -185,6 +185,12 @@ export const DividendIncomeSubcategory = (
           <Dollar path='/dividendReports/*/writableForeignTaxPaid' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
+        <Screen route='1099-div-box-7-election' condition='/dividendReports/*/hasForeignTaxPaid'>
+          <Heading i18nKey='/heading/income/dividends/box-7-election' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-7-election' />
+          <Boolean path='/dividendReports/*/foreignTaxElectionRequirementsMet' />
+          <SaveAndOrContinueButton />
+        </Screen>
         {knockout(`1099-div-box-7-knockout`, `/flowKnockoutDividendForeignTaxPaid`, `dividends-foreign-tax`)}
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />

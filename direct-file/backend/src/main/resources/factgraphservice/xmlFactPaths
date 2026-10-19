@@ -604,6 +604,7 @@ Lines that do not have / in column 1 are comments.
 /requiresScheduleD
 /roundedDependentCreditMagiAboveThreshold
 /saversCreditMultiplier
+/sched3Line1
 /sched8812CreditLimit
 /schedule1TotalOtherIncome
 /scheduleDLine10

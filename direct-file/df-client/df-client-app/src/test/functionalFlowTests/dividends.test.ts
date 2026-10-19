@@ -71,7 +71,7 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
     });
     expect(at(over, `1099-div-box-3-basis`, task)).toRouteNextTo(`${path}/1099-div-box-3-knockout`);
   });
-  it(`box 4 to box 5; box 5 > 0 and box 7 > 0 route to knockouts`, ({ task }) => {
+  it(`box 4 to box 5; box 5 > 0 routes to its knockout; box 7 asks about the 904(j) requirements`, ({ task }) => {
     const ord = { [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`) };
     expect(at(base(`single`, ord), `1099-div-box-4`, task)).toRouteNextTo(`${path}/1099-div-box-5`);
     const box5 = base(`single`, {
@@ -84,7 +84,19 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       ...ord,
       [`/dividendReports/#${id}/writableForeignTaxPaid`]: createDollarWrapper(`5`),
     });
-    expect(at(box7, `1099-div-box-7`, task)).toRouteNextTo(`${path}/1099-div-box-7-knockout`);
+    expect(at(box7, `1099-div-box-7`, task)).toRouteNextTo(`${path}/1099-div-box-7-election`);
+    const declined = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableForeignTaxPaid`]: createDollarWrapper(`5`),
+      [`/dividendReports/#${id}/foreignTaxElectionRequirementsMet`]: createBooleanWrapper(false),
+    });
+    expect(at(declined, `1099-div-box-7-election`, task)).toRouteNextTo(`${path}/1099-div-box-7-knockout`);
+    const elected = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableForeignTaxPaid`]: createDollarWrapper(`5`),
+      [`/dividendReports/#${id}/foreignTaxElectionRequirementsMet`]: createBooleanWrapper(true),
+    });
+    expect(at(elected, `1099-div-box-7-election`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
     expect(at(base(`single`, ord), `1099-div-box-7`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
   });
   it(`other boxes and nominee answers route to their knockouts`, ({ task }) => {

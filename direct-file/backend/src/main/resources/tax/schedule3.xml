@@ -10,6 +10,14 @@
           <Case>
             <When>
               <Any>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/sched3Line1" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
                 <Dependency module="saversCredits" path="/qualifiedForSaverCredit" />
                 <Dependency module="elderlyAndDisabled" path="/qualifiedForCreditForElderlyAndDisabled" />
                 <Dependency module="cdcc" path="/cdccQualified" />
@@ -45,10 +53,12 @@
     </Fact>
 
     <Fact path="/sched3Line1">
-      <Description>Schedule 3 Line 1: PLACEHOLDER</Description>
-      <Export downstreamFacts="true" />
+      <Name>Schedule 3 line 1 foreign tax credit</Name>
+      <Description>Schedule 3 (Form 1040) line 1, foreign tax credit. Only the credit without Form 1116 under the 26 U.S.C. 904(j) election (https://www.law.cornell.edu/uscode/text/26/904) is supported: Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1, "Enter on line 1 the smaller of (a) your total foreign taxes, or (b) the total of the amounts on Form 1040 or 1040-SR, line 16, and Schedule 2, line 1a." Computed in dividends /dividendForeignTaxCredit; every other case stops the return (dividends /flowKnockoutDividendForeignTaxPaid, interest /flowKnockoutHasForeignTaxPaid).</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <ExportZero />
       <Derived>
-        <Dollar>0</Dollar>
+        <Dependency module="dividends" path="/dividendForeignTaxCredit" />
       </Derived>
     </Fact>
 
@@ -112,7 +122,7 @@
       <Export mef="true" downstreamFacts="true" />
       <Derived>
         <Add>
-          <Dependency path="/sched3Line1" /> <!-- PLACEHOLDER -->
+          <Dependency path="/sched3Line1" />
           <Dependency module="cdcc" path="/cdccTotalCredit" />
           <Dependency path="/sched3Line3" /> <!-- PLACEHOLDER -->
           <Dependency module="saversCredits" path="/qualifiedSaverCreditAmount" />
