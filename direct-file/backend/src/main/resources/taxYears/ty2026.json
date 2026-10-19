@@ -40,6 +40,22 @@
       "title": "Internal Revenue Code, 26 U.S.C.",
       "url": "https://www.law.cornell.edu/uscode/text/26",
       "kind": "statute"
+    },
+    "ak-dor-26-004": {
+      "title": "Alaska Department of Revenue press release 26-004 (Sept. 18, 2026), DOR announces 2026 PFD amount",
+      "url": "https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf",
+      "kind": "pdf",
+      "sha256": "3f45616c0ceb5542332806f729977c38e96af1b5aef91ba9c31b9ce14b81528e"
+    },
+    "i1099sa": {
+      "title": "Instructions for Forms 1099-SA and 5498-SA",
+      "url": "https://www.irs.gov/instructions/i1099sa",
+      "kind": "web"
+    },
+    "usc5": {
+      "title": "Title 5, U.S. Code",
+      "url": "https://www.law.cornell.edu/uscode/text/5",
+      "kind": "statute"
     }
   },
   "parameters": [
@@ -1106,6 +1122,167 @@
           "form": "table"
         }
       ]
+    },
+    {
+      "fact": "/alaskaPfdAmount",
+      "file": "constants3.xml",
+      "values": [],
+      "cite": [
+        {
+          "source": "ak-dor-26-004",
+          "page": 1,
+          "quote": "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."
+        }
+      ]
+    },
+    {
+      "fact": "/alaskaPfdAmountDividendPortion",
+      "file": "constants3.xml",
+      "values": [
+        "Dollar:1000.00"
+      ],
+      "cite": [
+        {
+          "source": "ak-dor-26-004",
+          "page": 1,
+          "quote": "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."
+        }
+      ]
+    },
+    {
+      "fact": "/alaskaPfdAmountEnergyReliefPaymentPortion",
+      "file": "constants3.xml",
+      "values": [
+        "Dollar:200.00"
+      ],
+      "cite": [
+        {
+          "source": "ak-dor-26-004",
+          "page": 1,
+          "quote": "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."
+        }
+      ]
+    },
+    {
+      "fact": "/hsaForm5498DueDate",
+      "file": "constants4.xml",
+      "values": [
+        "Day:2027-06-01"
+      ],
+      "cite": [
+        {
+          "source": "i1099sa",
+          "section": "Statements to Participants",
+          "quote": "If you are required to file Form 5498-SA, you must provide a statement to the participant (generally Copy B) by May 31 of the subsequent year. If May 31 falls on a Saturday, Sunday, or a legal holiday, you must provide the statement by the next day that is not a Saturday, Sunday, or a legal holiday."
+        },
+        {
+          "source": "usc5",
+          "section": "§ 6103(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/5/6103",
+          "quote": "Memorial Day, the last Monday in May."
+        },
+        {
+          "source": "irc",
+          "section": "§ 7503",
+          "url": "https://www.law.cornell.edu/uscode/text/26/7503",
+          "quote": "When the last day prescribed under authority of the internal revenue laws for performing any act falls on Saturday, Sunday, or a legal holiday, the performance of such act shall be considered timely if it is performed on the next succeeding day which is not a Saturday, Sunday, or a legal holiday."
+        }
+      ]
+    },
+    {
+      "fact": "/maxIndividualEducatorExpensesLimit",
+      "file": "educatorAdjustment.xml",
+      "values": [
+        "Dollar:350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.12",
+          "page": 17,
+          "quote": "For taxable years beginning in 2026, under § 62(a)(2)(D), the amount of the deduction allowed under § 162 that consists of expenses paid or incurred by an eligible educator in connection with books, supplies (other than nonathletic supplies for courses of instruction in health or physical education), computer equipment (including related software and services) and other equipment, and supplementary materials used by the eligible educator in the classroom is $350."
+        }
+      ]
+    },
+    {
+      "fact": "/primaryEducatorExpensesWritable",
+      "file": "educatorAdjustment.xml",
+      "values": [
+        "Dollar:350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.12",
+          "page": 17,
+          "quote": "For taxable years beginning in 2026, under § 62(a)(2)(D), the amount of the deduction allowed under § 162 that consists of expenses paid or incurred by an eligible educator in connection with books, supplies (other than nonathletic supplies for courses of instruction in health or physical education), computer equipment (including related software and services) and other equipment, and supplementary materials used by the eligible educator in the classroom is $350."
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryEducatorExpensesWritable",
+      "file": "educatorAdjustment.xml",
+      "values": [
+        "Dollar:350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.12",
+          "page": 17,
+          "quote": "For taxable years beginning in 2026, under § 62(a)(2)(D), the amount of the deduction allowed under § 162 that consists of expenses paid or incurred by an eligible educator in connection with books, supplies (other than nonathletic supplies for courses of instruction in health or physical education), computer equipment (including related software and services) and other equipment, and supplementary materials used by the eligible educator in the classroom is $350."
+        }
+      ]
+    },
+    {
+      "fact": "/grossIncomeLimit",
+      "file": "familyAndHousehold.xml",
+      "values": [
+        "Dollar:5300"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.23",
+          "page": 20,
+          "quote": "For taxable years beginning in 2026, the exemption amount referred to in § 152(d)(1)(B) is $5,300."
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryFilerDateOfDeath",
+      "file": "filers.xml",
+      "values": [
+        "Day:2027-01-01"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6013(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6013",
+          "quote": "no joint return shall be made if the husband and wife have different taxable years; except that if such taxable years begin on the same day and end on different days because of the death of either or both, then the joint return may be made with respect to the taxable year of"
+        },
+        {
+          "source": "irc",
+          "section": "§ 6013(d)(1)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6013",
+          "quote": "if one dies before the close of the taxable year of the other—as of the time of such death"
+        }
+      ]
+    },
+    {
+      "fact": "/maxOasdiWagesOnMultipleW2sForOnePerson",
+      "file": "formW2s.xml",
+      "values": [
+        "Dollar:184500"
+      ],
+      "cite": [
+        {
+          "source": "fr-2025-19763",
+          "page": 49050,
+          "quote": "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
+        }
+      ]
     }
   ],
   "pendingReview": [
@@ -1156,48 +1333,6 @@
         }
       ],
       "note": "Statutory amount, not inflation-adjusted.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/alaskaPfdAmount",
-      "file": "constants3.xml",
-      "taggedYear": 2024,
-      "status": "unverified",
-      "values": [],
-      "note": "Sum of the two portion facts; no literal.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/alaskaPfdAmountDividendPortion",
-      "file": "constants3.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:1403.83"
-      ],
-      "note": "2024 Alaska PFD amount; the 2026 distribution amount is set by the State of Alaska and is not yet sourced.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/alaskaPfdAmountEnergyReliefPaymentPortion",
-      "file": "constants3.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:298.17"
-      ],
-      "note": "2024 one-time energy relief amount; not yet sourced for 2026.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/hsaForm5498DueDate",
-      "file": "constants4.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Day:2025-06-02"
-      ],
-      "note": "Due date for 2024 contributions; TY2026 needs the 2027 date.",
       "tracking": "#91"
     },
     {
@@ -1270,47 +1405,6 @@
       "tracking": "#91"
     },
     {
-      "fact": "/maxIndividualEducatorExpensesLimit",
-      "file": "educatorAdjustment.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:300"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§4.12",
-          "page": 17,
-          "quote": "under § 62(a)(2)(D), the amount of the deduction allowed under § 162 that consists of expenses paid or incurred by an eligible educator"
-        }
-      ],
-      "note": "Holds $300; the cited 2026 amount in the same paragraph is $350.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/primaryEducatorExpensesWritable",
-      "file": "educatorAdjustment.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:300"
-      ],
-      "note": "Writable limit duplicates /maxIndividualEducatorExpensesLimit ($300).",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/secondaryEducatorExpensesWritable",
-      "file": "educatorAdjustment.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:300"
-      ],
-      "note": "Writable limit duplicates /maxIndividualEducatorExpensesLimit ($300).",
-      "tracking": "#91"
-    },
-    {
       "fact": "/familyAndHousehold/*/ageAtFirstHalfOfYear",
       "file": "familyAndHousehold.xml",
       "taggedYear": 2024,
@@ -1325,42 +1419,12 @@
       "tracking": "#91"
     },
     {
-      "fact": "/grossIncomeLimit",
-      "file": "familyAndHousehold.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:5050"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§4.23",
-          "page": 20,
-          "quote": "For taxable years beginning in 2026, the exemption amount referred to in § 152(d)(1)(B) is $5,300."
-        }
-      ],
-      "note": "Holds $5,050 (2024).",
-      "tracking": "#91"
-    },
-    {
       "fact": "/taxDay",
       "file": "filers.xml",
       "taggedYear": 2024,
       "status": "structural",
       "values": [],
       "note": "Selects /defaultTaxDay or /massachusettsAndMaineDeadline; no literal.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/secondaryFilerDateOfDeath",
-      "file": "filers.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Day:2025-01-01"
-      ],
-      "note": "Writable upper bound 2025-01-01 is the day after TY2024; TY2026 needs 2027-01-01.",
       "tracking": "#91"
     },
     {
@@ -1372,24 +1436,6 @@
         "Dollar:5"
       ],
       "note": "Administrative $5 MFS filing threshold; 2026 source not yet confirmed.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/maxOasdiWagesOnMultipleW2sForOnePerson",
-      "file": "formW2s.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:168600"
-      ],
-      "cite": [
-        {
-          "source": "fr-2025-19763",
-          "page": 49050,
-          "quote": "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
-        }
-      ],
-      "note": "Holds $168,600 (2024 wage base).",
       "tracking": "#91"
     },
     {
