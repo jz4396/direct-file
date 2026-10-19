@@ -1,11 +1,11 @@
-import { ReactNode, createContext, useContext, useEffect } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useSyncExternalStore } from 'react';
 import { Path } from '../flow/Path.js';
 import { save } from '../hooks/useApiHook.js';
 import { InterceptingFactGraph } from './InterceptingFactGraph.js';
 import { FactGraph } from '@irs/js-factgraph-scala';
 import { TaxReturnSubmission, TaxReturnSubmissionStatus } from '../types/core.js';
 import { FEDERAL_RETURN_STATUS } from '../constants/taxConstants.js';
-import { useFlow } from '../flow/flowConfig.js';
+import { FlowConfig, useFlow } from '../flow/flowConfig.js';
 import { CompleteFactGraphResult } from '@irs/js-factgraph-scala/src/typings/FactGraph.js';
 import { TaxReturnsContext } from '../context/TaxReturnsContext.js';
 import { is1099RFeatureFlagEnabled } from '../constants/pageConstants.js';
@@ -26,6 +26,16 @@ export const FactGraphContext = createContext<FactGraphContextValue>({
 });
 
 let instance: FactGraphContextValue | undefined = undefined;
+
+// Providers subscribe so that replacing the instance (replaceFactGraphWithFacts) re-renders them with the new value.
+const instanceListeners = new Set<() => void>();
+const subscribeToInstance = (listener: () => void) => {
+  instanceListeners.add(listener);
+  return () => {
+    instanceListeners.delete(listener);
+  };
+};
+const getInstance = () => instance;
 
 type FactGraphContextProviderProps = {
   existingFacts?: object;
@@ -55,7 +65,8 @@ export const FactGraphContextProvider = ({
     instance = { factGraph };
   }
   // at this point it's always setup.
-  const factGraph = instance.factGraph as FactGraph;
+  const current = useSyncExternalStore(subscribeToInstance, getInstance) ?? instance;
+  const factGraph = current.factGraph as FactGraph;
 
   useEffect(() => {
     const isResubmittingPath = Path.concretePath(`/isResubmitting`, null);
@@ -114,10 +125,21 @@ export const FactGraphContextProvider = ({
       }
     }
   }, [currentTaxReturnId, factGraph]);
-  return <FactGraphContext.Provider value={instance}>{children}</FactGraphContext.Provider>;
+  return <FactGraphContext.Provider value={current}>{children}</FactGraphContext.Provider>;
+};
+
+/**
+ * Replace the in-memory fact graph with facts loaded in the browser (save file or device save). Runs entirely
+ * client-side. Mounted providers re-render with the new instance, so useFactGraph() returns the imported graph.
+ * Callers validate the facts first (saveState/saveStateSchema.ts migrateSaveState).
+ */
+export const replaceFactGraphWithFacts = (facts: object, flow?: FlowConfig) => {
+  const factGraph = new InterceptingFactGraph(facts, flow);
+  instance = { factGraph };
+  instanceListeners.forEach((listener) => listener());
+  return factGraph;
 };
 
 export const useFactGraph = () => {
   return useContext(FactGraphContext);
 };
-
