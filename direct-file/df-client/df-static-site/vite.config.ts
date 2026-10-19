@@ -6,6 +6,14 @@ import ViteYaml from '@modyfi/vite-plugin-yaml';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 import autoprefixer from 'autoprefixer';
 import path from 'path';
+import { createRequire } from 'module';
+
+// @trussworks/react-uswds 8 publishes an `exports` map without its stylesheet, so the
+// `@trussworks/react-uswds/lib/index.css` specifier must be resolved to the file directly.
+const reactUswdsCss = path.join(
+  path.dirname(createRequire(import.meta.url).resolve('@trussworks/react-uswds')),
+  'index.css'
+);
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -38,6 +46,7 @@ export default defineConfig({
     preserveSymlinks: true,
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      '@trussworks/react-uswds/lib/index.css': reactUswdsCss,
     },
   },
   envPrefix: ['STATIC_SITE'],
