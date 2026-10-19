@@ -145,7 +145,12 @@ describe(`PA part-year residency (#80)`, () => {
     expect(val(g, `/paLine12`)).toBe(`994.68`); // 32,400 x 0.0307
     expect(val(g, `/paLine13`)).toBe(`921.00`);
     expect(val(g, `/stateAmountOwed`)).toBe(`73.68`);
-    notStopped(g);
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    // #123: PA interest (PA period only) differs from federal, so PA Schedule A is required (PA-40 IN (2025) p. 31),
+    // and the March sale needs PA Schedule D (p. 17); neither is produced.
+    expect(get(g, `/flowKnockoutPaScheduleA`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleD`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
   });
 
   it(`moves FL -> PA on April 1: FL W-2 allocation for the PA period + PA W-2; sale before the move excluded`, () => {
@@ -164,7 +169,42 @@ describe(`PA part-year residency (#80)`, () => {
     expect(val(g, `/paLine12`)).toBe(`1688.50`);
     expect(val(g, `/paLine29`)).toBe(`0.00`);
     expect(val(g, `/paLine26`)).toBe(`306.50`); // 1,688.50 - 1,382 (box 17 rounds to whole dollars)
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    // #123: the October sale (PA period) needs PA Schedule D, which isn't produced.
+    expect(get(g, `/flowKnockoutPaScheduleD`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleA`).get).toBe(false);
+  });
+
+  it(`#123: moves PA -> FL, only a sale after the move (FL period): no PA Schedule D, return not stopped`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleD`, `/paSchoolCodeMovedOut`, `/paAskSchoolDistrictCode`];
+    const g = build(singleFilerData, {
+      ...move(`paToFl`),
+      ...w2s({ id: paW2, wages: 30000, state: `pa`, box16: 30000, box17: 921 }),
+      '/form8949Transactions': createCollectionWrapper([tx2]),
+      ...tx(tx2, `2026-10-15`, 15000, 10000),
+      '/form8949TransactionsIsDone': createBooleanWrapper(true),
+    });
+    expect(val(g, `/paLine5`)).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutPaScheduleD`).get).toBe(false);
+    // PA-40 IN (2025) p. 6: not in PA on Dec. 31, so the school code is 99999 and the filer is not asked.
+    expect(get(g, `/paSchoolCodeMovedOut`).get).toBe(true);
+    expect(get(g, `/paAskSchoolDistrictCode`).get).toBe(false);
+    expect(val(g, `/paSchoolCode`)).toBe(`99999`);
     notStopped(g);
+  });
+
+  it(`#123: moves FL -> PA: lived in PA on Dec. 31, so the school district code is asked (p. 6)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paAskSchoolDistrictCode`, `/paSchoolCode`];
+    const g = build(singleFilerData, {
+      ...move(`flToPa`, `2026-04-01`),
+      ...w2s({ id: paW2, wages: 45000, state: `pa`, box16: 45000, box17: 1381.5 }),
+      '/paSchoolDistrictCode': createStringWrapper(`67940`),
+    });
+    expect(get(g, `/paSchoolCodeMovedOut`).get).toBe(false);
+    expect(get(g, `/paAskSchoolDistrictCode`).get).toBe(true);
+    expect(val(g, `/paSchoolCode`)).toBe(`67940`);
   });
 
   it(`PA-source wages earned while living in FL are PA-taxable (PA W-2 box 16 for the whole year)`, () => {
