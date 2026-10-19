@@ -10103,8 +10103,8 @@ info:
             Tengo un PFD de Alaska de un hijo(a). ¿Por qué no lo puedo declarar en Direct File?
           body:
             - p: >-
-                El PFD del {{/taxYear}} es de {{/alaskaPfdAmount}}. El PFD de un hijo(a) se considera
-                ’ingresos no derivados del trabajo’ del hijo(a) y es tributable.
+                El PFD del {{/taxYear}} es de {{/alaskaPfdAmount}}. El PFD de un hijo(a) se considera ’ingresos no
+                derivados del trabajo’ del hijo(a) y es tributable.
             - p: >-
                 Direct File actualmente no acepta <Link1>reportar los ingresos no derivados del trabajo de hijos (en
                 inglés)</Link1>.

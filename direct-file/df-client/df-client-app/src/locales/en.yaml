@@ -5987,8 +5987,8 @@ info:
           header: I have a child’s Permanent Fund Dividend (PFD) from Alaska. Why can’t I report it in Direct File?
           body:
             - p:
-                The {{/taxYear}} PFD is for {{/alaskaPfdAmount}}. A child’s PFD is the child’s unearned income, and it is
-                taxable.
+                The {{/taxYear}} PFD is for {{/alaskaPfdAmount}}. A child’s PFD is the child’s unearned income, and it
+                is taxable.
             - p: Direct File doesn’t currently support <Link1>reporting children’s unearned income</Link1>.
             - p:
                 You’ll need to file using another tool. You must report all of your income to the IRS, even if you’re
