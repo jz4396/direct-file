@@ -145,6 +145,24 @@
 
     <!-- ========== Part II: Investment expenses ========== -->
 
+    <Fact path="/form8960Line10">
+      <Name>Form 8960 line 10: additional modifications</Name>
+      <Description>
+        f8960 (2026 draft) line 10: "Additional modifications (see instructions)". i8960 (2026 draft) p. 13 (PDF
+        p. 14): "Note: The early withdrawal penalty reported on Schedule 1 (Form 1040), line 18, is reported on Form
+        8960, line 10." Treas. Reg. 1.1411-4(f)(2)(iii) (https://www.law.cornell.edu/cfr/text/26/1.1411-4):
+        "Penalty on early withdrawal of savings. Deductions described in section 62(a)(9) are taken into account in
+        determining net investment income". Line 10 = interest /earlyWithdrawalPenaltyTotal (Schedule 1 line 18).
+        The other line 10 items (section 62(a)(4) rent and royalty deductions, section 62(a)(1) deductions of a
+        section 1411 trade or business, and the section 1411 NOL amount) only arise with Schedule E or Schedule C,
+        which /flowKnockoutForm8960Unsupported stops over the threshold, or are not in the app (no NOL deduction).
+      </Description>
+      <Export mef="true" />
+      <Derived>
+        <Dependency module="interest" path="/earlyWithdrawalPenaltyTotal" />
+      </Derived>
+    </Fact>
+
     <Fact path="/form8960Line11">
       <Name>Form 8960 line 11: total deductions and modifications</Name>
       <Description>
@@ -161,17 +179,13 @@
         withdrawal of savings. Deductions described in section 62(a)(9) are taken into account in determining net
         investment income", and the (f)(2)(iv) section 1411 NOL amount. Lines 9a-9c come from Schedule A, so for a
         filer who takes the standard deduction (taxCalculations /wantsStandardDeduction) lines 9a-9d are $0.
-        Line 10: i8960 (2026 draft) p. 13 (PDF p. 14): "The early withdrawal penalty reported on Schedule 1 (Form
-        1040), line 18, is reported on Form 8960, line 10." The app never populates Schedule 1 line 18: any
-        1099-INT box 2 penalty knocks out (interest /flowKnockoutHasEarlyWithdrawlPenalty, in /flowIsKnockedOut).
-        The 62(a)(4) and 62(a)(1) items only arise with Schedule E or Schedule C, which are stopped above the
-        threshold, and there is no NOL deduction in the app. So line 10 is $0. When Schedule 1 line 18 is wired,
-        line 10 must carry it (guarded by form8960.test.ts). An itemizer over the threshold is stopped by /flowKnockoutForm8960Unsupported (the
-        allocation and the Lines 9 and 10 Section 68 Limitation Worksheet, i8960 p. 19, are not modeled).
+        An itemizer over the threshold is stopped by /flowKnockoutForm8960Unsupported (the allocation and the
+        Lines 9 and 10 Section 68 Limitation Worksheet, i8960 p. 19, are not modeled). So line 11 = line 9d ($0)
+        + line 10 (/form8960Line10, the Schedule 1 line 18 early withdrawal penalty).
       </Description>
       <Export mef="true" />
       <Derived>
-        <Dollar>0</Dollar>
+        <Dependency path="/form8960Line10" />
       </Derived>
     </Fact>
 

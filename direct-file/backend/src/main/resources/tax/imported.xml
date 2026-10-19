@@ -799,7 +799,6 @@
       <Derived>
         <Any>
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
-          <Dependency module="interest" path="/flowKnockoutHasEarlyWithdrawlPenalty" />
           <Dependency module="interest" path="/flowKnockoutHasForeignTaxPaid" />
           <Dependency module="interest" path="/flowKnockoutTaxExemptInterest" />
           <Dependency module="interest" path="/flowKnockoutHasBonds" />

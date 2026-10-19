@@ -19,7 +19,6 @@
           <Dependency module="filers" path="/flowKnockoutHasApplicableRegisteredDomesticPartnership" />
           <Dependency module="filers" path="/knockoutSubjectToCommunityPropertyLaws" />
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
-          <Dependency module="interest" path="/flowKnockoutHasEarlyWithdrawlPenalty" />
           <Dependency module="interest" path="/flowKnockoutHasBonds" />
           <Dependency module="interest" path="/flowKnockoutHasForeignTaxPaid" />
           <Dependency module="interest" path="/flowKnockoutWithholdingUnsupportedState" />

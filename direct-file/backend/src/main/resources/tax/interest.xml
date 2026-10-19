@@ -671,23 +671,27 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutHasEarlyWithdrawlPenalty">
-      <Name>Knockout Has Early Withdrawl Penalty</Name>
-      <Description>Whether user is knocked out for having a early withdrawl penalty. Happens if the user has more than
-        $0 in early withdrawl penalty (box 2) across all their 1099-INTs.</Description>
-      <Export downstreamFacts="true" />
+    <Fact path="/earlyWithdrawalPenaltyTotal">
+      <Name>Penalty on early withdrawal of savings (Schedule 1 line 18)</Name>
+      <Description>
+        26 U.S.C. 62(a)(9) (https://www.law.cornell.edu/uscode/text/26/62#a_9) allows, above the line, "The deductions allowed by section 165 for losses incurred in any transaction
+        entered into for profit, though not connected with a trade or business, to the extent that such losses
+        include amounts forfeited to a bank, mutual savings bank, savings and loan association, building and loan
+        association, cooperative bank or homestead association as a penalty for premature withdrawal of funds from
+        a time savings account, certificate of deposit, or similar class of deposit." Schedule 1 (Form 1040) 2026 draft, line 18:
+        "Penalty on early withdrawal of savings". Instructions for Form 1040 (2026 draft) p. 95 (PDF p. 96),
+        Line 18: "The Form 1099-INT or Form 1099-OID you received will show the amount of any penalty you were
+        charged." The deduction is the sum of 1099-INT box 2 across all interest reports. There is no dollar
+        threshold and no cap at the interest reported in box 1: 62(a)(9) limits the deduction only to the amount
+        forfeited. Form 1099-OID is not an input in the app (listed under unsupported income sources), so box 3 of
+        a 1099-OID never reaches this line.
+      </Description>
+      <Export downstreamFacts="true" mef="true" />
 
       <Derived>
-        <GreaterThan>
-          <Left>
-            <CollectionSum>
-              <Dependency path="/interestReports/*/earlyWithdrawlPenaltyAmount" />
-            </CollectionSum>
-          </Left>
-          <Right>
-            <Dollar>0</Dollar>
-          </Right>
-        </GreaterThan>
+        <CollectionSum>
+          <Dependency path="/interestReports/*/earlyWithdrawlPenaltyAmount" />
+        </CollectionSum>
       </Derived>
     </Fact>
 

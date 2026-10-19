@@ -311,23 +311,40 @@ describe(`Form 8960 NIIT (#83): stops instead of zeros (BlockSubmissionOnTrue, /
   });
 });
 
-describe(`Form 8960 NIIT (#83): line 10 guard for Schedule 1 line 18 (early withdrawal penalty)`, () => {
+describe(`Form 8960 NIIT: line 10 carries Schedule 1 line 18 (early withdrawal penalty)`, () => {
   // i8960 (2026 draft) p. 13 (PDF p. 14): "The early withdrawal penalty reported on Schedule 1 (Form 1040), line 18,
-  // is reported on Form 8960, line 10." Treas. Reg. 1.1411-4(f)(2)(iii) (section 62(a)(9) penalty is properly
-  // allocable): https://www.law.cornell.edu/cfr/text/26/1.1411-4
-  // The app doesn't populate Schedule 1 line 18: a 1099-INT box 2 penalty knocks out, so line 10 stays $0.
-  // If this test starts failing because the penalty is now supported, wire Schedule 1 line 18 into Form 8960 line 10.
-  it(`1099-INT box 2 penalty over the threshold: knocked out, never a $0 line 10`, ({ task }) => {
-    task.meta.testedFactPaths = [`/form8960Line11`, `/flowKnockoutHasEarlyWithdrawlPenalty`, `/flowIsKnockedOut`];
+  // is reported on Form 8960, line 10." Treas. Reg. 1.1411-4(f)(2)(iii): "Deductions described in section 62(a)(9)
+  // are taken into account in determining net investment income". https://www.law.cornell.edu/cfr/text/26/1.1411-4
+  it(`single, $260,000 wages, $10,000 interest, $150 box 2 penalty: line 10 $150, NII $9,850, tax $374`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8960Line10`,
+      `/form8960Line11`,
+      `/form8960Line12`,
+      `/form8960Line13`,
+      `/form8960Line15`,
+      `/form8960Line16`,
+      `/form8960Line17`,
+      `/flowIsKnockedOut`,
+    ];
     const g = graph(status(`single`), 260000, 10000, {
       [`/interestReports/#${intId}/writableEarlyWithdrawlPenaltyAmount`]: createDollarWrapper(`150`),
     });
-    expect(val(g, `/flowKnockoutHasEarlyWithdrawlPenalty`)).toBe(true);
-    expect(val(g, `/flowIsKnockedOut`)).toBe(true);
-    expect(dollars(g, `/form8960Line11`)).toBe(`0.00`);
+    expect(dollars(g, `/form8960Line10`)).toBe(`150.00`);
+    expect(dollars(g, `/form8960Line11`)).toBe(`150.00`);
+    // Line 12 = line 8 $10,000 - line 11 $150.
+    expect(dollars(g, `/form8960Line12`)).toBe(`9850.00`);
+    // MAGI = AGI = $260,000 + $10,000 - $150 (Schedule 1 line 18, 26 U.S.C. 62(a)(9)).
+    expect(dollars(g, `/form8960Line13`)).toBe(`269850.00`);
+    expect(dollars(g, `/form8960Line15`)).toBe(`69850.00`);
+    expect(dollars(g, `/form8960Line16`)).toBe(`9850.00`);
+    // 26 U.S.C. 1411(a)(1): 3.8% x $9,850 = $374.30, entered in whole dollars like the other Schedule 2 lines.
+    expect(dollars(g, `/form8960Line17`)).toBe(`374.00`);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(false);
   });
-  it(`no penalty: not knocked out by the penalty stop`, () => {
+  it(`no penalty: line 10 and line 11 are $0`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8960Line10`, `/form8960Line11`];
     const g = graph(status(`single`), 260000, 10000);
-    expect(val(g, `/flowKnockoutHasEarlyWithdrawlPenalty`)).toBe(false);
+    expect(dollars(g, `/form8960Line10`)).toBe(`0.00`);
+    expect(dollars(g, `/form8960Line11`)).toBe(`0.00`);
   });
 });
