@@ -189,7 +189,7 @@
     <Fact path="/tentativeTaxFromTaxableIncome">
       <Name>Tentative tax from taxable income</Name>
       <Description>Tax as reported on Form 1040 line 16: QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 25 when it applies, otherwise Tax Table / Tax Computation Worksheet on line 15 (Rev. Proc. 2025-32 §4.01 pp.10–12 rates).</Description>
-      <Export mef="true" />
+      <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
         <Round><Switch><Case><When><Dependency path="/usesQdcgTaxWorksheet" /></When><Then><Dependency path="/qdcgLine25" /></Then></Case><Case><When><True /></When><Then><Dependency module="taxCalculations" path="/taxOnTaxableIncomeRegularRates" /></Then></Case></Switch></Round>

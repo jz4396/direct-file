@@ -27,6 +27,8 @@ import form6251En from './en.form6251.yaml';
 import form6251Es from './es.form6251.yaml';
 import paPitEn from './en.paPit.yaml';
 import paPitEs from './es.paPit.yaml';
+import dividendsEn from './en.dividends.yaml';
+import dividendsEs from './es.dividends.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -40,8 +42,7 @@ export function deepMerge(base: Tree, over: Tree): Tree {
   return out;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const enLocale: any = deepMerge(
+const enCore: Tree = deepMerge(
   deepMerge(
     deepMerge(
       deepMerge(
@@ -67,7 +68,8 @@ export const enLocale: any = deepMerge(
   paPitEn as Tree
 );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const esLocale: any = deepMerge(
+export const enLocale: any = deepMerge(enCore, dividendsEn as Tree);
+const esCore: Tree = deepMerge(
   deepMerge(
     deepMerge(
       deepMerge(
@@ -92,3 +94,5 @@ export const esLocale: any = deepMerge(
   ),
   paPitEs as Tree
 );
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const esLocale: any = deepMerge(esCore, dividendsEs as Tree);

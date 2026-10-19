@@ -17,7 +17,8 @@
 #       (/incomeSourcesSupported = false is part of /flowIsKnockedOut); the app has no Schedule 1 line 1 or 8z input.
 #   2c-2t, 3  AMT adjustments and preferences: /flowKnockoutAmtPreferenceItems (/hasAmtPreferenceItems). Line 2g
 #       (private activity bond interest, 1099-INT box 9) is also /flowKnockoutHasBonds.
-#   8   AMT foreign tax credit: /flowKnockoutHasForeignTaxPaid.
+#   8   AMT foreign tax credit: 1099-INT foreign tax /flowKnockoutHasForeignTaxPaid; 1099-DIV foreign tax
+#       /flowKnockoutDividendForeignTaxPaid whenever line 7 > $0 (always true when this form prints).
 #   14  Schedule D line 19 (unrecaptured §1250 gain): /flowKnockoutUnrecaptured1250Gain.
 #   35-37  "If line 14 is zero or blank, skip lines 35 through 37" (line 37 is 0 in line 38).
 #   33-34  blank when "lines 32 and 12 are the same, skip lines 33 through 37" (Irs6251PdfForm).

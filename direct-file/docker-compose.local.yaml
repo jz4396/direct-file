@@ -1,0 +1,105 @@
+# One-command local stack: interview client + backend API (PDF download)
+# behind the CSP simulator, with the services the API needs at startup.
+#
+# Use via scripts/local-docker.sh, which runs:
+#   docker compose -f docker-compose.yaml -f docker-compose.local.yaml up -d --build --wait <services>
+#
+# Differences from docker-compose.yaml alone:
+# - third-party images are pinned by digest
+# - database and localstack state live in named volumes (works on Linux
+#   hosts without host-side chown, and `down -v` wipes them)
+# - localstack does not get the host Docker socket (no Lambda locally)
+# - the CSP simulator reaches the API and client over the compose network
+# - the client container is enabled, runs nginx as a non-root user
+# - API gets a health check, so `--wait` returns once it is serving
+# - API and client images build with SKIP_CHECKS=true (no tests, spotless or
+#   type check in the image build); without the overlay they run as usual
+services:
+  db:
+    image: postgres:15@sha256:c961aa287d8698297cb26cdfadfbe9fd2cbaf77e53cfffe9636e8d8a1e4d842c
+    user: "999:999"
+    entrypoint: !reset []
+    command: !reset []
+    restart: "no"
+    volumes: !override
+      - "./docker/db/postgres/init:/docker-entrypoint-initdb.d:ro"
+      - "df-db-data:/var/lib/postgresql/data"
+
+  redis:
+    image: redis:7.0@sha256:352c1fdadc91926edda08f45aeb3f27f37194c2f14101229c0523a11195c96e3
+    user: "999:999"
+
+  localstack:
+    image: localstack/localstack:4.14.0@sha256:3ebc37595918b8accb852f8048fef2aff047d465167edd655528065b07bc364a
+    environment:
+      - LOCALSTACK_HOST=localstack
+      - SERVICES=s3,sqs,sqs-query,kms,sns,iam,logs
+      - DISABLE_EVENTS=1
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:4566/_localstack/init/ready | grep -q '\"completed\": true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 20s
+    volumes: !override
+      - "localstack-data:/var/lib/localstack"
+      - ./docker/localstack/localstack-script.sh:/etc/localstack/init/ready.d/script.sh:ro
+      - ./docker/localstack/policies:/etc/localstack/policies:ro
+      - ./backend/docker/localstack/feature-flags.json:/etc/localstack/init/ready.d/feature-flags.json:ro
+      - ./state-api/docker/localstack/sample-tax-return.xml:/etc/localstack/init/ready.d/sample-tax-return.xml:ro
+      - ./state-api/docker/localstack/fakestate.cer:/etc/localstack/init/ready.d/fakestate.cer:ro
+      - ./state-api/docker/localstack/fakestate_expired.cer:/etc/localstack/init/ready.d/fakestate_expired.cer:ro
+
+  api:
+    build:
+      args:
+        SKIP_CHECKS: "true"
+    environment:
+      LOCAL_WRAPPING_KEY: "${LOCAL_WRAPPING_KEY:?set LOCAL_WRAPPING_KEY (scripts/local-docker.sh generates one)}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/df/file/api/actuator/health | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  csp-simulator:
+    environment:
+      CSPSIM_BACKEND_BASE_URL: "http://api:8080"
+      CSPSIM_CLIENT_BASE_URL: "http://df-client:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+      df-client:
+        condition: service_healthy
+
+  df-client:
+    container_name: direct-file-app
+    build:
+      context: ./df-client
+      dockerfile: Dockerfile-local
+      additional_contexts:
+        backend: ./backend
+      args:
+        DF_CLIENT_PUBLIC_PATH: "/df/file"
+        DF_API_PUBLIC_PATH: "/df/file/api"
+        DF_API_PORT: "${DF_CSPSIM_PORT:-5000}"
+        ENABLE_EGAIN_CHAT: "0"
+        SKIP_CHECKS: "true"
+    user: "101:101"
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:uid=101,gid=101
+      - /var/run:uid=101,gid=101
+      - /tmp:uid=101,gid=101
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://127.0.0.1:3000/df/file/"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    ports:
+      - "${DF_LISTEN_ADDRESS:-127.0.0.1}:${DF_FE_PORT:-3000}:3000"
+
+volumes:
+  df-db-data:
+  localstack-data:

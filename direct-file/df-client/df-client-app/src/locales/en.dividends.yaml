@@ -1,0 +1,220 @@
+# Form 1099-DIV strings (#86 part a). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/dividends:
+    div-income-basic-info: Dividend information
+    div-income-amounts: Dividend amounts
+    div-income-tax-withheld: Federal income tax withheld
+    div-income-other-boxes: Other boxes
+headings:
+  /heading/knockout/form-8615: This tool doesn’t yet support the tax on a child’s unearned income (Form 8615)
+  /heading/income/dividends/box-7-election: Do all of these apply to the foreign tax on your Forms 1099-DIV?
+  /heading/income/dividends: Dividends
+  /heading/income/dividends/intro: Did you receive any dividends in {{/taxYear}}?
+  /heading/income/dividends/add-whose: Whose 1099-DIV is it?
+  /heading/income/dividends/payer: Enter the name of the payer from your 1099-DIV.
+  /heading/income/dividends/boxes-1a-1b: Enter the amounts from <strong>boxes 1a and 1b</strong>.
+  /heading/income/dividends/holding-period: Are any of the qualified dividends in box 1b not actually qualified?
+  /heading/income/dividends/box-2a: Enter the amount from <strong>box 2a</strong>, if any.
+  /heading/income/dividends/box-3: Enter the amount from <strong>box 3</strong>, if any.
+  /heading/income/dividends/box-3-basis: Is the amount in box 3 more than your cost (basis) in the shares?
+  /heading/income/dividends/box-4: Enter the amount from <strong>box 4</strong>, if any.
+  /heading/income/dividends/box-5: Enter the amount from <strong>box 5</strong>, if any.
+  /heading/income/dividends/box-7: Enter the amount from <strong>box 7</strong>, if any.
+  /heading/income/dividends/unsupported-boxes: Does this 1099-DIV show anything in any other box?
+  /heading/income/dividends/nominee: Did you receive any of these dividends for someone else (as a nominee)?
+  /heading/knockout/dividends-holding-period: This tool doesn’t yet support box 1b dividends that aren’t qualified
+  /heading/knockout/dividends-capital-gain-distributions: This tool doesn’t yet support capital gain distributions
+  /heading/knockout/dividends-nondividend-over-basis:
+    This tool doesn’t yet support nondividend distributions above your basis
+  /heading/knockout/dividends-section-199a: This tool doesn’t yet support section 199A dividends
+  /heading/knockout/dividends-amounts-inconsistent: Check the amounts you entered from this 1099-DIV
+  /heading/knockout/dividends-foreign-tax: This tool doesn’t yet support foreign tax that needs Form 1116
+  /heading/knockout/dividends-unsupported-boxes: This tool doesn’t yet support some boxes on your 1099-DIV
+  /heading/knockout/dividends-nominee: This tool doesn’t yet support dividends received as a nominee
+info:
+  /info/knockout/form-8615:
+    alertText:
+      body:
+        - p:
+            If you were under 24 at the end of the year and had more than $2,700 of interest, dividends, and other
+            unearned income, part of it may be taxed at your parent’s rate on Form 8615. This tool doesn’t figure that
+            yet.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/income/dividends/box-7-election:
+    body:
+      - ul:
+          - li:
+              All of your income from outside the U.S. was interest and dividends reported on Forms 1099-INT or
+              1099-DIV.
+          - li: You held the shares for at least 16 days and didn’t have to pay these dividends to someone else.
+          - li: You aren’t filing Form 4563 or excluding income from sources in Puerto Rico.
+          - li:
+              The foreign tax was legally owed, wasn’t eligible for a refund or lower treaty rate, and was paid to a
+              country that is recognized by the United States and doesn’t support terrorism.
+      - p:
+          If all of these apply and your total foreign tax is $300 or less ($600 or less if married filing jointly), you
+          can claim it as a credit on Schedule 3 without Form 1116.
+  /info/income/dividends/intro:
+    body:
+      - p:
+          Add each Form 1099-DIV you received in {{/taxYear}}. Brokerages, mutual funds, and companies that paid you
+          dividends send this form.
+  /info/income/dividends/payer:
+    body: The payer’s name is in the top left corner of the form.
+  /info/income/dividends/boxes-1a-1b:
+    body:
+      - p:
+          Box 1a is your total ordinary dividends. Box 1b is the part of box 1a that may be qualified dividends. Leave
+          box 1b blank if it’s empty on your form.
+  /info/income/dividends/holding-period:
+    body:
+      - p:
+          Dividends in box 1b aren’t qualified if you held the shares for 60 days or less during the 121-day period that
+          began 60 days before the ex-dividend date (90 days or less in a 181-day period for some preferred stock), or
+          if you had to make related payments, such as for a short sale. Answer yes if any of these apply.
+  /info/income/dividends/box-2a:
+    body: Box 2a is total capital gain distributions from a mutual fund or real estate investment trust.
+  /info/income/dividends/box-3:
+    body: Box 3 is a return of capital (nondividend distributions). It isn’t income until it is more than your cost.
+  /info/income/dividends/box-3-basis:
+    body:
+      - p:
+          Your cost (basis) is what you paid for the shares, reduced by any earlier nondividend distributions. Answer
+          yes if this year’s box 3 amount is more than what’s left of your cost.
+  /info/income/dividends/box-4:
+    body: Box 4 is federal income tax withheld (backup withholding).
+  /info/income/dividends/box-5:
+    body: Box 5 is section 199A dividends, which may qualify for the qualified business income deduction.
+  /info/income/dividends/box-7:
+    body: Box 7 is foreign tax paid on these dividends.
+  /info/income/dividends/unsupported-boxes:
+    body:
+      - p:
+          "Answer yes if your form shows an amount in box 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 12, 13, 14, 15, or 16, a country
+          in box 8, or a check in box 11 (FATCA filing requirement)."
+  /info/income/dividends/nominee:
+    body:
+      - p:
+          You’re a nominee if the form includes dividends that actually belong to someone else, such as a family member
+          who shares the account.
+  /info/income/dividends/secondary-filer-income-without-mfj:
+    alertText:
+      heading: Remove {{/secondaryFiler/firstName}}’s dividends to continue
+      body:
+        - p: >-
+            You changed your filing status from Married Filing Jointly to {{/filingStatusCapitalized}}. You need to
+            remove {{/secondaryFiler/firstName}}’s dividends from your tax return to continue.
+  /info/knockout/dividends-holding-period:
+    alertText:
+      body:
+        - p:
+            Dividends that don’t meet the holding period rules are taxed as ordinary dividends, not as qualified
+            dividends. This tool can’t split them out yet. You’ll need another way to file this return.
+  /info/knockout/dividends-capital-gain-distributions:
+    alertText:
+      body:
+        - p:
+            Capital gain distributions are reported on Schedule D or Form 1040, line 7, and taxed at capital gain rates.
+            This tool doesn’t figure that yet. You’ll need another way to file this return.
+  /info/knockout/dividends-nondividend-over-basis:
+    alertText:
+      body:
+        - p:
+            Nondividend distributions above your cost are a capital gain reported on Form 8949. This tool doesn’t
+            support that yet. You’ll need another way to file this return.
+  /info/knockout/dividends-section-199a:
+    alertText:
+      body:
+        - p:
+            Section 199A dividends go on Form 8995 for the qualified business income deduction, which this tool doesn’t
+            support yet. You’ll need another way to file this return.
+  /info/knockout/dividends-amounts-inconsistent:
+    alertText:
+      body:
+        - p:
+            Boxes 1b and 5 are parts of box 1a, so neither can be more than box 1a. Go back and check the amounts you
+            entered. If they match your form, you’ll need another way to file this return.
+  /info/knockout/dividends-foreign-tax:
+    alertText:
+      body:
+        - p:
+            Your foreign tax needs Form 1116 to be claimed as a credit, which this tool doesn’t support yet. You’ll need
+            another way to file this return.
+  /info/knockout/dividends-unsupported-boxes:
+    alertText:
+      body:
+        - p:
+            This tool supports only boxes 1a, 1b, 2a, 3, 4, 5, and 7 of Form 1099-DIV. You’ll need another way to file
+            this return.
+  /info/knockout/dividends-nominee:
+    alertText:
+      body:
+        - p:
+            Nominee dividends are subtracted on Schedule B, which this tool doesn’t support for dividends yet. You’ll
+            need another way to file this return.
+fields:
+  /dividendReports:
+    controls:
+      add: Add a 1099-DIV
+      complete_zero: I don’t have any Forms 1099-DIV to add
+      complete: I’m done adding Forms 1099-DIV
+      back: Go to dividends list
+    collectionListing:
+      itemHeading1: "{{/dividendReports/*/payer}}"
+      itemHeading2: "{{/dividendReports/*/filer/fullName}}’s dividends"
+      label1: Paid to {{/dividendReports/*/filer/fullName}}
+      label2: Ordinary dividends
+      value2: <strong>{{/dividendReports/*/ordinaryDividends}}</strong>
+    deleteControl:
+      text: <LinkModal1>Remove 1099-DIV</LinkModal1>
+      LinkModal1:
+        header: Are you sure you want to remove this 1099-DIV from your tax return?
+        body:
+          - p: This can’t be undone. If you change your mind later, you’ll have to type in all the information again.
+        controls:
+          confirm: Remove this 1099-DIV from my tax return
+          cancel: Cancel
+  /dividendReports/*/filer:
+    item: "{{/filers/*/firstName}} {{/filers/*/lastName}}"
+  /dividendReports/*/payer:
+    name: Payer name
+  /dividendReports/*/ordinaryDividends:
+    name: <strong>Box 1a</strong> - Total ordinary dividends
+  /dividendReports/*/writableQualifiedDividends:
+    name: <strong>Box 1b</strong> - Qualified dividends
+  /dividendReports/*/writableCapitalGainDistributions:
+    name: <strong>Box 2a</strong> - Total capital gain distributions
+  /dividendReports/*/writableNondividendDistributions:
+    name: <strong>Box 3</strong> - Nondividend distributions
+  /dividendReports/*/writableFederalTaxWithheld:
+    name: <strong>Box 4</strong> - Federal income tax withheld
+  /dividendReports/*/writableSection199ADividends:
+    name: <strong>Box 5</strong> - Section 199A dividends
+  /dividendReports/*/writableForeignTaxPaid:
+    name: <strong>Box 7</strong> - Foreign tax paid
+checklist:
+  /flow/income/dividends:
+    heading: Dividends (Form 1099-DIV)
+    dataItems:
+      dividendsTaxable: "Ordinary dividends: {{/ordinaryDividends}}"
+      dividendsNone: "None reported"
+dataviews:
+  /flow/income/dividends:
+    /dividendReports/*/filer/fullName: Whose 1099-DIV is it?
+    /dividendReports/*/payer: Payer name
+    /dividendReports/*/ordinaryDividends: Box 1a - Total ordinary dividends
+    /dividendReports/*/writableQualifiedDividends: Box 1b - Qualified dividends
+    /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet: Are any box 1b dividends not qualified?
+    /dividendReports/*/writableCapitalGainDistributions: Box 2a - Total capital gain distributions
+    /dividendReports/*/writableNondividendDistributions: Box 3 - Nondividend distributions
+    /dividendReports/*/nondividendDistributionsExceedBasis: Is box 3 more than your basis?
+    /dividendReports/*/writableFederalTaxWithheld: Box 4 - Federal income tax withheld
+    /dividendReports/*/writableSection199ADividends: Box 5 - Section 199A dividends
+    /dividendReports/*/writableForeignTaxPaid: Box 7 - Foreign tax paid
+    /dividendReports/*/foreignTaxElectionRequirementsMet: Do all of the foreign tax requirements apply?
+    /dividendReports/*/hasUnsupportedBoxes: Does this 1099-DIV show anything in another box?
+    /dividendReports/*/receivedAsNominee: Did you receive any of these dividends as a nominee?
+    primaryFiler: Your dividends
+    secondaryFiler: Your spouse’s dividends

@@ -725,7 +725,6 @@ info:
               Regalos mayores de $100,000 de parte de patrimonios en el extranjero o no residentes
       - h3: Inversiones
       - ul:
-          - li: Dividendos (Formulario 1099-DIV)
           - li: Ganancias o pérdidas de capital (Formularios 1099-B y 1099-S)
           - li: Descuento de emisión original (Formulario 1099-OID)
           - li: Patrimonios y fideicomisos
@@ -15398,10 +15397,11 @@ info:
   /info/income/income-supported-list: >-
     <li>Ingresos obtenidos como empleado(a) en {{/filerResidenceAndIncomeState}} (Formulario W-2)</li> <li>Compensación
     por desempleo de {{/filerResidenceAndIncomeState}} (Formulario 1099-G)</li> <li>Ingresos de intereses (Formulario
-    1099-INT)</li> <li>Aportaciones y distribuciones de una Cuenta de ahorros para la salud (HSA) (Formulario
-    1099-SA)</li> <li>Beneficios de Seguro Social (Formulario SSA-1099)</li> <li>Dividendo del Fondo Permanente de
-    Alaska (PFD)</li> <li> Distribuciones de planes de jubilación patrocinados por un empleador, como los 401(k),
-    pensiones, anualidades, planes 403(b), o planes 457(b) gubernamentales (Formulario 1099-R)</li>
+    1099-INT)</li> <li>Dividendos (Formulario 1099-DIV)</li> <li>Aportaciones y distribuciones de una Cuenta de ahorros
+    para la salud (HSA) (Formulario 1099-SA)</li> <li>Beneficios de Seguro Social (Formulario SSA-1099)</li>
+    <li>Dividendo del Fondo Permanente de Alaska (PFD)</li> <li> Distribuciones de planes de jubilación patrocinados por
+    un empleador, como los 401(k), pensiones, anualidades, planes 403(b), o planes 457(b) gubernamentales (Formulario
+    1099-R)</li>
   /info/complete/sign-and-submit/tax-owed-pay-now-pending:
     body:
       - p: >-
