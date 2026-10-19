@@ -343,10 +343,12 @@
         before they might be
         entitely to a refund on social security payments.
         https://www.ssa.gov/oact/cola/cbb.html
+        #91: TY2026 $184,500 (SSA: "For earnings in 2026, this base is $184,500."; same value as
+        scheduleSE.xml /socialSecurityWageBaseTy2026).
       </Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>168600</Dollar>
+        <Dollar>184500</Dollar>
       </Derived>
     </Fact>
 
