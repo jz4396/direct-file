@@ -99,6 +99,7 @@ Lines that do not have / in column 1 are comments.
 /dependentCreditNotFullyPhasedOut
 /dependentCreditPhaseout
 /dependentCreditPhaseoutThreshold
+/earlyWithdrawalPenaltyTotal
 /earnedIncomeAboveActcRefundabilityThreshold
 /earnedIncomeCredit
 /earnedIncomeExceedsActcRefundabilityThreshold
