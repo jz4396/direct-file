@@ -29,6 +29,8 @@ import paPitEn from './en.paPit.yaml';
 import paPitEs from './es.paPit.yaml';
 import dividendsEn from './en.dividends.yaml';
 import dividendsEs from './es.dividends.yaml';
+import saveStateEn from './en.saveState.yaml';
+import saveStateEs from './es.saveState.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -96,3 +98,11 @@ const esCore: Tree = deepMerge(
 );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const esLocale: any = deepMerge(esCore, dividendsEs as Tree);
+
+// Later overlays are merged onto the exported trees in place, so adding one doesn't re-nest the chains above.
+for (const [locale, overlay] of [
+  [enLocale, saveStateEn],
+  [esLocale, saveStateEs],
+] as const) {
+  Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
+}

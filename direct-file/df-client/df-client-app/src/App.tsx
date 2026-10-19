@@ -20,6 +20,7 @@ import LoadingVerify from './pages/LoadingVerify.js';
 import { v4 as uuidv4 } from 'uuid';
 import ResetTaxReturns from './auth/Account/ResetTaxReturns.js';
 import PreviewTaxReturns from './auth/Account/PreviewTaxReturns.js';
+import DeviceDataPage from './saveState/DeviceDataPage.js';
 import { ScreenHeader } from './screens/ScreenHeader.js';
 import { SystemAlertContextProvider } from './context/SystemAlertContext/SystemAlertContext.js';
 import { TaxReturnsContextProvider } from './context/TaxReturnsContext.js';
@@ -185,6 +186,16 @@ function App() {
                                   <TaxProfileContextOrSpinnerGate>
                                     <main id='main' tabIndex={-1}>
                                       <PreviewTaxReturns />
+                                    </main>
+                                  </TaxProfileContextOrSpinnerGate>
+                                }
+                              />
+                              <Route
+                                path='/account/device-data'
+                                element={
+                                  <TaxProfileContextOrSpinnerGate>
+                                    <main id='main' tabIndex={-1}>
+                                      <DeviceDataPage />
                                     </main>
                                   </TaxProfileContextOrSpinnerGate>
                                 }
