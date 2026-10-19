@@ -156,6 +156,21 @@ Builds the app for production to the `build` folder.
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
+### Response headers for hosting
+
+`index.html` carries the Content Security Policy as a `<meta>` tag (see `src/saveState/contentSecurityPolicy.ts`). A
+`<meta>` CSP can't carry `frame-ancestors`, so whatever serves the client must send these two response headers on
+every response, so that no other site can frame the app (clickjacking):
+
+```
+Content-Security-Policy: frame-ancestors 'none'
+X-Frame-Options: DENY
+```
+
+`X-Frame-Options` covers browsers that don't support `frame-ancestors`. The local nginx in `Dockerfile-local` sends
+both (`add_header ... always`, so error responses get them too). `src/saveState/frameHeaders.test.ts` checks that
+config. A production host or CDN needs the same headers, and should keep `X-Content-Type-Options: nosniff`.
+
 ## Integrating changes from Scala
 
 1. Build your scala changes in `fact-graph-scala` with `sbt fastOptJS`

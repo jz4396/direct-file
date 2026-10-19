@@ -10,6 +10,15 @@ import { createSaveState, DEFAULT_TAX_YEAR, migrateSaveState, parseJson, SaveSta
  * it. With a passphrase the file is an AES-GCM envelope (see saveStateCrypto.ts).
  */
 export const SAVE_FILE_MIME = `application/json`;
+/**
+ * Largest save file accepted, checked on `File.size` before reading and on the text length again here. A real fact
+ * graph is tens of KB (about twice that once encrypted and base64-encoded), so 1 MB leaves plenty of room.
+ */
+export const MAX_SAVE_FILE_BYTES = 1_000_000;
+
+const assertSize = (text: string) => {
+  if (text.length > MAX_SAVE_FILE_BYTES) throw new SaveStateError(`file-too-large`);
+};
 
 export interface ExportOptions {
   taxYear?: number;
@@ -43,9 +52,11 @@ export async function exportSaveFile(facts: unknown, opts: ExportOptions = {}): 
 
 /** Parse, decrypt (if needed), migrate and validate a save file's text. */
 export async function importSaveFile(text: string, passphrase?: string): Promise<SaveState> {
+  assertSize(text);
   const raw = parseJson(text);
   if (isEncryptedEnvelope(raw)) {
     if (!passphrase) throw new SaveStateError(`passphrase-required`);
+    // The envelope is longer than its plaintext, so the size check above covers the decrypted text too.
     return migrateSaveState(parseJson(await decryptText(raw, passphrase)));
   }
   return migrateSaveState(raw);
@@ -59,7 +70,10 @@ export function isEncryptedSaveFile(text: string): boolean {
   }
 }
 
-/** Trigger a browser download of the exported file (object URL, revoked immediately after the click). */
+/**
+ * Trigger a browser download of the exported file. The object URL is revoked on the next task: revoking it in the
+ * same tick as `click()` can cancel the download in some browsers.
+ */
 export function downloadSaveFile(file: ExportedSaveFile) {
   const url = URL.createObjectURL(new Blob([file.text], { type: SAVE_FILE_MIME }));
   try {
@@ -71,6 +85,6 @@ export function downloadSaveFile(file: ExportedSaveFile) {
     a.click();
     a.remove();
   } finally {
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   }
 }

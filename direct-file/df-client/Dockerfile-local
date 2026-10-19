@@ -65,6 +65,10 @@ http {\n\
     	root /static;\n\
     	gzip_static on;\n\
     	add_header X-Content-Type-Options nosniff;\n\
+    	# no framing by any origin (clickjacking): CSP frame-ancestors, plus X-Frame-Options for older browsers.\n\
+    	# A <meta> CSP can't carry frame-ancestors, so these must be response headers; production hosting sends the same.\n\
+    	add_header Content-Security-Policy \"frame-ancestors 'none'\" always;\n\
+    	add_header X-Frame-Options DENY always;\n\
     	location ~ ${DF_CLIENT_PUBLIC_PATH}/(assets|favicon|imgs)/ {\n\
     		try_files \$uri =404;\n\
     	}\n\

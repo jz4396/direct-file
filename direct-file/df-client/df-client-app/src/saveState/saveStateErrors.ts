@@ -6,6 +6,8 @@
  */
 export type SaveStateErrorCode =
   | `invalid-file`
+  | `file-too-large`
+  | `wrong-tax-year`
   | `unsupported-version`
   | `invalid-facts`
   | `passphrase-required`

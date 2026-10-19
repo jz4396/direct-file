@@ -15,7 +15,8 @@ export const ENCRYPTED_VERSION = 1;
 export const PBKDF2_ITERATIONS = 600_000;
 /** Bounds accepted when reading a file, so a crafted file can't force a trivially weak or a huge KDF cost. */
 export const MIN_PBKDF2_ITERATIONS = 100_000;
-export const MAX_PBKDF2_ITERATIONS = 10_000_000;
+/** 2M is over 3x the 600k we write; much more and PBKDF2 can freeze the tab for many seconds. */
+export const MAX_PBKDF2_ITERATIONS = 2_000_000;
 export const MIN_PASSPHRASE_LENGTH = 12;
 
 const SALT_BYTES = 16;
@@ -55,9 +56,13 @@ function headerAad(e: Omit<EncryptedEnvelope, `ciphertext`>): Uint8Array {
   return new TextEncoder().encode(JSON.stringify(h));
 }
 
+/** True when the passphrase is long enough to encrypt with (see assertPassphrase). */
+export const isPassphraseLongEnough = (passphrase: string) => passphrase.trim().length >= MIN_PASSPHRASE_LENGTH;
+
 export function assertPassphrase(passphrase: string | undefined): asserts passphrase is string {
   if (!passphrase) throw new SaveStateError(`passphrase-required`);
-  if (passphrase.length < MIN_PASSPHRASE_LENGTH) throw new SaveStateError(`passphrase-too-short`);
+  // Length is counted without leading and trailing spaces, so a passphrase of only spaces is too short.
+  if (passphrase.trim().length < MIN_PASSPHRASE_LENGTH) throw new SaveStateError(`passphrase-too-short`);
 }
 
 async function deriveKey(passphrase: string, salt: Uint8Array, iterations: number, usage: KeyUsage) {

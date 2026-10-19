@@ -3,6 +3,7 @@ import {
   decryptText,
   encryptText,
   EncryptedEnvelope,
+  isPassphraseLongEnough,
   MAX_PBKDF2_ITERATIONS,
   MIN_PBKDF2_ITERATIONS,
   PBKDF2_ITERATIONS,
@@ -76,5 +77,17 @@ describe(`save-state encryption (PBKDF2 + AES-GCM)`, () => {
   it(`requires a passphrase of at least 12 characters to encrypt`, async () => {
     expect(await codeOf(encryptText(secret, ``, TEST_ITERATIONS))).toBe(`passphrase-required`);
     expect(await codeOf(encryptText(secret, `short`, TEST_ITERATIONS))).toBe(`passphrase-too-short`);
+  });
+
+  it(`does not count leading or trailing spaces toward the minimum length`, async () => {
+    expect(await codeOf(encryptText(secret, ` `.repeat(12), TEST_ITERATIONS))).toBe(`passphrase-too-short`);
+    expect(await codeOf(encryptText(secret, `  short pass  `, TEST_ITERATIONS))).toBe(`passphrase-too-short`);
+    expect(isPassphraseLongEnough(` `.repeat(40))).toBe(false);
+    expect(isPassphraseLongEnough(PASSPHRASE)).toBe(true);
+  });
+
+  it(`caps the iteration count a file can ask for at 2,000,000`, () => {
+    expect(MAX_PBKDF2_ITERATIONS).toBe(2_000_000);
+    expect(PBKDF2_ITERATIONS).toBeLessThan(MAX_PBKDF2_ITERATIONS);
   });
 });

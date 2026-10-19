@@ -52,6 +52,8 @@ account:
       done: Se borraron de este navegador todos los datos de este sitio.
     errors:
       invalid-file: Ese archivo no es un archivo guardado de esta herramienta.
+      file-too-large: Ese archivo es demasiado grande para ser un archivo guardado de esta herramienta.
+      wrong-tax-year: Ese archivo guardado es de un año tributario distinto al de la declaración que está presentando.
       unsupported-version: Ese archivo guardado se creó con una versión más nueva de esta herramienta.
       invalid-facts: Ese archivo guardado está dañado y no se puede usar.
       passphrase-required: Ingrese la frase de contraseña de este archivo.

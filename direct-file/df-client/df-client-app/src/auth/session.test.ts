@@ -42,13 +42,13 @@ describe(`session clock`, () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it(`can clear user data and send user to logout url`, () => {
+  it(`can clear user data and send user to logout url`, async () => {
     const clock = new SessionClock();
     window.location.href = `about:blank`;
     sessionStorage.setItem(`email`, `testValue`);
     expect(sessionStorage.getItem(`email`)).toBe(`testValue`);
     expect(window.location.href).toEqual(`about:blank`);
-    clock.terminate();
+    await clock.terminate();
     expect(window.location.href).toEqual(`undefined`);
     expect(sessionStorage.getItem(`email`)).toBe(undefined);
   });

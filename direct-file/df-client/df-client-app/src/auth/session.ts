@@ -38,8 +38,8 @@ export class SessionClock {
   }
 
   /** Send the user to the logout page. */
-  terminate = () => {
-    clearBrowserStorage();
+  terminate = async () => {
+    await clearBrowserStorage();
     window.location.href = `${import.meta.env.VITE_SADI_LOGOUT_URL}`;
   };
 

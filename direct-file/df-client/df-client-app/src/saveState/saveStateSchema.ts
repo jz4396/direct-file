@@ -1,5 +1,6 @@
 import { CURRENT_TAX_YEAR } from '../constants/taxConstants.js';
 import { SaveStateError } from './saveStateErrors.js';
+import { assertFactsMatchDictionary } from './saveStateFacts.js';
 
 /**
  * Versioned save-state document.
@@ -8,7 +9,9 @@ import { SaveStateError } from './saveStateErrors.js';
  *   is what the existing "download fact graph" debug helper writes, so such files can still be imported.
  * - v2: the same facts wrapped in an envelope with a format marker, schema version, tax year and timestamp.
  *
- * Readers call `migrateSaveState`, which upgrades any older version to the current one and validates the shape.
+ * Readers call `migrateSaveState`, which upgrades any older version to the current one and validates it: the tax
+ * year must be the one this build files, and every fact must be a writable fact of this build's dictionary with the
+ * expected persister type (saveStateFacts.ts). Nothing reaches the fact graph, or the API, before that.
  */
 export const SAVE_STATE_FORMAT = `df-save-state`;
 export const SAVE_STATE_VERSION = 2;
@@ -57,11 +60,11 @@ function migrateV1toV2(facts: unknown, taxYear: number): SaveStateV2 {
   return { format: SAVE_STATE_FORMAT, version: 2, taxYear, savedAt: new Date(0).toISOString(), facts };
 }
 
-/** Upgrade any supported save-state document to the current version and validate it. */
-export function migrateSaveState(raw: unknown, defaultTaxYear: number = DEFAULT_TAX_YEAR): SaveState {
+function upgrade(raw: unknown, expectedTaxYear: number): SaveState {
   if (!isPlainObject(raw)) throw new SaveStateError(`invalid-file`);
 
-  if (isV1(raw)) return migrateV1toV2(raw, defaultTaxYear);
+  // A v1 file has no year; it is the bare fact graph of the return being filed.
+  if (isV1(raw)) return migrateV1toV2(raw, expectedTaxYear);
 
   if (raw.format !== SAVE_STATE_FORMAT || typeof raw.version !== `number`) throw new SaveStateError(`invalid-file`);
   if (raw.version > SAVE_STATE_VERSION || raw.version < 2) throw new SaveStateError(`unsupported-version`);
@@ -72,6 +75,17 @@ export function migrateSaveState(raw: unknown, defaultTaxYear: number = DEFAULT_
   }
   if (!isPersistedFacts(facts)) throw new SaveStateError(`invalid-facts`);
   return { format: SAVE_STATE_FORMAT, version: 2, taxYear, savedAt, facts };
+}
+
+/**
+ * Upgrade any supported save-state document to the current version and validate it against the return being filed:
+ * its tax year (`expectedTaxYear`, the year this build files) and this build's fact dictionary.
+ */
+export function migrateSaveState(raw: unknown, expectedTaxYear: number = DEFAULT_TAX_YEAR): SaveState {
+  const state = upgrade(raw, expectedTaxYear);
+  if (state.taxYear !== expectedTaxYear) throw new SaveStateError(`wrong-tax-year`);
+  assertFactsMatchDictionary(state.facts);
+  return state;
 }
 
 export function parseJson(text: string): unknown {

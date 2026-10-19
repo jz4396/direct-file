@@ -66,7 +66,7 @@ describe(`save on this device`, () => {
 
   it(`sign-out (clearBrowserStorage) removes the device save`, async () => {
     await saveToDevice(facts, PASSPHRASE, { iterations: TEST_ITERATIONS });
-    clearBrowserStorage();
+    await clearBrowserStorage();
     expect(hasDeviceSave()).toBe(false);
   });
 

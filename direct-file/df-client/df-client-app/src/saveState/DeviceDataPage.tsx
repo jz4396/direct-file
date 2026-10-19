@@ -4,9 +4,15 @@ import { Alert, Button, Checkbox, Label, TextInput } from '@trussworks/react-usw
 import { useFactGraph, replaceFactGraphWithFacts } from '../factgraph/FactGraphContext.js';
 import { useFlow } from '../flow/flowConfig.js';
 import PageTitle from '../components/PageTitle/index.js';
-import { downloadSaveFile, exportSaveFile, importSaveFile, isEncryptedSaveFile } from './saveStateFile.js';
+import {
+  downloadSaveFile,
+  exportSaveFile,
+  importSaveFile,
+  isEncryptedSaveFile,
+  MAX_SAVE_FILE_BYTES,
+} from './saveStateFile.js';
 import { clearAllDeviceData, hasDeviceSave, loadFromDevice, saveToDevice } from './deviceSaveStore.js';
-import { MIN_PASSPHRASE_LENGTH } from './saveStateCrypto.js';
+import { isPassphraseLongEnough, MIN_PASSPHRASE_LENGTH } from './saveStateCrypto.js';
 import { SaveStateError } from './saveStateErrors.js';
 
 type Status = { type: `success` | `error` | `warning`; key: string } | null;
@@ -62,6 +68,11 @@ const DeviceDataPage = () => {
     const file = e.target.files?.[0];
     setStatus(null);
     if (!file) return setImportFileText(null);
+    // Check the size before reading, so picking a huge file doesn't load it into memory.
+    if (file.size > MAX_SAVE_FILE_BYTES) {
+      setImportFileText(null);
+      return setStatus({ type: `error`, key: errorKey(new SaveStateError(`file-too-large`)) });
+    }
     file.text().then(setImportFileText, () => setStatus({ type: `error`, key: errorKey(null) }));
   };
 
@@ -103,7 +114,7 @@ const DeviceDataPage = () => {
     });
 
   const exportNeedsAck = exportPassphrase.length === 0 && !acceptPlaintext;
-  const exportPassphraseTooShort = exportPassphrase.length > 0 && exportPassphrase.length < MIN_PASSPHRASE_LENGTH;
+  const exportPassphraseTooShort = exportPassphrase.length > 0 && !isPassphraseLongEnough(exportPassphrase);
   const importNeedsPassphrase = importFileText !== null && isEncryptedSaveFile(importFileText);
 
   return (
@@ -186,11 +197,7 @@ const DeviceDataPage = () => {
         value={devicePassphrase}
         onChange={(e: ChangeEvent<HTMLInputElement>) => setDevicePassphrase(e.target.value)}
       />
-      <Button
-        type='button'
-        disabled={busy || devicePassphrase.length < MIN_PASSPHRASE_LENGTH}
-        onClick={handleSaveToDevice}
-      >
+      <Button type='button' disabled={busy || !isPassphraseLongEnough(devicePassphrase)} onClick={handleSaveToDevice}>
         {t(`account.deviceData.device.saveButton`)}
       </Button>
       <Button

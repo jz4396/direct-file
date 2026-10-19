@@ -49,6 +49,8 @@ account:
       done: All data for this site was cleared from this browser.
     errors:
       invalid-file: That file isn’t a save file from this tool.
+      file-too-large: That file is too big to be a save file from this tool.
+      wrong-tax-year: That save file is for a different tax year than the return you’re filing.
       unsupported-version: That save file was made by a newer version of this tool.
       invalid-facts: That save file is damaged and can’t be used.
       passphrase-required: Enter the passphrase for this file.

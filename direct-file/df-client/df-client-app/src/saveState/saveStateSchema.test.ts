@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { InterceptingFactGraph } from '../factgraph/InterceptingFactGraph.js';
 import { SaveStateError } from './saveStateErrors.js';
 import {
@@ -8,7 +8,9 @@ import {
   SAVE_STATE_FORMAT,
   SAVE_STATE_VERSION,
 } from './saveStateSchema.js';
-import { scenarioFactGraphJson } from './saveStateTestUtils.js';
+import { PASSPHRASE, scenarioFactGraphJson, TEST_ITERATIONS } from './saveStateTestUtils.js';
+import { downloadSaveFile, exportSaveFile, importSaveFile, MAX_SAVE_FILE_BYTES } from './saveStateFile.js';
+import { abstractPath } from './saveStateFacts.js';
 
 const code = (fn: () => unknown) => {
   try {
@@ -86,5 +88,88 @@ describe(`save-state schema`, () => {
       }
     })();
     expect(err?.message).toBe(`save-state: invalid-facts`);
+  });
+});
+
+describe(`import validation against the return being filed`, () => {
+  const facts = scenarioFactGraphJson();
+  const B = `gov.irs.factgraph.persisters.`;
+  const v2 = (over: Record<string, unknown> = {}) => ({
+    format: SAVE_STATE_FORMAT,
+    version: 2,
+    taxYear: DEFAULT_TAX_YEAR,
+    savedAt: `2027-02-01T00:00:00.000Z`,
+    facts,
+    ...over,
+  });
+  const importCode = async (raw: unknown, passphrase?: string) => {
+    try {
+      await importSaveFile(typeof raw === `string` ? raw : JSON.stringify(raw), passphrase);
+    } catch (e) {
+      return (e as SaveStateError).code;
+    }
+    return `no-error`;
+  };
+  const filerId = Object.keys(facts)
+    .find((p) => p.startsWith(`/filers/#`))
+    ?.split(`/`)[2];
+
+  it(`accepts the app's own fact graph for the year being filed`, async () => {
+    expect(await importCode(v2())).toBe(`no-error`);
+    expect(Object.keys(facts).length).toBeGreaterThan(20);
+  });
+
+  it.each([1999, 2025, DEFAULT_TAX_YEAR + 1])(`rejects a plaintext file for tax year %i`, async (taxYear) => {
+    expect(await importCode(v2({ taxYear }))).toBe(`wrong-tax-year`);
+  });
+
+  it(`rejects an encrypted file for another tax year (the year is inside the authenticated plaintext)`, async () => {
+    const file = await exportSaveFile(facts, { taxYear: 2025, passphrase: PASSPHRASE, iterations: TEST_ITERATIONS });
+    expect(await importCode(file.text, PASSPHRASE)).toBe(`wrong-tax-year`);
+  });
+
+  it.each([
+    [`an unknown fact`, { ...facts, '/notARealFact': { $type: `${B}BooleanWrapper`, item: true } }],
+    [`/filers stored as a StringWrapper`, { ...facts, '/filers': { $type: `${B}StringWrapper`, item: `x` } }],
+    [`a derived fact`, { ...facts, '/flowIsKnockedOut': { $type: `${B}BooleanWrapper`, item: false } }],
+    [
+      `a Boolean fact with a string item`,
+      { ...facts, '/carLoanHadInterest': { $type: `${B}BooleanWrapper`, item: `yes` } },
+    ],
+    [
+      `an unknown field of a collection item`,
+      { ...facts, [`/filers/#${filerId}/notARealField`]: { $type: `${B}StringWrapper`, item: `x` } },
+    ],
+  ])(`rejects %s with invalid-facts, in a v2 file and a v1 file`, async (_label, bad) => {
+    expect(await importCode(v2({ facts: bad }))).toBe(`invalid-facts`);
+    expect(await importCode(bad)).toBe(`invalid-facts`);
+  });
+
+  it(`rejects a file over ${MAX_SAVE_FILE_BYTES} characters before parsing it`, async () => {
+    const big = JSON.stringify(v2({ padding: `x`.repeat(MAX_SAVE_FILE_BYTES) }));
+    expect(await importCode(big)).toBe(`file-too-large`);
+    expect(await importCode(`{`.repeat(MAX_SAVE_FILE_BYTES + 1))).toBe(`file-too-large`);
+  });
+
+  it(`maps collection item paths to the dictionary's abstract paths`, () => {
+    expect(abstractPath(`/filers/#${filerId}/tin`)).toBe(`/filers/*/tin`);
+    expect(abstractPath(`/a/#1/b/#2/c`)).toBe(`/a/*/b/*/c`);
+  });
+});
+
+describe(`download`, () => {
+  it(`revokes the object URL after the click, not in the same tick`, () => {
+    vi.useFakeTimers();
+    const revoke = vi.fn();
+    URL.createObjectURL = vi.fn(() => `blob:test`) as typeof URL.createObjectURL;
+    URL.revokeObjectURL = revoke;
+    const click = vi.spyOn(HTMLAnchorElement.prototype, `click`).mockImplementation(() => {});
+    downloadSaveFile({ text: `{}`, filename: `f.json`, encrypted: false });
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(revoke).not.toHaveBeenCalled();
+    vi.runAllTimers();
+    expect(revoke).toHaveBeenCalledWith(`blob:test`);
+    click.mockRestore();
+    vi.useRealTimers();
   });
 });

@@ -3,7 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { wrapComponent } from '../test/helpers.js';
 import { setupFactGraph } from '../test/setupFactGraph.js';
 import { DEVICE_SAVE_KEY } from './deviceSaveStore.js';
-import { PASSPHRASE, scenarioFacts } from './saveStateTestUtils.js';
+import { PASSPHRASE, scenarioFactGraphJson, scenarioFacts } from './saveStateTestUtils.js';
+import { MAX_SAVE_FILE_BYTES } from './saveStateFile.js';
+import { DEFAULT_TAX_YEAR, SAVE_STATE_FORMAT } from './saveStateSchema.js';
 
 vi.mock(`react-i18next`, () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -107,5 +109,108 @@ describe(`DeviceDataPage`, () => {
     fireEvent.click(screen.getByRole(`button`, { name: `account.deviceData.device.loadButton` }));
     await waitFor(async () => expect((await status()).textContent).toBe(`account.deviceData.errors.decrypt-failed`));
     expect(replaceFactGraphWithFacts).not.toHaveBeenCalled();
+  });
+});
+
+describe(`DeviceDataPage import validation`, () => {
+  const fetchSpy = vi.fn();
+  const xhrOpen = vi.fn();
+  const facts = scenarioFactGraphJson();
+  const B = `gov.irs.factgraph.persisters.`;
+  const saveFile = (over: Record<string, unknown> = {}) =>
+    JSON.stringify({
+      format: SAVE_STATE_FORMAT,
+      version: 2,
+      taxYear: DEFAULT_TAX_YEAR,
+      savedAt: `2027-02-01T00:00:00.000Z`,
+      facts,
+      ...over,
+    });
+  const pick = (text: string, size = text.length) => {
+    const file = new File([`x`], `save.json`, { type: `application/json` });
+    Object.defineProperty(file, `size`, { value: size });
+    const read = vi.fn(() => Promise.resolve(text));
+    Object.defineProperty(file, `text`, { value: read });
+    fireEvent.change(screen.getByLabelText(`account.deviceData.import.fileLabel`), { target: { files: [file] } });
+    return read;
+  };
+  const importButton = () => screen.getByRole(`button`, { name: `account.deviceData.import.button` });
+  let graphBefore = ``;
+
+  beforeEach(() => {
+    holder.factGraph = setupFactGraph(scenarioFacts).factGraph;
+    graphBefore = holder.factGraph.toJSON();
+    vi.stubGlobal(`fetch`, fetchSpy);
+    vi.spyOn(XMLHttpRequest.prototype, `open`).mockImplementation(xhrOpen);
+    localStorage.setItem(`unrelated`, `kept`);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    localStorage.clear();
+    replaceFactGraphWithFacts.mockReset();
+    fetchSpy.mockReset();
+    xhrOpen.mockReset();
+  });
+
+  /** A rejected import leaves the return, storage and the network untouched. */
+  const expectNothingWritten = () => {
+    expect(replaceFactGraphWithFacts).not.toHaveBeenCalled();
+    expect(holder.factGraph?.toJSON()).toBe(graphBefore);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(xhrOpen).not.toHaveBeenCalled();
+    expect(localStorage.length).toBe(1);
+    expect(localStorage.getItem(DEVICE_SAVE_KEY)).toBeNull();
+  };
+
+  it(`imports a valid save file into the fact graph`, async () => {
+    render(wrapComponent(<DeviceDataPage />));
+    pick(saveFile());
+    await waitFor(() => expect(importButton()).toBeEnabled());
+    fireEvent.click(importButton());
+    await waitFor(async () => expect((await status()).textContent).toBe(`account.deviceData.import.done`));
+    expect(replaceFactGraphWithFacts).toHaveBeenCalledWith(facts, undefined);
+  });
+
+  it.each([1999, 2025])(`rejects a save file for tax year %i`, async (taxYear) => {
+    render(wrapComponent(<DeviceDataPage />));
+    pick(saveFile({ taxYear }));
+    await waitFor(() => expect(importButton()).toBeEnabled());
+    fireEvent.click(importButton());
+    await waitFor(async () => expect((await status()).textContent).toBe(`account.deviceData.errors.wrong-tax-year`));
+    expectNothingWritten();
+  });
+
+  it(`rejects an unknown fact and a wrong-typed /filers before anything is saved`, async () => {
+    render(wrapComponent(<DeviceDataPage />));
+    pick(
+      saveFile({
+        facts: {
+          ...facts,
+          '/notARealFact': { $type: `${B}BooleanWrapper`, item: true },
+          '/filers': { $type: `${B}StringWrapper`, item: `x` },
+        },
+      })
+    );
+    await waitFor(() => expect(importButton()).toBeEnabled());
+    fireEvent.click(importButton());
+    await waitFor(async () => expect((await status()).textContent).toBe(`account.deviceData.errors.invalid-facts`));
+    expectNothingWritten();
+  });
+
+  it(`refuses a file over the size cap without reading it`, async () => {
+    render(wrapComponent(<DeviceDataPage />));
+    const read = pick(saveFile(), MAX_SAVE_FILE_BYTES + 1);
+    expect((await status()).textContent).toBe(`account.deviceData.errors.file-too-large`);
+    expect(read).not.toHaveBeenCalled();
+    expect(importButton()).toBeDisabled();
+    expectNothingWritten();
+  });
+
+  it(`keeps the device save buttons disabled for a passphrase of only spaces`, () => {
+    render(wrapComponent(<DeviceDataPage />));
+    fireEvent.change(screen.getByLabelText(`account.deviceData.passphrase`), { target: { value: ` `.repeat(20) } });
+    expect(screen.getByRole(`button`, { name: `account.deviceData.device.saveButton` })).toBeDisabled();
   });
 });
