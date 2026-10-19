@@ -545,3 +545,52 @@ describe(`#86b capital gain distributions and the QDCG Tax Worksheet`, () => {
     expect(val(g, `/form8615UnearnedIncome`)).toBe(`2750.00`);
   });
 });
+
+// #86b: Form 6251 Part III with qualified dividends and capital gain distributions. Part III is built through line 40
+// (form6251.xml). Instructions for Form 6251 (2025) https://www.irs.gov/pub/irs-pdf/i6251.pdf, Part III, Lines 13, 14,
+// and 15: if none of statements (1) a different AMT gain or loss (for example an ISO or depreciation basis
+// difference, or a different AMT capital loss carryover), (2) line 15 is zero so no QDCG worksheet, or (3) a
+// Schedule K-1 (Form 1041) box 12 code B-F applies, "the AMT versions of your Qualified Dividends and Capital Gain
+// Tax Worksheet ... will be the same as those you used for regular tax purposes. Use the regular tax amounts to
+// complete lines 13, 14, and 15." (1) is a yes to the AMT adjustments question (/flowKnockoutAmtPreferenceItems);
+// (3) has no input; line 14 (Schedule D line 19) and Form 2555 stop the return or aren't collected. (2) only needs
+// AMT QDCG lines 2-4, which don't depend on line 1, so line 13 = regular worksheet line 4.
+describe(`#86b Form 6251 Part III with dividends (line 7 recomputed by hand)`, () => {
+  it(`qualified dividends + box 2a, AMTI above the 28% breakpoint: line 7 = line 40 = $67,674`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form6251UsesPartIII`, `/form6251Line13`, `/form6251Line40`, `/form6251Line7`];
+    // $300,000 wages, box 1a $60,000 (1b $50,000), box 2a $20,000; single, standard deduction $16,100.
+    const g = build({ ...paW2(300000), ...divs({ box1a: 60000, box1b: 50000, box2a: 20000 }) });
+    expect(val(g, `/taxableIncome`)).toBe(`363900.00`);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(true); // f6251 (2026 draft) line 7: line 3a or line 7a
+    expect(val(g, `/form6251Line4`)).toBe(`380000.00`); // line 1b + line 2a standard deduction
+    // Rev. Proc. 2025-32 sec. 4.10: $90,100 unmarried exemption; AMTI is under the phaseout threshold.
+    expect(val(g, `/form6251Line6`)).toBe(`289900.00`);
+    const L12 = 289900;
+    const L13 = 70000; // QDCG line 4 = line 3a $50,000 + line 7a $20,000
+    expect(val(g, `/form6251Line13`)).toBe(`70000.00`);
+    const L16 = Math.min(L12, L13); // line 15 = line 13 (no Schedule D Tax Worksheet)
+    const L17 = L12 - L16;
+    const L18 = L17 <= 244500 ? 0.26 * L17 : 0.28 * L17 - 4890;
+    const L21 = Math.max(0, 49450 - 293900); // line 20 = QDCG line 5 = $363,900 - $70,000
+    const L22 = Math.min(L12, L13);
+    const L23 = Math.min(L21, L22);
+    const L24 = L22 - L23;
+    const L29 = Math.max(0, 545500 - (L21 + 293900)); // lines 25-28
+    const L30 = Math.min(L24, L29);
+    const L33 = Math.max(0, L22 - (L23 + L30));
+    const L38 = L18 + 0.15 * L30 + 0.2 * L33; // line 37 = 0: line 14 is zero
+    const L39 = L12 <= 244500 ? 0.26 * L12 : 0.28 * L12 - 4890;
+    const L7 = Math.round(Math.min(L38, L39));
+    expect(L7).toBe(67674);
+    expect(val(g, `/form6251Line7`)).toBe(`${L7}.00`);
+    noKnockouts(g);
+  });
+
+  it(`statement (2), Form 1040 line 15 is zero: line 13 still takes AMT QDCG line 4, and line 7 is $0`, () => {
+    const g = build({ ...paW2(5000), ...divs({ box1a: 3000, box1b: 3000 }) });
+    expect(val(g, `/qdcgLine1`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line13`)).toBe(`3000.00`);
+    expect(val(g, `/form6251Line6`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`0.00`);
+  });
+});
