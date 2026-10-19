@@ -1,7 +1,7 @@
 # #122(a): 2026 Form 6251, Alternative Minimum Tax—Individuals. DRAFT-BASED MAPPING.
 # Source: https://www.irs.gov/pub/irs-dft/f6251--dft.pdf (early-release draft, "Created 5/26/26"), committed
 # byte-identical to irs.gov; SHA-256 a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc
-# (pinned in pdf/2026/draft-pdf-sha256.txt and rechecked by Form6251Ty2026PdfSmokeTest). Every field name and line
+# (pinned in pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Every field name and line
 # caption below comes from this draft's AcroForm tooltips (pypdf). When the final 2026 Form 6251 is released, re-download
 # it, re-hash it, and re-verify every field name and line number here before swapping it in (#124).
 # Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.

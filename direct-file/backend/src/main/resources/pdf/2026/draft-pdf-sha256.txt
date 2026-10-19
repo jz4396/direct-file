@@ -1,5 +1,5 @@
 # SHA-256 of IRS early-release draft PDFs committed under pdf/2026, as downloaded from irs.gov/pub/irs-dft.
 # Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the committed files by
-# Form6251Ty2026PdfSmokeTest. Drafts are replaced by final forms in #124: re-download, re-hash and re-verify the
+# DraftPdfHashManifestTest. Drafts are replaced by final forms later: re-download, re-hash and re-verify the
 # field map before updating a line here.
 a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc  IRS6251/en/f6251--dft.pdf  https://www.irs.gov/pub/irs-dft/f6251--dft.pdf
