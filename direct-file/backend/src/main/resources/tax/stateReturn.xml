@@ -70,7 +70,7 @@
       <Description>#78 state framework: any knockout of the computed state return. Each state adds All(/stateReturnIs{XX}, its knockouts). Wired into flow.xml /flowIsKnockedOut.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
-      <Derived><Any><All><Dependency path="/stateReturnPaFiled" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnreimbursedEmployeeExpenses" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" /><Dependency module="paPit" path="/flowKnockoutPaPartYear" /></Any></All></Any></Derived>
+      <Derived><Any><All><Dependency path="/stateReturnPaFiled" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnreimbursedEmployeeExpenses" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" /><Dependency module="paPit" path="/flowKnockoutPaPartYear" /><Dependency module="paPit" path="/flowKnockoutPaScheduleA" /><Dependency module="paPit" path="/flowKnockoutPaScheduleB" /><Dependency module="paPit" path="/flowKnockoutPaScheduleD" /></Any></All></Any></Derived>
     </Fact>
     <Fact path="/flowShowPaSpQuestion">
       <Name>Show the PA Tax Forgiveness nontaxable income question</Name>

@@ -101,7 +101,7 @@ form:
   "Enter the taxpayer’s Social Security number": /primaryFiler/tin
   # Section III, Column A, p. 38.
   "1. – Enter the total taxable income from Line 9 of the PA-40 return when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I": /paSpLine1 # line 1, PA-40 line 9
-  "2. – Enter the total amount of any alimony received when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I. See the instructions": /paSpLine2 # printed line 2, nontaxable interest (see CAUTION)
+  "2. – Enter the total amount of any alimony received when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I. See the instructions": /paSpLine2 # printed line 2, nontaxable interest (see CAUTION). Its source, 1099-INT box 3, also needs PA Schedule A (/flowKnockoutPaScheduleA), so it is blank on any return that reaches print
   "6. – If a nonresident or part-year resident, enter the total amount of any non-PA income received when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I. See the instructions": /paSpLine6 # line 6, non-PA income (#107)
   "11 – Add the Column A amounts for Lines 1 through 10 and enter the result here": /paSpLine11 # line 11, also PA-40 line 20
   # Section IV, left (Column A) boxes, pp. 38-39.

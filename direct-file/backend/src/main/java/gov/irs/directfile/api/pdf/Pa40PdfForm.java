@@ -66,12 +66,16 @@ class Pa40PdfForm extends PaPdfForm {
             }
         }
 
-        // School code, p. 6: "Nonresidents or part-year residents who did not reside in the state as of Dec. 31, 2025,
-        // should enter 99999 in the school district code field." A PA-to-FL mover is that case. Everyone else must
-        // enter the code of the district where they lived on Dec. 31 (p. 5); it is not collected, so it stays blank.
+        // School Code and School District Name, p. 5: "You must enter the five-digit code and name of the school
+        // district where you lived on Dec. 31, 2025". /paSchoolCode is the code the filer entered (one of the 500 on
+        // pp. 46-47), or 99999 for a PA-to-FL mover (p. 6: "Nonresidents or part-year residents who did not reside in
+        // the state as of Dec. 31, 2025, should enter 99999 in the school district code field."), whose name box
+        // stays blank.
+        final String schoolCode = text(facts, "/paSchoolCode");
+        facts.put(PREFIX + "SchoolCode", schoolCode);
+        facts.put(PREFIX + "SchoolDistrict", PaSchoolDistricts.name(schoolCode).toUpperCase(Locale.US));
         final boolean partYear = isTrue(facts, "/paResidencyStatusPartYear");
         final boolean movedOut = partYear && isTrue(facts, "/paPartYearMovedOut");
-        facts.put(PREFIX + "SchoolCode", movedOut ? "99999" : "");
 
         // Residency Status ovals, p. 6: export values 1 = (R) Pennsylvania Resident, 3 = (P) Part-Year Resident.
         // (N) Nonresident (2) is out of scope.

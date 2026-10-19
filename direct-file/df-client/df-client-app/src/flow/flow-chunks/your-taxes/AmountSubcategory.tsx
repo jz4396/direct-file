@@ -10,6 +10,7 @@ import {
   ContextHeading,
   DFAlert,
   DFModal,
+  GenericString,
   Heading,
   IconDisplay,
   InfoDisplay,
@@ -24,6 +25,13 @@ export const AmountSubcategory = (
   <Subcategory route='amount' completeIf='/flowHasSeenAmount'>
     {/* #78 PA-40 core: full-year PA residents. */}
     <SubSubcategory route='pa-40'>
+      {/* #123 PA-40 School Code (PA-40 IN p. 5): the district where the filer lived on Dec. 31. */}
+      <Screen route='pa-school-district' condition='/paAskSchoolDistrictCode'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-school-district' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-school-district' />
+        <GenericString path='/paSchoolDistrictCode' />
+        <SaveAndOrContinueButton />
+      </Screen>
       {/* #102 PA-40 line 1b (PA Schedule UE) isn't computed: ask, and knock out on yes. */}
       <Screen route='pa-unreimbursed-employee-expenses' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unreimbursed-employee-expenses' />
@@ -70,6 +78,25 @@ export const AmountSubcategory = (
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-unsupported-income' />
         <DFAlert i18nKey='/info/knockout/pa-unsupported-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      {/* #123 PA Schedules A, B and D are not produced. */}
+      <Screen route='pa-schedule-a-knockout' condition='/flowKnockoutPaScheduleA' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-schedule-a' />
+        <DFAlert i18nKey='/info/knockout/pa-schedule-a' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-schedule-b-knockout' condition='/flowKnockoutPaScheduleB' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-schedule-b' />
+        <DFAlert i18nKey='/info/knockout/pa-schedule-b' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-schedule-d-knockout' condition='/flowKnockoutPaScheduleD' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-schedule-d' />
+        <DFAlert i18nKey='/info/knockout/pa-schedule-d' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
       <Screen route='pa-sp-nontaxable-income' condition='/flowShowPaSpQuestion'>

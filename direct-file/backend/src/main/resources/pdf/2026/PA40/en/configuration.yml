@@ -27,14 +27,23 @@
 #                       part-year return has no G-L credit (Florida levies no income tax), so part-year printing needs
 #                       only the Residency Status oval and the from/to dates below.
 #   25                  use tax: /flowKnockoutPaUnsupportedItems.
+#   PA Schedules A, B, D are not produced. A return that needs one stops: /flowKnockoutPaScheduleA (p. 31: any amount
+#                       on Schedule A lines 2-15, e.g. 1099-INT box 3 or box 8 interest, part-year interest; or over
+#                       $2,500), /flowKnockoutPaScheduleB (p. 32: any amount on Schedule B lines 2-10; or over $2,500)
+#                       and /flowKnockoutPaScheduleD (any sale, gain or loss; Schedule D instructions: "even if the only
+#                       transaction is to report a loss"). So line 5 and its loss oval stay mapped but are blank on any
+#                       return that reaches print.
 #   27, Code, REV-1630  penalties and interest: not computed; p. 23 says to enter penalties owed, which the department
 #                       otherwise bills. Line 28 therefore equals line 26.
 #   31-36               credit forward and refund donations: not offered; p. 24, "If you do not enter amounts on Lines
 #                       30 through 36 ... you will receive a refund check", and line 30 = line 29.
-#   N (Nonresident), Extension, Amended, Final Return (F), Deceased, Farmers, dates of death, Country Code, School
-#   District name, signature date, preparer and E-File Opt Out boxes: not collected or out of scope.
-#   School Code: printed only as 99999 for a PA-to-FL mover (p. 6); otherwise not collected (see Pa40PdfForm).
+#   N (Nonresident), Extension, Amended, Final Return (F), Deceased, Farmers, dates of death, Country Code, signature
+#   date, preparer and E-File Opt Out boxes: not collected or out of scope.
 includeWhen: /stateReturnPaFiled
+customMaps:
+  template:
+    # p. 5 asks for the district name; the box has an automatic font size, which cuts off long names (PdfForm).
+    fitTextToWidth: "Name of School District"
 otherRequiredFacts:
   - /isMarried
   - /isFilingStatusMFJ
@@ -54,6 +63,7 @@ otherRequiredFacts:
   - /secondaryFiler/tin
   - /paResidencyStatusPartYear
   - /paPartYearMovedOut
+  - /paSchoolCode
   - /paPartYearMoveDate
   - /paLine5
   - /paSpLine11
@@ -77,7 +87,8 @@ form:
   "Use all caps to enter two character State abbreviation": ~pa40State
   "Enter five digit Zip Code": ~pa40Zip
   "Enter Daytime Telephone Number without parenthesis, dashes or spaces": /phone # p. 5
-  "Enter five digit School Code from list on pags 42 & 43": ~pa40SchoolCode # p. 6, 99999 for a PA-to-FL mover
+  "Enter five digit School Code from list on pags 42 & 43": ~pa40SchoolCode # p. 5 (/paSchoolCode); 99999 for a PA-to-FL mover (p. 6)
+  "Name of School District": ~pa40SchoolDistrict # p. 5, name for the code from pp. 46-47 (PaSchoolDistricts); blank for 99999
   "Residency Status": ~pa40Residency # p. 6: 1 = R, 3 = P
   "Part Year Resident from": ~pa40PartYearFrom # P oval "from MM/DD"
   "Part year resident to": ~pa40PartYearTo # "to MM/DD"
@@ -87,8 +98,8 @@ form:
   # Lines 1a-11, page 1.
   "1a. Gross Compensation": /paLine1a # p. 10, LINE 1a (W-2 box 16)
   "1c. Net Compensation": /paLine1c # 1a minus 1b
-  "2. Interest Income": /paLine2 # p. 14, LINE 2
-  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3
+  "2. Interest Income": /paLine2 # p. 14, LINE 2; prints only when PA Schedule A is not required (/flowKnockoutPaScheduleA, p. 31)
+  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3; $0 (no 1099-DIV); Schedule B stop /flowKnockoutPaScheduleB (p. 32)
   "5. Loss": ~pa40Line5Loss # p. 15, "If entering a loss, fill in the oval next to the line"
   "5. Net Gain or Loss from Sale, etc. of Property": ~pa40Line5 # p. 17, LINE 5 (size of a loss; see the oval)
   "9. Total PA Taxable Income": /paLine9 # p. 20, LINE 9 (losses are not added)

@@ -2,16 +2,25 @@ package gov.irs.directfile.api.pdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 import gov.irs.directfile.api.pdf.load.PdfConfiguration;
 import gov.irs.directfile.models.FactEvaluationResult;
@@ -19,6 +28,9 @@ import gov.irs.directfile.models.FactEvaluationResult;
 @Slf4j
 class PdfForm extends PdfTemplate {
     private static final String TEMPLATE_CUSTOM_MAP = "template";
+    // Largest font size used for a fitTextToWidth field, and the side padding (points) inside its box.
+    private static final float FIT_MAX_FONT_SIZE = 10f;
+    private static final float FIT_PADDING = 4f;
 
     public PdfForm(final String templateName) {
         // Subclass constructors may modify the following defaults.
@@ -58,7 +70,13 @@ class PdfForm extends PdfTemplate {
                     && facts.getBoolean(includeWhenPath)
                     && computePseudoFacts(facts, null, pdfConfig)) {
                 newPdfDocument = Loader.loadPDF(pdfTemplateBytes);
-                populateFormFields(newPdfDocument.getDocumentCatalog().getAcroForm(), formMap, facts, language, null);
+                populateFormFields(
+                        newPdfDocument.getDocumentCatalog().getAcroForm(),
+                        formMap,
+                        facts,
+                        language,
+                        null,
+                        fieldsToFitToWidth(pdfConfig));
                 skipLeadingPages(newPdfDocument, pdfConfig);
                 skipTrailingPages(newPdfDocument, pdfConfig);
                 results.add(newPdfDocument);
@@ -74,7 +92,12 @@ class PdfForm extends PdfTemplate {
                         if (computePseudoFacts(facts, id, pdfConfig)) {
                             newPdfDocument = Loader.loadPDF(pdfTemplateBytes);
                             populateFormFields(
-                                    newPdfDocument.getDocumentCatalog().getAcroForm(), formMap, facts, language, id);
+                                    newPdfDocument.getDocumentCatalog().getAcroForm(),
+                                    formMap,
+                                    facts,
+                                    language,
+                                    id,
+                                    fieldsToFitToWidth(pdfConfig));
                             skipLeadingPages(newPdfDocument, pdfConfig);
                             skipTrailingPages(newPdfDocument, pdfConfig);
                             results.add(newPdfDocument);
@@ -137,12 +160,47 @@ class PdfForm extends PdfTemplate {
         }
     }
 
+    /*
+     * Some state form boxes use an automatic font size (DA "0 Tf"), which PDFBox sizes from the box height only, so a
+     * long value is cut off at the right edge (PA-40 (2025) "Name of School District": "PHILIPSBURG-OSCEOLA AREA").
+     * `customMaps: { template: { fitTextToWidth: "<field name>|<field name>" } }` lists fields whose font size is set so
+     * the value fits the box width (at most FIT_MAX_FONT_SIZE). Absent key = no change.
+     */
+    static Set<String> fieldsToFitToWidth(final PdfConfiguration pdfConfig) {
+        final Map<String, Map<String, String>> custom = pdfConfig.getCustomData();
+        if (custom == null || custom.get(TEMPLATE_CUSTOM_MAP) == null) {
+            return Set.of();
+        }
+        final String value = custom.get(TEMPLATE_CUSTOM_MAP).get("fitTextToWidth");
+        if (value == null || value.isBlank()) {
+            return Set.of();
+        }
+        return Arrays.stream(value.split("\\|")).map(String::trim).collect(Collectors.toUnmodifiableSet());
+    }
+
+    static void fitTextToWidth(final PDAcroForm acroForm, final PDTextField field, final String text)
+            throws IOException {
+        final PDResources resources = acroForm.getDefaultResources();
+        final PDFont font = resources == null ? null : resources.getFont(COSName.getPDFName("Helv"));
+        if (font == null || text.isEmpty() || field.getWidgets().isEmpty()) {
+            return;
+        }
+        final PDRectangle box = field.getWidgets().get(0).getRectangle();
+        final float widthAtOnePoint = font.getStringWidth(text) / 1000f;
+        float size = FIT_MAX_FONT_SIZE;
+        if (widthAtOnePoint > 0) {
+            size = Math.min(size, (box.getWidth() - FIT_PADDING) / widthAtOnePoint);
+        }
+        field.setDefaultAppearance(String.format(Locale.US, "/Helv %.2f Tf 0 g", size));
+    }
+
     private void populateFormFields(
             final PDAcroForm acroForm,
             final Map<String, String> map,
             final FactEvaluationResult facts,
             final PdfLanguages language,
-            final UUID itemId) {
+            final UUID itemId,
+            final Set<String> fitToWidth) {
         // Set the field values in the interactive PDF form.
         map.forEach((pdfFieldName, factExpression) -> {
             final Object factValue = determineFieldValue(pdfFieldName, factExpression, facts, language, itemId);
@@ -152,6 +210,9 @@ class PdfForm extends PdfTemplate {
             }
             if (factValue.toString().length() > 0) {
                 try {
+                    if (fitToWidth.contains(pdfFieldName) && field instanceof PDTextField textField) {
+                        fitTextToWidth(acroForm, textField, factValue.toString().trim());
+                    }
                     PdfFieldHandler.setFieldInPDF(field, factValue);
                 } catch (IOException | PdfCreationException e) {
                     throw new RuntimeException(

@@ -21,6 +21,7 @@ dataviews:
         fl: Florida
         other: Otro estado
   /flow/your-taxes/amount:
+    /paSchoolDistrictCode: Código del distrito escolar de Pensilvania
     /paHasSpNontaxableIncome:
       ¿Tiene ingresos no tributables que cuentan para la Condonación de Impuestos de Pensilvania?
     /paPartYearResidentInterest: Intereses recibidos mientras era residente de Pensilvania
@@ -51,6 +52,11 @@ headings:
   /heading/your-taxes/amount/pa-part-year-interest: ¿Qué parte de sus intereses recibió mientras vivía en Pensilvania?
   /heading/knockout/pa-part-year:
     Esta herramienta aún no admite su declaración de Pensilvania como residente parte del año
+  /heading/your-taxes/amount/pa-school-district:
+    "¿Cuál es el código del distrito escolar de Pensilvania en el que vivía el 31 de diciembre de {{/taxYear}}?"
+  /heading/knockout/pa-schedule-a: Esta herramienta aún no admite el Anexo A de PA para sus ingresos de intereses
+  /heading/knockout/pa-schedule-b: Esta herramienta aún no admite el Anexo B de PA para sus ingresos de dividendos
+  /heading/knockout/pa-schedule-d: Esta herramienta aún no admite ventas de bienes en una declaración de Pensilvania
 info:
   /info/your-taxes/amount/pa-unreimbursed-employee-expenses:
     body:
@@ -147,6 +153,46 @@ info:
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/your-taxes/amount/pa-school-district:
+    body:
+      - p:
+          Pensilvania pide el código de 5 dígitos del distrito escolar donde vivía el 31 de diciembre, aunque se haya
+          mudado después de esa fecha. Use el distrito de la dirección de su vivienda, que puede ser distinta de su
+          dirección postal.
+      - p: <Link1>Busque el código de su distrito escolar en las instrucciones del PA-40 (páginas 46 y 47).</Link1>
+    urls:
+      Link1: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+  /info/knockout/pa-schedule-a:
+    alertText:
+      body:
+        - p:
+            Su declaración de Pensilvania necesita el Anexo A de PA, y esta herramienta aún no puede completarlo. Esto
+            incluye intereses de bonos de ahorro de EE. UU. u obligaciones del Tesoro, intereses exentos de impuestos,
+            intereses cuando vivió en Pensilvania solo parte del año o más de $2,500 de intereses.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-schedule-b:
+    alertText:
+      body:
+        - p:
+            Su declaración de Pensilvania necesita el Anexo B de PA, y esta herramienta aún no puede completarlo. Esto
+            incluye más de $2,500 de dividendos o dividendos cuando vivió en Pensilvania solo parte del año.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-schedule-d:
+    alertText:
+      body:
+        - p:
+            Su declaración de Pensilvania necesita el Anexo D de PA para cualquier venta de acciones, bonos u otros
+            bienes, incluso con pérdida, y esta herramienta aún no puede completarlo.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
 fields:
   /paPartYearMoveOptions:
     paToFl: Me mudé de Pensilvania a Florida
@@ -162,3 +208,5 @@ fields:
     name: Pago ganado mientras vivía en Pensilvania
   /paPartYearResidentInterest:
     name: Intereses recibidos mientras vivía en Pensilvania
+  /paSchoolDistrictCode:
+    name: Código del distrito escolar (5 dígitos)

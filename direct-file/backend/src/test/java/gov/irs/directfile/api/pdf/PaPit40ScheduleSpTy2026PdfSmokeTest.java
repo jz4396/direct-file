@@ -4,17 +4,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.text.TextPosition;
 import org.junit.jupiter.api.Test;
 
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
@@ -46,9 +53,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class PaPit40ScheduleSpTy2026PdfSmokeTest {
     static final String W2 = "959c03d1-af4a-447f-96aa-d19397048a44";
-    static final String TX2 = "a2222222-2222-4222-8222-222222222222";
     static final String KID1 = "c1230000-0000-4000-8000-000000000001";
     static final String KID2 = "c1230000-0000-4000-8000-000000000002";
+    static final String PA40_TEMPLATE = "src/main/resources/pdf/2026/PA40/en/2025_pa-40.pdf";
+    static final String PA40_CONFIG = "src/main/resources/pdf/2026/PA40/en/configuration.yml";
+    static final String SP_TEMPLATE = "src/main/resources/pdf/2026/PA40SP/en/2025_pa-40sp.pdf";
+    static final String SP_CONFIG = "src/main/resources/pdf/2026/PA40SP/en/configuration.yml";
+    static final String EMPTY_COLLECTION =
+            "{\"$type\":\"gov.irs.factgraph.persisters.CollectionWrapper\",\"item\":{\"items\":[]}}";
+    static final String SP_LINE2_PRINTED_BOX = "2. – Enter the total amount of any alimony received when completing the"
+            + " ovals for Lines 1a, 1b, 2, 3a or 4 in Section I. See the instructions";
+    static final String SP_LINE3_PRINTED_BOX = "3. - Enter the total amount of any nontaxable interest, dividends and"
+            + " gains and/or annualized income when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I."
+            + " See the instructions";
     static final String PA40_PAGE1 = "2500110057";
     static final String PA40_PAGE2 = "2500210055";
     static final String SP_PAGE1 = "2509510059";
@@ -108,10 +125,13 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         m.put("/formW2s/#" + W2 + "/writableWages", dollar("15000.00"));
         m.put("/formW2s/#" + W2 + "/writableStateWages", dollar("15000.00"));
         m.put("/formW2s/#" + W2 + "/writableStateWithholding", dollar("500.00"));
-        m.put("/form8949Transactions/#" + TX2 + "/costBasis", dollar("20000"));
+        // No property sales: any PA sale needs PA Schedule D (/flowKnockoutPaScheduleD), which isn't produced.
+        m.put("/form8949Transactions", EMPTY_COLLECTION);
         m.put("/familyAndHousehold", collection(KID1, KID2));
         child(m, KID1, "Kiddo", "biologicalChild", "2015-03-03", "0011");
         child(m, KID2, "Second", "biologicalChild", "2017-04-04", "0022");
+        // Harrisburg City, PA-40 IN (2025) p. 46.
+        m.put("/paSchoolDistrictCode", string("22275"));
         return m;
     }
 
@@ -121,9 +141,7 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         m.put("/paPartYearMove", enumValue("paToFl", "/paPartYearMoveOptions"));
         m.put("/paPartYearMoveDate", day("2026-07-01"));
         m.put("/formW2s/#" + W2 + "/paPartYearW2State", enumValue("pa", "/paPartYearW2StateOptions"));
-        m.put(
-                "/form8949Transactions",
-                "{\"$type\":\"gov.irs.factgraph.persisters.CollectionWrapper\",\"item\":" + "{\"items\":[]}}");
+        m.put("/form8949Transactions", EMPTY_COLLECTION);
         return m;
     }
 
@@ -206,6 +224,102 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             "16 – Multiply Line 14 by the decimal on Line 15 and enter the result here and on Line"
                     + " 21 of the PA-40 return when completing the ovals for Lines 1a, 1b, 2, 3a or 4 in Section I";
 
+    /** Top and bottom (from the page top) of the first text on page {@code pageIndex} that contains {@code text}. */
+    static float[] textLine(PDDocument doc, int pageIndex, String text) throws Exception {
+        float[][] found = new float[1][];
+        PDFTextStripper stripper = new PDFTextStripper() {
+            @Override
+            protected void writeString(String s, List<TextPosition> positions) {
+                int at = s.indexOf(text);
+                if (found[0] == null && at >= 0 && at < positions.size()) {
+                    TextPosition first = positions.get(at);
+                    found[0] = new float[] {first.getYDirAdj() - first.getHeightDir(), first.getYDirAdj()};
+                }
+            }
+        };
+        stripper.setStartPage(pageIndex + 1);
+        stripper.setEndPage(pageIndex + 1);
+        stripper.getText(doc);
+        assertTrue(found[0] != null, "text on the page: " + text);
+        return found[0];
+    }
+
+    /** Top and bottom (from the page top) of the widget of field {@code name} on page {@code pageIndex}. */
+    static float[] widget(PDDocument doc, int pageIndex, String name) {
+        PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+        PDField f = form.getField(name);
+        assertTrue(f instanceof PDTerminalField, "field: " + name);
+        float height = doc.getPage(pageIndex).getMediaBox().getHeight();
+        PDRectangle r = ((PDTerminalField) f).getWidgets().get(0).getRectangle();
+        return new float[] {height - r.getUpperRightY(), height - r.getLowerLeftY()};
+    }
+
+    @Test
+    void scheduleSpLine2BoxSitsOnThePrintedNontaxableInterestRow() throws Exception {
+        // The template's line 2 and 3 field names (tooltips) are swapped against the printed captions; the config maps
+        // /paSpLine2 by position. Check the boxes against the printed rows of Section III, column A (template page 2).
+        try (PDDocument doc = Loader.loadPDF(Files.readAllBytes(Path.of(SP_TEMPLATE)))) {
+            float[] line2Row = textLine(doc, 1, "Nontaxable interest, dividends and gains");
+            float[] line3Row = textLine(doc, 1, "Alimony");
+            float[] mapped = widget(doc, 1, SP_LINE2_PRINTED_BOX);
+            float[] other = widget(doc, 1, SP_LINE3_PRINTED_BOX);
+            float mappedMid = (mapped[0] + mapped[1]) / 2;
+            float otherMid = (other[0] + other[1]) / 2;
+            assertTrue(
+                    mappedMid > line2Row[0] && mappedMid < line2Row[1] + 2,
+                    "box mapped to /paSpLine2 is on printed row 2");
+            assertTrue(
+                    otherMid > line3Row[0] && otherMid < line3Row[1] + 2,
+                    "the other box is on printed row 3 (alimony)");
+        }
+        String config = Files.readString(Path.of(SP_CONFIG));
+        assertTrue(
+                config.contains("\"" + SP_LINE2_PRINTED_BOX + "\": /paSpLine2"), "config maps the printed row 2 box");
+        assertFalse(config.contains("\"" + SP_LINE3_PRINTED_BOX + "\":"), "printed row 3 (alimony) is not mapped");
+    }
+
+    @Test
+    void schoolDistrictCodesMatchTheFactLimitAndTheBooklet() throws Exception {
+        // PA-40 IN (2025) pp. 46-47 list 500 districts; paPit.xml /paSchoolDistrictCode accepts exactly those codes.
+        Map<String, String> names = PaSchoolDistricts.all();
+        assertEquals(500, names.size(), "500 school districts");
+        assertEquals("Harrisburg City", PaSchoolDistricts.name("22275"));
+        assertEquals("", PaSchoolDistricts.name("99999"), "99999 has no district name");
+        String xml = Files.readString(Path.of("src/main/resources/tax/paPit.xml"));
+        Matcher m = Pattern.compile(
+                        "<Fact path=\"/paSchoolDistrictCode\">.*?<!\\[CDATA\\[\\(\\?:([0-9|]+)\\)\\]\\]>",
+                        Pattern.DOTALL)
+                .matcher(xml);
+        assertTrue(m.find(), "Match limit on /paSchoolDistrictCode");
+        Set<String> limit = new TreeSet<>(List.of(m.group(1).split("\\|")));
+        assertEquals(new TreeSet<>(names.keySet()), limit, "fact limit codes == booklet codes");
+        assertTrue(limit.stream().allMatch(c -> c.matches("[0-9]{5}")), "five digits");
+        assertFalse(limit.contains("99999"), "99999 is filled in, not entered");
+    }
+
+    @Test
+    void longestSchoolDistrictNameFitsItsBox() throws Exception {
+        // "Name of School District" has an automatic font size; the config lists it under fitTextToWidth.
+        String longest = PaSchoolDistricts.all().values().stream()
+                .map(n -> n.toUpperCase(java.util.Locale.US))
+                .max(java.util.Comparator.comparingInt(String::length))
+                .orElseThrow();
+        try (PDDocument doc = Loader.loadPDF(Files.readAllBytes(Path.of(PA40_TEMPLATE)))) {
+            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            var field =
+                    (org.apache.pdfbox.pdmodel.interactive.form.PDTextField) form.getField("Name of School District");
+            PdfForm.fitTextToWidth(form, field, longest);
+            Matcher size = Pattern.compile("/Helv ([0-9.]+) Tf").matcher(field.getDefaultAppearance());
+            assertTrue(size.find(), "font size set");
+            var font = form.getDefaultResources().getFont(org.apache.pdfbox.cos.COSName.getPDFName("Helv"));
+            float width = font.getStringWidth(longest) / 1000f * Float.parseFloat(size.group(1));
+            float box = field.getWidgets().get(0).getRectangle().getWidth();
+            assertTrue(width <= box - 3.9f, longest + " fits: " + width + " <= " + box);
+        }
+        String config = Files.readString(Path.of(PA40_CONFIG));
+        assertTrue(config.contains("fitTextToWidth: \"Name of School District\""), "config lists the field");
+    }
+
     @Test
     void pa40PrintsTheGoldenScenario() throws Exception {
         byte[] bytes = generate(goldenScenario());
@@ -226,7 +340,8 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p1, "Use all caps to enter two character State abbreviation", "PA", "state");
             is(p1, "Enter five digit Zip Code", "17101", "ZIP");
             is(p1, "Enter Daytime Telephone Number without parenthesis, dashes or spaces", "4445550100", "phone");
-            blank(p1, "Enter five digit School Code from list on pags 42 & 43", "school code (not collected)");
+            is(p1, "Enter five digit School Code from list on pags 42 & 43", "22275", "school code (p. 5)");
+            is(p1, "Name of School District", "HARRISBURG CITY", "school district name (pp. 46-47)");
             is(p1, "Residency Status", "1", "(R) Pennsylvania Resident (p. 6)");
             blank(p1, "Part Year Resident from", "part-year from");
             blank(p1, "Part year resident to", "part-year to");
@@ -237,11 +352,11 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p1, "1c. Net Compensation", "15,000.00", "line 1c");
             blank(p1, "2. Interest Income", "line 2 ($0)");
             blank(p1, "3. Dividend  and Capital Gains Distributions Income", "line 3 ($0)");
-            is(p1, "5. Loss", "none", "line 5 loss oval (p. 15)");
-            is(p1, "5. Net Gain or Loss from Sale, etc. of Property", "1,000.00", "line 5 (p. 17)");
+            is(p1, "5. Loss", "Off", "line 5 loss oval");
+            blank(p1, "5. Net Gain or Loss from Sale, etc. of Property", "line 5 ($0; any sale is a Schedule D stop)");
             is(p1, "4. Loss", "Off", "line 4 loss oval");
             is(p1, "6. Loss", "Off", "line 6 loss oval");
-            is(p1, "9. Total PA Taxable Income", "15,000.00", "line 9, loss not added (p. 20)");
+            is(p1, "9. Total PA Taxable Income", "15,000.00", "line 9 (p. 20)");
             blank(p1, "10.  Other Deductions", "line 10");
             is(p1, "11. Adjusted PA Taxable Income", "15,000.00", "line 11 (p. 21)");
 
@@ -254,7 +369,7 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             blank(p2, "18.Total Estimated Payments and Credits", "line 18");
             is(p2, "Tax Forgiveness", "1", "line 19a Unmarried (p. 22)");
             is(p2, "Dependents", "2", "line 19b");
-            is(p2, "20. Total Eligibility Income", "15,000.00", "line 20");
+            is(p2, "20. Total Eligibility Income", "15,000.00", "line 20 = SP line 11");
             is(p2, "21. Tax Forgiveness Credit", "461.00", "line 21");
             blank(p2, "22. Resident Credit", "line 22");
             is(p2, "24. Total Payments and Credits", "961.00", "line 24 = 500 + 460.50, half-up");
@@ -319,6 +434,8 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             Map<String, String> p2 = fieldsOnPages(doc, SP_PAGE2);
             assertFalse(p2.isEmpty(), "Schedule SP page 2 printed");
             is(p2, SP_LINE1, "15,000.00", "line 1 = PA-40 line 9");
+            blank(p2, SP_LINE2_PRINTED_BOX, "printed line 2 ($0: box 3 interest is a Schedule A stop)");
+            blank(p2, SP_LINE3_PRINTED_BOX, "printed line 3 (alimony, not collected)");
             is(p2, SP_LINE11, "15,000.00", "line 11");
             is(p2, SP_LINE12, "461.00", "line 12");
             is(p2, SP_LINE14, "461.00", "line 14");
@@ -344,6 +461,7 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p1, "Part Year Resident from", "01/01", "PA residency from");
             is(p1, "Part year resident to", "06/30", "to the day before the move to FL");
             is(p1, "Enter five digit School Code from list on pags 42 & 43", "99999", "p. 6, not in PA on Dec. 31");
+            blank(p1, "Name of School District", "no district for 99999");
             is(p1, "1a. Gross Compensation", "50,000.00", "line 1a (PA W-2 box 16)");
             is(p1, "5. Loss", "Off", "no line 5 loss");
             blank(p1, "5. Net Gain or Loss from Sale, etc. of Property", "line 5 ($0)");
