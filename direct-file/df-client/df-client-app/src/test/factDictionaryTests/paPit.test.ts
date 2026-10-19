@@ -247,6 +247,39 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       blocks(g, `/flowKnockoutPaUnsupportedIncome`);
     });
   });
+  describe(`1099-INT box 2 early withdrawal penalty (PA-40 IN (2025) p. 15, LINE 2, Forfeited Interest Penalty)`, () => {
+    // "You may offset the penalty for premature redemption or withdrawal of a time savings account or certificate of
+    // deposit, only against the interest income you received in the same taxable year from that account or
+    // certificate. You cannot offset this penalty against other interest income. If your total penalty exceeds the
+    // related interest income, you may report the excess as a loss on PA Schedule D." Account-level interest and PA
+    // Schedule D are not modeled, so a PA-40 with a penalty is stopped.
+    const penalty = (box2: number) => ({
+      ...interest(1200),
+      [`/interestReports/#${intId}/writableEarlyWithdrawlPenaltyAmount`]: createDollarWrapper(`${box2}`),
+    });
+    it(`PA filer, W-2 $40,000, box 1 $1,200, box 2 $150: PA knockout true and /flowIsKnockedOut true`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+      const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...penalty(150) });
+      expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+      expect(val(g, `/earlyWithdrawalPenaltyTotal`)).toBe(`150.00`);
+      blocks(g, `/flowKnockoutPaUnsupportedIncome`);
+    });
+    it(`non-PA (FL) filer, same income: PA knockout false and the return is not knocked out`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+      const g = build(singleFilerData, { ...w2(40000, 40000, 0), ...penalty(150), ...pa(`fl`) });
+      expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+      expect(val(g, `/earlyWithdrawalPenaltyTotal`)).toBe(`150.00`);
+      expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+      expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    });
+    it(`PA filer, box 2 $0: the penalty does not stop the return`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowIsKnockedOut`];
+      const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...penalty(0) });
+      expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    });
+  });
   it(`joint return with property sales (spouse losses can't offset, p. 7)`, () => {
     blocks(
       build(mfjFilerData, { ...w2(80000, 80000, 2456), ...sale(14000, 10000) }),

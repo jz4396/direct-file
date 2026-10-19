@@ -2253,7 +2253,7 @@ info:
           header: Tipos de ingresos por intereses que Direct File aún no acepta
           body:
             - p: >-
-                Direct File no acepta entradas de las <strong>casillas 2, 6 y del 9-13</strong> del 1099-INT, ni los
+                Direct File no acepta entradas de las <strong>casillas 6 y del 9-13</strong> del 1099-INT, ni los
                 ingresos por intereses que se muestran en otros formularios, como el 1099-OID o el 1099-B.
             - p: >-
                 Tampoco puedes usar Direct File para declarar las siguientes situaciones:
@@ -2297,7 +2297,7 @@ info:
           header: Tipos de ingresos por intereses que Direct File aún no acepta
           body:
             - p: >-
-                Direct File no acepta entradas de las <strong>casillas 2, 6 y del 9-13</strong> del 1099-INT, ni los
+                Direct File no acepta entradas de las <strong>casillas 6 y del 9-13</strong> del 1099-INT, ni los
                 ingresos por intereses que se muestran en otros formularios, como el 1099-OID o el 1099-B.
             - p: >-
                 Tampoco puedes usar Direct File para declarar las siguientes situaciones:
@@ -8165,10 +8165,6 @@ info:
     heading: $t(dataviews./flow/income/interest./interestReports/*/factaFilingRequired)
     body:
       - p: $t(headings./heading/knockout/forms-missing/facta)
-  /info/knockout/forms-missing/1099-int-box-2-ko:
-    heading: $t(dataviews./flow/income/interest./interestReports/*/writableEarlyWithdrawlPenaltyAmount)
-    body:
-      - p: $t(headings./heading/knockout/forms-missing/1099-int-box-2-ko)
   /info/knockout/forms-missing/1099-int-box-6-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableForeignTaxPaid)
     body:
@@ -20735,8 +20731,6 @@ headings:
     Direct File no permite los formularios requeridos para declarar este tipo de ingresos por intereses.
   /heading/knockout/forms-missing/1099-int-box-6-ko: >-
     Direct File no permite los formularios requeridos para declarar los impuestos pagados en el extranjero.
-  /heading/knockout/forms-missing/1099-int-box-2-ko: >-
-    Direct File no permite los formularios requeridos para declarar una multa por retiro temprano.
   /heading/knockout/digital-assets: >-
     Direct File aún no permite los formularios requeridos para declarar activos digitales.
   /heading/knockout/forms-missing/generic-doesnt-have-tax-forms:

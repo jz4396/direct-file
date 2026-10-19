@@ -2631,8 +2631,6 @@ headings:
     Direct File doesn’t yet support the amount of income you received.
   /heading/knockout/social-security-wages-secondary-filer:
     Direct File doesn’t yet support the amount of income {{/secondaryFiler/firstName}} received.
-  /heading/knockout/forms-missing/1099-int-box-2-ko:
-    Direct File doesn’t yet support reporting an early withdrawal penalty.
   /heading/knockout/forms-missing/1099-int-box-6-ko: Direct File doesn’t yet support reporting foreign tax paid.
   /heading/knockout/forms-missing/1099-int-box-8-ko: Direct File doesn’t yet support reporting tax-exempt interest.
   /heading/knockout/forms-missing/1099-int-box-9-13-ko:
@@ -6946,10 +6944,6 @@ info:
     heading: $t(dataviews./flow/income/interest./interestReports/*/factaFilingRequired)
     body:
       - p: $t(headings./heading/knockout/forms-missing/facta)
-  /info/knockout/forms-missing/1099-int-box-2-ko:
-    heading: $t(dataviews./flow/income/interest./interestReports/*/writableEarlyWithdrawlPenaltyAmount)
-    body:
-      - p: $t(headings./heading/knockout/forms-missing/1099-int-box-2-ko)
   /info/knockout/forms-missing/1099-int-box-6-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableForeignTaxPaid)
     body:
@@ -7389,7 +7383,7 @@ info:
           header: What interest income types aren’t yet supported in Direct File?
           body:
             - p: >-
-                Direct File doesn’t support items from <strong>boxes 2, 6, 8–13, and 17</strong> on the 1099-INT, or
+                Direct File doesn’t support items from <strong>boxes 6, 8–13, and 17</strong> on the 1099-INT, or
                 interest income that appears on a different form like 1099-OID or 1099-B.
             - p: "You also can’t use Direct File to report the following situations:"
             - ul:
@@ -7427,7 +7421,7 @@ info:
           header: What interest income types aren’t yet supported in Direct File?
           body:
             - p: >-
-                Direct File doesn’t support items from <strong>boxes 2, 6, 8–13, and 17</strong> on the 1099-INT, or
+                Direct File doesn’t support items from <strong>boxes 6, 8–13, and 17</strong> on the 1099-INT, or
                 interest income that appears on a different form like 1099-OID or 1099-B.
             - p: "You also can’t use Direct File to report the following situations:"
             - ul:

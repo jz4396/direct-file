@@ -771,6 +771,21 @@ describe(`The \`income\` subcategory`, () => {
               );
             });
 
+            it(`moves from box 2 to box 3 when box 2 has an early withdrawal penalty`, ({ task }) => {
+              const { factGraph } = setupFactGraph({
+                ...baseIncomeData,
+                [`/interestReports/#${interestReportId}/has1099`]: createBooleanWrapper(has1099),
+                [`/interestReports/#${interestReportId}/${has1099 ? `writable1099Amount` : `no1099Amount`}`]:
+                  createDollarWrapper(`100`),
+                [`/interestReports/#${interestReportId}/${
+                  has1099 ? `writableEarlyWithdrawlPenaltyAmount` : `no1099Amount`
+                }`]: createDollarWrapper(`10`),
+              });
+              expect(givenFacts(factGraph).atPath(`${path}/1099-int-add-box-2`, interestReportId, task)).toRouteNextTo(
+                `${path}/1099-int-add-box-3?%2FinterestReports=${interestReportId}`
+              );
+            });
+
             it(`moves from box 3 to box 4`, ({ task }) => {
               const { factGraph } = setupFactGraph({
                 ...baseIncomeData,
@@ -934,21 +949,6 @@ describe(`The \`income\` subcategory`, () => {
           });
 
           describe(`Knocks out the filer`, () => {
-            it(`for having an early withdrawl penalty amount`, ({ task }) => {
-              const { factGraph } = setupFactGraph({
-                ...baseIncomeData,
-                [`/interestReports/#${interestReportId}/has1099`]: createBooleanWrapper(has1099),
-                [`/interestReports/#${interestReportId}/${has1099 ? `writable1099Amount` : `no1099Amount`}`]:
-                  createDollarWrapper(`100`),
-                [`/interestReports/#${interestReportId}/${
-                  has1099 ? `writableEarlyWithdrawlPenaltyAmount` : `no1099Amount`
-                }`]: createDollarWrapper(`10`),
-              });
-              expect(givenFacts(factGraph).atPath(`${path}/1099-int-add-box-2`, interestReportId, task)).toRouteNextTo(
-                `${path}/1099-int-box-2-knockout`
-              );
-            });
-
             it(`for having a foreign tax paid amount`, ({ task }) => {
               const { factGraph } = setupFactGraph({
                 ...baseIncomeData,

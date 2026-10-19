@@ -254,10 +254,6 @@ export const InterestIncomeSubcategory = (
             condition='/interestReports/hasRequiredFactaFilings'
           />
           <DFAccordion
-            i18nKey='/info/knockout/forms-missing/1099-int-box-2-ko'
-            condition='/flowKnockoutHasEarlyWithdrawlPenalty'
-          />
-          <DFAccordion
             i18nKey='/info/knockout/forms-missing/1099-int-box-6-ko'
             condition='/flowKnockoutHasForeignTaxPaid'
           />
@@ -409,12 +405,6 @@ export const InterestIncomeSubcategory = (
               required={false}
             />
             <SaveAndOrContinueButton />
-          </Screen>
-          <Screen route='1099-int-box-2-knockout' condition='/flowKnockoutHasEarlyWithdrawlPenalty' isKnockout={true}>
-            <IconDisplay name='ErrorOutline' size={9} isCentered />
-            <Heading i18nKey='/heading/knockout/forms-missing/1099-int-box-2-ko' batches={[`schedule-b-0`]} />
-            <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
-            <KnockoutButton i18nKey='button.knockout' />
           </Screen>
           <Screen route='1099-int-add-box-3'>
             <Heading i18nKey='/heading/income/interest/add-box-3-1099' />
