@@ -33,6 +33,7 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
+    "apply-year-config": "vite-node src/fact-dictionary/yearConfig/applyYearConfig.ts",
     "analyze-scenarios": "vite-node src/test/factDictionaryTests/analyzeScenarios.ts",
     "build-all-screens": "vite build --config vite.config.allscreens.ts",
     "build:development": "npm run build:ts && vite build --mode=development",

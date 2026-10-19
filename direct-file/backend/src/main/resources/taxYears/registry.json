@@ -1,0 +1,10 @@
+{
+  "$comment": "Tax years this build supports. Each entry names its parameter file in this directory. There is no fallback: a year that is not listed here is an error.",
+  "currentTaxYear": 2026,
+  "years": [
+    {
+      "taxYear": 2026,
+      "config": "ty2026.json"
+    }
+  ]
+}
