@@ -23,6 +23,7 @@ import {
   filerWithW2NoDeductionsNoCreditsBaseData,
   makeW2Data,
   mfjFilerData,
+  mfsFilerData,
   primaryFilerId,
   singleFilerData,
   spouseId,
@@ -322,6 +323,9 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
       get(build(divs({ box1a: 100, filer: spouseId }), mfjFilerData), `/dividendReports/secondaryFilerUsedWithoutMFJ`)
         .get
     ).toBe(false);
+    const mfs = build(divs({ box1a: 100, filer: spouseId }), mfsFilerData);
+    expect(get(mfs, `/dividendReports/secondaryFilerUsedWithoutMFJ`).get).toBe(true);
+    // Blocks submission (BlockSubmissionOnTrue), like /interestReports/secondaryFilerUsedWithoutMFJ; not a flow knockout.
     expect(submissionBlockingFacts).toContain(`/dividendReports/secondaryFilerUsedWithoutMFJ`);
   });
 });
