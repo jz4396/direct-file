@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.YamlPropertySourceLoader;
@@ -30,6 +31,7 @@ import gov.irs.directfile.api.taxreturn.models.TaxReturn;
 import gov.irs.directfile.models.FactTypeWithItem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -73,7 +75,7 @@ class ScheduleDForm8949PdfSmokeTest {
         Map<String, FactTypeWithItem> facts =
                 mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
         TaxReturn taxReturn = new TaxReturn();
-        taxReturn.setTaxYear(2024); // PDF templates live under pdf/2024 (TY2026 forms not yet published)
+        taxReturn.setTaxYear(2024); // PDF template config key; #35: Sch D / 8949 now use the 2026 drafts under pdf/2026
         taxReturn.setFactsWithoutDirtyingEntity(facts);
 
         byte[] bytes;
@@ -112,6 +114,11 @@ class ScheduleDForm8949PdfSmokeTest {
             // Form 1040 line 7a (#65: 2026 draft layout, field f1_70).
             assertEquals(1, count(byName, "Page1[0].f1_70[0]", "9000"), "1040 line 7a");
             assertTrue(doc.getNumberOfPages() >= 6, "1040 (2) + Sch D (2) + 8949 x2 (4)");
+            // #35: no irs.gov draft cover sheet survives in the merged return (skipLeadingPages on Sch D and 8949).
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "draft cover dropped");
+            assertTrue(text.contains("Schedule D (Form 1040) 2026"), "2026 Schedule D draft printed");
+            assertTrue(text.contains("Form 8949 (2026)"), "2026 Form 8949 draft printed");
         }
     }
 
