@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * (PdfForm throws "Failed to find field" otherwise), and each one must accept a value through PdfFieldHandler.
  */
 class ScheduleDForm8949PdfTemplateTest {
-    private static final String ROOT = "src/main/resources/pdf/2024/";
+    private static final String ROOT = "src/main/resources/pdf/2026/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"IRS1040SD/en/f1040sd.pdf", "IRS8949/en/f8949.pdf"})
+    @ValueSource(strings = {"IRS1040SD/en/f1040sd--dft.pdf", "IRS8949/en/f8949--dft.pdf"})
     void everyConfiguredFieldExistsAndFills(String pdf) throws Exception {
         String config = ROOT + pdf.substring(0, pdf.lastIndexOf('/')) + "/configuration.yml";
         Map<String, String> fields = new LinkedHashMap<>();
@@ -65,13 +65,12 @@ class ScheduleDForm8949PdfTemplateTest {
             flatten("", (Map<?, ?>) yaml.get("form"), fields);
         }
         String[][] expected = {{"Page1[0].c1_1", "ABCGHI"}, {"Page2[0].c2_1", "DEFJKL"}};
-        try (PDDocument doc = Loader.loadPDF(new File(ROOT + "IRS8949/en/f8949.pdf"))) {
+        try (PDDocument doc = Loader.loadPDF(new File(ROOT + "IRS8949/en/f8949--dft.pdf"))) {
             PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
             for (String[] part : expected) {
                 for (int i = 0; i < 6; i++) {
                     String name = "topmostSubform[0]." + part[0] + "[" + i + "]";
-                    assertEquals(
-                            "/form8949Transactions/*/printBox" + part[1].charAt(i), fields.get(name), name);
+                    assertEquals("/form8949Transactions/*/printBox" + part[1].charAt(i), fields.get(name), name);
                     PDField field = form.getField(name);
                     assertTrue(field instanceof PDCheckBox, name);
                     PdfFieldHandler.setFieldInPDF(field, Boolean.TRUE);
