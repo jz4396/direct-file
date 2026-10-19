@@ -1,0 +1,503 @@
+# PA school district codes and names, PA-40 IN (2025) pp. 46-47, "PA SCHOOL DISTRICTS & CODES BY COUNTY":
+# https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+# One row per code (a district listed under several counties has one code). Columns: code<TAB>name. 500 rows.
+01110	Bermudian Springs
+01160	Conewago Valley
+01305	Fairfield Area
+01375	Gettysburg Area
+01520	Littlestown Area
+01852	Upper Adams
+02060	Allegheny Valley
+02075	Avonworth
+02100	Pine-Richland
+02110	Baldwin Whitehall
+02125	Bethel Park
+02145	Brentwood Borough
+02160	Carlynton
+02175	Chartiers Valley
+02190	Clairton City
+02210	Cornell
+02225	Deer Lakes
+02250	Duquesne City
+02280	East Allegheny
+02315	Elizabeth Forward
+02391	Fox Chapel Area
+02410	Gateway
+02460	Hampton Township
+02475	Highlands
+02500	Keystone Oaks
+02600	McKeesport Area
+02630	Montour
+02634	Moon Area
+02640	Mount Lebanon
+02685	North Allegheny
+02687	Northgate
+02690	North Hills
+02735	Penn Hills
+02745	Pittsburgh
+02750	Plum Borough
+02775	Quaker Valley
+02820	Riverview
+02830	Shaler Area
+02865	South Allegheny
+02870	South Fayette Township
+02875	South Park
+02883	Steel Valley
+02885	Sto-Rox
+02920	Upper Saint Clair Township
+02940	West Allegheny
+02955	West Jefferson Hills
+02960	West Mifflin Area
+02980	Wilkinsburg Borough
+02990	Woodland Hills
+03060	Apollo-Ridge
+03085	Armstrong
+03305	Freeport Area
+03450	Leechburg Area
+04050	Aliquippa Borough
+04070	Ambridge Area
+04120	Beaver Area
+04150	Big Beaver Falls Area
+04160	Blackhawk
+04200	Central Valley
+04285	Freedom Area
+04410	Hopewell Area
+04530	Midland Borough
+04565	New Brighton Area
+04585	Riverside Beaver County
+04690	Rochester Area
+04740	South Side Area
+04930	Western Beaver County
+05100	Bedford Area
+05150	Chestnut Ridge
+05300	Everett Area
+05600	Northern Bedford County
+05800	Tussey Mountain
+06050	Antietam
+06075	Boyertown Area
+06085	Brandywine Heights Area
+06110	Conrad Weiser Area
+06150	Daniel Boone Area
+06200	Exeter Township
+06250	Fleetwood Area
+06300	Governor Mifflin
+06350	Hamburg Area
+06400	Kutztown Area
+06550	Muhlenberg Township
+06650	Oley Valley
+06700	Reading
+06750	Schuylkill Valley
+06800	Tulpehocken Area
+06810	Twin Valley
+06910	Wilson
+06935	Wyomissing
+07050	Altoona Area
+07100	Bellwood Antis
+07150	Claysburg-Kimmel
+07350	Hollidaysburg Area
+07750	Spring Cove
+07800	Tyrone Area
+07900	Williamsburg Community
+08050	Athens Area
+08100	Canton Area
+08300	Northeast Bradford County
+08600	Sayre Area
+08650	Towanda Area
+08665	Troy Area
+08900	Wyalusing Area
+09100	Bensalem Township
+09130	Bristol Borough
+09135	Bristol Township
+09200	Centennial
+09210	Central Bucks
+09235	Council Rock
+09720	Morrisville Borough
+09750	Neshaminy
+09760	New Hope Solebury
+09800	Palisades
+09810	Pennridge
+09820	Pennsbury
+09840	Quakertown Community
+10125	Butler Area
+10360	Karns City Area
+10500	Mars Area
+10535	Moniteau
+10750	Slippery Rock Area
+10780	Knoch
+10790	Seneca Valley
+11060	Blacklick Valley
+11120	Cambria Heights
+11130	Central Cambria
+11140	Conemaugh Valley
+11200	Ferndale Area
+11220	Forest Hills
+11250	Greater Johnstown
+11450	Northern Cambria
+11600	Penn Cambria
+11630	Portage Area
+11650	Richland
+11850	Westmont Hilltop
+12270	Cameron County
+13500	Jim Thorpe Area
+13550	Lehighton Area
+13650	Palmerton Area
+13660	Panther Valley
+13900	Weatherly Area
+14100	Bald Eagle Area
+14110	Bellefonte Area
+14700	Penns Valley Area
+14800	State College Area
+15050	Avon Grove
+15190	Coatesville Area
+15200	Downingtown Area
+15350	Great Valley
+15400	Kennett Consolidated
+15650	Octorara Area
+15660	Owen J. Roberts
+15670	Oxford Area
+15720	Phoenixville Area
+15780	Tredyffrin Easttown
+15850	Unionville-Chadds Ford
+15900	West Chester Area
+16030	Allegheny Clarion Valley
+16120	Clarion Area
+16170	Clarion-Limestone Area
+16650	Keystone
+16750	North Clarion County
+16800	Redbank Valley
+16900	Union
+17100	Clearfield Area
+17180	Curwensville Area
+17200	Dubois Area
+17300	Glendale
+17350	Harmony Area
+17500	Moshannon Valley
+17700	Philipsburg-Osceola Area
+17900	West Branch Area
+18360	Keystone Central
+19100	Benton Area
+19110	Berwick Area
+19120	Bloomsburg Area
+19150	Central Columbia
+19500	Millville Area
+19750	Southern Columbia Area
+20103	Conneaut
+20135	Crawford Central
+20470	Penncrest
+21050	Big Spring
+21100	Camp Hill
+21110	Carlisle Area
+21160	Cumberland Valley
+21250	East Pennsboro Area
+21650	Mechanicsburg Area
+21800	Shippensburg Area
+21830	South Middleton
+21900	West Shore
+22140	Central Dauphin
+22175	Derry Township
+22250	Halifax Area
+22275	Harrisburg City
+22400	Lower Dauphin
+22600	Middletown Area
+22610	Millersburg Area
+22800	Steelton Highspire
+22830	Susquehanna Township
+22900	Upper Dauphin Area
+23123	Chester Upland
+23130	Chichester
+23410	Garnet Valley
+23450	Haverford Township
+23510	Interboro
+23550	Marple Newtown
+23690	Penn-Delco
+23760	Radnor Township
+23770	Ridley
+23790	Rose Tree Media
+23840	Southeast Delco
+23850	Springfield
+23945	Upper Darby
+23960	Wallingford Swarthmore
+23965	William Penn
+24350	Johnsonburg Area
+24600	Ridgway Area
+24800	Saint Marys Area
+25145	Corry Area
+25260	Erie City
+25330	Fairview
+25355	Fort Leboeuf
+25390	General McLane
+25405	Girard
+25435	Harbor Creek
+25655	Iroquois
+25760	Millcreek Township
+25830	North East
+25850	Northwestern
+25910	Union City Area
+25970	Wattsburg Area
+26030	Albert Gallatin Area
+26080	Brownsville Area
+26130	Connellsville Area
+26290	Frazier
+26400	Laurel Highlands
+26800	Uniontown Area
+27200	Forest Area
+28130	Chambersburg Area
+28200	Fannett-Metal
+28300	Greencastle-Antrim
+28600	Tuscarora
+28900	Waynesboro Area
+29130	Central Fulton
+29230	Forbes Road
+29750	Southern Fulton
+30130	Carmichaels Area
+30140	Central Greene
+30350	Jefferson-Morgan
+30650	Southeastern Greene
+30850	West Greene
+31250	Huntingdon Area
+31280	Juniata Valley
+31600	Mount Union Area
+31750	Southern Huntingdon County
+32110	Blairsville-Saltsburg
+32330	Homer Center
+32370	Indiana Area
+32520	Marion Center Area
+32630	Penns Manor Area
+32730	Purchase Line
+32800	United
+33070	Brockway Area
+33080	Brookville Area
+33800	Punxsutawney Area
+34360	Juniata County
+35030	Abington Heights
+35130	Carbondale Area
+35220	Dunmore
+35460	Lakeland
+35550	Mid Valley
+35650	North Pocono
+35660	Old Forge
+35700	Riverside
+35740	Scranton City
+35840	Valley View
+36130	Cocalico
+36150	Columbia Borough
+36170	Conestoga Valley
+36220	Donegal
+36230	Eastern Lancaster County
+36240	Elizabethtown Area
+36260	Ephrata Area
+36310	Hempfield
+36360	Lampeter-Strasburg
+36400	Lancaster
+36440	Manheim Central
+36450	Manheim Township
+36520	Penn Manor
+36530	Pequea Valley
+36700	Solanco
+36900	Warwick
+37200	Ellwood City Area
+37400	Laurel
+37500	Mohawk Area
+37520	Neshannock Township
+37530	New Castle Area
+37620	Shenango Area
+37700	Union Area
+37800	Wilmington Area
+38030	Annville-Cleona
+38130	Cornwall-Lebanon
+38230	Eastern Lebanon County
+38460	Lebanon
+38500	Northern Lebanon
+38530	Palmyra Area
+39030	Allentown City
+39130	Catasauqua Area
+39230	East Penn
+39450	Northern Lehigh
+39460	Northwestern Lehigh
+39510	Parkland
+39560	Salisbury Township
+39570	Southern Lehigh
+39780	Whitehall-Coplay
+40140	Crestwood
+40160	Dallas
+40260	Greater Nanticoke Area
+40300	Hanover Area
+40330	Hazleton Area
+40390	Lake-Lehman
+40600	Northwest Area
+40660	Pittston Area
+40885	Wilkes-Barre Area
+40920	Wyoming Area
+40930	Wyoming Valley West
+41200	East Lycoming
+41400	Jersey Shore Area
+41420	Loyalsock Township
+41500	Montgomery Area
+41510	Montoursville Area
+41530	Muncy
+41610	South Williamsport Area
+41720	Williamsport Area
+42080	Bradford Area
+42230	Kane Area
+42600	Otto-Eldred
+42630	Port Allegany
+42750	Smethport Area
+43130	Commodore Perry
+43250	Farrell Area
+43280	Greenville Area
+43290	Grove City Area
+43330	Hermitage
+43360	Jamestown Area
+43390	Lakeview
+43500	Mercer Area
+43530	Reynolds
+43560	Sharon City
+43570	Sharpsville Area
+43750	West Middlesex Area
+44460	Mifflin County
+45200	East Stroudsburg Area
+45520	Pleasant Valley
+45540	Pocono Mountain
+45600	Stroudsburg Area
+46030	Abington
+46050	Bryn Athyn Borough
+46130	Cheltenham Township
+46160	Colonial
+46360	Hatboro-Horsham
+46380	Jenkintown
+46450	Lower Merion
+46460	Lower Moreland Township
+46530	Methacton
+46560	Norristown Area
+46570	North Penn
+46610	Perkiomen Valley
+46630	Pottsgrove
+46640	Pottstown
+46710	Souderton Area
+46720	Springfield Township
+46730	Spring-Ford Area
+46830	Upper Dublin
+46840	Upper Merion Area
+46850	Upper Moreland Township
+46860	Upper Perkiomen
+46930	Wissahickon
+47180	Danville Area
+48080	Bangor Area
+48100	Bethlehem Area
+48330	Easton Area
+48480	Nazareth Area
+48490	Northampton Area
+48560	Pen Argyl Area
+48600	Saucon Valley
+48860	Wilson Area
+49350	Line Mountain
+49500	Milton Area
+49510	Mount Carmel Area
+49650	Shamokin Area
+49660	Shikellamy
+49800	Warrior Run
+50300	Greenwood
+50400	Newport
+50600	Susquenita
+50800	West Perry
+51500	Philadelphia City
+52200	Delaware Valley
+53030	Austin Area
+53130	Coudersport Area
+53280	Galeton Area
+53550	Northern Potter
+53750	Oswayo Valley
+54080	Blue Mountain
+54450	Mahanoy Area
+54470	Minersville Area
+54500	North Schuylkill
+54600	Pine Grove Area
+54610	Pottsville Area
+54680	Saint Clair Area
+54720	Shenandoah Valley
+54730	Schuylkill Haven Area
+54760	Tamaqua Area
+54780	Tri-Valley
+54880	Williams Valley
+55500	Midd-West
+55710	Selinsgrove Area
+56100	Berlin Brothersvalley
+56180	Conemaugh Township Area
+56520	Meyersdale Area
+56550	North Star
+56630	Rockwood Area
+56700	Salisbury-Elk Lick
+56720	Shade-Central City
+56740	Shanksville-Stonycreek
+56770	Somerset Area
+56840	Turkeyfoot Valley Area
+56910	Windber Area
+57630	Sullivan County
+58100	Blue Ridge
+58250	Elk Lake
+58300	Forest City Regional
+58450	Montrose Area
+58460	Mountain View
+58650	Susquehanna Community
+59600	Northern Tioga
+59700	Southern Tioga
+59850	Wellsboro Area
+60400	Lewisburg Area
+60500	Mifflinburg Area
+61130	Cranberry Area
+61220	Franklin Area
+61620	Oil City Area
+61720	Titusville Area
+61860	Valley Grove
+62830	Warren County
+63050	Avella Area
+63090	Bentworth
+63100	Bethlehem-Center
+63120	Burgettstown Area
+63150	California Area
+63170	Canon-McMillan
+63180	Charleroi
+63190	Chartiers-Houston
+63240	Fort Cherry
+63390	McGuffey
+63650	Peters Township
+63700	Ringgold
+63800	Trinity Area
+63880	Washington
+64830	Wallenpaupack Area
+64870	Wayne Highlands
+64890	Western Wayne
+65060	Belle Vernon Area
+65070	Burrell
+65160	Derry Area
+65260	Franklin Regional
+65310	Greater Latrobe
+65320	Greensburg Salem
+65380	Hempfield Area
+65410	Jeannette City
+65440	Kiski Area
+65490	Ligonier Valley
+65580	Monessen City
+65590	Mount Pleasant Area
+65630	New Kensington-Arnold
+65650	Norwin
+65710	Penn-Trafford
+65750	Southmoreland
+65890	Yough
+66500	Lackawanna Trail
+66750	Tunkhannock Area
+67130	Central York
+67160	Dallastown Area
+67180	Dover Area
+67220	Eastern York
+67280	Hanover Public
+67440	Northeastern
+67460	Northern York County
+67550	Red Lion Area
+67620	South Eastern
+67640	South Western
+67650	Southern York County
+67670	Spring Grove Area
+67850	West York Area
+67900	York City
+67940	York Suburban
