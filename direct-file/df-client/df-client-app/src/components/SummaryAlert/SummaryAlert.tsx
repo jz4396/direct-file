@@ -39,7 +39,7 @@ const SummaryAlert = ({ sections, refs, headingLevel, type }: SummaryAlertProps)
                   <Translation i18nKey={s.i18nKey} collectionId={null} />
                 </Link>
               ) : (
-                <a href={``} data-path={s.path} onClick={(e) => scrollToInvalidElement(e, refs, prefersReducedMotion)}>
+                <a href={`#`} data-path={s.path} onClick={(e) => scrollToInvalidElement(e, refs, prefersReducedMotion)}>
                   <Translation i18nKey={s.i18nKey} collectionId={null} />
                 </a>
               )}
