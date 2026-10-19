@@ -119,7 +119,6 @@ const build = (extra: Record<string, unknown>, status: Record<string, unknown> =
 
 const FEDERAL_KOS = [
   `/flowKnockoutDividendUnsupportedBoxes`,
-  `/flowKnockoutCapitalGainDistributions`,
   `/flowKnockoutNondividendDistributionsOverBasis`,
   `/flowKnockoutQualifiedDividendsHoldingPeriod`,
   `/flowKnockoutSection199ADividends`,
@@ -212,11 +211,6 @@ describe(`1099-DIV box mappings`, () => {
 });
 
 describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () => {
-  it(`box 2a capital gain distributions > 0`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutCapitalGainDistributions`, `/totalCapitalGainDistributions`];
-    blocks(build(divs({ box1a: 500, box2a: 1 })), `/flowKnockoutCapitalGainDistributions`);
-    expect(get(build(divs({ box1a: 500, box2a: 0 })), `/flowKnockoutCapitalGainDistributions`).get).toBe(false);
-  });
   it(`box 3 above basis (capital gain)`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutNondividendDistributionsOverBasis`];
     blocks(build(divs({ box1a: 500, box3: 900, overBasis: true })), `/flowKnockoutNondividendDistributionsOverBasis`);
@@ -421,5 +415,119 @@ describe(`#86 dividends in downstream computations`, () => {
     expect(ko(young(`2002-03-03`, true))).toBe(false); // 24
     expect(ko(young(`2010-03-03`, false), mfjFilerData)).toBe(false); // joint return
     expect(ko({})).toBe(false); // base filer is an adult
+  });
+});
+
+// #86b: box 2a on Form 1040 line 7a (line 7a Exception 1) or Schedule D line 13, taxed through the QDCG worksheet.
+// Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31 Line 7a, p. 33 Line 7b, p. 36 Line 16,
+// p. 38 QDCG Tax Worksheet; Schedule D instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2.
+describe(`#86b capital gain distributions and the QDCG Tax Worksheet`, () => {
+  it(`box 2a alone goes on line 7a with the line 7b box, no Schedule D, and is taxed at 0%`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/capitalGainDistributionsWithoutScheduleD`,
+      `/capitalGainsOrLosses`,
+      `/capitalGainsScheduleDNotRequired`,
+      `/scheduleDLine13`,
+      `/qdcgLine3`,
+      `/qdcgLine11`,
+      `/qdcgLine19`,
+      `/qdcgLine24`,
+      `/usesQdcgTaxWorksheet`,
+      `/form6251UsesPartIII`,
+    ];
+    const g = build(divs({ box1a: 500, box2a: 800.5 }));
+    expect(get(g, `/capitalGainDistributionsWithoutScheduleD`).get).toBe(true);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(val(g, `/capitalGainsOrLosses`)).toBe(`801.00`); // whole dollars (p. 23)
+    expect(get(g, `/capitalGainsScheduleDNotRequired`).get).toBe(true);
+    expect(val(g, `/scheduleDLine13`)).toBe(`0.00`);
+    expect(val(g, `/qdcgLine3`)).toBe(`801.00`); // "No. Enter the amount from Form 1040 or 1040-SR, line 7a."
+    expect(val(g, `/qdcgLine4`)).toBe(`801.00`);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(true);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(true);
+    expect(val(g, `/form6251Line13`)).toBe(`801.00`);
+    expect(val(g, `/qdcgLine11`)).toBe(val(g, `/qdcgLine9`));
+    expect(val(g, `/qdcgLine24`)).toBe(val(g, `/taxOnTaxableIncomeRegularRates`));
+    const base = build(divs({ box1a: 500 }));
+    expect(Number(val(g, `/totalIncome`)) - Number(val(base, `/totalIncome`))).toBe(801);
+    // Line 1 stays under the 0% bracket (line 6), so the whole $801 is on line 9 and tax doesn't change.
+    expect(val(g, `/qdcgLine9`)).toBe(`801.00`);
+    expect(val(g, `/tentativeTaxFromTaxableIncome`)).toBe(val(base, `/tentativeTaxFromTaxableIncome`));
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    noKnockouts(g);
+  });
+
+  it(`box 2a above the 0% bracket is taxed at 15% on QDCG lines 17-18`, () => {
+    // $40,000 wages - $16,100 standard deduction = $23,900; + $40,000 box 2a = $63,900 on line 1.
+    const g = build(divs({ box1a: 0.01, box2a: 40000 }));
+    expect(val(g, `/qdcgLine1`)).toBe(`63900.00`);
+    expect(val(g, `/qdcgLine5`)).toBe(`23900.00`);
+    expect(val(g, `/qdcgLine9`)).toBe(`25550.00`); // $49,450 (line 6, Rev. Proc. 2025-32 §4.03) - $23,900
+    expect(val(g, `/qdcgLine17`)).toBe(`14450.00`);
+    expect(val(g, `/qdcgLine18`)).toBe(`2167.50`);
+    expect(val(g, `/qdcgLine19`)).toBe(`40000.00`);
+    expect(val(g, `/qdcgLine20`)).toBe(`0.00`);
+    expect(Number(val(g, `/qdcgLine25`))).toBe(Math.round(Number(val(g, `/qdcgLine22`)) + 2167.5));
+    noKnockouts(g);
+  });
+
+  it(`box 2a with Schedule D required goes on Schedule D line 13 instead`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleDLine13`, `/scheduleDLine15`, `/capitalGainsOrLosses`, `/qdcgLine3`];
+    const g = build({
+      ...divs({ box1a: 500, box2a: 1200 }),
+      '/writableLongTermCapitalLossCarryover': createDollarWrapper(`200`),
+    });
+    expect(get(g, `/requiresScheduleD`).get).toBe(true);
+    expect(get(g, `/capitalGainDistributionsWithoutScheduleD`).get).toBe(false);
+    expect(get(g, `/capitalGainsScheduleDNotRequired`).get).toBe(false);
+    expect(val(g, `/scheduleDLine13`)).toBe(`1200.00`);
+    expect(val(g, `/scheduleDLine15`)).toBe(`1000.00`); // line 13 less the line 14 carryover
+    expect(val(g, `/scheduleDLine16`)).toBe(`1000.00`);
+    expect(val(g, `/capitalGainsOrLosses`)).toBe(`1000.00`);
+    expect(val(g, `/qdcgLine3`)).toBe(`1000.00`); // "Yes. Enter the smaller of line 15 or line 16 of Schedule D."
+    noKnockouts(g);
+  });
+
+  it(`box 2a offset by a larger carryover: Schedule D loss, QDCG line 3 is $0`, () => {
+    const g = build({
+      ...divs({ box1a: 500, box2a: 1200 }),
+      '/writableLongTermCapitalLossCarryover': createDollarWrapper(`5000`),
+    });
+    expect(val(g, `/scheduleDLine15`)).toBe(`-3800.00`);
+    expect(val(g, `/capitalGainsOrLosses`)).toBe(`-3000.00`);
+    expect(val(g, `/qdcgLine3`)).toBe(`0.00`);
+    noKnockouts(g);
+  });
+
+  it(`no box 2a: line 7a is $0, line 7b unchecked`, () => {
+    const g = build(divs({ box1a: 500 }));
+    expect(get(g, `/capitalGainDistributionsWithoutScheduleD`).get).toBe(false);
+    expect(get(g, `/capitalGainsScheduleDNotRequired`).get).toBe(false);
+    expect(val(g, `/capitalGainsOrLosses`)).toBe(`0.00`);
+    expect(val(g, `/qdcgLine3`)).toBe(`0.00`);
+  });
+
+  it(`qualified dividends and box 2a together fill QDCG lines 2 and 3`, () => {
+    const g = build(divs({ box1a: 1000, box1b: 600, box2a: 300 }));
+    expect(val(g, `/qdcgLine2`)).toBe(`600.00`);
+    expect(val(g, `/qdcgLine3`)).toBe(`300.00`);
+    expect(val(g, `/qdcgLine4`)).toBe(`900.00`);
+    noKnockouts(g);
+  });
+
+  it(`box 2a on a Pennsylvania return stops the PA return (PA Schedule B line 10)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaDividends`];
+    const pa = build({ ...divs({ box1a: 500, box2a: 10 }), ...state(`pa`) });
+    expect(get(pa, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaDividends`);
+    const onlyCgd = build({ ...divs({ box1a: 0, box2a: 10 }), ...state(`pa`) });
+    expect(get(onlyCgd, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(build({ ...divs({ box1a: 500 }), ...state(`pa`) }), `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(build(divs({ box1a: 500, box2a: 10 })), `/flowKnockoutPaDividends`).get).toBe(false); // NJ
+  });
+
+  it(`box 2a counts as unearned income for Form 8615`, () => {
+    const g = build(divs({ box1a: 100, box2a: 2650 }));
+    expect(val(g, `/form8615UnearnedIncome`)).toBe(`2750.00`);
   });
 });

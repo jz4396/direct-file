@@ -23,7 +23,6 @@ headings:
   /heading/income/dividends/unsupported-boxes: Does this 1099-DIV show anything in any other box?
   /heading/income/dividends/nominee: Did you receive any of these dividends for someone else (as a nominee)?
   /heading/knockout/dividends-holding-period: This tool doesn’t yet support box 1b dividends that aren’t qualified
-  /heading/knockout/dividends-capital-gain-distributions: This tool doesn’t yet support capital gain distributions
   /heading/knockout/dividends-nondividend-over-basis:
     This tool doesn’t yet support nondividend distributions above your basis
   /heading/knockout/dividends-section-199a: This tool doesn’t yet support section 199A dividends
@@ -112,12 +111,6 @@ info:
         - p:
             Dividends that don’t meet the holding period rules are taxed as ordinary dividends, not as qualified
             dividends. This tool can’t split them out yet. You’ll need another way to file this return.
-  /info/knockout/dividends-capital-gain-distributions:
-    alertText:
-      body:
-        - p:
-            Capital gain distributions are reported on Schedule D or Form 1040, line 7, and taxed at capital gain rates.
-            This tool doesn’t figure that yet. You’ll need another way to file this return.
   /info/knockout/dividends-nondividend-over-basis:
     alertText:
       body:

@@ -65,7 +65,7 @@
     </Fact>
     <Fact path="/form6251UsesPartIII">
       <Name>Form 6251 uses Part III</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 7: complete Part III if "you reported qualified dividends on Form 1040 or 1040-SR, line 3a; or you had a gain on both lines 15 and 16 of Schedule D" (capital gain distributions on 1040 line 7a are not supported). Same trigger as the regular-tax QDCG worksheet. IRC §55(b)(3).</Description>
+      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 7: "If you reported capital gain distributions directly on Form 1040 or 1040-SR, line 7a; you reported qualified dividends on Form 1040 or 1040-SR, line 3a; or you had a gain on both lines 15 and 16 of Schedule D (Form 1040) (as refigured for the AMT, if necessary), complete Part III". #86b: same trigger as the regular-tax QDCG worksheet (scheduleD3 /usesQdcgTaxWorksheet, worksheet line 4 more than $0), now that line 7a capital gain distributions are supported; line 13 takes worksheet line 4, which includes them through worksheet line 3. No AMT refiguring of gains is needed in scope (no AMT basis adjustments; Schedule D Tax Worksheet and line 14 / Schedule D line 19 stop the return). IRC §55(b)(3).</Description>
       <Derived><Dependency module="scheduleD3" path="/usesQdcgTaxWorksheet" /></Derived>
     </Fact>
     <Fact path="/form6251Line12">

@@ -2,7 +2,7 @@
 # Source PDF: https://www.irs.gov/pub/irs-pdf/f1040sd.pdf, the latest published revision (2025; OMB 1545-0074).
 # The TY2026 form is not published yet. Re-run ../../fetch-schedule-d-pdfs.sh and re-verify field names when it is.
 # AcroForm field names were verified with pypdf against the committed PDF (#19).
-# Column (h) only for lines 1b/2/3/8b/9/10; lines 6/14 carryover; Part III lines 16 and 21.
+# Column (h) only for lines 1b/2/3/8b/9/10; line 13 capital gain distributions; lines 6/14 carryover; Part III lines 16 and 21.
 # Cites: Schedule D instr. (2025) p.3 (§1211(b) $3,000); p.10 (lines 6/14); p.14 (line 21).
 includeWhen: /requiresScheduleD
 form:
@@ -26,6 +26,7 @@ form:
           f1_34[0]: /scheduleDLine9
         Row10[0]:
           f1_38[0]: /scheduleDLine10
+      f1_41[0]: /scheduleDLine13 # line 13 capital gain distributions (#86b); f1_39/f1_40 are lines 11/12
       f1_42[0]: /scheduleDLine14
       f1_43[0]: /scheduleDLine15
     Page2[0]:
