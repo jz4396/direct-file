@@ -368,3 +368,58 @@ describe(`PA-40 line 3 dividends (PA-40 IN (2025) p. 15 and PA Schedule B p. 32)
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
 });
+
+describe(`#86 dividends in downstream computations`, () => {
+  it(`box 1b is taxed through the QDCG Tax Worksheet, not at ordinary rates (i1040 (2025) p. 38)`, () => {
+    const ordinary = build(divs({ box1a: 5000 }));
+    const qualified = build(divs({ box1a: 5000, box1b: 5000 }));
+    expect(val(qualified, `/qualifiedDividends`)).toBe(`5000.00`);
+    expect(get(qualified, `/usesQdcgTaxWorksheet`).get).toBe(true);
+    // $40,000 wages: 2026 single 12% bracket tops out above taxable income, so the 0% rate on line 3a lowers tax
+    expect(Number(val(qualified, `/tentativeTaxFromTaxableIncome`))).toBeLessThan(
+      Number(val(ordinary, `/tentativeTaxFromTaxableIncome`))
+    );
+    noKnockouts(qualified);
+  });
+
+  it(`ordinary dividends flow to Form 8960 line 2, the SS worksheet line 2a source, and student loan MAGI`, () => {
+    const g = build(divs({ box1a: 1234 }));
+    const base = build({});
+    expect(Number(val(g, `/totalIncome`)) - Number(val(base, `/totalIncome`))).toBe(1234);
+    expect(
+      Number(val(g, `/magiForStudentLoanInterestDeduction`)) - Number(val(base, `/magiForStudentLoanInterestDeduction`))
+    ).toBe(1234);
+    expect(val(g, `/form8960Line2`)).toBe(`1234.00`);
+    expect(val(g, `/form8615UnearnedIncome`)).toBe(`1234.00`);
+  });
+
+  const young = (dob: string, student?: boolean) => ({
+    [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(dob),
+    ...(student === undefined ? {} : { [`/filers/#${primaryFilerId}/isStudent`]: createBooleanWrapper(student) }),
+  });
+
+  it(`Form 8615: a filer under 18 with more than $2,700 of unearned income stops the return (i8615 (2026 draft))`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [`/form8615UnearnedIncome`, `/flowKnockoutForm8615`];
+    const g = build({ ...divs({ box1a: 2701 }), ...young(`2010-05-05`, false) });
+    expect(get(g, `/flowKnockoutForm8615`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutForm8615`);
+    // exactly $2,700 is not "more than $2,700"
+    expect(get(build({ ...divs({ box1a: 2700 }), ...young(`2010-05-05`, false) }), `/flowKnockoutForm8615`).get).toBe(
+      false
+    );
+  });
+
+  it(`Form 8615: ages 19 to 23 stop only as students; 24 and over, and joint returns, never stop`, () => {
+    const ko = (x: Record<string, unknown>, s?: Record<string, unknown>) =>
+      get(build({ ...divs({ box1a: 3000 }), ...x }, s), `/flowKnockoutForm8615`).get;
+    expect(ko(young(`2008-03-03`, false))).toBe(true); // 18 at end of 2026: support isn't asked
+    expect(ko(young(`2005-03-03`, true))).toBe(true); // 21, student
+    expect(ko(young(`2005-03-03`, false))).toBe(false); // 21, not a student
+    expect(ko(young(`2002-03-03`, true))).toBe(false); // 24
+    expect(ko(young(`2010-03-03`, false), mfjFilerData)).toBe(false); // joint return
+    expect(ko({})).toBe(false); // base filer is an adult
+  });
+});

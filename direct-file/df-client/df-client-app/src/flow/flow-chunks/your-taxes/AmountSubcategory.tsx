@@ -111,6 +111,13 @@ export const AmountSubcategory = (
       <DFAlert i18nKey='/info/knockout/amt-kiddie-tax' headingLevel='h3' type='warning' />
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
+    {/* #86 Form 8615 (tax for certain children who have unearned income) isn't computed */}
+    <Screen route='form-8615-knockout' condition='/flowKnockoutForm8615' isKnockout={true}>
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/form-8615' />
+      <DFAlert i18nKey='/info/knockout/form-8615' headingLevel='h3' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
     <Screen route='tax-amount-intro'>
       <ContextHeading displayOnlyOn='edit' i18nKey='/heading/your-taxes/amount/tax-amount' />
       <Heading i18nKey='/heading/your-taxes/amount/tax-amount-intro' />

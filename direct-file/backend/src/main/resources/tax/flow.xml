@@ -138,6 +138,7 @@
           <Dependency module="form6251" path="/flowKnockoutAmtPreferenceItems" />
           <Dependency module="form6251" path="/flowKnockoutAmtMfsAddBack" />
           <Dependency module="form6251" path="/flowKnockoutAmtKiddieTax" />
+          <Dependency module="income" path="/flowKnockoutForm8615" />
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />

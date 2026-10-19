@@ -6,6 +6,7 @@ subsubcategories:
     div-income-tax-withheld: Federal income tax withheld
     div-income-other-boxes: Other boxes
 headings:
+  /heading/knockout/form-8615: This tool doesn’t yet support the tax on a child’s unearned income (Form 8615)
   /heading/income/dividends/box-7-election: Do all of these apply to the foreign tax on your Forms 1099-DIV?
   /heading/income/dividends: Dividends
   /heading/income/dividends/intro: Did you receive any dividends in {{/taxYear}}?
@@ -31,6 +32,16 @@ headings:
   /heading/knockout/dividends-unsupported-boxes: This tool doesn’t yet support some boxes on your 1099-DIV
   /heading/knockout/dividends-nominee: This tool doesn’t yet support dividends received as a nominee
 info:
+  /info/knockout/form-8615:
+    alertText:
+      body:
+        - p:
+            If you were under 24 at the end of the year and had more than $2,700 of interest, dividends, and other
+            unearned income, part of it may be taxed at your parent’s rate on Form 8615. This tool doesn’t figure that
+            yet.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/income/dividends/box-7-election:
     body:
       - ul:

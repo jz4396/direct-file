@@ -411,6 +411,7 @@
     <Fact path="/filers/*/age">
       <Name>Age</Name>
       <Description>The age of the filer on the last day of the tax year.</Description>
+      <Export downstreamFacts="true" />
 
       <Derived>
         <Subtract>
