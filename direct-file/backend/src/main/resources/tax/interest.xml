@@ -645,15 +645,19 @@
     <Fact path="/interestReports/*/earlyWithdrawlPenaltyAmount">
       <Name>1099 Early Withdrawl Penalty Amount</Name>
       <Description>
-        Box 2 on the 1099-INT.
+        Box 2 on the 1099-INT. Only counted when the report is a 1099-INT (../has1099), like box 3, so a
+        value left over after switching the report to "no 1099" is not deducted.
       </Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <IsComplete>
-                <Dependency path="../writableEarlyWithdrawlPenaltyAmount" />
-              </IsComplete>
+              <All>
+                <IsComplete>
+                  <Dependency path="../writableEarlyWithdrawlPenaltyAmount" />
+                </IsComplete>
+                <Dependency path="../has1099" />
+              </All>
             </When>
             <Then>
               <Dependency path="../writableEarlyWithdrawlPenaltyAmount" />
@@ -679,7 +683,7 @@
         include amounts forfeited to a bank, mutual savings bank, savings and loan association, building and loan
         association, cooperative bank or homestead association as a penalty for premature withdrawal of funds from
         a time savings account, certificate of deposit, or similar class of deposit." Schedule 1 (Form 1040) 2026 draft, line 18:
-        "Penalty on early withdrawal of savings". Instructions for Form 1040 (2026 draft) p. 95 (PDF p. 96),
+        "Penalty on early withdrawal of savings". i1040 (2025) p. 95,
         Line 18: "The Form 1099-INT or Form 1099-OID you received will show the amount of any penalty you were
         charged." The deduction is the sum of 1099-INT box 2 across all interest reports. There is no dollar
         threshold and no cap at the interest reported in box 1: 62(a)(9) limits the deduction only to the amount

@@ -1,9 +1,9 @@
 // Penalty on early withdrawal of savings, Schedule 1 (Form 1040) line 18.
 // 26 U.S.C. 62(a)(9) (https://www.law.cornell.edu/uscode/text/26/62#a_9): above-the-line deduction for "amounts
 // forfeited to a bank ... as a penalty for premature withdrawal of funds from a time savings account, certificate of
-// deposit, or similar class of deposit." Instructions for Form 1040 (2026 draft) p. 95 (PDF p. 96), Line 18: "The Form
-// 1099-INT or Form 1099-OID you received will show the amount of any penalty you were charged." The amount is the sum
-// of 1099-INT box 2; there is no dollar threshold and no cap at the interest reported in box 1.
+// deposit, or similar class of deposit." i1040 (2025) p. 95, Line 18: "The Form 1099-INT or Form 1099-OID you received
+// will show the amount of any penalty you were charged." The amount is the sum of 1099-INT box 2; there is no dollar
+// threshold and no cap at the interest reported in box 1.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { createBooleanWrapper, createCollectionWrapper, createDollarWrapper } from '../persistenceWrappers.js';
@@ -94,6 +94,19 @@ describe(`Schedule 1 line 18: penalty on early withdrawal of savings (26 U.S.C. 
     const fg = graph(50000, report(intA, 1200, 0));
     expect(dollars(fg, `/earlyWithdrawalPenaltyTotal`)).toBe(`0.00`);
     expect(dollars(fg, `/agi`)).toBe(`51200.00`);
+  });
+
+  it(`box 2 left over after switching the report to "no 1099" is not deducted`, ({ task }) => {
+    task.meta.testedFactPaths = [`/earlyWithdrawalPenaltyTotal`, `/adjustmentsToIncome`, `/agi`];
+    const fg = graph(40000, {
+      ...makeInterestReportData(100, intA, primaryFilerId),
+      [`/interestReports/#${intA}/writableEarlyWithdrawlPenaltyAmount`]: createDollarWrapper(`50`),
+    });
+    expect(val(fg, `/interestReports/#${intA}/has1099`)).toBe(false);
+    expect(dollars(fg, `/earlyWithdrawalPenaltyTotal`)).toBe(`0.00`);
+    expect(dollars(fg, `/adjustmentsToIncome`)).toBe(`0.00`);
+    // $40,000 + $100, no deduction.
+    expect(dollars(fg, `/agi`)).toBe(`40100.00`);
   });
 
   it(`line 18 reduces the student loan interest MAGI (Schedule 1 lines 11-20, 23 and 25)`, ({ task }) => {
