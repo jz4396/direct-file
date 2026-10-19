@@ -63,6 +63,9 @@ abstract class PdfTemplate {
             new PdfTable("CDCC_CAREGIVERS_STATEMENT"),
             new Irs2441DueDiligencePdfTable("IRS2441_DUE_DILIGENCE_STATEMENT"),
 
+            // ASN 32 (#122: 2026 draft Form 6251)
+            new Irs6251PdfForm("IRS6251"),
+
             // ASN 43
             new IrsScheduleEicPdfForm("IRS1040EIC"),
 
