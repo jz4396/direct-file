@@ -8258,24 +8258,27 @@ info:
   /info/knockout/net-investment-single-hoh:
     body:
       - p: >-
-          Tu ingreso bruto ajustado (AGI) es {{/agi}} y tus ingresos por intereses son superiores a $0. Esta herramienta
-          aún no permite los AGI de más de {{/netInvestmentIncomeThresholdForSingleOrHoh}} con ingresos por intereses
-          para tu estado civil tributario de {{/filingStatusCapitalized}}, ya que podrías tener que pagar el impuesto
-          sobre los ingresos netos de inversión.
+          Tu ingreso bruto ajustado (AGI) es {{/agi}}, que es mayor que {{/netInvestmentIncomeThresholdForSingleOrHoh}}
+          para tu estado civil tributario de {{/filingStatusCapitalized}}, así que podrías tener que pagar el impuesto
+          sobre los ingresos netos de inversión. Esta herramienta puede calcular ese impuesto sobre intereses y
+          ganancias de capital, pero aún no cuando también tienes ingresos de trabajo por cuenta propia (Anexo C),
+          ingresos de alquiler o regalías (Anexo E) o deducciones detalladas.
   /info/knockout/net-investment-mfj-qss:
     body:
       - p: >-
-          Tu ingreso bruto ajustado (AGI) es {{/agi}} y tus ingresos por intereses son superiores a $0. Esta herramienta
-          aún no permite los AGI de más de {{/netInvestmentIncomeThresholdForMfjOrQss}} con ingresos por intereses para
-          tu estado civil tributario de {{/filingStatusCapitalized}}, ya que podrías tener que pagar el impuesto sobre
-          los ingresos netos de inversión.
+          Tu ingreso bruto ajustado (AGI) es {{/agi}}, que es mayor que {{/netInvestmentIncomeThresholdForMfjOrQss}}
+          para tu estado civil tributario de {{/filingStatusCapitalized}}, así que podrías tener que pagar el impuesto
+          sobre los ingresos netos de inversión. Esta herramienta puede calcular ese impuesto sobre intereses y
+          ganancias de capital, pero aún no cuando también tienes ingresos de trabajo por cuenta propia (Anexo C),
+          ingresos de alquiler o regalías (Anexo E) o deducciones detalladas.
   /info/knockout/net-investment-mfs:
     body:
       - p: >-
-          Tu ingreso bruto ajustado (AGI) es {{/agi}} y tus ingresos por intereses son superiores a $0. Esta herramienta
-          aún no permite los AGI de más de {{/netInvestmentIncomeThresholdForMfs}} con ingresos por intereses para tu
-          estado civil tributario de {{/filingStatusCapitalized}}, ya que podrías tener que pagar el impuesto sobre los
-          ingresos netos de inversión.
+          Tu ingreso bruto ajustado (AGI) es {{/agi}}, que es mayor que {{/netInvestmentIncomeThresholdForMfs}} para tu
+          estado civil tributario de {{/filingStatusCapitalized}}, así que podrías tener que pagar el impuesto sobre los
+          ingresos netos de inversión. Esta herramienta puede calcular ese impuesto sobre intereses y ganancias de
+          capital, pero aún no cuando también tienes ingresos de trabajo por cuenta propia (Anexo C), ingresos de
+          alquiler o regalías (Anexo E) o deducciones detalladas.
   /info/knockout/income/interest/1099-int-other-state-ko:
     body: >-
       Sólo puedes declarar la retención de impuestos estatales de {{/filerResidenceAndIncomeState}} con Direct File.
