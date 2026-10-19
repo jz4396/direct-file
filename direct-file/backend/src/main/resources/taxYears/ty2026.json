@@ -1,0 +1,1614 @@
+{
+  "$comment": "TY2026 parameter table. Each parameter lists the literal values of one fact-dictionary fact (backend/src/main/resources/tax) in document order and the authority for them. yearConfig.test.ts checks this file against the XML; apply-year-config writes it into the XML.",
+  "taxYear": 2026,
+  "sources": {
+    "rp-2025-32": {
+      "title": "Rev. Proc. 2025-32",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "kind": "pdf",
+      "sha256": "e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b"
+    },
+    "rp-2025-19": {
+      "title": "Rev. Proc. 2025-19",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
+      "kind": "pdf",
+      "sha256": "ff2ba4bac62ef6940c57578d70f8be88ff3898ac806e921ad52787c11da35bf4"
+    },
+    "n-2025-67": {
+      "title": "Notice 2025-67",
+      "url": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf",
+      "kind": "pdf",
+      "sha256": "1eea8f141b0cddd182f9f09b3bc8ffad683d27ceb806dfc6da126811dc0a1f8d"
+    },
+    "p4164": {
+      "title": "Publication 4164, Modernized e-File (MeF) Guide for Software Developers and Transmitters (Processing Year 2026)",
+      "url": "https://www.irs.gov/pub/irs-pdf/p4164.pdf",
+      "kind": "pdf",
+      "sha256": "af0c0383cdee12bbb89c196d843eaf27e22b1528761e2f11154446d2bd59b4d7"
+    },
+    "ssa-cbb": {
+      "title": "SSA Office of the Chief Actuary, Contribution and Benefit Base",
+      "url": "https://www.ssa.gov/oact/cola/cbb.html",
+      "kind": "web"
+    },
+    "fr-2025-19763": {
+      "title": "90 FR 49047 (Nov. 3, 2025), Cost-of-Living Increase and Other Determinations for 2026",
+      "url": "https://www.federalregister.gov/d/2025-19763",
+      "kind": "web"
+    },
+    "irc": {
+      "title": "Internal Revenue Code, 26 U.S.C.",
+      "url": "https://www.law.cornell.edu/uscode/text/26",
+      "kind": "statute"
+    },
+    "ak-dor-26-004": {
+      "title": "Alaska Department of Revenue press release 26-004 (Sept. 18, 2026), DOR announces 2026 PFD amount",
+      "url": "https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf",
+      "kind": "pdf",
+      "sha256": "3f45616c0ceb5542332806f729977c38e96af1b5aef91ba9c31b9ce14b81528e"
+    },
+    "i1099sa": {
+      "title": "Instructions for Forms 1099-SA and 5498-SA",
+      "url": "https://www.irs.gov/instructions/i1099sa",
+      "kind": "web"
+    },
+    "usc5": {
+      "title": "Title 5, U.S. Code",
+      "url": "https://www.law.cornell.edu/uscode/text/5",
+      "kind": "statute"
+    }
+  },
+  "parameters": [
+    {
+      "fact": "/defaultTaxDay",
+      "file": "constants.xml",
+      "values": [
+        "Day:2027-04-15"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6072(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6072",
+          "quote": "returns made on the basis of the calendar year shall be filed on or before the 15th day of April following the close of the calendar year"
+        },
+        {
+          "source": "irc",
+          "section": "§ 7503",
+          "url": "https://www.law.cornell.edu/uscode/text/26/7503",
+          "quote": "When the last day prescribed under authority of the internal revenue laws for performing any act falls on Saturday, Sunday, or a legal holiday, the performance of such act shall be considered timely if it is performed on the next succeeding day which is not a Saturday, Sunday, or a legal holiday."
+        }
+      ]
+    },
+    {
+      "fact": "/resubmissionDeadline",
+      "file": "constants.xml",
+      "values": [
+        "Day:2027-04-20"
+      ],
+      "cite": [
+        {
+          "source": "p4164",
+          "section": "§1.5.2",
+          "page": 18,
+          "quote": "When a rejected return is submitted on or before the due date of the return and a corrected return is “Accepted” by the IRS by the fifth calendar day after the due date of the return, it will be deemed to have been received on the date of the first reject."
+        }
+      ]
+    },
+    {
+      "fact": "/massachusettsAndMaineDeadline",
+      "file": "constants.xml",
+      "values": [
+        "Day:2027-04-15"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6072(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6072",
+          "quote": "returns made on the basis of the calendar year shall be filed on or before the 15th day of April following the close of the calendar year"
+        },
+        {
+          "source": "irc",
+          "section": "§ 7503",
+          "url": "https://www.law.cornell.edu/uscode/text/26/7503",
+          "quote": "When the last day prescribed under authority of the internal revenue laws for performing any act falls on Saturday, Sunday, or a legal holiday, the performance of such act shall be considered timely if it is performed on the next succeeding day which is not a Saturday, Sunday, or a legal holiday."
+        }
+      ]
+    },
+    {
+      "fact": "/taxYear",
+      "file": "constants.xml",
+      "values": [
+        "Int:2026"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§5.02",
+          "page": 35,
+          "quote": "Except as provided in section 5.03 of this revenue procedure, section 4 of this revenue procedure applies to taxable years beginning in 2026."
+        }
+      ]
+    },
+    {
+      "fact": "/majorityOfDaysInYear",
+      "file": "constants.xml",
+      "values": [
+        "Int:184",
+        "Int:183"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 152(c)(1)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/152",
+          "quote": "who has the same principal place of abode as the taxpayer for more than one-half of such taxable year"
+        }
+      ]
+    },
+    {
+      "fact": "/hsaSelfOnlyCoverageLimit",
+      "file": "constants3.xml",
+      "values": [
+        "Dollar:4400"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-19",
+          "section": "§2.01(1)",
+          "page": 1,
+          "pageEnd": 2,
+          "quote": "For calendar year 2026, the annual limitation on deductions under § 223(b)(2)(A) for an individual with self-only coverage under a high deductible health plan is $4,400."
+        }
+      ]
+    },
+    {
+      "fact": "/hsaFamilyCoverageLimit",
+      "file": "constants3.xml",
+      "values": [
+        "Dollar:8750"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-19",
+          "section": "§2.01(1)",
+          "page": 2,
+          "quote": "For calendar year 2026, the annual limitation on deductions under § 223(b)(2)(B) for an individual with family coverage under a high deductible health plan is $8,750."
+        }
+      ]
+    },
+    {
+      "fact": "/hdhpMinAnnualDeductibleSelf",
+      "file": "constants3.xml",
+      "values": [
+        "Dollar:1700"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-19",
+          "section": "§2.01(2)",
+          "page": 2,
+          "quote": "For calendar year 2026, a “high deductible health plan” is defined under § 223(c)(2)(A) as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage."
+        }
+      ]
+    },
+    {
+      "fact": "/hdhpMinAnnualDeductibleFamily",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:3400"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-19",
+          "section": "§2.01(2)",
+          "page": 2,
+          "quote": "For calendar year 2026, a “high deductible health plan” is defined under § 223(c)(2)(A) as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage."
+        }
+      ]
+    },
+    {
+      "fact": "/hdhpMaxOOPExpensesSelf",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:8500"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-19",
+          "section": "§2.01(2)",
+          "page": 2,
+          "quote": "For calendar year 2026, a “high deductible health plan” is defined under § 223(c)(2)(A) as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage."
+        }
+      ]
+    },
+    {
+      "fact": "/hdhpMaxOOPExpensesFamily",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:17000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-19",
+          "section": "§2.01(2)",
+          "page": 2,
+          "quote": "For calendar year 2026, a “high deductible health plan” is defined under § 223(c)(2)(A) as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage."
+        }
+      ]
+    },
+    {
+      "fact": "/capGainsZeroRateMFJ",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:98900"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "Married Individuals Filing Joint Returns and Surviving Spouse: Maximum Zero Rate Amount $98,900; Maximum 15% Rate Amount $613,700",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/capGains15RateMFJ",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:613700"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "Married Individuals Filing Joint Returns and Surviving Spouse: Maximum Zero Rate Amount $98,900; Maximum 15% Rate Amount $613,700",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/capGainsZeroRateMFS",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:49450"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "Married Individuals Filing Separate Returns: Maximum Zero Rate Amount $49,450; Maximum 15% Rate Amount $306,850",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/capGains15RateMFS",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:306850"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "Married Individuals Filing Separate Returns: Maximum Zero Rate Amount $49,450; Maximum 15% Rate Amount $306,850",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/capGainsZeroRateHoH",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:66200"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "Heads of Household: Maximum Zero Rate Amount $66,200; Maximum 15% Rate Amount $579,600",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/capGains15RateHoH",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:579600"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "Heads of Household: Maximum Zero Rate Amount $66,200; Maximum 15% Rate Amount $579,600",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/capGainsZeroRateSingle",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:49450"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "All Other Individuals: Maximum Zero Rate Amount $49,450; Maximum 15% Rate Amount $545,500",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/capGains15RateSingle",
+      "file": "constants4.xml",
+      "values": [
+        "Dollar:545500"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "All Other Individuals: Maximum Zero Rate Amount $49,450; Maximum 15% Rate Amount $545,500",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/maxCtcAmount",
+      "file": "ctcOdc.xml",
+      "values": [
+        "Dollar:2200"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.05(1)",
+          "page": 14,
+          "quote": "For taxable years beginning in 2026, the maximum amount of the credit allowed under § 24(a) is $2,200."
+        }
+      ]
+    },
+    {
+      "fact": "/maxActcAmount",
+      "file": "ctcOdc2.xml",
+      "values": [
+        "Dollar:1700"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.05(2)",
+          "page": 14,
+          "quote": "For taxable years beginning in 2026, the amount used in § 24(d)(1)(A) to determine the amount of the credit under § 24 that may be refundable is $1,700."
+        }
+      ]
+    },
+    {
+      "fact": "/phaseInEndsFor0QualifyingChildren",
+      "file": "eitc4.xml",
+      "values": [
+        "Dollar:8680"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Earned Income Amount: One $13,020; Two $18,290; Three or More $18,290; None $8,680",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/phaseInEndsFor1QualifyingChild",
+      "file": "eitc4.xml",
+      "values": [
+        "Dollar:13020"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Earned Income Amount: One $13,020; Two $18,290; Three or More $18,290; None $8,680",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/phaseInEndsFor2OrMoreQualifyingChildren",
+      "file": "eitc4.xml",
+      "values": [
+        "Dollar:18290"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Earned Income Amount: One $13,020; Two $18,290; Three or More $18,290; None $8,680",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcPhaseOutThreshold",
+      "file": "eitc5.xml",
+      "values": [
+        "Int:0",
+        "Dollar:10860",
+        "Int:1",
+        "Dollar:23890",
+        "Int:0",
+        "Dollar:18140",
+        "Int:1",
+        "Dollar:31160"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Threshold Phaseout Amount (All other filing statuses): One $23,890; Two $23,890; Three or More $23,890; None $10,860",
+          "form": "table"
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Threshold Phaseout Amount (Married Filing Jointly): One $31,160; Two $31,160; Three or More $31,160; None $18,140",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/belowEitcInvestmentIncomeLimit",
+      "file": "eitc5.xml",
+      "values": [
+        "Dollar:0",
+        "Dollar:12200"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(2)",
+          "page": 15,
+          "quote": "For taxable years beginning in 2026, the earned income tax credit is not allowed under § 32(i) if the aggregate amount of certain investment income exceeds $12,200."
+        }
+      ]
+    },
+    {
+      "fact": "/eitcMfjLimitWithThreeOrMoreChildren",
+      "file": "eitc6.xml",
+      "values": [
+        "Dollar:70244"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (Married Filing Jointly): One $58,863; Two $65,899; Three or More $70,244; None $26,820",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcSelfLimitWithThreeOrMoreChildren",
+      "file": "eitc6.xml",
+      "values": [
+        "Dollar:62974"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (All other filing statuses): One $51,593; Two $58,629; Three or More $62,974; None $19,540",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcMfjLimitWithTwoChildren",
+      "file": "eitc6.xml",
+      "values": [
+        "Dollar:65899"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (Married Filing Jointly): One $58,863; Two $65,899; Three or More $70,244; None $26,820",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcSelfLimitWithTwoChildren",
+      "file": "eitc6.xml",
+      "values": [
+        "Dollar:58629"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (All other filing statuses): One $51,593; Two $58,629; Three or More $62,974; None $19,540",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcMfjLimitWithOneChild",
+      "file": "eitc6.xml",
+      "values": [
+        "Dollar:58863"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (Married Filing Jointly): One $58,863; Two $65,899; Three or More $70,244; None $26,820",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcSelfLimitWithOneChild",
+      "file": "eitc6.xml",
+      "values": [
+        "Dollar:51593"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (All other filing statuses): One $51,593; Two $58,629; Three or More $62,974; None $19,540",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcMfjLimitWithZeroChildren",
+      "file": "eitc7.xml",
+      "values": [
+        "Dollar:26820"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (Married Filing Jointly): One $58,863; Two $65,899; Three or More $70,244; None $26,820",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcSelfLimitWithZeroChildren",
+      "file": "eitc7.xml",
+      "values": [
+        "Dollar:19540"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.06(1)",
+          "page": 15,
+          "quote": "Completed Phaseout Amount (All other filing statuses): One $51,593; Two $58,629; Three or More $62,974; None $19,540",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/maxIncomeLimitForMFJ",
+      "file": "saversCredits.xml",
+      "values": [
+        "Dollar:80500"
+      ],
+      "cite": [
+        {
+          "source": "n-2025-67",
+          "page": 3,
+          "quote": "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for married taxpayers filing a joint return is increased from $47,500 to $48,500; the limitation under section 25B(b)(1)(B) is increased from $51,000 to $52,500; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $79,000 to $80,500."
+        }
+      ]
+    },
+    {
+      "fact": "/maxIncomeLimitForHOH",
+      "file": "saversCredits.xml",
+      "values": [
+        "Dollar:60375"
+      ],
+      "cite": [
+        {
+          "source": "n-2025-67",
+          "page": 4,
+          "quote": "household is increased from $35,625 to $36,375; the limitation under section 25B(b)(1)(B) is increased from $38,250 to $39,375; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $59,250 to $60,375."
+        }
+      ]
+    },
+    {
+      "fact": "/maxIncomeLimitForOther",
+      "file": "saversCredits.xml",
+      "values": [
+        "Dollar:40250"
+      ],
+      "cite": [
+        {
+          "source": "n-2025-67",
+          "page": 4,
+          "quote": "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for all other taxpayers is increased from $23,750 to $24,250; the limitation under section 25B(b)(1)(B) is increased from $25,500 to $26,250; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $39,500 to $40,250."
+        }
+      ]
+    },
+    {
+      "fact": "/saversCreditAgiLimitForFiftyPercent",
+      "file": "saversCredits.xml",
+      "values": [
+        "Dollar:48500",
+        "Dollar:36375",
+        "Dollar:24250"
+      ],
+      "cite": [
+        {
+          "source": "n-2025-67",
+          "page": 3,
+          "quote": "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for married taxpayers filing a joint return is increased from $47,500 to $48,500; the limitation under section 25B(b)(1)(B) is increased from $51,000 to $52,500; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $79,000 to $80,500."
+        },
+        {
+          "source": "n-2025-67",
+          "page": 4,
+          "quote": "household is increased from $35,625 to $36,375; the limitation under section 25B(b)(1)(B) is increased from $38,250 to $39,375; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $59,250 to $60,375."
+        },
+        {
+          "source": "n-2025-67",
+          "page": 4,
+          "quote": "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for all other taxpayers is increased from $23,750 to $24,250; the limitation under section 25B(b)(1)(B) is increased from $25,500 to $26,250; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $39,500 to $40,250."
+        }
+      ]
+    },
+    {
+      "fact": "/saversCreditAgiLimitForTwentyPercent",
+      "file": "saversCredits.xml",
+      "values": [
+        "Dollar:52500",
+        "Dollar:39375",
+        "Dollar:26250"
+      ],
+      "cite": [
+        {
+          "source": "n-2025-67",
+          "page": 3,
+          "quote": "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for married taxpayers filing a joint return is increased from $47,500 to $48,500; the limitation under section 25B(b)(1)(B) is increased from $51,000 to $52,500; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $79,000 to $80,500."
+        },
+        {
+          "source": "n-2025-67",
+          "page": 4,
+          "quote": "household is increased from $35,625 to $36,375; the limitation under section 25B(b)(1)(B) is increased from $38,250 to $39,375; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $59,250 to $60,375."
+        },
+        {
+          "source": "n-2025-67",
+          "page": 4,
+          "quote": "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for all other taxpayers is increased from $23,750 to $24,250; the limitation under section 25B(b)(1)(B) is increased from $25,500 to $26,250; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $39,500 to $40,250."
+        }
+      ]
+    },
+    {
+      "fact": "/capitalLossLimit",
+      "file": "scheduleD.xml",
+      "values": [
+        "Dollar:1500",
+        "Dollar:3000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1211(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1211",
+          "quote": "$3,000 ($1,500 in the case of a married individual filing a separate return)"
+        }
+      ]
+    },
+    {
+      "fact": "/capGainsZeroRateAmount",
+      "file": "scheduleD.xml",
+      "values": [],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "For taxable years beginning in 2026, the maximum zero rate amounts and maximum 15 percent rate amounts under § 1(j)(5)(B), as adjusted for inflation, are as follows:"
+        }
+      ]
+    },
+    {
+      "fact": "/capGains15RateAmount",
+      "file": "scheduleD.xml",
+      "values": [],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.03",
+          "page": 13,
+          "quote": "For taxable years beginning in 2026, the maximum zero rate amounts and maximum 15 percent rate amounts under § 1(j)(5)(B), as adjusted for inflation, are as follows:"
+        }
+      ]
+    },
+    {
+      "fact": "/qdcgLine22",
+      "file": "scheduleD3.xml",
+      "valuesFrom": "/taxOnTaxableIncomeRegularRates",
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 1, § 1(j)(2)(A)",
+          "page": 10,
+          "quote": "Married Individuals Filing Joint Returns and Surviving Spouses: Not over $24,800 — 10% of the taxable income; Over $24,800 but not over $100,800 — $2,480 plus 12% of the excess over $24,800; Over $100,800 but not over $211,400 — $11,600 plus 22% of the excess over $100,800; Over $211,400 but not over $403,550 — $35,932 plus 24% of the excess over $211,400; Over $403,550 but not over $512,450 — $82,048 plus 32% of the excess over $403,550; Over $512,450 but not over $768,700 — $116,896 plus 35% of the excess over $512,450; Over $768,700 — $206,583.50 plus 37% of the excess over $768,700",
+          "form": "table"
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 2, § 1(j)(2)(B)",
+          "page": 10,
+          "quote": "Heads of Households: Not over $17,700 — 10% of the taxable income; Over $17,700 but not over $67,450 — $1,770 plus 12% of the excess over $17,700; Over $67,450 but not over $105,700 — $7,740 plus 22% of the excess over $67,450; Over $105,700 but not over $201,750 — $16,155 plus 24% of the excess over $105,700; Over $201,750 but not over $256,200 — $39,207 plus 32% of the excess over $201,750; Over $256,200 but not over $640,600 — $56,631 plus 35% of the excess over $256,200; Over $640,600 — $191,171 plus 37% of the excess over $640,600",
+          "pageEnd": 11,
+          "form": "table"
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 3, § 1(j)(2)(C)",
+          "page": 11,
+          "quote": "Unmarried Individuals (other than Surviving Spouses and Heads of Households): Not over $12,400 — 10% of the taxable income; Over $12,400 but not over $50,400 — $1,240 plus 12% of the excess over $12,400; Over $50,400 but not over $105,700 — $5,800 plus 22% of the excess over $50,400; Over $105,700 but not over $201,775 — $17,966 plus 24% of the excess over $105,700; Over $201,775 but not over $256,225 — $41,024 plus 32% of the excess over $201,775; Over $256,225 but not over $640,600 — $58,448 plus 35% of the excess over $256,225; Over $640,600 — $192,979.25 plus 37% of the excess over $640,600",
+          "form": "table"
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 4, § 1(j)(2)(D)",
+          "page": 11,
+          "quote": "Married Individuals Filing Separate Returns: Not over $12,400 — 10% of the taxable income; Over $12,400 but not over $50,400 — $1,240 plus 12% of the excess over $12,400; Over $50,400 but not over $105,700 — $5,800 plus 22% of the excess over $50,400; Over $105,700 but not over $201,775 — $17,966 plus 24% of the excess over $105,700; Over $201,775 but not over $256,225 — $41,024 plus 32% of the excess over $201,775; Over $256,225 but not over $384,350 — $58,448 plus 35% of the excess over $256,225; Over $384,350 — $103,291.75 plus 37% of the excess over $384,350",
+          "pageEnd": 12,
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/socialSecurityWageBaseTy2026",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Dollar:184500"
+      ],
+      "cite": [
+        {
+          "source": "ssa-cbb",
+          "section": "Contribution and benefit bases, 1937-2027",
+          "form": "table",
+          "quote": "2026 184,500"
+        },
+        {
+          "source": "fr-2025-19763",
+          "page": 49050,
+          "quote": "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
+        }
+      ]
+    },
+    {
+      "fact": "/additionalStandardDeductionMultiplier",
+      "file": "standardDeduction.xml",
+      "values": [
+        "Dollar:2050",
+        "Dollar:1650"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.14(3)",
+          "page": 18,
+          "quote": "For taxable years beginning in 2026, the additional standard deduction amount under § 63(f) for the aged or the blind is $1,650. The additional standard deduction amount is increased to $2,050 if the individual is also unmarried and not a surviving spouse."
+        }
+      ]
+    },
+    {
+      "fact": "/MFJStandardDeduction",
+      "file": "standardDeduction.xml",
+      "values": [
+        "Dollar:32200"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.14(1)",
+          "page": 18,
+          "quote": "Married Individuals Filing Joint Returns and Surviving Spouses (§ 1(j)(2)(A)): $32,200",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/singleOrMFSStandardDeduction",
+      "file": "standardDeduction.xml",
+      "values": [
+        "Dollar:16100"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.14(1)",
+          "page": 18,
+          "quote": "Unmarried Individuals (other than Surviving Spouses and Heads of Households) (§ 1(j)(2)(C)): $16,100; Married Individuals Filing Separate Returns (§ 1(j)(2)(D)): $16,100",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/HoHStandardDeduction",
+      "file": "standardDeduction.xml",
+      "values": [
+        "Dollar:24150"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.14(1)",
+          "page": 18,
+          "quote": "Heads of Households (§ 1(j)(2)(B)): $24,150",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/minimumStandardDeduction",
+      "file": "standardDeduction.xml",
+      "values": [
+        "Dollar:1350",
+        "Dollar:450"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.14(2)",
+          "page": 18,
+          "quote": "For taxable years beginning in 2026, the standard deduction amount under § 63(c)(5) for an individual who may be claimed as a dependent by another taxpayer cannot exceed the greater of (1) $1,350, or (2) the sum of $450 and the individual's earned income."
+        }
+      ]
+    },
+    {
+      "fact": "/maxIncomeForNonMFJStudentLoanInterestDeduction",
+      "file": "studentLoanAdjustment.xml",
+      "values": [
+        "Dollar:100000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.29",
+          "page": 23,
+          "quote": "For taxable years beginning in 2026, the $2,500 maximum deduction for interest paid on qualified education loans under § 221 begins to phase out under § 221(b)(2)(B), as adjusted for inflation, for taxpayers with modified adjusted gross income in excess of $85,000 ($175,000 for joint returns), and is completely phased out for taxpayers with modified adjusted gross income of $100,000 or more ($205,000 or more for joint returns)."
+        }
+      ]
+    },
+    {
+      "fact": "/maxIncomeForMFJStudentLoanInterestDeduction",
+      "file": "studentLoanAdjustment.xml",
+      "values": [
+        "Dollar:205000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.29",
+          "page": 23,
+          "quote": "For taxable years beginning in 2026, the $2,500 maximum deduction for interest paid on qualified education loans under § 221 begins to phase out under § 221(b)(2)(B), as adjusted for inflation, for taxpayers with modified adjusted gross income in excess of $85,000 ($175,000 for joint returns), and is completely phased out for taxpayers with modified adjusted gross income of $100,000 or more ($205,000 or more for joint returns)."
+        }
+      ]
+    },
+    {
+      "fact": "/studentLoanPhaseOutStart",
+      "file": "studentLoanAdjustment.xml",
+      "values": [
+        "Dollar:85000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.29",
+          "page": 23,
+          "quote": "For taxable years beginning in 2026, the $2,500 maximum deduction for interest paid on qualified education loans under § 221 begins to phase out under § 221(b)(2)(B), as adjusted for inflation, for taxpayers with modified adjusted gross income in excess of $85,000 ($175,000 for joint returns), and is completely phased out for taxpayers with modified adjusted gross income of $100,000 or more ($205,000 or more for joint returns)."
+        }
+      ]
+    },
+    {
+      "fact": "/studentLoanPhaseOutStartMfj",
+      "file": "studentLoanAdjustment.xml",
+      "values": [
+        "Dollar:175000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.29",
+          "page": 23,
+          "quote": "For taxable years beginning in 2026, the $2,500 maximum deduction for interest paid on qualified education loans under § 221 begins to phase out under § 221(b)(2)(B), as adjusted for inflation, for taxpayers with modified adjusted gross income in excess of $85,000 ($175,000 for joint returns), and is completely phased out for taxpayers with modified adjusted gross income of $100,000 or more ($205,000 or more for joint returns)."
+        }
+      ]
+    },
+    {
+      "fact": "/studentLoanPhaseOutComplete",
+      "file": "studentLoanAdjustment.xml",
+      "values": [
+        "Dollar:100000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.29",
+          "page": 23,
+          "quote": "For taxable years beginning in 2026, the $2,500 maximum deduction for interest paid on qualified education loans under § 221 begins to phase out under § 221(b)(2)(B), as adjusted for inflation, for taxpayers with modified adjusted gross income in excess of $85,000 ($175,000 for joint returns), and is completely phased out for taxpayers with modified adjusted gross income of $100,000 or more ($205,000 or more for joint returns)."
+        }
+      ]
+    },
+    {
+      "fact": "/studentLoanPhaseOutCompleteMfj",
+      "file": "studentLoanAdjustment.xml",
+      "values": [
+        "Dollar:205000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.29",
+          "page": 23,
+          "quote": "For taxable years beginning in 2026, the $2,500 maximum deduction for interest paid on qualified education loans under § 221 begins to phase out under § 221(b)(2)(B), as adjusted for inflation, for taxpayers with modified adjusted gross income in excess of $85,000 ($175,000 for joint returns), and is completely phased out for taxpayers with modified adjusted gross income of $100,000 or more ($205,000 or more for joint returns)."
+        }
+      ]
+    },
+    {
+      "fact": "/taxOnTaxableIncomeRegularRates",
+      "file": "taxCalculations2.xml",
+      "values": [
+        "Dollar:24800",
+        "Rational:10/100",
+        "Dollar:100800",
+        "Dollar:2480",
+        "Rational:12/100",
+        "Dollar:24800",
+        "Dollar:211400",
+        "Dollar:11600",
+        "Rational:22/100",
+        "Dollar:100800",
+        "Dollar:403550",
+        "Dollar:35932",
+        "Rational:24/100",
+        "Dollar:211400",
+        "Dollar:512450",
+        "Dollar:82048",
+        "Rational:32/100",
+        "Dollar:403550",
+        "Dollar:768700",
+        "Dollar:116896",
+        "Rational:35/100",
+        "Dollar:512450",
+        "Dollar:768700",
+        "Dollar:206583.50",
+        "Rational:37/100",
+        "Dollar:768700",
+        "Dollar:17700",
+        "Rational:10/100",
+        "Dollar:67450",
+        "Dollar:1770",
+        "Rational:12/100",
+        "Dollar:17700",
+        "Dollar:105700",
+        "Dollar:7740",
+        "Rational:22/100",
+        "Dollar:67450",
+        "Dollar:201750",
+        "Dollar:16155",
+        "Rational:24/100",
+        "Dollar:105700",
+        "Dollar:256200",
+        "Dollar:39207",
+        "Rational:32/100",
+        "Dollar:201750",
+        "Dollar:640600",
+        "Dollar:56631",
+        "Rational:35/100",
+        "Dollar:256200",
+        "Dollar:640600",
+        "Dollar:191171",
+        "Rational:37/100",
+        "Dollar:640600",
+        "Dollar:12400",
+        "Rational:10/100",
+        "Dollar:50400",
+        "Dollar:1240",
+        "Rational:12/100",
+        "Dollar:12400",
+        "Dollar:105700",
+        "Dollar:5800",
+        "Rational:22/100",
+        "Dollar:50400",
+        "Dollar:201775",
+        "Dollar:17966",
+        "Rational:24/100",
+        "Dollar:105700",
+        "Dollar:256225",
+        "Dollar:41024",
+        "Rational:32/100",
+        "Dollar:201775",
+        "Dollar:640600",
+        "Dollar:58448",
+        "Rational:35/100",
+        "Dollar:256225",
+        "Dollar:640600",
+        "Dollar:192979.25",
+        "Rational:37/100",
+        "Dollar:640600",
+        "Dollar:12400",
+        "Rational:10/100",
+        "Dollar:50400",
+        "Dollar:1240",
+        "Rational:12/100",
+        "Dollar:12400",
+        "Dollar:105700",
+        "Dollar:5800",
+        "Rational:22/100",
+        "Dollar:50400",
+        "Dollar:201775",
+        "Dollar:17966",
+        "Rational:24/100",
+        "Dollar:105700",
+        "Dollar:256225",
+        "Dollar:41024",
+        "Rational:32/100",
+        "Dollar:201775",
+        "Dollar:384350",
+        "Dollar:58448",
+        "Rational:35/100",
+        "Dollar:256225",
+        "Dollar:384350",
+        "Dollar:103291.75",
+        "Rational:37/100",
+        "Dollar:384350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 1, § 1(j)(2)(A)",
+          "page": 10,
+          "quote": "Married Individuals Filing Joint Returns and Surviving Spouses: Not over $24,800 — 10% of the taxable income; Over $24,800 but not over $100,800 — $2,480 plus 12% of the excess over $24,800; Over $100,800 but not over $211,400 — $11,600 plus 22% of the excess over $100,800; Over $211,400 but not over $403,550 — $35,932 plus 24% of the excess over $211,400; Over $403,550 but not over $512,450 — $82,048 plus 32% of the excess over $403,550; Over $512,450 but not over $768,700 — $116,896 plus 35% of the excess over $512,450; Over $768,700 — $206,583.50 plus 37% of the excess over $768,700",
+          "form": "table"
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 2, § 1(j)(2)(B)",
+          "page": 10,
+          "quote": "Heads of Households: Not over $17,700 — 10% of the taxable income; Over $17,700 but not over $67,450 — $1,770 plus 12% of the excess over $17,700; Over $67,450 but not over $105,700 — $7,740 plus 22% of the excess over $67,450; Over $105,700 but not over $201,750 — $16,155 plus 24% of the excess over $105,700; Over $201,750 but not over $256,200 — $39,207 plus 32% of the excess over $201,750; Over $256,200 but not over $640,600 — $56,631 plus 35% of the excess over $256,200; Over $640,600 — $191,171 plus 37% of the excess over $640,600",
+          "pageEnd": 11,
+          "form": "table"
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 3, § 1(j)(2)(C)",
+          "page": 11,
+          "quote": "Unmarried Individuals (other than Surviving Spouses and Heads of Households): Not over $12,400 — 10% of the taxable income; Over $12,400 but not over $50,400 — $1,240 plus 12% of the excess over $12,400; Over $50,400 but not over $105,700 — $5,800 plus 22% of the excess over $50,400; Over $105,700 but not over $201,775 — $17,966 plus 24% of the excess over $105,700; Over $201,775 but not over $256,225 — $41,024 plus 32% of the excess over $201,775; Over $256,225 but not over $640,600 — $58,448 plus 35% of the excess over $256,225; Over $640,600 — $192,979.25 plus 37% of the excess over $640,600",
+          "form": "table"
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01 Table 4, § 1(j)(2)(D)",
+          "page": 11,
+          "quote": "Married Individuals Filing Separate Returns: Not over $12,400 — 10% of the taxable income; Over $12,400 but not over $50,400 — $1,240 plus 12% of the excess over $12,400; Over $50,400 but not over $105,700 — $5,800 plus 22% of the excess over $50,400; Over $105,700 but not over $201,775 — $17,966 plus 24% of the excess over $105,700; Over $201,775 but not over $256,225 — $41,024 plus 32% of the excess over $201,775; Over $256,225 but not over $384,350 — $58,448 plus 35% of the excess over $256,225; Over $384,350 — $103,291.75 plus 37% of the excess over $384,350",
+          "pageEnd": 12,
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/alaskaPfdAmount",
+      "file": "constants3.xml",
+      "values": [],
+      "cite": [
+        {
+          "source": "ak-dor-26-004",
+          "page": 1,
+          "quote": "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."
+        }
+      ]
+    },
+    {
+      "fact": "/alaskaPfdAmountDividendPortion",
+      "file": "constants3.xml",
+      "values": [
+        "Dollar:1000.00"
+      ],
+      "cite": [
+        {
+          "source": "ak-dor-26-004",
+          "page": 1,
+          "quote": "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."
+        }
+      ]
+    },
+    {
+      "fact": "/alaskaPfdAmountEnergyReliefPaymentPortion",
+      "file": "constants3.xml",
+      "values": [
+        "Dollar:200.00"
+      ],
+      "cite": [
+        {
+          "source": "ak-dor-26-004",
+          "page": 1,
+          "quote": "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."
+        }
+      ]
+    },
+    {
+      "fact": "/hsaForm5498DueDate",
+      "file": "constants4.xml",
+      "values": [
+        "Day:2027-06-01"
+      ],
+      "cite": [
+        {
+          "source": "i1099sa",
+          "section": "Statements to Participants",
+          "quote": "If you are required to file Form 5498-SA, you must provide a statement to the participant (generally Copy B) by May 31 of the subsequent year. If May 31 falls on a Saturday, Sunday, or a legal holiday, you must provide the statement by the next day that is not a Saturday, Sunday, or a legal holiday."
+        },
+        {
+          "source": "usc5",
+          "section": "§ 6103(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/5/6103",
+          "quote": "Memorial Day, the last Monday in May."
+        },
+        {
+          "source": "irc",
+          "section": "§ 7503",
+          "url": "https://www.law.cornell.edu/uscode/text/26/7503",
+          "quote": "When the last day prescribed under authority of the internal revenue laws for performing any act falls on Saturday, Sunday, or a legal holiday, the performance of such act shall be considered timely if it is performed on the next succeeding day which is not a Saturday, Sunday, or a legal holiday."
+        }
+      ]
+    },
+    {
+      "fact": "/maxIndividualEducatorExpensesLimit",
+      "file": "educatorAdjustment.xml",
+      "values": [
+        "Dollar:350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.12",
+          "page": 17,
+          "quote": "For taxable years beginning in 2026, under § 62(a)(2)(D), the amount of the deduction allowed under § 162 that consists of expenses paid or incurred by an eligible educator in connection with books, supplies (other than nonathletic supplies for courses of instruction in health or physical education), computer equipment (including related software and services) and other equipment, and supplementary materials used by the eligible educator in the classroom is $350."
+        }
+      ]
+    },
+    {
+      "fact": "/primaryEducatorExpensesWritable",
+      "file": "educatorAdjustment.xml",
+      "values": [
+        "Dollar:350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.12",
+          "page": 17,
+          "quote": "For taxable years beginning in 2026, under § 62(a)(2)(D), the amount of the deduction allowed under § 162 that consists of expenses paid or incurred by an eligible educator in connection with books, supplies (other than nonathletic supplies for courses of instruction in health or physical education), computer equipment (including related software and services) and other equipment, and supplementary materials used by the eligible educator in the classroom is $350."
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryEducatorExpensesWritable",
+      "file": "educatorAdjustment.xml",
+      "values": [
+        "Dollar:350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.12",
+          "page": 17,
+          "quote": "For taxable years beginning in 2026, under § 62(a)(2)(D), the amount of the deduction allowed under § 162 that consists of expenses paid or incurred by an eligible educator in connection with books, supplies (other than nonathletic supplies for courses of instruction in health or physical education), computer equipment (including related software and services) and other equipment, and supplementary materials used by the eligible educator in the classroom is $350."
+        }
+      ]
+    },
+    {
+      "fact": "/grossIncomeLimit",
+      "file": "familyAndHousehold.xml",
+      "values": [
+        "Dollar:5300"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.23",
+          "page": 20,
+          "quote": "For taxable years beginning in 2026, the exemption amount referred to in § 152(d)(1)(B) is $5,300."
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryFilerDateOfDeath",
+      "file": "filers.xml",
+      "values": [
+        "Day:2027-01-01"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6013(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6013",
+          "quote": "no joint return shall be made if the husband and wife have different taxable years; except that if such taxable years begin on the same day and end on different days because of the death of either or both, then the joint return may be made with respect to the taxable year of"
+        },
+        {
+          "source": "irc",
+          "section": "§ 6013(d)(1)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6013",
+          "quote": "if one dies before the close of the taxable year of the other—as of the time of such death"
+        }
+      ]
+    },
+    {
+      "fact": "/maxOasdiWagesOnMultipleW2sForOnePerson",
+      "file": "formW2s.xml",
+      "values": [
+        "Dollar:184500"
+      ],
+      "cite": [
+        {
+          "source": "fr-2025-19763",
+          "page": 49050,
+          "quote": "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
+        }
+      ]
+    }
+  ],
+  "pendingReview": [
+    {
+      "fact": "/saversCreditOctDateForSameYearContribution",
+      "file": "constants.xml",
+      "taggedYear": 2024,
+      "status": "unverified",
+      "values": [
+        "Int:16"
+      ],
+      "note": "Day-of-October cutoff for the Saver's Credit testing period; 2026 source not yet confirmed.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/hsaExcessContributionsPenalty",
+      "file": "constants3.xml",
+      "taggedYear": 2024,
+      "status": "current",
+      "values": [
+        "String:6%"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 4973(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/4973",
+          "quote": "there is imposed for each taxable year a tax in an amount equal to 6 percent of the amount of the excess contributions"
+        }
+      ],
+      "note": "Statutory rate, not inflation-adjusted.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/hsaOver55AdditionalCoverageLimit",
+      "file": "constants3.xml",
+      "taggedYear": 2024,
+      "status": "current",
+      "values": [
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 223(b)(3)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/223",
+          "quote": "2009 and thereafter $1,000."
+        }
+      ],
+      "note": "Statutory amount, not inflation-adjusted.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/maxOdcAmount",
+      "file": "ctcOdc.xml",
+      "taggedYear": 2024,
+      "status": "current",
+      "values": [
+        "Dollar:500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 24(h)(4)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/24",
+          "quote": "shall be increased by $500 for each dependent of the taxpayer (as defined in section 152) other than a qualifying child described in subsection (c)."
+        }
+      ],
+      "note": "Statutory amount, not inflation-adjusted.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/dependentCreditPhaseoutThreshold",
+      "file": "ctcOdc.xml",
+      "taggedYear": 2024,
+      "status": "current",
+      "values": [
+        "Dollar:400000",
+        "Dollar:200000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 24(h)(3)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/24",
+          "quote": "the threshold amount shall be $400,000 in the case of a joint return ($200,000 in any other case)."
+        }
+      ],
+      "note": "Statutory amount, not inflation-adjusted.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/actcRefundabilityThreshold",
+      "file": "ctcOdc2.xml",
+      "taggedYear": 2024,
+      "status": "current",
+      "values": [
+        "Dollar:2500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 24(h)(6)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/24",
+          "quote": "Subsection (d)(1)(B)(i) shall be applied by substituting “$2,500” for “$3,000”."
+        }
+      ],
+      "note": "Statutory amount, not inflation-adjusted.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/pdf8812ContinueFromLine20",
+      "file": "ctcOdc3.xml",
+      "taggedYear": 2024,
+      "status": "structural",
+      "values": [
+        "Int:3"
+      ],
+      "note": "Form-line logic (3 × ACTC amount); no year-specific literal.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/familyAndHousehold/*/ageAtFirstHalfOfYear",
+      "file": "familyAndHousehold.xml",
+      "taggedYear": 2024,
+      "status": "structural",
+      "values": [
+        "Int:7",
+        "Int:7",
+        "Int:2",
+        "Int:1"
+      ],
+      "note": "Month/day components of July 2; no year-specific literal.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/taxDay",
+      "file": "filers.xml",
+      "taggedYear": 2024,
+      "status": "structural",
+      "values": [],
+      "note": "Selects /defaultTaxDay or /massachusettsAndMaineDeadline; no literal.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/MFSFilingThresholdAmount",
+      "file": "filers.xml",
+      "taggedYear": 2024,
+      "status": "unverified",
+      "values": [
+        "Dollar:5"
+      ],
+      "note": "Administrative $5 MFS filing threshold; 2026 source not yet confirmed.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/federalPovertyLineMagicNumberStartingNumber",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:18210",
+        "Dollar:16770",
+        "Dollar:14580"
+      ],
+      "note": "Poverty guideline amounts used for TY2024; TY2026 uses the guidelines in effect for the prior year.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/federalPovertyLineMagicNumberIncrement",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:6430",
+        "Dollar:5910",
+        "Dollar:5140"
+      ],
+      "note": "Poverty guideline amounts used for TY2024; TY2026 uses the guidelines in effect for the prior year.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/ptcRepaymentLimitationLessThan200PercentFplSingle",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:375"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§2.04",
+          "page": 5,
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/ptcRepaymentLimitationLessThan200PercentFplOther",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:750"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§2.04",
+          "page": 5,
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/ptcRepaymentLimitationLessThan300PercentFplSingle",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:950"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§2.04",
+          "page": 5,
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/ptcRepaymentLimitationLessThan300PercentFplOther",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:1900"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§2.04",
+          "page": 5,
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/ptcRepaymentLimitationLessThan400PercentFplSingle",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:1575"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§2.04",
+          "page": 5,
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/ptcRepaymentLimitationLessThan400PercentFplOther",
+      "file": "ptc.xml",
+      "taggedYear": 2024,
+      "status": "stale",
+      "values": [
+        "Dollar:3150"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§2.04",
+          "page": 5,
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/maxStudentLoadDeduction",
+      "file": "studentLoanAdjustment.xml",
+      "taggedYear": 2024,
+      "status": "current",
+      "values": [
+        "Dollar:2500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 221(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/221",
+          "quote": "the deduction allowed by subsection (a) for the taxable year shall not exceed $2,500."
+        }
+      ],
+      "note": "Statutory amount, not inflation-adjusted.",
+      "tracking": "#91"
+    },
+    {
+      "fact": "/studentLoanAmountPhaseOutAmount",
+      "file": "studentLoanAdjustment.xml",
+      "taggedYear": 2024,
+      "status": "structural",
+      "values": [
+        "Dollar:0",
+        "Dollar:10",
+        "Dollar:10"
+      ],
+      "note": "Rounding scale factors (×10, ÷10) and a $0 floor; no year-specific literal.",
+      "tracking": "#91"
+    }
+  ]
+}
