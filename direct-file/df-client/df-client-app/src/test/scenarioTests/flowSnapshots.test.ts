@@ -87,6 +87,50 @@ describe(`Flow snapshot tests`, () => {
       });
     });
   });
+
+  // #127: the ats-2 family (golden end-to-end scenarios, synthetic data) must keep a qualifying child. When #109 moved
+  // the dates to TY2026, the child (born 2006) turned 20 and silently dropped out of the qualifying-child screens. The
+  // child is now born 2009-07-20, so 17 at the end of 2026: under 19 for the 26 U.S.C. 152(c)(3)(A)(i) age test
+  // (https://www.law.cornell.edu/uscode/text/26/152#c_3), an EITC qualifying child (26 U.S.C. 32(c)(3)(A)), and not
+  // under 17 for the child tax credit (26 U.S.C. 24(c)(1), https://www.law.cornell.edu/uscode/text/26/24), so the
+  // credit for other dependents applies, as in the original scenario. If a future year-roll ages the child out again,
+  // these assertions fail instead of the snapshots quietly changing.
+  describe(`ats-2 scenarios keep a qualifying child under TY2026 dates (#127)`, () => {
+    const ATS2_SCENARIOS = [
+      `ats-2.json`,
+      `ats-2-1099r.json`,
+      `ats-2-1099r-blank-taxable.json`,
+      `ats-2-1099r-nonzero-taxable.json`,
+      `ats-2-occupation-test.json`,
+      `ats-3-1099r.json`,
+      `mef-ats-2.json`,
+      `mef-ats-2a.json`,
+    ];
+    const QC_SCREENS = [`add-person-ssn-valid-for-work`, `add-person-qc-support`, `add-person-qc-of-another`];
+    ATS2_SCENARIOS.forEach((json) => {
+      it(`${json}: the dependent is a qualifying child and reaches the qualifying-child screens`, () => {
+        const factJson = JSON.parse(fs.readFileSync(`${SCENARIO_FOLDER}/${json}`, `utf-8`));
+        const { factGraph } = setupFactGraph(factJson.facts);
+        const deps = scalaListToJsArray(
+          factGraph.get(`/familyAndHousehold` as ConcretePath).get.getItemsAsStrings()
+        ) as string[];
+        expect(deps).toHaveLength(1);
+        const dep = (p: string) => factGraph.get(`/familyAndHousehold/#${deps[0]}/${p}` as ConcretePath);
+        expect(dep(`ageTest`).get).toBe(true);
+        expect(dep(`qualifyingChild`).get).toBe(true);
+        expect(dep(`eitcQualifyingChild`).get).toBe(true);
+        expect(dep(`eligibleCtc`).get).toBe(false);
+        expect(dep(`eligibleOdc`).get).toBe(true);
+        const screens = getFlowScreenOrderingFromFlowConfig(factGraph);
+        QC_SCREENS.forEach((route) =>
+          expect(
+            screens.some((s) => s.startsWith(`/flow/you-and-your-family/dependents/${route}?`)),
+            route
+          ).toBe(true)
+        );
+      });
+    });
+  });
 });
 
 const SINGULAR_COLLECTIONS = [`/primaryFiler`, `/secondaryFiler`];
