@@ -20,6 +20,7 @@ dataviews:
         fl: Florida
         other: Another state
   /flow/your-taxes/amount:
+    /paSchoolDistrictCode: Pennsylvania school district code
     /paHasSpNontaxableIncome: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
     /paPartYearResidentInterest: Interest received while a Pennsylvania resident
     /paHasUnreimbursedEmployeeExpenses:
@@ -49,6 +50,11 @@ headings:
   /heading/your-taxes/amount/pa-part-year-interest:
     How much of your interest did you receive while you lived in Pennsylvania?
   /heading/knockout/pa-part-year: This tool doesn’t yet support your Pennsylvania part-year resident return
+  /heading/your-taxes/amount/pa-school-district:
+    "What is the code for the Pennsylvania school district you lived in on December 31, {{/taxYear}}?"
+  /heading/knockout/pa-schedule-a: This tool doesn’t yet support PA Schedule A for your interest income
+  /heading/knockout/pa-schedule-b: This tool doesn’t yet support PA Schedule B for your dividend income
+  /heading/knockout/pa-schedule-d: This tool doesn’t yet support sales of property on a Pennsylvania return
 info:
   /info/your-taxes/amount/pa-exempt-obligation-dividends:
     body:
@@ -153,6 +159,45 @@ info:
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/your-taxes/amount/pa-school-district:
+    body:
+      - p:
+          Pennsylvania asks for the 5-digit code of the school district where you lived on December 31, even if you
+          moved after that date. Use the district for your home address, which may not match your mailing address.
+      - p: <Link1>Find your school district code in the PA-40 instructions (pages 46 and 47).</Link1>
+    urls:
+      Link1: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+  /info/knockout/pa-schedule-a:
+    alertText:
+      body:
+        - p:
+            "Your Pennsylvania return needs PA Schedule A, and this tool can’t fill it out yet. This includes interest
+            from U.S. savings bonds or Treasury obligations, tax-exempt interest, interest when you lived in
+            Pennsylvania for only part of the year, or more than $2,500 of interest."
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-schedule-b:
+    alertText:
+      body:
+        - p:
+            Your Pennsylvania return needs PA Schedule B, and this tool can’t fill it out yet. This includes more than
+            $2,500 of dividends, or dividends when you lived in Pennsylvania for only part of the year.
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-schedule-d:
+    alertText:
+      body:
+        - p:
+            Your Pennsylvania return needs PA Schedule D for any sale of stocks, bonds or other property, even one with
+            a loss, and this tool can’t fill it out yet.
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
 fields:
   /paPartYearMoveOptions:
     paToFl: I moved from Pennsylvania to Florida
@@ -168,3 +213,5 @@ fields:
     name: Pay earned while living in Pennsylvania
   /paPartYearResidentInterest:
     name: Interest received while living in Pennsylvania
+  /paSchoolDistrictCode:
+    name: School district code (5 digits)

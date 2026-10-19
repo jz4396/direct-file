@@ -104,7 +104,11 @@ abstract class PdfTemplate {
             new IrsW2PdfForm("IRSW2"),
 
             // no ASN
-            new PdfForm("DF1099R"));
+            new PdfForm("DF1099R"),
+
+            // State returns follow the federal forms (#123): PA-40, then PA-40 Schedule SP.
+            new Pa40PdfForm("PA40"),
+            new PaScheduleSpPdfForm("PA40SP"));
 
     protected PdfTemplate(
             final String templateName, final boolean shouldRemoveTinDashes, final boolean shouldRoundCurrency) {
