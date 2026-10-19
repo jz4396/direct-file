@@ -22,8 +22,14 @@ dataviews:
   /flow/your-taxes/amount:
     /paHasSpNontaxableIncome: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
     /paPartYearResidentInterest: Interest received while a Pennsylvania resident
+    /paHasUnreimbursedEmployeeExpenses:
+      Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
     /paHasUnsupportedItems: Do any Pennsylvania items this tool doesn’t support apply to you?
 headings:
+  /heading/your-taxes/amount/pa-unreimbursed-employee-expenses:
+    "For your {{/taxYear}} Pennsylvania return, do you want to deduct unreimbursed employee business expenses?"
+  /heading/knockout/pa-unreimbursed-employee-expenses:
+    This tool doesn’t yet support unreimbursed employee business expenses on a Pennsylvania return
   /heading/your-taxes/amount/pa-unsupported-items:
     "For your {{/taxYear}} Pennsylvania return, do any of these apply to you?"
   /heading/knockout/pa-unsupported-items: This tool doesn’t yet support these Pennsylvania tax items
@@ -40,14 +46,25 @@ headings:
     How much of your interest did you receive while you lived in Pennsylvania?
   /heading/knockout/pa-part-year: This tool doesn’t yet support your Pennsylvania part-year resident return
 info:
+  /info/your-taxes/amount/pa-unreimbursed-employee-expenses:
+    body:
+      These are costs you paid to do your job that your employer didn’t pay you back for, claimed on PA Schedule UE.
+      Pennsylvania allows only expenses required to do your job. Answer no if your employer reimbursed you exactly or
+      gave you an allowance it didn’t include in your wages.
+  /info/knockout/pa-unreimbursed-employee-expenses:
+    alertText:
+      body:
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/your-taxes/amount/pa-unsupported-items:
     body:
       - p:
-          "Unreimbursed employee business expenses (PA Schedule UE); medical savings account, health savings account,
-          529 or ABLE contributions, or student loan interest you want to deduct; income from an estate or trust;
-          gambling or lottery winnings; Pennsylvania estimated or extension payments, or a refund from last year applied
-          to this year; credit for tax paid to another state; other Pennsylvania credits (Schedules OC or DC); or use
-          tax you owe."
+          "Medical savings account, health savings account, 529 or ABLE contributions, or student loan interest you want
+          to deduct; income from an estate or trust; gambling or lottery winnings; Pennsylvania estimated or extension
+          payments, or a refund from last year applied to this year; credit for tax paid to another state; other
+          Pennsylvania credits (Schedules OC or DC); or use tax you owe."
       - p: This tool doesn’t figure local earned income tax. File that with your local tax collector.
   /info/knockout/pa-unsupported-items:
     alertText:

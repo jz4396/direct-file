@@ -24,8 +24,14 @@ dataviews:
     /paHasSpNontaxableIncome:
       ¿Tiene ingresos no tributables que cuentan para la Condonación de Impuestos de Pensilvania?
     /paPartYearResidentInterest: Intereses recibidos mientras era residente de Pensilvania
+    /paHasUnreimbursedEmployeeExpenses:
+      ¿Desea deducir gastos de negocio no reembolsados como empleado en su declaración de Pensilvania?
     /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
 headings:
+  /heading/your-taxes/amount/pa-unreimbursed-employee-expenses:
+    "Para su declaración de Pensilvania de {{/taxYear}}, ¿desea deducir gastos de negocio no reembolsados como empleado?"
+  /heading/knockout/pa-unreimbursed-employee-expenses:
+    Esta herramienta aún no admite gastos de negocio no reembolsados como empleado en una declaración de Pensilvania
   /heading/your-taxes/amount/pa-unsupported-items:
     "Para su declaración de Pensilvania de {{/taxYear}}, ¿le corresponde alguno de estos casos?"
   /heading/knockout/pa-unsupported-items: Esta herramienta aún no admite estas partidas de impuestos de Pensilvania
@@ -46,15 +52,26 @@ headings:
   /heading/knockout/pa-part-year:
     Esta herramienta aún no admite su declaración de Pensilvania como residente parte del año
 info:
+  /info/your-taxes/amount/pa-unreimbursed-employee-expenses:
+    body:
+      Son gastos que pagó para realizar su trabajo y que su empleador no le reembolsó, y se declaran en el Anexo UE de
+      PA. Pensilvania solo permite gastos necesarios para realizar su trabajo. Responda no si su empleador le reembolsó
+      la cantidad exacta o le dio una asignación que no incluyó en su salario.
+  /info/knockout/pa-unreimbursed-employee-expenses:
+    alertText:
+      body:
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/your-taxes/amount/pa-unsupported-items:
     body:
       - p:
-          "Gastos de negocio no reembolsados como empleado (Anexo UE de PA); aportaciones a una cuenta de ahorros
-          médicos, cuenta de ahorros para la salud, plan 529 o ABLE, o intereses de préstamos estudiantiles que desea
-          deducir; ingresos de un caudal hereditario o fideicomiso; ganancias de juegos de azar o lotería; pagos
-          estimados o de prórroga de Pensilvania, o un reembolso del año pasado aplicado a este año; crédito por
-          impuestos pagados a otro estado; otros créditos de Pensilvania (Anexos OC o DC); o impuesto sobre el uso que
-          adeuda."
+          "Aportaciones a una cuenta de ahorros médicos, cuenta de ahorros para la salud, plan 529 o ABLE, o intereses
+          de préstamos estudiantiles que desea deducir; ingresos de un caudal hereditario o fideicomiso; ganancias de
+          juegos de azar o lotería; pagos estimados o de prórroga de Pensilvania, o un reembolso del año pasado aplicado
+          a este año; crédito por impuestos pagados a otro estado; otros créditos de Pensilvania (Anexos OC o DC); o
+          impuesto sobre el uso que adeuda."
       - p:
           Esta herramienta no calcula el impuesto local sobre ingresos del trabajo. Preséntelo ante su recaudador de
           impuestos local.

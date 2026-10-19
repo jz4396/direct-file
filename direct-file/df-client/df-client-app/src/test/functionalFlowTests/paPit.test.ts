@@ -12,7 +12,7 @@ const path = `/flow/your-taxes/amount`;
 const w2Id = `4623aac9-6d6f-424e-9ba2-8cdf19d45b10`;
 
 // #78 PA-40 core knockout routing.
-const graph = (paWages: number, unsupported: boolean, spIncome?: boolean) =>
+const graph = (paWages: number, unsupported: boolean, spIncome?: boolean, ue = false) =>
   setupFactGraph({
     ...baseFilerData,
     ...makeW2Data(paWages),
@@ -20,11 +20,22 @@ const graph = (paWages: number, unsupported: boolean, spIncome?: boolean) =>
     [`/formW2s/#${w2Id}/writableStateWages`]: createDollarWrapper(`${paWages}`),
     [`/formW2s/#${w2Id}/writableStateWithholding`]: createDollarWrapper(`0`),
     '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+    '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(ue),
     '/paHasUnsupportedItems': createBooleanWrapper(unsupported),
     ...(spIncome === undefined ? {} : { '/paHasSpNontaxableIncome': createBooleanWrapper(spIncome) }),
   }).factGraph;
 
 describe(`PA-40 core (#78) flow`, () => {
+  it(`yes to line 1b unreimbursed employee expenses routes to the knockout (#102)`, ({ task }) => {
+    expect(
+      givenFacts(graph(50000, false, undefined, true)).atPath(`${path}/pa-unreimbursed-employee-expenses`, null, task)
+    ).toRouteNextTo(`${path}/pa-unreimbursed-employee-expenses-knockout`);
+  });
+  it(`no to line 1b continues to the other unsupported PA items (#102)`, ({ task }) => {
+    expect(
+      givenFacts(graph(50000, false)).atPath(`${path}/pa-unreimbursed-employee-expenses`, null, task)
+    ).toRouteNextTo(`${path}/pa-unsupported-items`);
+  });
   it(`yes to unsupported PA items routes to the knockout`, ({ task }) => {
     expect(givenFacts(graph(50000, true)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
       `${path}/pa-unsupported-items-knockout`

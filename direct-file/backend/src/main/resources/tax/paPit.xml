@@ -16,7 +16,7 @@
     </Fact>
     <Fact path="/paLine1b">
       <Name>PA-40 line 1b unreimbursed employee business expenses</Name>
-      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 1b. Not modeled (PA Schedule UE): $0; claiming it is covered by /flowKnockoutPaUnsupportedItems.</Description>
+      <Description>#78: PA-40 (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf line 1b ("Unreimbursed Employee Business Expenses"). #102: not modeled, so $0; anyone claiming it is knocked out by /flowKnockoutPaUnreimbursedEmployeeExpenses. PA-40 IN (2025, latest booklet; 2026 not yet published) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 27, PA SCHEDULE UE (LINE 1b): "Allowable employee business expenses for PA purposes are similar to, but not the same as, expenses for federal purposes. PA law only permits expenses required to perform the duties of a job or profession." Schedule UE is filed per employer (p. 27: "PA Schedule UE – separate schedule for each employer or job") with Sections IV-VII for office, moving, education and depreciation and Schedule NRH allocation (p. 29), which is too much to model here. Line 1b reduces class (1) compensation, 72 P.S. §7303(a)(1) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Derived><Dollar>0</Dollar></Derived>
     </Fact>
     <Fact path="/paLine1c">
@@ -118,9 +118,23 @@
       <Export downstreamFacts="true" />
       <Derived><GreaterOf><Dollar>0</Dollar><Subtract><Minuend><Dependency path="/paLine24" /></Minuend><Subtrahends><Dependency path="/paLine12" /></Subtrahends></Subtract></GreaterOf></Derived>
     </Fact>
+    <Fact path="/paHasUnreimbursedEmployeeExpenses">
+      <Name>Claims PA-40 line 1b unreimbursed employee business expenses</Name>
+      <Description>#102: PA-40 (2025) line 1b. PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 9: "In computing compensation, only certain expenses are deductible; see the PA Schedule UE instructions beginning on Page 27." p. 29, line 16: "complete Side 1 and include your allowable unreimbursed employee business expenses on Line 1b of your PA-40."</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutPaUnreimbursedEmployeeExpenses">
+      <Name>Flow knockout: PA-40 line 1b (PA Schedule UE)</Name>
+      <Description>#102: yes to /paHasUnreimbursedEmployeeExpenses. Line 1b needs PA Schedule UE (PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 27: "PA law only permits expenses required to perform the duties of a job or profession."), which this tool doesn't compute; knocked out rather than using $0. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(1) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><Dependency module="stateReturn" path="/stateReturnPaFiled" /><IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></All></Derived>
+    </Fact>
     <Fact path="/paHasUnsupportedItems">
       <Name>Has PA-40 items this tool doesn't support</Name>
-      <Description>#78: PA-40 (2025) line 1b (Schedule UE unreimbursed employee expenses), line 7 (estate/trust, Schedule J), line 8 (gambling/lottery, Schedule T), line 10 (MSA/HSA/529/ABLE/Schedule O deductions), lines 14-16 (prior-year credit, estimated and extension payments), line 22 (Schedule G-L credit for taxes paid to another state), line 23 (Schedules OC/DC credits), line 25 (use tax).</Description>
+      <Description>#78: PA-40 (2025) line 7 (estate/trust, Schedule J), line 8 (gambling/lottery, Schedule T), line 10 (MSA/HSA/529/ABLE/Schedule O deductions), lines 14-16 (prior-year credit, estimated and extension payments), line 22 (Schedule G-L credit for taxes paid to another state), line 23 (Schedules OC/DC credits), line 25 (use tax).</Description>
       <Writable>
         <Boolean />
       </Writable>

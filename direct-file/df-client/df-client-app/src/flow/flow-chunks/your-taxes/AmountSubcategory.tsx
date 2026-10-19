@@ -24,6 +24,23 @@ export const AmountSubcategory = (
   <Subcategory route='amount' completeIf='/flowHasSeenAmount'>
     {/* #78 PA-40 core: full-year PA residents. */}
     <SubSubcategory route='pa-40'>
+      {/* #102 PA-40 line 1b (PA Schedule UE) isn't computed: ask, and knock out on yes. */}
+      <Screen route='pa-unreimbursed-employee-expenses' condition='/stateReturnPaFiled'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-unreimbursed-employee-expenses' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unreimbursed-employee-expenses' />
+        <Boolean path='/paHasUnreimbursedEmployeeExpenses' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen
+        route='pa-unreimbursed-employee-expenses-knockout'
+        condition='/flowKnockoutPaUnreimbursedEmployeeExpenses'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-unreimbursed-employee-expenses' />
+        <DFAlert i18nKey='/info/knockout/pa-unreimbursed-employee-expenses' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='pa-unsupported-items' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />
