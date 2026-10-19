@@ -49,8 +49,10 @@
 
     <Fact path="/hasForeignAccounts">
       <Name>Interest of signature authorization in a foreign financial account</Name>
-      <Description>At any time during 2023, did you have a financial interest in or signature authority over a financial
-        account located in a foreign country?</Description>
+      <Description>Schedule B (Form 1040) line 7a, question 1: at any time during the tax year, did you have a
+        financial interest in or signature authority over a financial account located in a foreign country?
+        Instructions for Schedule B (Form 1040) (2025) p. 2, Line 7a—Question 1: "Check the 'Yes' box even if you
+        aren't required to file FinCEN Form 114."</Description>
       <Export mef="true" />
 
       <Writable>
@@ -71,7 +73,8 @@
 
     <Fact path="/isForeignTrustsGrantor">
       <Name>Is the TP an owner, grantor, settler or trustor of a foreign trust?</Name>
-      <Description>At any time during 2023, did you own a foreign trust?</Description>
+      <Description>Part of Schedule B (Form 1040) line 8: at any time during the tax year, did you own (were you the
+        grantor of) a foreign trust?</Description>
 
       <Writable>
         <Boolean />
@@ -89,9 +92,23 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowShouldAskForeignTrustsTransactions">
+      <Name>Ask about distributions from or transfers to a foreign trust</Name>
+      <Description>The second half of Schedule B (Form 1040) line 8 is asked only after "No" to line 7a and "No"
+        to the foreign trust grantor question. Any earlier "Yes" already leads to the knockout.</Description>
+
+      <Derived>
+        <All>
+          <Dependency path="/doesNotHaveForeignAccounts" />
+          <Dependency path="/isNotForeignTrustsGrantor" />
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/hasForeignTrustsTransactions">
       <Name>Did the TP have any transactions with a foreign trust?</Name>
-      <Description>At any time during 2023, did you have a transaction with a foreign trust?</Description>
+      <Description>Part of Schedule B (Form 1040) line 8: during the tax year, did you receive a distribution from,
+        or were you a transferor to, a foreign trust?</Description>
 
       <Writable>
         <Boolean />
@@ -138,7 +155,14 @@
     </Fact>
 
     <Fact path="/hasForeignAccountsOrTrusts">
-      <Description>The TP has interest in foreign accounts or foreign trusts</Description>
+      <Description>The TP answered "Yes" to Schedule B (Form 1040) line 7a (question 1) or line 8. Either answer
+        makes Schedule B required and knocks the return out (see /flowIsKnockedOut), because the follow-up filings
+        are not supported. Instructions for Schedule B (Form 1040) (2025) p. 3, Line 7a—Question 2: a U.S. person
+        "must file the form if the aggregate value of foreign financial accounts exceeds $10,000 at any time during
+        2025" (FinCEN Form 114, line 7b country list); p. 2, Part III: "Regardless of whether you are required to
+        file FinCEN Form 114 (FBAR), you may be required to file Form 8938"; p. 3, Line 8: "If you were the grantor
+        of, or transferor to, a foreign trust that existed during 2025, you may have to file Form 3520." Because
+        any "Yes" knocks out, line 7a question 2 and line 7b are never reached on a supported return.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>

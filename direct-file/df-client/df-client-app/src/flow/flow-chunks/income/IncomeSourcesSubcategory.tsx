@@ -165,10 +165,7 @@ export const IncomeSourcesSubcategory = (
         <Boolean path='/isForeignTrustsGrantor' batches={[`schedule-b-1`]} />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen
-        route='foreign-trusts-transactions'
-        condition={{ operator: `isFalse`, condition: `/isForeignTrustsGrantor` }}
-      >
+      <Screen route='foreign-trusts-transactions' condition='/flowShouldAskForeignTrustsTransactions'>
         <Heading
           i18nKey='/heading/income/income-sources/foreign-trusts-transactions'
           condition={{ operator: `isFalse`, condition: `/isFilingStatusMFJ` }}
