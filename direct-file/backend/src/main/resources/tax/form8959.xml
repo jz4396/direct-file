@@ -103,6 +103,7 @@
       <Name>Form 8959 line 6</Name>
       <Description>f8959 (2026) line 6: "Subtract line 5 from line 4. If zero or less, enter -0-".
         Line 5 = /form8959Threshold.</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
@@ -163,6 +164,7 @@
         self-employment income. Only the primary filer can own a Schedule C business here (scheduleC
         /flowKnockoutScheduleCSpouseBusiness), so this is the whole return's SE income.
       </Description>
+      <ExportZero />
       <Derived>
         <Switch>
           <Case>
@@ -195,6 +197,7 @@
         1401(b)(2)(B): the SE threshold "shall be reduced (but not below zero) by the amount of wages
         taken into account in determining the tax imposed under section 3121(b)(2) with respect to
         the taxpayer."</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
@@ -214,6 +217,7 @@
       <Name>Form 8959 line 17</Name>
       <Description>f8959 (2026) line 17: "Subtract line 16 from line 13. If zero or less, enter
         -0-".</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
@@ -283,6 +287,7 @@
       <Name>Form 8959 line 22: Additional Medicare Tax withholding on Medicare wages</Name>
       <Description>f8959 (2026) line 22: "Subtract line 21 from line 19. If zero or less, enter -0-.
         This is your Additional Medicare Tax withholding on Medicare wages".</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>

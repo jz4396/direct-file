@@ -3,3 +3,5 @@
 # DraftPdfHashManifestTest. Drafts are replaced by final forms later: re-download, re-hash and re-verify the
 # field map before updating a line here.
 a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc  IRS6251/en/f6251--dft.pdf  https://www.irs.gov/pub/irs-dft/f6251--dft.pdf
+8f663b2ca3dd052537a4d8aea4ae9aada0606b0f7dc7711fa8948489ef870d2f  IRS8959/en/f8959--dft.pdf  https://www.irs.gov/pub/irs-dft/f8959--dft.pdf
+2306f4f334a8b3b1ed73fd5045dec86eed194902923462bf485431c756f66982  IRS8960/en/f8960--dft.pdf  https://www.irs.gov/pub/irs-dft/f8960--dft.pdf
