@@ -162,6 +162,10 @@ class Irs8949PdfForm extends PdfForm {
                         }
                     }
                 }
+                // #35: the 2026 draft template starts with the irs.gov "DRAFT-NOT FOR FILING" cover sheet; drop it
+                // (and any configured trailing pages) on every packed form, as PdfForm does for other templates.
+                skipLeadingPages(doc, pdfConfig);
+                skipTrailingPages(doc, pdfConfig);
                 results.add(doc);
             }
         } catch (IOException e) {
