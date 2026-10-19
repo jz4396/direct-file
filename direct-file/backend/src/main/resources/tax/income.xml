@@ -868,6 +868,30 @@
       </Derived>
     </Fact>
 
+    <Fact path="/schedule1Line3">
+      <Name>Schedule 1 line 3: Business income or (loss)</Name>
+      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 1 (PDF p. 2), Part I, line 3: "Business income or (loss). Attach Schedule C". Same amount as scheduleC /scheduleCNetProfitOrLoss (Schedule C line 31). Printed without ExportZero so a Schedule 1 with no Schedule C leaves line 3 blank.</Description>
+      <Derived>
+        <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule1Line5">
+      <Name>Schedule 1 line 5: Rental real estate, royalties, partnerships, S corporations, trusts, etc.</Name>
+      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 1 (PDF p. 2), Part I, line 5: "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach Schedule E". Same amount as scheduleE /scheduleENetIncome (Schedule E Part I only; Part II stops the return, scheduleE /flowKnockoutScheduleEPartII). Printed without ExportZero so a Schedule 1 with no Schedule E leaves line 5 blank.</Description>
+      <Derived>
+        <Dependency module="scheduleE" path="/scheduleENetIncome" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule1Line15">
+      <Name>Schedule 1 line 15: Deductible part of self-employment tax</Name>
+      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 2 (PDF p. 3), Part II, line 15: "Deductible part of self-employment tax. Attach Schedule SE". Same amount as scheduleSE /deductibleSelfEmploymentTax (26 U.S.C. 164(f)), already in taxCalculations /adjustmentsToIncome (line 26). Printed without ExportZero so a Schedule 1 with no Schedule SE leaves line 15 blank.</Description>
+      <Derived>
+        <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+      </Derived>
+    </Fact>
+
     <Fact path="/requiresSchedule1">
       <Name>Requires Schedule 1</Name>
       <Description>Does the taxpayer need to file Schedule 1?</Description>
