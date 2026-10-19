@@ -1,0 +1,42 @@
+# #119: 2026 Schedule 3 (Form 1040), Additional Credits and Payments. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f1040s3--dft.pdf (early-release draft, "Created 4/27/26"), committed
+# byte-identical to irs.gov; SHA-256 5feb6f8d0f08191a2da153573d195fc354f385e26915b99b57d4588893b7cef0 (pinned in
+# pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Field names and line captions come from
+# this draft's AcroForm tooltips (pypdf), and each field's position was checked against the printed line number beside
+# it. Form page 1 = PDF p. 2. No 2026 Schedule 3 instructions draft is posted yet; the captions quoted below are from
+# the form itself. When the final 2026 Schedule 3 is released (#124), re-download it, re-hash it and re-verify every
+# field name and line number here before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+#
+# 2026 field names vs the 2024 map (pdf/2024/IRS1040S3/en): the draft's line 6z text field is f2_22 (inside
+# Line6z_ReadOrder) and there is no f1_39, so every field from line 7 on is one lower: line 7 f1_25 -> f1_24, line 8
+# f1_26 -> f1_25, line 9 f1_27 -> f1_26, line 15 f1_39 -> f1_38. The 2024 map on this draft would print line 8 on
+# line 9.
+#
+# Not mapped, left blank (never a silent 0); each has no input in this tool, or stops the return:
+#   3 education credits (Form 8863), 5a (Form 5695), 6a-6c, 6e-6m, 6z, 10 (extension payment), 12, 13a-13z: no input
+#      (schedule3 /sched3Line3, /sched3Line5b, /sched3Line6f, /sched3Line6l, /sched3Line6m are $0 placeholders).
+#      So line 14 = 0.
+#   5b, 6e  "Reserved for future use".
+#   11  excess social security tax withheld: a filer with more than one W-2 and social security wages over the wage
+#      base stops the return (formW2s /anyFilerExceedsMaxOasdiWages, in /flowIsKnockedOut).
+# $0 amounts print blank (FactGraphService zero suppression).
+includeWhen: /hasSchedule3
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on Form 1040, 1040-SR, or 1040-NR"
+      f1_02[0]: /primaryFiler/tin # "Your social security number"
+      # Part I, Nonrefundable Credits
+      f1_03[0]: /sched3Line1 # 1 "Foreign tax credit. Attach Form 1116 if required" (no Form 1116, 26 U.S.C. 904(j))
+      f1_04[0]: /cdccTotalCredit # 2 "Credit for child and dependent care expenses from Form 2441, line 11. Attach Form 2441"
+      f1_06[0]: /qualifiedSaverCreditAmount # 4 "Retirement savings contributions credit. Attach Form 8880"
+      f1_12[0]: /totalEdc # 6d "Credit for the elderly or disabled. Attach Schedule R"
+      f1_24[0]: /totalOtherNonrefundableCredits # 7 "Total other nonrefundable credits. Add lines 6a through 6z"
+      f1_25[0]: /line8OfSchedule3 # 8 "Add lines 1 through 4, 5a, and 7. Enter here and on Form 1040, 1040-SR, or 1040-NR, line 20"
+      # Part II, Other Payments and Refundable Credits
+      f1_26[0]: /netPtcAmountWhenZeroOrPositive # 9 "Net premium tax credit. Attach Form 8962"
+      f1_38[0]: /otherPaymentsAndRefundableCreditsTotal # 15 "Add lines 9 through 12 and 14. Enter here and on Form 1040, 1040-SR, or 1040-NR, line 31"

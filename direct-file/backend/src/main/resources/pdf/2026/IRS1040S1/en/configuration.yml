@@ -1,0 +1,50 @@
+# #119: 2026 Schedule 1 (Form 1040), Additional Income and Adjustments to Income. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf (early-release draft, "Created 4/24/26"), committed
+# byte-identical to irs.gov; SHA-256 a017a1b717d1c70ff8d831ef8b73c730e5b24f147c394c37f792035a9df22fad (pinned in
+# pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Field names and line captions come from
+# this draft's AcroForm tooltips (pypdf), and each field's position was checked against the printed line number beside
+# it. Form page 1 = PDF p. 2, form page 2 = PDF p. 3. No 2026 Schedule 1 instructions draft is posted yet; the captions
+# quoted below are from the form itself. When the final 2026 Schedule 1 is released (#124), re-download it, re-hash it
+# and re-verify every field name and line number here before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+#
+# 2026 field names vs the 2024 map (pdf/2024/IRS1040S1/en): the draft adds f1_03 (the Form 1099-K note above line 1)
+# and line 4 / line 7 checkboxes, so line 7 moves f1_11 -> f1_12 and 8g f1_18 -> f1_19; lines 9 and 10 stay f1_37 and
+# f1_38; line 26 moves f2_31 -> f2_30. Line 15 (deductible part of SE tax) was not mapped in 2024 and now is.
+#
+# Not mapped, left blank (never a silent 0); each has no input in this tool, or stops the return:
+#   1099-K note (f1_03), 1 state and local refunds, 2a-2b alimony received, 4 Form 4797/4684, 6 Schedule F, 8a-8e,
+#   8h-8z (other than 8g), 12, 14, 16, 17, 19a-19c alimony paid, 22 (reserved), 23, 24a-24z, 25: no input
+#   (/incomeSourcesSupported is the filer's statement that they have no unsupported income).
+#   8f Form 8889 income: HSA distributions not used for qualified medical expenses and testing-period income stop the
+#       return (hsa /flowKnockoutHsaUnqualifiedDistributions, /flowKnockoutHsaTestingPeriodAdditionalIncomeYes).
+#   20 IRA deduction: IRA contributions stop the return (income /madeIraContributions, in /flowIsKnockedOut).
+# $0 amounts print blank (FactGraphService zero suppression); /schedule1Line3, /schedule1Line5 and /schedule1Line15
+# exist so lines 3, 5 and 15 stay blank on a Schedule 1 filed for some other line.
+includeWhen: /requiresSchedule1
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on Form 1040, 1040-SR, or 1040-NR"
+      f1_02[0]: /primaryFiler/tin # "Your social security number"
+      # Part I, Additional Income
+      f1_07[0]: /schedule1Line3 # 3 "Business income or (loss). Attach Schedule C"
+      f1_09[0]: /schedule1Line5 # 5 "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach Schedule E"
+      Line7_ReadOrder[0]:
+        c1_3[0]: /xmlHasRepaidUnemploymentCompensation # 7 "If you repaid a 2026 overpayment (see instructions), check here"
+        f1_11[0]: /unemploymentCompRepaidAmt # 7 "and enter amount repaid"
+      f1_12[0]: /unemploymentCompensation # 7 "Unemployment compensation" (net of the 2026 repayment)
+      f1_19[0]: /alaskaPfdIncome # 8g "Alaska Permanent Fund dividends"
+      f1_37[0]: /schedule1TotalOtherIncome # 9 "Total other income. Add lines 8a through 8z"
+      f1_38[0]: /otherIncome # 10 "Combine lines 1 through 7 and 9. ... Enter here and on Form 1040, 1040-SR, or 1040-NR, line 8"
+    Page2[0]:
+      # Part II, Adjustments to Income
+      f2_01[0]: /educatorExpensesAdjustment # 11 "Educator expenses"
+      f2_03[0]: /hsaTotalDeductibleAmount # 13 "Health savings account deduction. Attach Form 8889"
+      f2_05[0]: /schedule1Line15 # 15 "Deductible part of self-employment tax. Attach Schedule SE"
+      f2_08[0]: /earlyWithdrawalPenaltyTotal # 18 "Penalty on early withdrawal of savings"
+      f2_13[0]: /studentLoanInterestAdjustmentAmount # 21 "Student loan interest deduction"
+      f2_30[0]: /adjustmentsToIncome # 26 "Add lines 11 through 23 and 25. ... Enter here and on Form 1040, 1040-SR, or 1040-NR, line 10"

@@ -6,3 +6,6 @@
 2306f4f334a8b3b1ed73fd5045dec86eed194902923462bf485431c756f66982  IRS8960/en/f8960--dft.pdf  https://www.irs.gov/pub/irs-dft/f8960--dft.pdf
 0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1  IRS1040SD/en/f1040sd--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040sd--dft.pdf
 891d869c87ffe9c6d7f79079d19ebf4ac0afa7257f6374cd95936e44a7079ffe  IRS8949/en/f8949--dft.pdf  https://www.irs.gov/pub/irs-dft/f8949--dft.pdf
+a017a1b717d1c70ff8d831ef8b73c730e5b24f147c394c37f792035a9df22fad  IRS1040S1/en/f1040s1--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf
+0e3d4faa4b96f692bc31119d2c86189c3d8b9263e8f3aaaf7c3da371887ebc56  IRS1040S2/en/f1040s2--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf
+5feb6f8d0f08191a2da153573d195fc354f385e26915b99b57d4588893b7cef0  IRS1040S3/en/f1040s3--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040s3--dft.pdf
