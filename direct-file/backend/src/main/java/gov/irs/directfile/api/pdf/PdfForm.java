@@ -18,6 +18,8 @@ import gov.irs.directfile.models.FactEvaluationResult;
 
 @Slf4j
 class PdfForm extends PdfTemplate {
+    private static final String TEMPLATE_CUSTOM_MAP = "template";
+
     public PdfForm(final String templateName) {
         // Subclass constructors may modify the following defaults.
         super(templateName, false, false);
@@ -94,10 +96,10 @@ class PdfForm extends PdfTemplate {
      */
     static int leadingPagesToSkip(final PdfConfiguration pdfConfig) {
         final Map<String, Map<String, String>> custom = pdfConfig.getCustomData();
-        if (custom == null || custom.get("template") == null) {
+        if (custom == null || custom.get(TEMPLATE_CUSTOM_MAP) == null) {
             return 0;
         }
-        final String value = custom.get("template").get("skipLeadingPages");
+        final String value = custom.get(TEMPLATE_CUSTOM_MAP).get("skipLeadingPages");
         return value == null ? 0 : Integer.parseInt(value.trim());
     }
 
@@ -118,10 +120,10 @@ class PdfForm extends PdfTemplate {
      */
     static int trailingPagesToSkip(final PdfConfiguration pdfConfig) {
         final Map<String, Map<String, String>> custom = pdfConfig.getCustomData();
-        if (custom == null || custom.get("template") == null) {
+        if (custom == null || custom.get(TEMPLATE_CUSTOM_MAP) == null) {
             return 0;
         }
-        final String value = custom.get("template").get("skipTrailingPages");
+        final String value = custom.get(TEMPLATE_CUSTOM_MAP).get("skipTrailingPages");
         return value == null ? 0 : Integer.parseInt(value.trim());
     }
 

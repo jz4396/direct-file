@@ -16,6 +16,7 @@ import gov.irs.directfile.models.FactEvaluationResult;
  */
 class PaScheduleSpPdfForm extends PaPdfForm {
     static final String PREFIX = "~paSp";
+    private static final String DEPENDENT = PREFIX + "Dependent";
     // Section II has nine rows; more than nine dependent children is a stop (/flowKnockoutPaSpUnsupported).
     static final int DEPENDENT_ROWS = 9;
 
@@ -64,18 +65,18 @@ class PaScheduleSpPdfForm extends PaPdfForm {
                     continue;
                 }
                 row++;
-                facts.put(PREFIX + "Dependent" + row + "Name", upper(facts, base + "/fullName"));
-                facts.put(PREFIX + "Dependent" + row + "Age", text(facts, base + "/age"));
+                facts.put(DEPENDENT + row + "Name", upper(facts, base + "/fullName"));
+                facts.put(DEPENDENT + row + "Age", text(facts, base + "/age"));
                 // The Enum value goes through PdfLanguages.translateRelationship (e.g. "Child", "Stepchild").
                 facts.put(
-                        PREFIX + "Dependent" + row + "Relationship",
+                        DEPENDENT + row + "Relationship",
                         facts.getOptional(base + "/relationship").orElse(""));
-                facts.put(PREFIX + "Dependent" + row + "Ssn", ssn(facts, base + "/tin"));
+                facts.put(DEPENDENT + row + "Ssn", ssn(facts, base + "/tin"));
             }
         }
         for (int r = row + 1; r <= DEPENDENT_ROWS; r++) {
             for (String col : new String[] {"Name", "Age", "Relationship", "Ssn"}) {
-                facts.put(PREFIX + "Dependent" + r + col, "");
+                facts.put(DEPENDENT + r + col, "");
             }
         }
         final String children = text(facts, "/paSpDependentChildCount");
