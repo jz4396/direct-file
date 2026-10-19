@@ -485,23 +485,29 @@
 
     <Fact path="/qualifiedDividends">
       <Name>Qualified Dividends</Name>
-      <Description>Qualified dividend income to report on line 3a of Form 1040.
-
-        OUT OF SCOPE</Description>
-
+      <Description>Qualified dividend income to report on line 3a of Form 1040. #86: total of Form 1099-DIV box 1b
+        (dividends /totalQualifiedDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        p. 25, Line 3a: "Enter your total qualified dividends on line 3a. ... Generally, these dividends are shown in
+        box 1b of Form(s) 1099-DIV." Taxed through the QDCG Tax Worksheet (scheduleD3 /qdcgLine2).</Description>
+      <Export downstreamFacts="true" mef="true" />
       <Derived>
-        <Dollar>0</Dollar>
+        <Round>
+          <Dependency module="dividends" path="/totalQualifiedDividends" />
+        </Round>
       </Derived>
     </Fact>
 
     <Fact path="/ordinaryDividends">
       <Name>Ordinary dividends</Name>
-      <Description>Ordinary dividend income to report on line 3b of Form 1040.
-        OUT OF SCOPE</Description>
-      <Export downstreamFacts="true" />
-
+      <Description>Ordinary dividend income to report on line 3b of Form 1040. #86: total of Form 1099-DIV box 1a
+        (dividends /totalOrdinaryDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        p. 26, Line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
+        Form(s) 1099-DIV." 26 U.S.C. 61(a)(7) (https://www.law.cornell.edu/uscode/text/26/61).</Description>
+      <Export downstreamFacts="true" mef="true" />
       <Derived>
-        <Dollar>0</Dollar>
+        <Round>
+          <Dependency module="dividends" path="/totalOrdinaryDividends" />
+        </Round>
       </Derived>
     </Fact>
 
@@ -686,7 +692,8 @@
     <Fact path="/capitalGainsScheduleDNotRequired">
       <Name>Capital Gains Schedule D Not Required</Name>
       <Description>1040 checkbox when *nonzero* gain/loss is exempt from Schedule D.
-        Always false in scope: capital gain distributions (1099-DIV box 2a) are not supported, and every
+        Always false in scope: capital gain distributions (1099-DIV box 2a) stop the return
+        (dividends /flowKnockoutCapitalGainDistributions), and every
         Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p.11).
       </Description>
       <Derived>

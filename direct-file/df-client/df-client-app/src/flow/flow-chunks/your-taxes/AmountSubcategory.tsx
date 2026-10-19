@@ -41,6 +41,19 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-unreimbursed-employee-expenses' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* #86 PA Schedule B adjustments to dividends aren't computed: ask, and knock out on yes. */}
+      <Screen route='pa-exempt-obligation-dividends' condition='/paAskExemptObligationDividends'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-exempt-obligation-dividends' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-exempt-obligation-dividends' />
+        <Boolean path='/paHasExemptObligationDividends' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-dividends-knockout' condition='/flowKnockoutPaDividends' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-dividends' />
+        <DFAlert i18nKey='/info/knockout/pa-dividends' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='pa-unsupported-items' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />
