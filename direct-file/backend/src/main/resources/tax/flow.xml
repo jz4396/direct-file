@@ -20,6 +20,14 @@
           <Dependency module="filers" path="/knockoutSubjectToCommunityPropertyLaws" />
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
           <Dependency module="interest" path="/flowKnockoutHasBonds" />
+          <Dependency module="dividends" path="/flowKnockoutDividendUnsupportedBoxes" />
+          <Dependency module="dividends" path="/flowKnockoutCapitalGainDistributions" />
+          <Dependency module="dividends" path="/flowKnockoutNondividendDistributionsOverBasis" />
+          <Dependency module="dividends" path="/flowKnockoutQualifiedDividendsHoldingPeriod" />
+          <Dependency module="dividends" path="/flowKnockoutSection199ADividends" />
+          <Dependency module="dividends" path="/flowKnockoutDividendForeignTaxPaid" />
+          <Dependency module="dividends" path="/flowKnockoutDividendNominee" />
+          <Dependency module="dividends" path="/flowKnockoutDividendAmountsInconsistent" />
           <Dependency module="interest" path="/flowKnockoutHasForeignTaxPaid" />
           <Dependency module="interest" path="/flowKnockoutWithholdingUnsupportedState" />
           <Dependency module="interest" path="/flowKnockoutStateTaxWithheld" />
@@ -130,6 +138,7 @@
           <Dependency module="form6251" path="/flowKnockoutAmtPreferenceItems" />
           <Dependency module="form6251" path="/flowKnockoutAmtMfsAddBack" />
           <Dependency module="form6251" path="/flowKnockoutAmtKiddieTax" />
+          <Dependency module="income" path="/flowKnockoutForm8615" />
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
@@ -714,6 +723,7 @@
             <Dependency module="unemployment" path="/form1099GsIsDone" />
             <Dependency module="formW2s" path="/formW2sIsDone" />
             <Dependency module="interest" path="/interestReportsIsDone" />
+            <Dependency module="dividends" path="/dividendReportsIsDone" />
             <Dependency module="paymentMethod" path="/paymentSectionComplete" />
             <Dependency module="form1099Rs" path="/form1099RsIsComplete" />
             <Dependency module="form1099Misc" path="/isApfSectionComplete" />

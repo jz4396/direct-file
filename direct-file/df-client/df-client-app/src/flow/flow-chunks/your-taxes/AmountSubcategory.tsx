@@ -41,6 +41,19 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-unreimbursed-employee-expenses' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* #86 PA Schedule B adjustments to dividends aren't computed: ask, and knock out on yes. */}
+      <Screen route='pa-exempt-obligation-dividends' condition='/paAskExemptObligationDividends'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-exempt-obligation-dividends' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-exempt-obligation-dividends' />
+        <Boolean path='/paHasExemptObligationDividends' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-dividends-knockout' condition='/flowKnockoutPaDividends' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-dividends' />
+        <DFAlert i18nKey='/info/knockout/pa-dividends' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='pa-unsupported-items' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />
@@ -96,6 +109,13 @@ export const AmountSubcategory = (
       <IconDisplay name='ErrorOutline' size={9} isCentered />
       <Heading i18nKey='/heading/knockout/amt-kiddie-tax' />
       <DFAlert i18nKey='/info/knockout/amt-kiddie-tax' headingLevel='h3' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
+    {/* #86 Form 8615 (tax for certain children who have unearned income) isn't computed */}
+    <Screen route='form-8615-knockout' condition='/flowKnockoutForm8615' isKnockout={true}>
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/form-8615' />
+      <DFAlert i18nKey='/info/knockout/form-8615' headingLevel='h3' type='warning' />
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
     <Screen route='tax-amount-intro'>

@@ -123,7 +123,7 @@ describe(`PA-40 core (#78)`, () => {
     const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(1200, 800) });
     expect(val(g, `/interestIncome`)).toBe(`2000.00`);
     expect(val(g, `/paLine2`)).toBe(`1200.00`);
-    expect(val(g, `/paLine3`)).toBe(`0.00`); // dividends out of scope in this app
+    expect(val(g, `/paLine3`)).toBe(`0.00`); // no 1099-DIV
     expect(val(g, `/paLine9`)).toBe(`41200.00`);
     expect(val(g, `/paLine12`)).toBe(`1264.84`); // 41,200 × 0.0307
   });

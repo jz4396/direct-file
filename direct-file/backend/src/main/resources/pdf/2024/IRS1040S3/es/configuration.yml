@@ -4,7 +4,7 @@ form:
     Page1[0]:
       f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
       f1_02[0]: /primaryFiler/tin
-      # f1_03[0]:
+      f1_03[0]: /sched3Line1 # line 1 foreign tax credit (no Form 1116, 26 U.S.C. 904(j))
       f1_04[0]: /cdccTotalCredit
       # f1_05[0]:
       f1_06[0]: /qualifiedSaverCreditAmount

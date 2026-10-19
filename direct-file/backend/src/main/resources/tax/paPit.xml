@@ -37,7 +37,7 @@
     </Fact>
     <Fact path="/paLine3">
       <Name>PA-40 line 3 dividends</Name>
-      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 15, LINE 3: "Report all dividend income received or credited during 2025." Dividends are out of scope in this app (/ordinaryDividends = $0). 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(5).</Description>
+      <Description>#78: PA-40 IN (2025), https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 15, LINE 3: "Report all dividend income received or credited during 2025." 72 P.S. §7303(a) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(5). #86: PA Schedule B line 1 (p. 32): "Enter the amount of dividend income you reported on Line 3b of your federal Form 1040." (income /ordinaryDividends, Form 1099-DIV box 1a). p. 32: if there are no amounts for Lines 2 through 10 of PA Schedule B, "you must report your income on Line 3 of the PA-40, but you do not have to submit PA Schedule B." The adjustments that can arise from a supported 1099-DIV all stop the return instead: line 3 exempt U.S./PA obligation dividends and line 4 nonresident-period dividends (/flowKnockoutPaDividends), line 7 exempt-interest dividends (box 12, dividends /flowKnockoutDividendUnsupportedBoxes) and capital gains distributions, which p. 32 makes "taxable as dividend income on Line 3" (box 2a, dividends /flowKnockoutCapitalGainDistributions). Return-of-capital (box 3) is not in box 1a; p. 32: PA-taxable dividend income does not include "Distributions designated as return of capital ... that reduce the basis of your stock".</Description>
       <Derived><Dependency module="income" path="/ordinaryDividends" /></Derived>
     </Fact>
     <Fact path="/paLine4">
@@ -132,6 +132,25 @@
       <BlockSubmissionOnTrue />
       <Derived><All><Dependency module="stateReturn" path="/stateReturnPaFiled" /><IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></IsComplete><Dependency path="/paHasUnreimbursedEmployeeExpenses" /></All></Derived>
     </Fact>
+    <Fact path="/paAskExemptObligationDividends">
+      <Name>Ask about PA-exempt obligation dividends</Name>
+      <Description>#86: a PA-40 is filed and there are ordinary dividends (Form 1099-DIV box 1a).</Description>
+      <Derived><All><Dependency module="stateReturn" path="/stateReturnPaFiled" /><Dependency module="dividends" path="/hasDividendIncome" /></All></Derived>
+    </Fact>
+    <Fact path="/paHasExemptObligationDividends">
+      <Name>Has dividends from U.S. or PA obligations</Name>
+      <Description>#86: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 32, PA Schedule B line 3: "Enter the total amount of any tax-exempt dividends from direct obligations of the Commonwealth of Pennsylvania, direct obligations of political subdivisions of Pennsylvania and/or direct obligations of the U.S. Government (U.S. Treasury Bonds, Notes, Bills, Certificates, and Savings Bonds) included in any tax-exempt fund or money market fund dividends." and PA-taxable dividend income does not include "Dividends from PA tax-exempt obligations."</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutPaDividends">
+      <Name>Flow knockout: PA Schedule B adjustments to dividends</Name>
+      <Description>#86: PA-40 line 3 is federal Form 1040 line 3b only when PA Schedule B lines 2-10 are all $0 (PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 32). Stops the return, rather than overstating line 3, when there are dividends and (1) yes to /paHasExemptObligationDividends (PA Schedule B line 3, p. 32; the exempt part would also go on Schedule SP line 2), or (2) a PA/FL part-year resident (/paPartYearSupported): p. 43, "As a nonresident, you do not pay PA income tax on ordinary interest, ordinary dividends", so the nonresident-period dividends are a PA Schedule B line 4 adjustment (p. 32: "dividend income for a part-year resident taxpayer during the period the taxpayer was a nonresident") and Schedule SP line 6 non-PA income (p. 38); 1099-DIVs carry no dates. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived><All><Dependency module="stateReturn" path="/stateReturnPaFiled" /><Dependency module="dividends" path="/hasDividendIncome" /><Any><Dependency path="/paPartYearSupported" /><All><IsComplete><Dependency path="/paHasExemptObligationDividends" /></IsComplete><Dependency path="/paHasExemptObligationDividends" /></All></Any></All></Derived>
+    </Fact>
     <Fact path="/paHasUnsupportedItems">
       <Name>Has PA-40 items this tool doesn't support</Name>
       <Description>#78: PA-40 (2025) line 7 (estate/trust, Schedule J), line 8 (gambling/lottery, Schedule T), line 10 (MSA/HSA/529/ABLE/Schedule O deductions), lines 14-16 (prior-year credit, estimated and extension payments), line 22 (Schedule G-L credit for taxes paid to another state), line 23 (Schedules OC/DC credits), line 25 (use tax).</Description>
@@ -176,7 +195,7 @@
     </Fact>
     <Fact path="/paSpLine6">
       <Name>Schedule SP line 6 Non-PA income</Name>
-      <Description>#107: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, line 6: "6. Non-PA income. Part-year residents and nonresidents must complete this line. Enter the total of all income, not already reported on this schedule, that you (and your spouse, if applicable) earned, received or realized while residing outside Pennsylvania." p. 37, "Nonresidents and Part-Year Residents": "Such taxpayers must include in their eligibility income all income as described whether earned within or outside Pennsylvania." Part-year (PA/FL) residents: compensation earned while living in FL (/formW2s/*/paSpNonPaPeriodCompensation) + FL-period interest (/paSpNonPaPeriodInterest) + FL-period net gain from sales (/paSpNonPaPeriodGainOrLoss, if positive). Dividends are out of scope ($0), and Schedule C, Schedule E, 1099-R, 1099-MISC and 1099-G income already knock out (#101/#105). Full-year residents: $0 (no time outside PA).</Description>
+      <Description>#107: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, line 6: "6. Non-PA income. Part-year residents and nonresidents must complete this line. Enter the total of all income, not already reported on this schedule, that you (and your spouse, if applicable) earned, received or realized while residing outside Pennsylvania." p. 37, "Nonresidents and Part-Year Residents": "Such taxpayers must include in their eligibility income all income as described whether earned within or outside Pennsylvania." Part-year (PA/FL) residents: compensation earned while living in FL (/formW2s/*/paSpNonPaPeriodCompensation) + FL-period interest (/paSpNonPaPeriodInterest) + FL-period net gain from sales (/paSpNonPaPeriodGainOrLoss, if positive). Dividends: a part-year resident with any dividends stops the return (/flowKnockoutPaDividends, #86), and Schedule C, Schedule E, 1099-R, 1099-MISC and 1099-G income already knock out (#101/#105). Full-year residents: $0 (no time outside PA).</Description>
       <Export downstreamFacts="true" />
       <Derived><Switch><Case><When><Not><Dependency path="/paPartYearSupported" /></Not></When><Then><Dollar>0</Dollar></Then></Case><Case><When><True /></When><Then><Add><CollectionSum><Dependency module="formW2s" path="/formW2s/*/paSpNonPaPeriodCompensation" /></CollectionSum><Dependency path="/paSpNonPaPeriodInterest" /><GreaterOf><Dollar>0</Dollar><Dependency path="/paSpNonPaPeriodGainOrLoss" /></GreaterOf></Add></Then></Case></Switch></Derived>
     </Fact>

@@ -37,36 +37,36 @@ form:
       # f1_32[0]:
       f1_33[0]: /interestIncome # line 4 = line 2 - line 3; line 3 (Form 8815 exclusion) is not claimed, so line 4 = line 2
       ReadOrderControl[0]:
-        # f1_34[0]:
-      # f1_35[0]:
-      # f1_36[0]:
-      # f1_37[0]:
-      # f1_38[0]:
-      # f1_39[0]:
-      # f1_40[0]:
-      # f1_41[0]:
-      # f1_42[0]:
-      # f1_43[0]:
-      # f1_44[0]:
-      # f1_45[0]:
-      # f1_46[0]:
-      # f1_47[0]:
-      # f1_48[0]:
-      # f1_49[0]:
-      # f1_50[0]:
-      # f1_51[0]:
-      # f1_52[0]:
-      # f1_53[0]:
-      # f1_54[0]:
-      # f1_55[0]:
-      # f1_56[0]:
-      # f1_57[0]:
-      # f1_58[0]:
-      # f1_59[0]:
-      # f1_60[0]:
-      # f1_61[0]:
-      # f1_62[0]:
-      # f1_63[0]:
+        f1_34[0]: /dividendReports/[0]/payer
+      f1_35[0]: /dividendReports/[0]/roundedOrdinaryDividends
+      f1_36[0]: /dividendReports/[1]/payer
+      f1_37[0]: /dividendReports/[1]/roundedOrdinaryDividends
+      f1_38[0]: /dividendReports/[2]/payer
+      f1_39[0]: /dividendReports/[2]/roundedOrdinaryDividends
+      f1_40[0]: /dividendReports/[3]/payer
+      f1_41[0]: /dividendReports/[3]/roundedOrdinaryDividends
+      f1_42[0]: /dividendReports/[4]/payer
+      f1_43[0]: /dividendReports/[4]/roundedOrdinaryDividends
+      f1_44[0]: /dividendReports/[5]/payer
+      f1_45[0]: /dividendReports/[5]/roundedOrdinaryDividends
+      f1_46[0]: /dividendReports/[6]/payer
+      f1_47[0]: /dividendReports/[6]/roundedOrdinaryDividends
+      f1_48[0]: /dividendReports/[7]/payer
+      f1_49[0]: /dividendReports/[7]/roundedOrdinaryDividends
+      f1_50[0]: /dividendReports/[8]/payer
+      f1_51[0]: /dividendReports/[8]/roundedOrdinaryDividends
+      f1_52[0]: /dividendReports/[9]/payer
+      f1_53[0]: /dividendReports/[9]/roundedOrdinaryDividends
+      f1_54[0]: /dividendReports/[10]/payer
+      f1_55[0]: /dividendReports/[10]/roundedOrdinaryDividends
+      f1_56[0]: /dividendReports/[11]/payer
+      f1_57[0]: /dividendReports/[11]/roundedOrdinaryDividends
+      f1_58[0]: /dividendReports/[12]/payer
+      f1_59[0]: /dividendReports/[12]/roundedOrdinaryDividends
+      f1_60[0]: /dividendReports/[13]/payer
+      f1_61[0]: /dividendReports/[13]/roundedOrdinaryDividends
+      f1_62[0]: /dividendReports/[14]/payer
+      f1_63[0]: /dividendReports/[14]/roundedOrdinaryDividends
       f1_64[0]: /ordinaryDividends # line 6, same amount as Form 1040 line 3b
       TagcorrectingSubform[0]:
         c1_1[0]: /hasForeignAccounts

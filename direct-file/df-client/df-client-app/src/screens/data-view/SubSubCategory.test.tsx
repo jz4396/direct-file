@@ -25,6 +25,7 @@ import { setupFactGraph } from '../../test/setupFactGraph.js';
 // Test data for rendering subsubcategories
 const w2Id = `0b1e355e-3d19-415d-8470-fbafd9f58361`;
 const interestReportId = `0b1e355e-3d19-415d-8470-fbafd9f58361`;
+const dividendReportId = `86a0e000-0000-4000-8000-000000000001`;
 const dependentId = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d48`;
 const apfForm1099Id = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d42`;
 const retirementForm1099Id = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d75`;
@@ -79,6 +80,10 @@ const baseIncomeData = {
   '/interestReports': {
     $type: `gov.irs.factgraph.persisters.CollectionWrapper`,
     item: { items: [`${interestReportId}`] },
+  },
+  '/dividendReports': {
+    $type: `gov.irs.factgraph.persisters.CollectionWrapper`,
+    item: { items: [`${dividendReportId}`] },
   },
 };
 const baseApfData = {
@@ -201,6 +206,7 @@ describe(`SubSubCategory`, () => {
           [`/flow/you-and-your-family/dependents`]: dependentId,
           [`/flow/income/jobs`]: w2Id,
           [`/flow/income/interest`]: interestReportId,
+          [`/flow/income/dividends`]: dividendReportId,
           [`/flow/income/unemployment`]: formId,
           [`/flow/income/retirement`]: retirementForm1099Id,
           [`/flow/income/alaska-pfd`]: apfForm1099Id,
