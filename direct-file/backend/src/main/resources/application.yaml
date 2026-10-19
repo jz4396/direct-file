@@ -195,17 +195,17 @@ direct-file:
       - name: IRS1040SD
         year: 2024
         language-code: en
-        location: pdf/2024/IRS1040SD/en/f1040sd.pdf
+        location: pdf/2026/IRS1040SD/en/f1040sd--dft.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS1040SD/en/configuration.yml
+        configuration-location: pdf/2026/IRS1040SD/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS8949
         year: 2024
         language-code: en
-        location: pdf/2024/IRS8949/en/f8949.pdf
+        location: pdf/2026/IRS8949/en/f8949--dft.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS8949/en/configuration.yml
+        configuration-location: pdf/2026/IRS8949/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS1040EIC

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * rows per Part, line 2 totals of columns (d), (e), (g), (h) per form (Form 8949 (2025) line 2).
  */
 class Irs8949PdfFormTest {
-    private static final String PDF = "src/main/resources/pdf/2024/IRS8949/en/f8949.pdf";
+    private static final String PDF = "src/main/resources/pdf/2026/IRS8949/en/f8949--dft.pdf";
 
     private static List<UUID> ids(int n) {
         List<UUID> out = new ArrayList<>();

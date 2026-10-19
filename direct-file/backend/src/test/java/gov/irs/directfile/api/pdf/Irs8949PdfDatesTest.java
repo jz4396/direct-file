@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Form 8949 (2025); Day facts must print as MM/DD/YYYY on every packed row (#49), in both Parts.
  */
 class Irs8949PdfDatesTest {
-    private static final String DIR = "src/main/resources/pdf/2024/IRS8949/en/";
+    private static final String DIR = "src/main/resources/pdf/2026/IRS8949/en/";
     private static final String TX = "/form8949Transactions/#";
 
     private static void day(FactEvaluationResult f, String path, String iso) {
@@ -52,11 +52,15 @@ class Irs8949PdfDatesTest {
         try (InputStream in = new FileInputStream(DIR + "configuration.yml")) {
             config = PdfConfiguration.load(in);
         }
-        byte[] template = Files.readAllBytes(Path.of(DIR + "f8949.pdf"));
+        byte[] template = Files.readAllBytes(Path.of(DIR + "f8949--dft.pdf"));
         List<PDDocument> docs =
                 new Irs8949PdfForm("IRS8949").generateDocuments(facts, template, config, PdfLanguages.EN);
         try {
             assertEquals(2, docs.size(), "one Form 8949 for box A, one for box D");
+            for (PDDocument doc : docs) {
+                // #35: the draft cover sheet (file page 1) is dropped; each form keeps its two form pages.
+                assertEquals(2, doc.getNumberOfPages(), "Form 8949 Part I and Part II pages only");
+            }
             PDAcroForm a = docs.get(0).getDocumentCatalog().getAcroForm();
             String p1 = "topmostSubform[0].Page1[0].Table_Line1_Part1[0].";
             assertEquals("02/02/2026", a.getField(p1 + "Row1[0].f1_04[0]").getValueAsString());
