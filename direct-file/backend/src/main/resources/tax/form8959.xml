@@ -3,9 +3,9 @@
   Form 8959, Additional Medicare Tax (#82). Replaces the old formW2s /knockoutMedicareWages
   high-wage knockout with a computation of Parts I, II, IV and V.
   TY2026 layout (2026 drafts; Part II is now RRTA and Part IV is SE income). Sources fetched from irs.gov 2026-10-16:
-    Form 8959 (2026) draft, Created 5/27/26   https://www.irs.gov/pub/irs-dft/f8959--dft.pdf (sha256 8f663b2c...870d2f)
-    Instructions for Form 8959 (2026) draft    https://www.irs.gov/pub/irs-dft/i8959--dft.pdf (sha256 c5b1661e...bbaf1)
-    Schedule 2 (Form 1040) 2026 draft          https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf (sha256 0e3d4faa...ebc56)
+    Form 8959 (2026) draft, Created 5/27/26   https://www.irs.gov/pub/irs-dft/f8959%2D%2Ddft.pdf (sha256 8f663b2c...870d2f)
+    Instructions for Form 8959 (2026) draft    https://www.irs.gov/pub/irs-dft/i8959%2D%2Ddft.pdf (sha256 c5b1661e...bbaf1)
+    Schedule 2 (Form 1040) 2026 draft          https://www.irs.gov/pub/irs-dft/f1040s2%2D%2Ddft.pdf (sha256 0e3d4faa...ebc56)
     i8959 (2026) p.1 What's New: "For 2026, report the Additional Medicare Tax on Medicare wages and RRTA
     compensation from Form 8959, line 12, on Schedule 2 (Form 1040), line 17b ... Report the Additional Medicare
     Tax on self-employment income from Form 8959, line 18, on Schedule 2 (Form 1040), line 11".
@@ -103,6 +103,7 @@
       <Name>Form 8959 line 6</Name>
       <Description>f8959 (2026) line 6: "Subtract line 5 from line 4. If zero or less, enter -0-".
         Line 5 = /form8959Threshold.</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
@@ -163,6 +164,7 @@
         self-employment income. Only the primary filer can own a Schedule C business here (scheduleC
         /flowKnockoutScheduleCSpouseBusiness), so this is the whole return's SE income.
       </Description>
+      <ExportZero />
       <Derived>
         <Switch>
           <Case>
@@ -195,6 +197,7 @@
         1401(b)(2)(B): the SE threshold "shall be reduced (but not below zero) by the amount of wages
         taken into account in determining the tax imposed under section 3121(b)(2) with respect to
         the taxpayer."</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
@@ -214,6 +217,7 @@
       <Name>Form 8959 line 17</Name>
       <Description>f8959 (2026) line 17: "Subtract line 16 from line 13. If zero or less, enter
         -0-".</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
@@ -283,6 +287,7 @@
       <Name>Form 8959 line 22: Additional Medicare Tax withholding on Medicare wages</Name>
       <Description>f8959 (2026) line 22: "Subtract line 21 from line 19. If zero or less, enter -0-.
         This is your Additional Medicare Tax withholding on Medicare wages".</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
