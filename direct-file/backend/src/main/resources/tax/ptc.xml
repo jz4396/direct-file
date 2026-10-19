@@ -40,7 +40,7 @@
       <Description>#91: blocks submission for any return that must file Form 8962 until the TY2026 premium tax credit
         rules are implemented. The PTC facts in this module still follow the TY2024 rules, and three of those rules
         changed for TY2026:
-        (1) Repayment limitation removed. Rev. Proc. 2025-32 sec. 2.04, p. 6
+        (1) Repayment limitation removed. Rev. Proc. 2025-32 sec. 2.04, p. 5
         (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "Section 71305 of the OBBBA removes sec. 36B(f)(2)(B), which
         limited the tax increase from excess advance payments for certain households, effective for taxable years
         beginning after December 31, 2025." /ptcRepaymentLimitation still caps repayment at the TY2024 amounts.
