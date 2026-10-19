@@ -30,6 +30,32 @@ Early bootstrap. First changes are documentation and process; tax-year updates a
 
 See [ONBOARDING.md](/ONBOARDING.md) to run Direct File locally (upstream docs still apply to the base stack).
 
+## Run locally with Docker (one command)
+
+Requirements: Docker Engine with Compose v2 (`docker compose version`), `openssl`, and about 8 GB of memory free for the first build.
+
+```sh
+cd direct-file
+scripts/local-docker.sh          # build + start, waits until healthy
+```
+
+This builds and starts the backend API (including PDF generation), the interview client, the CSP simulator (local sign-in), Postgres, Redis and LocalStack, using `docker-compose.yaml` plus the `docker-compose.local.yaml` overlay. When it returns:
+
+| What | URL |
+| --- | --- |
+| Interview (sign in with any email, choose IAL2) | http://localhost:5000/ |
+| Client served directly (no sign-in) | http://localhost:3000/df/file/ |
+| API health | http://localhost:8080/df/file/api/actuator/health |
+
+Other commands: `scripts/local-docker.sh status`, `logs [service]`, `down` (keeps data), `reset` (also deletes the local database and LocalStack volumes).
+
+Notes:
+
+- On first run the script writes `direct-file/.local-docker.env` with a random `LOCAL_WRAPPING_KEY` for local encryption. It is git-ignored; delete it together with `reset` to start fresh.
+- Third-party images are pinned by digest; ports bind to `127.0.0.1` only. Set `DF_LISTEN_ADDRESS`, `DF_CSPSIM_PORT` or `DF_FE_PORT` to change them.
+- MeF submit/status, state-api and email are not started; filing is not available locally.
+- The first build downloads Maven, sbt and npm dependencies and can take 15-30 minutes.
+
 ## Exempted code (from upstream)
 
 Not all source used in the original Direct File is in this repository. Code or data considered PII, FTI, SBU, or developed for National Security Systems (40 U.S.C. § 11103) was exempted upstream. Some functionality was removed or rewritten for that reason.
