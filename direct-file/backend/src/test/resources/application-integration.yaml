@@ -257,6 +257,22 @@ direct-file:
         configuration-location: "src/main/resources/pdf/2024/IRS8880/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
+      - name: IRS8959
+        year: 2024
+        language-code: en
+        location: "src/main/resources/pdf/2026/IRS8959/en/f8959--dft.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/IRS8959/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
+      - name: IRS8960
+        year: 2024
+        language-code: en
+        location: "src/main/resources/pdf/2026/IRS8960/en/f8960--dft.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/IRS8960/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
       - name: IRS8889
         year: 2024
         language-code: en

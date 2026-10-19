@@ -196,6 +196,7 @@
       <Description>f8960 (2026 draft) line 12: "Net investment income. Subtract Part II, line 11, from Part I,
         line 8. Individuals, complete lines 13-17. ... If zero or less, enter -0-".</Description>
       <Export mef="true" />
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>
@@ -278,6 +279,7 @@
         26 U.S.C. 1411(a)(1)(B): "the excess (if any) of- (i) the modified adjusted gross income for such taxable
         year, over (ii) the threshold amount."</Description>
       <Export mef="true" />
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Subtract>

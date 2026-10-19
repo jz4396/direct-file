@@ -1,0 +1,53 @@
+# 2026 Form 8959, Additional Medicare Tax. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f8959--dft.pdf (early-release draft, "Created 5/27/26"), committed
+# byte-identical to irs.gov; SHA-256 8f663b2ca3dd052537a4d8aea4ae9aada0606b0f7dc7711fa8948489ef870d2f
+# (pinned in pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Field names and line captions
+# come from this draft's AcroForm tooltips (pypdf), and each field's position was checked against the printed line
+# number beside it. When the final 2026 Form 8959 is released, re-download it, re-hash it and re-verify every field
+# name and line number here before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+#
+# Included when /requiresForm8959 (line 12, 18 or 24 more than zero; Instructions for Form 8959 (2026 draft) p. 1,
+# "Attach Form 8959 to your return").
+#
+# Not mapped, left blank (never a silent 0), because a nonzero amount is a stop that blocks submission:
+#   8-11  Part II, RRTA compensation: /flowKnockoutForm8959Unsupported.
+#   23    Additional Medicare Tax withholding on RRTA compensation: /flowKnockoutForm8959Unsupported.
+# Lines 2 (Form 4137) and 3 (Form 8919) are mapped; their facts are $0 on any return that can be submitted
+# (unreportedTips /flowKnockoutUnreportedTips; /flowKnockoutForm8959Unsupported), so they print blank.
+# $0 amounts print blank (FactGraphService zero suppression) except where the form says "enter -0-": lines 6, 13,
+# 16, 17 and 22, whose facts carry <ExportZero />.
+includeWhen: /requiresForm8959
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on return"
+      f1_2[0]: /primaryFiler/tin # "Your social security number"
+      # Part I, Additional Medicare Tax on Medicare Wages
+      f1_3[0]: /form8959Line1 # 1 "Medicare wages and tips from Form W-2, box 5"
+      f1_4[0]: /form8959Line2 # 2 "Unreported tips from Form 4137, line 6"
+      f1_5[0]: /form8959Line3 # 3 "Wages from Form 8919, line 6"
+      f1_6[0]: /form8959Line4 # 4 "Add lines 1 through 3"
+      f1_7[0]: /form8959Threshold # 5 "Enter the following amount for your filing status"
+      f1_8[0]: /form8959Line6 # 6 "Subtract line 5 from line 4. If zero or less, enter -0-"
+      f1_9[0]: /form8959Line7 # 7 "Additional Medicare Tax on Medicare wages. Multiply line 6 by 0.9% (0.009)"
+      # Part II, lines 8-11 (f1_10 to f1_13): RRTA, not mapped (see above)
+      # Part III
+      f1_14[0]: /form8959Line12 # 12 "Add lines 7 and 11. Also enter this amount on Schedule 2 (Form 1040), line 17b"
+      # Part IV, Additional Medicare Tax on Self-Employment Income
+      f1_15[0]: /form8959Line13 # 13 "Self-employment income from Schedule SE (Form 1040), Part I, line 6"
+      f1_16[0]: /form8959Threshold # 14 "Enter the following amount for your filing status"
+      f1_17[0]: /form8959Line4 # 15 "Enter the amount from line 4"
+      f1_18[0]: /form8959Line16 # 16 "Subtract line 15 from line 14. If zero or less, enter -0-"
+      f1_19[0]: /form8959Line17 # 17 "Subtract line 16 from line 13. If zero or less, enter -0-"
+      f1_20[0]: /form8959Line18 # 18 "Additional Medicare Tax on self-employment income ... Schedule 2 (Form 1040), line 11"
+      # Part V, Withholding Reconciliation
+      f1_21[0]: /form8959Line19 # 19 "Medicare tax withheld from Form W-2, box 6"
+      f1_22[0]: /form8959Line1 # 20 "Enter the amount from line 1"
+      f1_23[0]: /form8959Line21 # 21 "Multiply line 20 by 1.45% (0.0145)"
+      f1_24[0]: /form8959Line22 # 22 "Subtract line 21 from line 19. If zero or less, enter -0-"
+      # 23 (f1_25): RRTA withholding, not mapped (see above)
+      f1_26[0]: /form8959Line24 # 24 "Total Additional Medicare Tax withholding. Add lines 22 and 23"
