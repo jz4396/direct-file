@@ -68,7 +68,7 @@
     "/familyAndHousehold/#79ac153b-58be-4d5e-a59f-276ef540318e/dateOfBirth": {
       "$type": "gov.irs.factgraph.persisters.DayWrapper",
       "item": {
-        "date": "2006-07-20"
+        "date": "2009-07-20"
       }
     },
     "/familyAndHousehold/#79ac153b-58be-4d5e-a59f-276ef540318e/deceased": {
