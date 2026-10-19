@@ -25,6 +25,15 @@
               <Dollar>0</Dollar>
             </Right>
           </GreaterThan>
+          <!-- #83: Schedule 2 line 6 (Net Investment Income Tax, Form 8960 line 17) -->
+          <GreaterThan>
+            <Left>
+              <Dependency path="/schedule2Line6NetInvestmentIncomeTax" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
           <!-- #82: Schedule 2 lines 11 and 17b (Additional Medicare Tax, Form 8959 lines 18 and 12) -->
           <GreaterThan>
             <Left>
@@ -70,6 +79,22 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule2Line6NetInvestmentIncomeTax">
+      <Name>Schedule 2 line 6: Net investment income tax</Name>
+      <Description>#83. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf,
+        form page 1 = PDF p. 2), Part II Section A, line 6: "Net investment income tax. Attach Form 8960".
+        (Line 12 on the 2026 draft is "Section 965 net tax liability installment from Form 965-A"; the NIIT
+        line is 6.) Line 6 confirmed in code review. i8960 (2026 draft) p. 22, Line 17: "If you file Form 1040 or 1040-SR, include this amount on
+        Schedule 2 (Form 1040), line 6." f8960 (2026 draft) line 17: "Enter here and include on your tax
+        return". Line 6 is in line 15 ("Add lines 4 through 11 and line 14"), which flows to line 21 ("Add lines
+        15 and 20. These are your total additional taxes. Enter here and on Form 1040 or 1040-SR, line 23"),
+        taxCalculations /line21OfSchedule2.</Description>
+      <Export mef="true" downstreamFacts="true" />
+      <Derived>
+        <Dependency module="form8960" path="/form8960Line17" />
       </Derived>
     </Fact>
 

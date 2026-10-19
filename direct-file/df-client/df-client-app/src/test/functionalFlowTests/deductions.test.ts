@@ -403,10 +403,18 @@ describe(`Flow tests`, () => {
       [`/wasK12Educators`]: createEnumWrapper(`neither`, `/k12EducatorOptions`),
       [`/hadStudentLoanInterestPayments`]: createBooleanWrapper(false),
     };
+    // #83: interest-only NII over the §1411(b) threshold is now computed on Form 8960, not knocked out.
+    // These screens stay for what Form 8960 can't model (e.g. itemized deductions on line 9b), so the
+    // knockout cases elect to itemize. https://www.law.cornell.edu/uscode/text/26/1411
+    const itemizer = {
+      '/scheduleAWantsToItemize': createBooleanWrapper(true),
+      '/scheduleAWritableElectsToItemize': createBooleanWrapper(true),
+    };
 
     it(`MFS - moves you to the knockout screen after taxable income summary if you exceed MFS limit`, ({ task }) => {
       const { factGraph } = setupFactGraph({
         ...baseFilerWithInterestIncome,
+        ...itemizer,
         ...made160kIncomeData,
         [`/filingStatus`]: createEnumWrapper(`marriedFilingSeparately`, `/filingStatusOptions`),
         // Special condition for MFS needed to make livedApartAllYear complete
@@ -437,6 +445,7 @@ describe(`Flow tests`, () => {
     }) => {
       const { factGraph } = setupFactGraph({
         ...baseFilerWithInterestIncome,
+        ...itemizer,
         [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
         [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
         ...made260kIncomeData,
@@ -451,6 +460,7 @@ describe(`Flow tests`, () => {
     }) => {
       const { factGraph } = setupFactGraph({
         ...baseFilerWithInterestIncome,
+        ...itemizer,
         ...made260kIncomeData,
         [`/filingStatus`]: createEnumWrapper(`qualifiedSurvivingSpouse`, `/filingStatusOptions`),
       });
@@ -487,11 +497,22 @@ describe(`Flow tests`, () => {
       ).toRouteNextTo(`/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro`);
     });
 
+    it(`Single, standard deduction - NIIT is computed, no knockout screen (#83)`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerWithInterestIncome,
+        ...made210kIncomeData,
+        [`/filingStatus`]: createEnumWrapper(`single`, `/filingStatusOptions`),
+      });
+      expect(
+        givenFacts(factGraph).atPath(`/flow/credits-and-deductions/deductions/taxable-income-summary`, null, task)
+      ).toRouteNextTo(`/data-view/flow/credits-and-deductions/deductions`);
+    });
     it(`Single - moves you to the knockout screen after taxable income summary if you exceed Single/HoH limit`, ({
       task,
     }) => {
       const { factGraph } = setupFactGraph({
         ...baseFilerWithInterestIncome,
+        ...itemizer,
         ...made210kIncomeData,
         [`/filingStatus`]: createEnumWrapper(`single`, `/filingStatusOptions`),
       });
@@ -504,6 +525,7 @@ describe(`Flow tests`, () => {
     }) => {
       const { factGraph } = setupFactGraph({
         ...baseFilerWithInterestIncome,
+        ...itemizer,
         ...made210kIncomeData,
         [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
       });

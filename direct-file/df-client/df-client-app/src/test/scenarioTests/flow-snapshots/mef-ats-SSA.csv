@@ -48,6 +48,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=fbba80f1-36fc-47f1-b9d7-6f59919d4fdd
@@ -67,7 +69,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=fbba80f1-36fc-47f1-b9d7-6f59919d4fdd
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=fbba80f1-36fc-47f1-b9d7-6f59919d4fdd
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=fbba80f1-36fc-47f1-b9d7-6f59919d4fdd
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=fbba80f1-36fc-47f1-b9d7-6f59919d4fdd
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 /flow/income/interest/int-income-loop-intro?%2FinterestReports=bceec18d-38d8-4991-87fc-774c415f8cde
 /flow/income/interest/add-int-income?%2FinterestReports=bceec18d-38d8-4991-87fc-774c415f8cde
@@ -110,6 +116,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/eligible-educator
 /flow/credits-and-deductions/deductions/paid-student-loan-interest
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits
@@ -136,6 +146,7 @@ Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/third-party-designee-choice
 /flow/your-taxes/other-preferences/comms-different-language-choice
 /flow/your-taxes/other-preferences/comms-different-format-choice
+/flow/your-taxes/other-preferences/presidential-fund
 Category: /flow/complete
 Subcategory: /flow/complete/review
 /flow/complete/review/review

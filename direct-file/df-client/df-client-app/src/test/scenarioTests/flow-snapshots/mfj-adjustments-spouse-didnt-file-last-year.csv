@@ -148,6 +148,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/foreign-trusts-transactions
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
+/flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/ira-contributions
 Subcategory: /flow/income/jobs
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=e6ed7417-c524-46bd-bb18-eb06fb4c5f8b
@@ -167,7 +169,11 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-has-box-14?%2FformW2s=e6ed7417-c524-46bd-bb18-eb06fb4c5f8b
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=e6ed7417-c524-46bd-bb18-eb06fb4c5f8b
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=e6ed7417-c524-46bd-bb18-eb06fb4c5f8b
+/flow/income/jobs/w2-unreported-tips?%2FformW2s=e6ed7417-c524-46bd-bb18-eb06fb4c5f8b
 Subcategory: /flow/income/unemployment
+Subcategory: /flow/income/schedule-c
+Subcategory: /flow/income/schedule-e
+/flow/income/schedule-e/schedule-e-intro
 Subcategory: /flow/income/interest
 /flow/income/interest/int-income-loop-intro?%2FinterestReports=dcc97884-069f-41ca-b9b0-18bd5ead6a28
 /flow/income/interest/add-int-income?%2FinterestReports=dcc97884-069f-41ca-b9b0-18bd5ead6a28
@@ -206,6 +212,10 @@ Subcategory: /flow/credits-and-deductions/deductions
 /flow/credits-and-deductions/deductions/student-loan-interest-amount
 /flow/credits-and-deductions/deductions/student-loan-interest-summary
 /flow/credits-and-deductions/deductions/standard-deduction-intro
+/flow/credits-and-deductions/deductions/charitable-non-itemizer-intro
+/flow/credits-and-deductions/deductions/car-loan-intro
+/flow/credits-and-deductions/deductions/itemize-intro
+/flow/credits-and-deductions/deductions/overtime-other
 /flow/credits-and-deductions/deductions/taxable-income-summary
 Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/credits-intro-potential-credits

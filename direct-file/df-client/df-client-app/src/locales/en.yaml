@@ -12378,21 +12378,24 @@ info:
   /info/knockout/net-investment-mfs:
     body:
       - p: >-
-          Your Adjusted Gross Income (AGI) is {{/agi}}, and you have interest income greater than $0. This tool doesn’t
-          yet support an AGI over {{/netInvestmentIncomeThresholdForMfs}} with interest income for your filing status of
-          {{/filingStatusCapitalized}}, as you may be required to pay the Net Investment Income Tax.
+          Your Adjusted Gross Income (AGI) is {{/agi}}, which is over {{/netInvestmentIncomeThresholdForMfs}} for your
+          filing status of {{/filingStatusCapitalized}}, so you may owe the Net Investment Income Tax. This tool can
+          figure that tax on interest and capital gains, but not yet when you also have self-employment (Schedule C)
+          income, rental or royalty (Schedule E) income, or itemized deductions.
   /info/knockout/net-investment-mfj-qss:
     body:
       - p: >-
-          Your Adjusted Gross Income (AGI) is {{/agi}}, and you have interest income greater than $0. This tool doesn’t
-          yet support an AGI over {{/netInvestmentIncomeThresholdForMfjOrQss}} with interest income for your filing
-          status of {{/filingStatusCapitalized}}, as you may be required to pay the Net Investment Income Tax.
+          Your Adjusted Gross Income (AGI) is {{/agi}}, which is over {{/netInvestmentIncomeThresholdForMfjOrQss}} for
+          your filing status of {{/filingStatusCapitalized}}, so you may owe the Net Investment Income Tax. This tool
+          can figure that tax on interest and capital gains, but not yet when you also have self-employment (Schedule C)
+          income, rental or royalty (Schedule E) income, or itemized deductions.
   /info/knockout/net-investment-single-hoh:
     body:
       - p: >-
-          Your Adjusted Gross Income (AGI) is {{/agi}}, and you have interest income greater than $0. This tool doesn’t
-          yet support an AGI over {{/netInvestmentIncomeThresholdForSingleOrHoh}} with interest income for your filing
-          status of {{/filingStatusCapitalized}}, as you may be required to pay the Net Investment Income Tax.
+          Your Adjusted Gross Income (AGI) is {{/agi}}, which is over {{/netInvestmentIncomeThresholdForSingleOrHoh}}
+          for your filing status of {{/filingStatusCapitalized}}, so you may owe the Net Investment Income Tax. This
+          tool can figure that tax on interest and capital gains, but not yet when you also have self-employment
+          (Schedule C) income, rental or royalty (Schedule E) income, or itemized deductions.
   /info/knockout/hsa-coverage-MFS-line-6-ko:
     body:
       - p:
