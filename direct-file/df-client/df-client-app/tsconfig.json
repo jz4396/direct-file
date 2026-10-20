@@ -3,6 +3,7 @@
   "compilerOptions": {
     "types": ["vite/client", "@modyfi/vite-plugin-yaml/modules"],
     "noEmit": true,
+    "declaration": false,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
