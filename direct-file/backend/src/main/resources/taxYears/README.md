@@ -4,6 +4,9 @@
 `currentTaxYear` must be one of them, and must match `CURRENT_TAX_YEAR` in
 `df-client-app/src/constants/taxConstants.ts` and the `/taxYear` fact. A year that is not
 listed is an error (`UnknownTaxYearError`); there is no fallback to another year.
+The backend reads the same list (`SupportedTaxYears`): creating a return for a year that is not
+listed is refused with a 400, so a return can never reach PDF generation for a year that has no
+parameters or templates (for example TY2025).
 
 `tyYYYY.json` is the source of truth for the year's parameters:
 

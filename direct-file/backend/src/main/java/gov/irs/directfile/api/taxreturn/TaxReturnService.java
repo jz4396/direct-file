@@ -207,6 +207,11 @@ public class TaxReturnService {
         UUID userId = _userId;
         addTaxPeriodToAuditLog(taxYear);
         auditService.addEventProperty(AuditLogElement.XXX_CODE, XXXCode.XXX_CODE);
+        if (!SupportedTaxYears.isSupported(taxYear)) {
+            log.error("Cannot create tax return for user: {}. Tax year {} is not supported.", userId, taxYear);
+            throw new InvalidDataException(String.format(
+                    "Tax year %d is not supported. Supported tax years: %s", taxYear, SupportedTaxYears.years()));
+        }
         Optional<TaxReturn> existingTaxReturn = taxReturnRepo.findByUserIdAndTaxYear(userId, taxYear);
 
         if (existingTaxReturn.isPresent()) {
