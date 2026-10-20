@@ -1,0 +1,27 @@
+# Household employment taxes (Schedule H) screener + knockout strings (#159).
+# Feature overlay merged onto en.yaml by locales/featureLocales.ts.
+headings:
+  /heading/income/income-sources/household-employees: In {{/taxYear}}, did you have a household employee?
+  /heading/knockout/household-employees: This tool doesn’t yet support household employment taxes
+info:
+  /info/income/income-sources/household-employees:
+    body: >-
+      A household employee is someone you hired to do work in or around your home, such as a babysitter, nanny,
+      housekeeper, caretaker, cook, driver, private nurse or yard worker, when you controlled what work they did and how
+      they did it. Answer yes if, for any household employee, you paid one of them $3,000 or more in cash wages in
+      {{/taxYear}}, you withheld federal income tax in {{/taxYear}}, or you paid all of them a total of $1,000 or more
+      in cash wages in any calendar quarter of {{/lastTaxYear}} or {{/taxYear}}.
+  /info/knockout/household-employees:
+    alertText:
+      body:
+        - p: >-
+            You owe household employment taxes, which are figured on Schedule H (Form 1040). This tool doesn’t support
+            Schedule H yet.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /hasHouseholdEmployeeScheduleH:
+    boolean:
+      "yes": Yes, I had a household employee who meets one of these tests
+      "no": No

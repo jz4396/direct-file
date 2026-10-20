@@ -31,6 +31,8 @@ import dividendsEn from './en.dividends.yaml';
 import dividendsEs from './es.dividends.yaml';
 import saveStateEn from './en.saveState.yaml';
 import saveStateEs from './es.saveState.yaml';
+import householdEmploymentEn from './en.householdEmployment.yaml';
+import householdEmploymentEs from './es.householdEmployment.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -103,6 +105,8 @@ export const esLocale: any = deepMerge(esCore, dividendsEs as Tree);
 for (const [locale, overlay] of [
   [enLocale, saveStateEn],
   [esLocale, saveStateEs],
+  [enLocale, householdEmploymentEn],
+  [esLocale, householdEmploymentEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }
