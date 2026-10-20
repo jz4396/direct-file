@@ -52,7 +52,7 @@ public class TestDataFactory {
             final UUID userExternalId, final Map<String, FactTypeWithItem> facts) {
         User user = userRepository.findByExternalId(userExternalId).get();
         TaxReturn taxReturn = new TaxReturn();
-        taxReturn.setTaxYear(2024);
+        taxReturn.setTaxYear(2026);
         taxReturn.addOwner(user);
         taxReturn.setFacts(facts);
         return taxReturnRepository.save(taxReturn);
