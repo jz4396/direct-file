@@ -25,17 +25,34 @@ export const STATIC_DESCRIPTION =
   `Unofficial, client-only preview of the open-source Direct File tax interview. Not affiliated with the IRS. ` +
   `It can’t e-file or print, and your answers stay in your browser.`;
 
+/** <link> rels and <meta> names that point the browser at a site icon, tile or web app manifest. */
+export const ICON_LINK_RELS =
+  /^(?:shortcut icon|icon|apple-touch-icon|apple-touch-icon-precomposed|mask-icon|manifest)$/i;
+export const ICON_META_NAMES = /^msapplication-/i;
+
+/**
+ * Drop the favicon, home-screen, pinned-tab and tile icons and the manifest: they are the IRS seal. No icon replaces
+ * them, so the browser shows its default.
+ */
+export function removeIconTags(html: string): string {
+  return html
+    .replace(/[ \t]*<link\b[^>]*\brel="([^"]*)"[^>]*>\n?/g, (tag, rel: string) => (ICON_LINK_RELS.test(rel) ? `` : tag))
+    .replace(/[ \t]*<meta\b[^>]*\bname="([^"]*)"[^>]*>\n?/g, (tag, name: string) =>
+      ICON_META_NAMES.test(name) ? `` : tag
+    );
+}
+
 function replaceOnce(html: string, re: RegExp, replacement: string, what: string): string {
   if (!re.test(html)) throw new Error(`index.html: ${what} not found; update prepareStaticIndexHtml`);
   return html.replace(re, replacement);
 }
 
 /**
- * index.html for the static client-only build: no analytics, and a title and description that make no claim to be
- * the official service. Also asks search engines not to index the preview (with X-Robots-Tag and robots.txt).
+ * index.html for the static client-only build: no analytics, no seal icons or manifest, and a title and description
+ * that make no claim to be the official service. Also asks search engines not to index the preview (with X-Robots-Tag and robots.txt).
  */
 export function prepareStaticIndexHtml(html: string): string {
-  let out = stripAnalyticsSnippet(html);
+  let out = removeIconTags(stripAnalyticsSnippet(html));
   out = replaceOnce(out, /<title>[^<]*<\/title>/, `<title>${STATIC_TITLE}</title>`, `<title>`);
   out = replaceOnce(
     out,

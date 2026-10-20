@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -6,6 +7,7 @@ import { buildContentSecurityPolicy } from '../saveState/contentSecurityPolicy.j
 import { checkStaticBundle, IRS_LOGO_FILES, OFFICIAL_SITE_STRINGS, staticBannerHeadings } from './checkStaticBundle.js';
 import { BLOCKED_MESSAGE } from './networkGuard.js';
 import { STATIC_BACKEND_URL } from './staticMode.js';
+import { OFFICIAL_ASSET_SHA256 } from './officialAssetHashes.js';
 import { prepareStaticIndexHtml, STATIC_DESCRIPTION, STATIC_TITLE, stripAnalyticsSnippet } from './staticIndexHtml.js';
 import { enLocale, esLocale } from '../locales/featureLocales.js';
 
@@ -30,6 +32,29 @@ describe(`Cloudflare Pages config for the static client`, () => {
     const robots = read(path.join(PAGES, `robots.txt`));
     expect(robots).toMatch(/^User-agent: \*$/m);
     expect(robots).toMatch(/^Disallow: \/$/m);
+  });
+
+  it(`drops every site icon, tile and manifest tag from index.html`, () => {
+    const source = read(path.join(APP, `index.html`));
+    expect(source).toMatch(/rel="apple-touch-icon"/);
+    const html = prepareStaticIndexHtml(source);
+    expect(html).not.toMatch(/rel="(?:shortcut icon|icon|apple-touch-icon[^"]*|mask-icon|manifest)"/);
+    expect(html).not.toMatch(/msapplication-|\/favicon\//);
+    expect(html).toContain(`<meta name="viewport"`);
+  });
+
+  it(`records the hash of every seal and logo image in public/`, () => {
+    const sha = (f: string) =>
+      crypto
+        .createHash(`sha256`)
+        .update(fs.readFileSync(path.join(APP, f)))
+        .digest(`hex`);
+    const current = [
+      ...fs.readdirSync(path.join(APP, `public/favicon`)).map((f) => `public/favicon/${f}`),
+      ...IRS_LOGO_FILES.map((f) => `public/imgs/${f}`),
+    ].sort();
+    expect(Object.keys(OFFICIAL_ASSET_SHA256).sort()).toEqual(current);
+    for (const f of current) expect(OFFICIAL_ASSET_SHA256[f]).toBe(sha(f));
   });
 
   it(`gives index.html a title and description that don't claim to be the official service`, () => {
@@ -106,7 +131,7 @@ describe(`Cloudflare Pages config for the static client`, () => {
 
 describe(`static bundle check`, () => {
   let dir = ``;
-  const site = (files: Record<string, string>) => {
+  const site = (files: Record<string, string | Buffer>) => {
     dir = fs.mkdtempSync(path.join(os.tmpdir(), `pages-`));
     for (const [name, text] of Object.entries(files)) {
       fs.mkdirSync(path.dirname(path.join(dir, name)), { recursive: true });
@@ -131,6 +156,10 @@ describe(`static bundle check`, () => {
     'df/file/robots.txt': robots,
     'df/file/assets/main.js': goodJs,
   };
+
+  const withHead = (tag: string) => goodHtml.replace(`</head>`, `${tag}</head>`);
+  const sealIco = fs.readFileSync(path.join(APP, `public/favicon/favicon.ico`));
+  const logoSvg = fs.readFileSync(path.join(APP, `public/imgs/irs-df-logo.svg`));
 
   it(`passes a static build`, () => {
     expect(checkStaticBundle(site(good))).toEqual([]);
@@ -235,9 +264,48 @@ describe(`static bundle check`, () => {
       { 'df/file/robots.txt': `User-agent: *\nDisallow:\n` },
       /doesn't disallow all crawlers/,
     ],
-  ] as [string, Record<string, string | undefined>, RegExp][])(`fails on %s`, (_label, override, expected) => {
+    [`a staged favicon/ directory`, { 'df/file/favicon/neutral.png': `png` }, /favicon\/neutral\.png: site icon/],
+    [`a favicon.ico at the site root`, { 'favicon.ico': `ico` }, /favicon\.ico: site icon/],
+    [`a favicon.ico under /df/file/`, { 'df/file/favicon.ico': `ico` }, /df\/file\/favicon\.ico: site icon/],
+    [`a web app manifest`, { 'df/file/site.webmanifest': `{}` }, /site\.webmanifest: site icon or manifest/],
+    [`a manifest.json`, { 'df/file/manifest.json': `{}` }, /manifest\.json: site icon or manifest/],
+    [`a browserconfig.xml`, { 'df/file/browserconfig.xml': `<browserconfig/>` }, /browserconfig\.xml: site icon/],
+    [
+      `seal bytes under another name`,
+      { 'df/file/imgs/neutral.png': sealIco },
+      /same bytes as public\/favicon\/favicon\.ico/,
+    ],
+    [
+      `logo bytes under another name`,
+      { 'df/file/imgs/neutral.svg': logoSvg },
+      /same bytes as public\/imgs\/irs-df-logo\.svg/,
+    ],
+    [`an icon link`, { 'index.html': withHead(`<link rel="icon" href="/x.png" />`) }, /<link rel="icon">/],
+    [
+      `an apple-touch-icon link`,
+      { 'index.html': withHead(`<link rel="apple-touch-icon" href="/df/file/favicon/apple-icon.png" />`) },
+      /<link rel="apple-touch-icon">/,
+    ],
+    [
+      `a mask-icon link`,
+      { 'index.html': withHead(`<link rel="mask-icon" href="/s.svg" color="#000" />`) },
+      /<link rel="mask-icon">/,
+    ],
+    [`a manifest link`, { 'index.html': withHead(`<link rel="manifest" href="/m.json" />`) }, /<link rel="manifest">/],
+    [
+      `a tile icon meta`,
+      { 'index.html': withHead(`<meta name="msapplication-TileImage" content="/t.png" />`) },
+      /msapplication-TileImage/,
+    ],
+    [`a social card meta`, { 'index.html': withHead(`<meta property="og:image" content="/seal.png" />`) }, /og:image/],
+    [
+      `a favicon reference in the bundle`,
+      { 'df/file/assets/i.js': `"/df/file/favicon/favicon-32x32.png"` },
+      /references a favicon/,
+    ],
+  ] as [string, Record<string, string | Buffer | undefined>, RegExp][])(`fails on %s`, (_label, override, expected) => {
     const files = Object.fromEntries(
-      Object.entries({ ...good, ...override }).filter((e): e is [string, string] => e[1] !== undefined)
+      Object.entries({ ...good, ...override }).filter(([, v]) => v !== undefined) as [string, string | Buffer][]
     );
     const problems = checkStaticBundle(site(files));
     expect(problems.some((p) => expected.test(p))).toBe(true);
