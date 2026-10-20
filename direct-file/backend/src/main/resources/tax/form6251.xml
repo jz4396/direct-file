@@ -243,12 +243,20 @@
       <BlockSubmissionOnTrue />
       <Derived><All><Dependency module="filingStatus" path="/isFilingStatusMFS" /><IsComplete><Dependency path="/form6251Line4" /></IsComplete><GreaterThan><Left><Dependency path="/form6251Line4" /></Left><Right><Dollar>640200</Dollar></Right></GreaterThan></All></Derived>
     </Fact>
-    <Fact path="/flowKnockoutAmtKiddieTax">
-      <Name>Flow knockout: AMT exemption limit for a child (kiddie tax)</Name>
-      <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.11, p. 17: "for a child to whom the § 1(g) 'kiddie tax' applies, the exemption amount under §§ 55(d) and 59(j) ... may not exceed the sum of (1) the child's earned income for the taxable year, plus (2) $9,750." Knocks out a filer who can be claimed as a dependent when AMTI exceeds earned income + $9,750 (the only case where the §59(j) limit can change the result).</Description>
-      <Export downstreamFacts="true" />
-      <BlockSubmissionOnTrue />
-      <Derived><All><Dependency module="filers" path="/eitherFilerIsClaimedAsDependent" /><IsComplete><Dependency path="/form6251Line4" /></IsComplete><GreaterThan><Left><Dependency path="/form6251Line4" /></Left><Right><Add><Dependency module="income" path="/earnedIncomeWithAllCombatPay" /><Dollar>9750</Dollar></Add></Right></GreaterThan></All></Derived>
-    </Fact>
+    <!-- #164: no AMT exemption limit for a child subject to the kiddie tax for TY2026, so there is no knockout for it.
+      26 U.S.C. 55(d)(4)(A) (https://www.law.cornell.edu/uscode/text/26/55): "In the case of any taxable year beginning
+      after December 31, 2017— ... (iii) subsection (j) of section 59 shall not apply." Clause (iii) was added by
+      Pub. L. 116-94, div. O, sec. 501(b), effective for taxable years beginning after Dec. 31, 2017. Pub. L. 119-21,
+      sec. 70107(a)(1), "struck out ', and before January 1, 2026' after 'December 31, 2017'" in that introductory text,
+      effective for "taxable years beginning after December 31, 2025" (sec. 70107(d)), so clause (iii) has no end date.
+      The limit itself is 26 U.S.C. 59(j)(1) (https://www.law.cornell.edu/uscode/text/26/59): "the exemption amount for
+      purposes of section 55 shall not exceed the sum of— (A) such child's earned income ... plus (B) $5,000."
+      Rev. Proc. 2025-32 sec. 4.11, p. 17 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) still prints the indexed
+      sec. 59(j)(1)(B) amount ($9,750). Rev. Proc. 2024-40 sec. 3.12, p. 11
+      (https://www.irs.gov/pub/irs-drop/rp-24-40.pdf) printed $9,550 for 2025, a year in which clause (iii) already
+      turned sec. 59(j) off. The printed figure is an inflation adjustment and doesn't override sec. 55(d)(4)(A)(iii).
+      The Instructions for Form 6251 (2025), p. 9, "Exemption Worksheet—Line 5" (https://www.irs.gov/pub/irs-pdf/i6251.pdf)
+      have no earned-income cap for a child. A child whose unearned income is subject to sec. 1(g) still stops on
+      income /flowKnockoutForm8615, because Form 8615 is not supported. -->
   </Facts>
 </FactDictionaryModule>
