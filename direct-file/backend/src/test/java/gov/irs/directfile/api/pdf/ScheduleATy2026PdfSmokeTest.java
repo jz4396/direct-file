@@ -69,7 +69,7 @@ class ScheduleATy2026PdfSmokeTest {
             facts.put(e.getKey(), mapper.readValue(e.getValue(), FactTypeWithItem.class));
         }
         TaxReturn taxReturn = new TaxReturn();
-        taxReturn.setTaxYear(2024); // configured-pdfs bucket; the IRS1040 en template itself is the 2026 draft
+        taxReturn.setTaxYear(2026); // configured-pdfs bucket; the IRS1040 en template itself is the 2026 draft
         taxReturn.setFactsWithoutDirtyingEntity(facts);
         try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
             return in.readAllBytes();
