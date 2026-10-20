@@ -199,6 +199,38 @@ describe(`DeviceDataPage import validation`, () => {
     expectNothingWritten();
   });
 
+  it.each([
+    [
+      `an enum value that is not an option`,
+      {
+        '/filingStatus': {
+          $type: `${B}EnumWrapper`,
+          item: { value: [`totallyBogus`], enumOptionsPath: `/filingStatusOptions` },
+        },
+      },
+    ],
+    [
+      `a collection item id that is not a UUID`,
+      { '/filers': { $type: `${B}CollectionWrapper`, item: { items: [`not-a-uuid`] } } },
+    ],
+    [
+      `an unknown field on a collection`,
+      {
+        '/filers': {
+          $type: `${B}CollectionWrapper`,
+          item: { ...(facts[`/filers`] as { item: object }).item, injected: 1 },
+        },
+      },
+    ],
+  ])(`rejects %s before anything is written or autosaved`, async (_label, bad) => {
+    render(wrapComponent(<DeviceDataPage />));
+    pick(saveFile({ facts: { ...facts, ...bad } }));
+    await waitFor(() => expect(importButton()).toBeEnabled());
+    fireEvent.click(importButton());
+    await waitFor(async () => expect((await status()).textContent).toBe(`account.deviceData.errors.invalid-facts`));
+    expectNothingWritten();
+  });
+
   it(`refuses a file over the size cap without reading it`, async () => {
     render(wrapComponent(<DeviceDataPage />));
     const read = pick(saveFile(), MAX_SAVE_FILE_BYTES + 1);
