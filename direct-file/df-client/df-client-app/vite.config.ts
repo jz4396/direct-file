@@ -9,7 +9,7 @@ import autoprefixer from 'autoprefixer';
 import path from 'path';
 import { createRequire } from 'module';
 import { buildContentSecurityPolicy } from './src/saveState/contentSecurityPolicy';
-import { stripAnalyticsSnippet } from './src/staticClient/stripAnalyticsSnippet';
+import { prepareStaticIndexHtml } from './src/staticClient/staticIndexHtml';
 
 // @trussworks/react-uswds 8 publishes an `exports` map without its stylesheet, so the
 // `@trussworks/react-uswds/lib/index.css` specifier must be resolved to the file directly.
@@ -32,8 +32,8 @@ function contentSecurityPolicy(): Plugin {
     transformIndexHtml: {
       order: 'pre',
       handler(html) {
-        // Static client-only mode (src/staticClient) ships no third-party analytics loader.
-        const out = staticClientOnly ? stripAnalyticsSnippet(html) : html;
+        // Static client-only mode (src/staticClient): no analytics loader, and no official-site title or description.
+        const out = staticClientOnly ? prepareStaticIndexHtml(html) : html;
         return {
           html: out,
           tags: [

@@ -13,6 +13,8 @@ const CommonHeader: FC<CommonHeaderProps> = ({
   children,
   homeLink,
   homeLinkTitle,
+  logoSrc,
+  logoText,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -41,7 +43,11 @@ const CommonHeader: FC<CommonHeaderProps> = ({
               <div className='usa-logo'>
                 <div className='usa-logo__text'>
                   <Link to={homeLink} rel='home' title={t(homeLinkTitle)} className={styles.dfHomeLink}>
-                    <img src={`${dfPrefix}/imgs/irs-df-logo.svg`} alt={``} className={styles.irsLogo} />
+                    {logoSrc ? (
+                      <img src={logoSrc} alt={``} className={styles.irsLogo} />
+                    ) : (
+                      <span className={styles.dfLogoText}>{logoText}</span>
+                    )}
                   </Link>
                 </div>
               </div>
