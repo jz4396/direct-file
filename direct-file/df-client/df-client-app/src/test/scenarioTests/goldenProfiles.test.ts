@@ -45,6 +45,12 @@
 //      LINE 13: "Enter your total PA tax withheld from Box 17 of your federal Form(s) W2." p. 23 LINE 24: "Add Lines
 //      13, 18, 21, 22, and 23." p. 24 LINE 29: "Subtract Line 12 (and subtract Lines 25 and 27, if you entered amounts
 //      on these lines) from Line 24, and enter the difference here."
+// [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
+//      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
+//      number means a social security number issued to an individual by the Social Security Administration". The
+//      fixture SSNs are in the 900 area, which SSA never issues; the app reads them as neither an SSN nor (with these
+//      group numbers) an ITIN, so EITC is $0 on every profile. Every profile's AGI is also above $19,540. No profile
+//      has a child, so the child tax credit SSN rule (§24(h)(7)) is not reached and CTC is $0.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -85,6 +91,17 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
         const { area, group, serial } = (wrapper as { item: { area: string; group: string; serial: string } }).item;
         expect(`${area}-${group}-${serial}`, `${name} ${path}`).toMatch(GOLDEN_SSN_PATTERN);
       }
+    }
+  });
+  it(`the 900-area TINs are neither an SSN nor an ITIN to the app, and no profile gets EITC or CTC`, () => {
+    for (const [name, facts] of Object.entries(goldenProfiles)) {
+      const g = graph(facts);
+      expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(false);
+      expect(get(g, `/primaryFiler/tin/isITIN`).get, name).toBe(false);
+      expect(get(g, `/eitcQualified`).get, name).toBe(false);
+      expect(get(g, `/earnedIncomeCredit`).get.toString(), name).toBe(`0.00`);
+      expect(get(g, `/totalCtc`).get.toString(), name).toBe(`0.00`);
+      expect(get(g, `/nonRefundableCredits`).get.toString(), name).toBe(`0.00`);
     }
   });
 });
