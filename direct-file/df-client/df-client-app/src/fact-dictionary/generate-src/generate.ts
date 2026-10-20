@@ -3,6 +3,7 @@ import * as prettier from 'prettier';
 import stringifyObject from 'stringify-object';
 import processFactsToDigestWrapper from './processFactsToDigestWrapper.js';
 import readRawFacts from './readRawFacts.js';
+import { loadTaxYearRegistry } from '../yearConfig/yearConfig.js';
 import {
   individualFilerAliases,
   w2Aliases,
@@ -185,3 +186,12 @@ const prettyExportToStateFactsString = prettier.format(exportToStateFactsString,
 });
 
 fs.writeFileSync(exportToStateFactsFilename, prettyExportToStateFactsString);
+
+// Tax year registry (backend/src/main/resources/taxYears/registry.json): which years can start a new return.
+const taxYearRegistry = loadTaxYearRegistry();
+const taxYearsFilename = `./src/fact-dictionary/generated/taxYears.ts`;
+const taxYearsString = `${generatedWarning} export const taxYearRegistry = ${stringifyObject({
+  currentTaxYear: taxYearRegistry.currentTaxYear,
+  years: taxYearRegistry.years.map(({ taxYear, enabled }) => ({ taxYear, enabled })),
+})} as const`;
+fs.writeFileSync(taxYearsFilename, prettier.format(taxYearsString, { parser: `typescript` }));

@@ -51,12 +51,32 @@ describe(`tax year registry`, () => {
     try {
       fs.writeFileSync(
         path.join(dir, `registry.json`),
-        JSON.stringify({ currentTaxYear: 2026, years: [{ taxYear: 2026, config: `ty2026.json` }] })
+        JSON.stringify({ currentTaxYear: 2026, years: [{ taxYear: 2026, config: `ty2026.json`, enabled: true }] })
       );
       fs.writeFileSync(path.join(dir, `ty2026.json`), JSON.stringify({ ...config, taxYear: 2025 }));
       expect(() => loadTaxYearConfig(2026, dir)).toThrow(/declares tax year 2025/);
       fs.writeFileSync(path.join(dir, `registry.json`), JSON.stringify({ currentTaxYear: 2027, years: [] }));
       expect(() => loadTaxYearRegistry(dir)).toThrow(UnknownTaxYearError);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it(`keeps TY2026 enabled for new returns`, () => {
+    expect(registry.years.find((y) => y.taxYear === 2026)?.enabled).toBe(true);
+  });
+
+  it(`requires an explicit boolean enabled flag on every year`, () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), `taxyears-`));
+    const write = (entry: Record<string, unknown>) =>
+      fs.writeFileSync(path.join(dir, `registry.json`), JSON.stringify({ currentTaxYear: 2026, years: [entry] }));
+    try {
+      write({ taxYear: 2026, config: `ty2026.json` });
+      expect(() => loadTaxYearRegistry(dir)).toThrow(/2026 has no boolean enabled flag/);
+      write({ taxYear: 2026, config: `ty2026.json`, enabled: `true` });
+      expect(() => loadTaxYearRegistry(dir)).toThrow(/2026 has no boolean enabled flag/);
+      write({ taxYear: 2026, config: `ty2026.json`, enabled: false });
+      expect(loadTaxYearRegistry(dir).years[0].enabled).toBe(false);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
