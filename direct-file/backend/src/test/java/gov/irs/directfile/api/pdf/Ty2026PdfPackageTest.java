@@ -52,6 +52,7 @@ import gov.irs.directfile.api.taxreturn.models.TaxReturn;
 import gov.irs.directfile.models.FactTypeWithItem;
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.collectionItem;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.tin;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
@@ -100,6 +101,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   Prints Form 1040, Schedule 3, Form 8880 and the W-2.
  * Scenario 6, HSA (hsa-single-filer-contributions-only.json): single; two W-2s ($39,674 total, $260 employer HSA
  *   contributions); self-only HDHP; $770 own HSA contributions. Prints Form 1040, Schedule 1, Form 8889 and two W-2s.
+ * Scenario 7, self-employed family (#179 review): head of household; three children under 17 (tinType ssn, 9xx
+ *   numbers: printing only); $13,000 ordinary dividends; Schedule C profit $4,000 (or $10,000); no W-2.
+ *   Prints Form 1040, Schedules 1, 2, B and 8812 (Part II-B, lines 22-27).
  * </pre>
  */
 class Ty2026PdfPackageTest {
@@ -291,6 +295,56 @@ class Ty2026PdfPackageTest {
         m.put(kid2 + "lastName", string(LAST_NAME));
         m.put(kid1 + "tin", tin("900", "00", "0011"));
         m.put(kid2 + "tin", tin("900", "00", "0022"));
+        return syntheticFiler(m);
+    }
+
+    static final String KID3 = "c8812000-0000-4000-8000-000000000003";
+    static final String BIZ = "b8812000-0000-4000-8000-000000000001";
+
+    /**
+     * Head of household, three qualifying children under 17, $13,000 ordinary dividends (over the $12,200 EITC
+     * investment income limit), one Schedule C business with the given profit, no W-2. Children are declared tinType
+     * = ssn with 9xx numbers: printing only (see the class comment).
+     */
+    static Map<String, String> selfEmployedFamily(String profit) {
+        Map<String, String> m = new HashMap<>();
+        m.put("/filingStatus", enumValue("headOfHousehold", "/filingStatusOptions"));
+        m.put("/formW2s", PaPit40ScheduleSpTy2026PdfSmokeTest.EMPTY_COLLECTION);
+        m.put("/form8949Transactions", PaPit40ScheduleSpTy2026PdfSmokeTest.EMPTY_COLLECTION);
+        m.put("/receivedImproperClaims", bool(false));
+        m.put("/scheduleAWantsToItemize", bool(false));
+        m.put("/nonItemizerHadCashGifts", bool(false));
+        String kid1 = PaPit40ScheduleSpTy2026PdfSmokeTest.KID1;
+        String kid2 = PaPit40ScheduleSpTy2026PdfSmokeTest.KID2;
+        m.put("/familyAndHousehold", collection(kid1, kid2, KID3));
+        PaPit40ScheduleSpTy2026PdfSmokeTest.child(m, kid1, "Kiddo", "biologicalChild", "2015-03-03", "0011");
+        PaPit40ScheduleSpTy2026PdfSmokeTest.child(m, kid2, "Second", "biologicalChild", "2017-04-04", "0022");
+        PaPit40ScheduleSpTy2026PdfSmokeTest.child(m, KID3, "Third", "biologicalChild", "2019-05-05", "0033");
+        int n = 0;
+        for (String kid : List.of(kid1, kid2, KID3)) {
+            n++;
+            m.put("/familyAndHousehold/#" + kid + "/lastName", string(LAST_NAME));
+            m.put("/familyAndHousehold/#" + kid + "/tin", tin("900", "00", "00" + n + n));
+        }
+
+        String div = Schedules123Ty2026PdfSmokeTest.DIV;
+        m.put("/dividendReports", collection(div));
+        m.put("/dividendReports/#" + div + "/filer", collectionItem(W2));
+        m.put("/dividendReports/#" + div + "/payer", string("Synthetic Index Fund"));
+        m.put("/dividendReports/#" + div + "/ordinaryDividends", dollar("13000.00"));
+        m.put("/dividendReports/#" + div + "/hasUnsupportedBoxes", bool(false));
+        m.put("/dividendReports/#" + div + "/receivedAsNominee", bool(false));
+        m.put("/dividendReports/#" + div + "/hasSeenLastAvailableScreen", bool(true));
+        m.put("/dividendReportsIsDone", bool(true));
+
+        m.put("/hadSelfEmploymentIncome", bool(true));
+        m.put("/wantsQbiDeduction", bool(false));
+        m.put("/scheduleCBusinesses", collection(BIZ));
+        m.put("/scheduleCBusinesses/#" + BIZ + "/filer", collectionItem(W2));
+        m.put("/scheduleCBusinesses/#" + BIZ + "/businessName", string("Synthetic Gig Work"));
+        m.put("/scheduleCBusinesses/#" + BIZ + "/writableGrossReceipts", dollar(profit));
+        m.put("/scheduleCBusinesses/#" + BIZ + "/writableTotalExpenses", dollar("0.00"));
+        m.put("/scheduleCBusinessesIsDone", bool(true));
         return syntheticFiler(m);
     }
 
@@ -661,6 +715,75 @@ class Ty2026PdfPackageTest {
         assertEquals(actc, amt(s8812, "Page2[0].f2_16[0]"), "27 = smaller of 17 or 20 (Part II-B skipped)");
         assertEquals(line14, amt(f1040, "Page2[0].f2_12[0]"), "Form 1040 line 19 = 8812 line 14");
         assertEquals(actc, amt(f1040, "Page2[0].f2_27[0]"), "Form 1040 line 28 = 8812 line 27");
+        // Part II-B is skipped (two children), so lines 21-26 stay blank, as before the line 22/23 change.
+        for (String line : List.of("f2_10", "f2_11", "f2_12", "f2_13", "f2_14", "f2_15")) {
+            assertEquals("", text(s8812, "Page2[0]." + line + "[0]"), line + " blank outside Part II-B");
+        }
+    }
+
+    /**
+     * #179 review: Schedule 8812 (2026 draft) page 2, Part II-B. Line 22 "Enter the total of the amounts from Schedule 1
+     * (Form 1040), line 15; Schedule 2 (Form 1040), line 16c; and Schedule 2 (Form 1040), line 17c"; line 23 "Add lines
+     * 21 and 22"; line 25 "Subtract line 24 from line 23"; line 26 "Enter the larger of line 20 or line 25"; line 27 the
+     * smaller of line 17 or line 26. 26 U.S.C. 24(d)(2)(A)(ii) counts half of self-employment tax (the 164(f)
+     * deduction on Schedule 1 line 15) as social security taxes. Printing only (9xx children declared ssn).
+     */
+    @Test
+    void selfEmployedFamilyPartIIBPrintsLines22And23() throws Exception {
+        Map<String, String> scenario = selfEmployedFamily("4000.00");
+        assertInvalidTin(scenario);
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf");
+        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040S8812", 1));
+        Map<String, String> f1040 = pkg.fields("IRS1040", 0);
+        Map<String, String> s1 = pkg.fields("IRS1040S1", 0);
+        Map<String, String> s8812 = pkg.fields("IRS1040S8812", 0);
+        // SE: round(4,000 x .9235) = 3,694; 458 + 107 = 565; Schedule 1 line 15 = round(282.50) = 283.
+        assertEquals(283, amt(s1, "Page2[0].f2_05[0]"), "Schedule 1 line 15");
+        assertEquals(3 * 1700, amt(s8812, "Page2[0].f2_4[0]"), "16b = 3 x $1,700");
+        assertEquals(5100, amt(s8812, "Page2[0].f2_5[0]"), "17 = smaller of 16a ($6,600) or 16b");
+        assertEquals(4000 - 283, amt(s8812, "Page2[0].f2_6[0]"), "18a = Schedule C profit - Schedule 1 line 15");
+        assertEquals(pct(3717 - 2500, "0.15"), amt(s8812, "Page2[0].f2_9[0]"), "20 = 15% of (18a - $2,500) = 183");
+        assertEquals("", text(s8812, "Page2[0].f2_10[0]"), "21 no W-2 withholding (zero prints blank)");
+        assertEquals(283, amt(s8812, "Page2[0].f2_11[0]"), "22 = Schedule 1 line 15");
+        assertEquals(283, amt(s8812, "Page2[0].f2_12[0]"), "23 = 21 + 22");
+        assertEquals("", text(s8812, "Page2[0].f2_13[0]"), "24 no EITC: $13,000 dividends exceed $12,200");
+        assertEquals(283, amt(s8812, "Page2[0].f2_14[0]"), "25 = 23 - 24");
+        assertEquals(283, amt(s8812, "Page2[0].f2_15[0]"), "26 = larger of 20 (183) or 25 (283)");
+        assertEquals(283, amt(s8812, "Page2[0].f2_16[0]"), "27 = smaller of 17 or 26");
+        assertEquals(283, amt(f1040, "Page2[0].f2_27[0]"), "Form 1040 line 28 = 8812 line 27");
+    }
+
+    /** Same family with $10,000 profit: line 20 ($1,019) exceeds line 25 ($707), so lines 26 and 27 take line 20. */
+    @Test
+    void selfEmployedFamilyLine20OverLine25() throws Exception {
+        Map<String, String> scenario = selfEmployedFamily("10000.00");
+        assertInvalidTin(scenario);
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf");
+        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040S8812", 1));
+        Map<String, String> f1040 = pkg.fields("IRS1040", 0);
+        Map<String, String> s8812 = pkg.fields("IRS1040S8812", 0);
+        // SE: 9,235; 1,145 + 268 = 1,413; Schedule 1 line 15 = round(706.50) = 707. 18a = 9,293.
+        assertEquals(10000 - 707, amt(s8812, "Page2[0].f2_6[0]"), "18a");
+        assertEquals(pct(9293 - 2500, "0.15"), amt(s8812, "Page2[0].f2_9[0]"), "20 = 15% of 6,793 = 1,019");
+        assertEquals(707, amt(s8812, "Page2[0].f2_11[0]"), "22 = Schedule 1 line 15");
+        assertEquals(707, amt(s8812, "Page2[0].f2_12[0]"), "23 = 21 + 22");
+        assertEquals(707, amt(s8812, "Page2[0].f2_14[0]"), "25 = 23 - 24");
+        assertEquals(1019, amt(s8812, "Page2[0].f2_15[0]"), "26 = larger of 20 (1,019) or 25 (707)");
+        assertEquals(1019, amt(s8812, "Page2[0].f2_16[0]"), "27 = smaller of 17 ($5,100) or 26");
+        assertEquals(1019, amt(f1040, "Page2[0].f2_27[0]"), "Form 1040 line 28 = 8812 line 27");
+    }
+
+    /** The scenario's children are declared ssn with 9xx numbers: /familyAndHouseholdHasInvalidTIN is true (#181). */
+    static void assertInvalidTin(Map<String, String> scenario) throws Exception {
+        JsonNode root =
+                MAPPER.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
+        Map<String, FactTypeWithItem> facts =
+                MAPPER.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
+        for (var e : scenario.entrySet()) {
+            facts.put(e.getKey(), MAPPER.readValue(e.getValue(), FactTypeWithItem.class));
+        }
+        var r = factGraphService.getGraph(facts).get(CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
+        assertTrue(r.hasValue() && Boolean.TRUE.equals(r.get()), CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
     }
 
     @Test
