@@ -3,6 +3,8 @@
   "compilerOptions": {
     "types": ["vite/client", "@modyfi/vite-plugin-yaml/modules"],
     "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "paths": {
       "eslint-plugin-df-rules": ["../eslint-plugin-df-rules/src"]
     }

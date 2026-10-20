@@ -76,7 +76,8 @@
     "verify-module-dependencies": "vite-node src/fact-dictionary/verifyModuleDependencies.ts",
     "verify-pdf-fact-paths": "vite-node src/fact-dictionary/verifyPdfFactPaths.ts",
     "watch-fact-dictionary": "nodemon --watch ./src/fact-dictionary/generate-src/xml-src/ --exec npm run generate-fact-dictionary",
-    "migrate-scenarios": "vite-node src/test/factDictionaryTests/migrateScenarios.ts"
+    "migrate-scenarios": "vite-node src/test/factDictionaryTests/migrateScenarios.ts",
+    "typecheck": "npm run build:ts"
   },
   "devDependencies": {
     "@modyfi/vite-plugin-yaml": "^1.1.0",

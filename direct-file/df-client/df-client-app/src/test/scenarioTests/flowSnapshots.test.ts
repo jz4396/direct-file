@@ -1,4 +1,4 @@
-import { describe, it, Mock } from 'vitest';
+import { describe, it, expect, Mock } from 'vitest';
 import fs from 'fs';
 import { createFlowConfig } from '../../flow/flowConfig.js';
 import flowNodes from '../../flow/flow.js';

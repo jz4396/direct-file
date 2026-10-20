@@ -221,11 +221,12 @@ describe(`Flow Nodes correspond to english translations`, () => {
     const contentNodesWithKey = findFlowNodesWithProp(flowNodes, `i18nKey`);
     for (const node of contentNodesWithKey) {
       if (node.props.i18nKey) {
-        let translationKey = node.props.i18nKey as keyof typeof en;
+        // `en` is typed `any`, so `keyof typeof en` widens to `string | number | symbol`; i18n keys are strings.
+        let translationKey = node.props.i18nKey as string;
 
         // TODO: standardize how we pass in i18n keys for Hints so we don't need this
         if (node.type.name === `Hint`) {
-          translationKey = `/info${translationKey}` as keyof typeof en;
+          translationKey = `/info${translationKey}`;
         }
         // possible key types and mappings:
         // /info/a --> en.info[/info/a]
