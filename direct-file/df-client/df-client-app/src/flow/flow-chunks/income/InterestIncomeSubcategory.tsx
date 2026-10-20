@@ -310,7 +310,7 @@ export const InterestIncomeSubcategory = (
           <Heading i18nKey='/heading/income/interest-data-import-refer-1099' />
           <InfoDisplay i18nKey='/info/income/interest-data-import-refer-1099' />
           <DFModal i18nKey='/info/income/interest-data-import-where-do-i-find-my-1099' />
-          <SaveAndOrContinueButton nextRouteOverride='/flow/income/interest/1099-int-add-boxes-15-17' />
+          <SaveAndOrContinueButton nextRouteOverride='/flow/income/interest/1099-int-nominee' />
         </Screen>
       </Gate>
       <SubSubcategory route='int-income-basic-info'>
@@ -525,6 +525,39 @@ export const InterestIncomeSubcategory = (
             <IconDisplay name='ErrorOutline' size={9} isCentered />
             <Heading i18nKey='/heading/knockout/forms-missing/1099-int-box-9-13-ko' batches={[`schedule-b-0`]} />
             <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+            <KnockoutButton i18nKey='button.knockout' />
+          </Screen>
+        </SubSubcategory>
+        <SubSubcategory route='int-income-schedule-b-subtractions'>
+          <Screen route='1099-int-nominee'>
+            <Heading i18nKey='/heading/income/interest/nominee' batches={[`schedule-b-0`]} />
+            <InfoDisplay i18nKey='/info/income/interest/nominee' />
+            <Boolean path='/interestReports/*/receivedAsNominee' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='1099-int-accrued-interest' condition='/interestReports/*/askPaidAccruedInterest'>
+            <Heading i18nKey='/heading/income/interest/accrued-interest' batches={[`schedule-b-0`]} />
+            <InfoDisplay i18nKey='/info/income/interest/accrued-interest' />
+            <Boolean path='/interestReports/*/paidAccruedInterest' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen
+            route='1099-int-savings-bond-previously-reported'
+            condition='/interestReports/*/askSavingsBondInterestPreviouslyReported'
+          >
+            <Heading i18nKey='/heading/income/interest/savings-bond-previously-reported' batches={[`schedule-b-0`]} />
+            <InfoDisplay i18nKey='/info/income/interest/savings-bond-previously-reported' />
+            <Boolean path='/interestReports/*/savingsBondInterestPreviouslyReported' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen
+            route='1099-int-schedule-b-subtraction-knockout'
+            condition='/flowKnockoutInterestScheduleBSubtraction'
+            isKnockout={true}
+          >
+            <IconDisplay name='ErrorOutline' size={9} isCentered />
+            <Heading i18nKey='/heading/knockout/interest-schedule-b-subtraction' batches={[`schedule-b-0`]} />
+            <DFAlert i18nKey='/info/knockout/interest-schedule-b-subtraction' headingLevel='h2' type='warning' />
             <KnockoutButton i18nKey='button.knockout' />
           </Screen>
         </SubSubcategory>

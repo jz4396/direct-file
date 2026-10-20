@@ -1,0 +1,45 @@
+# Form 1099-INT amounts that Schedule B Part I subtracts (#144). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/interest:
+    int-income-schedule-b-subtractions: Intereses que pertenecen a otra persona
+headings:
+  /heading/income/interest/nominee:
+    ¿Recibió alguno de los intereses de este Formulario 1099-INT para otra persona (como nominatario)?
+  /heading/income/interest/accrued-interest:
+    ¿Pagó intereses acumulados al vendedor cuando compró un bono incluido en este Formulario 1099-INT?
+  /heading/income/interest/savings-bond-previously-reported:
+    ¿Incluye el encasillado 3 intereses de bonos de ahorro de los EE. UU. que ya se declararon, o que se acumularon
+    antes de que usted recibiera el bono?
+  /heading/knockout/interest-schedule-b-subtraction: Esta herramienta aún no permite restar intereses en el Anexo B
+info:
+  /info/income/interest/nominee:
+    body:
+      - p:
+          Usted es nominatario si el formulario está a su nombre, pero parte de los intereses en realidad pertenece a
+          otra persona, como un familiar que comparte la cuenta.
+  /info/income/interest/accrued-interest:
+    body:
+      - p:
+          Cuando compra un bono entre fechas de pago de intereses, por lo general le paga al vendedor los intereses
+          acumulados desde el último pago. Esos intereses están sujetos a impuestos para el vendedor, aunque su
+          Formulario 1099-INT los incluya.
+  /info/income/interest/savings-bond-previously-reported:
+    body:
+      - p:
+          Por ejemplo, intereses de bonos de ahorro de la Serie EE o I que se declararon cada año a medida que se
+          acumulaban, o que se acumularon mientras otra persona era dueña de los bonos antes de que se los regalaran.
+  /info/knockout/interest-schedule-b-subtraction:
+    alertText:
+      body:
+        - p:
+            Estos intereses se declaran en el Anexo B y luego se restan del total, lo cual esta herramienta aún no hace.
+            Tendrá que usar otro método para presentar esta declaración.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+dataviews:
+  /flow/income/interest:
+    /interestReports/*/receivedAsNominee: ¿Recibió alguno de estos intereses como nominatario?
+    /interestReports/*/paidAccruedInterest: ¿Pagó intereses acumulados al vendedor de un bono?
+    /interestReports/*/savingsBondInterestPreviouslyReported:
+      ¿Incluye el encasillado 3 intereses de bonos de ahorro ya declarados o acumulados antes de recibir el bono?
