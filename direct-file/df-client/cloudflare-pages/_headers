@@ -1,0 +1,10 @@
+# Cloudflare Pages response headers for the static client-only build (see README.md).
+# The Content-Security-Policy must stay equal to buildContentSecurityPolicy(undefined, { staticClientOnly: true })
+# plus frame-ancestors, which a <meta> CSP can't carry; src/staticClient/pagesConfig.test.ts checks this.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'; worker-src 'self'; connect-src 'none'; img-src 'self' data: blob:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
