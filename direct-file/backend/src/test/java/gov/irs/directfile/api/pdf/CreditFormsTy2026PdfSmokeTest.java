@@ -85,7 +85,11 @@ class CreditFormsTy2026PdfSmokeTest {
         ObjectNode facts = (ObjectNode) root.get("facts");
         Map<String, String> defaults = new LinkedHashMap<>();
         for (String c : new String[] {
-            "/form1099Miscs", "/offeredFormW2s", "/offeredInterestReports", "/scheduleCBusinesses", "/form8949Transactions"
+            "/form1099Miscs",
+            "/offeredFormW2s",
+            "/offeredInterestReports",
+            "/scheduleCBusinesses",
+            "/form8949Transactions"
         }) {
             defaults.put(c, "{\"$type\":\"gov.irs.factgraph.persisters.CollectionWrapper\",\"item\":{\"items\":[]}}");
         }
@@ -218,7 +222,8 @@ class CreditFormsTy2026PdfSmokeTest {
     static boolean is8880(String t) {
         return t.contains(DRAFT_MARK)
                 && t.contains("Form 8880")
-                && (t.contains("Credit for Qualified Retirement Savings Contributions") || t.contains("Form 8880 (2026)"));
+                && (t.contains("Credit for Qualified Retirement Savings Contributions")
+                        || t.contains("Form 8880 (2026)"));
     }
 
     static boolean is8889(String t) {
@@ -353,7 +358,9 @@ class CreditFormsTy2026PdfSmokeTest {
             assertFalse(String.join(" ", texts).contains(COVER_SHEET), "draft cover sheet dropped");
             List<Integer> p8880 = pages(texts, CreditFormsTy2026PdfSmokeTest::is8880);
             assertEquals(1, p8880.size(), "Form 8880 page 1 only (cover sheet and instructions page dropped)");
-            assertFalse(String.join(" ", texts).contains("Form 8880 (2026) Page 2"), "page 2 (instructions, worksheet) dropped");
+            assertFalse(
+                    String.join(" ", texts).contains("Form 8880 (2026) Page 2"),
+                    "page 2 (instructions, worksheet) dropped");
             Map<String, String> f = fieldsOn(doc, p8880);
             assertOnlyTestTins(f);
             assertEquals("900-00-1032", field(f, "Page1[0].f1_2[0]"), "SSN (rewritten to 9xx)");
@@ -428,10 +435,7 @@ class CreditFormsTy2026PdfSmokeTest {
                 }
             }
             for (String name : mapped) {
-                String terminal = name.replaceAll("\\[(\\d+)\\]$", "");
-                assertTrue(
-                        inPdf.contains(name) || inPdf.contains(terminal) || inPdf.contains(name + ""),
-                        d.getKey() + " field exists in the draft: " + name);
+                assertTrue(inPdf.contains(name), d.getKey() + " field exists in the draft: " + name);
             }
         }
     }
