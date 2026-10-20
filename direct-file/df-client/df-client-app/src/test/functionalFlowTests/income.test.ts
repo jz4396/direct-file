@@ -431,7 +431,8 @@ describe(`The \`income\` subcategory`, () => {
       }
     });
     describe(`The social security wages knockout`, () => {
-      // #91: TY2026 threshold is the 2026 OASDI wage base, $184,500 (https://www.ssa.gov/oact/cola/cbb.html)
+      // #91: TY2026 threshold is the 2026 OASDI wage base, $184,500 (90 FR 49047, p. 49050: "The OASDI contribution and
+      // benefit base is $184,500 for remuneration paid in 2026", https://www.federalregister.gov/d/2025-19763)
       // Always have one W-2
       const oasdiWagesThreshold = 184500;
       const w2Id2 = `5c154be1-ea2d-4afa-aae4-29d412bca27e`;

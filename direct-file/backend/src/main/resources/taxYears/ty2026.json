@@ -26,11 +26,6 @@
       "kind": "pdf",
       "sha256": "af0c0383cdee12bbb89c196d843eaf27e22b1528761e2f11154446d2bd59b4d7"
     },
-    "ssa-cbb": {
-      "title": "SSA Office of the Chief Actuary, Contribution and Benefit Base",
-      "url": "https://www.ssa.gov/oact/cola/cbb.html",
-      "kind": "web"
-    },
     "fr-2025-19763": {
       "title": "90 FR 49047 (Nov. 3, 2025), Cost-of-Living Increase and Other Determinations for 2026",
       "url": "https://www.federalregister.gov/d/2025-19763",
@@ -799,12 +794,6 @@
       ],
       "cite": [
         {
-          "source": "ssa-cbb",
-          "section": "Contribution and benefit bases, 1937-2027",
-          "form": "table",
-          "quote": "2026 184,500"
-        },
-        {
           "source": "fr-2025-19763",
           "page": 49050,
           "quote": "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
@@ -1253,7 +1242,7 @@
       "fact": "/secondaryFilerDateOfDeath",
       "file": "filers.xml",
       "values": [
-        "Day:2027-01-01"
+        "Day:2026-12-31"
       ],
       "cite": [
         {

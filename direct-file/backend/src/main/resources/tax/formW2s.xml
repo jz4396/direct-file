@@ -342,9 +342,8 @@
       <Description>The limit of Social Security Wages that one filer can have across multiple W2s
         before they might be
         entitely to a refund on social security payments.
-        https://www.ssa.gov/oact/cola/cbb.html
-        #91: TY2026 $184,500 (SSA: "For earnings in 2026, this base is $184,500."; same value as
-        scheduleSE.xml /socialSecurityWageBaseTy2026).
+        #91/#166: TY2026 $184,500. SSA, "Cost-of-Living Increase and Other Determinations for 2026",
+        90 FR 49047 (Nov. 3, 2025), https://www.federalregister.gov/d/2025-19763 (PDF https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf), p. 49050: "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026." Same value as scheduleSE.xml /socialSecurityWageBaseTy2026.
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
