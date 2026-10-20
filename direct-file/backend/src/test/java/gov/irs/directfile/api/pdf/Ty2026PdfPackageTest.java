@@ -85,6 +85,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   $4,000 loan interest. Prints Form 1040, Schedules 1-A, 3, A, the W-2 and PA-40.
  * Scenario 3, PA tax forgiveness: single; W-2 $15,000 with $500 PA tax withheld; two dependent children.
  *   Prints Form 1040, the W-2, PA-40 and PA-40 Schedule SP.
+ * Scenarios 4-6 (#120) start from synthetic files under src/test/resources/scenarios (CreditFormsTy2026PdfSmokeTest
+ *   .scenarioFacts), with the filer renamed as above:
+ * Scenario 4, family (hoh-cdcc.json): head of household; W-2 $50,000; two children under 13; one care provider paid
+ *   $2,000. Prints Form 1040, Schedule 3, Form 2441, Schedule 8812 and the W-2.
+ * Scenario 5, saver (single-simple-savers-credit.json): single; W-2 $24,469 with $4,000 elective deferrals.
+ *   Prints Form 1040, Schedule 3, Form 8880 and the W-2.
+ * Scenario 6, HSA (hsa-single-filer-contributions-only.json): single; two W-2s ($39,674 total, $260 employer HSA
+ *   contributions); self-only HDHP; $770 own HSA contributions. Prints Form 1040, Schedule 1, Form 8889 and two W-2s.
  * </pre>
  */
 class Ty2026PdfPackageTest {
@@ -95,6 +103,9 @@ class Ty2026PdfPackageTest {
     static final String SSN_DASHED = "900-00-0001";
     static final String SSN_DIGITS = "900000001";
     static final String LAST_NAME = "Exampleton";
+    static final String FAMILY = "hoh-cdcc.json";
+    static final String SAVER = "single-simple-savers-credit.json";
+    static final String HSA = "hsa-single-filer-contributions-only.json";
 
     /** Pages printed per form instance, from the face of each form (draft cover sheets excluded). */
     static final Map<String, Integer> PAGES = Map.ofEntries(
@@ -110,6 +121,10 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS6251", 2),
             Map.entry("IRS8959", 1),
             Map.entry("IRS8960", 1),
+            Map.entry("IRS1040S8812", 2),
+            Map.entry("IRS2441", 2),
+            Map.entry("IRS8880", 1),
+            Map.entry("IRS8889", 1),
             Map.entry("PA40", 2),
             Map.entry("PA40SP", 2),
             Map.entry("IRSW2", 1));
@@ -122,14 +137,17 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS1040SR", "2024 Form 1040-SR template only (filer 65 or older); no 2026 form committed"),
             Map.entry("DEPENDENTS_STATEMENT", "2024 statement template only (more than 4 dependents)"),
             Map.entry("SCHEDULE_R", "2024 Schedule R template only; no 2026 form committed"),
-            Map.entry("IRS2441", "2024 Form 2441 template only; 2026 draft print is #120"),
-            Map.entry("CDCC_QUALIFYING_PERSON_STATEMENT", "2024 Form 2441 statement template only (#120)"),
-            Map.entry("CDCC_CAREGIVERS_STATEMENT", "2024 Form 2441 statement template only (#120)"),
-            Map.entry("IRS2441_DUE_DILIGENCE_STATEMENT", "2024 Form 2441 statement template only (#120)"),
+            // Form 2441 attachments (more than three qualifying persons or care providers; Part I line 1c due
+            // diligence) are not IRS forms, so there is no 2026 draft: they still print the pdf/2024 statement
+            // templates, two of which print "2024" in a column heading.
+            Map.entry(
+                    "CDCC_QUALIFYING_PERSON_STATEMENT",
+                    "pdf/2024 Form 2441 statement template; column (e) heading prints \"paid in 2024\""),
+            Map.entry(
+                    "CDCC_CAREGIVERS_STATEMENT",
+                    "pdf/2024 Form 2441 statement template; column (d) heading prints \"household employee in 2024?\""),
+            Map.entry("IRS2441_DUE_DILIGENCE_STATEMENT", "pdf/2024 Form 2441 statement template; no 2026 template"),
             Map.entry("IRS1040EIC", "2024 Schedule EIC template only; no 2026 form committed"),
-            Map.entry("IRS1040S8812", "2024 Schedule 8812 template only; 2026 draft print is #120"),
-            Map.entry("IRS8889", "2024 Form 8889 template only; 2026 draft print is #120"),
-            Map.entry("IRS8880", "2024 Form 8880 template only; 2026 draft print is #120"),
             Map.entry("IRS8962", "2024 Form 8962 template only; no 2026 form committed"),
             Map.entry("FORM9000", "2021 Form 9000 template only (alternative media preference)"),
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
@@ -269,6 +287,35 @@ class Ty2026PdfPackageTest {
         return syntheticFiler(m);
     }
 
+    /** A synthetic scenario file with the made-up filer name and test-only SSN used by every package. */
+    static Map<String, FactTypeWithItem> scenarioFile(String scenario) throws Exception {
+        Map<String, FactTypeWithItem> facts = CreditFormsTy2026PdfSmokeTest.scenarioFacts(scenario);
+        String primary = null;
+        for (var e : facts.entrySet()) {
+            if (e.getKey().startsWith("/filers/#")
+                    && e.getKey().endsWith("/isPrimaryFiler")
+                    && e.getValue().item().asBoolean(false)) {
+                primary = e.getKey().substring("/filers/#".length(), e.getKey().length() - "/isPrimaryFiler".length());
+            }
+        }
+        assertTrue(primary != null, scenario + " has a primary filer");
+        Map<String, String> m = new HashMap<>();
+        String p = "/filers/#" + primary + "/";
+        m.put(p + "firstName", string("Avery"));
+        m.put(p + "writableMiddleInitial", string("Q"));
+        m.put(p + "lastName", string(LAST_NAME));
+        m.put(p + "tin", tin("900", "00", "0001"));
+        for (String k : new ArrayList<>(facts.keySet())) {
+            if (k.startsWith("/formW2s/#") && k.endsWith("/filer")) {
+                m.put(k.substring(0, k.length() - "/filer".length()) + "/tin", tin("900", "00", "0001"));
+            }
+        }
+        for (var e : m.entrySet()) {
+            facts.put(e.getKey(), MAPPER.readValue(e.getValue(), FactTypeWithItem.class));
+        }
+        return facts;
+    }
+
     // ---------------------------------------------------------------- tests
 
     @Test
@@ -276,6 +323,9 @@ class Ty2026PdfPackageTest {
         Set<String> printed = new TreeSet<>();
         for (Map<String, String> s : List.of(investor(), itemizer(), paTaxForgiveness())) {
             printed.addAll(render(s, null).forms.keySet());
+        }
+        for (String s : List.of(FAMILY, SAVER, HSA)) {
+            printed.addAll(renderFacts(scenarioFile(s), null).forms.keySet());
         }
         assertEquals(PAGES.keySet(), printed, "forms printed across the scenarios");
         Set<String> notPrinted = new TreeSet<>(templates.keySet());
@@ -560,6 +610,80 @@ class Ty2026PdfPackageTest {
         assertEquals(500 + sp16 - paTax, paAmt(pa2, "29. OVERPAYMENT"), "29 = 24 - 12");
     }
 
+    @Test
+    void familyCreditsPackage() throws Exception {
+        Pkg pkg = renderFacts(scenarioFile(FAMILY), "e2e-ty2026-family.pdf");
+        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1));
+        Map<String, String> f1040 = pkg.fields("IRS1040", 0);
+        Map<String, String> s3 = pkg.fields("IRS1040S3", 0);
+        Map<String, String> f2441 = pkg.fields("IRS2441", 0);
+        Map<String, String> s8812 = pkg.fields("IRS1040S8812", 0);
+
+        // Form 2441 (2026 draft): Part I provider 1 column, line 2, lines 3-11.
+        assertEquals(2000, amt(f2441, "Row1e[0].f1_12[0]"), "1e provider 1 amount paid");
+        assertEquals(2000, amt(f2441, "Page1[0].f1_27[0]"), "3 = line 2 column (d)");
+        assertEquals(50000, amt(f2441, "Page1[0].f1_28[0]"), "4 earned income");
+        assertEquals(amt(f1040, "Page1[0].f1_75[0]"), amt(f2441, "Page1[0].f1_31[0]"), "7 = Form 1040 line 11a");
+        // 26 U.S.C. 21(a)(2) as amended by P.L. 119-21: 50% reduced by 1 point per $2,000 of AGI over $15,000, not
+        // below 35%. At $50,000 AGI the decimal is .35.
+        assertEquals("35", text(f2441, "Page1[0].f1_32[0]"), "8 decimal");
+        assertEquals(pct(2000, "0.35"), amt(f2441, "Page1[0].f1_33[0]"), "9a = 6 x 8");
+        long credit = Math.min(amt(f2441, "Page1[0].f1_35[0]"), amt(f2441, "Page1[0].f1_36[0]"));
+        assertEquals(credit, amt(f2441, "Page1[0].f1_37[0]"), "11 = smaller of 9c or 10");
+        assertEquals(credit, amt(s3, "f1_04[0]"), "Schedule 3 line 2 = Form 2441 line 11");
+
+        // Schedule 8812 (2026 draft): $2,200 per child under 26 U.S.C. 24(h)(2) as amended by P.L. 119-21; the
+        // refundable portion per child under 24(h)(5) is $1,700 for 2026 (Rev. Proc. 2025-32).
+        assertEquals("2", text(s8812, "Page1[0].f1_9[0]"), "4 qualifying children");
+        assertEquals(2 * 2200, amt(s8812, "Page1[0].f1_10[0]"), "5 = 4 x $2,200");
+        long line14 = amt(s8812, "Page1[0].f1_19[0]");
+        assertEquals(Math.min(amt(s8812, "Page1[0].f1_17[0]"), amt(s8812, "Page1[0].f1_18[0]")), line14, "14");
+        assertEquals("", text(s8812, "Page2[0].f2_1[0]"), "15 reserved for future use");
+        long line16a = amt(s8812, "Page2[0].f2_2[0]");
+        assertEquals(amt(s8812, "Page1[0].f1_17[0]") - line14, line16a, "16a = 12 - 14");
+        assertEquals(2 * 1700, amt(s8812, "Page2[0].f2_4[0]"), "16b = 2 x $1,700");
+        assertEquals(pct(50000 - 2500, "0.15"), amt(s8812, "Page2[0].f2_9[0]"), "20 = 15% of (18a - $2,500)");
+        long actc = Math.min(Math.min(line16a, 2 * 1700), amt(s8812, "Page2[0].f2_9[0]"));
+        assertEquals(actc, amt(s8812, "Page2[0].f2_16[0]"), "27 = smaller of 17 or 20 (Part II-B skipped)");
+        assertEquals(line14, amt(f1040, "Page2[0].f2_12[0]"), "Form 1040 line 19 = 8812 line 14");
+        assertEquals(actc, amt(f1040, "Page2[0].f2_27[0]"), "Form 1040 line 28 = 8812 line 27");
+    }
+
+    @Test
+    void saverPackage() throws Exception {
+        Pkg pkg = renderFacts(scenarioFile(SAVER), "e2e-ty2026-saver.pdf");
+        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS8880", 1, "IRSW2", 1));
+        Map<String, String> f8880 = pkg.fields("IRS8880", 0);
+        Map<String, String> s3 = pkg.fields("IRS1040S3", 0);
+        assertEquals(4000, amt(f8880, "BodyRow2[0].f1_5[0]"), "2 elective deferrals");
+        assertEquals(2000, amt(f8880, "BodyRow6[0].f1_13[0]"), "6 = smaller of 5 or $2,000 (26 U.S.C. 25B(a))");
+        assertEquals(24469, amt(f8880, "Page1[0].f1_16[0]"), "8 = Form 1040 line 11a");
+        // Notice 2025-67, all other filers: 25B(b)(1)(A) limit $24,250, (B) $26,250, so $24,469 is the 20% band.
+        assertEquals("2", text(f8880, "Page1[0].f1_17[0]"), "9 decimal .2");
+        assertEquals(pct(2000, "0.2"), amt(f8880, "Page1[0].f1_18[0]"), "10 = 7 x 9");
+        long line12 = Math.min(amt(f8880, "Page1[0].f1_18[0]"), amt(f8880, "Page1[0].f1_19[0]"));
+        assertEquals(line12, amt(f8880, "Page1[0].f1_20[0]"), "12 = smaller of 10 or 11");
+        assertEquals(line12, amt(s3, "f1_06[0]"), "Schedule 3 line 4 = Form 8880 line 12");
+    }
+
+    @Test
+    void hsaPackage() throws Exception {
+        Pkg pkg = renderFacts(scenarioFile(HSA), "e2e-ty2026-hsa.pdf");
+        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S1", 1, "IRS8889", 1, "IRSW2", 2));
+        Map<String, String> f8889 = pkg.fields("IRS8889", 0);
+        Map<String, String> s1 = pkg.fields("IRS1040S1", 0);
+        Map<String, String> f1040 = pkg.fields("IRS1040", 0);
+        assertTrue(checked(f8889, "Page1[0].c1_1[0]"), "1 self-only coverage");
+        assertEquals(770, amt(f8889, "Page1[0].f1_3[0]"), "2 own contributions");
+        // Rev. Proc. 2025-19: 2026 self-only limit under 26 U.S.C. 223(b)(2)(A) is $4,400.
+        assertEquals(4400, amt(f8889, "Page1[0].f1_4[0]"), "3 self-only limit");
+        assertEquals(260, amt(f8889, "Page1[0].f1_10[0]"), "9 employer contributions (W-2 box 12 W)");
+        assertEquals(4400 - 260, amt(f8889, "Page1[0].f1_13[0]"), "12 = 8 - 11");
+        assertEquals(770, amt(f8889, "Page1[0].f1_14[0]"), "13 = smaller of 2 or 12");
+        assertEquals(770, amt(s1, "Page2[0].f2_03[0]"), "Schedule 1 line 13 = Form 8889 line 13");
+        assertEquals(770, amt(f1040, "Page1[0].f1_74[0]"), "Form 1040 line 10 = Schedule 1 line 26");
+    }
+
     // ---------------------------------------------------------------- rendering
 
     /** One rendered package: form name -> instances, each the list of 0-based output page indexes. */
@@ -644,6 +768,10 @@ class Ty2026PdfPackageTest {
         for (var e : scenario.entrySet()) {
             facts.put(e.getKey(), MAPPER.readValue(e.getValue(), FactTypeWithItem.class));
         }
+        return renderFacts(facts, outName);
+    }
+
+    static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName) throws Exception {
 
         // A golden return must be one the product files: no knockout or other submission-blocking fact is true.
         Graph graph = factGraphService.getGraph(facts);

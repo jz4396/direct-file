@@ -81,6 +81,27 @@ class CreditFormsTy2026PdfSmokeTest {
                 .get();
         PdfService pdfService = new PdfService(props, new IOLocationService(null), factGraphService);
 
+        Map<String, FactTypeWithItem> typed = scenarioFacts(scenario);
+        TaxReturn taxReturn = new TaxReturn();
+        taxReturn.setTaxYear(2026);
+        taxReturn.setFactsWithoutDirtyingEntity(typed);
+        byte[] bytes;
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
+            bytes = in.readAllBytes();
+        }
+        String out = System.getProperty("pdf.smoke.out");
+        if (out != null) {
+            Files.write(Path.of(out, "credit-forms-ty2026-" + scenario.replace(".json", ".pdf")), bytes);
+        }
+        return bytes;
+    }
+
+    /**
+     * Facts of a scenario under src/test/resources/scenarios, with every TIN moved to a test-only 9xx area and the
+     * TY2026 interview facts the scenario predates filled in as none / false.
+     */
+    static Map<String, FactTypeWithItem> scenarioFacts(String scenario) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(new ClassPathResource("scenarios/" + scenario).getInputStream());
         ObjectNode facts = (ObjectNode) root.get("facts");
         Map<String, String> defaults = new LinkedHashMap<>();
@@ -116,20 +137,7 @@ class CreditFormsTy2026PdfSmokeTest {
                 facts.set(d.getKey(), mapper.readTree(d.getValue()));
             }
         }
-        Map<String, FactTypeWithItem> typed =
-                mapper.convertValue(facts, new TypeReference<Map<String, FactTypeWithItem>>() {});
-        TaxReturn taxReturn = new TaxReturn();
-        taxReturn.setTaxYear(2024); // configured-pdfs bucket; the templates under test are the 2026 drafts
-        taxReturn.setFactsWithoutDirtyingEntity(typed);
-        byte[] bytes;
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
-            bytes = in.readAllBytes();
-        }
-        String out = System.getProperty("pdf.smoke.out");
-        if (out != null) {
-            Files.write(Path.of(out, "credit-forms-ty2026-" + scenario.replace(".json", ".pdf")), bytes);
-        }
-        return bytes;
+        return mapper.convertValue(facts, new TypeReference<Map<String, FactTypeWithItem>>() {});
     }
 
     static List<String> pageTexts(PDDocument doc) throws Exception {
