@@ -37,9 +37,9 @@ direct-file:
       - name: IRS1040S8812
         year: 2024
         language-code: en
-        location: "src/main/resources/pdf/2024/IRS1040S8812/en/f1040s8_accessible.pdf"
+        location: "src/main/resources/pdf/2026/IRS1040S8812/en/f1040s8--dft.pdf"
         location-type: directory
-        configuration-location: "src/main/resources/pdf/2024/IRS1040S8812/en/configuration.yml"
+        configuration-location: "src/main/resources/pdf/2026/IRS1040S8812/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
       - name: IRS1040S8812
@@ -269,9 +269,9 @@ direct-file:
       - name: IRS8880
         year: 2024
         language-code: en
-        location: "src/main/resources/pdf/2024/IRS8880/en/f8880_accessible-p.pdf"
+        location: "src/main/resources/pdf/2026/IRS8880/en/f8880--dft.pdf"
         location-type: directory
-        configuration-location: "src/main/resources/pdf/2024/IRS8880/en/configuration.yml"
+        configuration-location: "src/main/resources/pdf/2026/IRS8880/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
       - name: IRS8959
@@ -293,9 +293,9 @@ direct-file:
       - name: IRS8889
         year: 2024
         language-code: en
-        location: "src/main/resources/pdf/2024/IRS8889/en/f8889_accessible.pdf"
+        location: "src/main/resources/pdf/2026/IRS8889/en/f8889--dft.pdf"
         location-type: directory
-        configuration-location: "src/main/resources/pdf/2024/IRS8889/en/configuration.yml"
+        configuration-location: "src/main/resources/pdf/2026/IRS8889/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
       - name: IRS8962
@@ -341,9 +341,9 @@ direct-file:
       - name: IRS2441
         year: 2024
         language-code: en
-        location: "src/main/resources/pdf/2024/IRS2441/en/f2441.pdf"
+        location: "src/main/resources/pdf/2026/IRS2441/en/f2441--dft.pdf"
         location-type: directory
-        configuration-location: "src/main/resources/pdf/2024/IRS2441/en/configuration.yml"
+        configuration-location: "src/main/resources/pdf/2026/IRS2441/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
       - name: IRS2441_DUE_DILIGENCE_STATEMENT
