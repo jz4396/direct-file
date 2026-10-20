@@ -469,7 +469,9 @@ describe(`PA Schedules A, B and D knockouts (#123)`, () => {
     expect(val(g, `/paLine2`)).toBe(`2500.00`);
     clear(g);
   });
-  it(`Schedule B: dividends are $0 in this app (no 1099-DIV yet), so no Schedule B line has an amount`, ({ task }) => {
+  it(`Schedule B: wages only, no Form 1099-DIV, so no Schedule B line has an amount (#154 cases: dividends.test.ts)`, ({
+    task,
+  }) => {
     task.meta.testedFactPaths = [`/flowKnockoutPaScheduleB`, `/paScheduleBThreshold`];
     const g = build(singleFilerData, w2(40000, 40000, 1228));
     expect(val(g, `/paLine3`)).toBe(`0.00`);

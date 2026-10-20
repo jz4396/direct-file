@@ -183,7 +183,9 @@ info:
       body:
         - p:
             Your Pennsylvania return needs PA Schedule B, and this tool can’t fill it out yet. This includes more than
-            $2,500 of dividends, or dividends when you lived in Pennsylvania for only part of the year.
+            $2,500 of dividends, capital gain distributions (Form 1099-DIV box 2a), fund dividends from U.S. or
+            Pennsylvania obligations, dividends you received as a nominee, or dividends when you lived in Pennsylvania
+            for only part of the year.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
