@@ -84,13 +84,18 @@ function writableTypes(): Map<string, string> {
 
 /**
  * Collection item ids are UUIDs (fact-graph Collection / CollectionItem hold `java.util.UUID`). Checked here so a
- * damaged file fails as `invalid-facts` rather than as a hydration error later.
+ * damaged file fails as `invalid-facts` rather than as a hydration error later. Lowercase only: `java.util.UUID`
+ * and the `uuid` package both write lowercase, and the fact graph drops an uppercase path id on `toJSON()`.
  */
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 export const isUuid = (v: unknown): v is string => typeof v === `string` && UUID.test(v);
 
-/** Every `#<id>` segment of a fact path must be a UUID. */
-const pathIdsAreUuids = (path: string) => [...path.matchAll(/\/#([^/]*)/g)].every((m) => isUuid(m[1]));
+/**
+ * A concrete fact path names each collection item as `#<uuid>`. A `*` segment is the dictionary's abstract form, never
+ * a stored fact, and every `#<id>` segment must be a UUID.
+ */
+const pathIdsAreUuids = (path: string) =>
+  !path.split(`/`).includes(`*`) && [...path.matchAll(/\/#([^/]*)/g)].every((m) => isUuid(m[1]));
 
 /** `/filers/#<id>/tin` -> `/filers/*\/tin`. */
 export const abstractPath = (path: string) => path.replace(/\/#[^/]+/g, `/*`);
@@ -143,12 +148,15 @@ function itemKeysMatch(wrapper: string, item: Record<string, unknown>): boolean 
   return !shape || hasExactKeys(item, shape.required, shape.optional);
 }
 
-/** Enum and MultiEnum values must be options of the fact's dictionary EnumOptions. */
+/**
+ * Enum and MultiEnum values must be options of the fact's dictionary EnumOptions, and `enumOptionsPath` must be the
+ * dictionary's options path exactly (the app writes `getOptionsPathForEnum`'s abstract path, never a concrete one).
+ */
 function enumMatches(path: string, wrapper: string, item: Record<string, unknown>): boolean {
   const optionsPath = enumOptionsPathByFact?.get(path);
   const allowed = optionsPath ? enumValuesByOptionsPath?.get(optionsPath) : undefined;
   if (!optionsPath || !allowed) return false;
-  if (typeof item.enumOptionsPath !== `string` || abstractPath(item.enumOptionsPath) !== optionsPath) return false;
+  if (item.enumOptionsPath !== optionsPath) return false;
   const values = wrapper === `EnumWrapper` ? item.value : item.values;
   if (!Array.isArray(values) || (wrapper === `EnumWrapper` && values.length > 1)) return false;
   return values.every((v) => typeof v === `string` && allowed.has(v));
