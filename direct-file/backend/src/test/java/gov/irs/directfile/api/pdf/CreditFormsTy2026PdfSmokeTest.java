@@ -55,22 +55,49 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>Golden returns are the synthetic scenarios under src/test/resources/scenarios. Every TIN in them is rewritten to a
  * test-only 9xx area number before the return is built, so no printed SSN, ITIN or EIN can be a real one. Facts that
  * those scenarios predate (TY2026 interview questions with an obvious "none" answer) are added as empty / false.
+ *
+ * <p>These scenarios prove PDF printing only; they are not returns that can be filed. A 9xx number is never an SSN in
+ * the fact graph ({@code Tin.isSSN} is false for every area starting with 9), so a child declared {@code tinType =
+ * ssn} with a 9xx number keeps CTC eligibility (the dependent's {@code eligibleCtc} fact reads the declared tinType,
+ * so Schedule 8812 prints the CTC lines) while {@code /familyAndHouseholdHasInvalidTIN}, a submission-blocking
+ * fact, is true. The CTC scenarios assert that. Real filing also needs an SSN for each CTC child under 26 U.S.C.
+ * 24(h)(7); the filer-SSN requirement of 24(h)(7) as amended by P.L. 119-21 is not modeled (#182). The backend's
+ * submission-blocking list is empty (#181), so no check here relies on it.
  */
 class CreditFormsTy2026PdfSmokeTest {
     static final String DRAFT_MARK = "OMB USE ONLY DRAFT";
     static final String COVER_SHEET = "The draft you are looking for begins on the next page";
 
-    static byte[] generateScenario(String scenario) throws Exception {
+    /** Submission-blocking: a dependent's TIN does not match its declared type. */
+    static final String INVALID_TIN = "/familyAndHouseholdHasInvalidTIN";
+
+    private static FactGraphService factGraphService;
+
+    static synchronized FactGraphService factGraphService() throws Exception {
+        if (factGraphService != null) {
+            return factGraphService;
+        }
         ObjectMapper mapper = new ObjectMapper();
         GenericApplicationContext ctx = new GenericApplicationContext();
         ctx.refresh();
-        FactGraphService factGraphService = new FactGraphService(mapper, ctx);
-        ReflectionTestUtils.setField(factGraphService, "loadAtStartup", true);
-        ReflectionTestUtils.setField(factGraphService, "factDictionaryXmlPattern", "classpath:/tax/*.xml");
+        FactGraphService fgs = new FactGraphService(mapper, ctx);
+        ReflectionTestUtils.setField(fgs, "loadAtStartup", true);
+        ReflectionTestUtils.setField(fgs, "factDictionaryXmlPattern", "classpath:/tax/*.xml");
         Method init = FactGraphService.class.getDeclaredMethod("init");
         init.setAccessible(true);
-        init.invoke(factGraphService);
+        init.invoke(fgs);
+        factGraphService = fgs;
+        return fgs;
+    }
 
+    /** Whether a boolean fact of the scenario's graph is true. */
+    static boolean factIsTrue(String scenario, String path) throws Exception {
+        var r = factGraphService().getGraph(scenarioFacts(scenario)).get(path);
+        return r.hasValue() && Boolean.TRUE.equals(r.get());
+    }
+
+    static byte[] generateScenario(String scenario) throws Exception {
+        FactGraphService fgs = factGraphService();
         StandardEnvironment env = new StandardEnvironment();
         for (PropertySource<?> ps :
                 new YamlPropertySourceLoader().load("app", new ClassPathResource("application.yaml"))) {
@@ -79,7 +106,7 @@ class CreditFormsTy2026PdfSmokeTest {
         PdfServiceProperties props = Binder.get(env)
                 .bind("direct-file.pdfs", PdfServiceProperties.class)
                 .get();
-        PdfService pdfService = new PdfService(props, new IOLocationService(null), factGraphService);
+        PdfService pdfService = new PdfService(props, new IOLocationService(null), fgs);
 
         Map<String, FactTypeWithItem> typed = scenarioFacts(scenario);
         TaxReturn taxReturn = new TaxReturn();
@@ -242,6 +269,10 @@ class CreditFormsTy2026PdfSmokeTest {
     void childCareAndChildTaxCreditReturnPrints2026Form2441AndSchedule8812() throws Exception {
         // hoh-cdcc.json: head of household, $50,000 W-2 wages, two qualifying children under 13 (ages 10 and 7 at the
         // end of 2026), one care provider paid $2,000 for the younger child, no dependent care benefits.
+        // Printing only, not a fileable return: both children are declared tinType = ssn with 9xx numbers, which are
+        // never SSNs in the fact graph, so CTC prints and the submission-blocking invalid-TIN fact is true (#181,
+        // #182).
+        assertTrue(factIsTrue("hoh-cdcc.json", INVALID_TIN), INVALID_TIN + " (9xx children declared ssn)");
         try (PDDocument doc = Loader.loadPDF(generateScenario("hoh-cdcc.json"))) {
             List<String> texts = pageTexts(doc);
             assertFalse(String.join(" ", texts).contains(COVER_SHEET), "draft cover sheets dropped");
@@ -325,6 +356,10 @@ class CreditFormsTy2026PdfSmokeTest {
 
     @Test
     void moreThanThreeCareProvidersAndQualifyingPersonsFillProviderColumnsAndStatements() throws Exception {
+        // Printing only, not a fileable return: the children are declared tinType = ssn with 9xx numbers (#181, #182).
+        assertTrue(
+                factIsTrue("hoh-cdcc-multiple-careproviders.json", INVALID_TIN),
+                INVALID_TIN + " (9xx children declared ssn)");
         // hoh-cdcc-multiple-careproviders.json: four care providers and five qualifying persons, dependent care
         // benefits (Part III).
         try (PDDocument doc = Loader.loadPDF(generateScenario("hoh-cdcc-multiple-careproviders.json"))) {

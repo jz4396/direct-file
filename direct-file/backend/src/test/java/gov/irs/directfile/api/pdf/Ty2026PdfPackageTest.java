@@ -44,12 +44,9 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import gov.irs.factgraph.Graph;
-
 import gov.irs.directfile.api.config.ConfiguredPdfProperties;
 import gov.irs.directfile.api.config.PdfServiceProperties;
 import gov.irs.directfile.api.io.IOLocationService;
-import gov.irs.directfile.api.loaders.domain.TaxFact;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.directfile.api.taxreturn.models.TaxReturn;
 import gov.irs.directfile.models.FactTypeWithItem;
@@ -74,6 +71,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * <p>Expected amounts are either inputs, a cited constant, or the form's own line arithmetic on other printed lines.
  *
+ * <p>These golden scenarios prove PDF printing only; they are not returns that can be filed. A 9xx number is never an
+ * SSN in the fact graph ({@code Tin.isSSN} is false for every area starting with 9), so the filer is classified as an
+ * ITIN holder and a child declared {@code tinType = ssn} with a 9xx number makes {@code
+ * /familyAndHouseholdHasInvalidTIN} (submission-blocking) true. Such a child still counts for the CTC, because the
+ * dependent's {@code eligibleCtc} fact reads the declared tinType; that is what lets Schedule 8812 print its CTC lines,
+ * and the CTC scenario asserts the invalid-TIN fact is true. Real filing needs an SSN for each CTC child under 26 U.S.C.
+ * 24(h)(7); the filer-SSN requirement of 24(h)(7) as amended by P.L. 119-21 is not modeled (#182). The backend's
+ * submission-blocking list is empty (#181), so this test does not claim any scenario is free of blocking facts.
+ *
  * <pre>
  * Scenario 1, investor (federal, DC): single; W-2 $250,000 wages / $184,500 social security wages / $250,000 Medicare
  *   wages / $4,075 Medicare tax withheld; 1099-INT $10,000 with a $150 early withdrawal penalty; Form 8949 box A
@@ -87,8 +93,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   Prints Form 1040, the W-2, PA-40 and PA-40 Schedule SP.
  * Scenarios 4-6 (#120) start from synthetic files under src/test/resources/scenarios (CreditFormsTy2026PdfSmokeTest
  *   .scenarioFacts), with the filer renamed as above:
- * Scenario 4, family (hoh-cdcc.json): head of household; W-2 $50,000; two children under 13; one care provider paid
- *   $2,000. Prints Form 1040, Schedule 3, Form 2441, Schedule 8812 and the W-2.
+ * Scenario 4, family (hoh-cdcc.json): head of household; W-2 $50,000; two children under 13 (tinType ssn, 9xx
+ *   numbers: printing only, /familyAndHouseholdHasInvalidTIN is true); one care provider paid $2,000.
+ *   Prints Form 1040, Schedule 3, Form 2441, Schedule 8812 and the W-2.
  * Scenario 5, saver (single-simple-savers-credit.json): single; W-2 $24,469 with $4,000 elective deferrals.
  *   Prints Form 1040, Schedule 3, Form 8880 and the W-2.
  * Scenario 6, HSA (hsa-single-filer-contributions-only.json): single; two W-2s ($39,674 total, $260 employer HSA
@@ -612,7 +619,14 @@ class Ty2026PdfPackageTest {
 
     @Test
     void familyCreditsPackage() throws Exception {
-        Pkg pkg = renderFacts(scenarioFile(FAMILY), "e2e-ty2026-family.pdf");
+        // Printing only, not a fileable return: both children are declared tinType = ssn with 9xx numbers, which are
+        // never SSNs in the fact graph, so the CTC lines print and the invalid-TIN fact is true (#181, #182).
+        Map<String, FactTypeWithItem> facts = scenarioFile(FAMILY);
+        var invalidTin = factGraphService.getGraph(facts).get(CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
+        assertTrue(
+                invalidTin.hasValue() && Boolean.TRUE.equals(invalidTin.get()),
+                CreditFormsTy2026PdfSmokeTest.INVALID_TIN + " (9xx children declared ssn)");
+        Pkg pkg = renderFacts(facts, "e2e-ty2026-family.pdf");
         pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s3 = pkg.fields("IRS1040S3", 0);
@@ -773,17 +787,8 @@ class Ty2026PdfPackageTest {
 
     static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName) throws Exception {
 
-        // A golden return must be one the product files: no knockout or other submission-blocking fact is true.
-        Graph graph = factGraphService.getGraph(facts);
-        List<String> blocking = new ArrayList<>();
-        for (TaxFact f : factGraphService.getDigest().getSubmissionBlockingFacts()) {
-            var r = graph.get(f.path());
-            if (r.hasValue() && Boolean.TRUE.equals(r.get())) {
-                blocking.add(f.path());
-            }
-        }
-        assertEquals(List.of(), blocking, "submission-blocking facts");
-
+        // No submission-blocking check here: the backend's blocking list is empty (#181), and the CTC scenario is
+        // blocked by design (see the class comment).
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(TAX_YEAR);
         taxReturn.setFactsWithoutDirtyingEntity(facts);
