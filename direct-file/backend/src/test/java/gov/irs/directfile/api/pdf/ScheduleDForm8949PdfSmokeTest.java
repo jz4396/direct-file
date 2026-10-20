@@ -75,7 +75,7 @@ class ScheduleDForm8949PdfSmokeTest {
         Map<String, FactTypeWithItem> facts =
                 mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
         TaxReturn taxReturn = new TaxReturn();
-        taxReturn.setTaxYear(2024); // PDF template config key; #35: Sch D / 8949 now use the 2026 drafts under pdf/2026
+        taxReturn.setTaxYear(2026); // PDF template config key; #35: Sch D / 8949 now use the 2026 drafts under pdf/2026
         taxReturn.setFactsWithoutDirtyingEntity(facts);
 
         byte[] bytes;
