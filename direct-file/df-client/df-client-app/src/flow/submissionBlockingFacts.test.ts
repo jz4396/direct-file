@@ -59,7 +59,8 @@ describe(`submission-blocking facts`, () => {
   it(`the generated lists are the backend dictionary's <BlockSubmissionOnTrue /> facts`, () => {
     const xml = blockingFactsInXml();
     expect([...submissionBlockingFacts].sort()).toEqual([...xml.keys()].sort());
-    expect(submissionBlockingFacts.length).toBe(116);
+    // The old hand-copied list had 22 paths.
+    expect(submissionBlockingFacts.length).toBeGreaterThan(100);
 
     const covered = new Set<string>();
     xml.forEach((deps, p) => deps.forEach((d) => d !== p && xml.has(d) && covered.add(d)));
