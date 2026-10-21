@@ -11,6 +11,8 @@
 #
 # Part III (lines 12-40) prints only when line 7 requires it (/form6251UsesPartIII); Irs6251PdfForm fills the
 # ~form6251PartIIILineNN pseudo-facts from /form6251LineNN in that case and leaves them blank otherwise.
+# Part III amounts are whole dollars in the fact graph (#178: lines 18, 31, 34 and 39 round half up), so the pseudo-facts
+# print the same .00 amounts as every other line.
 #
 # Not mapped, left blank (never a silent 0), because a nonzero amount is a stop that blocks submission:
 #   2b  Schedule 1 line 1 / 8z tax refund: Form 1099-G box 2 refunds and 8z income are unsupported income sources
