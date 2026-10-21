@@ -99,6 +99,9 @@ public class TaxReturnService {
 
     private final StatusResponseBodyCacheService statusResponseBodyCacheService;
 
+    /** Supported tax years and their enabled flags (taxYears/registry.json); tests may substitute one. */
+    private SupportedTaxYears.Registry taxYearRegistry = SupportedTaxYears.registry();
+
     public TaxReturnService(
             final AuditService auditService,
             final TaxReturnRepository taxReturnRepo,
@@ -207,10 +210,10 @@ public class TaxReturnService {
         UUID userId = _userId;
         addTaxPeriodToAuditLog(taxYear);
         auditService.addEventProperty(AuditLogElement.XXX_CODE, XXXCode.XXX_CODE);
-        if (!SupportedTaxYears.isSupported(taxYear)) {
-            log.error("Cannot create tax return for user: {}. Tax year {} is not supported.", userId, taxYear);
-            throw new InvalidDataException(String.format(
-                    "Tax year %d is not supported. Supported tax years: %s", taxYear, SupportedTaxYears.years()));
+        Optional<String> yearRefusal = taxYearRegistry.newReturnRefusal(taxYear);
+        if (yearRefusal.isPresent()) {
+            log.error("Cannot create tax return for user: {}. {}", userId, yearRefusal.get());
+            throw new InvalidDataException(yearRefusal.get());
         }
         Optional<TaxReturn> existingTaxReturn = taxReturnRepo.findByUserIdAndTaxYear(userId, taxYear);
 

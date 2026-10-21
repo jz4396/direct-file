@@ -1,10 +1,11 @@
 {
-  "$comment": "Tax years this build supports. Each entry names its parameter file in this directory. There is no fallback: a year that is not listed here is an error.",
+  "$comment": "Tax years this build supports. Each entry names its parameter file in this directory. There is no fallback: a year that is not listed here is an error. enabled (required) says whether a new return can be started for the year; a listed year that is not enabled keeps its existing returns.",
   "currentTaxYear": 2026,
   "years": [
     {
       "taxYear": 2026,
-      "config": "ty2026.json"
+      "config": "ty2026.json",
+      "enabled": true
     }
   ]
 }

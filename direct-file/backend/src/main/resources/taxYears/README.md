@@ -8,6 +8,13 @@ The backend reads the same list (`SupportedTaxYears`): creating a return for a y
 listed is refused with a 400, so a return can never reach PDF generation for a year that has no
 parameters or templates (for example TY2025).
 
+Each year entry also has a required boolean `enabled`. Set it to `false` to stop new returns for that
+year without a code change: the backend refuses to create a return for it with a 400, and the client
+(`src/constants/taxYearAvailability.ts`, reading `generated/taxYears.ts`, which
+`npm run generate-fact-dictionary` writes from this file) shows no start button. The year stays
+supported, so existing returns for it can still be opened, edited and printed. An entry without a
+boolean `enabled` fails backend startup and the client's registry loader; there is no default.
+
 `tyYYYY.json` is the source of truth for the year's parameters:
 
 - `parameters` has one entry per fact tagged `<TaxYear>YYYY</TaxYear>` in `../tax/*.xml`.
