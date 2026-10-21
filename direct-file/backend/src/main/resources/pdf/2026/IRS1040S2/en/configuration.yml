@@ -8,7 +8,7 @@
 # and re-verify every field name and line number here before swapping it in.
 # Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
 #
-# 2026 renumbering (Part II): line 4 SE tax, 5 Form 5329 additional tax, 6 NIIT (Form 8960), 11 Additional Medicare
+# 2026 renumbering (Part II): line 4 SE tax, 5 additional tax on IRAs or other tax-favored accounts, 6 NIIT (Form 8960), 11 Additional Medicare
 # Tax on SE income (Form 8959 line 18), 13c HSA distribution additional tax, 15 = lines 4-11 + 14, 16a Form 4137,
 # 17b Additional Medicare tax on wages (Form 8959 line 12), 17d, 20 = 16c + 17d + 18 + 19c, 21 = 15 + 20 to Form 1040
 # line 23. The 2024 map (pdf/2024/IRS1040S2/en) printed only line 1a, line 3 and a duplicate of line 3; lines 4-21
@@ -17,8 +17,8 @@
 # Not mapped, left blank (never a silent 0); each has no input in this tool, or stops the return:
 #   1b-1y  no input (Forms 8936 Schedule A, 4255); so 1z = 1a.
 #   4 checkboxes (Forms 4361, 4029, "3"): no SE tax exemption is offered.
-#   5  Form 5329 additional tax: a Form 1099-R code 1 early distribution stops the return
-#      (form1099Rs /flowKnockoutRetirementQualifiedEarlyDistribution); HSA additional taxes are line 13c/13d.
+#   5  #116: only the 10% additional tax on Form 1099-R code 1 distributions without Form 5329 is mapped (below). A
+#      claimed exception, or code 1 on some but not all Forms 1099-R, stops the return; HSA additional taxes are line 13c/13d.
 #   7-10, 12, 13a, 13b, 13e-13o, 13z  no input. 13k golden parachute: W-2 box 12 code K stops the return
 #      (formW2s /knockoutForBox12Value). 13h/13i: W-2 box 11 nonqualified plan amounts stop the return
 #      (formW2s /flowKnockoutNonQualifiedPlans).
@@ -50,6 +50,8 @@ form:
       f1_13[0]: /totalAdditionalTaxesOwed # 3 "Add lines 1z and 2. Enter here and on Form 1040, 1040-SR, or 1040-NR, line 17"
       # Part II, Additional Taxes; Section A, Additional Income Taxes
       f1_15[0]: /schedule2Line4 # 4 "Self-employment tax. Attach Schedule SE"
+      c1_6[0]: /schedule2Line5Form5329NotRequired # 5 "If not required, check here" (on state /1)
+      f1_16[0]: /schedule2Line5 # 5 "Additional tax on IRAs or other tax-favored accounts. Attach Form 5329 if required"
       f1_17[0]: /schedule2Line6NetInvestmentIncomeTax # 6 "Net investment income tax. Attach Form 8960"
       f1_22[0]: /line11AdditionalMedicareTax # 11 "Additional Medicare Tax on self-employment income. Attach Form 8959"
     Page2[0]:
