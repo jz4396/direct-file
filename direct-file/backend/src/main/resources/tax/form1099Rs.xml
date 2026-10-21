@@ -3340,8 +3340,8 @@
       <Writable>
         <Day />
         <Limit type="Max">
-          <!-- #91: TY2026 window (upstream TY2024 value 2025-01-01 shifted by two years to match /taxYear 2026). -->
-          <Day>2027-01-01</Day>
+          <!-- #166: last day of tax year 2026. Max is inclusive (Max.scala uses LessThanOrEqual), so 2026-12-31 is accepted and 2027-01-01 is not. -->
+          <Day>2026-12-31</Day>
         </Limit>
       </Writable>
     </Fact>

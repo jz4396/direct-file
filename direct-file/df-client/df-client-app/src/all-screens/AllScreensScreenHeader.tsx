@@ -1,10 +1,12 @@
-import { FC } from 'react';
+import { ComponentProps, FC } from 'react';
 import { Accordion, Tag } from '@trussworks/react-uswds';
-import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion.js';
 import { dependenciesPerTaxTest } from './AllScreensContext.js';
 import { BatchDetails, CONTENT_BATCHES, calculateScreenStatus } from '../flow/batches.js';
 import { ScreenConfig } from '../flow/ScreenConfig.js';
 import styles from './AllScreens.module.scss';
+
+// react-uswds 8 no longer exposes deep `lib/components/...` paths, so derive the item type from the public export.
+type AccordionItemProps = ComponentProps<typeof Accordion>['items'][number];
 
 interface AllScreensScreenHeaderProps {
   screen: ScreenConfig;

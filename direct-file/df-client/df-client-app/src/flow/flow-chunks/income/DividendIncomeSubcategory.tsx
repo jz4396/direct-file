@@ -17,13 +17,14 @@ import {
   SetFactAction,
   TaxReturnAlert,
 } from '../../ContentDeclarations.js';
+import type { ConditionString } from '../../Condition.js';
 
 /**
  * Form 1099-DIV interview (#86 parts a and b): boxes 1a, 1b, 2a, 3, 4, 5 and 7.
  * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4. Every other box, and every case that can't
  * be computed yet, stops the return. Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
-const knockout = (route: string, condition: string, key: string) => (
+const knockout = (route: string, condition: ConditionString, key: string) => (
   <Screen route={route} condition={condition} isKnockout={true}>
     <IconDisplay name='ErrorOutline' size={9} isCentered />
     <Heading i18nKey={`/heading/knockout/${key}`} />

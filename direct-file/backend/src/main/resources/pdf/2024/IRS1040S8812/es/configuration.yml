@@ -35,7 +35,8 @@ form:
       c2_3[1]: /pdf8812Line20Yes
       Line21_ReadOrder[0]:
         f2_9[0]: /pdf8812Line21
-      f2_11[0]: /pdf8812Line21
+      f2_10[0]: /pdf8812Line22 # 22 (Anexo 1 linea 15; Anexo 2 lineas 5, 6 y 13 of the 2024 form)
+      f2_11[0]: /pdf8812Line23 # 23 "Sume las lineas 21 y 22"
       f2_12[0]: /pdf8812Line24
       f2_13[0]: /pdf8812Line25
       f2_14[0]: /pdf8812Line26

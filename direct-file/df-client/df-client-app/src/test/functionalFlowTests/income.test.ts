@@ -431,7 +431,8 @@ describe(`The \`income\` subcategory`, () => {
       }
     });
     describe(`The social security wages knockout`, () => {
-      // #91: TY2026 threshold is the 2026 OASDI wage base, $184,500 (https://www.ssa.gov/oact/cola/cbb.html)
+      // #91: TY2026 threshold is the 2026 OASDI wage base, $184,500 (90 FR 49047, p. 49050: "The OASDI contribution and
+      // benefit base is $184,500 for remuneration paid in 2026", https://www.federalregister.gov/d/2025-19763)
       // Always have one W-2
       const oasdiWagesThreshold = 184500;
       const w2Id2 = `5c154be1-ea2d-4afa-aae4-29d412bca27e`;
@@ -944,7 +945,7 @@ describe(`The \`income\` subcategory`, () => {
               });
               expect(
                 givenFacts(factGraph).atPath(`${path}/1099-int-add-boxes-9-14`, interestReportId, task)
-              ).toRouteNextTo(`${path}/1099-int-add-boxes-15-17?%2FinterestReports=${interestReportId}`);
+              ).toRouteNextTo(`${path}/1099-int-nominee?%2FinterestReports=${interestReportId}`);
             });
           });
 
@@ -3700,5 +3701,55 @@ describe(`The \`income\` subcategory`, () => {
         });
       });
     });
+  });
+});
+
+describe(`1099-INT interest that Schedule B subtracts (#144)`, () => {
+  const path = `/flow/income/interest`;
+  const id = `0b1e355e-3d19-415d-8470-fbafd9f58361`;
+  const facts = (extra: Record<string, unknown>, box3 = 0) =>
+    setupFactGraph({
+      ...baseFilerData,
+      '/interestReports': createCollectionWrapper([id]),
+      [`/interestReports/#${id}/has1099`]: createBooleanWrapper(true),
+      [`/interestReports/#${id}/writable1099Amount`]: createDollarWrapper(`100`),
+      [`/interestReports/#${id}/writableInterestOnGovernmentBonds`]: createDollarWrapper(`${box3}`),
+      ...extra,
+    }).factGraph;
+  const nominee = (v: boolean) => ({ [`/interestReports/#${id}/receivedAsNominee`]: createBooleanWrapper(v) });
+  const accrued = (v: boolean) => ({ [`/interestReports/#${id}/paidAccruedInterest`]: createBooleanWrapper(v) });
+  const savings = (v: boolean) => ({
+    [`/interestReports/#${id}/savingsBondInterestPreviouslyReported`]: createBooleanWrapper(v),
+  });
+  const ko = `${path}/1099-int-schedule-b-subtraction-knockout?%2FinterestReports=${id}`;
+
+  it(`nominee Yes routes to the knockout`, ({ task }) => {
+    expect(givenFacts(facts(nominee(true), 50)).atPath(`${path}/1099-int-nominee`, id, task)).toRouteNextTo(ko);
+  });
+  it(`accrued interest Yes routes to the knockout`, ({ task }) => {
+    const g = facts({ ...nominee(false), ...accrued(true) }, 50);
+    expect(givenFacts(g).atPath(`${path}/1099-int-nominee`, id, task)).toRouteNextTo(
+      `${path}/1099-int-accrued-interest?%2FinterestReports=${id}`
+    );
+    expect(givenFacts(g).atPath(`${path}/1099-int-accrued-interest`, id, task)).toRouteNextTo(ko);
+  });
+  it(`savings bond interest previously reported Yes routes to the knockout`, ({ task }) => {
+    const g = facts({ ...nominee(false), ...accrued(false), ...savings(true) }, 50);
+    expect(givenFacts(g).atPath(`${path}/1099-int-accrued-interest`, id, task)).toRouteNextTo(
+      `${path}/1099-int-savings-bond-previously-reported?%2FinterestReports=${id}`
+    );
+    expect(givenFacts(g).atPath(`${path}/1099-int-savings-bond-previously-reported`, id, task)).toRouteNextTo(ko);
+  });
+  it(`all No continues to state tax information`, ({ task }) => {
+    const g = facts({ ...nominee(false), ...accrued(false), ...savings(false) }, 50);
+    expect(givenFacts(g).atPath(`${path}/1099-int-savings-bond-previously-reported`, id, task)).toRouteNextTo(
+      `${path}/1099-int-add-boxes-15-17?%2FinterestReports=${id}`
+    );
+  });
+  it(`with no box 3 interest, the savings bond question is skipped`, ({ task }) => {
+    const g = facts({ ...nominee(false), ...accrued(false) }, 0);
+    expect(givenFacts(g).atPath(`${path}/1099-int-accrued-interest`, id, task)).toRouteNextTo(
+      `${path}/1099-int-add-boxes-15-17?%2FinterestReports=${id}`
+    );
   });
 });

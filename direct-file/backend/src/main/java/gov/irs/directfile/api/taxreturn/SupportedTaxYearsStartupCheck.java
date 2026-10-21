@@ -18,7 +18,10 @@ public class SupportedTaxYearsStartupCheck {
     SortedSet<Integer> loadRegistry() {
         // First use of SupportedTaxYears runs its static load; a bad registry throws here and fails the bean.
         SortedSet<Integer> years = SupportedTaxYears.years();
-        log.info("Supported tax years: {}", years);
+        log.info(
+                "Supported tax years: {}; open for new returns: {}",
+                years,
+                SupportedTaxYears.registry().enabledYears());
         return years;
     }
 }

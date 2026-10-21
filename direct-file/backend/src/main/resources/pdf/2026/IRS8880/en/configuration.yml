@@ -1,0 +1,49 @@
+# Form 8880, PDFBox template for TY2026 print.
+# DRAFT-BASED MAPPING (#120): source is the 2026 early-release draft https://www.irs.gov/pub/irs-dft/f8880--dft.pdf
+# (created 3/16/26, 3 pages, 206,763 bytes), committed byte-identical to irs.gov,
+# SHA-256 97a6b5b3df449310dbfb1f9574edb06dd2009f1b04d86261bb1c88fc087c9e01 (pinned in ../../draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). When the final 2026 Form 8880 is published, re-download, re-hash and
+# re-verify every field below before swapping it in (#124).
+# Page 1 of the file is the "Caution: DRAFT-NOT FOR FILING" cover sheet (skipLeadingPages drops it). Page 3 of the file
+# is form page 2 (instructions and the Credit Limit Worksheet, "for your records"); the 2024 template printed page 1
+# only, so skipTrailingPages drops it and the printed form stays one page.
+# AcroForm field names and widget rectangles on page 1 match the 2024 template (only f1_17, line 9 decimal, is 7pt
+# narrower), so the field map is unchanged. Tooltip changes only: year 2024 -> 2026, line 4 "after 2021" -> "after 2023",
+# line 8 "line 11" -> "line 11a", and the caution AGI limits "$40,250 ($60,375 if head of household; $80,500 if married
+# filing jointly)", which match /maxIncomeLimitForOther, /maxIncomeLimitForHOH and /maxIncomeLimitForMFJ (Notice
+# 2025-67 pp. 3-4, cited in saversCredits.xml).
+includeWhen: /qualifiedForSaverCredit
+customMaps:
+  template:
+    skipLeadingPages: "1"
+    skipTrailingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
+      f1_2[0]: /primaryFiler/tin
+      Table_Ln1-6[0]:
+        BodyRow1[0]:
+          f1_3[0]: /primaryFilerIraAndAbleContributions
+          f1_4[0]: /secondaryFilerIraAndAbleContributions
+        BodyRow2[0]:
+          f1_5[0]: /primaryFilersDeferralsAndContributions
+          f1_6[0]: /secondaryFilersDeferralsAndContributions
+        BodyRow3[0]:
+          f1_7[0]: /primaryFilerTotalContributions
+          f1_8[0]: /secondaryFilerTotalContributions
+        BodyRow4[0]:
+          f1_9[0]: /primaryFilerGrossDistributions
+          f1_10[0]: /secondaryFilerGrossDistributions
+        BodyRow5[0]:
+          f1_11[0]: /submittedPrimaryFilerTotalContributionsLessDistributions
+          f1_12[0]: /submittedSecondaryFilerTotalContributionsLessDistributions
+        BodyRow6[0]:
+          f1_13[0]: /submittedPrimaryFilerMaxCreditCalc
+          f1_14[0]: /submittedSecondaryFilerMaxCreditCalc
+      f1_15[0]: /combinedCreditLimit
+      f1_16[0]: /agi
+      f1_17[0]: /pdfSaversCreditMultiplierAsInt
+      f1_18[0]: /ratioedCombinedCreditLimit
+      f1_19[0]: /limitationBasedOnTaxLiability
+      f1_20[0]: /qualifiedSaverCreditAmount

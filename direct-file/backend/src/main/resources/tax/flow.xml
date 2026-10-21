@@ -20,6 +20,7 @@
           <Dependency module="filers" path="/knockoutSubjectToCommunityPropertyLaws" />
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
           <Dependency module="interest" path="/flowKnockoutHasBonds" />
+          <Dependency module="interest" path="/flowKnockoutInterestScheduleBSubtraction" />
           <Dependency module="dividends" path="/flowKnockoutDividendUnsupportedBoxes" />
           <Dependency module="dividends" path="/flowKnockoutNondividendDistributionsOverBasis" />
           <Dependency module="dividends" path="/flowKnockoutQualifiedDividendsHoldingPeriod" />
@@ -137,7 +138,6 @@
           <Dependency module="scheduleD" path="/flowKnockoutUnrecaptured1250Gain" />
           <Dependency module="form6251" path="/flowKnockoutAmtPreferenceItems" />
           <Dependency module="form6251" path="/flowKnockoutAmtMfsAddBack" />
-          <Dependency module="form6251" path="/flowKnockoutAmtKiddieTax" />
           <Dependency module="income" path="/flowKnockoutForm8615" />
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />

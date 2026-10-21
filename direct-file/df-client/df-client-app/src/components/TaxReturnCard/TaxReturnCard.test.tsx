@@ -9,9 +9,24 @@ import en from '../../locales/en.yaml';
 import { store } from '../../redux/store.js';
 import { Provider } from 'react-redux';
 
-const { mockIsFlowEnabled } = vi.hoisted(() => {
+const { mockIsFlowEnabled, registryEnabled } = vi.hoisted(() => {
   return {
     mockIsFlowEnabled: vi.fn(() => true),
+    // `enabled` of the current tax year in the (generated) tax year registry; null keeps the real registry.
+    registryEnabled: { value: null as boolean | null },
+  };
+});
+
+vi.mock(`../../fact-dictionary/generated/taxYears.js`, async (importOriginal) => {
+  const original = await importOriginal<typeof import('../../fact-dictionary/generated/taxYears.js')>();
+  return {
+    get taxYearRegistry() {
+      if (registryEnabled.value === null) return original.taxYearRegistry;
+      return {
+        ...original.taxYearRegistry,
+        years: original.taxYearRegistry.years.map((y) => ({ ...y, enabled: registryEnabled.value })),
+      };
+    },
   };
 });
 
@@ -47,6 +62,8 @@ const renderCreateTaxReturnCard = (network: { online: boolean; prevOnlineStatus:
 describe(`Tax Return Card`, () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockIsFlowEnabled.mockImplementation(() => true);
+    registryEnabled.value = null;
   });
 
   it(`Constructs return headers`, async () => {
@@ -77,5 +94,20 @@ describe(`Tax Return Card`, () => {
     mockIsFlowEnabled.mockImplementation(() => false);
     renderCreateTaxReturnCard({ online: true, prevOnlineStatus: false });
     expect(screen.getByRole(`link`, { name: en.taxReturnCard.otherWaysToFile })).toBeInTheDocument();
+  });
+
+  it(`Offers no start button when the current tax year is disabled in the tax year registry`, async () => {
+    registryEnabled.value = false;
+    vi.spyOn(useApiHook, `save`);
+    renderCreateTaxReturnCard({ online: true, prevOnlineStatus: false });
+    expect(screen.queryByRole(`button`)).not.toBeInTheDocument();
+    expect(screen.getByRole(`link`, { name: en.taxReturnCard.otherWaysToFile })).toBeInTheDocument();
+    expect(useApiHook.save).not.toHaveBeenCalled();
+  });
+
+  it(`Offers the start button when the current tax year is enabled (the shipped registry)`, () => {
+    renderCreateTaxReturnCard({ online: true, prevOnlineStatus: false });
+    expect(screen.getByRole(`button`)).toBeInTheDocument();
+    expect(screen.queryByRole(`link`, { name: en.taxReturnCard.otherWaysToFile })).not.toBeInTheDocument();
   });
 });

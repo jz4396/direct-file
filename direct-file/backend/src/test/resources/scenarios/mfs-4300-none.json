@@ -81,7 +81,7 @@
     "/familyAndHousehold/#04282192-cc89-47a6-8728-07bc050b580f/dateOfBirth": {
       "$type": "gov.irs.factgraph.persisters.DayWrapper",
       "item": {
-        "date": "2002-09-09"
+        "date": "2004-09-09"
       }
     },
     "/familyAndHousehold/#04282192-cc89-47a6-8728-07bc050b580f/deceased": {

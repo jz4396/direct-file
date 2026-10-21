@@ -14,6 +14,11 @@
  *
  * Loading is strict: a year that is not in the registry is an error, never a fallback to another
  * year.
+ *
+ * Every registry entry also has a required boolean `enabled` flag. A year that is listed but not
+ * enabled keeps its parameters and existing returns, but no new return can be started for it: the
+ * backend refuses the create (SupportedTaxYears) and the client offers no start button
+ * (src/constants/taxYearAvailability.ts, fed by the generated generated/taxYears.ts).
  */
 import fs from 'fs';
 import path from 'path';
@@ -78,7 +83,14 @@ export interface TaxYearConfig {
 
 export interface TaxYearRegistry {
   currentTaxYear: number;
-  years: { taxYear: number; config: string }[];
+  years: TaxYearRegistryEntry[];
+}
+
+export interface TaxYearRegistryEntry {
+  taxYear: number;
+  config: string;
+  /** Whether a new return can be started for this year. Required; there is no default. */
+  enabled: boolean;
 }
 
 export class UnknownTaxYearError extends Error {
@@ -98,6 +110,10 @@ export function loadTaxYearRegistry(folder = TAX_YEARS_FOLDER): TaxYearRegistry 
   const years = registry.years.map((y) => y.taxYear);
   if (new Set(years).size !== years.length) {
     throw new Error(`Tax year registry lists a year more than once`);
+  }
+  const noFlag = registry.years.find((y) => typeof y.enabled !== `boolean`);
+  if (noFlag) {
+    throw new Error(`Tax year registry entry ${noFlag.taxYear} has no boolean enabled flag`);
   }
   if (!years.includes(registry.currentTaxYear)) {
     throw new UnknownTaxYearError(registry.currentTaxYear, years);
