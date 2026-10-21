@@ -35,3 +35,7 @@ tsconfig.tsbuildinfo
 
 */exported-locales*.xlsx
 *.xlsx
+
+# static client-only build and Cloudflare Pages staging (cloudflare-pages/README.md)
+dist-static
+cloudflare-pages/out
