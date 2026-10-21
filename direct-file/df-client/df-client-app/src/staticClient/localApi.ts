@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CURRENT_TAX_YEAR } from '../constants/taxConstants.js';
 import type { TaxReturn } from '../types/core.js';
+import { acceptsNewReturns } from '../constants/taxYearAvailability.js';
 
 /**
  * In-browser stand-in for the Direct File API in static client-only mode (staticMode.ts).
@@ -86,6 +87,9 @@ export function handleLocalApiRequest(path: string, method: string, body: unknow
       if (m === `GET`) return json(200, returns);
       if (m === `POST`) {
         const taxYear = Number(parseBody(body)?.taxYear ?? CURRENT_TAX_YEAR);
+        // Same rule as the backend (SupportedTaxYears.newReturnRefusal): only listed, enabled years take new returns.
+        if (!acceptsNewReturns(taxYear))
+          return json(400, { message: `Tax year ${taxYear} is not open for new returns` });
         if (returns.some((r) => r.taxYear === taxYear)) return json(409, { message: `already-exists` });
         const created = newReturn(taxYear);
         returns = [...returns, created];
