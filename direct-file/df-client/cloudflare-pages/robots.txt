@@ -1,0 +1,3 @@
+# The static client-only preview is not meant to be found by search engines (see also X-Robots-Tag in _headers).
+User-agent: *
+Disallow: /

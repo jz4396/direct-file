@@ -1,0 +1,11 @@
+# Static client-only build (vite build --mode static, see staticClient/staticMode.ts).
+# Feature overlay merged onto en.yaml by locales/featureLocales.ts.
+staticClient:
+  banner:
+    label: Unofficial preview notice
+    heading: Unofficial preview. Not affiliated with the IRS.
+    body: >-
+      This preview can’t e-file or print a return. Your answers stay in this browser, and reloading the page clears
+      them.
+  pageTitle: Direct File interview preview (unofficial)
+  homeLinkText: Direct File preview

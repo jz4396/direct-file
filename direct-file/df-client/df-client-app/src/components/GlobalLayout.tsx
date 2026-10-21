@@ -13,6 +13,8 @@ import { AutoLanguageSelector } from './AutoLanguageSelector.js';
 import EndOfFilingSeasonBanner from './EndOfFilingSeasonBanner/EndOfFilingSeasonBanner.js';
 import { RenderIfTaxProfileLoadedGate } from '../screens/RenderIfTaxProfileLoadedGate.js';
 import { isSpanishEnabled } from '../constants/pageConstants.js';
+import { isStaticClientOnly } from '../staticClient/staticMode.js';
+import StaticClientBanner from '../staticClient/StaticClientBanner.js';
 
 export type SwitchLangFunc = (lang: string, force?: boolean) => void;
 
@@ -52,13 +54,19 @@ function GlobalLayout({
       <SessionManager />
       <AutoLanguageSelector switchLang={switchLang} />
 
-      <div className='bg-ink'>
-        <GovBanner
-          className='gov-banner'
-          aria-label='Official government website'
-          language={locale === `es-US` ? `spanish` : `english`}
-        />
-      </div>
+      {isStaticClientOnly() ? (
+        // The static client-only build is not an official site: no government banner, and a notice that can't be
+        // dismissed on every page instead.
+        <StaticClientBanner />
+      ) : (
+        <div className='bg-ink'>
+          <GovBanner
+            className='gov-banner'
+            aria-label='Official government website'
+            language={locale === `es-US` ? `spanish` : `english`}
+          />
+        </div>
+      )}
       {(prevOnlineStatus !== online || !online) && <ConnectivityBanner />}
       <Routes>
         <Route
@@ -114,17 +122,20 @@ function GlobalLayout({
         {/* Intentionally rendering empty fallback, to prevent warnings */}
         <Route path='/*' element={<></>} />
       </Routes>
-      <CommonFooter
-        masthead={t(`footer.masthead`)}
-        df_prefix={`${import.meta.env.VITE_PUBLIC_PATH}`}
-        logo_alt={t(`footer.logo_alt`)}
-        official_of={t(`footer.official_of`)}
-        important_links={t(`footer.important_links`)}
-        about={t(`footer.about`)}
-        direct_file_news={t(`footer.direct_file_news`)}
-        accessibility={t(`footer.accessibility`)}
-        privacy={t(`footer.privacy`)}
-      />
+      {/* The agency identifier footer (IRS logo, "An official website of the IRS") is left out of the static build. */}
+      {!isStaticClientOnly() && (
+        <CommonFooter
+          masthead={t(`footer.masthead`)}
+          df_prefix={`${import.meta.env.VITE_PUBLIC_PATH}`}
+          logo_alt={t(`footer.logo_alt`)}
+          official_of={t(`footer.official_of`)}
+          important_links={t(`footer.important_links`)}
+          about={t(`footer.about`)}
+          direct_file_news={t(`footer.direct_file_news`)}
+          accessibility={t(`footer.accessibility`)}
+          privacy={t(`footer.privacy`)}
+        />
+      )}
     </>
   );
 }

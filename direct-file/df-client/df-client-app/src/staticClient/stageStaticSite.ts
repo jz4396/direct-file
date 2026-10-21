@@ -1,0 +1,38 @@
+/**
+ * Stage the static client-only build for Cloudflare Pages and check it (checkStaticBundle.ts).
+ *
+ *   npm run build:static        # vite build --mode static -> dist-static/
+ *   npm run stage:static        # dist-static/ + ../cloudflare-pages/_headers, _redirects, robots.txt
+ *                               #   -> ../cloudflare-pages/out/
+ *                               # (stageStaticSiteCli.ts)
+ *
+ * Layout of the staged site: the client under /df/file/ (its build base), `_headers` and `_redirects` at the root,
+ * and a copy of index.html at the root so Pages' single-page-app fallback serves the client for any route.
+ * robots.txt (Disallow: /) goes to the root and replaces the client's own. The IRS logo files and the favicon/
+ * directory (the IRS seal icons and the manifest) are left out: the static build is an unofficial preview and
+ * doesn't reference them.
+ * Exits non-zero, and deploy.sh stops, if the check finds a problem.
+ */
+import fs from 'fs';
+import path from 'path';
+import { checkStaticBundle, IRS_LOGO_FILES, isIconAsset } from './checkStaticBundle.js';
+
+export const DIST = path.resolve(`dist-static`);
+export const PAGES = path.resolve(`../cloudflare-pages`);
+export const OUT = path.join(PAGES, `out`);
+
+export function stageStaticSite(dist = DIST, out = OUT, pages = PAGES): string[] {
+  if (!fs.existsSync(path.join(dist, `index.html`))) return [`${dist}/index.html not found: run npm run build:static`];
+  fs.rmSync(out, { recursive: true, force: true });
+  fs.mkdirSync(path.join(out, `df`), { recursive: true });
+  // favicon/ holds the IRS seal icons, favicon.ico, the web app manifest and browserconfig.xml; none are staged.
+  fs.cpSync(dist, path.join(out, `df`, `file`), {
+    recursive: true,
+    filter: (src) => !isIconAsset(path.relative(dist, src)),
+  });
+  fs.copyFileSync(path.join(dist, `index.html`), path.join(out, `index.html`));
+  for (const f of [`_headers`, `_redirects`, `robots.txt`]) fs.copyFileSync(path.join(pages, f), path.join(out, f));
+  fs.copyFileSync(path.join(pages, `robots.txt`), path.join(out, `df`, `file`, `robots.txt`));
+  for (const f of IRS_LOGO_FILES) fs.rmSync(path.join(out, `df`, `file`, `imgs`, f), { force: true });
+  return checkStaticBundle(out);
+}
