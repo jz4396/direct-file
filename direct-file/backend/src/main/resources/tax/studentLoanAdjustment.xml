@@ -186,7 +186,7 @@
     <Fact path="/maxStudentLoadDeduction">
       <Name>Maximum student loan deduction</Name>
       <Description>The maximum amount one is allowed to deduct because of student loan interest payments</Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>2500</Dollar>
