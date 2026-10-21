@@ -33,6 +33,8 @@ import saveStateEn from './en.saveState.yaml';
 import saveStateEs from './es.saveState.yaml';
 import interestScheduleBEn from './en.interestScheduleB.yaml';
 import interestScheduleBEs from './es.interestScheduleB.yaml';
+import householdEmploymentEn from './en.householdEmployment.yaml';
+import householdEmploymentEs from './es.householdEmployment.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -107,6 +109,8 @@ for (const [locale, overlay] of [
   [esLocale, saveStateEs],
   [enLocale, interestScheduleBEn],
   [esLocale, interestScheduleBEs],
+  [enLocale, householdEmploymentEn],
+  [esLocale, householdEmploymentEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }

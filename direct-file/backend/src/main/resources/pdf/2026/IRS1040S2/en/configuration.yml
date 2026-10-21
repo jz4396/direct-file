@@ -21,12 +21,15 @@
 #      (form1099Rs /flowKnockoutRetirementQualifiedEarlyDistribution); HSA additional taxes are line 13c/13d.
 #   7-10, 12, 13a, 13b, 13e-13o, 13z  no input. 13k golden parachute: W-2 box 12 code K stops the return
 #      (formW2s /knockoutForBox12Value). 13h/13i: W-2 box 11 nonqualified plan amounts stop the return
-#      (formW2s /flowKnockoutNonQualifiedPlans).
+#      (formW2s /flowKnockoutNonQualifiedPlans). 13h: W-2 box 12 code Z ("Income under a nonqualified deferred
+#      compensation plan that fails to satisfy section 409A", General Instructions for Forms W-2 and W-3 (2026)
+#      p. 22) stops the return too (formW2s /nqdcDeferrals via /knockoutForBox12Value).
 #   13c, 13d  HSA distributions not used for medical expenses and testing-period failures stop the return
 #      (hsa /flowKnockoutHsaUnqualifiedDistributions, /flowKnockoutHsaTestingPeriodAdditionalIncomeYes). So 14 = 0.
 #   16a  Form 4137 unreported tips stop the return (unreportedTips /flowKnockoutUnreportedTips). 16b Form 8919: no
 #      input (income /wagesFrom8919 is $0). So 16c = 0.
-#   17a  Schedule H: a household employee stops the return (cdcc /flowKnockoutHouseholdEmployee).
+#   17a  Schedule H: a household employee stops the return, from the general question in income sources
+#      (householdEmployment /flowKnockoutScheduleH) or the dependent care question (cdcc /flowKnockoutHouseholdEmployee).
 #   17c  W-2 box 12 codes A, B, M and N stop the return (formW2s /knockoutForBox12Value).
 #   18  Form 5329 excess contributions: IRA contributions and HSA excess contributions stop the return
 #      (income /madeIraContributions, hsa /flowKnockoutHsaExcessContributions).
