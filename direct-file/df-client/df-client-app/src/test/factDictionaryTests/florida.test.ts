@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { baseFilerData, primaryFilerId } from '../testData.js';
 import { createCollectionWrapper, createDollarWrapper, createEnumWrapper } from '../persistenceWrappers.js';
 import { Path } from '../../flow/Path.js';
+import type { Path as FDPath } from '../../fact-dictionary/Path.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 
 const w2Id = `81f10000-e491-4e23-b02d-ade63dce5881`;
@@ -22,7 +23,7 @@ const residentOf = (st: string) => ({
   '/filerResidenceAndIncomeState': createEnumWrapper(st, `/scopedStateOptions`),
 });
 
-const get = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], p: string) => fg.get(Path.concretePath(p, null)).get;
+const get = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], p: FDPath) => fg.get(Path.concretePath(p, null)).get;
 
 describe(`Florida residents (#81)`, () => {
   it(`full-year FL resident with a FL W-2 and $0 box 17 is not stopped`, ({ task }) => {

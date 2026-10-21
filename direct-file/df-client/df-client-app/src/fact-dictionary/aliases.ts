@@ -39,6 +39,8 @@ export const individualFilerAliases = [
   `/form1099Miscs/*/filer/`,
   `/form1099Rs/*/filer/`,
   `/hsaDistributions/*/filer/`,
+  `/dividendReports/*/filer/`,
+  `/scheduleCBusinesses/*/filer/`,
   ...w2Slices.map((slice) => `${slice}filer/`),
 ] as const;
 
