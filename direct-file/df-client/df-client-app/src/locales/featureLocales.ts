@@ -33,6 +33,8 @@ import saveStateEn from './en.saveState.yaml';
 import saveStateEs from './es.saveState.yaml';
 import interestScheduleBEn from './en.interestScheduleB.yaml';
 import interestScheduleBEs from './es.interestScheduleB.yaml';
+import householdEmploymentEn from './en.householdEmployment.yaml';
+import householdEmploymentEs from './es.householdEmployment.yaml';
 import form2210En from './en.form2210.yaml';
 import form2210Es from './es.form2210.yaml';
 
@@ -109,6 +111,8 @@ for (const [locale, overlay] of [
   [esLocale, saveStateEs],
   [enLocale, interestScheduleBEn],
   [esLocale, interestScheduleBEs],
+  [enLocale, householdEmploymentEn],
+  [esLocale, householdEmploymentEs],
   [enLocale, form2210En],
   [esLocale, form2210Es],
 ] as const) {
