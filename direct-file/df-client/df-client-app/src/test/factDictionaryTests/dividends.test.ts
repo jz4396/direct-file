@@ -598,3 +598,76 @@ describe(`#86b Form 6251 Part III with dividends (line 7 recomputed by hand)`, (
     expect(val(g, `/form6251Line7`)).toBe(`0.00`);
   });
 });
+
+/*
+ * #154: PA Schedule B knockout from the Form 1099-DIV facts. PA-40 Schedule B (2025) form and instructions
+ * https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
+ * PDF p. 3, WHO MUST COMPLETE: "PA resident and part-year resident taxpayers must complete and include PA-40 Schedule
+ * B with an originally filed PA-40, Personal Income Tax Return, if there are any amounts on Lines 2 through 11 (not
+ * including subtotal Line 6)." PDF p. 4: Line 3 (U.S./PA obligation fund dividends), Line 4 ("dividend income for a
+ * part-year resident taxpayer during the period the taxpayer was a nonresident; nominee capital gains distributions"),
+ * Line 10 (capital gains distributions). Over $2,500 of PA-taxable dividends is a limit this tool sets.
+ */
+describe(`#154 PA Schedule B dividend knockout`, () => {
+  const paBuild = (extra: Record<string, unknown>) =>
+    build({ ...state(`pa`), '/paHasExemptObligationDividends': createBooleanWrapper(false), ...extra });
+  const scheduleB = (g: Fg) => get(g, `/flowKnockoutPaScheduleB`).get;
+  it(`full-year PA, $2,501 of ordinary dividends (over the $2,500 limit) stops the PA return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleB`, `/paScheduleBThreshold`, `/paLine3`];
+    const g = paBuild(divs({ box1a: 2501 }));
+    expect(val(g, `/paLine3`)).toBe(`2501.00`);
+    expect(scheduleB(g)).toBe(true);
+    expect(get(g, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaScheduleB`);
+  });
+  it(`two forms that add to $2,501 count together (the limit is on the PA-40 line 3 total)`, () => {
+    expect(scheduleB(paBuild(divs({ box1a: 1500 }, { box1a: 1001 })))).toBe(true);
+  });
+  it(`full-year PA, exactly $2,500 of ordinary dividends with no Schedule B line: no knockout`, () => {
+    const g = paBuild(divs({ box1a: 2500, box1b: 2000 }));
+    expect(val(g, `/paLine3`)).toBe(`2500.00`);
+    expect(scheduleB(g)).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+  it(`the limit uses the rounded line 3b total: $2,500.49 stays, $2,500.50 stops`, () => {
+    expect(scheduleB(paBuild(divs({ box1a: 2500.49 })))).toBe(false);
+    expect(scheduleB(paBuild(divs({ box1a: 2500.5 })))).toBe(true);
+  });
+  it(`Line 3: fund dividends from U.S. or PA obligations stop it at any amount`, () => {
+    const g = paBuild({ ...divs({ box1a: 100 }), '/paHasExemptObligationDividends': createBooleanWrapper(true) });
+    expect(scheduleB(g)).toBe(true);
+    expect(get(g, `/flowKnockoutPaDividends`).get).toBe(true);
+  });
+  it(`Line 10: any capital gain distribution (box 2a) stops it, even with $0 in box 1a`, () => {
+    expect(scheduleB(paBuild(divs({ box1a: 0, box2a: 10 })))).toBe(true);
+    expect(scheduleB(paBuild(divs({ box1a: 100, box2a: 1 })))).toBe(true);
+  });
+  it(`Line 4: dividends received as a nominee stop it (and the federal return)`, () => {
+    const g = paBuild(divs({ box1a: 100, nominee: true }));
+    expect(scheduleB(g)).toBe(true);
+    expect(get(g, `/flowKnockoutDividendNominee`).get).toBe(true);
+  });
+  it(`Line 4: a PA/FL part-year resident with any dividends stops it, at amounts under $2,500`, () => {
+    const g = build({
+      ...divs({ box1a: 50 }),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+      [`/formW2s/#${w2Id}/paPartYearResidentPeriodWages`]: createDollarWrapper(`40000`),
+    });
+    expect(scheduleB(g)).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+  it(`no 1099-DIV: no Schedule B line has an amount`, () => {
+    const g = build(state(`pa`));
+    expect(val(g, `/paLine3`)).toBe(`0.00`);
+    expect(scheduleB(g)).toBe(false);
+  });
+  it(`not a PA return (NJ): $10,000 of dividends and box 2a never stop it`, () => {
+    expect(scheduleB(build(divs({ box1a: 10000, box2a: 50 })))).toBe(false);
+  });
+});

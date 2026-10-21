@@ -109,7 +109,7 @@ export const AccountContent = () => {
         )}
         <IconListItem key={4}>
           <IconListIcon>
-            <Icon.Save aria-hidden='true' />
+            <Icon.SaveAlt aria-hidden='true' />
           </IconListIcon>
           <IconListContent>
             <RouterLink to='device-data'>{t(`account.deviceData.link`)}</RouterLink>

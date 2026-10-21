@@ -10,7 +10,9 @@ import {
 } from './saveStateSchema.js';
 import { PASSPHRASE, scenarioFactGraphJson, TEST_ITERATIONS } from './saveStateTestUtils.js';
 import { downloadSaveFile, exportSaveFile, importSaveFile, MAX_SAVE_FILE_BYTES } from './saveStateFile.js';
-import { abstractPath } from './saveStateFacts.js';
+import { abstractPath, isUuid } from './saveStateFacts.js';
+import * as testData from '../test/testData.js';
+import { setupFactGraph } from '../test/setupFactGraph.js';
 
 const code = (fn: () => unknown) => {
   try {
@@ -112,7 +114,8 @@ describe(`import validation against the return being filed`, () => {
   };
   const filerId = Object.keys(facts)
     .find((p) => p.startsWith(`/filers/#`))
-    ?.split(`/`)[2];
+    ?.split(`/`)[2]
+    ?.slice(1);
 
   it(`accepts the app's own fact graph for the year being filed`, async () => {
     expect(await importCode(v2())).toBe(`no-error`);
@@ -143,6 +146,139 @@ describe(`import validation against the return being filed`, () => {
   ])(`rejects %s with invalid-facts, in a v2 file and a v1 file`, async (_label, bad) => {
     expect(await importCode(v2({ facts: bad }))).toBe(`invalid-facts`);
     expect(await importCode(bad)).toBe(`invalid-facts`);
+  });
+
+  describe(`enum values, collection item ids and item fields (#163)`, () => {
+    const W2 = Object.keys(facts)
+      .find((p) => p.startsWith(`/formW2s/#`))
+      ?.split(`/`)[2]
+      ?.slice(1);
+    const tinPath = Object.keys(facts).find((p) => /^\/filers\/#[^/]+\/tin$/.test(p)) as string;
+    const filers = facts[`/filers`] as { item: { items: string[] } };
+    const enumOf = (value: unknown, enumOptionsPath = `/filingStatusOptions`) => ({
+      $type: `${B}EnumWrapper`,
+      item: { value, enumOptionsPath },
+    });
+    const careProvider = `0b7f6f0e-3b1c-4d43-9a57-6a4e2c1d0f11`;
+    const dueDiligence = (values: unknown) => ({
+      ...facts,
+      '/cdccCareProviders': { $type: `${B}CollectionWrapper`, item: { items: [careProvider] } },
+      [`/cdccCareProviders/#${careProvider}/writableDueDiligence`]: {
+        $type: `${B}MultEnumWrapper`,
+        item: { values, enumOptionsPath: `/cdccDueDiligenceOptions` },
+      },
+    });
+    const policy = `5d0c9a3e-8f21-4b6a-9c47-2e1f6a8b3d70`;
+    const coverageMonths = (enumOptionsPath: unknown) => ({
+      ...facts,
+      '/1095As': { $type: `${B}CollectionWrapper`, item: { items: [policy] } },
+      [`/1095As/#${policy}/coverageMonths`]: {
+        $type: `${B}MultEnumWrapper`,
+        item: { values: [`jan`], enumOptionsPath },
+      },
+    });
+    const upperFilerId = (filerId as string).toUpperCase();
+
+    it.each([
+      [`an enum value that is not an option (totallyBogus)`, { ...facts, '/filingStatus': enumOf([`totallyBogus`]) }],
+      [`an enum value that is an option of another enum`, { ...facts, '/filingStatus': enumOf([`neither`]) }],
+      [
+        `an enum pointing at another enum's options path`,
+        { ...facts, '/filingStatus': enumOf([`neither`], `/k12EducatorOptions`) },
+      ],
+      [`an enum with two values`, { ...facts, '/filingStatus': enumOf([`single`, `single`]) }],
+      [`an enum value that is not a list`, { ...facts, '/filingStatus': enumOf(`single`) }],
+      [`a multi-enum with one value that is not an option`, dueDiligence([`providerRefusedToProvideTIN`, `x`])],
+      [`a collection whose item id is not a UUID`, { ...facts, '/filers': { ...filers, item: { items: [`1`] } } }],
+      [
+        `a collection item path whose id is not a UUID`,
+        { ...facts, '/filers/#not-a-uuid/isBlind': { $type: `${B}BooleanWrapper`, item: false } },
+      ],
+      [
+        `a collection item path with __proto__ as its id`,
+        { ...facts, '/filers/#__proto__/isBlind': { $type: `${B}BooleanWrapper`, item: false } },
+      ],
+      [
+        `a collection item reference whose id is not a UUID`,
+        { ...facts, [`/formW2s/#${W2}/filer`]: { $type: `${B}CollectionItemWrapper`, item: { id: `x` } } },
+      ],
+      [
+        `an extra field on a collection`,
+        { ...facts, '/filers': { ...filers, item: { ...filers.item, injected: [`x`] } } },
+      ],
+      [
+        `an extra field on a collection item reference`,
+        { ...facts, [`/formW2s/#${W2}/filer`]: { $type: `${B}CollectionItemWrapper`, item: { id: filerId, x: 1 } } },
+      ],
+      [
+        `an extra field inside a collection item's TIN`,
+        {
+          ...facts,
+          [tinPath]: { ...(facts[tinPath] as object), item: { area: `900`, group: `55`, serial: `5555`, x: 1 } },
+        },
+      ],
+      [`an extra key next to $type and item`, { ...facts, [tinPath]: { ...(facts[tinPath] as object), note: `x` } }],
+      [
+        `a TIN missing a required field`,
+        { ...facts, [tinPath]: { $type: `${B}TinWrapper`, item: { area: `900`, group: `55` } } },
+      ],
+      [
+        `a wildcard collection path (/filers/*/isBlind)`,
+        { ...facts, '/filers/*/isBlind': { $type: `${B}BooleanWrapper`, item: true } },
+      ],
+      [
+        `a wildcard collection path (/formW2s/*/writableWages)`,
+        { ...facts, '/formW2s/*/writableWages': { $type: `${B}DollarWrapper`, item: `1.00` } },
+      ],
+      [
+        `a wildcard collection path holding a collection item reference`,
+        { ...facts, '/formW2s/*/filer': { $type: `${B}CollectionItemWrapper`, item: { id: filerId } } },
+      ],
+      [`an enumOptionsPath with #__proto__ as its id`, coverageMonths(`/1095As/#__proto__/monthOptions`)],
+      [`an enumOptionsPath with #constructor as its id`, coverageMonths(`/1095As/#constructor/monthOptions`)],
+      [
+        `a concrete enumOptionsPath (the app writes the abstract one)`,
+        coverageMonths(`/1095As/#${policy}/monthOptions`),
+      ],
+      [
+        `a collection item path whose UUID is uppercase`,
+        { ...facts, [`/filers/#${upperFilerId}/isBlind`]: { $type: `${B}BooleanWrapper`, item: true } },
+      ],
+      [
+        `a collection whose item id is an uppercase UUID`,
+        { ...facts, '/filers': { ...filers, item: { items: [upperFilerId] } } },
+      ],
+    ])(`rejects %s with invalid-facts, in a v2 file and a v1 file`, async (_label, bad) => {
+      expect(tinPath && W2 && (facts[tinPath] as { $type: string }).$type).toBe(`${B}TinWrapper`);
+      expect(isUuid(filerId) && isUuid(W2)).toBe(true);
+      expect(await importCode(v2({ facts: bad }))).toBe(`invalid-facts`);
+      expect(await importCode(bad)).toBe(`invalid-facts`);
+    });
+
+    it.each([
+      [`an enum with no value`, { ...facts, '/filingStatus': enumOf([]) }],
+      [`a valid multi-enum`, dueDiligence([`providerRefusedToProvideTIN`, `providerMovedAndFilerUnableToFindThem`])],
+      [`an empty multi-enum`, dueDiligence([])],
+      [`a multi-enum in a collection with the dictionary's options path`, coverageMonths(`/1095As/*/monthOptions`)],
+    ])(`accepts %s`, async (_label, ok) => {
+      expect(await importCode(v2({ facts: ok }))).toBe(`no-error`);
+    });
+
+    it(`accepts the fact graph of every synthetic test return (golden end-to-end scenarios, synthetic data)`, () => {
+      let checked = 0;
+      for (const data of Object.values(testData)) {
+        if (!data || typeof data !== `object` || Array.isArray(data)) continue;
+        let json: unknown;
+        try {
+          json = JSON.parse(setupFactGraph(data as Parameters<typeof setupFactGraph>[0]).factGraph.toJSON());
+        } catch {
+          continue; // not a fact set
+        }
+        expect(code(() => migrateSaveState(json))).toBe(`no-error`);
+        checked++;
+      }
+      expect(checked).toBeGreaterThan(20);
+    });
   });
 
   it(`rejects a file over ${MAX_SAVE_FILE_BYTES} characters before parsing it`, async () => {

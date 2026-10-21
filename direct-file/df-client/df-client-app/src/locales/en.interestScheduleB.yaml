@@ -1,0 +1,43 @@
+# Form 1099-INT amounts that Schedule B Part I subtracts (#144). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/income/interest:
+    int-income-schedule-b-subtractions: Interest that belongs to someone else
+headings:
+  /heading/income/interest/nominee:
+    Did you receive any of the interest on this 1099-INT for someone else (as a nominee)?
+  /heading/income/interest/accrued-interest:
+    Did you pay accrued interest to the seller when you bought a bond on this 1099-INT?
+  /heading/income/interest/savings-bond-previously-reported:
+    Does box 3 include U.S. savings bond interest that was already reported, or that built up before you got the bond?
+  /heading/knockout/interest-schedule-b-subtraction: This tool doesn’t yet support subtracting interest on Schedule B
+info:
+  /info/income/interest/nominee:
+    body:
+      - p:
+          You’re a nominee if the form is in your name but some of the interest actually belongs to someone else, such
+          as a family member who shares the account.
+  /info/income/interest/accrued-interest:
+    body:
+      - p:
+          When you buy a bond between interest payment dates, you usually pay the seller the interest that built up
+          since the last payment. That interest is taxable to the seller, even if your 1099-INT includes it.
+  /info/income/interest/savings-bond-previously-reported:
+    body:
+      - p:
+          For example, interest on Series EE or I savings bonds that was reported each year as it built up, or that
+          built up while someone else owned the bonds before they were given to you.
+  /info/knockout/interest-schedule-b-subtraction:
+    alertText:
+      body:
+        - p:
+            This interest is reported on Schedule B and then subtracted from the total, which this tool doesn’t do yet.
+            You’ll need another way to file this return.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+dataviews:
+  /flow/income/interest:
+    /interestReports/*/receivedAsNominee: Did you receive any of this interest as a nominee?
+    /interestReports/*/paidAccruedInterest: Did you pay accrued interest to the seller of a bond?
+    /interestReports/*/savingsBondInterestPreviouslyReported:
+      Does box 3 include savings bond interest already reported or built up before you got the bond?

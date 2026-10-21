@@ -11,13 +11,14 @@ import {
   SaveAndOrContinueButton,
   IconDisplay,
 } from '../../ContentDeclarations.js';
+import type { ConditionString } from '../../Condition.js';
 
 /**
  * Schedule E Part I MVP: rental real estate and royalties (#38, spec PR #8; TY2026, filed in 2027).
  * Supported: net income with no depreciation, no personal use, no K-1 income. Everything else knocks out.
  * Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
  */
-const knockout = (route: string, condition: string, key: string) => (
+const knockout = (route: string, condition: ConditionString, key: string) => (
   <Screen route={route} condition={condition} isKnockout={true}>
     <IconDisplay name='ErrorOutline' size={9} isCentered />
     <Heading i18nKey={`/heading/knockout/${key}`} />

@@ -1,0 +1,59 @@
+# Schedule 8812 (Form 1040), PDFBox template for TY2026 print.
+# DRAFT-BASED MAPPING (#120): source is the 2026 early-release draft https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf
+# ("Version A, Cycle 4", created 4/24/26, 2 pages, 65,489 bytes), committed byte-identical to irs.gov,
+# SHA-256 0638b2863bdaeadfd3fccee12a9145bf92a442d8de156584c5602cc7e3881422 (pinned in ../../draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). When the final 2026 Schedule 8812 is published, re-download, re-hash and
+# re-verify every field below before swapping it in (#124).
+# This draft has no "DRAFT-NOT FOR FILING" cover sheet (page 1 is the schedule), so no page is skipped.
+# AcroForm field names and tooltips re-read with pypdf from the committed draft and diffed against the 2024 template:
+# - Page 1: field names and order unchanged. Tooltip changes only: line 1 "line 11" -> "line 11b", line 5 "$2,000" ->
+#   "$2,200", line 12 "No" wording.
+# - Page 2: line 15 changed from a checkbox ("Check this box if you do not want to claim the additional child tax
+#   credit") to "Reserved for future use" (text field f2_1, left blank; the 2024 map never printed line 15). Every later
+#   page-2 text field moved up by one (2024 f2_n -> 2026 f2_(n+1)) and each checkbox down by one (c2_2 -> c2_1,
+#   c2_3 -> c2_2), re-matched by tooltip and line number.
+# Cites: Rev. Proc. 2025-32 §4.05 p. 14: "the maximum amount of the credit allowed under § 24(a) is $2,200" and
+# refundable "§ 24(d)(1)(A) ... is $1,700" (already in the fact dictionary; /totalPotentialCtc, /maxActcAmount).
+includeWhen: /pdfIncludeSchedule8812
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName
+      f1_2[0]: /primaryFiler/tin
+      f1_3[0]: /agi # 1 "Enter the amount from line 11b of your Form 1040"
+      f1_8[0]: /dependentCreditMagi # 3
+      f1_9[0]: /ctcEligibleDependents # 4
+      f1_10[0]: /totalPotentialCtc # 5 "Multiply line 4 by $2,200"
+      Line6ReadOrder[0]:
+        f1_11[0]: /odcEligibleDependents # 6
+      f1_12[0]: /totalPotentialOdc # 7
+      f1_13[0]: /totalPotentialDependentCredits # 8
+      f1_14[0]: /dependentCreditPhaseoutThreshold # 9
+      f1_15[0]: /roundedDependentCreditMagiAboveThreshold # 10
+      f1_16[0]: /dependentCreditPhaseout # 11
+      f1_17[0]: /dependentCreditLessPhaseout # 12
+      c1_1[0]: /dependentCreditFullyPhasedOut # 12 No
+      c1_1[1]: /dependentCreditNotFullyPhasedOut # 12 Yes
+      f1_18[0]: /sched8812CreditLimit # 13
+      f1_19[0]: /totalCtcAndOdc # 14
+    Page2[0]:
+      # f2_1[0]: line 15 "Reserved for future use" (blank)
+      f2_2[0]: /remainingCtcAndOdc # 16a (2024 f2_1)
+      f2_3[0]: /pdf8812Line16bCount # 16b count (2024 f2_2)
+      f2_4[0]: /pdf8812Line16bAmount # 16b x $1,700 (2024 f2_3)
+      f2_5[0]: /pdf8812Line17 # 17 (2024 f2_4)
+      f2_6[0]: /pdf8812Line18a # 18a (2024 f2_5)
+      f2_7[0]: /pdf8812Line18b # 18b (2024 f2_6)
+      c2_1[0]: /pdf8812Line19No # 19 No (2024 c2_2[0])
+      c2_1[1]: /pdf8812Line19Yes # 19 Yes (2024 c2_2[1])
+      f2_8[0]: /pdf8812Line19Amount # 19 (2024 f2_7)
+      f2_9[0]: /pdf8812Line20 # 20 (2024 f2_8)
+      c2_2[0]: /pdf8812Line20No # 20 No (2024 c2_3[0])
+      c2_2[1]: /pdf8812Line20Yes # 20 Yes (2024 c2_3[1])
+      f2_10[0]: /pdf8812Line21 # 21 (2024 f2_9)
+      f2_11[0]: /pdf8812Line22 # 22 "Enter the total of the amounts from Schedule 1 (Form 1040), line 15; Schedule 2 (Form 1040), line 16c; and Schedule 2 (Form 1040), line 17c" (tooltip; 2024 f2_10, not mapped there)
+      f2_12[0]: /pdf8812Line23 # 23 "Add lines 21 and 22" (tooltip; 2024 f2_11, mapped to line 21 there)
+      f2_13[0]: /pdf8812Line24 # 24 (2024 f2_12)
+      f2_14[0]: /pdf8812Line25 # 25 (2024 f2_13)
+      f2_15[0]: /pdf8812Line26 # 26 (2024 f2_14)
+      f2_16[0]: /additionalCtc # 27 (2024 f2_15)

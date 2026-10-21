@@ -1,14 +1,14 @@
-import { FC, PropsWithChildren } from 'react';
+import { ComponentProps, FC, PropsWithChildren } from 'react';
 import { Icon } from '@trussworks/react-uswds';
-// mysterious linter error, but the build is fine
-// eslint-disable-next-line import/no-unresolved
-import { IconProps } from '@trussworks/react-uswds/lib/components/Icon/Icon.js';
 import classNames from 'classnames';
 import styles from './IconDisplay.module.scss';
 import { useTranslation } from 'react-i18next';
 
 /* USWDS Icons can be found at https://designsystem.digital.gov/components/icon/
  * or https://trussworks.github.io/react-uswds/?path=/docs/components-icons-individual */
+// react-uswds 8 no longer exposes deep `lib/components/...` paths; every Icon member shares the same props type.
+type IconProps = ComponentProps<typeof Icon.Add>;
+
 export type IconName = Exclude<keyof typeof Icon, 'prototype'>;
 
 export type IconDisplayProps = PropsWithChildren<

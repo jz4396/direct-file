@@ -201,7 +201,9 @@ info:
       body:
         - p:
             Su declaración de Pensilvania necesita el Anexo B de PA, y esta herramienta aún no puede completarlo. Esto
-            incluye más de $2,500 de dividendos o dividendos cuando vivió en Pensilvania solo parte del año.
+            incluye más de $2,500 de dividendos, distribuciones de ganancias de capital (casilla 2a del Formulario
+            1099-DIV), dividendos de fondos provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que
+            recibió como nominatario o dividendos cuando vivió en Pensilvania solo parte del año.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:

@@ -57,6 +57,14 @@ describe(`df-client local nginx: no framing`, () => {
     expect(server).toContain(`add_header X-Frame-Options DENY always;`);
   });
 
+  it(`sends X-Content-Type-Options nosniff on every response, including errors (always)`, () => {
+    expect(server).toContain(`add_header X-Content-Type-Options nosniff always;`);
+    // Without `always`, nginx only adds the header to 2xx/3xx responses, so a 404 page could be MIME-sniffed.
+    const addHeaders = server.split(`\n`).filter((l) => l.startsWith(`add_header`));
+    expect(addHeaders.length).toBeGreaterThanOrEqual(3);
+    addHeaders.forEach((l) => expect(l).toMatch(/ always;$/));
+  });
+
   it(`no location block sets its own headers (which would drop the server-level ones)`, () => {
     expect(locations.length).toBeGreaterThanOrEqual(2);
     locations.forEach((l) => expect(l).not.toContain(`add_header`));

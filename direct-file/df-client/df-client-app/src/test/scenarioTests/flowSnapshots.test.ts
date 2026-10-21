@@ -1,4 +1,4 @@
-import { describe, it, Mock } from 'vitest';
+import { describe, it, expect, Mock } from 'vitest';
 import fs from 'fs';
 import { createFlowConfig } from '../../flow/flowConfig.js';
 import flowNodes from '../../flow/flow.js';
@@ -129,6 +129,59 @@ describe(`Flow snapshot tests`, () => {
           ).toBe(true)
         );
       });
+    });
+  });
+
+  // #157: five non-ats golden end-to-end scenarios (synthetic data) lost the qualifying-child screens when #109 moved
+  // the dates to TY2026, the same cause as #127. Each qualifying child's date of birth is shifted forward two years
+  // so the child is the same age at the end of 2026 as at the end of 2024, the tax year these scenarios were written
+  // for. Age test: 26 U.S.C. 152(c)(3)(A) (https://www.law.cornell.edu/uscode/text/26/152#c_3), "(i) has not
+  // attained the age of 19 as of the close of the calendar year in which the taxable year of the taxpayer begins, or
+  // (ii) is a student who has not attained the age of 24 as of the close of such calendar year."
+  //   1099r-box-2b-total-distribution: Sammy, child, born 2008-07-20, 18 at the end of 2026 (clause (i)).
+  //   cfa-xml-error-1 and w2-with-box-14-value-set-to-0: Poseidon, sibling, full-time student, born 2003-08-09,
+  //     23 at the end of 2026 (clause (ii)).
+  //   mfs-4300-none: Tandy, child, full-time student, born 2004-09-09, 22 at the end of 2026 (clause (ii)).
+  // edc-single-disqualified-edit-condition is not shifted: no qualifying child is intended. It is a single filer
+  // with no family or household members (/familyAndHousehold is empty) that tests the elderly or disabled credit,
+  // and none of its snapshots has ever had a dependent screen.
+  describe(`non-ats scenarios keep their qualifying child under TY2026 dates (#157)`, () => {
+    const QC_SCREENS = [`add-person-qc-support`, `add-person-qc-of-another`];
+    const CASES: [string, string, string][] = [
+      [`1099r-box-2b-total-distribution.json`, `79ac153b-58be-4d5e-a59f-276ef540318e`, `2008-07-20`],
+      [`cfa-xml-error-1.json`, `7e2fe8ae-17cb-4190-bffb-a35dfbc14fc3`, `2003-08-09`],
+      [`w2-with-box-14-value-set-to-0.json`, `7e2fe8ae-17cb-4190-bffb-a35dfbc14fc3`, `2003-08-09`],
+      [`mfs-4300-none.json`, `04282192-cc89-47a6-8728-07bc050b580f`, `2004-09-09`],
+    ];
+    CASES.forEach(([json, depId, dob]) => {
+      it(`${json}: the dependent born ${dob} is a qualifying child and reaches the qualifying-child screens`, () => {
+        const factJson = JSON.parse(fs.readFileSync(`${SCENARIO_FOLDER}/${json}`, `utf-8`));
+        expect(factJson.facts[`/familyAndHousehold/#${depId}/dateOfBirth`].item.date).toBe(dob);
+        const { factGraph } = setupFactGraph(factJson.facts);
+        const dep = (p: string) => factGraph.get(`/familyAndHousehold/#${depId}/${p}` as ConcretePath);
+        expect(dep(`ageTest`).get).toBe(true);
+        expect(dep(`qualifyingChild`).get).toBe(true);
+        const screens = getFlowScreenOrderingFromFlowConfig(factGraph);
+        QC_SCREENS.forEach((route) =>
+          expect(
+            screens.some((s) => s.startsWith(`/flow/you-and-your-family/dependents/${route}?`) && s.includes(depId)),
+            route
+          ).toBe(true)
+        );
+      });
+    });
+
+    it(`edc-single-disqualified-edit-condition.json: no family or household members, so no qualifying child`, () => {
+      const factJson = JSON.parse(
+        fs.readFileSync(`${SCENARIO_FOLDER}/edc-single-disqualified-edit-condition.json`, `utf-8`)
+      );
+      const { factGraph } = setupFactGraph(factJson.facts);
+      const members = scalaListToJsArray(
+        factGraph.get(`/familyAndHousehold` as ConcretePath).get.getItemsAsStrings()
+      ) as string[];
+      expect(members).toHaveLength(0);
+      const screens = getFlowScreenOrderingFromFlowConfig(factGraph);
+      expect(screens.some((s) => s.includes(`/dependents/add-person-qc-support`))).toBe(false);
     });
   });
 });

@@ -1,0 +1,162 @@
+# Form 2441, PDFBox template for TY2026 print.
+# DRAFT-BASED MAPPING (#120): source is the 2026 early-release draft https://www.irs.gov/pub/irs-dft/f2441--dft.pdf
+# (created 4/30/26, 3 pages, 296,519 bytes), committed byte-identical to irs.gov,
+# SHA-256 67eca7567ce5ff06e72d40a07db487f406da33139e664c0c0d9c67a4e31e9385 (pinned in ../../draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). When the final 2026 Form 2441 is published, re-download, re-hash and
+# re-verify every field below before swapping it in (#124).
+# Page 1 of the file is the "Caution: DRAFT-NOT FOR FILING" cover sheet; skipLeadingPages drops it.
+# AcroForm field names, tooltips and widget rectangles re-read with pypdf from the committed draft. The 2024 template
+# has no tooltips, so it was matched by widget position and the printed line captions.
+# - Part I (line 1) is redesigned. 2024: one row per provider with columns (a) name, (b) address (two fields),
+#   (c) identifying number, (d) household employee Yes/No, (e) amount paid. 2026: one column per provider ("Provider 1"
+#   to "Provider 3") with rows 1a name, 1b address (one multi-line field), 1c identifying number, 1d "Was the care
+#   provider your household employee in 2026?" Yes/No, 1e amount paid. Each fact keeps its meaning; only the field
+#   moves (see the per-field comments). The second 2024 address field (ColB f1_5/f1_10/f1_15, always blank) has no
+#   2026 counterpart.
+# - Line 2 and lines 3-11: same lines and order; field numbers shift down by 3 (2024 f1_18..f1_40 -> 2026
+#   f1_15..f1_37) because Part I lost the three blank address fields.
+# - Page 2 (Part III, lines 12-31): field names unchanged. Line 21 now reads "Enter $7,500 ($3,750 if married filing
+#   separately ...)", which matches /cdccMaximumExclusion (IRC §129(a)(2)(A) as amended by P.L. 119-21, cited in
+#   cdcc.xml).
+# Line 8 decimal: IRC §21(a)(2) as amended by P.L. 119-21 (50% reduced to 35%, then to 20%) is already in the fact
+# dictionary (/cdccCareExpensesDecimalAmount, cdcc.xml); this map prints that fact as before.
+includeWhen: /shouldSubmitForm2441
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName
+      f1_2[0]: /primaryFiler/tin
+      c1_1[0]: /mfsButEligibleForCdcc
+#        c1_2[0]:
+      PartI[0]:
+        c1_3[0]: /cdccShouldIncludeMoreThanThreeCareProviders
+      PartITable[0]:
+        Row1a[0]:
+          Provider1[0]:
+#           Uses pseudoFact b/c if no care providers, line 1a provider 1 should say 'none' (2024 BodyRow1 f1_3)
+            f1_3[0]: ~form2441CareProviderNameOrNone
+          Provider2[0]:
+            f1_4[0]: /~careProviders/[1]/displayName # 2024 BodyRow2 f1_8
+          Provider3[0]:
+            f1_5[0]: /~careProviders/[2]/displayName # 2024 BodyRow3 f1_13
+        Row1b[0]:
+          Provider1[0]:
+            f1_6[0]: /~careProviders/[0]/pdfAddress # 2024 BodyRow1 ColB f1_4
+          Provider2[0]:
+            f1_7[0]: /~careProviders/[1]/pdfAddress # 2024 BodyRow2 ColB f1_9
+          Provider3[0]:
+            f1_8[0]: /~careProviders/[2]/pdfAddress # 2024 BodyRow3 ColB f1_14
+        Row1c[0]:
+          f1_9[0]: /~careProviders/[0]/pdfTinEinColumn # 2024 BodyRow1 f1_6
+          f1_10[0]: /~careProviders/[1]/pdfTinEinColumn # 2024 BodyRow2 f1_11
+          f1_11[0]: /~careProviders/[2]/pdfTinEinColumn # 2024 BodyRow3 f1_16
+        Row1d[0]:
+          Provider1[0]:
+            c1_4[0]: /~careProviders/[0]/isHouseholdEmployee # Yes (2024 BodyRow1 ColD c1_4[0])
+            c1_4[1]: /~careProviders/[0]/isHouseholdEmployeeNo # No (2024 BodyRow1 ColD c1_4[1])
+          Provider2[0]:
+            c1_5[0]: /~careProviders/[1]/isHouseholdEmployee
+            c1_5[1]: /~careProviders/[1]/isHouseholdEmployeeNo
+          Provider3[0]:
+            c1_6[0]: /~careProviders/[2]/isHouseholdEmployee
+            c1_6[1]: /~careProviders/[2]/isHouseholdEmployeeNo
+        Row1e[0]:
+          f1_12[0]: /~careProviders/[0]/amountPaidForCare # 2024 BodyRow1 f1_7
+          f1_13[0]: /~careProviders/[1]/amountPaidForCare # 2024 BodyRow2 f1_12
+          f1_14[0]: /~careProviders/[2]/amountPaidForCare # 2024 BodyRow3 f1_17
+      c1_7[0]: /cdccHasMoreThanThreeQualifyingPersons # line 2 "more than three qualifying persons" box
+      Table_Line2[0]:
+        Row1[0]:
+          f1_15[0]: /~cdccAllQualifyingPeople/[0]/firstName # 2024 f1_18
+          f1_16[0]: /~cdccAllQualifyingPeople/[0]/lastName # 2024 f1_19
+          f1_17[0]: /~cdccAllQualifyingPeople/[0]/tin # 2024 f1_20
+          c1_8[0]: /~cdccAllQualifyingPeople/[0]/unableToCareForSelfAndOverAge12
+          f1_18[0]: /~cdccAllQualifyingPeople/[0]/cdccQualifyingExpenseAmount # 2024 f1_21
+        Row2[0]:
+          f1_19[0]: /~cdccAllQualifyingPeople/[1]/firstName # 2024 f1_22
+          f1_20[0]: /~cdccAllQualifyingPeople/[1]/lastName # 2024 f1_23
+          f1_21[0]: /~cdccAllQualifyingPeople/[1]/tin # 2024 f1_24
+          c1_9[0]: /~cdccAllQualifyingPeople/[1]/unableToCareForSelfAndOverAge12
+          f1_22[0]: /~cdccAllQualifyingPeople/[1]/cdccQualifyingExpenseAmount # 2024 f1_25
+        Row3[0]:
+          f1_23[0]: /~cdccAllQualifyingPeople/[2]/firstName # 2024 f1_26
+          f1_24[0]: /~cdccAllQualifyingPeople/[2]/lastName # 2024 f1_27
+          f1_25[0]: /~cdccAllQualifyingPeople/[2]/tin # 2024 f1_28
+          c1_10[0]: /~cdccAllQualifyingPeople/[2]/unableToCareForSelfAndOverAge12
+          f1_26[0]: /~cdccAllQualifyingPeople/[2]/cdccQualifyingExpenseAmount # 2024 f1_29
+      f1_27[0]: /~cdccQualifyingExpenses # 3 (2024 f1_30)
+      f1_28[0]: /~cdccEarnedIncomePrimaryFilerLine4 # 4 (2024 f1_31)
+      f1_29[0]: /~cdccEarnedIncomeLine5 # 5 (2024 f1_32)
+      f1_30[0]: /~cdccLowerOfEarnedIncomeAndExpenses # 6 (2024 f1_33)
+      f1_31[0]: /~cdccAgi # 7 "Form 1040 ... line 11a" (2024 f1_34)
+      f1_32[0]: /~pdfCdccCareExpensesDecimalAmount # 8 (2024 f1_35)
+      f1_33[0]: /~cdccTentativeExpenseAmount # 9a (2024 f1_36)
+      f1_34[0]: /~cdccCreditForPriorYearExpenses # 9b (2024 f1_37)
+      f1_35[0]: /~cdccTotalEligibleCDCCAmount # 9c (2024 f1_38)
+      f1_36[0]: /~cdccCreditLimit # 10 (2024 f1_39)
+      f1_37[0]: /~cdccTotalCredit # 11 (2024 f1_40)
+    Page2[0]:
+      f2_1[0]: /cdccDependentCareBenefitsAmount
+      f2_2[0]: /cdccCarryoverAmountFromPriorTaxYear
+      f2_3[0]: /cdccForfeitedCredits
+      f2_4[0]: /cdccAdjustedDependentCareBenefitsAmount
+      Line16_ReadOrder[0]:
+        f2_5[0]: /form2441Line16Expenses
+      f2_6[0]: /cdccLesserOfAdjustBenefitsAndQualifiedExpenses
+      f2_7[0]: /form2441Line18Income
+      f2_8[0]: /form2441Line19Income
+      f2_9[0]: /cdccTentativeExclusionAmount
+      f2_10[0]: /cdccSpecifiedExclusionAmount
+      c2_1[0]: /cdccCheckboxSoleProprietorshipNo
+      c2_1[1]: /cdccCheckboxSoleProprietorshipYes
+      f2_11[0]: /cdccSoleProprietorshipOrPartnershipExclusionAmount
+      f2_12[0]: /cdccExclusionAmountNotFromSoleProprietorshipOrPartnership
+      f2_13[0]: /cdccDeductibleBenefitsAmount
+      f2_14[0]: /cdccExcludedBenefitsAmount
+      f2_15[0]: /cdccTaxableBenefits
+      f2_16[0]: /~form2441Line27ExpenseCap
+      f2_17[0]: /~cdccSumOfDeductibleAndExcludedBenefitsAmount
+      f2_18[0]: /~cdccNetAllowableAmount
+      f2_19[0]: /~form2441Line30Expenses
+      f2_20[0]: /~cdccSmallerOfTotalQualifyingExpensesAmount
+otherRequiredFacts:
+  - /pdfNone
+  - /shouldIncludeCareProviders
+  - /hasNoCareProviders
+  - /cdccQualified
+  - /cdccShouldIncludeMoreThanThreeCareProviders
+  - /cdccCareProviders/[0]/displayName
+  - /cdccCareProviders/[0]/pdfAddress
+  - /cdccCareProviders/[0]/pdfTinEinColumn
+  - /cdccCareProviders/[0]/isHouseholdEmployee
+  - /cdccCareProviders/[0]/isHouseholdEmployeeNo
+  - /cdccCareProviders/[0]/amountPaidForCare
+  - /cdccCareProviders/[1]/pdfAddress
+  - /cdccCareProviders/[1]/pdfTinEinColumn
+  - /cdccCareProviders/[1]/isHouseholdEmployee
+  - /cdccCareProviders/[1]/isHouseholdEmployeeNo
+  - /cdccCareProviders/[1]/amountPaidForCare
+  - /cdccCareProviders/[2]/pdfAddress
+  - /cdccCareProviders/[2]/pdfTinEinColumn
+  - /cdccCareProviders/[2]/isHouseholdEmployee
+  - /cdccCareProviders/[2]/isHouseholdEmployeeNo
+  - /cdccCareProviders/[2]/amountPaidForCare
+  - /xmlCdccCareExpensesDecimalAmount
+  - /cdccQualifyingExpenses
+  - /cdccEarnedIncomePrimaryFilerLine4
+  - /cdccEarnedIncomeLine5
+  - /cdccLowerOfEarnedIncomeAndExpenses
+  - /cdccCareExpensesDecimalAmount
+  - /cdccTentativeExpenseAmount
+  - /cdccCreditForPriorYearExpenses
+  - /cdccTotalEligibleCDCCAmount
+  - /cdccCreditLimit
+  - /cdccTotalCredit
+  - /form2441Line27ExpenseCap
+  - /cdccSumOfDeductibleAndExcludedBenefitsAmount
+  - /cdccNetAllowableAmount
+  - /form2441Line30Expenses
+  - /cdccSmallerOfTotalQualifyingExpensesAmount

@@ -6,6 +6,7 @@ import { NetworkConnectionContext } from '../../context/networkConnectionContext
 import DFAlert from '../Alert/DFAlert.js';
 import { CURRENT_TAX_YEAR } from '../../constants/taxConstants.js';
 import { isFlowEnabled } from '../../constants/pageConstants.js';
+import { acceptsNewReturns } from '../../constants/taxYearAvailability.js';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks.js';
 import { createTaxReturn, selectCurrentTaxReturnCreate } from '../../redux/slices/tax-return/taxReturnSlice.js';
 
@@ -34,7 +35,7 @@ export const CreateTaxReturnCard = ({ setShouldProgressOnSuccessfulTaxReturnCrea
       <h2 className='margin-0  bg-base-lightest padding-2'>{t(`taxReturnCard.header`, { taxYear: year })}</h2>
       <div className='padding-205'>
         {hasFetchError && <DFAlert type='error' i18nKey='home.error' collectionId={null} headingLevel='h3' />}
-        {!isFlowEnabled() ? (
+        {!isFlowEnabled() || !acceptsNewReturns(year) ? (
           <>
             <div className='margin-bottom-2'>
               <DFAlert type='error' i18nKey='home.endOfTaxSeasonAlert' collectionId={null} headingLevel='h3' />

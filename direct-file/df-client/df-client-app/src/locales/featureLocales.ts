@@ -31,6 +31,8 @@ import dividendsEn from './en.dividends.yaml';
 import dividendsEs from './es.dividends.yaml';
 import saveStateEn from './en.saveState.yaml';
 import saveStateEs from './es.saveState.yaml';
+import interestScheduleBEn from './en.interestScheduleB.yaml';
+import interestScheduleBEs from './es.interestScheduleB.yaml';
 import householdEmploymentEn from './en.householdEmployment.yaml';
 import householdEmploymentEs from './es.householdEmployment.yaml';
 
@@ -105,6 +107,8 @@ export const esLocale: any = deepMerge(esCore, dividendsEs as Tree);
 for (const [locale, overlay] of [
   [enLocale, saveStateEn],
   [esLocale, saveStateEs],
+  [enLocale, interestScheduleBEn],
+  [esLocale, interestScheduleBEs],
   [enLocale, householdEmploymentEn],
   [esLocale, householdEmploymentEs],
 ] as const) {

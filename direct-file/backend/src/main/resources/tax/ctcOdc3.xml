@@ -264,7 +264,10 @@
     </Fact>
     <Fact path="/socialSecurityOverEitc">
       <Name>Social Security taxes in excess of EITC claimed</Name>
-      <Description>Social Security taxes in excess of EITC claimed.</Description>
+      <Description>Schedule 8812 (Form 1040) 2026 draft, page 2, Part II-B, line 25: "Subtract line 24 from line 23. If
+        zero or less, enter -0-". Line 23 (/actcSocialSecurityTaxes) is W-2 social security and Medicare taxes withheld
+        (line 21) plus the 26 U.S.C. 24(d)(2)(A)(ii) half of self-employment tax (line 22); line 24 is the earned income
+        credit. Schedule 3 line 11 (excess social security tax withheld), also part of line 24, is not modeled.</Description>
       <Export mef="true" />
       <ExportZero />
 
@@ -273,7 +276,7 @@
           <GreaterOf>
             <Subtract>
               <Minuend>
-                <Dependency module="formW2s" path="/socialSecurityTaxesWithheld" />
+                <Dependency path="/actcSocialSecurityTaxes" />
               </Minuend>
               <Subtrahends>
                 <Dependency module="eitc" path="/earnedIncomeCredit" />
