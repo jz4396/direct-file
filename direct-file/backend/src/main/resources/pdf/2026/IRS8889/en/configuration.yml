@@ -1,0 +1,47 @@
+# Form 8889, PDFBox template for TY2026 print.
+# DRAFT-BASED MAPPING (#120): source is the 2026 early-release draft https://www.irs.gov/pub/irs-dft/f8889--dft.pdf
+# (created 4/30/26, 2 pages, 244,837 bytes), committed byte-identical to irs.gov,
+# SHA-256 c94550b7d4b735b11e9901c5dbff5dab0aa6dcbbefab04864c61cd5275cafec8 (pinned in ../../draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). When the final 2026 Form 8889 is published, re-download, re-hash and
+# re-verify every field below before swapping it in (#124).
+# Page 1 of the file is the "Caution: DRAFT-NOT FOR FILING" cover sheet; skipLeadingPages drops it.
+# AcroForm field names and widget rectangles match the 2024 template (f1_2 differs by 1pt), so the field map is
+# unchanged. Tooltip changes: year 2024 -> 2026; lines 17b and 21 now say Schedule 2 "line 13c" / "line 13d" (2024:
+# 17c / 17d); line 3 tooltip still says "$4,300 ($8,550 for family coverage)" and "end of 2025", but the printed line 3
+# reads "end of 2026 ... enter $4,400 ($8,750 for family coverage)", which matches /hsaSelfOnlyCoverageLimit and
+# /hsaFamilyCoverageLimit (Rev. Proc. 2025-19 §2.01 p. 2, cited in constants3.xml).
+customMaps:
+  template:
+    skipLeadingPages: "1"
+includeForEach: /filersRequiredToFileForm8889
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /filersRequiredToFileForm8889/*/hsaPdfFilerName
+      f1_2[0]: /filersRequiredToFileForm8889/*/tin
+      c1_1[0]: /filersRequiredToFileForm8889/*/isCoveredBySelfOnlyHdhpForExport
+      c1_1[1]: /filersRequiredToFileForm8889/*/isCoveredByFamilyHdhpForExport
+      f1_3[0]: /filersRequiredToFileForm8889/*/hsaNonemployerContributionsTotalForExport
+      # Some lines must use `/filers`. `ExportZero` does not work for aliases.
+      f1_4[0]: /filers/*/hsaInitialContributionLimit
+      # f1_5[0]:
+      f1_6[0]: /filers/*/hsaContributionLimitLessMsaContributions
+      f1_7[0]: /filers/*/hsaContributionLimitLessAddition
+      f1_8[0]: /filersRequiredToFileForm8889/*/additionToHsaContributionLimit
+      f1_9[0]: /filersRequiredToFileForm8889/*/hsaTotalContributionLimit
+      f1_10[0]: /filers/*/hsaContributionsW2sTotal
+      f1_11[0]: /filersRequiredToFileForm8889/*/hsaFundingDistributionsTotal
+      f1_12[0]: /filers/*/hsaEmployerContributionsAndFundingDistributionTotalForExport
+      f1_13[0]: /filers/*/hsaContributionLimitLessLine11
+      f1_14[0]: /filers/*/hsaTotalDeductibleAmount
+      f1_15[0]: /filersRequiredToFileForm8889/*/totalHsaDistributions
+      f1_16[0]: /filersRequiredToFileForm8889/*/hsaRolloversAndTimelyWithdrawals
+      f1_17[0]: /filers/*/hsaCalculatedDistributionAmount
+      f1_18[0]: /filersRequiredToFileForm8889/*/hsaQualifiedMedExpenses
+      f1_19[0]: /filers/*/hsaCalculatedTaxableHsaDistributionTotal
+      c1_2[0]: Off
+      # f1_20[0]:
+      # f1_21[0]:
+      # f1_22[0]:
+      # f1_23[0]:
+      # f1_24[0]:
