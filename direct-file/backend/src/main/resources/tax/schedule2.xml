@@ -189,7 +189,7 @@
 
     <Fact path="/schedule2Line17d">
       <Name>Schedule 2 line 17d</Name>
-      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 17d: "Total other employment taxes. Add lines 17a through 17c". Only line 17b (/line17bAdditionalMedicareTax) is in scope: 17a household employment taxes (Schedule H) stop the return when the household employee question, asked in the dependent care sections, is yes (cdcc /flowKnockoutHouseholdEmployee) and 17c uncollected tax from W-2 box 12 codes A, B, M and N stops it too (formW2s /knockoutForBox12Value).</Description>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 17d: "Total other employment taxes. Add lines 17a through 17c". Only line 17b (/line17bAdditionalMedicareTax) is in scope: 17a household employment taxes (Schedule H) stop the return when the general household-employee question in income sources is yes (householdEmployment /flowKnockoutScheduleH) or the household employee question in the dependent care sections is yes (cdcc /flowKnockoutHouseholdEmployee) and 17c uncollected tax from W-2 box 12 codes A, B, M and N stops it too (formW2s /knockoutForBox12Value).</Description>
       <Derived>
         <Round>
           <Dependency path="/line17bAdditionalMedicareTax" />
