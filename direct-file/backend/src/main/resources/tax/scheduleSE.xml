@@ -13,11 +13,9 @@
       <Name>Social Security (OASDI) wage base TY2026</Name>
       <Description>
         TY2026 OASDI contribution and benefit base = $184,500.
-        Primary source: SSA https://www.ssa.gov/oact/cola/cbb.html
-        ("For earnings in 2026, this base is $184,500.")
-        Also: 90 FR 49047, 49050 (Nov. 3, 2025), https://www.federalregister.gov/d/2025-19763 :
-        "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and
-        self-employment income earned in tax years beginning in 2026."
+        #166: SSA, "Cost-of-Living Increase and Other Determinations for 2026",
+        90 FR 49047 (Nov. 3, 2025), https://www.federalregister.gov/d/2025-19763 (PDF https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf), p. 49050:
+        "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -130,7 +128,7 @@
         Schedule SE line 8 (8a W-2 boxes 3 + 7; 8b Form 4137 and 8c Form 8919 are out of scope:
         Form 8919 wages are hard-coded $0 in income.xml and 4137-type tips are not collected).
         Cite: 26 U.S.C. § 1402(b)(1); Instructions for Schedule SE, line 8;
-        SSA CBB https://www.ssa.gov/oact/cola/cbb.html
+        TY2026 wage base: see /socialSecurityWageBaseTy2026 (90 FR 49047, p. 49050).
       </Description>
       <Derived>
         <GreaterOf>
