@@ -37,6 +37,8 @@ import ctcFilerSsnEn from './en.ctcFilerSsn.yaml';
 import ctcFilerSsnEs from './es.ctcFilerSsn.yaml';
 import householdEmploymentEn from './en.householdEmployment.yaml';
 import householdEmploymentEs from './es.householdEmployment.yaml';
+import staticClientEn from './en.staticClient.yaml';
+import staticClientEs from './es.staticClient.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -115,6 +117,8 @@ for (const [locale, overlay] of [
   [esLocale, ctcFilerSsnEs],
   [enLocale, householdEmploymentEn],
   [esLocale, householdEmploymentEs],
+  [enLocale, staticClientEn],
+  [esLocale, staticClientEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }

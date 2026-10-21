@@ -9,6 +9,7 @@ import autoprefixer from 'autoprefixer';
 import path from 'path';
 import { createRequire } from 'module';
 import { buildContentSecurityPolicy } from './src/saveState/contentSecurityPolicy';
+import { prepareStaticIndexHtml } from './src/staticClient/staticIndexHtml';
 
 // @trussworks/react-uswds 8 publishes an `exports` map without its stylesheet, so the
 // `@trussworks/react-uswds/lib/index.css` specifier must be resolved to the file directly.
@@ -20,20 +21,33 @@ const reactUswdsCss = path.join(
 // Build-only CSP <meta> (see src/saveState/contentSecurityPolicy.ts).
 function contentSecurityPolicy(): Plugin {
   let backendUrl: string | undefined;
+  let staticClientOnly = false;
   return {
     name: 'df-content-security-policy',
     apply: 'build',
     configResolved(config) {
       backendUrl = config.env.VITE_BACKEND_URL;
+      staticClientOnly = config.env.VITE_STATIC_CLIENT_ONLY === 'true';
     },
-    transformIndexHtml() {
-      return [
-        {
-          tag: 'meta',
-          attrs: { 'http-equiv': 'Content-Security-Policy', content: buildContentSecurityPolicy(backendUrl) },
-          injectTo: 'head-prepend',
-        },
-      ];
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        // Static client-only mode (src/staticClient): no analytics loader, and no official-site title or description.
+        const out = staticClientOnly ? prepareStaticIndexHtml(html) : html;
+        return {
+          html: out,
+          tags: [
+            {
+              tag: 'meta',
+              attrs: {
+                'http-equiv': 'Content-Security-Policy',
+                content: buildContentSecurityPolicy(backendUrl, { staticClientOnly }),
+              },
+              injectTo: 'head-prepend',
+            },
+          ],
+        };
+      },
     },
   };
 }
@@ -132,4 +146,12 @@ export const configOptions: UserConfig = {
 };
 
 // https://vitejs.dev/config/
-export default defineConfig(configOptions);
+// `--mode static` (static client-only build, src/staticClient) ships only the app page, not the all-screens tool.
+export default defineConfig(({ mode }) =>
+  mode === 'static'
+    ? {
+        ...configOptions,
+        build: { ...configOptions.build, rollupOptions: { input: { main: path.resolve(__dirname, 'index.html') } } },
+      }
+    : configOptions
+);

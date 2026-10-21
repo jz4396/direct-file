@@ -1,0 +1,11 @@
+# Static client-only build (vite build --mode static, see staticClient/staticMode.ts).
+# Feature overlay merged onto es.yaml by locales/featureLocales.ts.
+staticClient:
+  banner:
+    label: Aviso de versión preliminar no oficial
+    heading: Versión preliminar no oficial. No está afiliada con el IRS.
+    body: >-
+      Esta versión preliminar no puede presentar electrónicamente ni imprimir una declaración. Sus respuestas permanecen
+      en este navegador y se borran si vuelve a cargar la página.
+  pageTitle: Versión preliminar de la entrevista de Direct File (no oficial)
+  homeLinkText: Direct File (versión preliminar)

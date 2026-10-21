@@ -51,6 +51,7 @@ const Header = () => {
         homeLinkTitle='components.header.title-link-label'
         navMenuLabel={t(`components.header.menu`)}
         dfPrefix={baseRouterPath}
+        logoSrc={`${baseRouterPath}/imgs/irs-df-logo.svg`}
       >
         <div className='usa-language-container'>
           <a className='usa-button usa-language-container' href={directFileUrl}>
