@@ -86,7 +86,7 @@ const hohFilerData = {
   ...singleFilerData,
   '/filingStatus': createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
 };
-const KOS = [`/flowKnockoutAmtPreferenceItems`, `/flowKnockoutAmtMfsAddBack`, `/flowKnockoutAmtKiddieTax`];
+const KOS = [`/flowKnockoutAmtPreferenceItems`, `/flowKnockoutAmtMfsAddBack`];
 const noAmtKnockouts = (g: Fg) => KOS.forEach((k) => expect(get(g, k).get).toBe(false));
 
 describe(`Form 6251 constants — Rev. Proc. 2025-32 §4.10 pp. 16 (exemption), 17 (phaseout)`, () => {
@@ -281,26 +281,56 @@ describe(`Form 6251 knockouts (BlockSubmissionOnTrue, wired into /flowIsKnockedO
     // single at the same AMTI is not affected
     expect(get(fg(clean(singleFilerData, 700000)), `/flowKnockoutAmtMfsAddBack`).get).toBe(false);
   });
-  it(`dependent filer with AMTI over earned income + $9,750 (Rev. Proc. 2025-32 §4.11 p. 17) knocks out`, ({
-    task,
-  }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutAmtKiddieTax`, `/flowIsKnockedOut`];
+  /**
+   * #164: no AMT exemption limit for a child subject to the kiddie tax for TY2026. 26 U.S.C. 55(d)(4)(A)
+   * (https://www.law.cornell.edu/uscode/text/26/55): "In the case of any taxable year beginning after December 31,
+   * 2017— ... (iii) subsection (j) of section 59 shall not apply." Pub. L. 119-21 sec. 70107(a)(1) struck the
+   * ", and before January 1, 2026" end date (effective for taxable years beginning after Dec. 31, 2025, sec. 70107(d)).
+   * Rev. Proc. 2025-32 sec. 4.11, p. 17 still prints the indexed sec. 59(j)(1)(B) amount ($9,750), as Rev. Proc. 2024-40
+   * sec. 3.12, p. 11 did ($9,550) for 2025, when clause (iii) already applied.
+   */
+  describe(`#164 dependent filers get the full AMT exemption (sec. 59(j) off under sec. 55(d)(4)(A)(iii))`, () => {
     const dep = {
       [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(true),
       [`/filers/#${primaryFilerId}/willBeClaimed`]: createBooleanWrapper(true),
       [`/filers/#${primaryFilerId}/potentialClaimerMustFile`]: createBooleanWrapper(true),
     };
     const interest = (amt: number) => makeInterestReportData(amt, undefined, primaryFilerId);
-    const ok = fg({ ...clean(singleFilerData, 5000), ...dep });
-    expect(get(ok, `/flowKnockoutAmtKiddieTax`).get).toBe(false); // AMTI 5,000 ≤ 14,750
-    const g = fg({ ...clean(singleFilerData, 5000), ...dep, ...interest(30000) });
-    expect(get(g, `/eitherFilerIsClaimedAsDependent`).get).toBe(true);
-    expect(get(g, `/flowKnockoutAmtKiddieTax`).get).toBe(true);
-    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
-    expect(submissionBlockingFacts).toContain(`/flowKnockoutAmtKiddieTax`);
-    // same income, not a dependent: no knockout
-    expect(get(fg({ ...clean(singleFilerData, 5000), ...interest(30000) }), `/flowKnockoutAmtKiddieTax`).get).toBe(
-      false
-    );
+
+    it(`the AMT kiddie-tax knockout fact no longer exists and doesn't block submission`, () => {
+      expect(submissionBlockingFacts).not.toContain(`/flowKnockoutAmtKiddieTax`);
+    });
+
+    it(`adult dependent with AMTI over earned income + $9,750: not knocked out, full $90,100 exemption`, ({ task }) => {
+      task.meta.testedFactPaths = [`/form6251ExemptionAmount`, `/form6251Line5`, `/amt`, `/flowIsKnockedOut`];
+      // Primary filer born 1987 (age 39 at the end of 2026) is not a child under sec. 1(g)(2).
+      const g = fg({ ...clean(singleFilerData, 5000), ...dep, ...interest(30000) });
+      expect(get(g, `/eitherFilerIsClaimedAsDependent`).get).toBe(true);
+      expect(val(g, `/form6251Line4`)).not.toBe(`0.00`);
+      expect(val(g, `/form6251ExemptionAmount`)).toBe(`90100.00`);
+      expect(val(g, `/form6251Line5`)).toBe(`90100.00`);
+      expect(val(g, `/amt`)).toBe(`0.00`);
+      expect(get(g, `/flowKnockoutForm8615`).get).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    });
+
+    it(`adult dependent with large interest income: AMT uses the full exemption, not earned income + $9,750`, () => {
+      const g = fg({ ...clean(singleFilerData, 5000), ...dep, ...interest(150000) });
+      expect(val(g, `/form6251Line5`)).toBe(`90100.00`);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    });
+
+    it(`a child subject to sec. 1(g) still stops, on the Form 8615 knockout`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutForm8615`, `/flowIsKnockedOut`];
+      const child = {
+        ...clean(singleFilerData, 5000),
+        ...dep,
+        ...interest(30000),
+        [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(`2010-06-06`),
+      };
+      const g = fg(child);
+      expect(get(g, `/flowKnockoutForm8615`).get).toBe(true);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    });
   });
 });
