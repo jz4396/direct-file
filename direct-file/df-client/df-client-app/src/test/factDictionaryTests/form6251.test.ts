@@ -223,6 +223,39 @@ describe(`Form 6251 Part III — capital gain rates`, () => {
     expect(val(g, `/totalTax`)).toBe(`237120.00`);
     expect(get(g, `/requiresSchedule2`).get).toBe(true);
   });
+  // #178: every amount entered on a Part III line is in whole dollars, half a dollar up (IRC 6102(a)(2); 26 CFR
+  // 301.6102-1(a); Form 1040 instr. (2025) p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you
+  // must round all amounts"). Line 38 adds the rounded lines 18, 31 and 34; line 40 is the smaller of 38 or 39.
+  it(`single, $100,010 wages + $1,000,000 LTCG: lines 18, 31 and 39 round (31 = $69,238.50 -> $69,239), AMT $12,827`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/form6251Line18`,
+      `/form6251Line31`,
+      `/form6251Line34`,
+      `/form6251Line38`,
+      `/form6251Line39`,
+      `/form6251Line40`,
+      `/form6251Line7`,
+      `/amt`,
+    ];
+    const g = fg({ ...clean(singleFilerData, 100010), ...ltGain(1000000) });
+    expect(val(g, `/form6251Line12`)).toBe(`1100010.00`);
+    expect(val(g, `/form6251Line17`)).toBe(`100010.00`);
+    expect(val(g, `/form6251Line18`)).toBe(`26003.00`); // 26% × 100,010 = 26,002.60
+    expect(val(g, `/form6251Line30`)).toBe(`461590.00`); // 545,500 − 83,910
+    expect(val(g, `/form6251Line31`)).toBe(`69239.00`); // 15% × 461,590 = 69,238.50, half a dollar up
+    expect(val(g, `/form6251Line33`)).toBe(`538410.00`);
+    expect(val(g, `/form6251Line34`)).toBe(`107682.00`); // 20% × 538,410
+    expect(val(g, `/form6251Line38`)).toBe(`202924.00`); // 26,003 + 69,239 + 107,682
+    expect(val(g, `/form6251Line39`)).toBe(`303113.00`); // 28% × 1,100,010 − 4,890 = 303,112.80
+    expect(val(g, `/form6251Line40`)).toBe(`202924.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`202924.00`);
+    // regular tax: 69,238.50 + 107,682 + 13,176 (Tax Table on $83,910) = 190,096.50 -> 190,097. Before #178 line 7
+    // was round(202,923.10) = 202,923 and the AMT $12,826.
+    expect(val(g, `/form6251Line10`)).toBe(`190097.00`);
+    expect(val(g, `/amt`)).toBe(`12827.00`);
+  });
   it(`MFJ, $200,000 wages + $1,000,000 LTCG: mid-phaseout exemption $40,200, line 7 $219,253, AMT $15,208`, ({
     task,
   }) => {
