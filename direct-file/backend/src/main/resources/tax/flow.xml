@@ -129,6 +129,7 @@
           <Dependency module="cdcc" path="/flowKnockoutBenefitsDistribution" />
           <Dependency module="cdcc" path="/knockoutCdccWorksheetA" />
           <Dependency module="cdcc" path="/flowKnockoutHouseholdEmployee" />
+          <Dependency module="householdEmployment" path="/flowKnockoutScheduleH" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleAUnsupported" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleACharitableLimit" />

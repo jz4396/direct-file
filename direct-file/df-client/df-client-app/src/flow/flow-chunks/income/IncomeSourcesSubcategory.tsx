@@ -286,6 +286,19 @@ export const IncomeSourcesSubcategory = (
         <DFAlert i18nKey='/info/knockout/amt-preference-items' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* #159: household employment taxes (Schedule H, Schedule 2 line 17a); cites in householdEmployment.xml */}
+      <Screen route='household-employees'>
+        <Heading i18nKey='/heading/income/income-sources/household-employees' />
+        <InfoDisplay i18nKey='/info/income/income-sources/household-employees' />
+        <Boolean path='/hasHouseholdEmployeeScheduleH' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='household-employees-knockout' condition='/flowKnockoutScheduleH' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/household-employees' />
+        <DFAlert i18nKey='/info/knockout/household-employees' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
     </SubSubcategory>
     <SubSubcategory route='iras'>
       <Screen route='ira-contributions'>

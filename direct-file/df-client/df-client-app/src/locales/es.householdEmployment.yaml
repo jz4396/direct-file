@@ -1,0 +1,29 @@
+# Impuestos sobre el empleo de empleados domésticos (Anexo H) (#159).
+# Superposición de funciones combinada con es.yaml en locales/featureLocales.ts.
+headings:
+  /heading/income/income-sources/household-employees: En {{/taxYear}}, ¿tuvo un empleado doméstico?
+  /heading/knockout/household-employees:
+    Esta herramienta todavía no acepta los impuestos sobre el empleo de empleados domésticos
+info:
+  /info/income/income-sources/household-employees:
+    body: >-
+      Un empleado doméstico es alguien a quien usted contrató para trabajar en su hogar o alrededor de él, como una
+      niñera, un ama de llaves, un cuidador, un cocinero, un chofer, un enfermero privado o un jardinero, cuando usted
+      controlaba qué trabajo hacía y cómo lo hacía. Conteste que sí si, para algún empleado doméstico, le pagó a uno de
+      ellos $3,000 o más en salarios en efectivo en {{/taxYear}}, retuvo impuesto federal sobre los ingresos en
+      {{/taxYear}}, o les pagó a todos ellos un total de $1,000 o más en salarios en efectivo en cualquier trimestre
+      calendario de {{/lastTaxYear}} o {{/taxYear}}.
+  /info/knockout/household-employees:
+    alertText:
+      body:
+        - p: >-
+            Usted debe impuestos sobre el empleo de empleados domésticos, que se calculan en el Anexo H (Formulario
+            1040). Esta herramienta todavía no acepta el Anexo H.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /hasHouseholdEmployeeScheduleH:
+    boolean:
+      "yes": Sí, tuve un empleado doméstico que cumple una de estas pruebas
+      "no": "No"
