@@ -1,6 +1,7 @@
 //page or query-parameter constants
 
 import { DataImportRolloutBehavior } from '../redux/slices/data-import/dataImportProfileTypes.js';
+import { isStaticClientOnly } from '../staticClient/staticMode.js';
 
 export const LOCAL_DATA_IMPORT_BEHAVIOR = `DATA_IMPORT_ABOUT_YOU_BASIC_PLUS_IP_PIN_PLUS_W2_PLUS_1099_INT_PLUS_1095_A`;
 export const DEFAULT_DATA_IMPORT_BEHAVIOR = `DATA_IMPORT_ABOUT_YOU_BASIC_PLUS_IP_PIN_PLUS_W2`;
@@ -14,7 +15,7 @@ export const REF_LOCATION_VALUE = {
   AUTHSTATE: `df_authorize_state`,
 } as const;
 
-export const environmentNames = [`LOCALHOST`] as const;
+export const environmentNames = [`LOCALHOST`, `STATIC_CLIENT`] as const;
 export type EnvironmentName = (typeof environmentNames)[number];
 
 export type EnvironmentConfig = {
@@ -46,9 +47,14 @@ export type EnvironmentConfig = {
 
 // List of client hosts and their configurations.
 // TODO: https://git.irslabs.org/irslabs-prototypes/direct-file/-/issues/8485
+// In static client-only mode (src/staticClient) the STATIC_CLIENT config applies to whatever origin serves the
+// bundle, and LOCALHOST applies to none, so a local preview of the static build behaves like the deployed one.
+const staticClient = isStaticClientOnly();
+const currentOrigin = typeof location !== `undefined` ? location.origin : ``;
+
 export const ENVIRONMENT_CONFIGS: Record<EnvironmentName, EnvironmentConfig> = {
   LOCALHOST: {
-    hostNames: [`http://localhost`],
+    hostNames: staticClient ? [] : [`http://localhost`],
     flowEnabled: true,
     returnTransferEnabled: true,
     developerToolsEnabled: true,
@@ -58,6 +64,20 @@ export const ENVIRONMENT_CONFIGS: Record<EnvironmentName, EnvironmentConfig> = {
     isTelemetryEnabled: true,
     isSpanishEnabled: true,
     defaultDataImportRolloutBehavior: `DATA_IMPORT_ABOUT_YOU_BASIC_PLUS_IP_PIN_PLUS_W2_PLUS_1099_INT_PLUS_1095_A`,
+  },
+  STATIC_CLIENT: {
+    hostNames: staticClient && currentOrigin ? [currentOrigin] : [],
+    flowEnabled: true,
+    // No backend: no state transfer, no developer tools that talk to the API, no telemetry.
+    returnTransferEnabled: false,
+    developerToolsEnabled: false,
+    preauthUuidEnabled: false,
+    isProd: true,
+    // Unused: getDataImportMode() returns `disabled` in static mode (there is no data import service).
+    dataImportMode: `real-api`,
+    isTelemetryEnabled: false,
+    isSpanishEnabled: true,
+    defaultDataImportRolloutBehavior: `DATA_IMPORT_ABOUT_YOU_BASIC`,
   },
 } as const;
 
@@ -95,6 +115,8 @@ export const showPreauthUuidPanelOnDashboard = (): boolean => {
 };
 
 export const getDataImportMode = (): 'disabled' | 'clientside-intercept' | 'real-api' => {
+  // Static client-only mode has no data import service, and the session override must not turn one on.
+  if (isStaticClientOnly()) return `disabled`;
   const override = typeof sessionStorage !== `undefined` ? sessionStorage.getItem(`DATAIMPORT_MODE_OVERRIDE`) : ``;
   if (override === `clientside-intercept` || override === `real-api`) {
     return override;
