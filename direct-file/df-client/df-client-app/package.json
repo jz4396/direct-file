@@ -38,6 +38,8 @@
     "build-all-screens": "vite build --config vite.config.allscreens.ts",
     "build:development": "npm run build:ts && vite build --mode=development",
     "build:ts": "tsc --build",
+    "build:static": "vite build --mode static --outDir dist-static --emptyOutDir",
+    "stage:static": "vite-node src/staticClient/stageStaticSiteCli.ts",
     "build": "npm run build:ts && vite build",
     "convert-locale-body": "vite-node src/scripts/convertInfoBody.ts",
     "copy-transpiled-js": "vite-node src/scripts/copyTranspiledJS.ts",
