@@ -1,0 +1,4 @@
+# The client is built with base /df/file (vite.config.ts), so the site root redirects there. Other unknown paths
+# get Pages' single-page-app fallback: the staged site has no 404.html and a copy of index.html at its root
+# (stageStaticSite.ts), and that page loads its assets from /df/file/.
+/ /df/file/ 302
