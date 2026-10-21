@@ -7,6 +7,13 @@ import reportWebVitals from './reportWebVitals.js';
 import { initI18n } from './i18n.js';
 import { interceptor } from './hooks/useApiHook.js';
 import { CommonOverrideBanner, commonOverrideOverrideDateIfRequired } from '@irs/df-common';
+import { isStaticClientOnly } from './staticClient/staticMode.js';
+import { installStaticNetworkGuard } from './staticClient/networkGuard.js';
+
+// Static client-only mode: answer API calls in the page and block all network APIs before any other code runs.
+if (isStaticClientOnly()) {
+  installStaticNetworkGuard(window, import.meta.env.VITE_BACKEND_URL);
+}
 
 commonOverrideOverrideDateIfRequired();
 initPrivacyHandler();
