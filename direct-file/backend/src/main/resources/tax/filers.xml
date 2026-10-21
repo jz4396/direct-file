@@ -1691,6 +1691,134 @@
       </Derived>
     </Fact>
 
+    <!--
+      #182: filer SSN requirement for the Child Tax Credit. Unlike /filers/*/ssnValidForEitc (IRC §32(m)), a card marked
+      "Not valid for employment" doesn't qualify: the Schedule 8812 instructions require an SSN "valid for employment".
+    -->
+    <Fact path="/filers/*/ssnValidForCtc">
+      <Name>Filer has an SSN that meets the Child Tax Credit requirement</Name>
+      <Description>IRC §24(h)(7)(A)-(B) https://www.law.cornell.edu/uscode/text/26/24, as amended by P.L. 119-21 §70104(b) (taxable years beginning after December 31, 2024, §70104(f)): "No credit shall be allowed under this section to a taxpayer with respect to any qualifying child unless the taxpayer includes on the return of tax for the taxable year— (i) the taxpayer’s social security number (or, in the case of a joint return, the social security number of at least 1 spouse), and (ii) the social security number of such qualifying child." Instructions for Schedule 8812 (2026) draft https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf (SHA-256 d1b1893ee232e2cd909a94ac2ef3ba9f2bb2a9591f8f238a6c61b75db3bf4335) p. 2: "You must have a valid SSN to claim the CTC or ACTC. If you are filing a joint return, only one filer must have a valid SSN." and "A valid SSN is one that is valid for employment and that is issued by the Social Security Administration before the due date of your 2026 return (including extensions)." Valid: an SSN for a filer who was a U.S. citizen all year, or whose card has no employment legend or reads "Valid for work only with DHS authorization" with that authorization in effect, matching /familyAndHousehold/*/ssnValidForEmployment for the child. An ITIN or ATIN doesn't qualify. An expired DHS authorization isn't treated as valid here; see /flowKnockoutCtcFilerSsnDhsExpired.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <All>
+            <Dependency path="../isSecondaryFiler" />
+            <Dependency path="../tin/isSSN" />
+            <Any>
+              <!-- Citizens all year aren't asked about the card legend. -->
+              <Not>
+                <Dependency path="../needsSSNWorkStatus" />
+              </Not>
+              <Equal>
+                <Left>
+                  <Dependency path="/secondaryFilerSsnEmploymentValidity" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/ssnEmploymentValidityOptions">neither</Enum>
+                </Right>
+              </Equal>
+              <Equal>
+                <Left>
+                  <Dependency path="/secondaryFilerSsnEmploymentValidity" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/ssnEmploymentValidityOptions">validOnlyWithDhsAuthorization</Enum>
+                </Right>
+              </Equal>
+            </Any>
+          </All>
+          <All>
+            <Dependency path="../isPrimaryFiler" />
+            <Dependency path="../tin/isSSN" />
+            <Any>
+              <!-- Citizens all year aren't asked about the card legend. -->
+              <Not>
+                <Dependency path="../needsSSNWorkStatus" />
+              </Not>
+              <Equal>
+                <Left>
+                  <Dependency path="/primaryFilerSsnEmploymentValidity" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/primaryFilerSsnEmploymentValidityOptions">neither</Enum>
+                </Right>
+              </Equal>
+              <Equal>
+                <Left>
+                  <Dependency path="/primaryFilerSsnEmploymentValidity" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/primaryFilerSsnEmploymentValidityOptions">validOnlyWithDhsAuthorization</Enum>
+                </Right>
+              </Equal>
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/filers/*/ssnDhsAuthorizationExpired">
+      <Name>Filer's SSN card requires DHS authorization that has expired</Name>
+      <Description>#182: the filer isn't a U.S. citizen all year and the SSN card reads "Valid for work only with DHS authorization" with that authorization expired. Whether such an SSN meets IRC §24(h)(7)(B) (issued to a citizen or "pursuant to subclause (I) ... of section 205(c)(2)(B)(i) of the Social Security Act") is unresolved; /flowKnockoutCtcFilerSsnDhsExpired stops the return when the CTC depends on it.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <All>
+            <Dependency path="../isSecondaryFiler" />
+            <Dependency path="../tin/isSSN" />
+            <Dependency path="../needsSSNWorkStatus" />
+            <Equal>
+              <Left>
+                <Dependency path="/secondaryFilerSsnEmploymentValidity" />
+              </Left>
+              <Right>
+                <Enum optionsPath="/ssnEmploymentValidityOptions">validOnlyWithDhsAuthorizationExpired</Enum>
+              </Right>
+            </Equal>
+          </All>
+          <All>
+            <Dependency path="../isPrimaryFiler" />
+            <Dependency path="../tin/isSSN" />
+            <Dependency path="../needsSSNWorkStatus" />
+            <Equal>
+              <Left>
+                <Dependency path="/primaryFilerSsnEmploymentValidity" />
+              </Left>
+              <Right>
+                <Enum optionsPath="/primaryFilerSsnEmploymentValidityOptions">validOnlyWithDhsAuthorizationExpired</Enum>
+              </Right>
+            </Equal>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/filerSsnRequirementForCtcMet">
+      <Name>Filer SSN requirement for the Child Tax Credit is met</Name>
+      <Description>#182: the primary filer has an SSN that meets /filers/*/ssnValidForCtc, or, on a joint return, at least one spouse does. IRC §24(h)(7)(A)-(B) https://www.law.cornell.edu/uscode/text/26/24, as amended by P.L. 119-21 §70104(b) (taxable years beginning after December 31, 2024, §70104(f)): "No credit shall be allowed under this section to a taxpayer with respect to any qualifying child unless the taxpayer includes on the return of tax for the taxable year— (i) the taxpayer’s social security number (or, in the case of a joint return, the social security number of at least 1 spouse), and (ii) the social security number of such qualifying child." Instructions for Schedule 8812 (2026) draft https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf (SHA-256 d1b1893ee232e2cd909a94ac2ef3ba9f2bb2a9591f8f238a6c61b75db3bf4335) p. 2: "You must have a valid SSN to claim the CTC or ACTC. If you are filing a joint return, only one filer must have a valid SSN." and "A valid SSN is one that is valid for employment and that is issued by the Social Security Administration before the due date of your 2026 return (including extensions)."</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Any>
+                <Dependency path="/primaryFiler/ssnValidForCtc" />
+                <Dependency path="/secondaryFiler/ssnValidForCtc" />
+              </Any>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/primaryFiler/ssnValidForCtc" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/filers/*/ssnNotValidForEmployment">
       <Description>The SSN is marked "not valid" for employment</Description>
       <Export stateSystems="true" />

@@ -30,6 +30,55 @@
         </GreaterThan>
       </Derived>
     </Fact>
+    <!--
+      #182: the only open case in the filer SSN requirement. Kept to this one fact so it can be flipped once resolved:
+      if an expired-DHS SSN qualifies, add validOnlyWithDhsAuthorizationExpired to /filers/*/ssnValidForCtc and drop
+      this fact; if it doesn't, drop this fact and the child falls to the ODC.
+    -->
+    <Fact path="/flowKnockoutCtcFilerSsnDhsExpired">
+      <Name>Knockout: CTC depends on a filer SSN whose DHS work authorization has expired</Name>
+      <Description>#182: a child meets the Child Tax Credit child tests, the filer SSN requirement isn't otherwise met, and the primary filer (or, on a joint return, either spouse) has an SSN card reading "Valid for work only with DHS authorization" with that authorization expired. IRC §24(h)(7)(B) https://www.law.cornell.edu/uscode/text/26/24 counts an SSN "only if the social security number is issued— (i) to a citizen of the United States or pursuant to subclause (I) (or that portion of subclause (III) that relates to subclause (I)) of section 205(c)(2)(B)(i) of the Social Security Act, and (ii) before the due date for such return", which turns on how the number was issued, while Instructions for Schedule 8812 (2026) draft https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf p. 2 require an SSN "valid for employment". This tool can't tell which applies, so the return stops instead of allowing or denying the credit.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold/*/meetsChildCtcTests" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Not>
+            <Dependency module="filers" path="/filerSsnRequirementForCtcMet" />
+          </Not>
+          <Switch>
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </When>
+              <Then>
+                <Any>
+                  <Dependency module="filers" path="/primaryFiler/ssnDhsAuthorizationExpired" />
+                  <Dependency module="filers" path="/secondaryFiler/ssnDhsAuthorizationExpired" />
+                </Any>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dependency module="filers" path="/primaryFiler/ssnDhsAuthorizationExpired" />
+              </Then>
+            </Case>
+          </Switch>
+        </All>
+      </Derived>
+    </Fact>
     <Fact path="/flowAskAboutOdc">
       <Name>Whether we should ask the taxpayer about ODC eligibility</Name>
       <Description>This requires that we have ODC eligible individuals, and that we haven't asked

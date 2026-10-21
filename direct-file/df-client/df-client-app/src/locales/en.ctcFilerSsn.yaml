@@ -1,0 +1,15 @@
+# Child Tax Credit filer SSN requirement (#182). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/knockout/ctc-filer-ssn-dhs-expired: This tool can’t yet decide whether you can claim the Child Tax Credit
+info:
+  /info/knockout/ctc-filer-ssn-dhs-expired:
+    alertText:
+      body:
+        - p:
+            To claim the Child Tax Credit, you (or, if you’re filing jointly, you or your spouse) must have a Social
+            Security number that’s valid for employment. Your Social Security card says “Valid for work only with DHS
+            authorization,” and you told us that authorization has expired. This tool can’t yet decide whether that
+            number meets the requirement.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file

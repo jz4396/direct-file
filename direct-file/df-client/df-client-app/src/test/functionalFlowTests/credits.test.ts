@@ -380,3 +380,33 @@ describe(`The \`credits\` subcategory`, () => {
     });
   });
 });
+
+describe(`CTC filer SSN requirement (#182) flow`, () => {
+  const childId = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d48`;
+  const notQualifiedPtc = `/flow/credits-and-deductions/credits/ptc-not-qualified-no-aptc`;
+  const ctcIntro = `/flow/credits-and-deductions/credits/ctc-intro`;
+  const knockout = `/flow/credits-and-deductions/credits/ctc-filer-ssn-dhs-expired-knockout`;
+  const filer = (validity: string) =>
+    setupFactGraph({
+      ...baseFilerData,
+      [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+      [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(`1987-01-01`),
+      [`/filers/#${primaryFilerId}/isUsCitizenFullYear`]: createBooleanWrapper(false),
+      [`/primaryFilerSsnEmploymentValidity`]: createEnumWrapper(validity, `/primaryFilerSsnEmploymentValidityOptions`),
+      [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
+      '/familyAndHousehold': createCollectionWrapper([childId]),
+      ...makeChildData(childId, `2014-01-01`),
+    }).factGraph;
+
+  it(`routes a sole filer with expired DHS authorization to the knockout`, ({ task }) => {
+    expect(givenFacts(filer(`validOnlyWithDhsAuthorizationExpired`)).atPath(notQualifiedPtc, null, task)).toRouteNextTo(
+      knockout
+    );
+  });
+
+  it(`routes a filer with DHS authorization in effect to the CTC intro`, ({ task }) => {
+    expect(givenFacts(filer(`validOnlyWithDhsAuthorization`)).atPath(notQualifiedPtc, null, task)).toRouteNextTo(
+      ctcIntro
+    );
+  });
+});

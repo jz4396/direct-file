@@ -1,0 +1,16 @@
+# Child Tax Credit filer SSN requirement (#182). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/knockout/ctc-filer-ssn-dhs-expired:
+    Esta herramienta aún no puede determinar si usted puede reclamar el Crédito tributario por hijos
+info:
+  /info/knockout/ctc-filer-ssn-dhs-expired:
+    alertText:
+      body:
+        - p:
+            Para reclamar el Crédito tributario por hijos, usted (o, si presenta una declaración conjunta, usted o su
+            cónyuge) debe tener un número de Seguro Social válido para trabajar. Su tarjeta de Seguro Social dice “Valid
+            for work only with DHS authorization” y usted nos indicó que esa autorización venció. Esta herramienta aún
+            no puede determinar si ese número cumple con el requisito.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
