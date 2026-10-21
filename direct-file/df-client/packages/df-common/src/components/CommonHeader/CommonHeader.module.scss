@@ -20,6 +20,11 @@
   }
 }
 
+.df-logo-text {
+  font-weight: font-weight('bold');
+  font-size: size('sans', 'lg');
+}
+
 .df-header {
   :global {
     .usa-logo__text {

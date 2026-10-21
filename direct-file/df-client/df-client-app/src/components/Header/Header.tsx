@@ -11,6 +11,7 @@ import { isSpanishEnabled } from '../../constants/pageConstants.js';
 import { Modal, ModalHeading, ModalRef } from '@trussworks/react-uswds';
 import ContentDisplay from '../ContentDisplay/index.js';
 import { SwitchLangFunc } from '../GlobalLayout.js';
+import { isStaticClientOnly } from '../../staticClient/staticMode.js';
 
 type HeaderProps = {
   switchLang: SwitchLangFunc;
@@ -77,6 +78,9 @@ const Header = ({ switchLang, autoSpanishModal: showSpanishModal }: HeaderProps)
     <CommonHeader
       headerAriaLabel={t(`header.banner-label`)}
       dfPrefix={`${import.meta.env.VITE_PUBLIC_PATH}`}
+      // The static client-only build is not an IRS site, so it shows a text home link instead of the IRS logo.
+      logoSrc={isStaticClientOnly() ? undefined : `${import.meta.env.VITE_PUBLIC_PATH}/imgs/irs-df-logo.svg`}
+      logoText={isStaticClientOnly() ? t(`staticClient.homeLinkText`) : undefined}
       homeLink='/home'
       homeLinkTitle='header.title-link-label'
       navMenuLabel={t(`header.menu`)}
