@@ -305,11 +305,16 @@ export function citeErrors(config: TaxYearConfig, where: string, cites: Cite[] |
   return errors;
 }
 
+/** Statute text writes rates out (`30 percent`); `30%` is also accepted in that spelling. */
+export function alternateQuotedForms(form: string): string[] {
+  return form.endsWith(`%`) ? [form, `${form.slice(0, -1)} percent`] : [form];
+}
+
 /** Every dollar amount and percentage rate the parameter holds must appear in one of its quotes. */
 export function quoteCoverageErrors(where: string, values: string[], cites: Cite[]): string[] {
   const quotes = cites.map((c) => c.quote).join(`\n`);
   const missing = [...new Set(values.map(quotedForms).filter((v): v is string => v !== null))].filter(
-    (v) => !quotes.includes(v)
+    (v) => !alternateQuotedForms(v).some((form) => quotes.includes(form))
   );
   return missing.length ? [`${where}: cited quotes do not contain ${missing.join(`, `)}`] : [];
 }
