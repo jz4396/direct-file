@@ -103,7 +103,9 @@ class ScheduleATy2026PdfSmokeTest {
 
     static String value(Map<String, String> byName, String suffix) {
         for (var e : byName.entrySet()) {
-            if (e.getKey().endsWith(suffix) && e.getValue() != null && !e.getValue().isEmpty()) {
+            if (e.getKey().endsWith(suffix)
+                    && e.getValue() != null
+                    && !e.getValue().isEmpty()) {
                 return e.getValue();
             }
         }
@@ -155,8 +157,15 @@ class ScheduleATy2026PdfSmokeTest {
             long l15 = cents(value(f, "form1[0].Page2[0].f2_05[0]"));
             long l18 = cents(value(f, "form1[0].Page2[0].f2_19[0]"));
             assertEquals(l4 + 1500000 + 1200000 + l15, l18, "18 = 4 + 7 + 10 + 15");
-            // Issue #67: Schedule A total (2026 draft line 18; older forms called this line 17) equals Form 1040 line 12e.
-            assertEquals(l18, cents(value(f, "f1_57[0]")), "Sch A line 18 == 1040 line 12 (/standardOrItemizedDeductions)");
+            // Issue #67: Schedule A total (2026 draft line 18; older forms called this line 17) equals Form 1040 line
+            // 12e.
+            // #178: on the 2026 Form 1040 draft line 12e is Page 2 f2_02 (tooltip "12e. Standard deduction or itemized
+            // deductions (from Schedule A)."); f1_57 is line 1z ("1z. Add lines 1a through 1h."). The full name keeps
+            // Schedule A's own form1[0].Page2[0].f2_02[0] (line 12) out of the match.
+            assertEquals(
+                    l18,
+                    cents(value(f, "topmostSubform[0].Page2[0].f2_02[0]")),
+                    "Sch A line 18 == 1040 line 12e (/standardOrItemizedDeductions)");
             String no = value(f, "form1[0].Page2[0].c2_1[0]");
             assertFalse(no.isEmpty() || "Off".equals(no), "line 18 No box checked");
             // Unsupported lines stay blank, not a silent 0.
