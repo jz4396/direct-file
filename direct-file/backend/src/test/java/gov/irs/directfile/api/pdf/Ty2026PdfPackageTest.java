@@ -78,8 +78,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * /familyAndHouseholdHasInvalidTIN} (submission-blocking) true. Such a child still counts for the CTC, because the
  * dependent's {@code eligibleCtc} fact reads the declared tinType; that is what lets Schedule 8812 print its CTC lines,
  * and the CTC scenario asserts the invalid-TIN fact is true. Real filing needs an SSN for each CTC child under 26 U.S.C.
- * 24(h)(7); the filer-SSN requirement of 24(h)(7) as amended by P.L. 119-21 is not modeled (#182). The backend's
- * submission-blocking list is empty (#181), so this test does not claim any scenario is free of blocking facts.
+ * 24(h)(7); the filer-SSN requirement of 24(h)(7) as amended by P.L. 119-21 is not modeled (#182). Printing is not
+ * filing: PdfService prints these returns, while the sign and submit paths refuse them (the family scenario asserts the
+ * server's submission-blocking check names /familyAndHouseholdHasInvalidTIN). This test does not claim any scenario is
+ * free of blocking facts.
  *
  * <pre>
  * Scenario 1, investor (federal, DC): single; W-2 $250,000 wages / $184,500 social security wages / $250,000 Medicare
@@ -674,12 +676,18 @@ class Ty2026PdfPackageTest {
     @Test
     void familyCreditsPackage() throws Exception {
         // Printing only, not a fileable return: both children are declared tinType = ssn with 9xx numbers, which are
-        // never SSNs in the fact graph, so the CTC lines print and the invalid-TIN fact is true (#181, #182).
+        // never SSNs in the fact graph, so the CTC lines print and the invalid-TIN fact is true (#182).
         Map<String, FactTypeWithItem> facts = scenarioFile(FAMILY);
         var invalidTin = factGraphService.getGraph(facts).get(CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
         assertTrue(
                 invalidTin.hasValue() && Boolean.TRUE.equals(invalidTin.get()),
                 CreditFormsTy2026PdfSmokeTest.INVALID_TIN + " (9xx children declared ssn)");
+        // The server refuses to sign or submit this return (#181); it still prints.
+        assertTrue(
+                factGraphService
+                        .submissionBlockingFactPaths(factGraphService.getGraph(facts))
+                        .contains(CreditFormsTy2026PdfSmokeTest.INVALID_TIN),
+                "sign/submit gate names " + CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
         Pkg pkg = renderFacts(facts, "e2e-ty2026-family.pdf");
         pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
@@ -773,7 +781,7 @@ class Ty2026PdfPackageTest {
         assertEquals(1019, amt(f1040, "Page2[0].f2_27[0]"), "Form 1040 line 28 = 8812 line 27");
     }
 
-    /** The scenario's children are declared ssn with 9xx numbers: /familyAndHouseholdHasInvalidTIN is true (#181). */
+    /** The scenario's children are declared ssn with 9xx numbers: /familyAndHouseholdHasInvalidTIN is true. */
     static void assertInvalidTin(Map<String, String> scenario) throws Exception {
         JsonNode root =
                 MAPPER.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
@@ -910,8 +918,8 @@ class Ty2026PdfPackageTest {
 
     static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName) throws Exception {
 
-        // No submission-blocking check here: the backend's blocking list is empty (#181), and the CTC scenario is
-        // blocked by design (see the class comment).
+        // No submission-blocking check here: printing is not filing, and the CTC scenario is blocked by design (see the
+        // class comment). Sign and submit enforce FactGraphService#submissionBlockingFactPaths.
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(TAX_YEAR);
         taxReturn.setFactsWithoutDirtyingEntity(facts);

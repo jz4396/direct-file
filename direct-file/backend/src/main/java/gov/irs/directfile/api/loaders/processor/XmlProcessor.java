@@ -114,6 +114,10 @@ public class XmlProcessor {
         Element exportZeroElement = getDirectChildElement(factElement, FACT_EXPORT_ZERO);
         boolean exportZero = exportZeroElement != null;
 
+        // <BlockSubmissionOnTrue />: the same marker the client generator (generate.ts) reads
+        boolean blockSubmissionOnTrue =
+                getDirectChildElement(factElement, BLOCK_SUBMISSION_ON_TRUE_ELEMENT_NAME) != null;
+
         // writable
         Element writableElement = getDirectChildElement(factElement, FACT_WRITABLE_CHILD_NAME);
         List<Element> writableElementChildren = getAllDirectChildElements(writableElement);
@@ -129,7 +133,8 @@ public class XmlProcessor {
         Element exportElement = getDirectChildElement(factElement, FACT_EXPORT_CHILD_NAME);
         ExportNode export = readExportNode(exportElement);
 
-        return new TaxFact(path, name, description, exportZero, writable, derived, placeholder, export);
+        return new TaxFact(
+                path, name, description, exportZero, blockSubmissionOnTrue, writable, derived, placeholder, export);
     }
 
     private TaxWritable readWritableNode(List<Element> writableElementList) {
