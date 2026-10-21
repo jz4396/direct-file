@@ -952,6 +952,139 @@
       </Derived>
     </Fact>
 
+    <!--
+      #144: 1099-INT amounts that Schedule B Part I subtracts below the line 1 subtotal. This tool doesn't produce the
+      subtotal or the labeled subtraction, so each case stops the return instead of overstating Form 1040 line 2b.
+    -->
+    <Fact path="/interestReports/*/receivedAsNominee">
+      <Name>1099-INT includes interest received as a nominee</Name>
+      <Description>Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf (SHA-256 b92f31ece57a82ea576ac96507fe5df637dbda7489a80eb28aaab88e7c87b287) p. 1, General Instructions: "Use Schedule B (Form 1040) if any of the following applies." The 2026 draft https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) has the same text on PDF p. 2 (printed p. 1) and p. 3. p. 1, General Instructions: "You received interest or ordinary dividends as a nominee." p. 1, Line 1, Nominees: "If you received a Form 1099-INT that includes interest you received as a nominee (that is, in your name, but the interest actually belongs to someone else), report the total on line 1. ... Below this subtotal, enter “Nominee Distribution” and show the total interest you received as a nominee. Subtract this amount from the subtotal and enter the result on line 2."</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/interestReports/*/paidAccruedInterest">
+      <Name>1099-INT includes accrued interest paid to the seller of a bond</Name>
+      <Description>Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf (SHA-256 b92f31ece57a82ea576ac96507fe5df637dbda7489a80eb28aaab88e7c87b287) p. 1, General Instructions: "Use Schedule B (Form 1040) if any of the following applies." The 2026 draft https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) has the same text on PDF p. 2 (printed p. 1) and p. 3. p. 1, General Instructions: "You have accrued interest from a bond." p. 2, Line 1, Accrued interest: "When you buy bonds between interest payment dates and pay accrued interest to the seller, this interest is taxable to the seller. If you received a Form 1099 for interest as a purchaser of a bond with accrued interest, follow the rules earlier under Nominees to see how to report the accrued interest. But identify the amount to be subtracted as “Accrued Interest.”"</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/interestReports/*/hasInterestOnGovernmentBonds">
+      <Name>1099-INT has box 3 interest</Name>
+      <Description>Box 3 (interest on U.S. savings bonds and Treasury obligations) is more than $0. Asks /interestReports/*/savingsBondInterestPreviouslyReported.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../interestOnGovernmentBonds" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+    <Fact path="/interestReports/*/askPaidAccruedInterest">
+      <Name>Ask the accrued interest question</Name>
+      <Description>Flow only: asked after a No to /interestReports/*/receivedAsNominee. A Yes already stops the return.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../receivedAsNominee" />
+          </IsComplete>
+          <Not>
+            <Dependency path="../receivedAsNominee" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/interestReports/*/askSavingsBondInterestPreviouslyReported">
+      <Name>Ask the savings bond interest question</Name>
+      <Description>Flow only: asked when box 3 is more than $0 after a No to /interestReports/*/paidAccruedInterest. A Yes already stops the return.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../askPaidAccruedInterest" />
+          <IsComplete>
+            <Dependency path="../paidAccruedInterest" />
+          </IsComplete>
+          <Not>
+            <Dependency path="../paidAccruedInterest" />
+          </Not>
+          <Dependency path="../hasInterestOnGovernmentBonds" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/interestReports/*/savingsBondInterestPreviouslyReported">
+      <Name>1099-INT box 3 includes savings bond interest already reported or accrued before the bond was received</Name>
+      <Description>Pub. 550 (2025) https://www.irs.gov/pub/irs-pdf/p550.pdf (SHA-256 83552968a07e63d1c81e5b4f311fc0e54728b5ff9654b5a0d2ba6292c5574317) p. 25, U.S. savings bond interest previously reported: "If you received a Form 1099-INT for U.S. savings bond interest, the form may show interest you do not have to report. ... On Schedule B (Form 1040), Part I, line 1, report all the interest shown on your Form 1099-INT. Then follow these steps. 1. Several rows above Schedule B (Form 1040), Part I, line 2, enter a subtotal of all interest listed on Schedule B (Form 1040), Part I, line 1. 2. Below the subtotal, enter “U.S. Savings Bond Interest Previously Reported” and enter amounts previously reported or interest accrued before you received the bond. 3. Subtract these amounts from the subtotal and enter the result on Schedule B (Form 1040), Part I, line 2." Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf p. 1, Line 1: "Include interest from series EE, H, HH, and I U.S. savings bonds."</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/interestReports/*/hasScheduleBSubtraction">
+      <Name>1099-INT needs a Schedule B Part I subtraction</Name>
+      <Description>Yes to /interestReports/*/receivedAsNominee, /interestReports/*/paidAccruedInterest or /interestReports/*/savingsBondInterestPreviouslyReported. An unanswered question is not a yes.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency path="../receivedAsNominee" />
+            </IsComplete>
+            <Dependency path="../receivedAsNominee" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../paidAccruedInterest" />
+            </IsComplete>
+            <Dependency path="../paidAccruedInterest" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../savingsBondInterestPreviouslyReported" />
+            </IsComplete>
+            <Dependency path="../savingsBondInterestPreviouslyReported" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutInterestScheduleBSubtraction">
+      <Name>Knockout: 1099-INT interest that Schedule B Part I subtracts</Name>
+      <Description>#144: any 1099-INT with /interestReports/*/hasScheduleBSubtraction (nominee interest, accrued interest paid to a seller, or U.S. savings bond interest previously reported or accrued before the bond was received). Each is reported in full on Schedule B line 1 and subtracted below a subtotal before line 2; this tool puts the full box 1 and box 3 amounts on Form 1040 line 2b and doesn't produce the subtraction, so the return stops. Cites on the three questions.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/interestReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/interestReports/*/hasScheduleBSubtraction" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutHasBonds">
       <Name>Knockout Has Bonds</Name>
       <Description>Whether user is knocked out for having a bonds. Happens if the user has more than
