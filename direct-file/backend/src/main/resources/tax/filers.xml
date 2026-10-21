@@ -1697,7 +1697,7 @@
     -->
     <Fact path="/filers/*/ssnValidForCtc">
       <Name>Filer has an SSN that meets the Child Tax Credit requirement</Name>
-      <Description>IRC §24(h)(7)(A)-(B) https://www.law.cornell.edu/uscode/text/26/24, as amended by P.L. 119-21 §70104(b) (taxable years beginning after December 31, 2024, §70104(f)): "No credit shall be allowed under this section to a taxpayer with respect to any qualifying child unless the taxpayer includes on the return of tax for the taxable year— (i) the taxpayer’s social security number (or, in the case of a joint return, the social security number of at least 1 spouse), and (ii) the social security number of such qualifying child." Instructions for Schedule 8812 (2026) draft https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf (SHA-256 d1b1893ee232e2cd909a94ac2ef3ba9f2bb2a9591f8f238a6c61b75db3bf4335) p. 2: "You must have a valid SSN to claim the CTC or ACTC. If you are filing a joint return, only one filer must have a valid SSN." and "A valid SSN is one that is valid for employment and that is issued by the Social Security Administration before the due date of your 2026 return (including extensions)." Valid: an SSN for a filer who was a U.S. citizen all year, or whose card has no employment legend or reads "Valid for work only with DHS authorization" with that authorization in effect, matching /familyAndHousehold/*/ssnValidForEmployment for the child. An ITIN or ATIN doesn't qualify. An expired DHS authorization isn't treated as valid here; see /flowKnockoutCtcFilerSsnDhsExpired.</Description>
+      <Description>IRC §24(h)(7)(A)-(B) https://www.law.cornell.edu/uscode/text/26/24, as amended by P.L. 119-21 §70104(b) (taxable years beginning after December 31, 2024, §70104(f)): "No credit shall be allowed under this section to a taxpayer with respect to any qualifying child unless the taxpayer includes on the return of tax for the taxable year— (i) the taxpayer’s social security number (or, in the case of a joint return, the social security number of at least 1 spouse), and (ii) the social security number of such qualifying child." Instructions for Schedule 8812 (2026) draft https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf (SHA-256 d1b1893ee232e2cd909a94ac2ef3ba9f2bb2a9591f8f238a6c61b75db3bf4335) p. 2: "You must have a valid SSN to claim the CTC or ACTC. If you are filing a joint return, only one filer must have a valid SSN." and "A valid SSN is one that is valid for employment and that is issued by the Social Security Administration before the due date of your 2026 return (including extensions)." Valid: an SSN for a filer who was a U.S. citizen all year, or whose card has no employment legend or reads "Valid for work only with DHS authorization" with that authorization in effect, matching /familyAndHousehold/*/ssnValidForEmployment for the child. An ITIN or ATIN doesn't qualify. An expired DHS authorization, or a restricted card although the filer's status has changed, isn't treated as valid here; see /filers/*/ssnCtcStatusUnresolved, which stops the return through /flowKnockoutCtcFilerSsnUnresolved.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Any>
@@ -1758,7 +1758,7 @@
     </Fact>
     <Fact path="/filers/*/ssnDhsAuthorizationExpired">
       <Name>Filer's SSN card requires DHS authorization that has expired</Name>
-      <Description>#182: the filer isn't a U.S. citizen all year and the SSN card reads "Valid for work only with DHS authorization" with that authorization expired. Whether such an SSN meets IRC §24(h)(7)(B) (issued to a citizen or "pursuant to subclause (I) ... of section 205(c)(2)(B)(i) of the Social Security Act") is unresolved; /flowKnockoutCtcFilerSsnDhsExpired stops the return when the CTC depends on it.</Description>
+      <Description>#182: the filer isn't a U.S. citizen all year and the SSN card reads "Valid for work only with DHS authorization" with that authorization expired. Whether such an SSN meets IRC §24(h)(7)(B) (issued to a citizen or "pursuant to subclause (I) ... of section 205(c)(2)(B)(i) of the Social Security Act") is unresolved; see /filers/*/ssnCtcStatusUnresolved.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Any>
@@ -1789,6 +1789,41 @@
             </Equal>
           </All>
         </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/filers/*/askSsnStatusChangedForCtc">
+      <Name>Ask whether the filer's status changed since the SSN card was issued</Name>
+      <Description>#182: the filer's SSN card reads "Not valid for employment", or "Valid for work only with DHS authorization" with that authorization expired. IRC §24(h)(7)(B)(ii) asks whether a qualifying SSN was issued "before the due date for such return", and 42 U.S.C. 405(c)(2)(B)(i)(I) https://www.law.cornell.edu/uscode/text/42/405 covers numbers assigned "to other aliens at such time as their status is so changed as to make it lawful for them to engage in such employment", so a status change that isn't on the card yet leaves the CTC unresolved.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../tin/isSSN" />
+          <Dependency path="../needsSSNWorkStatus" />
+          <Any>
+            <Dependency path="../ssnNotValidForEmployment" />
+            <Dependency path="../ssnDhsAuthorizationExpired" />
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/filers/*/writableSsnStatusChangedForCtc">
+      <Name>Filer's status changed so a card without the restriction is available</Name>
+      <Description>#182: "Has your immigration or citizenship status changed so that you can now get a Social Security card without that restriction?" Asked when /filers/*/askSsnStatusChangedForCtc.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/filers/*/ssnCtcStatusUnresolved">
+      <Name>Whether the filer's SSN meets the CTC requirement can't be decided</Name>
+      <Description>#182: (1) the card reads "Valid for work only with DHS authorization" and the authorization has expired. §24(h)(7)(B)(i) tests how the number was issued, the Instructions for Schedule 8812 (2026) draft p. 2 require an SSN "valid for employment", and Pub. 596 (2025) https://www.irs.gov/pub/irs-pdf/p596.pdf (SHA-256 29e8c6695912318253743210fcd68aaa10ad874c76edcab4aa7dc4b23ff51dbf) p. 5, which covers the EIC only, counts such a card "only if that authorization is still valid"; no CTC source addresses an expired authorization. Or (2) the card is restricted but the filer's status has changed so a card without the restriction is available (/filers/*/writableSsnStatusChangedForCtc). Pub. 596 (2025) p. 5 lets that count for the EIC "even if the social security card wasn't updated"; the Schedule 8812 instructions give no CTC equivalent. A restricted card with no status change fails /filers/*/ssnValidForCtc.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="../askSsnStatusChangedForCtc" />
+          <Any>
+            <Dependency path="../ssnDhsAuthorizationExpired" />
+            <Dependency path="../writableSsnStatusChangedForCtc" />
+          </Any>
+        </All>
       </Derived>
     </Fact>
     <Fact path="/filerSsnRequirementForCtcMet">

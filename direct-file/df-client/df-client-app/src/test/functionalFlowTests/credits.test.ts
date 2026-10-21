@@ -385,7 +385,7 @@ describe(`CTC filer SSN requirement (#182) flow`, () => {
   const childId = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d48`;
   const notQualifiedPtc = `/flow/credits-and-deductions/credits/ptc-not-qualified-no-aptc`;
   const ctcIntro = `/flow/credits-and-deductions/credits/ctc-intro`;
-  const knockout = `/flow/credits-and-deductions/credits/ctc-filer-ssn-dhs-expired-knockout`;
+  const knockout = `/flow/credits-and-deductions/credits/ctc-filer-ssn-unresolved-knockout`;
   const filer = (validity: string) =>
     setupFactGraph({
       ...baseFilerData,

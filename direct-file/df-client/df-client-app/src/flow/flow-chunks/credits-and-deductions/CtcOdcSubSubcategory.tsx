@@ -78,13 +78,13 @@ export const CtcOdcSubSubcategory = (
   <Gate condition='/flowTrue'>
     <SubSubcategory route='ctc-odc' headingLevel='h2' borderStyle='heavy'>
       <Screen
-        route='ctc-filer-ssn-dhs-expired-knockout'
-        condition='/flowKnockoutCtcFilerSsnDhsExpired'
+        route='ctc-filer-ssn-unresolved-knockout'
+        condition='/flowKnockoutCtcFilerSsnUnresolved'
         isKnockout={true}
       >
         <IconDisplay name='ErrorOutline' size={9} isCentered />
-        <Heading i18nKey='/heading/knockout/ctc-filer-ssn-dhs-expired' />
-        <DFAlert i18nKey='/info/knockout/ctc-filer-ssn-dhs-expired' headingLevel='h2' type='warning' />
+        <Heading i18nKey='/heading/knockout/ctc-filer-ssn-unresolved' />
+        <DFAlert i18nKey='/info/knockout/ctc-filer-ssn-unresolved' headingLevel='h2' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
       <Gate condition='/maybeEligibleForCtc'>

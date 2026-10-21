@@ -31,15 +31,14 @@
       </Derived>
     </Fact>
     <!--
-      #182: the only open case in the filer SSN requirement. Kept to this one fact so it can be flipped once resolved:
-      if an expired-DHS SSN qualifies, add validOnlyWithDhsAuthorizationExpired to /filers/*/ssnValidForCtc and drop
-      this fact; if it doesn't, drop this fact and the child falls to the ODC.
+      #182: the open cases in the filer SSN requirement (/filers/*/ssnCtcStatusUnresolved). Kept to this
+      knockout and its condition /ctcFilerSsnUnresolvedApplies:
+      if a source later decides them, move the case into /filers/*/ssnValidForCtc (pass) or drop it (fail, so the child
+      falls to the ODC) and remove this fact.
     -->
-    <Fact path="/flowKnockoutCtcFilerSsnDhsExpired">
-      <Name>Knockout: CTC depends on a filer SSN whose DHS work authorization has expired</Name>
-      <Description>#182: a child meets the Child Tax Credit child tests, the filer SSN requirement isn't otherwise met, and the primary filer (or, on a joint return, either spouse) has an SSN card reading "Valid for work only with DHS authorization" with that authorization expired. IRC §24(h)(7)(B) https://www.law.cornell.edu/uscode/text/26/24 counts an SSN "only if the social security number is issued— (i) to a citizen of the United States or pursuant to subclause (I) (or that portion of subclause (III) that relates to subclause (I)) of section 205(c)(2)(B)(i) of the Social Security Act, and (ii) before the due date for such return", which turns on how the number was issued, while Instructions for Schedule 8812 (2026) draft https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf p. 2 require an SSN "valid for employment". This tool can't tell which applies, so the return stops instead of allowing or denying the credit.</Description>
-      <BlockSubmissionOnTrue />
-      <Export downstreamFacts="true" />
+    <Fact path="/ctcFilerSsnUnresolvedApplies">
+      <Name>The CTC depends on a filer SSN this tool can't decide</Name>
+      <Description>#182: condition for /flowKnockoutCtcFilerSsnUnresolved. Incomplete while the child or card questions are unanswered; the knockout treats that as false.</Description>
       <Derived>
         <All>
           <GreaterThan>
@@ -62,8 +61,8 @@
               </When>
               <Then>
                 <Any>
-                  <Dependency module="filers" path="/primaryFiler/ssnDhsAuthorizationExpired" />
-                  <Dependency module="filers" path="/secondaryFiler/ssnDhsAuthorizationExpired" />
+                  <Dependency module="filers" path="/primaryFiler/ssnCtcStatusUnresolved" />
+                  <Dependency module="filers" path="/secondaryFiler/ssnCtcStatusUnresolved" />
                 </Any>
               </Then>
             </Case>
@@ -72,11 +71,40 @@
                 <True />
               </When>
               <Then>
-                <Dependency module="filers" path="/primaryFiler/ssnDhsAuthorizationExpired" />
+                <Dependency module="filers" path="/primaryFiler/ssnCtcStatusUnresolved" />
               </Then>
             </Case>
           </Switch>
         </All>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutCtcFilerSsnUnresolved">
+      <Name>Knockout: the CTC depends on a filer SSN this tool can't decide</Name>
+      <Description>#182: a child meets the Child Tax Credit child tests, the filer SSN requirement (/filerSsnRequirementForCtcMet) isn't otherwise met, and the primary filer (or, on a joint return, either spouse) has /filers/*/ssnCtcStatusUnresolved: an SSN card with expired DHS work authorization, or a restricted card although the filer's status has changed. IRC §24(h)(7)(B) https://www.law.cornell.edu/uscode/text/26/24 counts an SSN "only if the social security number is issued— (i) to a citizen of the United States or pursuant to subclause (I) (or that portion of subclause (III) that relates to subclause (I)) of section 205(c)(2)(B)(i) of the Social Security Act, and (ii) before the due date for such return." Instructions for Schedule 8812 (2026) draft https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf p. 2: "A valid SSN is one that is valid for employment and that is issued by the Social Security Administration before the due date of your 2026 return (including extensions)." Neither settles these cases, so the return stops instead of allowing or denying the credit.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <!-- Complete and false unless the condition is complete and true, so submission checks never see it incomplete. -->
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/ctcFilerSsnUnresolvedApplies" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/ctcFilerSsnUnresolvedApplies" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
     <Fact path="/flowAskAboutOdc">
