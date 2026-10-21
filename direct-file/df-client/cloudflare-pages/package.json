@@ -1,0 +1,9 @@
+{
+  "name": "direct-file-cloudflare-pages-deploy",
+  "private": true,
+  "description": "Pinned deploy tooling for the static client-only build (see README.md). Install with npm ci --ignore-scripts.",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "wrangler": "4.149.0"
+  }
+}
