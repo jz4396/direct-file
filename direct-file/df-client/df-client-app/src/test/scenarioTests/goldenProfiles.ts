@@ -1,6 +1,7 @@
-// Golden end-to-end scenarios (synthetic data), #135 profiles 5 and 7. Every name, SSN, address, EIN and payer in
-// this file is made up: SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN ranges,
-// so no fixture can match a real person. The expected figures are hand-computed in goldenProfiles.test.ts.
+// Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT) and profile B
+// (Florida only). Every name, SSN, address, EIN and payer in this file is made up: SSNs use the 900-999 area (never
+// issued by SSA), with group numbers outside the ITIN ranges, so no fixture can match a real person. The expected
+// figures are hand-computed in goldenProfiles.test.ts.
 import {
   createAddressWrapper,
   createBooleanWrapper,
@@ -16,12 +17,24 @@ import {
 import {
   baseFilerData,
   filerWithW2NoDeductionsNoCreditsBaseData,
+  mfjFilerData,
+  mfsFilerData,
   primaryFilerId,
   singleFilerData,
   spouseId,
 } from '../testData.js';
 
 export const GOLDEN_SSN_PATTERN = /^9\d{2}-?\d{2}-?\d{4}$/;
+
+/**
+ * SSN-shaped test numbers a golden profile may use where the fact graph must read a TIN as an SSN (a profile that
+ * claims the child tax credit or EITC: IRC §24(h)(7), §32(m)). A 9xx area is never an SSN to the fact graph
+ * (Tin.isSSN), so such a profile can't use one. Only numbers already used as SSNs by the shared upstream fixtures in
+ * src/test/testData.ts are allowed; goldenProfiles.test.ts checks that each still appears there.
+ */
+export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`555-55-5555`, `111-11-1111`, `444-00-4444`];
+
+export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
 
 const noW2 = Object.fromEntries(
   Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
@@ -133,6 +146,9 @@ const qualifiedDividends = (id: string, payer: string, box1a: number, box1b: num
   '/dividendReportsIsDone': createBooleanWrapper(true),
 });
 
+const casey: Person = { first: `Casey`, last: `Sample`, ssn: [`900`, `41`, `1001`], dob: `1980-02-17` };
+const morgan: Person = { first: `Morgan`, last: `Sample`, ssn: [`900`, `42`, `1002`], dob: `1981-08-30` };
+const taylor: Person = { first: `Taylor`, last: `Placeholder`, ssn: [`900`, `43`, `1003`], dob: `1992-04-03` };
 const avery: Person = { first: `Avery`, last: `Sample`, ssn: [`900`, `12`, `3456`], dob: `1975-03-09` };
 const jordan: Person = { first: `Jordan`, last: `Example`, ssn: [`900`, `23`, `4567`], dob: `1988-11-21` };
 const riley: Person = { first: `Riley`, last: `Placeholder`, ssn: [`900`, `34`, `5678`], dob: `1990-05-14` };
@@ -203,7 +219,103 @@ export const profile7PaToFlPartYear = {
   ),
 };
 
+const spouse = (p: Person) => ({
+  [`/filers/#${spouseId}/firstName`]: createStringWrapper(p.first),
+  [`/filers/#${spouseId}/writableMiddleInitial`]: createStringWrapper(``),
+  [`/filers/#${spouseId}/lastName`]: createStringWrapper(p.last),
+  [`/filers/#${spouseId}/occupation`]: createStringWrapper(`Designer`),
+  [`/filers/#${spouseId}/tin`]: createTinWrapper({ area: p.ssn[0], group: p.ssn[1], serial: p.ssn[2] }),
+  [`/filers/#${spouseId}/dateOfBirth`]: createDayWrapper(p.dob),
+});
+
+/**
+ * Profile A: single Florida resident, W-2 wages $210,000 plus Form 1099-DIV ordinary dividends $20,000 (qualified
+ * $15,000): Form 8960 NIIT on the dividends, Form 8959 on wages over $200,000, QDCG worksheet.
+ */
+export const profileADividendsNiit = {
+  ...single(casey, { street: `123 Example St`, city: `Orlando`, zip: `32801`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  ...w2s(casey.ssn, {
+    id: `13500000-0000-4000-8000-000000000a01`,
+    employer: `Example Analytics LLC`,
+    ein: [`00`, `0000101`],
+    box1: 210000,
+    box2: 40000,
+    box5: 210000,
+    box6: 3045,
+  }),
+  ...qualifiedDividends(`13500000-0000-4000-8000-000000000a02`, `Example Dividend Fund`, 20000, 15000),
+};
+
+/** Profile A boundary row: the same income on a joint return (spouse with no income). */
+export const profileADividendsNiitMfj = {
+  ...profileADividendsNiit,
+  ...mfjFilerData,
+  ...spouse(morgan),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(casey.dob),
+};
+
+/** Profile A boundary row: married filing separately, W-2 $124,001 plus $1,000 dividends (MAGI $125,001). */
+export const profileADividendsNiitMfs = {
+  ...profileADividendsNiit,
+  ...mfsFilerData,
+  ...spouse(morgan),
+  // Separate-return screening answers: the spouse files their own return, doesn't itemize, has an SSN (not an
+  // NRA TIN), isn't 65 or older and has no gross income.
+  '/MFSLivingSpouseFilingReturn': createBooleanWrapper(true),
+  '/MFSSpouseFilingReturn': createBooleanWrapper(true),
+  '/MFSSpouseHasNRTIN': createBooleanWrapper(false),
+  '/spouseItemizes': createBooleanWrapper(false),
+  '/MFSSpouse65OrOlder': createBooleanWrapper(false),
+  '/MFSSpouseHasGrossIncome': createBooleanWrapper(false),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(casey.dob),
+  ...w2s(casey.ssn, {
+    id: `13500000-0000-4000-8000-000000000a01`,
+    employer: `Example Analytics LLC`,
+    ein: [`00`, `0000101`],
+    box1: 124001,
+    box2: 20000,
+    box5: 124001,
+    box6: 1798,
+  }),
+  ...qualifiedDividends(`13500000-0000-4000-8000-000000000a02`, `Example Dividend Fund`, 1000, 1000),
+};
+
+/** Profile B: single Florida resident, no state return: W-2, Form 1099-INT and Form 1099-DIV. */
+export const profileBFloridaOnly = {
+  ...single(taylor, { street: `123 Example St`, city: `Jacksonville`, zip: `32202`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  ...w2s(taylor.ssn, {
+    id: `13500000-0000-4000-8000-000000000b01`,
+    employer: `Example Coastal Services Inc`,
+    ein: [`00`, `0000201`],
+    box1: 48000,
+    box2: 4000,
+  }),
+  ...interest(`13500000-0000-4000-8000-000000000b02`, `Example Savings Bank`, 600),
+  ...qualifiedDividends(`13500000-0000-4000-8000-000000000b03`, `Example Index Fund`, 900, 400),
+};
+
+/** Profile B negative row: the same return with $150 of state income tax withheld in W-2 box 17. */
+export const profileBFloridaStateWithholding = {
+  ...profileBFloridaOnly,
+  ...w2s(taylor.ssn, {
+    id: `13500000-0000-4000-8000-000000000b01`,
+    employer: `Example Coastal Services Inc`,
+    ein: [`00`, `0000201`],
+    box1: 48000,
+    box2: 4000,
+    box16: 48000,
+    box17: 150,
+  }),
+};
+
 export const goldenProfiles = {
+  profileADividendsNiit,
+  profileADividendsNiitMfj,
+  profileADividendsNiitMfs,
+  profileBFloridaOnly,
+  profileBFloridaStateWithholding,
   profile5AmtAnd8959,
   profile7PaFullYear,
   profile7PaToFlPartYear,
