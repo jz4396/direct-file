@@ -129,6 +129,7 @@ class Ty2026PdfPackageTest {
 
     /** Group-00 test SSN serials (area 444) for each CTC child, 26 U.S.C. 24(h)(7)(A)(ii). */
     static final List<String> CTC_CHILD_SERIALS = List.of("1111", "2222", "3333");
+
     static final String FAMILY = "hoh-cdcc.json";
     static final String SAVER = "single-simple-savers-credit.json";
     static final String HSA = "hsa-single-filer-contributions-only.json";
@@ -721,8 +722,7 @@ class Ty2026PdfPackageTest {
         // number issued to an individual by the Social Security Administration"; an ITIN filer gets no EIC. Schedule
         // EIC still prints its 2024 template (see EXCLUDED), so it skips the per-form TY2026 template checks.
         pkg.assertForms(
-                Map.of(
-                        "IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1, "IRS1040EIC", 1),
+                Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1, "IRS1040EIC", 1),
                 Set.of("IRS1040EIC"));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s3 = pkg.fields("IRS1040S3", 0);

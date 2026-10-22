@@ -56,13 +56,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * test-only 9xx area number before the return is built, so no printed SSN, ITIN or EIN can be a real one. Facts that
  * those scenarios predate (TY2026 interview questions with an obvious "none" answer) are added as empty / false.
  *
- * <p>These scenarios prove PDF printing only; they are not returns that can be filed. A 9xx number is never an SSN in
- * the fact graph ({@code Tin.isSSN} is false for every area starting with 9), so a child declared {@code tinType =
- * ssn} with a 9xx number keeps CTC eligibility (the dependent's {@code eligibleCtc} fact reads the declared tinType,
- * so Schedule 8812 prints the CTC lines) while {@code /familyAndHouseholdHasInvalidTIN}, a submission-blocking
- * fact, is true. The CTC scenarios assert that. Real filing also needs an SSN for each CTC child under 26 U.S.C.
- * 24(h)(7); the filer-SSN requirement of 24(h)(7) as amended by P.L. 119-21 is not modeled (#182). Printing is not
- * filing: these returns print, and the server's sign and submit check refuses them (asserted for hoh-cdcc.json).
+ * <p>These scenarios prove PDF printing only. A 9xx number is never an SSN in the fact graph ({@code Tin.isSSN} is
+ * false for every area starting with 9), so a 9xx filer is an ITIN holder and a child declared {@code tinType = ssn}
+ * with a 9xx number makes {@code /familyAndHouseholdHasInvalidTIN} (submission-blocking) true. The Child Tax Credit
+ * needs both SSNs: 26 U.S.C. 24(h)(7) (https://www.law.cornell.edu/uscode/text/26/24), as amended by P.L. 119-21,
+ * allows no credit for a qualifying child "unless the taxpayer includes on the return of tax for the taxable year—
+ * (i) the taxpayer's social security number ..., and (ii) the social security number of such qualifying child." So
+ * the CTC scenario ({@link #scenarioFactsWithCtcSsns}) gives the primary filer and each dependent declared ssn a
+ * group-00 test SSN instead of a 9xx number; the SSA never assigns group 00
+ * (https://www.ssa.gov/employer/randomization.html). Other scenarios keep 9xx numbers throughout.
  */
 class CreditFormsTy2026PdfSmokeTest {
     static final String DRAFT_MARK = "OMB USE ONLY DRAFT";
@@ -96,7 +98,66 @@ class CreditFormsTy2026PdfSmokeTest {
         return r.hasValue() && Boolean.TRUE.equals(r.get());
     }
 
+    /** Group-00 test SSN for the primary filer in the CTC scenario. */
+    static final String CTC_FILER_SSN = "444-00-4444";
+
+    /** Group-00 test SSNs for the dependents declared ssn in the CTC scenario, in the scenario file's order. */
+    static final List<String> CTC_CHILD_SSNS = List.of("444-00-1111", "444-00-2222", "444-00-3333");
+
+    /**
+     * {@link #scenarioFacts}, then the primary filer gets {@link #CTC_FILER_SSN} and each dependent declared
+     * {@code tinType = ssn} gets the next of {@link #CTC_CHILD_SSNS}, so 26 U.S.C. 24(h)(7) is met. Every other number
+     * (care providers, employers) stays 9xx.
+     */
+    static Map<String, FactTypeWithItem> scenarioFactsWithCtcSsns(String scenario) throws Exception {
+        Map<String, FactTypeWithItem> facts = scenarioFacts(scenario);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, FactTypeWithItem> overrides = new LinkedHashMap<>();
+        int child = 0;
+        for (String k : new ArrayList<>(facts.keySet())) {
+            if (k.startsWith("/filers/#")
+                    && k.endsWith("/isPrimaryFiler")
+                    && facts.get(k).item().asBoolean(false)) {
+                overrides.put(k.substring(0, k.length() - "/isPrimaryFiler".length()) + "/tin", tinFact(CTC_FILER_SSN));
+            }
+            if (k.startsWith("/familyAndHousehold/#")
+                    && k.endsWith("/tinType")
+                    && mapper.writeValueAsString(facts.get(k)).contains("\"ssn\"")) {
+                overrides.put(
+                        k.substring(0, k.length() - "/tinType".length()) + "/tin",
+                        tinFact(CTC_CHILD_SSNS.get(child++)));
+            }
+        }
+        facts.putAll(overrides);
+        return facts;
+    }
+
+    static FactTypeWithItem tinFact(String dashed) throws Exception {
+        String[] p = dashed.split("-");
+        return new ObjectMapper()
+                .readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.TinWrapper\",\"item\":{\"area\":\"" + p[0]
+                                + "\",\"group\":\"" + p[1] + "\",\"serial\":\"" + p[2] + "\"}}",
+                        FactTypeWithItem.class);
+    }
+
+    /**
+     * 26 U.S.C. 24(h)(7): /filerSsnRequirementForCtcMet is complete and true, and no dependent has an invalid TIN
+     * (/familyAndHouseholdHasInvalidTIN complete and false).
+     */
+    static void assertCtcSsnRequirementMet(Map<String, FactTypeWithItem> facts) throws Exception {
+        var graph = factGraphService().getGraph(facts);
+        var met = graph.get("/filerSsnRequirementForCtcMet");
+        assertTrue(met.complete() && Boolean.TRUE.equals(met.get()), "/filerSsnRequirementForCtcMet");
+        var invalid = graph.get(INVALID_TIN);
+        assertTrue(invalid.complete() && Boolean.FALSE.equals(invalid.get()), INVALID_TIN);
+    }
+
     static byte[] generateScenario(String scenario) throws Exception {
+        return generate(scenario, scenarioFacts(scenario));
+    }
+
+    static byte[] generate(String scenario, Map<String, FactTypeWithItem> typed) throws Exception {
         FactGraphService fgs = factGraphService();
         StandardEnvironment env = new StandardEnvironment();
         for (PropertySource<?> ps :
@@ -108,7 +169,6 @@ class CreditFormsTy2026PdfSmokeTest {
                 .get();
         PdfService pdfService = new PdfService(props, new IOLocationService(null), fgs);
 
-        Map<String, FactTypeWithItem> typed = scenarioFacts(scenario);
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026);
         taxReturn.setFactsWithoutDirtyingEntity(typed);
@@ -235,11 +295,14 @@ class CreditFormsTy2026PdfSmokeTest {
         return ScheduleATy2026PdfSmokeTest.cents(field(f, suffix));
     }
 
+    /** Every printed SSN-shaped number is a test-only 9xx or group-00 number (the SSA assigns neither as an SSN). */
     static void assertOnlyTestTins(Map<String, String> f) {
         for (var e : f.entrySet()) {
             String v = e.getValue() == null ? "" : e.getValue();
             if (v.matches("\\d{3}-\\d{2}-\\d{4}")) {
-                assertTrue(v.startsWith("9"), "test-only 9xx TIN printed in " + e.getKey() + ": " + v);
+                assertTrue(
+                        v.startsWith("9") || v.substring(4, 6).equals("00"),
+                        "test-only 9xx or group-00 TIN printed in " + e.getKey() + ": " + v);
             }
         }
     }
@@ -269,16 +332,15 @@ class CreditFormsTy2026PdfSmokeTest {
     void childCareAndChildTaxCreditReturnPrints2026Form2441AndSchedule8812() throws Exception {
         // hoh-cdcc.json: head of household, $50,000 W-2 wages, two qualifying children under 13 (ages 10 and 7 at the
         // end of 2026), one care provider paid $2,000 for the younger child, no dependent care benefits.
-        // Printing only, not a fileable return: both children are declared tinType = ssn with 9xx numbers, which are
-        // never SSNs in the fact graph, so CTC prints and the submission-blocking invalid-TIN fact is true, which
-        // the sign and submit paths refuse (#182).
-        assertTrue(factIsTrue("hoh-cdcc.json", INVALID_TIN), INVALID_TIN + " (9xx children declared ssn)");
-        assertTrue(
+        // The filer and both children have group-00 test SSNs, so 26 U.S.C. 24(h)(7) is met (see the class comment).
+        Map<String, FactTypeWithItem> facts = scenarioFactsWithCtcSsns("hoh-cdcc.json");
+        assertCtcSsnRequirementMet(facts);
+        assertFalse(
                 factGraphService()
-                        .submissionBlockingFactPaths(factGraphService().getGraph(scenarioFacts("hoh-cdcc.json")))
+                        .submissionBlockingFactPaths(factGraphService().getGraph(facts))
                         .contains(INVALID_TIN),
-                "sign/submit gate names " + INVALID_TIN);
-        try (PDDocument doc = Loader.loadPDF(generateScenario("hoh-cdcc.json"))) {
+                "sign/submit gate doesn't name " + INVALID_TIN);
+        try (PDDocument doc = Loader.loadPDF(generate("hoh-cdcc.json", facts))) {
             List<String> texts = pageTexts(doc);
             assertFalse(String.join(" ", texts).contains(COVER_SHEET), "draft cover sheets dropped");
 
@@ -287,7 +349,7 @@ class CreditFormsTy2026PdfSmokeTest {
             Map<String, String> f = fieldsOn(doc, p2441);
             assertOnlyTestTins(f);
             assertTrue(field(f, "Page1[0].f1_1[0]").contains("Testerface"), "name line");
-            assertEquals("911-00-1111", field(f, "Page1[0].f1_2[0]"), "SSN (rewritten to 9xx)");
+            assertEquals(CTC_FILER_SSN, field(f, "Page1[0].f1_2[0]"), "SSN (group-00 test SSN)");
             // Part I, 2026 layout: one column per provider.
             assertEquals("Mrs Doubtfire", field(f, "Row1a[0].Provider1[0].f1_3[0]"), "1a provider 1 name");
             assertFalse(field(f, "Row1b[0].Provider1[0].f1_6[0]").isBlank(), "1b provider 1 address");
@@ -298,7 +360,8 @@ class CreditFormsTy2026PdfSmokeTest {
             assertEquals("", field(f, "Row1a[0].Provider2[0].f1_4[0]"), "no provider 2");
             // Line 2
             assertEquals("Uno", field(f, "Table_Line2[0].Row1[0].f1_15[0]"), "2(a) first name, person 1");
-            assertEquals("922-00-1111", field(f, "Table_Line2[0].Row1[0].f1_17[0]"), "2(b) SSN, person 1");
+            String person1Ssn = field(f, "Table_Line2[0].Row1[0].f1_17[0]");
+            assertTrue(CTC_CHILD_SSNS.contains(person1Ssn), "2(b) SSN, person 1 (group-00 test SSN): " + person1Ssn);
             assertEquals("Duo", field(f, "Table_Line2[0].Row2[0].f1_19[0]"), "2(a) first name, person 2");
             assertEquals(200000, amt(f, "Table_Line2[0].Row2[0].f1_22[0]"), "2(d) expenses, person 2");
             // Lines 3-11
@@ -323,7 +386,7 @@ class CreditFormsTy2026PdfSmokeTest {
             assertEquals(2, p8812.size(), "Schedule 8812 prints two pages (this draft has no cover sheet)");
             Map<String, String> s = fieldsOn(doc, p8812);
             assertOnlyTestTins(s);
-            assertEquals("911-00-1111", field(s, "Page1[0].f1_2[0]"), "SSN");
+            assertEquals(CTC_FILER_SSN, field(s, "Page1[0].f1_2[0]"), "SSN");
             assertEquals(5000000, amt(s, "Page1[0].f1_3[0]"), "1 = Form 1040 line 11b");
             assertEquals(5000000, amt(s, "Page1[0].f1_8[0]"), "3");
             assertEquals("2", field(s, "Page1[0].f1_9[0]"), "4 qualifying children");
