@@ -5613,6 +5613,14 @@ info:
           early distribution. To report this, you need to file Form 5329, which isn’t supported in Direct File yet.
       - p: You must report all of your income to the IRS, even if you’re not able to do so with Direct File.
       - p: You’ll need to file using another tool.
+  /info/income/1099R/1099-r-early-distribution-not-every-form-knockout:
+    body:
+      - p:
+          You told us one of your Forms 1099-R has code 1 in box 7 and another Form 1099-R has a different code. When
+          code 1 isn’t on all of your Forms 1099-R, you may need to file Form 5329, which isn’t supported in Direct File
+          yet.
+      - p: You must report all of your income to the IRS, even if you’re not able to do so with Direct File.
+      - p: You’ll need to file using another tool.
   /info/income/1099R/what-if-2-amounts-box-14:
     helpText:
       modals:
@@ -18618,7 +18626,7 @@ fields:
     mfj:
       boolean:
         "yes": Yes, {{/secondaryFiler/firstName}} has a qualified exception to the early distribution
-        "no": No, {{/secondaryFiler/firstName}} has a qualified exception to the early distribution
+        "no": No, {{/secondaryFiler/firstName}} doesn’t have a qualified exception to the early distribution
   /form1099Rs/*/writeablePublicSafetyOfficer:
     self:
       boolean:
