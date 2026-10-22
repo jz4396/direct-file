@@ -1526,5 +1526,283 @@
       </Derived>
     </Fact>
 
+    <!-- #35 follow-up: Schedule D lines 1b, 2, 3, 8b, 9 and 10, columns (d), (e) and (g). Column (h) is
+      /scheduleDLine1b etc. in scheduleD2.xml. 2026 draft Form 8949 (irs.gov/pub/irs-dft, Created 4/1/26) Part I and
+      Part II line 2: "Totals. Add the amounts in columns (d), (e), (g), and (h) (subtract negative amounts). Enter each
+      total here and include on your Schedule D, line 1b (if Box A or Box G above is checked), line 2 (if Box B or Box H
+      above is checked), or line 3 (if Box C or Box I above is checked)" (Part II: lines 8b, 9 and 10 for D/J, E/K and
+      F/L). Column (h) = (d) - (e) + (g) is gain or loss under IRC 1001(a), and the short-term/long-term split is IRC
+      1222. Rounded to whole dollars like the column (h) totals; $0 prints blank. -->
+    <Fact path="/scheduleDLine1bTransactions">
+      <Name>Schedule D line 1b transactions (Form 8949 Box A or Box G)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 1b (Box A or G, isBoxA).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxA" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bProceeds">
+      <Name>Schedule D line 1b column (d)</Name>
+      <Description>Schedule D line 1b column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for
+        Box A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/proceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bCostBasis">
+      <Name>Schedule D line 1b column (e)</Name>
+      <Description>Schedule D line 1b column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/costBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bAdjustment">
+      <Name>Schedule D line 1b column (g)</Name>
+      <Description>Schedule D line 1b column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/adjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Transactions">
+      <Name>Schedule D line 2 transactions (Form 8949 Box B or Box H)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 2 (Box B or H, isBoxB).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxB" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Proceeds">
+      <Name>Schedule D line 2 column (d)</Name>
+      <Description>Schedule D line 2 column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for Box
+        B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/proceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2CostBasis">
+      <Name>Schedule D line 2 column (e)</Name>
+      <Description>Schedule D line 2 column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/costBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Adjustment">
+      <Name>Schedule D line 2 column (g)</Name>
+      <Description>Schedule D line 2 column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/adjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Transactions">
+      <Name>Schedule D line 3 transactions (Form 8949 Box C or Box I)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 3 (Box C or I, isBoxC).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxC" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Proceeds">
+      <Name>Schedule D line 3 column (d)</Name>
+      <Description>Schedule D line 3 column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for Box
+        C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/proceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3CostBasis">
+      <Name>Schedule D line 3 column (e)</Name>
+      <Description>Schedule D line 3 column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/costBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Adjustment">
+      <Name>Schedule D line 3 column (g)</Name>
+      <Description>Schedule D line 3 column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/adjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bTransactions">
+      <Name>Schedule D line 8b transactions (Form 8949 Box D or Box J)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 8b (Box D or J, isBoxD).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxD" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bProceeds">
+      <Name>Schedule D line 8b column (d)</Name>
+      <Description>Schedule D line 8b column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/proceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bCostBasis">
+      <Name>Schedule D line 8b column (e)</Name>
+      <Description>Schedule D line 8b column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for
+        Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/costBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bAdjustment">
+      <Name>Schedule D line 8b column (g)</Name>
+      <Description>Schedule D line 8b column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/adjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Transactions">
+      <Name>Schedule D line 9 transactions (Form 8949 Box E or Box K)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 9 (Box E or K, isBoxE).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxE" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Proceeds">
+      <Name>Schedule D line 9 column (d)</Name>
+      <Description>Schedule D line 9 column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/proceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9CostBasis">
+      <Name>Schedule D line 9 column (e)</Name>
+      <Description>Schedule D line 9 column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for Box
+        E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/costBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Adjustment">
+      <Name>Schedule D line 9 column (g)</Name>
+      <Description>Schedule D line 9 column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/adjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Transactions">
+      <Name>Schedule D line 10 transactions (Form 8949 Box F or Box L)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 10 (Box F or L, isBoxF).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxF" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Proceeds">
+      <Name>Schedule D line 10 column (d)</Name>
+      <Description>Schedule D line 10 column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/proceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10CostBasis">
+      <Name>Schedule D line 10 column (e)</Name>
+      <Description>Schedule D line 10 column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for
+        Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/costBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Adjustment">
+      <Name>Schedule D line 10 column (g)</Name>
+      <Description>Schedule D line 10 column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/adjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+
   </Facts>
 </FactDictionaryModule>
