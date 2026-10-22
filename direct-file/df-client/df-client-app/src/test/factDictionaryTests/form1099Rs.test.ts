@@ -83,7 +83,7 @@ describe(`1099-R nonstandardOrCorrectedChoice determines isCorrected`, () => {
 });
 
 describe(`1099-R distribution code(s)`, () => {
-  const supportedCodes = [`2`, `7`, `G`, `H`, `2B`, `B2`, `7B`, `B7`, `GB`, `BG`, `4G`, `G4`, `H4`, `4H`];
+  const supportedCodes = [`1`, `2`, `7`, `G`, `H`, `2B`, `B2`, `7B`, `B7`, `GB`, `BG`, `4G`, `G4`, `H4`, `4H`];
 
   for (const code of supportedCodes) {
     it(`should support ` + code, ({ task }) => {
@@ -122,6 +122,13 @@ describe(`1099-R distribution code(s)`, () => {
     `7H`,
     `GH`,
     `BH`,
+    // #116: code 1 with any other code is not read as code 1 alone.
+    `12`,
+    `17`,
+    `1G`,
+    `1B`,
+    `1J`,
+    `1S`,
   ];
   // Note: double valid characters such as `11` are also unsupported, but that cannot be tested here.
   // It is enforced by limit regex on the input component.

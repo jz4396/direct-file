@@ -286,6 +286,7 @@
     <Fact path="/schedule1AOvertimeLine21">
       <Description>Line 21: "Enter the smaller of the amount on line 20 or $12,500 ($25,000 if married filing jointly)".
         Line 20 = line 17 + line 19 (0). §225(b)(1).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <LesserOf>
           <Dependency path="/schedule1AOvertimeLine17" />
@@ -304,6 +305,7 @@
     </Fact>
     <Fact path="/schedule1AOvertimeLine23">
       <Description>Line 23: "Enter $150,000 ($300,000 if married filing jointly)". §225(b)(2)(A).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>

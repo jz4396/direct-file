@@ -25,6 +25,15 @@
               <Dollar>0</Dollar>
             </Right>
           </GreaterThan>
+          <!-- #116: Schedule 2 line 5 (10% additional tax on a code 1 early distribution) -->
+          <GreaterThan>
+            <Left>
+              <Dependency path="/schedule2Line5" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
           <!-- #83: Schedule 2 line 6 (Net Investment Income Tax, Form 8960 line 17) -->
           <GreaterThan>
             <Left>
@@ -138,14 +147,39 @@
       </Derived>
     </Fact>
 
+    <Fact path="/schedule2Line5">
+      <Name>Schedule 2 line 5: Additional tax on IRAs or other tax-favored accounts</Name>
+      <Description>#116. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf, SHA-256 0e3d4faa4b96f692bc31119d2c86189c3d8b9263e8f3aaaf7c3da371887ebc56), form page 1 (PDF p. 2), line 5: "Additional tax on IRAs or other tax-favored accounts. Attach Form 5329 if required. If not required, check here". The only line 5 amount in scope is the 26 U.S.C. 72(t)(1) 10% additional tax on Form 1099-R code 1 distributions reported without Form 5329 (form1099Rs /earlyDistributionAdditionalTax, with its cites). Every case that needs Form 5329 stops the return, so the "not required" box is checked whenever line 5 has an amount (/schedule2Line5Form5329NotRequired). Printed without ExportZero, so line 5 is blank when there is no code 1 distribution.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="form1099Rs" path="/earlyDistributionAdditionalTax" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schedule2Line5Form5329NotRequired">
+      <Name>Schedule 2 line 5: Form 5329 not required</Name>
+      <Description>#116. Schedule 2 (Form 1040) 2026 draft, line 5: "If not required, check here". 2026 draft Instructions for Form 5329 (https://www.irs.gov/pub/irs-dft/i5329--dft.pdf), PDF p. 2: "if distribution code 1 is correctly shown in box 7a of all your Forms 1099-R and you owe the additional tax on the full amount shown on each Form 1099-R, you don’t have to file Form 5329." True when /schedule2Line5 is more than $0; every Form 5329 case stops the return.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/schedule2Line5" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
     <Fact path="/schedule2Line15">
       <Name>Schedule 2 line 15</Name>
-      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 15: "Add lines 4 through 11 and line 14". In scope: line 4 (/schedule2Line4), line 6 (/schedule2Line6NetInvestmentIncomeTax) and line 11 (/line11AdditionalMedicareTax). Lines 5, 7-10 and 13a-13z (so line 14) have no input or stop the return (see pdf/2026/IRS1040S2/en/configuration.yml), so they are $0.</Description>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 15: "Add lines 4 through 11 and line 14". In scope: line 4 (/schedule2Line4), line 5 (/schedule2Line5, #116), line 6 (/schedule2Line6NetInvestmentIncomeTax) and line 11 (/line11AdditionalMedicareTax). Lines 7-10 and 13a-13z (so line 14) have no input or stop the return (see pdf/2026/IRS1040S2/en/configuration.yml), so they are $0.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Round>
           <Add>
             <Dependency path="/schedule2Line4" />
+            <Dependency path="/schedule2Line5" />
             <Dependency path="/schedule2Line6NetInvestmentIncomeTax" />
             <Dependency path="/line11AdditionalMedicareTax" />
           </Add>

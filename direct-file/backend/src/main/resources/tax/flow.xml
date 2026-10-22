@@ -65,6 +65,7 @@
           <Dependency module="form1099Rs" path="/flowKnockoutForDeathBenefitPaymentDate" />
           <Dependency module="form1099Rs" path="/flowKnockoutRetirementQualifiedDisasterDistribution" />
           <Dependency module="form1099Rs" path="/flowKnockoutRetirementQualifiedEarlyDistribution" />
+          <Dependency module="form1099Rs" path="/flowKnockoutEarlyDistributionNotOnEveryForm1099R" />
           <Dependency module="form1099Rs" path="/flowKnockoutRetirementPublicSafetyOfficer" />
           <Dependency module="form1099Rs" path="/flowKnockoutForPreTaxToPostTaxRollover" />
           <Dependency module="form1099Rs" path="/has1099rFormsAndFeatureIsNotEnabled" />
@@ -77,6 +78,7 @@
           <Dependency module="interest" path="/flowKnockoutTaxExemptInterest" />
           <Dependency module="estimatedPayments" path="/knockoutPaidEstimatedTaxesUnderDifferentLastName" />
           <Dependency module="familyAndHousehold" path="/knockoutHohQpHasNoTin" />
+          <Dependency module="ctcOdc" path="/flowKnockoutCtcFilerSsnUnresolved" />
           <Dependency module="familyAndHousehold" path="/knockoutPersonBornAndDiedInTaxYearWithoutTin" />
           <Dependency module="dependentsBenefitSplit" path="/knockedOutByNonCustodialParentBenefitSplit" />
           <Dependency module="dependentsBenefitSplit" path="/knockedOutByContradictory8832" />

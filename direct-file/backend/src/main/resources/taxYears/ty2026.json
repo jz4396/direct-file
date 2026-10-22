@@ -69,6 +69,36 @@
       "url": "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
       "kind": "pdf",
       "sha256": "482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a"
+    },
+    "f6251-dft": {
+      "title": "Form 6251 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f6251--dft.pdf",
+      "kind": "pdf",
+      "sha256": "a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc"
+    },
+    "f1040sa-dft": {
+      "title": "Schedule A (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf",
+      "kind": "pdf",
+      "sha256": "d49acff9afc2faa178b7bf1f70d826d03c2c6def43700880f8ae5bb8bb5a0ffa"
+    },
+    "f1040s1a-dft": {
+      "title": "Schedule 1-A (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf",
+      "kind": "pdf",
+      "sha256": "e22aec7feb2f5b734e16ee74d70acfdfdc0d66a5292f69cf0ced3b87543d95ac"
+    },
+    "f8959-dft": {
+      "title": "Form 8959 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f8959--dft.pdf",
+      "kind": "pdf",
+      "sha256": "8f663b2ca3dd052537a4d8aea4ae9aada0606b0f7dc7711fa8948489ef870d2f"
+    },
+    "i8960-2025": {
+      "title": "2025 Instructions for Form 8960",
+      "url": "https://www.irs.gov/pub/irs-pdf/i8960.pdf",
+      "kind": "pdf",
+      "sha256": "b10fbb23ff4a053db197285497a00914c558e3ae0cdf5c956b7c0c7867376428"
     }
   },
   "parameters": [
@@ -1288,6 +1318,536 @@
           "source": "fr-2025-19763",
           "page": 49050,
           "quote": "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
+        }
+      ]
+    },
+    {
+      "fact": "/form6251ExemptionAmount",
+      "file": "form6251.xml",
+      "values": [
+        "Dollar:70100",
+        "Dollar:140200",
+        "Dollar:90100"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.10",
+          "page": 16,
+          "quote": "the exemption amounts under § 55(d)(1) are: Joint Returns or Surviving Spouses $140,200; Unmarried Individuals (other than Surviving Spouses) $90,100; Married Individuals Filing Separate Returns $70,100",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/form6251PhaseoutThreshold",
+      "file": "form6251.xml",
+      "values": [
+        "Dollar:1000000",
+        "Dollar:500000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.10",
+          "page": 17,
+          "quote": "Filing status / Threshold Phaseout Amount / Complete Phaseout Amount: Joint Returns or Surviving Spouses $1,000,000 $1,280,400; Unmarried Individuals (other than Surviving Spouses) $500,000 $680,200; Married Individuals Filing Separate Returns $500,000 $640,200",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/form6251RateBreakpoint",
+      "file": "form6251.xml",
+      "values": [
+        "Dollar:122250",
+        "Dollar:244500"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.10",
+          "page": 16,
+          "quote": "under § 55(b)(1), the excess taxable income above which the 28 percent tax rate applies is: Married Individuals Filing Separate Returns $122,250; All Other Taxpayers $244,500",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/form6251RateOffset",
+      "file": "form6251.xml",
+      "values": [
+        "Dollar:2445",
+        "Dollar:4890"
+      ],
+      "cite": [
+        {
+          "source": "f6251-dft",
+          "section": "Line 18",
+          "page": 3,
+          "quote": "If line 17 is $244,500 or less ($122,250 or less if married filing separately), multiply line 17 by 26% (0.26). Otherwise, multiply line 17 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately) from the result"
+        }
+      ]
+    },
+    {
+      "fact": "/flowKnockoutAmtMfsAddBack",
+      "file": "form6251.xml",
+      "values": [
+        "Dollar:640200"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.10",
+          "page": 17,
+          "quote": "Married Individuals Filing Separate Returns $500,000 $640,200",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/flowKnockoutScheduleAOverallLimit",
+      "file": "scheduleA.xml",
+      "values": [
+        "Dollar:384350"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.01",
+          "page": 12,
+          "quote": "Over $384,350 $103,291.75 plus 37% of the excess over $384,350",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleASaltThreshold",
+      "file": "scheduleA.xml",
+      "values": [
+        "Dollar:252500",
+        "Dollar:505000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 164(b)(7)(B)(ii)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/164",
+          "quote": "the term “threshold amount” means— (I) in the case of any taxable year beginning in calendar year 2025, $500,000, (II) in the case of any taxable year beginning in calendar year 2026, $505,000"
+        },
+        {
+          "source": "irc",
+          "section": "§ 164(b)(7)(B)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/164",
+          "quote": "the applicable limitation amount shall be reduced by 30 percent of the excess (if any) of the taxpayer’s modified adjusted gross income over the threshold amount (half the threshold amount in the case of a married individual filing a separate return)."
+        },
+        {
+          "source": "f1040sa-dft",
+          "section": "Line 5e",
+          "page": 2,
+          "quote": "Enter the smaller of line 5d or $40,400 ($20,200 if married filing separately). If Form 1040 or 1040-SR, line 11b, is more than $505,000 ($252,500 if married filing separately)"
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleASaltLimitBeforeMfsHalving",
+      "file": "scheduleA.xml",
+      "values": [
+        "Dollar:10000",
+        "Dollar:40400",
+        "Rational:30/100",
+        "Dollar:0"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 164(b)(7)(A)(ii)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/164",
+          "quote": "in the case of any taxable year beginning in calendar year 2026, $40,400"
+        },
+        {
+          "source": "irc",
+          "section": "§ 164(b)(7)(B)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/164",
+          "quote": "the applicable limitation amount shall be reduced by 30 percent of the excess (if any) of the taxpayer’s modified adjusted gross income over the threshold amount (half the threshold amount in the case of a married individual filing a separate return)."
+        },
+        {
+          "source": "irc",
+          "section": "§ 164(b)(7)(B)(iii)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/164",
+          "quote": "The reduction under clause (i) shall not result in the applicable limitation amount being less than $10,000."
+        }
+      ]
+    },
+    {
+      "fact": "/schedule1ALine9",
+      "file": "schedule1A.xml",
+      "values": [
+        "Dollar:25000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 224(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/224",
+          "quote": "The amount allowed as a deduction under this section for any taxable year shall not exceed $25,000."
+        }
+      ]
+    },
+    {
+      "fact": "/schedule1ALine11",
+      "file": "schedule1A.xml",
+      "values": [
+        "Dollar:300000",
+        "Dollar:150000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 224(b)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/224",
+          "quote": "shall be reduced (but not below zero) by $100 for each $1,000 by which the taxpayer’s modified adjusted gross income exceeds $150,000 ($300,000 in the case of a joint return)"
+        }
+      ]
+    },
+    {
+      "fact": "/schedule1AOvertimeLine21",
+      "file": "schedule1AOvertime.xml",
+      "values": [
+        "Dollar:25000",
+        "Dollar:12500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 225(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/225",
+          "quote": "The amount allowed as a deduction under this section for any taxable year shall not exceed $12,500 ($25,000 in the case of a joint return)."
+        }
+      ]
+    },
+    {
+      "fact": "/schedule1AOvertimeLine23",
+      "file": "schedule1AOvertime.xml",
+      "values": [
+        "Dollar:300000",
+        "Dollar:150000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 225(b)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/225",
+          "quote": "shall be reduced (but not below zero) by $100 for each $1,000 by which the taxpayer’s modified adjusted gross income exceeds $150,000 ($300,000 in the case of a joint return)"
+        }
+      ]
+    },
+    {
+      "fact": "/carLoanLine30",
+      "file": "carLoanInterest.xml",
+      "values": [
+        "Dollar:10000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 163(h)(4)(C)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/163",
+          "quote": "The amount of interest taken into account by a taxpayer under subparagraph (B) for any taxable year shall not exceed $10,000."
+        }
+      ]
+    },
+    {
+      "fact": "/carLoanLine32",
+      "file": "carLoanInterest.xml",
+      "values": [
+        "Dollar:200000",
+        "Dollar:100000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 163(h)(4)(C)(ii)(I)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/163",
+          "quote": "shall be reduced (but not below zero) by $200 for each $1,000 (or portion thereof) by which the modified adjusted gross income of the taxpayer for the taxable year exceeds $100,000 ($200,000 in the case of a joint return)."
+        }
+      ]
+    },
+    {
+      "fact": "/schedule1ASeniorAmount",
+      "file": "schedule1A.xml",
+      "values": [
+        "Dollar:6000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 151(d)(5)(C)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/151",
+          "quote": "there shall be allowed a deduction in an amount equal to $6,000 for each qualified individual with respect to the taxpayer."
+        }
+      ]
+    },
+    {
+      "fact": "/schedule1ALine38",
+      "file": "schedule1A.xml",
+      "values": [
+        "Dollar:150000",
+        "Dollar:75000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 151(d)(5)(C)(iii)(I)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/151",
+          "quote": "the $6,000 amount in clause (i) shall be reduced (but not below zero) by 6 percent of so much of the taxpayer’s modified adjusted gross income as exceeds $75,000 ($150,000 in the case of a joint return)."
+        }
+      ]
+    },
+    {
+      "fact": "/schedule1ALine40",
+      "file": "schedule1A.xml",
+      "values": [
+        "Rational:6/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 151(d)(5)(C)(iii)(I)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/151",
+          "quote": "the $6,000 amount in clause (i) shall be reduced (but not below zero) by 6 percent of so much of the taxpayer’s modified adjusted gross income as exceeds $75,000 ($150,000 in the case of a joint return)."
+        },
+        {
+          "source": "f1040s1a-dft",
+          "section": "Line 40",
+          "page": 4,
+          "quote": "Multiply line 39 by 6% (0.06)"
+        }
+      ]
+    },
+    {
+      "fact": "/cdccCareExpensesFallOffThreshold",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:15000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "the term “applicable percentage” means 50 percent— (A) reduced (but not below 35 percent) by 1 percentage point for each $2,000 or fraction thereof by which the taxpayer’s adjusted gross income for the taxable year exceeds $15,000, and (B) further reduced (but not below 20 percent) by 1 percentage point for each $2,000 ($4,000 in the case of a joint return) or fraction thereof by which the taxpayer’s adjusted gross income for the taxable year exceeds $75,000 ($150,000 in the case of a joint return)."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccCareExpensesSecondPhaseoutThreshold",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:150000",
+        "Dollar:75000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "the term “applicable percentage” means 50 percent— (A) reduced (but not below 35 percent) by 1 percentage point for each $2,000 or fraction thereof by which the taxpayer’s adjusted gross income for the taxable year exceeds $15,000, and (B) further reduced (but not below 20 percent) by 1 percentage point for each $2,000 ($4,000 in the case of a joint return) or fraction thereof by which the taxpayer’s adjusted gross income for the taxable year exceeds $75,000 ($150,000 in the case of a joint return)."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMaxClaimableExpenseWithOneQP",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:3000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(c)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "shall not exceed— (1) $3,000 if there is 1 qualifying individual with respect to the taxpayer for such taxable year, or (2) $6,000 if there are 2 or more qualifying individuals with respect to the taxpayer for such taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMaxClaimableExpenseWithTwoQP",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:6000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(c)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "shall not exceed— (1) $3,000 if there is 1 qualifying individual with respect to the taxpayer for such taxable year, or (2) $6,000 if there are 2 or more qualifying individuals with respect to the taxpayer for such taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMaximumExclusionForNonMFS",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:7500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 129(a)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/129",
+          "quote": "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMaximumExclusionForMFS",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:3750"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 129(a)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/129",
+          "quote": "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."
+        }
+      ]
+    },
+    {
+      "fact": "/netInvestmentIncomeThresholdForMfjOrQss",
+      "file": "interest.xml",
+      "values": [
+        "Dollar:250000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1411(b)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1411",
+          "quote": "the term “threshold amount” means— (1) in the case of a taxpayer making a joint return under section 6013 or a surviving spouse (as defined in section 2(a)), $250,000, (2) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under paragraph (1), and (3) in any other case, $200,000."
+        }
+      ]
+    },
+    {
+      "fact": "/netInvestmentIncomeThresholdForMfs",
+      "file": "interest.xml",
+      "values": [
+        "Dollar:125000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1411(b)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1411",
+          "quote": "the term “threshold amount” means— (1) in the case of a taxpayer making a joint return under section 6013 or a surviving spouse (as defined in section 2(a)), $250,000, (2) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under paragraph (1), and (3) in any other case, $200,000."
+        },
+        {
+          "source": "i8960-2025",
+          "page": 2,
+          "quote": "The applicable threshold amount is based on your filing status. • Married filing jointly or Qualifying surviving spouse is $250,000. • Married filing separately is $125,000. • Single or Head of household is $200,000."
+        }
+      ]
+    },
+    {
+      "fact": "/netInvestmentIncomeThresholdForSingleOrHoh",
+      "file": "interest.xml",
+      "values": [
+        "Dollar:200000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1411(b)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1411",
+          "quote": "the term “threshold amount” means— (1) in the case of a taxpayer making a joint return under section 6013 or a surviving spouse (as defined in section 2(a)), $250,000, (2) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under paragraph (1), and (3) in any other case, $200,000."
+        }
+      ]
+    },
+    {
+      "fact": "/maxMFJMedicareWages",
+      "file": "formW2s.xml",
+      "values": [
+        "Dollar:250000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 3101(b)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/3101",
+          "quote": "a tax equal to 0.9 percent of wages which are received with respect to employment (as defined in section 3121(b)) during any taxable year beginning after December 31, 2012, and which are in excess of— (A) in the case of a joint return, $250,000, (B) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under subparagraph (A), and (C) in any other case, $200,000."
+        },
+        {
+          "source": "irc",
+          "section": "§ 1401(b)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "a tax equal to 0.9 percent of the self-employment income for such taxable year which is in excess of— (i) in the case of a joint return, $250,000, (ii) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under clause (i), and (iii) in any other case, $200,000."
+        }
+      ]
+    },
+    {
+      "fact": "/maxMFSMedicareWages",
+      "file": "formW2s.xml",
+      "values": [
+        "Dollar:125000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 3101(b)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/3101",
+          "quote": "a tax equal to 0.9 percent of wages which are received with respect to employment (as defined in section 3121(b)) during any taxable year beginning after December 31, 2012, and which are in excess of— (A) in the case of a joint return, $250,000, (B) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under subparagraph (A), and (C) in any other case, $200,000."
+        },
+        {
+          "source": "irc",
+          "section": "§ 1401(b)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "a tax equal to 0.9 percent of the self-employment income for such taxable year which is in excess of— (i) in the case of a joint return, $250,000, (ii) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under clause (i), and (iii) in any other case, $200,000."
+        },
+        {
+          "source": "f8959-dft",
+          "section": "Line 5",
+          "page": 2,
+          "quote": "Enter the following amount for your filing status: Married filing jointly $250,000; Married filing separately $125,000; Single, Head of household, or Qualifying surviving spouse $200,000",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/maxNonMFSorMFJMedicareWages",
+      "file": "formW2s.xml",
+      "values": [
+        "Dollar:200000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 3101(b)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/3101",
+          "quote": "a tax equal to 0.9 percent of wages which are received with respect to employment (as defined in section 3121(b)) during any taxable year beginning after December 31, 2012, and which are in excess of— (A) in the case of a joint return, $250,000, (B) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under subparagraph (A), and (C) in any other case, $200,000."
+        },
+        {
+          "source": "irc",
+          "section": "§ 1401(b)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "a tax equal to 0.9 percent of the self-employment income for such taxable year which is in excess of— (i) in the case of a joint return, $250,000, (ii) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under clause (i), and (iii) in any other case, $200,000."
+        }
+      ]
+    },
+    {
+      "fact": "/maxIndividualMedicareWages",
+      "file": "formW2s.xml",
+      "values": [
+        "Dollar:200000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 3102(f)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/3102",
+          "quote": "In the case of any tax imposed by section 3101(b)(2), subsection (a) shall only apply to the extent to which the taxpayer receives wages from the employer in excess of $200,000"
         }
       ]
     },

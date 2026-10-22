@@ -438,6 +438,7 @@
       <Name>Schedule 1-A line 30</Name>
       <Description>#53: line 30 "Enter the smaller of the amount on line 29 or $10,000". 163(h)(4)(C)(i): "shall not
         exceed $10,000". #69: applied once to the all-vehicle total (per return, not per vehicle).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <LesserOf>
           <Dependency path="/carLoanLine29" />
@@ -449,6 +450,7 @@
     <Fact path="/carLoanLine32">
       <Name>Schedule 1-A line 32</Name>
       <Description>#53: line 32 "Enter $100,000 ($200,000 if married filing jointly)". 163(h)(4)(C)(ii)(I).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>

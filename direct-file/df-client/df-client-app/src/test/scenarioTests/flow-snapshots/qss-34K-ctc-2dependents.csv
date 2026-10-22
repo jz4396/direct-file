@@ -14,6 +14,7 @@ Subcategory: /flow/you-and-your-family/about-you
 /flow/you-and-your-family/about-you/about-you-state-income-1099-misc-pfd?%2FprimaryFiler=dccb2612-e7ee-4242-99e2-c03f4eed3ca2
 /flow/you-and-your-family/about-you/about-you-tin?%2FprimaryFiler=dccb2612-e7ee-4242-99e2-c03f4eed3ca2
 /flow/you-and-your-family/about-you/about-you-ssn-valid-for-work?%2FprimaryFiler=dccb2612-e7ee-4242-99e2-c03f4eed3ca2
+/flow/you-and-your-family/about-you/about-you-ssn-status-changed?%2FprimaryFiler=dccb2612-e7ee-4242-99e2-c03f4eed3ca2
 /flow/you-and-your-family/about-you/about-you-ip-pin-input-review?%2FprimaryFiler=dccb2612-e7ee-4242-99e2-c03f4eed3ca2
 /flow/you-and-your-family/about-you/about-you-blind?%2FprimaryFiler=dccb2612-e7ee-4242-99e2-c03f4eed3ca2
 /flow/you-and-your-family/about-you/about-you-self-care?%2FprimaryFiler=dccb2612-e7ee-4242-99e2-c03f4eed3ca2
@@ -160,9 +161,9 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/cdcc-intro
 /flow/credits-and-deductions/credits/cdcc-gating
 /flow/credits-and-deductions/credits/cdcc-not-qualified
-/flow/credits-and-deductions/credits/ctc-intro
-/flow/credits-and-deductions/credits/ctc-improper-claims
-/flow/credits-and-deductions/credits/ctc-qualified
+/flow/credits-and-deductions/credits/ctc-filer-ssn-unresolved-knockout
+/flow/credits-and-deductions/credits/odc-improper-claims
+/flow/credits-and-deductions/credits/odc-qualified
 /flow/credits-and-deductions/credits/credit-summary-qualified
 Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
@@ -183,6 +184,7 @@ Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/comms-different-language-choice
 /flow/your-taxes/other-preferences/comms-different-language-input
 /flow/your-taxes/other-preferences/comms-different-format-choice
+/flow/your-taxes/other-preferences/presidential-fund
 Category: /flow/complete
 Subcategory: /flow/complete/review
 /flow/complete/review/review
