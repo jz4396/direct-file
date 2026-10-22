@@ -446,6 +446,44 @@ describe(`The about you section`, () => {
       ).toRouteNextTo(`/flow/you-and-your-family/about-you/about-you-ip-pin-input-review`);
     });
 
+    it(`asks about a status change after the federal benefits question for a "not valid" card (#182)`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        [`/filers/#${primaryFilerId}/isUsCitizenFullYear`]: createBooleanWrapper(false),
+        [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `222`, group: `12`, serial: `1234` }),
+        [`/primaryFilerSsnEmploymentValidity`]: createEnumWrapper(
+          `notValid`,
+          `/primaryFilerSsnEmploymentValidityOptions`
+        ),
+      });
+      expect(
+        givenFacts(factGraph).atPath(
+          `/flow/you-and-your-family/about-you/about-you-ssn-federal-benefits`,
+          primaryFilerId,
+          task
+        )
+      ).toRouteNextTo(`/flow/you-and-your-family/about-you/about-you-ssn-status-changed`);
+    });
+
+    it(`asks about a status change for an expired DHS authorization (#182)`, ({ task }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseFilerData,
+        [`/filers/#${primaryFilerId}/isUsCitizenFullYear`]: createBooleanWrapper(false),
+        [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `222`, group: `12`, serial: `1234` }),
+        [`/primaryFilerSsnEmploymentValidity`]: createEnumWrapper(
+          `validOnlyWithDhsAuthorizationExpired`,
+          `/primaryFilerSsnEmploymentValidityOptions`
+        ),
+      });
+      expect(
+        givenFacts(factGraph).atPath(
+          `/flow/you-and-your-family/about-you/about-you-ssn-valid-for-work`,
+          primaryFilerId,
+          task
+        )
+      ).toRouteNextTo(`/flow/you-and-your-family/about-you/about-you-ssn-status-changed`);
+    });
+
     it(`moves to IP PIN readonly input if data import has an IP PIN value`, async ({ task }) => {
       vi.spyOn(pageConstants, `isTelemetryEnabled`).mockReturnValue(false);
       (taxReturnFetch as Mock).mockReturnValue(Promise.resolve([fakeTaxReturn]));

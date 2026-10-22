@@ -3856,9 +3856,9 @@
       </Derived>
     </Fact>
 
-    <Fact path="/familyAndHousehold/*/eligibleCtc">
-      <Name>Eligible for the Child Tax Credit</Name>
-      <Description>The dependent is eligible for the Child Tax Credit (CTC).</Description>
+    <Fact path="/familyAndHousehold/*/meetsChildCtcTests">
+      <Name>Meets the child tests for the Child Tax Credit</Name>
+      <Description>The dependent meets the Child Tax Credit tests that depend on the child (claimed qualifying child under 17, citizenship/residency, SSN valid for employment), before the filer SSN requirement of IRC §24(h)(7)(A)(i).</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -3883,6 +3883,19 @@
             </Right>
           </Equal>
           <Dependency path="../ssnValidForEmployment" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/familyAndHousehold/*/eligibleCtc">
+      <Name>Eligible for the Child Tax Credit</Name>
+      <Description>The dependent is eligible for the Child Tax Credit (CTC): the child tests (../meetsChildCtcTests) and the filer SSN requirement (#182, IRC §24(h)(7)(A)(i), https://www.law.cornell.edu/uscode/text/26/24; cites on /filerSsnRequirementForCtcMet). A child who fails only the filer requirement isn't eligibleCtc, so /familyAndHousehold/*/eligibleOdc applies: IRC §24(h)(4)(C), "In the case of any qualifying child with respect to whom a credit is not allowed under this section by reason of paragraph (7), such child shall be treated as a dependent to whom subparagraph (A) applies."</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <All>
+          <Dependency path="../meetsChildCtcTests" />
+          <Dependency module="filers" path="/filerSsnRequirementForCtcMet" />
         </All>
       </Derived>
     </Fact>

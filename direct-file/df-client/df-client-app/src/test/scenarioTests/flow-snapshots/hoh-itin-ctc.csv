@@ -118,9 +118,8 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/cdcc-intro
 /flow/credits-and-deductions/credits/cdcc-gating
 /flow/credits-and-deductions/credits/cdcc-not-qualified
-/flow/credits-and-deductions/credits/ctc-intro
-/flow/credits-and-deductions/credits/ctc-improper-claims
-/flow/credits-and-deductions/credits/ctc-qualified
+/flow/credits-and-deductions/credits/odc-improper-claims
+/flow/credits-and-deductions/credits/odc-qualified
 /flow/credits-and-deductions/credits/credit-summary-qualified
 Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
@@ -131,10 +130,9 @@ Subcategory: /flow/your-taxes/amount
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/refund-intro
-/flow/your-taxes/payment-method/refund-method-choice
-/flow/your-taxes/payment-method/refund-direct-deposit
-/flow/your-taxes/payment-method/refund-outro
+/flow/your-taxes/payment-method/payment-intro
+/flow/your-taxes/payment-method/payment-method-choice
+/flow/your-taxes/payment-method/payment-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice
