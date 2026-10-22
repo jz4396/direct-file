@@ -424,8 +424,8 @@ class CreditFormsTy2026PdfSmokeTest {
 
     /**
      * Negative case for the filer SSN requirement of 26 U.S.C. 24(h)(7)(A)(i): the hoh-cdcc.json children keep their
-     * group-00 test SSNs and pass the child tests, but the filer has a test ITIN (900-00-0001; Tin.isITIN treats group
-     * 00 as a test ITIN). /filerSsnRequirementForCtcMet is false, so no child is eligibleCtc and each falls to the
+     * group-00 test SSNs and pass the child tests, but the filer has an ITIN (900-70-0001: area 9xx, group in the
+     * 70-88 ITIN range of IRS Publication 4757, the range Tin.isITIN checks). /filerSsnRequirementForCtcMet is false, so no child is eligibleCtc and each falls to the
      * credit for other dependents, $500 per dependent under 24(h)(4)(A). An ITIN filer gets no earned income credit
      * either (26 U.S.C. 32(c)(1)(E) and 32(m)), so no Schedule EIC prints.
      */
@@ -441,7 +441,7 @@ class CreditFormsTy2026PdfSmokeTest {
             }
         }
         assertTrue(primary != null, "primary filer");
-        facts.put(primary + "/tin", tinFact("900-00-0001"));
+        facts.put(primary + "/tin", tinFact("900-70-0001"));
 
         var graph = factGraphService().getGraph(facts);
         var met = graph.get("/filerSsnRequirementForCtcMet");
@@ -479,7 +479,7 @@ class CreditFormsTy2026PdfSmokeTest {
             assertEquals(2, p8812.size(), "Schedule 8812 prints (ODC)");
             Map<String, String> s = fieldsOn(doc, p8812);
             assertOnlyTestTins(s);
-            assertEquals("900-00-0001", field(s, "Page1[0].f1_2[0]"), "filer ITIN");
+            assertEquals("900-70-0001", field(s, "Page1[0].f1_2[0]"), "filer ITIN");
             assertTrue(Set.of("", "0").contains(field(s, "Page1[0].f1_9[0]")), "4 no CTC children");
             assertEquals("", field(s, "Page1[0].f1_10[0]"), "5 no CTC (zero prints blank)");
             assertEquals("2", field(s, "Page1[0].Line6ReadOrder[0].f1_11[0]"), "6 ODC dependents");
