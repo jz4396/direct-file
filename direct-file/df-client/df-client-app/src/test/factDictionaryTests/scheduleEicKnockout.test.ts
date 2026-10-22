@@ -7,6 +7,7 @@
 // - EIC figures: Rev. Proc. 2025-32 sec. 4.06, p. 15 (one qualifying child: earned income amount $13,020, 34%,
 //   maximum $4,427); Schedule C earned income as in scheduleCEarnedIncomeCredits.test.ts (#117).
 import { describe, it, expect } from 'vitest';
+import fs from 'fs';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import {
   createBooleanWrapper,
@@ -19,8 +20,11 @@ import {
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 import { baseFilerData, filerWithW2NoDeductionsNoCreditsBaseData, makeChildData, primaryFilerId } from '../testData.js';
-import { profile5AmtAnd8959 } from '../scenarioTests/goldenProfiles.js';
-import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
+import { goldenProfiles, profile5AmtAnd8959 } from '../scenarioTests/goldenProfiles.js';
+import {
+  submissionBlockingFacts,
+  submissionBlockingFactsRequiringValue,
+} from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 
 const KO = `/flowKnockoutScheduleEicWithoutTy2026Template`;
 const businessId = `e2080000-0000-4000-8000-000000000001`;
@@ -68,6 +72,40 @@ const graph = (data: Record<string, unknown>) => {
 describe(`Schedule EIC without a TY2026 template (#208)`, () => {
   it(`is a submission-blocking input to /flowIsKnockedOut`, () => {
     expect(submissionBlockingFacts).toContain(KO);
+    // Covered by /flowIsKnockedOut, which is the top-level fact the server requires to be false.
+    expect(submissionBlockingFactsRequiringValue).not.toContain(KO);
+    expect(submissionBlockingFactsRequiringValue).toContain(`/flowIsKnockedOut`);
+    const flowXml = fs.readFileSync(`./src/fact-dictionary/generate-src/xml-src/flow.xml`, `utf-8`);
+    const knockedOut = flowXml.match(/<Fact path="\/flowIsKnockedOut">[\s\S]*?<\/Fact>/)?.[0] ?? ``;
+    expect(knockedOut).toContain(`<Dependency module="eitc" path="${KO}" />`);
+  });
+
+  it.each(Object.entries(goldenProfiles))(`golden profile %s: the knockout is complete and false`, (_, profile) => {
+    const { get } = graph(profile);
+    expect(get(`/pdfIncludeScheduleEic`).get).toBe(false);
+    expect(get(KO).complete).toBe(true);
+    expect(get(KO).get).toBe(false);
+  });
+
+  it(`every backend scenario: the knockout is complete, and true only with Schedule EIC`, () => {
+    const folder = `./src/test/factDictionaryTests/backend-scenarios`;
+    const files = fs.readdirSync(folder).filter((f) => f.endsWith(`.json`));
+    expect(files.length).toBeGreaterThan(100);
+    const knockedOut: string[] = [];
+    for (const file of files) {
+      const { get } = graph(JSON.parse(fs.readFileSync(`${folder}/${file}`, `utf-8`)).facts);
+      const ko = get(KO);
+      const schedule = get(`/pdfIncludeScheduleEic`);
+      // The knockout is always complete. Two scenarios stop before the EIC questions (/eitcQualified has no
+      // value), so /pdfIncludeScheduleEic is a placeholder false there and the knockout is complete and false.
+      expect(ko.complete, file).toBe(true);
+      expect(ko.get, file).toBe(schedule.get);
+      if (ko.get) expect(schedule.complete, file).toBe(true);
+      if (ko.get) knockedOut.push(file);
+    }
+    // Scenarios with an EIC qualifying child are knocked out; every other scenario is complete and false.
+    expect(knockedOut.length).toBeGreaterThan(0);
+    expect(knockedOut.length).toBeLessThan(files.length);
   });
 
   it(`ordinary return with no dependents: the knockout is complete and false`, ({ task }) => {

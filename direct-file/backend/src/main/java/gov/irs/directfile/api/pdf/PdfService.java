@@ -51,6 +51,13 @@ public class PdfService {
     private final ConfiguredPdfLookup lookup;
     private static final int DIRECT_FILE_PILOT_YEAR = 2023;
 
+    /**
+     * Knockouts that also stop the printed package. A filer who claims the earned income credit with a qualifying
+     * child must give the child's name, age and TIN on the return (26 U.S.C. 32(c)(3)(D)(i)) on Schedule EIC, and
+     * there is no TY2026 Schedule EIC template yet, so the package is not built rather than printed on the 2024 form.
+     */
+    static final List<String> PDF_BLOCKING_KNOCKOUTS = List.of("/flowKnockoutScheduleEicWithoutTy2026Template");
+
     @SneakyThrows
     public PdfService(
             PdfServiceProperties properties, IOLocationService ioLocationService, FactGraphService factGraphService) {
@@ -107,6 +114,11 @@ public class PdfService {
         FactEvaluationResult facts;
         try {
             Graph graph = factGraphService.getGraph(taxReturn.getFacts());
+            List<String> knockouts = pdfBlockingKnockouts(graph);
+            if (!knockouts.isEmpty()) {
+                log.info("Not generating PDF for tax return {}: knockout {}", taxReturn.getId(), knockouts);
+                throw new PdfRefusedByKnockoutException(knockouts);
+            }
             facts = factGraphService.extractFacts(factPaths, graph);
         } catch (JsonProcessingException e) {
             throw new PdfCreationException("Could not parse JSON for tax return " + taxReturn.getId(), e);
@@ -167,6 +179,18 @@ public class PdfService {
         }
 
         return inputStream;
+    }
+
+    /** The {@link #PDF_BLOCKING_KNOCKOUTS} that are true (complete or placeholder) on the graph. */
+    static List<String> pdfBlockingKnockouts(Graph graph) {
+        List<String> out = new ArrayList<>();
+        for (String path : PDF_BLOCKING_KNOCKOUTS) {
+            var result = graph.get(path);
+            if (result.hasValue() && Boolean.TRUE.equals(result.get())) {
+                out.add(path);
+            }
+        }
+        return out;
     }
 
     private void mergeDocuments(final List<PDDocument> newDocuments, final PDDocument combinedDocument)

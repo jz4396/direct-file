@@ -1,8 +1,8 @@
 # Schedule EIC without a TY2026 template (#208). Overlay merged by locales/featureLocales.ts.
 headings:
   /heading/knockout/schedule-eic-without-ty2026-template:
-    Esta herramienta aún no puede presentar una declaración que reclame el Crédito tributario por ingreso del trabajo
-    con un hijo calificado
+    Esta herramienta aún no puede preparar ni imprimir una declaración que reclame el Crédito tributario por ingreso
+    del trabajo con un hijo calificado
 info:
   /info/knockout/schedule-eic-without-ty2026-template:
     alertText:
