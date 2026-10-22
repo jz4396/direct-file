@@ -79,6 +79,7 @@
           <Dependency module="estimatedPayments" path="/knockoutPaidEstimatedTaxesUnderDifferentLastName" />
           <Dependency module="familyAndHousehold" path="/knockoutHohQpHasNoTin" />
           <Dependency module="ctcOdc" path="/flowKnockoutCtcFilerSsnUnresolved" />
+          <Dependency module="eitc" path="/flowKnockoutScheduleEicWithoutTy2026Template" />
           <Dependency module="familyAndHousehold" path="/knockoutPersonBornAndDiedInTaxYearWithoutTin" />
           <Dependency module="dependentsBenefitSplit" path="/knockedOutByNonCustodialParentBenefitSplit" />
           <Dependency module="dependentsBenefitSplit" path="/knockedOutByContradictory8832" />

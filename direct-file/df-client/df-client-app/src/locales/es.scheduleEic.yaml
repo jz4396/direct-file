@@ -1,0 +1,16 @@
+# Schedule EIC without a TY2026 template (#208). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/knockout/schedule-eic-without-ty2026-template:
+    Esta herramienta aún no puede presentar una declaración que reclame el Crédito tributario por ingreso del trabajo
+    con un hijo calificado
+info:
+  /info/knockout/schedule-eic-without-ty2026-template:
+    alertText:
+      body:
+        - p:
+            Para reclamar el Crédito tributario por ingreso del trabajo con un hijo calificado, su declaración debe
+            incluir el Anexo EIC con el nombre, el número de Seguro Social y el año de nacimiento de cada hijo
+            calificado. Esta herramienta aún no puede producir el Anexo EIC de 2026.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
