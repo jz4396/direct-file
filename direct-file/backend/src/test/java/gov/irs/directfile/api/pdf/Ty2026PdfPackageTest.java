@@ -82,7 +82,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * taxable year— (i) the taxpayer's social security number ..., and (ii) the social security number of such qualifying
  * child." The filer is a U.S. citizen all year, so the SSN is valid for employment (ssnValidForCtc) and
  * /filerSsnRequirementForCtcMet is true. Each CTC scenario asserts that, and that /familyAndHouseholdHasInvalidTIN is
- * false. This test does not claim any scenario is free of other blocking facts.
+ * false. The negative case (an ITIN filer with the same children gets the ODC only) is
+ * CreditFormsTy2026PdfSmokeTest#itinFilerWithQualifyingChildrenGetsOdcOnly. This test does not claim any scenario is free of other blocking facts.
  *
  * <pre>
  * Scenario 1, investor (federal, DC): single; W-2 $250,000 wages / $184,500 social security wages / $250,000 Medicare
@@ -710,20 +711,19 @@ class Ty2026PdfPackageTest {
     void familyCreditsPackage() throws Exception {
         // The filer and both children have group-00 test SSNs, so 26 U.S.C. 24(h)(7) is met (see the class comment).
         Map<String, FactTypeWithItem> facts = scenarioFile(FAMILY, CTC_FILER_SSN, true);
+        noEitc(facts);
         assertCtcSsnRequirementMet(facts);
+        var eitcQualified = factGraphService.getGraph(facts).get("/eitcQualified");
+        assertTrue(
+                eitcQualified.complete() && Boolean.FALSE.equals(eitcQualified.get()),
+                "/eitcQualified (EIC disallowance period), so no Schedule EIC");
         assertFalse(
                 factGraphService
                         .submissionBlockingFactPaths(factGraphService.getGraph(facts))
                         .contains(CreditFormsTy2026PdfSmokeTest.INVALID_TIN),
                 "sign/submit gate doesn't name " + CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
         Pkg pkg = renderFacts(facts, "e2e-ty2026-family.pdf").filerSsn(CTC_FILER_SSN_DASHED);
-        // With a filer SSN the earned income credit is no longer barred, so Schedule EIC prints. 26 U.S.C. 32(m)
-        // (https://www.law.cornell.edu/uscode/text/26/32): "a taxpayer identification number means a social security
-        // number issued to an individual by the Social Security Administration"; an ITIN filer gets no EIC. Schedule
-        // EIC still prints its 2024 template (see EXCLUDED), so it skips the per-form TY2026 template checks.
-        pkg.assertForms(
-                Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1, "IRS1040EIC", 1),
-                Set.of("IRS1040EIC"));
+        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s3 = pkg.fields("IRS1040S3", 0);
         Map<String, String> f2441 = pkg.fields("IRS2441", 0);
@@ -832,6 +832,26 @@ class Ty2026PdfPackageTest {
         assertEquals(1019, amt(f1040, "Page2[0].f2_27[0]"), "Form 1040 line 28 = 8812 line 27");
     }
 
+    /**
+     * Keeps the earned income credit out of the family package so it covers Form 2441 and Schedule 8812 only (Schedule
+     * EIC has no TY2026 template yet, #208): the filer is in a two-year EIC disallowance period, 26 U.S.C.
+     * 32(k)(1)(B)(ii) (https://www.law.cornell.edu/uscode/text/26/32), "the period of 2 taxable years after the most
+     * recent taxable year for which there was a final determination that the taxpayer's claim of credit under this
+     * section was due to reckless or intentional disregard of rules and regulations". The CTC disallowance facts
+     * (/receivedImproperClaims) are separate and stay as the scenario answers them.
+     */
+    static void noEitc(Map<String, FactTypeWithItem> facts) throws Exception {
+        Map<String, String> m = new LinkedHashMap<>();
+        m.put("/eitcHadImproperClaims", bool(true));
+        m.put("/eitcImproperClaimsDueToQc", bool(false));
+        m.put("/eitcImproperClaimTakenSinceDisallowal", bool(false));
+        m.put("/eitcReceivedImproperClaimsNotice", enumValue("twoYears", "/improperClaimsNoticeOptions"));
+        m.put("/eitcImproperClaimsNoticeExpired", bool(false));
+        for (var e : m.entrySet()) {
+            facts.put(e.getKey(), MAPPER.readValue(e.getValue(), FactTypeWithItem.class));
+        }
+    }
+
     /** {@link #assertCtcSsnRequirementMet(Map)} on the scenario layered over the shared smoke fixture. */
     static void assertScenarioCtcSsnRequirementMet(Map<String, String> scenario) throws Exception {
         JsonNode root =
@@ -911,27 +931,12 @@ class Ty2026PdfPackageTest {
         }
 
         void assertForms(Map<String, Integer> expectedInstances) throws Exception {
-            assertForms(expectedInstances, Set.of());
-        }
-
-        /**
-         * Like {@link #assertForms(Map)}, but each form in {@code expectedExcluded} must be in EXCLUDED (no 2026
-         * template committed): it is counted in the package but skips the per-form TY2026 template checks.
-         */
-        void assertForms(Map<String, Integer> expectedInstances, Set<String> expectedExcluded) throws Exception {
-            for (String name : expectedExcluded) {
-                assertTrue(EXCLUDED.containsKey(name), name + " is listed as excluded");
-                assertTrue(expectedInstances.containsKey(name), name + " is expected in the package");
-            }
             String ssnDigits = ssnDashed.replace("-", "");
             Map<String, Integer> actual = new TreeMap<>();
             forms.forEach((name, instances) -> actual.put(name, instances.size()));
             assertEquals(new TreeMap<>(expectedInstances), actual, "forms (and copies) in the package");
             for (var e : forms.entrySet()) {
                 String name = e.getKey();
-                if (expectedExcluded.contains(name)) {
-                    continue;
-                }
                 ConfiguredPdfProperties t = templates.get(name);
                 assertTrue(PAGES.containsKey(name), "page count known for " + name);
                 for (List<Integer> pages : e.getValue()) {

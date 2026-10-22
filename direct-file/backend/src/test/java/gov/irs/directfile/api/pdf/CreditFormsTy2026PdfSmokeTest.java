@@ -422,6 +422,74 @@ class CreditFormsTy2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Negative case for the filer SSN requirement of 26 U.S.C. 24(h)(7)(A)(i): the hoh-cdcc.json children keep their
+     * group-00 test SSNs and pass the child tests, but the filer has a test ITIN (900-00-0001; Tin.isITIN treats group
+     * 00 as a test ITIN). /filerSsnRequirementForCtcMet is false, so no child is eligibleCtc and each falls to the
+     * credit for other dependents, $500 per dependent under 24(h)(4)(A). An ITIN filer gets no earned income credit
+     * either (26 U.S.C. 32(c)(1)(E) and 32(m)), so no Schedule EIC prints.
+     */
+    @Test
+    void itinFilerWithQualifyingChildrenGetsOdcOnly() throws Exception {
+        Map<String, FactTypeWithItem> facts = scenarioFactsWithCtcSsns("hoh-cdcc.json");
+        String primary = null;
+        for (String k : facts.keySet()) {
+            if (k.startsWith("/filers/#")
+                    && k.endsWith("/isPrimaryFiler")
+                    && facts.get(k).item().asBoolean(false)) {
+                primary = k.substring(0, k.length() - "/isPrimaryFiler".length());
+            }
+        }
+        assertTrue(primary != null, "primary filer");
+        facts.put(primary + "/tin", tinFact("900-00-0001"));
+
+        var graph = factGraphService().getGraph(facts);
+        var met = graph.get("/filerSsnRequirementForCtcMet");
+        assertTrue(
+                met.complete() && Boolean.FALSE.equals(met.get()), "/filerSsnRequirementForCtcMet complete and false");
+        var invalid = graph.get(INVALID_TIN);
+        assertTrue(invalid.complete() && Boolean.FALSE.equals(invalid.get()), INVALID_TIN + " (children have SSNs)");
+        var unresolved = graph.get("/flowKnockoutCtcFilerSsnUnresolved");
+        assertTrue(
+                unresolved.complete() && Boolean.FALSE.equals(unresolved.get()),
+                "/flowKnockoutCtcFilerSsnUnresolved complete and false: an ITIN is decided, not unresolved");
+        int children = 0;
+        for (String k : facts.keySet()) {
+            if (k.startsWith("/familyAndHousehold/#") && k.endsWith("/tinType")) {
+                String child = k.substring(0, k.length() - "/tinType".length());
+                children++;
+                var meets = graph.get(child + "/meetsChildCtcTests");
+                assertTrue(meets.complete() && Boolean.TRUE.equals(meets.get()), child + " meetsChildCtcTests");
+                var ctc = graph.get(child + "/eligibleCtc");
+                assertTrue(
+                        ctc.complete() && Boolean.FALSE.equals(ctc.get()), child + " eligibleCtc complete and false");
+                var odc = graph.get(child + "/eligibleOdc");
+                assertTrue(odc.complete() && Boolean.TRUE.equals(odc.get()), child + " eligibleOdc");
+            }
+        }
+        assertEquals(2, children, "two children");
+        var eic = graph.get("/pdfIncludeScheduleEic");
+        assertTrue(eic.complete() && Boolean.FALSE.equals(eic.get()), "/pdfIncludeScheduleEic complete and false");
+
+        try (PDDocument doc = Loader.loadPDF(generate("hoh-cdcc-itin-filer.json", facts))) {
+            List<String> texts = pageTexts(doc);
+            assertFalse(
+                    String.join(" ", texts).contains("Qualifying Child Information"), "no Schedule EIC in the package");
+            List<Integer> p8812 = pages(texts, CreditFormsTy2026PdfSmokeTest::is8812);
+            assertEquals(2, p8812.size(), "Schedule 8812 prints (ODC)");
+            Map<String, String> s = fieldsOn(doc, p8812);
+            assertOnlyTestTins(s);
+            assertEquals("900-00-0001", field(s, "Page1[0].f1_2[0]"), "filer ITIN");
+            assertTrue(Set.of("", "0").contains(field(s, "Page1[0].f1_9[0]")), "4 no CTC children");
+            assertEquals("", field(s, "Page1[0].f1_10[0]"), "5 no CTC (zero prints blank)");
+            assertEquals("2", field(s, "Page1[0].Line6ReadOrder[0].f1_11[0]"), "6 ODC dependents");
+            assertEquals(2 * 50000, amt(s, "Page1[0].f1_12[0]"), "7 = line 6 x $500 (24(h)(4)(A))");
+            assertEquals(2 * 50000, amt(s, "Page1[0].f1_13[0]"), "8 = 5 + 7");
+            assertEquals("", field(s, "Page2[0].f2_4[0]"), "16b no refundable CTC");
+            assertEquals("", field(s, "Page2[0].f2_16[0]"), "27 no additional CTC");
+        }
+    }
+
     @Test
     void moreThanThreeCareProvidersAndQualifyingPersonsFillProviderColumnsAndStatements() throws Exception {
         // Printing only, not a fileable return: the children are declared tinType = ssn with 9xx numbers (#182), so
