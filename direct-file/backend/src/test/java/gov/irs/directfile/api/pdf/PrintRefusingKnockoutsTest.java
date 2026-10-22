@@ -1,136 +1,184 @@
 package gov.irs.directfile.api.pdf;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import scala.Option;
 
 import gov.irs.factgraph.Graph;
 import gov.irs.factgraph.monads.Result;
 
+import gov.irs.directfile.api.loaders.domain.TaxFact;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
+import gov.irs.directfile.api.loaders.service.SubmissionBlockingFactsTest;
+import gov.irs.directfile.models.FactTypeWithItem;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * The print path fails closed: a listed knockout lets the return print only when it is complete and false.
- * Incomplete, missing from the dictionary, not a boolean, or failing evaluation counts as true, and the warning names
- * the fact path only. The true case through the real print path is
- * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath.
- */
+/** The shared list of knockouts that stop the printed package, and which paths refuse the print. */
 class PrintRefusingKnockoutsTest {
-    static final String CODE_Q = "/flowKnockoutForm8949CodeQ";
-    static final String SECRET = "exception-text-sentinel-5521";
-    static Graph emptyReturn;
+    static final String CODE_Q_KNOCKOUT = "/flowKnockoutForm8949CodeQ";
+    static final String SECRET = "value 123-45-6789";
 
-    Logger logger = (Logger) LoggerFactory.getLogger(PrintRefusingKnockouts.class);
-    ListAppender<ILoggingEvent> logs = new ListAppender<>();
-
-    @BeforeAll
-    static void loadDictionary() throws Exception {
-        GenericApplicationContext ctx = new GenericApplicationContext();
-        ctx.refresh();
-        FactGraphService factGraphService = new FactGraphService(new ObjectMapper(), ctx);
-        ReflectionTestUtils.setField(factGraphService, "loadAtStartup", true);
-        ReflectionTestUtils.setField(factGraphService, "factDictionaryXmlPattern", "classpath:/tax/*.xml");
-        Method init = FactGraphService.class.getDeclaredMethod("init");
-        init.setAccessible(true);
-        init.invoke(factGraphService);
-        emptyReturn = factGraphService.getGraph(Map.of());
+    static Result<Object> complete(Object v) {
+        return Result.apply(v, true);
     }
 
-    @BeforeEach
-    void captureLogs() {
-        logs.start();
-        logger.addAppender(logs);
+    static Result<Object> placeholder(Object v) {
+        return Result.apply(v, false);
     }
 
-    @AfterEach
-    void releaseLogs() {
-        logger.detachAppender(logs);
+    static Result<Object> incomplete() {
+        return Result.apply(Option.empty());
     }
 
-    static List<String> onEmptyReturn(String... paths) {
-        return PrintRefusingKnockouts.refusingPaths(List.of(paths), path -> emptyReturn.get(path));
+    static Function<String, Result<Object>> evaluator(Map<String, Result<Object>> results) {
+        return path -> {
+            if ("/throws".equals(path)) {
+                throw new IllegalStateException(SECRET);
+            }
+            return results.get(path);
+        };
     }
 
-    /** Every warning names exactly the expected paths and carries no value, exception or exception text. */
-    void assertWarnedPathsOnly(List<String> paths) {
-        assertEquals(paths.size(), logs.list.size(), logs.list::toString);
-        for (int i = 0; i < paths.size(); i++) {
-            ILoggingEvent event = logs.list.get(i);
-            String message = event.getFormattedMessage();
-            assertEquals(List.of(paths.get(i)), List.of(event.getArgumentArray()), message);
-            assertNull(event.getThrowableProxy(), message);
-            assertFalse(message.contains(SECRET), message);
-            assertFalse(message.contains("Exception"), message);
-            assertFalse(message.contains("2026"), message);
+    @Test
+    void listHoldsTheForm8949CodeQKnockout() {
+        assertEquals(List.of(CODE_Q_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
+        assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
+        assertEquals(
+                PrintRefusingKnockouts.FACT_PATHS.size(),
+                new HashSet<>(PrintRefusingKnockouts.FACT_PATHS).size(),
+                "no duplicates");
+    }
+
+    @Test
+    void everyEntryIsAKnockoutCoveredByFlowIsKnockedOut() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        Set<String> blocking = new HashSet<>();
+        for (TaxFact f : fgs.getDigest().getSubmissionBlockingFacts()) {
+            blocking.add(f.path());
+        }
+        Set<String> topLevel = fgs.getDigest().getSubmissionBlockingFactsRequiringValue();
+        for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+            assertTrue(blocking.contains(path), path + " is a <BlockSubmissionOnTrue /> fact");
+            assertFalse(topLevel.contains(path), path + " is covered by /flowIsKnockedOut, not top-level");
         }
     }
 
-    @Test
-    void theListedKnockoutsAreCompleteAndFalseOnAnEmptyReturn() {
-        assertTrue(PrintRefusingKnockouts.FACT_PATHS.contains(CODE_Q));
-        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(emptyReturn));
-        assertWarnedPathsOnly(List.of());
+    static List<String> refusing(String path, Result<Object> result) {
+        Map<String, Result<Object>> results = new HashMap<>();
+        results.put(path, result);
+        return PrintRefusingKnockouts.refusingPaths(List.of(path), evaluator(results));
     }
 
     @Test
-    void anIncompleteKnockoutCountsAsTrue() {
-        // /soldCollectibles is a writable boolean with no answer on an empty return, so it is incomplete.
-        assertEquals(List.of("/soldCollectibles"), onEmptyReturn(CODE_Q, "/soldCollectibles"));
-        assertWarnedPathsOnly(List.of("/soldCollectibles"));
+    void completeFalseIsTheOnlyValueThatPrints() {
+        assertEquals(List.of(), refusing("/k", complete(false)));
     }
 
     @Test
-    void aKnockoutMissingFromTheDictionaryCountsAsTrue() {
-        assertEquals(List.of("/noSuchPrintKnockout"), onEmptyReturn("/noSuchPrintKnockout", CODE_Q));
-        assertWarnedPathsOnly(List.of("/noSuchPrintKnockout"));
+    void completeTrueRefuses() {
+        assertEquals(List.of("/k"), refusing("/k", complete(true)));
     }
 
     @Test
-    void aKnockoutThatFailsEvaluationCountsAsTrue() {
-        Function<String, Result<Object>> failing = path -> {
-            throw new IllegalStateException(SECRET);
-        };
-        assertEquals(List.of(CODE_Q), PrintRefusingKnockouts.refusingPaths(List.of(CODE_Q), failing));
-        assertEquals(List.of(CODE_Q), PrintRefusingKnockouts.refusingPaths(List.of(CODE_Q), path -> null));
-        assertWarnedPathsOnly(List.of(CODE_Q, CODE_Q));
+    void placeholderTrueRefuses() {
+        assertEquals(List.of("/k"), refusing("/k", placeholder(true)));
     }
 
     @Test
-    void aNonBooleanFactCountsAsTrueWithoutLoggingItsValue() {
-        // /taxYear is complete (2026) but not a boolean, so it cannot say "no knockout".
-        assertEquals(List.of("/taxYear"), onEmptyReturn("/taxYear"));
-        assertWarnedPathsOnly(List.of("/taxYear"));
+    void placeholderFalseRefuses() {
+        assertEquals(List.of("/k"), refusing("/k", placeholder(false)));
     }
 
     @Test
-    void onlyCompleteFalsePrintsAndPlaceholdersRefuse() {
-        Result<Object> completeFalse = Result.apply(Boolean.FALSE, true);
-        Result<Object> completeTrue = Result.apply(Boolean.TRUE, true);
-        Result<Object> placeholderFalse = Result.apply(Boolean.FALSE, false);
-        Result<Object> placeholderTrue = Result.apply(Boolean.TRUE, false);
-        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(List.of(CODE_Q), path -> completeFalse));
-        assertEquals(List.of(CODE_Q), PrintRefusingKnockouts.refusingPaths(List.of(CODE_Q), path -> completeTrue));
-        assertWarnedPathsOnly(List.of()); // a true knockout is the expected refusal, not a warning
-        assertEquals(List.of(CODE_Q), PrintRefusingKnockouts.refusingPaths(List.of(CODE_Q), path -> placeholderFalse));
-        assertEquals(List.of(CODE_Q), PrintRefusingKnockouts.refusingPaths(List.of(CODE_Q), path -> placeholderTrue));
-        assertWarnedPathsOnly(List.of(CODE_Q, CODE_Q));
+    void incompleteRefuses() {
+        assertEquals(List.of("/k"), refusing("/k", incomplete()));
+    }
+
+    @Test
+    void missingRefuses() throws Exception {
+        assertEquals(List.of("/k"), refusing("/k", null));
+        Graph golden = CreditFormsTy2026PdfSmokeTest.factGraphService().getGraph(SubmissionBlockingFactsTest.golden());
+        assertEquals(
+                List.of("/noSuchKnockout"),
+                PrintRefusingKnockouts.refusingPaths(List.of("/noSuchKnockout"), path -> golden.get(path)));
+    }
+
+    @Test
+    void erroredRefusesAndLogsOnlyThePath() {
+        Logger logger = (Logger) LoggerFactory.getLogger(PrintRefusingKnockouts.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            assertEquals(List.of("/throws"), refusing("/throws", complete(false)));
+        } finally {
+            logger.detachAppender(appender);
+        }
+        assertEquals(1, appender.list.size());
+        ILoggingEvent event = appender.list.get(0);
+        assertEquals(Level.WARN, event.getLevel());
+        assertEquals("Print-refusing knockout /throws could not be evaluated", event.getFormattedMessage());
+        assertArrayEquals(new Object[] {"/throws"}, event.getArgumentArray());
+        assertNull(event.getThrowableProxy(), "no stack trace");
+        assertFalse(event.getFormattedMessage().contains(SECRET), "no exception message");
+        assertFalse(event.getFormattedMessage().contains("IllegalStateException"), "no exception class");
+    }
+
+    @Test
+    void returnsEveryRefusingPathInListOrder() {
+        List<String> paths = List.of("/a", "/b", "/c", "/d", "/e", "/throws", "/missing", "/f");
+        Map<String, Result<Object>> results = Map.of(
+                "/a", complete(true),
+                "/b", complete(false),
+                "/c", placeholder(true),
+                "/d", incomplete(),
+                "/e", placeholder(false),
+                "/f", complete(false));
+        assertEquals(
+                List.of("/a", "/c", "/d", "/e", "/throws", "/missing"),
+                PrintRefusingKnockouts.refusingPaths(paths, evaluator(results)));
+    }
+
+    @Test
+    void returnsNothingWhenEveryKnockoutIsCompleteAndFalse() {
+        Map<String, Result<Object>> results = Map.of("/a", complete(false), "/b", complete(false));
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(List.of("/a", "/b"), evaluator(results)));
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(List.of(), evaluator(results)));
+    }
+
+    /**
+     * Every backend scenario prints: none has a Form 8949 code Q row, and the knockout is complete and false in each,
+     * so fail-closed refuses no clean return. The code Q refusal through the real print path is
+     * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath.
+     */
+    @Test
+    void everyScenarioStillPrints() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        Resource[] files = new PathMatchingResourcePatternResolver().getResources("classpath:scenarios/*.json");
+        assertTrue(files.length > 100, "scenarios found: " + files.length);
+        for (Resource file : files) {
+            JsonNode root = mapper.readTree(file.getInputStream());
+            Map<String, FactTypeWithItem> facts =
+                    mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
+            assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(facts)), file.getFilename());
+        }
     }
 }

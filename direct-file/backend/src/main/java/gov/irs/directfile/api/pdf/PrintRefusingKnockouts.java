@@ -11,14 +11,11 @@ import gov.irs.factgraph.monads.Result;
 
 /**
  * Knockouts that stop the printed package as well as sign and submit. {@link PdfService#getTaxReturn} builds no PDF
- * while any of them is true, and the PDF endpoint answers 400 with those paths as {@code blockingFacts}.
+ * unless every one of them is complete and false, and the PDF endpoint answers 400 with every refusing path as
+ * {@code blockingFacts}.
  *
- * <p>Each entry must be a {@code <BlockSubmissionOnTrue />} knockout listed in {@code /flowIsKnockedOut} that is
- * complete and false on clean returns. One path per line.
- *
- * <p>Fails closed: a listed fact lets the return print only when it is complete and false. Incomplete (including a
- * placeholder), not a boolean, missing from the dictionary, or failing evaluation counts as true. The warning for
- * those cases logs the fact path only, never a value or exception text.
+ * <p>Each entry must be a {@code <BlockSubmissionOnTrue />} knockout listed in {@code /flowIsKnockedOut}, and is
+ * removed when the form it waits for has a template and field map. One path per line.
  */
 @Slf4j
 public final class PrintRefusingKnockouts {
@@ -30,35 +27,34 @@ public final class PrintRefusingKnockouts {
 
     private PrintRefusingKnockouts() {}
 
-    /** The {@link #FACT_PATHS} that refuse the print: everything except complete false (placeholders refuse too). */
+    /** The {@link #FACT_PATHS} that refuse the print on the graph. */
     public static List<String> refusingPaths(Graph graph) {
         return refusingPaths(FACT_PATHS, path -> graph.get(path));
     }
 
-    /** The given paths, in the given order, that do not evaluate to complete false. */
-    @SuppressWarnings("PMD.AvoidCatchingGenericException") // any evaluation failure must refuse, not print
+    /**
+     * The given paths that refuse the print, in the given order. This fails closed: only a complete false value lets
+     * the package print. True (complete or placeholder), a placeholder false, no value, a path the graph does not
+     * have, and an evaluation error all refuse.
+     */
     static List<String> refusingPaths(List<String> paths, Function<String, Result<Object>> evaluate) {
         List<String> out = new ArrayList<>();
         for (String path : paths) {
-            Result<Object> result;
-            try {
-                result = evaluate.apply(path);
-            } catch (RuntimeException e) {
-                log.warn("Print-refusing knockout {} could not be evaluated; refusing the print", path);
-                out.add(path);
-                continue;
-            }
-            if (result == null || !result.complete()) {
-                log.warn(
-                        "Print-refusing knockout {} is missing, incomplete or a placeholder; refusing the print", path);
-                out.add(path);
-            } else if (!Boolean.FALSE.equals(result.get())) {
-                if (!Boolean.TRUE.equals(result.get())) {
-                    log.warn("Print-refusing knockout {} is not a boolean; refusing the print", path);
-                }
+            if (!allowsPrinting(path, evaluate)) {
                 out.add(path);
             }
         }
         return out;
+    }
+
+    private static boolean allowsPrinting(String path, Function<String, Result<Object>> evaluate) {
+        try {
+            Result<Object> result = evaluate.apply(path);
+            return result != null && result.complete() && Boolean.FALSE.equals(result.get());
+        } catch (RuntimeException e) {
+            // Only the path: no fact value, exception message, class name or stack trace.
+            log.warn("Print-refusing knockout {} could not be evaluated", path);
+            return false;
+        }
     }
 }
