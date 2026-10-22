@@ -1,9 +1,10 @@
 import { it, describe, expect } from 'vitest';
 import { Path } from '../../flow/Path.js';
-import { baseFilerData, makeChildData, makeW2Data, primaryFilerId } from '../testData.js';
-import { createBooleanWrapper, createDayWrapper, createEnumWrapper } from '../persistenceWrappers.js';
+import { baseFilerData, makeChildData, makeW2Data, mfjFilerData, primaryFilerId, spouseId } from '../testData.js';
+import { createBooleanWrapper, createDayWrapper, createEnumWrapper, createTinWrapper } from '../persistenceWrappers.js';
 import { CURRENT_TAX_YEAR } from '../../constants/taxConstants.js';
 import { setupFactGraph } from '../setupFactGraph.js';
+import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 
 const childDependentId = `4fa3a5a7-a9d1-43a9-a0fb-277596e70d48`;
 const childDependentId2 = `71c66f78-31b0-4a92-ab5b-c211784b16c7`;
@@ -141,4 +142,227 @@ describe(`CTC and ODC amounts`, () => {
       expect(factGraph.get(Path.concretePath(`/totalCtcAndOdc`, null)).get.toString()).toBe(c.total);
     });
   }
+});
+
+// #182: IRC §24(h)(7)(A)(i), as amended by P.L. 119-21 §70104(b): no CTC "unless the taxpayer includes on the return
+// ... the taxpayer's social security number (or, in the case of a joint return, the social security number of at
+// least 1 spouse)". §24(h)(4)(C): a child denied the CTC "by reason of paragraph (7)" is treated as a dependent for
+// the $500 credit for other dependents. https://www.law.cornell.edu/uscode/text/26/24
+describe(`CTC filer SSN requirement (#182)`, () => {
+  // 9XX-70-XXXX is in the ITIN group range (Tin.isITIN); 555-55-5555 and 111-11-1111 are the suite's SSNs.
+  const itin = createTinWrapper({ area: `900`, group: `70`, serial: `0001` });
+  const primaryValidity = (v: string) => ({
+    [`/primaryFilerSsnEmploymentValidity`]: createEnumWrapper(v, `/primaryFilerSsnEmploymentValidityOptions`),
+  });
+  const statusChanged = (v: boolean) => ({
+    [`/filers/#${primaryFilerId}/writableSsnStatusChangedForCtc`]: createBooleanWrapper(v),
+  });
+  const primaryNonCitizen = { [`/filers/#${primaryFilerId}/isUsCitizenFullYear`]: createBooleanWrapper(false) };
+  const primaryItin = { [`/filers/#${primaryFilerId}/tin`]: itin };
+  const spouseItin = { [`/filers/#${spouseId}/tin`]: itin };
+  const mfjWithChild = {
+    ...filerWithChild,
+    ...mfjFilerData,
+    [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(dob.adult),
+    [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  };
+  // Only an 18-year-old dependent: no child meets the CTC age test (ODC only).
+  const noCtcAgeChild = {
+    ...baseFilerData,
+    [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(dob.adult),
+    [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+    [`/filingStatus`]: createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
+    '/familyAndHousehold': {
+      $type: `gov.irs.factgraph.persisters.CollectionWrapper`,
+      item: { items: [`${childDependentId3}`] },
+    },
+    ...child3Data,
+  };
+  type FactPath = Parameters<typeof Path.concretePath>[0];
+  const get = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], path: FactPath, id: string | null = null) =>
+    fg.get(Path.concretePath(path, id));
+  const expectCtc = (data: object, ctc: boolean) => {
+    const { factGraph } = setupFactGraph(data);
+    expect(get(factGraph, `/familyAndHousehold/*/meetsChildCtcTests`, childDependentId).get).toBe(true);
+    expect(get(factGraph, `/filerSsnRequirementForCtcMet`).get).toBe(ctc);
+    expect(get(factGraph, `/familyAndHousehold/*/eligibleCtc`, childDependentId).get).toBe(ctc);
+    expect(get(factGraph, `/familyAndHousehold/*/eligibleOdc`, childDependentId).get).toBe(!ctc);
+    expect(get(factGraph, `/ctcEligibleDependents`).get).toBe(ctc ? 1 : 0);
+    expect(get(factGraph, `/odcEligibleDependents`).get).toBe(ctc ? 0 : 1);
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(false);
+    return factGraph;
+  };
+
+  it(`SSN citizen filer is unchanged: CTC`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filerSsnRequirementForCtcMet`, `/familyAndHousehold/*/eligibleCtc`];
+    expectCtc(filerWithChild, true);
+  });
+
+  it(`single (HoH) ITIN filer: no CTC; the child falls to the ODC under §24(h)(4)(C)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/familyAndHousehold/*/eligibleOdc`, `/totalCtc`, `/totalOdc`];
+    const fg = expectCtc({ ...filerWithChild, ...primaryItin, ...makeW2Data(56800) }, false);
+    // ODC is $500 per dependent, §24(h)(4)(A); tax before credits exceeds $500 at these wages.
+    expect(get(fg, `/totalCtc`).get.toString()).toBe(`0.00`);
+    expect(get(fg, `/totalOdc`).get.toString()).toBe(`500.00`);
+  });
+
+  it(`MFJ, ITIN primary and SSN spouse: CTC (at least 1 spouse)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filerSsnRequirementForCtcMet`];
+    expectCtc({ ...mfjWithChild, ...primaryItin }, true);
+  });
+
+  it(`MFJ, SSN primary and ITIN spouse: CTC`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filerSsnRequirementForCtcMet`];
+    expectCtc({ ...mfjWithChild, ...spouseItin }, true);
+  });
+
+  it(`MFJ, both spouses ITIN: no CTC, ODC only`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filerSsnRequirementForCtcMet`];
+    expectCtc({ ...mfjWithChild, ...primaryItin, ...spouseItin }, false);
+  });
+
+  it(`non-citizen filer whose card reads "Not valid for employment": no CTC`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filers/*/ssnValidForCtc`];
+    const fg = expectCtc(
+      {
+        ...filerWithChild,
+        ...primaryNonCitizen,
+        ...primaryValidity(`notValid`),
+        [`/filers/#${primaryFilerId}/writableHasSSNOnlyForBenefits`]: createBooleanWrapper(false),
+        ...statusChanged(false),
+      },
+      false
+    );
+    // The same SSN still meets IRC §32(m) for the EITC, which is why the EITC fact isn't reused.
+    expect(get(fg, `/filers/*/ssnValidForEitc`, primaryFilerId).get).toBe(true);
+  });
+
+  it(`non-citizen filer with "Valid for work only with DHS authorization" in effect: CTC`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filers/*/ssnValidForCtc`];
+    expectCtc({ ...filerWithChild, ...primaryNonCitizen, ...primaryValidity(`validOnlyWithDhsAuthorization`) }, true);
+  });
+
+  it(`sole qualifying filer with expired DHS authorization: knockout, not a silent pass or fail`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCtcFilerSsnUnresolved`, `/flowIsKnockedOut`];
+    const { factGraph } = setupFactGraph({
+      ...filerWithChild,
+      ...primaryNonCitizen,
+      ...primaryValidity(`validOnlyWithDhsAuthorizationExpired`),
+    });
+    expect(get(factGraph, `/filers/*/ssnDhsAuthorizationExpired`, primaryFilerId).get).toBe(true);
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(true);
+    expect(get(factGraph, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`expired DHS authorization doesn't stop the return when the other spouse has a qualifying SSN`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCtcFilerSsnUnresolved`];
+    expectCtc(
+      { ...mfjWithChild, ...primaryNonCitizen, ...primaryValidity(`validOnlyWithDhsAuthorizationExpired`) },
+      true
+    );
+  });
+
+  it(`MFJ, expired DHS authorization and an ITIN spouse: knockout`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCtcFilerSsnUnresolved`];
+    const { factGraph } = setupFactGraph({
+      ...mfjWithChild,
+      ...spouseItin,
+      ...primaryNonCitizen,
+      ...primaryValidity(`validOnlyWithDhsAuthorizationExpired`),
+    });
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(true);
+  });
+
+  it(`expired DHS authorization with no CTC-age child: no knockout`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCtcFilerSsnUnresolved`];
+    const { factGraph } = setupFactGraph({
+      ...noCtcAgeChild,
+      ...primaryNonCitizen,
+      ...primaryValidity(`validOnlyWithDhsAuthorizationExpired`),
+    });
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).complete).toBe(true);
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(false);
+  });
+
+  it(`unanswered card legend leaves the CTC incomplete rather than false`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filerSsnRequirementForCtcMet`, `/familyAndHousehold/*/eligibleCtc`];
+    const data: Record<string, unknown> = { ...filerWithChild, ...primaryNonCitizen };
+    delete data[`/primaryFilerSsnEmploymentValidity`];
+    const { factGraph } = setupFactGraph(data);
+    expect(get(factGraph, `/filerSsnRequirementForCtcMet`).complete).toBe(false);
+    expect(get(factGraph, `/familyAndHousehold/*/eligibleCtc`, childDependentId).complete).toBe(false);
+    // Submission checks fail closed on an incomplete blocking fact, so the knockout itself stays complete and false.
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).complete).toBe(true);
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(false);
+  });
+
+  it(`unanswered card legend with no CTC-age child doesn't leave the knockout incomplete`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCtcFilerSsnUnresolved`];
+    const data: Record<string, unknown> = { ...noCtcAgeChild, ...primaryNonCitizen };
+    delete data[`/primaryFilerSsnEmploymentValidity`];
+    const { factGraph } = setupFactGraph(data);
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).complete).toBe(true);
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(false);
+  });
+  it(`the knockout blocks submission`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCtcFilerSsnUnresolved`];
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutCtcFilerSsnUnresolved`);
+  });
+
+  it(`"Not valid for employment" card but status since changed: knockout`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filers/*/ssnCtcStatusUnresolved`, `/flowKnockoutCtcFilerSsnUnresolved`];
+    const { factGraph } = setupFactGraph({
+      ...filerWithChild,
+      ...primaryNonCitizen,
+      ...primaryValidity(`notValid`),
+      [`/filers/#${primaryFilerId}/writableHasSSNOnlyForBenefits`]: createBooleanWrapper(false),
+      ...statusChanged(true),
+    });
+    expect(get(factGraph, `/filers/*/askSsnStatusChangedForCtc`, primaryFilerId).get).toBe(true);
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(true);
+    expect(get(factGraph, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`expired DHS authorization knocks out even when the status hasn't changed`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filers/*/ssnCtcStatusUnresolved`];
+    const { factGraph } = setupFactGraph({
+      ...filerWithChild,
+      ...primaryNonCitizen,
+      ...primaryValidity(`validOnlyWithDhsAuthorizationExpired`),
+      ...statusChanged(false),
+    });
+    expect(get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`).get).toBe(true);
+  });
+
+  it(`the status question isn't asked for a card with no legend or DHS authorization in effect`, ({ task }) => {
+    task.meta.testedFactPaths = [`/filers/*/askSsnStatusChangedForCtc`];
+    for (const v of [`neither`, `validOnlyWithDhsAuthorization`]) {
+      const { factGraph } = setupFactGraph({ ...filerWithChild, ...primaryNonCitizen, ...primaryValidity(v) });
+      expect(get(factGraph, `/filers/*/askSsnStatusChangedForCtc`, primaryFilerId).get).toBe(false);
+    }
+  });
+
+  it(`MFJ, SSN and ITIN spouses: $2,200 CTC per child`, ({ task }) => {
+    task.meta.testedFactPaths = [`/totalCtc`];
+    // Rev. Proc. 2025-32 §4.05(1), p. 14: "the maximum amount of the credit allowed under § 24(a) is $2,200".
+    // MFJ wages $80,000 leave tax before credits above $2,200 and MAGI below the $400,000 phase-out (§24(h)(3)).
+    const { factGraph } = setupFactGraph({ ...mfjWithChild, ...spouseItin, ...makeW2Data(80000) });
+    expect(get(factGraph, `/totalCtc`).get.toString()).toBe(`2200.00`);
+    expect(get(factGraph, `/totalOdc`).get.toString()).toBe(`0.00`);
+  });
+  it(`the knockout is complete and false on ordinary returns`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutCtcFilerSsnUnresolved`];
+    const ordinary = {
+      'SSN citizen, no dependents': { ...baseFilerData },
+      'SSN citizen HoH with a child': filerWithChild,
+      'MFJ SSN citizens with a child': mfjWithChild,
+      'ITIN filer with a child': { ...filerWithChild, ...primaryItin },
+    };
+    for (const [name, data] of Object.entries(ordinary)) {
+      const { factGraph } = setupFactGraph(data);
+      const ko = get(factGraph, `/flowKnockoutCtcFilerSsnUnresolved`);
+      expect(ko.complete, name).toBe(true);
+      expect(ko.get, name).toBe(false);
+    }
+  });
 });

@@ -15700,6 +15700,15 @@ info:
       - p: >-
           Debes reportar todos tus ingresos al IRS, aun si no puedes hacerlo con Direct File.
       - p: Necesitarás presentar tu declaración con otra herramienta.
+  /info/income/1099R/1099-r-early-distribution-not-every-form-knockout:
+    body:
+      - p: >-
+          Dijiste que uno de tus Formularios 1099-R tiene el código 1 en la casilla 7 y que otro Formulario 1099-R tiene
+          un código diferente. Cuando el código 1 no aparece en todos tus Formularios 1099-R, es posible que necesites
+          enviar el Formulario 5329, lo cual aún no se acepta en Direct File.
+      - p: >-
+          Debes reportar todos tus ingresos al IRS, aun si no puedes hacerlo con Direct File.
+      - p: Necesitarás presentar tu declaración con otra herramienta.
   /info/income/1099R/whats-is-early-distribution:
     helpText:
       modals:
