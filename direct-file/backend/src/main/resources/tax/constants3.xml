@@ -108,7 +108,8 @@
     </Fact>
     <Fact path="/form1099RsDistributionCodeValidChars">
       <Description>Characters that appear in DF-supported distribution codes. #116: 1 is added for code 1 (early
-        distribution, no known exception). With 1 kept, a code 1 combined with another code (such as 12, 17, 1B or 1G) is
+        distribution, no known exception). With 1 kept, a code 1 combined with another code (such as 12, 17, 1B or 1G)
+        is
         no longer read as the other code alone, so it is unsupported and stops the return.</Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -123,7 +124,10 @@
       </Derived>
     </Fact>
     <Fact path="/hsaSelfOnlyCoverageLimit">
-      <Description>HSA contribution limit, self-only HDHP coverage, IRC §223(b)(2)(A) (https://www.law.cornell.edu/uscode/text/26/223). Rev. Proc. 2025-19 §2.01, p. 2 (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): "For calendar year 2026, the annual limitation on deductions under § 223(b)(2)(A) for an individual with self-only coverage under a high deductible health plan is $4,400."</Description>
+      <Description>HSA contribution limit, self-only HDHP coverage, IRC §223(b)(2)(A)
+        (https://www.law.cornell.edu/uscode/text/26/223). Rev. Proc. 2025-19 §2.01, p. 2
+        (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): "For calendar year 2026, the annual limitation on deductions
+        under § 223(b)(2)(A) for an individual with self-only coverage under a high deductible health plan is $4,400."</Description>
       <Export downstreamFacts="true" />
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -131,7 +135,10 @@
       </Derived>
     </Fact>
     <Fact path="/hsaFamilyCoverageLimit">
-      <Description>HSA contribution limit, family HDHP coverage, IRC §223(b)(2)(B) (https://www.law.cornell.edu/uscode/text/26/223). Rev. Proc. 2025-19 §2.01, p. 2 (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): "For calendar year 2026, the annual limitation on deductions under § 223(b)(2)(B) for an individual with family coverage under a high deductible health plan is $8,750."</Description>
+      <Description>HSA contribution limit, family HDHP coverage, IRC §223(b)(2)(B)
+        (https://www.law.cornell.edu/uscode/text/26/223). Rev. Proc. 2025-19 §2.01, p. 2
+        (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): "For calendar year 2026, the annual limitation on deductions
+        under § 223(b)(2)(B) for an individual with family coverage under a high deductible health plan is $8,750."</Description>
       <Export downstreamFacts="true" />
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -158,21 +165,34 @@
       </Derived>
     </Fact>
     <Fact path="/alaskaPfdAmountDividendPortion">
-      <Description>Portion of the Alaska Permanent Fund that was the normal dividend distribution. #91: 2026 PFD. Alaska Department of Revenue press release 26-004 (Sept. 18, 2026), https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf: "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."</Description>
+      <Description>Portion of the Alaska Permanent Fund that was the normal dividend distribution. #91: 2026 PFD. Alaska
+        Department of Revenue press release 26-004 (Sept. 18, 2026),
+        https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf: "Alaskans
+        will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00
+        energy relief payment."</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>1000.00</Dollar>
       </Derived>
     </Fact>
     <Fact path="/alaskaPfdAmountEnergyReliefPaymentPortion">
-      <Description>Portion of the Alaska Permanent Fund that was a one-time energy relief payment. #91: 2026 PFD. Alaska Department of Revenue press release 26-004 (Sept. 18, 2026), https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf: "Alaskans will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00 energy relief payment."</Description>
+      <Description>Portion of the Alaska Permanent Fund that was a one-time energy relief payment. #91: 2026 PFD. Alaska
+        Department of Revenue press release 26-004 (Sept. 18, 2026),
+        https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf: "Alaskans
+        will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00
+        energy relief payment."</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>200.00</Dollar>
       </Derived>
     </Fact>
     <Fact path="/hdhpMinAnnualDeductibleSelf">
-      <Description>HDHP minimum annual deductible, self-only coverage. Rev. Proc. 2025-19 §2.01, p. 2 (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): a high deductible health plan is defined "as a health plan with an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not exceed $8,500 for self-only coverage or $17,000 for family coverage." IRC §223(c)(2) (https://www.law.cornell.edu/uscode/text/26/223).</Description>
+      <Description>HDHP minimum annual deductible, self-only coverage. Rev. Proc. 2025-19 §2.01, p. 2
+        (https://www.irs.gov/pub/irs-drop/rp-25-19.pdf): a high deductible health plan is defined "as a health plan with
+        an annual deductible that is not less than $1,700 for self-only coverage or $3,400 for family coverage, and for
+        which the annual out-of-pocket expenses (deductibles, co-payments, and other amounts, but not premiums) do not
+        exceed $8,500 for self-only coverage or $17,000 for family coverage." IRC §223(c)(2)
+        (https://www.law.cornell.edu/uscode/text/26/223).</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>1700</Dollar>
