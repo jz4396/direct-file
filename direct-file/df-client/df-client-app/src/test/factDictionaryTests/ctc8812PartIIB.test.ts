@@ -34,7 +34,9 @@ import {
  *
  * Synthetic data with test-only 9xx numbers. The children are declared tinType = ssn; 9xx numbers are never SSNs in
  * the fact graph, so these graphs exercise the computation only and are not fileable (/familyAndHouseholdHasInvalidTIN
- * is true; #181, #182).
+ * is true; #181). The primary filer keeps the shared fixture SSN 555-55-5555 from baseFilerData (testData.ts, a U.S.
+ * citizen all year): since #182 the CTC needs a filer SSN (26 U.S.C. 24(h)(7)(A)(i),
+ * https://www.law.cornell.edu/uscode/text/26/24), and a 9xx filer number would leave no CTC to test.
  *
  * Shared hand computation: 3 qualifying children under 17, so line 5 = 3 x $2,200 = $6,600 and line 16b =
  * 3 x $1,700 = $5,100 (Rev. Proc. 2025-32 §4.05, p. 14). AGI stays under the standard deduction, so tax and line 14
@@ -69,7 +71,6 @@ const completeNoW2 = Object.fromEntries(
 const base = {
   ...baseFilerData,
   ...completeNoW2,
-  [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `900`, group: `00`, serial: `0001` }),
   [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(`1987-01-01`),
   [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
   '/filingStatus': createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
@@ -240,6 +241,9 @@ describe(`Schedule 8812 Part II-B lines 21-27 (2026 draft)`, () => {
       [`/formW2s/#${w2}/writableOasdiWithholding`]: createDollarWrapper(`248`),
       [`/formW2s/#${w2}/writableMedicareWithholding`]: createDollarWrapper(`58`),
       '/hadSelfEmploymentIncome': createBooleanWrapper(false),
+      // With an SSN filer and earned income the EITC is in play, so its interview answers are needed.
+      '/eitcHadImproperClaims': createBooleanWrapper(false),
+      '/eitcQcOfAnother': createBooleanWrapper(false),
     });
     const eitc = Number(dollars(factGraph, `/earnedIncomeCredit`));
     const line25 = Math.max(306 - eitc, 0);

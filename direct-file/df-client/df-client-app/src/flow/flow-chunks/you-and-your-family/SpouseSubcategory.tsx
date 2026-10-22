@@ -395,6 +395,12 @@ export const SpouseSubcategory = (
               <Boolean path='/secondaryFiler/writableHasSSNOnlyForBenefits' />
               <SaveAndOrContinueButton />
             </Screen>
+            <Screen route='spouse-mfj-ssn-status-changed' condition='/secondaryFiler/askSsnStatusChangedForCtc'>
+              <Heading i18nKey='/heading/you-and-your-family/spouse/ssn-status-changed' />
+              <InfoDisplay i18nKey='/info/you-and-your-family/spouse/ssn-status-changed' />
+              <Boolean path='/secondaryFiler/writableSsnStatusChangedForCtc' />
+              <SaveAndOrContinueButton />
+            </Screen>
           </SubSubcategory>
           <SubSubcategory route='spouse-ip-pin'>
             <Screen route='spouse-mfj-ip-pin-choice'>

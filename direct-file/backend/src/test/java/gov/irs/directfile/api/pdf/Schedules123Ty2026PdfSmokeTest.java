@@ -57,12 +57,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *    Schedule 1: 3 10,000, 10 10,000, 15 707 (706.50, whole dollars), 26 707.
  *    Schedule 2: 4 1,413, 15 1,413, 21 1,413 (lines 17b, 17d and 20 blank).
  *    Schedule 3: 1 50 (no Form 1116; Form 6251 line 7 is 0), 8 50 (Form 1040 line 20). Lines 7, 9 and 15 blank.
+ * D. Early distribution (#116): the smoke fixture's W-2 plus one Form 1099-R, box 1 and box 2a $10,000, box 7 code 1
+ *    alone, no exception. 26 U.S.C. 72(t)(1): 10% of the taxable amount = 1,000; the 2026 draft Instructions for Form
+ *    5329, PDF p. 2, send it to Schedule 2 line 5 with no Form 5329 when code 1 is on all Forms 1099-R.
+ *    Schedule 2: 5 1,000 with the "If not required, check here" box checked, 15 1,000, 21 1,000 (Form 1040 line 23).
  * </pre>
  */
 class Schedules123Ty2026PdfSmokeTest {
     static final String W2 = Form8959Form8960Ty2026PdfSmokeTest.W2;
     static final String BIZ = "c1190000-0000-4000-8000-000000000001";
     static final String DIV = "d1190000-0000-4000-8000-000000000001";
+    static final String R1 = "e1160000-0000-4000-8000-000000000001";
     static final String SCH1 = "Schedule 1 (Form 1040) 2026";
     static final String SCH2 = "Schedule 2 (Form 1040) 2026";
     static final String SCH3 = "Schedule 3 (Form 1040) 2026";
@@ -113,6 +118,26 @@ class Schedules123Ty2026PdfSmokeTest {
         m.put("/dividendReports/#" + DIV + "/receivedAsNominee", bool(false));
         m.put("/dividendReports/#" + DIV + "/hasSeenLastAvailableScreen", bool(true));
         m.put("/dividendReportsIsDone", bool(true));
+        return m;
+    }
+
+    static Map<String, String> earlyDistribution() {
+        Map<String, String> m = standardDeduction(new HashMap<>());
+        String r = "/form1099Rs/#" + R1;
+        m.put("/form1099Rs", collection(R1));
+        m.put("/hasCompleted1099RSection", bool(true));
+        m.put(r + "/filer", collectionItem(W2));
+        m.put(r + "/writableGrossDistribution", dollar("10000.00"));
+        m.put(r + "/writableTaxableAmount", dollar("10000.00"));
+        m.put(r + "/writableTaxableAmountNotDetermined", bool(false));
+        m.put(r + "/writableTotalDistribution", bool(false));
+        m.put(r + "/iraSepSimple", bool(false));
+        m.put(r + "/writableDistributionCode", string("1"));
+        m.put(r + "/writableQualifiedEarlyDistribution", bool(false));
+        m.put(r + "/writableIsIndirectRollover", bool(false));
+        m.put(r + "/writableQualifiedDisasterDistribution", bool(false));
+        m.put(r + "/writableIsDistributionFromMilitaryRetirementPlan", bool(false));
+        m.put(r + "/hasSeenLastAvailableScreen", bool(true));
         return m;
     }
 
@@ -256,6 +281,32 @@ class Schedules123Ty2026PdfSmokeTest {
             Map<String, String> f = fieldsOnPages(doc, F1040);
             assertEquals(50, f1040(f, "Page2[0].f2_13[0]"), "Form 1040 line 20 = Schedule 3 line 8");
             assertEquals(1413, f1040(f, "Page2[0].f2_16[0]"), "Form 1040 line 23 = Schedule 2 line 21");
+        }
+    }
+
+    @Test
+    void earlyDistributionPrintsLine5WithTheBoxChecked() throws Exception {
+        byte[] bytes = generate(earlyDistribution());
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> s2 = page(doc, SCH2);
+            amount(s2, "f1_16[0]", 1000, "Schedule 2 line 5 = 10% of the code 1 taxable amount");
+            assertEquals("1", any(s2, "c1_6[0]"), "Schedule 2 line 5 Form 5329 not required box");
+            blank(s2, "f1_15[0]", "Schedule 2 line 4 (no Schedule SE)");
+            amount2(s2, "f2_07[0]", 1000, "Schedule 2 line 15");
+            amount2(s2, "f2_20[0]", 1000, "Schedule 2 line 21");
+
+            Map<String, String> f = fieldsOnPages(doc, F1040);
+            assertEquals(1000, f1040(f, "Page2[0].f2_16[0]"), "Form 1040 line 23 = Schedule 2 line 21");
+        }
+    }
+
+    @Test
+    void noEarlyDistributionLeavesLine5BlankAndUnchecked() throws Exception {
+        byte[] bytes = generate(wagesAndInterest());
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> s2 = page(doc, SCH2);
+            blank(s2, "f1_16[0]", "Schedule 2 line 5");
+            assertTrue(!"1".equals(any(s2, "c1_6[0]")), "Schedule 2 line 5 box not checked");
         }
     }
 }
