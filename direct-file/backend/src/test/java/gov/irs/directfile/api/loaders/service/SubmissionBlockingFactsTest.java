@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -34,7 +35,6 @@ import gov.irs.directfile.api.loaders.domain.TaxFact;
 import gov.irs.directfile.models.FactTypeWithItem;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * The server's sign/submit gate (#181): the list comes from every {@code <BlockSubmissionOnTrue />} fact in the
@@ -138,7 +138,7 @@ public class SubmissionBlockingFactsTest {
         assertFalse(top.contains(STATE_RETURN_KNOCKOUT), "a knockout in /flowIsKnockedOut is not top-level");
     }
 
-    /** The client's generated list (df-client generate.ts), when it has been generated in this checkout. */
+    /** The client's generated list, written by df-client-app's {@code npm run generate-fact-dictionary}. */
     static final Path CLIENT_LIST = Path.of(
             "..", "df-client", "df-client-app", "src", "fact-dictionary", "generated", "submissionBlockingFacts.ts");
 
@@ -152,11 +152,18 @@ public class SubmissionBlockingFactsTest {
         return out;
     }
 
+    /** JUnit tag of tests that read the client's generated files. */
+    public static final String CLIENT_GENERATED = "client-generated";
+
+    static final String MISSING_CLIENT_LIST = "The client's generated blocking-facts list is missing: "
+            + CLIENT_LIST.toAbsolutePath().normalize()
+            + ". Generate it before the backend tests with `npm ci && npm run generate-fact-dictionary` in"
+            + " direct-file/df-client/df-client-app. The file is gitignored, so a fresh checkout does not have it.";
+
     @Test
+    @Tag(CLIENT_GENERATED)
     void clientGeneratedListsEqualTheServerLists() throws Exception {
-        assumeTrue(
-                Files.exists(CLIENT_LIST),
-                "run `npm run generate-fact-dictionary` in df-client-app to compare the client list");
+        assertTrue(Files.isRegularFile(CLIENT_LIST), MISSING_CLIENT_LIST);
         String source = Files.readString(CLIENT_LIST);
         assertEquals(
                 paths(fgs.getDigest().getSubmissionBlockingFacts()), clientArray(source, "submissionBlockingFacts"));
