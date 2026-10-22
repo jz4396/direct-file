@@ -139,7 +139,7 @@
                 <Dependency module="formW2s" path="/primaryFilerHasCombatPay" />
                 <GreaterThan>
                   <Left>
-                    <Dependency module="income" path="/primaryFilerEmployerIncomeSubtotalBase" />
+                    <Dependency module="income" path="/primaryFilerEarnedIncomeForCdccBase" />
                   </Left>
                   <Right>
                     <Dollar> 0 </Dollar>
@@ -159,7 +159,7 @@
                   <Dependency module="filers" path="/primaryFiler/isStudentOrDisabled" />
                   <GreaterThan>
                     <Left>
-                      <Dependency module="income" path="/primaryFilerEmployerIncomeSubtotalBase" />
+                      <Dependency module="income" path="/primaryFilerEarnedIncomeForCdccBase" />
                     </Left>
                     <Right>
                       <Dollar> 0 </Dollar>
@@ -600,7 +600,7 @@
       <Derived>
         <LessThan>
           <Left>
-            <Dependency module="income" path="/primaryFilerEmployerIncomeSubtotalBase" />
+            <Dependency module="income" path="/primaryFilerEarnedIncomeForCdccBase" />
           </Left>
           <Right>
             <Dependency path="/cdccMaximumExclusion" />

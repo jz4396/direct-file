@@ -165,8 +165,12 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     expect(get(`/flowKnockoutScheduleCEarnedIncomeCredits`).get).toBe(false);
   });
 
-  it(`EITC-eligible gig filer is knocked out (EITC SE earned income not wired yet)`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutScheduleCEarnedIncomeCredits`];
+  it(`EITC gig filer: $8,000 profit adds $7,435 earned income and no longer knocks out (#117)`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleCEarnedIncomeCredits`,
+      `/eitcEarnedIncomeWithoutCombatPay`,
+      `/earnedIncomeCredit`,
+    ];
     const { factGraph } = setupFactGraph({
       ...completeBaseNoW2,
       ...baseFilerData,
@@ -187,7 +191,13 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     const eitcQualified = factGraph.get(`/eitcQualified` as ConcretePath);
     const knockout = factGraph.get(`/flowKnockoutScheduleCEarnedIncomeCredits` as ConcretePath);
     expect(eitcQualified.get).toBe(true);
-    expect(knockout.get).toBe(true);
+    expect(knockout.complete).toBe(true);
+    expect(knockout.get).toBe(false);
+    // EIC Worksheet B line 1e (Form 1040 instructions (2025), PDF p. 47): 8,000 - 565 = 7,435
+    expect(factGraph.get(`/eitcEarnedIncomeWithoutCombatPay` as ConcretePath).get.toString()).toBe(`7435.00`);
+    // No qualifying child: EIC Table row $7,400-$7,450, 7.65% of the $7,425 midpoint = $568
+    // (26 U.S.C. 32(b)(1); Rev. Proc. 2025-32 sec. 4.06, p. 15)
+    expect(factGraph.get(`/earnedIncomeCredit` as ConcretePath).get.toString()).toBe(`568.00`);
   });
 
   it(`Unset collection: "no" → $0 complete; "yes" with no businesses → incomplete (no silent zero)`, ({ task }) => {
