@@ -42,27 +42,18 @@ describe(`ty2026.json pendingReview after the sweep (#91)`, () => {
   type Entry = { fact: string; status: string; note: string; taggedYear: number };
   const pending: Entry[] = config.pendingReview;
 
-  it(`keeps only structural entries, the MFS threshold awaiting the 2026 i1040, and the repealed PTC caps`, () => {
+  it(`keeps only structural entries and the MFS threshold awaiting the 2026 i1040`, () => {
     for (const e of pending) {
-      const allowed =
-        e.status === `structural` ||
-        e.fact === `/MFSFilingThresholdAmount` ||
-        e.fact.startsWith(`/ptcRepaymentLimitation`);
+      const allowed = e.status === `structural` || e.fact === `/MFSFilingThresholdAmount`;
       expect(allowed, e.fact).toBe(true);
       expect(e.note.length, e.fact).toBeGreaterThan(20);
     }
   });
 
-  it(`the six PTC repayment caps are not retagged and cite their TY2026 repeal`, () => {
-    // Rev. Proc. 2025-32 sec. 2.04, https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 5: "Section 71305 of the OBBBA
+  it(`the repealed PTC repayment caps are gone from the parameter file and the fact dictionary`, () => {
+    // #88: Rev. Proc. 2025-32 sec. 2.04, https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 5: "Section 71305 of the OBBBA
     // removes sec. 36B(f)(2)(B) ... effective for taxable years beginning after December 31, 2025."
-    const caps = pending.filter((e) => e.fact.startsWith(`/ptcRepaymentLimitation`));
-    expect(caps).toHaveLength(6);
-    for (const e of caps) {
-      expect(e.taggedYear).toBe(2024);
-      expect(e.status).toBe(`stale`);
-      expect(e.note).toContain(`/flowKnockoutPtcTy2026RulesNotImplemented`);
-    }
+    expect(pending.some((e) => e.fact.startsWith(`/ptcRepaymentLimitation`))).toBe(false);
     const params: { fact: string }[] = config.parameters;
     expect(params.some((p) => p.fact.startsWith(`/ptcRepaymentLimitation`))).toBe(false);
   });

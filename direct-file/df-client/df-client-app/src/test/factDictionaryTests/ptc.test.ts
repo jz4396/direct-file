@@ -165,13 +165,12 @@ describe(`Premium tax credit`, () => {
         ...ptcSingleFiler,
         ...makeW2Data(38337),
       });
-      // #91: 38337 * 100 / 15650 (2025 HHS guideline, 90 FR 5917 p. 5917) = 244.96, truncated to 244%. The
-      // applicable percentage table is still the TY2024 one (ptc.xml /applicableFigure: from 150% to 300% of the
-      // poverty line, 0.04% for each percentage point over 150%; see /flowKnockoutPtcTy2026RulesNotImplemented):
-      // (244 - 150) x 0.0004 = 0.0376.
-      expect(factGraph.get(Path.concretePath(`/formattedApplicableFigure`, null)).get).toBe(`0.0376`);
-      // calculates Round(38337 * 0.0376) = Round(1441.4712), which rounds down
-      expect(factGraph.get(Path.concretePath(`/ptcAnnualContributionAmount`, null)).get.toString()).toBe(`1441.00`);
+      // #91: 38337 * 100 / 15650 (2025 HHS guideline, 90 FR 5917 p. 5917) = 244.96, truncated to 244%. #88: Rev. Proc.
+      // 2025-25 sec. 3.01 (https://www.irs.gov/pub/irs-drop/rp-25-25.pdf) PDF p. 3, "At least 200% but less than
+      // 250%": 6.60% to 8.44%, so 6.60% + 44 x 1.84% / 50 = 8.2192%, rounded to 0.0822.
+      expect(factGraph.get(Path.concretePath(`/formattedApplicableFigure`, null)).get).toBe(`0.0822`);
+      // calculates Round(38337 * 0.0822) = Round(3151.3014), which rounds down
+      expect(factGraph.get(Path.concretePath(`/ptcAnnualContributionAmount`, null)).get.toString()).toBe(`3151.00`);
     });
   });
 });
