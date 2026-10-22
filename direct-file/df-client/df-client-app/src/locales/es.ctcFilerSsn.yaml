@@ -1,0 +1,46 @@
+# Child Tax Credit filer SSN requirement (#182). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/you-and-your-family/about-you/ssn-status-changed:
+    ¿Ha cambiado su situación migratoria o de ciudadanía de manera que ahora puede obtener una tarjeta de Seguro Social
+    sin esa restricción?
+  /heading/you-and-your-family/spouse/ssn-status-changed:
+    ¿Ha cambiado la situación migratoria o de ciudadanía de {{/secondaryFiler/firstName}} de manera que ahora puede
+    obtener una tarjeta de Seguro Social sin esa restricción?
+  /heading/knockout/ctc-filer-ssn-unresolved:
+    Esta herramienta aún no puede determinar si usted puede reclamar el Crédito tributario por hijos
+info:
+  /info/you-and-your-family/about-you/ssn-status-changed:
+    body:
+      - p:
+          Por ejemplo, usted se hizo ciudadano de los EE. UU. o residente permanente legal, u obtuvo autorización para
+          trabajar, pero su tarjeta de Seguro Social aún no se ha actualizado.
+  /info/you-and-your-family/spouse/ssn-status-changed:
+    body:
+      - p:
+          Por ejemplo, {{/secondaryFiler/firstName}} se hizo ciudadano de los EE. UU. o residente permanente legal, u
+          obtuvo autorización para trabajar, pero su tarjeta de Seguro Social aún no se ha actualizado.
+  /info/knockout/ctc-filer-ssn-unresolved:
+    alertText:
+      body:
+        - p:
+            Para reclamar el Crédito tributario por hijos, usted (o, si presenta una declaración conjunta, usted o su
+            cónyuge) debe tener un número de Seguro Social válido para trabajar y emitido a más tardar en la fecha de
+            vencimiento de la declaración. Según lo que nos indicó sobre la tarjeta de Seguro Social, esta herramienta
+            aún no puede determinar si ese número cumple con el requisito.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /filers/*/writableSsnStatusChangedForCtc:
+    boolean:
+      "yes": Sí, mi situación ha cambiado
+      "no": No, mi situación no ha cambiado
+  /secondaryFiler/writableSsnStatusChangedForCtc:
+    boolean:
+      "yes": Sí, la situación de {{/secondaryFiler/firstName}} ha cambiado
+      "no": No, la situación de {{/secondaryFiler/firstName}} no ha cambiado
+dataviews:
+  /flow/you-and-your-family/about-you:
+    /filers/*/writableSsnStatusChangedForCtc: Situación cambiada desde que se emitió la tarjeta de Seguro Social
+  /flow/you-and-your-family/spouse:
+    /secondaryFiler/writableSsnStatusChangedForCtc: Situación cambiada desde que se emitió la tarjeta de Seguro Social

@@ -10,6 +10,8 @@ import {
   InfoDisplay,
   Enum,
   ConditionalList,
+  DFAlert,
+  KnockoutButton,
 } from '../../ContentDeclarations.js';
 import { ItemConfig } from '../../../components/ConditionalList/ConditionalList.js';
 
@@ -75,6 +77,16 @@ export const OdcDisqualifyingItems: ItemConfig[] = [
 export const CtcOdcSubSubcategory = (
   <Gate condition='/flowTrue'>
     <SubSubcategory route='ctc-odc' headingLevel='h2' borderStyle='heavy'>
+      <Screen
+        route='ctc-filer-ssn-unresolved-knockout'
+        condition='/flowKnockoutCtcFilerSsnUnresolved'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ctc-filer-ssn-unresolved' />
+        <DFAlert i18nKey='/info/knockout/ctc-filer-ssn-unresolved' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Gate condition='/maybeEligibleForCtc'>
         <Screen route='ctc-intro'>
           <ContextHeading displayOnlyOn='edit' i18nKey='/heading/credits-and-deductions/credits/ctc-or-odc' />
