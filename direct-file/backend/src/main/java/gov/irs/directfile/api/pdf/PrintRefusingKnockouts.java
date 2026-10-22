@@ -11,7 +11,8 @@ import gov.irs.factgraph.monads.Result;
 
 /**
  * Knockouts that stop the printed package as well as sign and submit. {@link PdfService#getTaxReturn} builds no PDF
- * while any of them is true, and the PDF endpoint answers 400 with every true path as {@code blockingFacts}.
+ * unless every one of them is complete and false, and the PDF endpoint answers 400 with every refusing path as
+ * {@code blockingFacts}.
  *
  * <p>Each entry must be a {@code <BlockSubmissionOnTrue />} knockout listed in {@code /flowIsKnockedOut}, and is
  * removed when the form it waits for has a template and field map. One path per line.
@@ -26,31 +27,34 @@ public final class PrintRefusingKnockouts {
 
     private PrintRefusingKnockouts() {}
 
-    /** The {@link #FACT_PATHS} that are true on the graph. */
-    public static List<String> truePaths(Graph graph) {
-        return truePaths(FACT_PATHS, path -> graph.get(path));
+    /** The {@link #FACT_PATHS} that refuse the print on the graph. */
+    public static List<String> refusingPaths(Graph graph) {
+        return refusingPaths(FACT_PATHS, path -> graph.get(path));
     }
 
     /**
-     * The given paths whose value is true, complete or placeholder, in the given order. A path that fails to evaluate
-     * counts as true, so an unreadable knockout refuses rather than prints.
+     * The given paths that refuse the print, in the given order. This fails closed: only a complete false value lets
+     * the package print. True (complete or placeholder), a placeholder false, no value, a path the graph does not
+     * have, and an evaluation error all refuse.
      */
-    static List<String> truePaths(List<String> paths, Function<String, Result<Object>> evaluate) {
+    static List<String> refusingPaths(List<String> paths, Function<String, Result<Object>> evaluate) {
         List<String> out = new ArrayList<>();
         for (String path : paths) {
-            try {
-                Result<Object> result = evaluate.apply(path);
-                if (result != null && result.hasValue() && Boolean.TRUE.equals(result.get())) {
-                    out.add(path);
-                }
-            } catch (RuntimeException e) {
-                log.warn(
-                        "Print-refusing knockout {} could not be evaluated ({})",
-                        path,
-                        e.getClass().getSimpleName());
+            if (!allowsPrinting(path, evaluate)) {
                 out.add(path);
             }
         }
         return out;
+    }
+
+    private static boolean allowsPrinting(String path, Function<String, Result<Object>> evaluate) {
+        try {
+            Result<Object> result = evaluate.apply(path);
+            return result != null && result.complete() && Boolean.FALSE.equals(result.get());
+        } catch (RuntimeException e) {
+            // Only the path: no fact value, exception message, class name or stack trace.
+            log.warn("Print-refusing knockout {} could not be evaluated", path);
+            return false;
+        }
     }
 }

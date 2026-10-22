@@ -145,7 +145,7 @@ class TaxReturnControllerSubmissionBlockingTest {
     }
 
     @Test
-    void pdfRefusedByKnockoutListsEveryTruePath() throws Exception {
+    void pdfRefusedByKnockoutListsEveryRefusingPath() throws Exception {
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026);
         when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));

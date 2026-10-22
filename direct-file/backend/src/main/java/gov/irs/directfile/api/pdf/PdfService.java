@@ -107,7 +107,7 @@ public class PdfService {
         FactEvaluationResult facts;
         try {
             Graph graph = factGraphService.getGraph(taxReturn.getFacts());
-            List<String> knockouts = PrintRefusingKnockouts.truePaths(graph);
+            List<String> knockouts = PrintRefusingKnockouts.refusingPaths(graph);
             if (!knockouts.isEmpty()) {
                 log.info("Not generating PDF for tax return {}: knockout {}", taxReturn.getId(), knockouts);
                 throw new PdfRefusedByKnockoutException(knockouts);
