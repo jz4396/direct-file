@@ -100,7 +100,7 @@
     </Fact>
     <Fact path="/schedule1ALine5">
       <Description>Line 5: qualified employee tips, W-2 box 12 code TP (lines 4a-4e column (iii)). Zero unless the
-        occupation is confirmed and the filer is not MFS (§224(f)). Per-W-2 valid SSN is applied in formW2s.</Description>
+        occupation is confirmed and the filer is not MFS (§224(f)). Per-W-2 valid SSN is applied in formW2s. #202: rounded to whole dollars once the column (iii) amounts are added. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you have to add two or more amounts to figure the amount to enter on a line, include cents when adding the amounts and round off only the total." 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102) rounds half up.</Description>
       <Derived>
         <Switch>
           <!-- No code TP tips: complete 0 without asking (placeholder answers are incomplete). -->
@@ -116,7 +116,9 @@
               </All>
             </When>
             <Then>
-              <CollectionSum><Dependency module="formW2s" path="/formW2s/*/qualifiedTipsForSchedule1A" /></CollectionSum>
+              <Round>
+                <CollectionSum><Dependency module="formW2s" path="/formW2s/*/qualifiedTipsForSchedule1A" /></CollectionSum>
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -254,14 +256,19 @@
       </Derived>
     </Fact>
     <Fact path="/schedule1ALine40">
-      <Description>Line 40: line 39 x 6%. The statute ("6 percent of so much of ... MAGI as exceeds") has no
-        rounding step or $1,000 increments, unlike line 34 for car loan interest.</Description>
+      <Description>Line 40: line 39 x 6%. 2026 draft Schedule 1-A (Created 6/16/26), https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf,
+        line 40: "Multiply line 39 by 6% (0.06)". The statute ("6 percent of so much of ... MAGI as exceeds") has no
+        $1,000 increments, unlike line 34 for car loan interest. #202: the line itself is rounded to whole dollars as it is
+        computed, so line 41 ("Subtract line 40 from $6,000") and lines 43, 44 and Form 1040 line 13a/14 come out whole.
+        26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR 301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
-        <Multiply>
-          <Rational>6/100</Rational>
-          <Dependency path="/schedule1ALine39" />
-        </Multiply>
+        <Round>
+          <Multiply>
+            <Rational>6/100</Rational>
+            <Dependency path="/schedule1ALine39" />
+          </Multiply>
+        </Round>
       </Derived>
     </Fact>
     <Fact path="/schedule1ALine41">

@@ -21,7 +21,7 @@
     <Fact path="/scheduleAMedical">
       <Export downstreamFacts="true" />
       <Name>Schedule A medical and dental expenses</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1; $0 when the filer chose not to itemize.</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1; $0 when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -29,7 +29,9 @@
               <Dependency path="/scheduleAWantsToItemize" />
             </When>
             <Then>
-              <Dependency path="/scheduleAWritableMedical" />
+              <Round>
+                <Dependency path="/scheduleAWritableMedical" />
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -55,7 +57,7 @@
     <Fact path="/scheduleAStateLocalIncomeOrSalesTax">
       <Export downstreamFacts="true" />
       <Name>Schedule A state and local income taxes or general sales taxes</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a; $0 when the filer chose not to itemize.</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a; $0 when the filer chose not to itemize. #202: line 5a is rounded to whole dollars here, so lines 5d ("Add lines 5a through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR 301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -63,7 +65,9 @@
               <Dependency path="/scheduleAWantsToItemize" />
             </When>
             <Then>
-              <Dependency path="/scheduleAWritableStateLocalIncomeOrSalesTax" />
+              <Round>
+                <Dependency path="/scheduleAWritableStateLocalIncomeOrSalesTax" />
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -89,7 +93,7 @@
     <Fact path="/scheduleARealEstateTaxes">
       <Export downstreamFacts="true" />
       <Name>Schedule A state and local real estate taxes</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b; $0 when the filer chose not to itemize.</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b; $0 when the filer chose not to itemize. #202: line 5b is rounded to whole dollars here, so lines 5d ("Add lines 5a through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR 301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -97,7 +101,9 @@
               <Dependency path="/scheduleAWantsToItemize" />
             </When>
             <Then>
-              <Dependency path="/scheduleAWritableRealEstateTaxes" />
+              <Round>
+                <Dependency path="/scheduleAWritableRealEstateTaxes" />
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -123,7 +129,7 @@
     <Fact path="/scheduleAPersonalPropertyTaxes">
       <Export downstreamFacts="true" />
       <Name>Schedule A state and local personal property taxes</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c; $0 when the filer chose not to itemize.</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c; $0 when the filer chose not to itemize. #202: line 5c is rounded to whole dollars here, so lines 5d ("Add lines 5a through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR 301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -131,7 +137,9 @@
               <Dependency path="/scheduleAWantsToItemize" />
             </When>
             <Then>
-              <Dependency path="/scheduleAWritablePersonalPropertyTaxes" />
+              <Round>
+                <Dependency path="/scheduleAWritablePersonalPropertyTaxes" />
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -157,7 +165,7 @@
     <Fact path="/scheduleAMortgageInterest">
       <Export downstreamFacts="true" />
       <Name>Schedule A home mortgage interest and points reported on Form 1098</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a; $0 when the filer chose not to itemize.</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a; $0 when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -165,7 +173,9 @@
               <Dependency path="/scheduleAWantsToItemize" />
             </When>
             <Then>
-              <Dependency path="/scheduleAWritableMortgageInterest" />
+              <Round>
+                <Dependency path="/scheduleAWritableMortgageInterest" />
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -191,7 +201,7 @@
     <Fact path="/scheduleACashGifts">
       <Export downstreamFacts="true" />
       <Name>Schedule A gifts to charity by cash or check</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11; $0 when the filer chose not to itemize.</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11; $0 when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -199,7 +209,9 @@
               <Dependency path="/scheduleAWantsToItemize" />
             </When>
             <Then>
-              <Dependency path="/scheduleAWritableCashGifts" />
+              <Round>
+                <Dependency path="/scheduleAWritableCashGifts" />
+              </Round>
             </Then>
           </Case>
           <Case>

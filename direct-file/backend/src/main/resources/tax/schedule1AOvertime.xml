@@ -246,7 +246,7 @@
     <Fact path="/schedule1AOvertimeLine17">
       <Description>Line 17: add lines 16a-16e column (iii), qualified overtime of a W-2 employee: code TT plus, under #68,
         the amount figured with the draft 1040 instructions p.106 methods (/overtimeSelfFiguredAmount). Zero unless the FLSA
-        premium is confirmed and not MFS (§225(e)). Per-W-2 valid SSN is applied in formW2s.</Description>
+        premium is confirmed and not MFS (§225(e)). Per-W-2 valid SSN is applied in formW2s. The self-figured amount (1/3, 1/4 or 1/2 of the statement amount) can carry cents, and is added with cents before the line is rounded. #202: rounded to whole dollars once the column (iii) amounts are added. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you have to add two or more amounts to figure the amount to enter on a line, include cents when adding the amounts and round off only the total." 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102) rounds half up.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -261,19 +261,21 @@
               </All>
             </When>
             <Then>
-              <Add>
-                <CollectionSum><Dependency module="formW2s" path="/formW2s/*/qualifiedOvertimeForSchedule1A" /></CollectionSum>
-                <Switch>
-                  <Case>
-                    <When><Dependency path="/overtimeSelfFiguredSsnValid" /></When>
-                    <Then><Dependency path="/overtimeSelfFiguredAmount" /></Then>
-                  </Case>
-                  <Case>
-                    <When><True /></When>
-                    <Then><Dollar>0</Dollar></Then>
-                  </Case>
-                </Switch>
-              </Add>
+              <Round>
+                <Add>
+                  <CollectionSum><Dependency module="formW2s" path="/formW2s/*/qualifiedOvertimeForSchedule1A" /></CollectionSum>
+                  <Switch>
+                    <Case>
+                      <When><Dependency path="/overtimeSelfFiguredSsnValid" /></When>
+                      <Then><Dependency path="/overtimeSelfFiguredAmount" /></Then>
+                    </Case>
+                    <Case>
+                      <When><True /></When>
+                      <Then><Dollar>0</Dollar></Then>
+                    </Case>
+                  </Switch>
+                </Add>
+              </Round>
             </Then>
           </Case>
           <Case>
