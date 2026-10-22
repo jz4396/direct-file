@@ -138,20 +138,45 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCEarnedIncomeCredits">
-      <Name>Knockout: Schedule C income with EITC / CDCC (or ACTC with a loss)</Name>
+      <Name>Knockout: Schedule C cases the EITC, CDCC or ACTC earned income can't yet figure</Name>
       <Description>
-        Explicit non-support (no silent mis-statement) in this slice:
-        - EITC earned income (26 U.S.C. 32(c)(2)(A)(ii)) and CDCC earned income (26 U.S.C. 21(d)(2),
-          32(c)(2)) include net earnings from self-employment, but the eitc*/cdcc modules still use
-          wages only (/employerIncomeSubtotal). Any nonzero Schedule C result with EITC or CDCC
-          eligibility is knocked out until those modules are wired.
-        - ACTC earned income (Schedule 8812 line 18a) is wired via /scheduleCNetProfitForEarnedIncome,
-          which floors a net loss at zero; a Schedule C loss with CTC eligibility is knocked out.
+        #117. The EITC (eitc /eitcEarnedIncomeWithoutCombatPay), the CDCC (income /primaryFilerEarnedIncomeForCdccBase)
+        and the ACTC (income /earnedIncomeWithAllCombatPay) add /scheduleCNetProfitForEarnedIncome. Still stopped:
+        - A Schedule C net loss. Both sources say a loss reduces earned income: Instructions for Form 1040 (2025), PDF
+          p. 47, EIC Worksheet B, line 1e and line 4b ("Combine lines 1e, 2c, 3, and 4a"), and the 2026 draft
+          Instructions for Form 2441, PDF p. 5 ("You must reduce your earned income by any loss from self-employment").
+          /scheduleCNetProfitForEarnedIncome is floored at $0, so a loss stops the return when the EITC could apply
+          (AGI below the EITC completed phaseout, eitc /belowEitcAgiLimit, or eitc /eitcQualified), the CDCC applies
+          or the CTC applies. A loss can lower earned income below the EITC limit even when wages alone are above it,
+          so the EITC test is on AGI, which already includes the loss.
+        - A joint return with any Schedule C result and the CDCC: Form 2441 lines 4 and 5 need each spouse's
+          Schedule SE line 3 and Schedule 1 line 15 share ("If filing jointly, figure your and your spouse's earned
+          income separately"), and Schedule SE is not yet figured per spouse.
+        Stopped elsewhere: a spouse-owned business (/flowKnockoutScheduleCSpouseBusiness) and statutory employees
+        (formW2s /flowKnockoutStatutoryEmployee). Church employee income, Forms 4361/4029 and the optional methods have
+        no input in this tool. Complete and false when there is no Schedule C or the Schedule C result is a profit on a
+        return that isn't a joint return claiming the CDCC.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
         <Any>
+          <All>
+            <LessThan>
+              <Left>
+                <Dependency path="/scheduleCNetProfitOrLoss" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </LessThan>
+            <Any>
+              <Dependency module="eitc" path="/eitcQualified" />
+              <Dependency module="eitc" path="/belowEitcAgiLimit" />
+              <Dependency module="cdcc" path="/cdccQualified" />
+              <Dependency module="ctcOdc" path="/ctcQualified" />
+            </Any>
+          </All>
           <All>
             <Not>
               <Equal>
@@ -163,21 +188,8 @@
                 </Right>
               </Equal>
             </Not>
-            <Any>
-              <Dependency module="eitc" path="/eitcQualified" />
-              <Dependency module="cdcc" path="/cdccQualified" />
-            </Any>
-          </All>
-          <All>
-            <LessThan>
-              <Left>
-                <Dependency path="/scheduleCNetProfitOrLoss" />
-              </Left>
-              <Right>
-                <Dollar>0</Dollar>
-              </Right>
-            </LessThan>
-            <Dependency module="ctcOdc" path="/ctcQualified" />
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency module="cdcc" path="/cdccQualified" />
           </All>
         </Any>
       </Derived>
@@ -397,9 +409,16 @@
     <Fact path="/scheduleCNetProfitForEarnedIncome">
       <Name>Schedule C net profit included in earned income</Name>
       <Description>
-        Earned income from self-employment for EITC/ACTC = Schedule C net profit minus the deductible
-        part of SE tax (Schedule 1 line 15), per Pub. 596 EIC Worksheet B (26 U.S.C. 32(c)(2)(A)(ii)).
-        Floored at zero for this component in this MVP (net SE loss not netted against wages).
+        Earned income from self-employment for the EITC, CDCC and ACTC = Schedule C net profit (Schedule SE line 3)
+        minus the deductible part of SE tax (Schedule 1 line 15, Schedule SE line 13), 26 U.S.C. 32(c)(2)(A)(ii)
+        (https://www.law.cornell.edu/uscode/text/26/32#c_2_A): "net earnings from self-employment ... determined with
+        regard to the deduction allowed to the taxpayer by section 164(f)". Instructions for Form 1040 (2025), PDF
+        p. 47, EIC Worksheet B, Part 1: "1a. Enter the amount from Schedule SE, Part I, line 3. ... d. Enter the
+        amount from Schedule SE, Part I, line 13. ... e. Subtract line 1d from line 1c." Under $400 of net earnings no
+        SE tax applies, so this is the Schedule C line 31 net profit (Worksheet B Part 2, line 2b). 2026 draft
+        Instructions for Form 2441, PDF p. 5, lines 4 and 5: "2. The amount shown on Schedule SE (Form 1040), line 3,
+        minus any deduction you claim on Schedule 1 (Form 1040), line 15." #117: floored at $0 because a loss is not
+        modeled; a loss stops the return wherever it would change a credit (/flowKnockoutScheduleCEarnedIncomeCredits).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>

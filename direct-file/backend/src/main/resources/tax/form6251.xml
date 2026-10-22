@@ -10,21 +10,25 @@
     <Fact path="/form6251ExemptionAmount">
       <Name>AMT exemption amount (before phaseout)</Name>
       <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 16: "For taxable years beginning in 2026, the exemption amounts under § 55(d)(1) are: Joint Returns or Surviving Spouses $140,200; Unmarried Individuals (other than Surviving Spouses) $90,100; Married Individuals Filing Separate Returns $70,100". IRC §55(d)(1) https://www.law.cornell.edu/uscode/text/26/55. Same figures on Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf line 5.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived><Switch><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFS" /></When><Then><Dollar>70100</Dollar></Then></Case><Case><When><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><Dependency module="filingStatus" path="/isFilingStatusQSS" /></Any></When><Then><Dollar>140200</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>90100</Dollar></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/form6251PhaseoutThreshold">
       <Name>AMT exemption phaseout threshold</Name>
       <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 17: "[Filing status / Threshold Phaseout Amount / Complete Phaseout Amount] Joint Returns or Surviving Spouses $1,000,000 [complete phaseout $1,280,400]; Unmarried Individuals (other than Surviving Spouses) $500,000 [$680,200]; Married Individuals Filing Separate Returns $500,000 [$640,200]". IRC §55(d)(2), (d)(4)(A)(ii)(I)-(II).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived><Switch><Case><When><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><Dependency module="filingStatus" path="/isFilingStatusQSS" /></Any></When><Then><Dollar>1000000</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>500000</Dollar></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/form6251RateBreakpoint">
       <Name>AMT 28% rate breakpoint</Name>
       <Description>#77: Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.10, p. 16: "under § 55(b)(1), the excess taxable income above which the 28 percent tax rate applies is: Married Individuals Filing Separate Returns $122,250; All Other Taxpayers $244,500". IRC §55(b)(1)(A)(i), (b)(1)(C).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived><Switch><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFS" /></When><Then><Dollar>122250</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>244500</Dollar></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/form6251RateOffset">
       <Name>AMT 28% rate offset</Name>
       <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 7: "Otherwise, multiply line 6 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately) from the result." ($4,890 = 2% x $244,500; $2,445 = 2% x $122,250.)</Description>
+      <TaxYear>2026</TaxYear>
       <Derived><Switch><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFS" /></When><Then><Dollar>2445</Dollar></Then></Case><Case><When><True /></When><Then><Dollar>4890</Dollar></Then></Case></Switch></Derived>
     </Fact>
     <Fact path="/form6251Line1a">
@@ -241,6 +245,7 @@
       <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 4: "(If married filing separately and line 4 is more than $640,200, see instructions.)" IRC §55(d)(2) last sentence (MFS AMTI add-back) is not implemented. $640,200 = Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) p. 17 MFS complete phaseout amount.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
+      <TaxYear>2026</TaxYear>
       <Derived><All><Dependency module="filingStatus" path="/isFilingStatusMFS" /><IsComplete><Dependency path="/form6251Line4" /></IsComplete><GreaterThan><Left><Dependency path="/form6251Line4" /></Left><Right><Dollar>640200</Dollar></Right></GreaterThan></All></Derived>
     </Fact>
     <!-- #164: no AMT exemption limit for a child subject to the kiddie tax for TY2026, so there is no knockout for it.
