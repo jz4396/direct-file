@@ -274,6 +274,55 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutForm8949CodeQ">
+      <Export downstreamFacts="true" />
+      <Name>Flow knockout: Form 8949 adjustment code Q (section 1202 exclusion)</Name>
+      <Description>True when any Form 8949 row's code field (column (f)) contains the code letter Q, upper or
+        lower case. Form 8949 instr. (2025) p. 8, code Q: "You sold or exchanged QSB stock and can exclude part
+        of the gain" (the section 1202 exclusion, entered as a negative amount in column (g)). Under IRC
+        §1(h)(4)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/1) 28-percent rate gain includes "section
+        1202 gain", which §1(h)(7) defines as "the excess of (A) the gain which would be excluded from gross
+        income under section 1202 but for the percentage limitation in section 1202(a), over (B) the gain
+        excluded from gross income under section 1202". That amount goes on Schedule D line 18 (Schedule D
+        instr. (2025), Line 18, 28% Rate Gain Worksheet), and a nonzero line 18 means line 20 is No and the tax
+        is figured on the Schedule D Tax Worksheet, which this tool does not compute (scheduleD3.xml uses the
+        Qualified Dividends and Capital Gain Tax Worksheet only). The row does not say which section 1202(a)
+        percentage applies, so any code Q stops the return. A blank code field is complete and not Q; no rows is
+        false.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/form8949Transactions" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/form8949Transactions/*/hasAdjustmentCodeQ" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions">
       <Export downstreamFacts="true" />
       <Name>Form 8949 transactions</Name>
@@ -464,6 +513,28 @@
           <Int>7</Int>
         </Limit>
       </Writable>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/hasAdjustmentCodeQ">
+      <Name>Form 8949 row has adjustment code Q</Name>
+      <Description>True when ../adjustmentCode contains the code letter Q in either case (codes are single
+        letters, entered together, e.g. "BQ" or "Q"). A blank code field is complete and false. Used by
+        /flowKnockoutForm8949CodeQ.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../adjustmentCode" />
+          </IsComplete>
+          <Regex>
+            <Input>
+              <Dependency path="../adjustmentCode" />
+            </Input>
+            <Pattern>
+              <String>[\s\S]*[Qq][\s\S]*</String>
+            </Pattern>
+          </Regex>
+        </All>
+      </Derived>
     </Fact>
 
     <Fact path="/form8949Transactions/*/box">

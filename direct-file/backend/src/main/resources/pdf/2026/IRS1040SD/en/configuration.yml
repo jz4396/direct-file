@@ -66,7 +66,8 @@ form:
       f1_42[0]: /scheduleDLine14
       f1_43[0]: /scheduleDLine15
     Page2[0]:
-      # Line 16 = f2_1; line 21 (positive) = f2_4. Lines 18/19 (f2_2/f2_3) are knocked out by #21.
+      # Line 16 = f2_1; line 21 (positive) = f2_4. Lines 18/19 (f2_2/f2_3) are knocked out by #21
+      # (collectibles, unrecaptured 1250 gain, 1099-DIV boxes 2b-2d) and Form 8949 code Q (section 1202 gain).
       f2_1[0]: /scheduleDLine16
       c2_1[0]: /scheduleDLine17Yes # 17 "Are lines 15 and 16 both gains? Yes."
       c2_1[1]: /scheduleDLine17No # 17 "No. Skip lines 18 through 21, and go to line 22."

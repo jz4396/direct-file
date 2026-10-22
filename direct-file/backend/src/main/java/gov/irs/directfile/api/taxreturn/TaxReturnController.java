@@ -246,10 +246,21 @@ public class TaxReturnController implements TaxReturnApi {
                                             "taxreturn", taxReturn.getTaxYear(), language))
                     .body(new InputStreamResource(stream));
         } catch (Exception e) {
-            log.error("Error: " + e.getMessage(), e);
-            throw new ResponseStatusException(
-                    GetPdfResponseFailedToCreate.code, GetPdfResponseFailedToCreate.description, e);
+            throw pdfFailureResponse(e);
         }
+    }
+
+    /**
+     * A print-refusing knockout (PdfService#PRINT_REFUSING_KNOCKOUTS) keeps its 400 and knockout paths; anything else
+     * is logged and becomes the generic PDF error.
+     */
+    private static ResponseStatusException pdfFailureResponse(Exception e) {
+        if (e instanceof SubmissionBlockingFactsResponseStatusException printRefused) {
+            return printRefused;
+        }
+        log.error("Error: " + e.getMessage(), e);
+        return new ResponseStatusException(
+                GetPdfResponseFailedToCreate.code, GetPdfResponseFailedToCreate.description, e);
     }
 
     @Override

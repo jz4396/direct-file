@@ -25,9 +25,11 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.irs.directfile.api.config.PdfServiceProperties;
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.io.IOLocationService;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.directfile.api.taxreturn.models.TaxReturn;
@@ -35,6 +37,7 @@ import gov.irs.directfile.models.FactTypeWithItem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -134,8 +137,54 @@ class ScheduleDForm8949PdfSmokeTest {
         }
     }
 
+    /**
+     * Form 8949 code Q (Form 8949 instr. (2025) p. 8: "You sold or exchanged QSB stock and can exclude part of the
+     * gain"). Section 1202 gain is 28-percent rate gain (IRC 1(h)(4)(A)(ii), 1(h)(7)) on Schedule D line 18, which
+     * needs the Schedule D Tax Worksheet this tool does not compute. The print path refuses the package in both
+     * languages and names only the knockout path; the same row with code B still prints (see the loss test).
+     */
+    @Test
+    void codeQReturnIsRefusedByThePrintPath() throws Exception {
+        String tx = "/form8949Transactions/#a2222222-2222-4222-8222-222222222222/";
+        PdfService pdfService = pdfService();
+        for (String code : List.of("Q", "bq")) {
+            TaxReturn taxReturn = taxReturn(facts -> {
+                facts.putObject(tx + "writableAdjustment")
+                        .put("$type", "gov.irs.factgraph.persisters.DollarWrapper")
+                        .put("item", "-2500");
+                facts.putObject(tx + "adjustmentCode")
+                        .put("$type", "gov.irs.factgraph.persisters.StringWrapper")
+                        .put("item", code);
+            });
+            for (String language : List.of("en", "es")) {
+                SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                        SubmissionBlockingFactsResponseStatusException.class,
+                        () -> pdfService.getTaxReturn(language, taxReturn, false),
+                        code + " " + language);
+                assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+                assertEquals(
+                        List.of("/flowKnockoutForm8949CodeQ"),
+                        e.getBody().getProperties().get("blockingFacts"));
+                assertFalse(e.getMessage().contains("-2500"), e.getMessage());
+            }
+        }
+    }
+
     /** Renders the synthetic return through the real PdfService after applying edit to its facts. */
     private static byte[] render(Consumer<ObjectNode> edit, String fileName) throws Exception {
+        byte[] bytes;
+        try (InputStream in = pdfService().getTaxReturn("en", taxReturn(edit), false)) {
+            bytes = in.readAllBytes();
+        }
+        String out = System.getProperty("pdf.smoke.out");
+        if (out != null) {
+            Files.write(Path.of(out, fileName), bytes);
+        }
+        return bytes;
+    }
+
+    /** The real PdfService over the real fact dictionary and application.yaml PDF configuration. */
+    private static PdfService pdfService() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         GenericApplicationContext ctx = new GenericApplicationContext();
         ctx.refresh();
@@ -154,8 +203,12 @@ class ScheduleDForm8949PdfSmokeTest {
         PdfServiceProperties props = Binder.get(env)
                 .bind("direct-file.pdfs", PdfServiceProperties.class)
                 .get();
-        PdfService pdfService = new PdfService(props, new IOLocationService(null), factGraphService);
+        return new PdfService(props, new IOLocationService(null), factGraphService);
+    }
 
+    /** The synthetic return after applying edit to its facts. */
+    private static TaxReturn taxReturn(Consumer<ObjectNode> edit) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
         JsonNode root =
                 mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
         ObjectNode factsNode = (ObjectNode) root.get("facts");
@@ -165,16 +218,7 @@ class ScheduleDForm8949PdfSmokeTest {
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026); // PDF template config key; #35: Sch D / 8949 now use the 2026 drafts under pdf/2026
         taxReturn.setFactsWithoutDirtyingEntity(facts);
-
-        byte[] bytes;
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
-            bytes = in.readAllBytes();
-        }
-        String out = System.getProperty("pdf.smoke.out");
-        if (out != null) {
-            Files.write(Path.of(out, fileName), bytes);
-        }
-        return bytes;
+        return taxReturn;
     }
 
     /** Checked Schedule D Part III boxes, read from the Schedule D page that carries line 17. */
