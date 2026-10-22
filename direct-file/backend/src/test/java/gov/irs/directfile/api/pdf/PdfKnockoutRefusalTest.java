@@ -138,8 +138,8 @@ class PdfKnockoutRefusalTest {
     }
 
     @Test
-    void pdfBlockingKnockoutsAreSubmissionBlockingFacts() throws Exception {
-        assertTrue(PdfService.PDF_BLOCKING_KNOCKOUTS.stream()
+    void printRefusingKnockoutsAreSubmissionBlockingFacts() throws Exception {
+        assertTrue(PrintRefusingKnockouts.FACT_PATHS.stream()
                 .allMatch(p -> factGraphService.getDigest().getSubmissionBlockingFacts().stream()
                         .anyMatch(f -> f.path().equals(p))));
     }

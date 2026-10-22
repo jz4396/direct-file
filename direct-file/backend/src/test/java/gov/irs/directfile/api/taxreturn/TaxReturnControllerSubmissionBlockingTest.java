@@ -143,4 +143,18 @@ class TaxReturnControllerSubmissionBlockingTest {
                 e.getBody().getProperties().get("blockingFacts"));
         responseBody(e, HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    void pdfRefusedByKnockoutListsEveryTruePath() throws Exception {
+        TaxReturn taxReturn = new TaxReturn();
+        taxReturn.setTaxYear(2026);
+        when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
+        List<String> paths = List.of("/flowKnockoutScheduleEicWithoutTy2026Template", "/flowKnockoutOther");
+        when(pdfService.getTaxReturn(eq("es"), same(taxReturn), eq(false)))
+                .thenThrow(new PdfRefusedByKnockoutException(paths));
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> controller.pdf(id, "es"));
+        assertEquals(paths, e.getBody().getProperties().get("blockingFacts"));
+        responseBody(e, HttpStatus.BAD_REQUEST);
+    }
 }
