@@ -161,11 +161,35 @@ fs.writeFileSync(wrappedFactsFileName, prettyWrappedFactsString);
 
 const submissionBlockingFacts = rawFacts.filter((f) => f.BlockSubmissionOnTrue !== undefined).map((f) => f[`@path`]);
 
+// Top-level blocking facts: not a direct <Dependency path> of another blocking fact's Derived or Placeholder. Each must
+// be false (no value refuses). The rest are inputs to a blocking aggregate such as /flowIsKnockedOut and block only
+// when true. The backend (TaxDictionaryDigest.topLevelBlockingFacts) applies the same rule to the same XML.
+type DependencyNode = { typeName: string; options?: Record<string, unknown>; children?: DependencyNode[] };
+const dependencyPaths = (node: DependencyNode | null | undefined, out: Set<string>) => {
+  if (!node) return;
+  if (node.typeName === `Dependency` && typeof node.options?.path === `string`) out.add(node.options.path);
+  (node.children ?? []).forEach((child) => dependencyPaths(child, out));
+};
+const blockingPathSet = new Set<string>(submissionBlockingFacts);
+const coveredBlockingFacts = new Set<string>();
+for (const fact of wrappedFacts) {
+  if (!blockingPathSet.has(fact.path)) continue;
+  const deps = new Set<string>();
+  dependencyPaths(fact.derived as DependencyNode | null, deps);
+  dependencyPaths(fact.placeholder as DependencyNode | null, deps);
+  deps.delete(fact.path);
+  deps.forEach((d) => blockingPathSet.has(d) && coveredBlockingFacts.add(d));
+}
+const submissionBlockingFactsRequiringValue = submissionBlockingFacts.filter((p) => !coveredBlockingFacts.has(p));
+
 const submissionBlockingFactsFilename = `./src/fact-dictionary/generated/submissionBlockingFacts.ts`;
 // eslint-disable-next-line max-len
 const submissionBlockingFactsString = `${generatedWarning} import { AbsolutePath } from "../Path.js"; export const submissionBlockingFacts: AbsolutePath[] = ${stringifyObject(
   submissionBlockingFacts
-)}`;
+)};
+export const submissionBlockingFactsRequiringValue: AbsolutePath[] = ${stringifyObject(
+  submissionBlockingFactsRequiringValue
+)};`;
 const prettySubmissionBlockingFactsString = prettier.format(submissionBlockingFactsString, {
   parser: `typescript`,
 });

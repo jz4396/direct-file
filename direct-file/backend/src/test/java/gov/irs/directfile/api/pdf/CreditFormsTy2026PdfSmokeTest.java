@@ -61,8 +61,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * ssn} with a 9xx number keeps CTC eligibility (the dependent's {@code eligibleCtc} fact reads the declared tinType,
  * so Schedule 8812 prints the CTC lines) while {@code /familyAndHouseholdHasInvalidTIN}, a submission-blocking
  * fact, is true. The CTC scenarios assert that. Real filing also needs an SSN for each CTC child under 26 U.S.C.
- * 24(h)(7); the filer-SSN requirement of 24(h)(7) as amended by P.L. 119-21 is not modeled (#182). The backend's
- * submission-blocking list is empty (#181), so no check here relies on it.
+ * 24(h)(7); the filer-SSN requirement of 24(h)(7) as amended by P.L. 119-21 is not modeled (#182). Printing is not
+ * filing: these returns print, and the server's sign and submit check refuses them (asserted for hoh-cdcc.json).
  */
 class CreditFormsTy2026PdfSmokeTest {
     static final String DRAFT_MARK = "OMB USE ONLY DRAFT";
@@ -270,9 +270,14 @@ class CreditFormsTy2026PdfSmokeTest {
         // hoh-cdcc.json: head of household, $50,000 W-2 wages, two qualifying children under 13 (ages 10 and 7 at the
         // end of 2026), one care provider paid $2,000 for the younger child, no dependent care benefits.
         // Printing only, not a fileable return: both children are declared tinType = ssn with 9xx numbers, which are
-        // never SSNs in the fact graph, so CTC prints and the submission-blocking invalid-TIN fact is true (#181,
-        // #182).
+        // never SSNs in the fact graph, so CTC prints and the submission-blocking invalid-TIN fact is true, which
+        // the sign and submit paths refuse (#182).
         assertTrue(factIsTrue("hoh-cdcc.json", INVALID_TIN), INVALID_TIN + " (9xx children declared ssn)");
+        assertTrue(
+                factGraphService()
+                        .submissionBlockingFactPaths(factGraphService().getGraph(scenarioFacts("hoh-cdcc.json")))
+                        .contains(INVALID_TIN),
+                "sign/submit gate names " + INVALID_TIN);
         try (PDDocument doc = Loader.loadPDF(generateScenario("hoh-cdcc.json"))) {
             List<String> texts = pageTexts(doc);
             assertFalse(String.join(" ", texts).contains(COVER_SHEET), "draft cover sheets dropped");
@@ -356,7 +361,8 @@ class CreditFormsTy2026PdfSmokeTest {
 
     @Test
     void moreThanThreeCareProvidersAndQualifyingPersonsFillProviderColumnsAndStatements() throws Exception {
-        // Printing only, not a fileable return: the children are declared tinType = ssn with 9xx numbers (#181, #182).
+        // Printing only, not a fileable return: the children are declared tinType = ssn with 9xx numbers (#182), so
+        // sign and submit refuse it.
         assertTrue(
                 factIsTrue("hoh-cdcc-multiple-careproviders.json", INVALID_TIN),
                 INVALID_TIN + " (9xx children declared ssn)");

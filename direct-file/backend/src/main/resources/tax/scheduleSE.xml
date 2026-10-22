@@ -146,6 +146,65 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleSELine8a">
+      <Name>Schedule SE line 8a: Total social security wages and tips</Name>
+      <Description>
+        #89. 2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, created 4/27/26), form
+        page 1, line 8a: "Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2) and railroad
+        retirement (tier 1) compensation." W-2 box 3 (/primaryFilerOasdiWagesTotal) plus box 7
+        (/primaryFilerOasdiTipsTotal) for the person with self-employment income; railroad retirement compensation
+        is not collected. Wage-base coordination under 26 U.S.C. 1402(b)(1). Printed only; the tax itself uses
+        /seRemainingSocialSecurityWageBase.
+      </Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/primaryFilerOasdiWagesTotal" />
+            <Dependency path="/primaryFilerOasdiTipsTotal" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleSELine8d">
+      <Name>Schedule SE line 8d</Name>
+      <Description>
+        #89. 2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf), form page 1, line 8d:
+        "Add lines 8a, 8b, and 8c." Line 8b (Form 4137 unreported tips) stops the return
+        (unreportedTips /flowKnockoutUnreportedTips) and line 8c (Form 8919 wages) has no input (income
+        /wagesFrom8919 is $0), so line 8d = line 8a. Line 8a says "If $184,500 or more, skip lines 8b through 10,
+        and go to line 11", so line 8d is $0 (printed blank) when line 8a is at least the TY2026 wage base
+        (/socialSecurityWageBaseTy2026, $184,500; 90 FR 49047, p. 49050; 26 U.S.C. 1402(b)(1)).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/scheduleSELine8a" />
+                </Left>
+                <Right>
+                  <Dependency path="/socialSecurityWageBaseTy2026" />
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/scheduleSELine8a" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/seSocialSecurityTaxableEarnings">
       <Name>SE earnings subject to 12.4% Social Security tax</Name>
       <Description>
