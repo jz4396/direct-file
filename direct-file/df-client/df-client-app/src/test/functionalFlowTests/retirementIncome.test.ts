@@ -364,8 +364,7 @@ describe(`The retirement 1099-R loop`, () => {
     });
   });
 
-  //'early distribution no known exception' code 1 is not implemented yet
-  /*
+  // #116: code 1 alone is supported; the 10% additional tax goes on Schedule 2 line 5.
   describe(`When the user has/doesn't have an early distribution`, () => {
     it(`navigates to the next screen when the Taxpayer does not have a qualified early distribution`, ({ task }) => {
       const { factGraph } = setupFactGraph({
@@ -393,7 +392,7 @@ describe(`The retirement 1099-R loop`, () => {
         givenFacts(factGraph).atPath(`${path}/1099-r-box-7-early-distribution-question`, spouseId, task)
       ).toRouteNextTo(`${path}/1099-r-box-7-indirect-rollover`);
     });
-    it(`navigates to the knockout screen when the Taxpayer has a qualified arly distribution`, ({ task }) => {
+    it(`navigates to the knockout screen when the Taxpayer has a qualified early distribution`, ({ task }) => {
       const { factGraph } = setupFactGraph({
         ...baseIncomeData,
         [`/form1099Rs/#${formId}/writableDistributionCode`]: createStringWrapper(`1`),
@@ -419,8 +418,23 @@ describe(`The retirement 1099-R loop`, () => {
         givenFacts(factGraph).atPath(`${path}/1099-r-box-7-early-distribution-question`, spouseId, task)
       ).toRouteNextTo(`${path}/1099-r-box-7-early-distribution-knockout`);
     });
+    it(`navigates to the knockout screen when code 1 is on one Form 1099-R and another code is on another`, ({
+      task,
+    }) => {
+      const { factGraph } = setupFactGraph({
+        ...baseIncomeData,
+        '/form1099Rs': {
+          $type: `gov.irs.factgraph.persisters.CollectionWrapper`,
+          item: { items: [formId, spouseId] },
+        },
+        [`/form1099Rs/#${formId}/writableDistributionCode`]: createStringWrapper(`7`),
+        [`/form1099Rs/#${spouseId}/writableDistributionCode`]: createStringWrapper(`1`),
+      });
+      expect(givenFacts(factGraph).atPath(`${path}/1099-r-add-box-7-codes`, spouseId, task)).toRouteNextTo(
+        `${path}/1099-r-box-7-early-distribution-not-every-form-knockout`
+      );
+    });
   });
-  */
   describe(`When the user enters indirect rollover qualifying distribution codes in box 7`, () => {
     it(`navigates to the follow-up question when the Taxpayer's code includes '2'`, ({ task }) => {
       const { factGraph } = setupFactGraph({

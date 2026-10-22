@@ -1327,12 +1327,37 @@
       </Derived>
     </Fact>
 
+    <Fact path="/primaryFilerEarnedIncomeForCdccBase">
+      <Name>Primary filer earned income for the CDCC, before combat pay and dependent care benefits</Name>
+      <Description>#117: the primary filer's line 1 earned income (/primaryFilerEmployerIncomeSubtotalBase) plus net
+        earnings from self-employment (scheduleC /scheduleCNetProfitForEarnedIncome). Every Schedule C business is the
+        primary filer's while a spouse-owned business stops the return (scheduleC /flowKnockoutScheduleCSpouseBusiness).
+        26 U.S.C. 21(d)(1) (https://www.law.cornell.edu/uscode/text/26/21#d_1): expenses can't exceed "(A) in the case of
+        a taxpayer who is not married at the close of such year, such individual's earned income for such year, or (B)
+        in the case of a taxpayer who is married at the close of such year, the lesser of such individual's earned
+        income or the earned income of his spouse for such year"; 21(e)(1) uses the 32(c)(2) definition of earned
+        income. 2026 draft Instructions for Form 2441 (https://www.irs.gov/pub/irs-dft/i2441--dft.pdf, SHA-256
+        7fdecfe193df435542bb452ba108bee011bef7032fda8abe972d6fbd5de233e7), PDF p. 5, lines 4 and 5: "If filing jointly,
+        figure your and your spouse’s earned income separately." and "2. The amount shown on Schedule SE (Form 1040),
+        line 3, minus any deduction you claim on Schedule 1 (Form 1040), line 15." and "Caution: You must reduce your
+        earned income by any loss from self-employment." A Schedule C loss is not modeled and stops the return when the
+        credit could apply, and a joint return with a Schedule C stops it too until Schedule SE is figured per spouse
+        (scheduleC /flowKnockoutScheduleCEarnedIncomeCredits).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerEmployerIncomeSubtotalBase" />
+          <Dependency module="scheduleC" path="/scheduleCNetProfitForEarnedIncome" />
+        </Add>
+      </Derived>
+    </Fact>
+
     <Fact path="/cdccPrimaryEarnedIncomeWithCombatPayForCredits">
       <Export downstreamFacts="true" />
 
       <Derived>
         <Add>
-          <Dependency path="/primaryFilerEmployerIncomeSubtotalBase" />
+          <Dependency path="/primaryFilerEarnedIncomeForCdccBase" />
           <Dependency path="/cdccPrimaryFilerCombatPayForCredits" />
         </Add>
       </Derived>
@@ -1724,11 +1749,10 @@
       <Derived>
         <Round>
           <Add>
-            <Dependency path="/primaryFilerEmployerIncomeSubtotalBase" />
+            <Dependency path="/primaryFilerEarnedIncomeForCdccBase" />
             <Dependency path="/cdccPrimaryFilerCombatPayForBenefits" />
             <!-- OUT OF SCOPE: earned income calculations when student/disabled -->
-            <!-- OUT OF SCOPE: earned income from Schedule SE (Form 1040) -->
-            <!-- OUT OF SCOPE: earned income from Schedule C (Form 1040) -->
+            <!-- #117: Schedule SE line 3 minus Schedule 1 line 15 is in /primaryFilerEarnedIncomeForCdccBase -->
             <!--
             OUT OF SCOPE: earned income calculations when student/disabled
             <Dependency path="/primaryFilerIncomeForMonthsDisabledOrInSchool" />

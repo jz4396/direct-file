@@ -292,6 +292,7 @@
     <Fact path="/scheduleASaltThreshold">
       <Name>SALT MAGI threshold</Name>
       <Description>#37: IRC §164(b)(7)(B)(ii)(II) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/164): "in the case of any taxable year beginning in calendar year 2026, $505,000"; (B)(i): "half the threshold amount in the case of a married individual filing a separate return".</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>
@@ -317,6 +318,7 @@
     <Fact path="/scheduleASaltLimitBeforeMfsHalving">
       <Name>SALT applicable limitation amount after phasedown</Name>
       <Description>#37: IRC §164(b)(7)(A)(ii): "$40,400" for 2026; (B)(i): "reduced by 30 percent of the excess (if any) of the taxpayer's modified adjusted gross income over the threshold amount"; (B)(iii): "shall not result in the applicable limitation amount being less than $10,000". MAGI = AGI here (no §911/931/933 exclusions; those knock out).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <GreaterOf>
           <Dollar>10000</Dollar>
@@ -503,6 +505,7 @@
       <Name>Knockout: §68 overall limitation</Name>
       <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 18: "Is the amount on Form 1040 or 1040-SR, line 11b, minus the amounts on lines 13a and 13b of that form, more than $384,350? ... Yes. Your deductions may be limited." IRC §68(a) as amended (https://www.law.cornell.edu/uscode/text/26/68), 2/37 reduction. Not in MVP scope.</Description>
       <BlockSubmissionOnTrue />
+      <TaxYear>2026</TaxYear>
       <Derived>
         <All>
           <Dependency path="/itemizesDeductions" />

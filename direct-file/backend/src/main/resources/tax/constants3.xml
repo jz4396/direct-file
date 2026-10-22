@@ -107,10 +107,12 @@
       </Derived>
     </Fact>
     <Fact path="/form1099RsDistributionCodeValidChars">
-      <Description>Characters that appear in DF-supported distribution codes.</Description>
+      <Description>Characters that appear in DF-supported distribution codes. #116: 1 is added for code 1 (early
+        distribution, no known exception). With 1 kept, a code 1 combined with another code (such as 12, 17, 1B or 1G) is
+        no longer read as the other code alone, so it is unsupported and stops the return.</Description>
       <Export downstreamFacts="true" />
       <Derived>
-        <String>247BGH</String>
+        <String>1247BGH</String>
       </Derived>
     </Fact>
     <Fact path="/hsaExcessContributionsPenalty">
