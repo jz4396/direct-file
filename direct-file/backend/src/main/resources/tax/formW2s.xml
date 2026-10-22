@@ -300,6 +300,7 @@
       <Description>The maximum medicare wages (W-2 Box 5) a MFS filer might have without possibly
         needing to pay
         Additional Medicare Tax</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>125000</Dollar>
       </Derived>
@@ -310,6 +311,7 @@
       <Description>The maximum medicare wages (W-2 Box 5) a MFS filer might have without possibly
         needing to pay
         Additional Medicare Tax</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>250000</Dollar>
       </Derived>
@@ -321,6 +323,7 @@
         have without
         possibly
         needing to pay Additional Medicare Tax</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>200000</Dollar>
       </Derived>
@@ -331,6 +334,7 @@
       <Description>The maximum medicare wages (W-2 Box 5) any individual on a return could have
         before needing to pay
         Additonal Medicare Tax</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>200000</Dollar>
       </Derived>
