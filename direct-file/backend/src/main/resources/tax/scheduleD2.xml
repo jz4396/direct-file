@@ -436,14 +436,22 @@
     <Fact path="/scheduleDLine20Yes">
       <Name>Schedule D line 20 Yes: lines 18 and 19 zero or blank, no Form 4952</Name>
       <Description>Checked only when line 17 is Yes and lines 18 and 19 are provably zero: every input this
-        tool knows that can put an amount on them is complete and false. Line 18 (28% rate gain, IRC §1(h)(4)):
-        collectibles gain (scheduleD /flowKnockoutCollectibles) and section 1202 gain, IRC §1(h)(4)(A)(ii) and
-        §1(h)(7) (scheduleD /flowKnockoutForm8949CodeQ, Form 8949 code Q). Line 19 (unrecaptured section 1250
-        gain, IRC §1(h)(6)): scheduleD /flowKnockoutUnrecaptured1250Gain. Both: Form 1099-DIV boxes 2b, 2c and
-        2d (dividends /flowKnockoutDividendUnsupportedBoxes). Each of those stops the return, so on a supported
-        return lines 18 and 19 print blank. Form 4952 is never filed: investment interest (Schedule A line 9,
-        IRC 163(d)) stops the return (#37 /flowKnockoutScheduleAUnsupported). The tax is then figured on the
-        Qualified Dividends and Capital Gain Tax Worksheet (scheduleD3.xml), matching this box; line 20 No
+        tool knows
+        that can put an amount on them is complete and false. Line 18 (28% rate gain, IRC §1(h)(4)):
+        collectibles gain
+        (scheduleD /flowKnockoutCollectibles) and section 1202 gain, IRC §1(h)(4)(A)(ii) and
+        §1(h)(7) (scheduleD
+        /flowKnockoutForm8949CodeQ, Form 8949 code Q). Line 19 (unrecaptured section 1250
+        gain, IRC §1(h)(6)): scheduleD
+        /flowKnockoutUnrecaptured1250Gain. Both: Form 1099-DIV boxes 2b, 2c and
+        2d (dividends
+        /flowKnockoutDividendUnsupportedBoxes). Each of those stops the return, so on a supported
+        return lines 18 and 19
+        print blank. Form 4952 is never filed: investment interest (Schedule A line 9,
+        IRC 163(d)) stops the return (#37
+        /flowKnockoutScheduleAUnsupported). The tax is then figured on the
+        Qualified Dividends and Capital Gain Tax
+        Worksheet (scheduleD3.xml), matching this box; line 20 No
         (Schedule D Tax Worksheet) is never checked.</Description>
       <Derived>
         <All>
