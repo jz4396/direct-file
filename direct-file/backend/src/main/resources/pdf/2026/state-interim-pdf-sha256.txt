@@ -3,5 +3,7 @@
 # file keeps its year in its name. Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the
 # committed files by StateInterimPdfHashManifestTest. When the 2026 form is published (#124), download it, hash it,
 # re-verify the field map in that template's configuration.yml, and replace the row.
+# #124 swap: then run Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true; it fails on any mapped field
+# missing from the new AcroForm and rewrites the hash/unmapped-field manifests under src/test/resources/pdf/2026.
 fcd7648601f3ce5a7a258be49c54aa1c604e1c61c1fe9175351451ac6087d8b3  PA40/en/2025_pa-40.pdf  https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf
 cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b  PA40SP/en/2025_pa-40sp.pdf  https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40sp.pdf
