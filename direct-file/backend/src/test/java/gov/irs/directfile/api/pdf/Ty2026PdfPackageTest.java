@@ -105,7 +105,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   contributions); self-only HDHP; $770 own HSA contributions. Prints Form 1040, Schedule 1, Form 8889 and two W-2s.
  * Scenario 7, self-employed family (#179 review): head of household; three children under 17 (tinType ssn, 9xx
  *   numbers: printing only); $13,000 ordinary dividends; Schedule C profit $4,000 (or $10,000); no W-2.
- *   Prints Form 1040, Schedules 1, 2, B and 8812 (Part II-B, lines 22-27).
+ *   Prints Form 1040, Schedules 1, 2, B, SE (#89) and 8812 (Part II-B, lines 22-27).
  * </pre>
  */
 class Ty2026PdfPackageTest {
@@ -130,6 +130,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS1040SA", 2),
             Map.entry("IRS1040SB", 1),
             Map.entry("IRS1040SD", 2),
+            Map.entry("IRS1040SSE", 2),
             Map.entry("IRS8949", 2),
             Map.entry("IRS6251", 2),
             Map.entry("IRS8959", 1),
@@ -384,7 +385,8 @@ class Ty2026PdfPackageTest {
     @Test
     void scenariosTogetherPrintEveryConfiguredTy2026FormOrListItAsExcluded() throws Exception {
         Set<String> printed = new TreeSet<>();
-        for (Map<String, String> s : List.of(investor(), itemizer(), paTaxForgiveness())) {
+        for (Map<String, String> s :
+                List.of(investor(), itemizer(), paTaxForgiveness(), selfEmployedFamily("4000.00"))) {
             printed.addAll(render(s, null).forms.keySet());
         }
         for (String s : List.of(FAMILY, SAVER, HSA)) {
@@ -741,12 +743,28 @@ class Ty2026PdfPackageTest {
         Map<String, String> scenario = selfEmployedFamily("4000.00");
         assertInvalidTin(scenario);
         Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf");
-        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040S8812", 1));
+        pkg.assertForms(Map.of(
+                "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s1 = pkg.fields("IRS1040S1", 0);
+        Map<String, String> s2 = pkg.fields("IRS1040S2", 0);
+        Map<String, String> se = pkg.fields("IRS1040SSE", 0);
         Map<String, String> s8812 = pkg.fields("IRS1040S8812", 0);
         // SE: round(4,000 x .9235) = 3,694; 458 + 107 = 565; Schedule 1 line 15 = round(282.50) = 283.
-        assertEquals(283, amt(s1, "Page2[0].f2_05[0]"), "Schedule 1 line 15");
+        // #89, 2026 draft Schedule SE: 4a = line 3 x 92.35% (26 U.S.C. 1402(a)(12)); no W-2, so 8a and 8d are blank
+        // and 9 = the $184,500 wage base (90 FR 49047, p. 49050); 10 = 3,694 x 12.4% = 458.06 (26 U.S.C. 1401(a));
+        // 11 = 3,694 x 2.9% = 107.13 (1401(b)(1)); 12 = 565 to Schedule 2 line 4; 13 = 565 x 50% to Schedule 1
+        // line 15 (164(f)(1)).
+        assertEquals(4000, amt(se, "Page1[0].f1_5[0]"), "SE 2 = Schedule C line 31");
+        assertEquals(3694, amt(se, "Page1[0].f1_7[0]"), "SE 4a");
+        assertEquals("", text(se, "Page1[0].f1_14[0]"), "SE 8a no W-2");
+        assertEquals(184500, amt(se, "Page1[0].f1_18[0]"), "SE 9 = 7 - 8d");
+        assertEquals(458, amt(se, "Page1[0].f1_19[0]"), "SE 10");
+        assertEquals(107, amt(se, "Page1[0].f1_20[0]"), "SE 11");
+        assertEquals(565, amt(se, "Page1[0].f1_21[0]"), "SE 12");
+        assertEquals(565, amt(s2, "Page1[0].f1_15[0]"), "Schedule 2 line 4 = SE line 12");
+        assertEquals(283, amt(se, "Page1[0].f1_22[0]"), "SE 13");
+        assertEquals(283, amt(s1, "Page2[0].f2_05[0]"), "Schedule 1 line 15 = SE line 13");
         assertEquals(3 * 1700, amt(s8812, "Page2[0].f2_4[0]"), "16b = 3 x $1,700");
         assertEquals(5100, amt(s8812, "Page2[0].f2_5[0]"), "17 = smaller of 16a ($6,600) or 16b");
         assertEquals(4000 - 283, amt(s8812, "Page2[0].f2_6[0]"), "18a = Schedule C profit - Schedule 1 line 15");
@@ -767,7 +785,8 @@ class Ty2026PdfPackageTest {
         Map<String, String> scenario = selfEmployedFamily("10000.00");
         assertInvalidTin(scenario);
         Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf");
-        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040S8812", 1));
+        pkg.assertForms(Map.of(
+                "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s8812 = pkg.fields("IRS1040S8812", 0);
         // SE: 9,235; 1,145 + 268 = 1,413; Schedule 1 line 15 = round(706.50) = 707. 18a = 9,293.
