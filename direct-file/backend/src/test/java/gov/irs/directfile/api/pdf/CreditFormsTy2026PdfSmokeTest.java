@@ -334,6 +334,13 @@ class CreditFormsTy2026PdfSmokeTest {
         // end of 2026), one care provider paid $2,000 for the younger child, no dependent care benefits.
         // The filer and both children have group-00 test SSNs, so 26 U.S.C. 24(h)(7) is met (see the class comment).
         Map<String, FactTypeWithItem> facts = scenarioFactsWithCtcSsns("hoh-cdcc.json");
+        // Form 2441 and Schedule 8812 only: the filer is in a two-year EIC disallowance period
+        // (26 U.S.C. 32(k)(1)(B)(ii)), so no Schedule EIC, which has no TY2026 template yet (#208).
+        Ty2026PdfPackageTest.noEitc(facts);
+        var eitcQualified = factGraphService().getGraph(facts).get("/eitcQualified");
+        assertTrue(
+                eitcQualified.complete() && Boolean.FALSE.equals(eitcQualified.get()),
+                "/eitcQualified (EIC disallowance period), so no Schedule EIC");
         assertCtcSsnRequirementMet(facts);
         assertFalse(
                 factGraphService()
