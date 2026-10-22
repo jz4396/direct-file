@@ -26,14 +26,16 @@ function blockingFactsInXml() {
     const xml = fs.readFileSync(path.join(TAX_XML, file), `utf-8`).replace(/<!--[\s\S]*?-->/g, ``);
     for (const fact of xml.matchAll(/<Fact\s+path="([^"]+)"[^>]*>([\s\S]*?)<\/Fact>/g)) {
       if (!/<BlockSubmissionOnTrue\s*\/>/.test(fact[2])) continue;
-      out.set(fact[1], new Set([...fact[2].matchAll(/<Dependency\s+path="([^"]+)"/g)].map((m) => m[1])));
+      out.set(fact[1], new Set([...fact[2].matchAll(/<Dependency\b[^>]*\bpath="([^"]+)"/g)].map((m) => m[1])));
     }
   }
   return out;
 }
 
 function goldenFacts(): Record<string, unknown> {
-  return JSON.parse(fs.readFileSync(GOLDEN, `utf-8`)).facts;
+  const facts: Record<string, unknown> = JSON.parse(fs.readFileSync(GOLDEN, `utf-8`)).facts;
+  // /meta/* is persistence bookkeeping, not a dictionary fact.
+  return Object.fromEntries(Object.entries(facts).filter(([p]) => !p.startsWith(`/meta/`)));
 }
 
 type FakeResult = { hasValue: boolean; complete: boolean; get: unknown };
