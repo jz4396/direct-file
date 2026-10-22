@@ -1,0 +1,44 @@
+# Child Tax Credit filer SSN requirement (#182). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/you-and-your-family/about-you/ssn-status-changed:
+    Has your immigration or citizenship status changed so that you can now get a Social Security card without that
+    restriction?
+  /heading/you-and-your-family/spouse/ssn-status-changed:
+    Has {{/secondaryFiler/firstName}}’s immigration or citizenship status changed so that they can now get a Social
+    Security card without that restriction?
+  /heading/knockout/ctc-filer-ssn-unresolved: This tool can’t yet decide whether you can claim the Child Tax Credit
+info:
+  /info/you-and-your-family/about-you/ssn-status-changed:
+    body:
+      - p:
+          For example, you became a U.S. citizen or a lawful permanent resident, or you got work authorization, but your
+          Social Security card hasn’t been updated yet.
+  /info/you-and-your-family/spouse/ssn-status-changed:
+    body:
+      - p:
+          For example, {{/secondaryFiler/firstName}} became a U.S. citizen or a lawful permanent resident, or got work
+          authorization, but their Social Security card hasn’t been updated yet.
+  /info/knockout/ctc-filer-ssn-unresolved:
+    alertText:
+      body:
+        - p:
+            To claim the Child Tax Credit, you (or, if you’re filing jointly, you or your spouse) must have a Social
+            Security number that’s valid for employment and issued by the due date of the return. Based on what you told
+            us about the Social Security card, this tool can’t yet decide whether that number meets the requirement.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+fields:
+  /filers/*/writableSsnStatusChangedForCtc:
+    boolean:
+      "yes": Yes, my status has changed
+      "no": No, my status hasn’t changed
+  /secondaryFiler/writableSsnStatusChangedForCtc:
+    boolean:
+      "yes": Yes, {{/secondaryFiler/firstName}}’s status has changed
+      "no": No, {{/secondaryFiler/firstName}}’s status hasn’t changed
+dataviews:
+  /flow/you-and-your-family/about-you:
+    /filers/*/writableSsnStatusChangedForCtc: Status changed since the Social Security card was issued
+  /flow/you-and-your-family/spouse:
+    /secondaryFiler/writableSsnStatusChangedForCtc: Status changed since the Social Security card was issued

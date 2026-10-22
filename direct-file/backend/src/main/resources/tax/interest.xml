@@ -56,6 +56,7 @@
       <Name>Net investment income threshold for MFS filing status</Name>
       <Description>The max income before someone is eligible to pay net investment income tax</Description>
 
+      <TaxYear>2026</TaxYear>
       <Derived>
         <!-- IRC §1411(b)(2): "in the case of a married taxpayer filing a separate return, ½ of the dollar amount
              determined under paragraph (1)" = $125,000. https://www.law.cornell.edu/uscode/text/26/1411 -->
@@ -67,6 +68,7 @@
       <Name>Net investment income threshold for MFJ or QSS filing status</Name>
       <Description>The max income before someone is eligible to pay net investment income tax</Description>
 
+      <TaxYear>2026</TaxYear>
       <Derived>
         <!-- IRC §1411(b)(1): "$250,000 in the case of a taxpayer making a joint return under section 6013 or a
              surviving spouse (as defined in section 2(a))". https://www.law.cornell.edu/uscode/text/26/1411 -->
@@ -78,6 +80,7 @@
       <Name>Net investment income threshold for Single or HOH filing status</Name>
       <Description>The max income before someone is eligible to pay net investment income tax</Description>
 
+      <TaxYear>2026</TaxYear>
       <Derived>
         <!-- IRC §1411(b)(3): "$200,000 in any other case". https://www.law.cornell.edu/uscode/text/26/1411 -->
         <Dollar>200000</Dollar>

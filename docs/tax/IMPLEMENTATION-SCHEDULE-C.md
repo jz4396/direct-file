@@ -16,7 +16,7 @@
 8. **Explicit knockouts (no silent zero / no silent mis-statement)**, both `BlockSubmissionOnTrue` and in `/flowIsKnockedOut`:
    - `/flowKnockoutScheduleCQbi` — § 199A QBI deduction requested
    - `/flowKnockoutScheduleCSpouseBusiness` — any business owned by the secondary filer. Schedule SE is figured per spouse, but EITC/CDCC earned income with self-employment are not per spouse yet, and no Schedule SE PDF is printed yet
-   - `/flowKnockoutScheduleCEarnedIncomeCredits` — nonzero Schedule C with EITC or CDCC eligibility (those modules still use wages-only earned income), or a Schedule C loss with CTC eligibility (ACTC earned income floors the SE component at zero)
+   - `/flowKnockoutScheduleCEarnedIncomeCredits` — a Schedule C loss when the EITC could apply (AGI below the completed phaseout) or the CDCC or CTC applies, since `/scheduleCNetProfitForEarnedIncome` floors a loss at zero; or a joint return with a Schedule C claiming the CDCC (Form 2441 lines 4 and 5 need per-spouse Schedule SE)
    - `/flowKnockoutScheduleCAdditionalMedicare`: W-2 Medicare wages (`formW2s /formW2totalMedicareWages`) + net SE earnings (92.35% figure) > `formW2s /medicareWagesAdditionalTaxThreshhold` ($200k / $250k MFJ / $125k MFS), when SE tax applies. Under 26 U.S.C. § 1401(b)(2)(A) the 0.9% Additional Medicare Tax hits SE income above the threshold, and § 1401(b)(2)(B) reduces the threshold by FICA wages (https://www.law.cornell.edu/uscode/text/26/1401#b_2). The wage-only `/knockoutMedicareWages` misses e.g. single $150k wages + $100k profit (150,000 + 92,350 > 200,000, about $381 owed). Form 8959 is not computed, so this case is knocked out.
 9. Section is required: `/scheduleCSectionIsComplete` is part of `flow.xml` `/flowIncomplete`
 10. Unset `/scheduleCBusinesses` collection: "no" (or section not reached) → $0, complete; "yes" with no businesses → incomplete, so `/totalTaxIsIncomplete` blocks submission
@@ -27,7 +27,7 @@
 - Farm optional methods / Schedule F / church employee income
 - Additional 0.9% Medicare tax (Form 8959): not computed; knocked out when wages + SE earnings exceed the threshold (see above)
 - QBI § 199A computation (knocked out)
-- EITC / CDCC earned income from self-employment (knocked out, see above)
+- EITC / CDCC earned income from a Schedule C loss, and CDCC on a joint return with a Schedule C (knocked out, see above). A profit is included: Schedule SE line 3 minus Schedule 1 line 15 (Form 1040 instructions (2025) EIC Worksheet B, PDF p. 47; 2026 draft Form 2441 instructions, PDF p. 5)
 - MFJ spouse-owned business (per-spouse Schedule SE facts exist; the knockout stays until EITC/CDCC earned income is per spouse and a Schedule SE PDF prints for each spouse)
 - Schedule C / SE PDF print (Phase A print will expand PDFBox TY2024 → TY2026 templates in a follow-up); no MeF
 
@@ -69,7 +69,7 @@
 | C | 1,000 | 1,500 | −500 | 0 | 0 | 0 | — |
 | D | 70,000 | 10,000 | 60,000 | 55,410 | 8,478 | 4,239 | 55,761 |
 
-- A: NESE = round(8,000 × 0.9235) = 7,388; OASDI = round(7,388 × 0.124) = 916; HI = round(7,388 × 0.029) = 214; SE = 1,130; half = 565. (EITC-eligible → knocked out.)
+- A: NESE = round(8,000 × 0.9235) = 7,388; OASDI = round(7,388 × 0.124) = 916; HI = round(7,388 × 0.029) = 214; SE = 1,130; half = 565. EITC earned income 8,000 − 565 = 7,435; no qualifying child, EIC $568.
 - B: NESE 277 < $400 → no SE tax (§ 1402(b)).
 - D: OASDI = round(55,410 × 0.124) = 6,871; HI = round(55,410 × 0.029) = 1,607; SE = 8,478 → Sch 2 line 21 / 1040 line 23; half = 4,239 → Sch 1 line 15; AGI = 60,000 − 4,239 = 55,761; total tax = income tax after credits + 8,478.
 

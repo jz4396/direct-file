@@ -398,6 +398,12 @@ export const AboutYouSubcategory = (
           <Boolean path='/filers/*/writableHasSSNOnlyForBenefits' />
           <SaveAndOrContinueButton />
         </Screen>
+        <Screen route='about-you-ssn-status-changed' condition='/filers/*/askSsnStatusChangedForCtc'>
+          <Heading i18nKey='/heading/you-and-your-family/about-you/ssn-status-changed' />
+          <InfoDisplay i18nKey='/info/you-and-your-family/about-you/ssn-status-changed' />
+          <Boolean path='/filers/*/writableSsnStatusChangedForCtc' />
+          <SaveAndOrContinueButton />
+        </Screen>
       </Gate>
     </SubSubcategory>
     <SubSubcategory route='your-identity-protection'>
