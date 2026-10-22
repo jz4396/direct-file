@@ -104,14 +104,94 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     expect(factGraph.get(`/selfEmploymentTax` as ConcretePath).get.toString()).toBe(`0.00`);
   });
 
-  it(`QBI request with SE income knockouts (explicit non-support)`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutScheduleCQbi`];
-    const { factGraph } = setupFactGraph({
-      ...baseSingle,
+  describe(`#185: 199A QBI is not computed, so any Schedule C business knocks out (no silent $0 on line 13b)`, () => {
+    // 26 U.S.C. 199A(a) (https://www.law.cornell.edu/uscode/text/26/199A): "there shall be allowed as a deduction"; it
+    // is not an election, so the /wantsQbiDeduction answer can't gate the stop. Synthetic data.
+    const profit50k = {
+      ...completeBaseNoW2,
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(true),
+      '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+      [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Consulting`),
+      [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`60000`),
+      [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`10000`),
+      '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+    };
+    const answers: [string, Record<string, unknown>][] = [
+      [`"yes"`, { '/wantsQbiDeduction': createBooleanWrapper(true) }],
+      [`"no"`, { '/wantsQbiDeduction': createBooleanWrapper(false) }],
+      [`unanswered`, {}],
+    ];
+    for (const [label, extra] of answers) {
+      it(`Sch C $50,000 profit, QBI question ${label} → knocked out`, ({ task }) => {
+        task.meta.testedFactPaths = [`/flowKnockoutScheduleCQbi`, `/flowIsKnockedOut`];
+        const { factGraph } = setupFactGraph({ ...profit50k, ...extra });
+        expect(factGraph.get(`/scheduleCNetProfitOrLoss` as ConcretePath).get.toString()).toBe(`50000.00`);
+        expect(factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath).complete).toBe(true);
+        expect(factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath).get).toBe(true);
+        expect(factGraph.get(`/flowIsKnockedOut` as ConcretePath).get).toBe(true);
+      });
+    }
+
+    it(`Sch C net loss also knocks out (199A(c)(2) carries the loss to the next year)`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutScheduleCQbi`];
+      const { factGraph } = setupFactGraph({
+        ...profit50k,
+        [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`1000`),
+        [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`6000`),
+      });
+      expect(factGraph.get(`/scheduleCNetProfitOrLoss` as ConcretePath).get.toString()).toBe(`-5000.00`);
+      expect(factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath).get).toBe(true);
     });
-    expect(factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath).get).toBe(true);
+
+    it(`"yes" to self-employment before any business is listed fails closed; unanswered stays incomplete`, ({
+      task,
+    }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutScheduleCQbi`];
+      const yes = setupFactGraph({ ...baseSingle, '/hadSelfEmploymentIncome': createBooleanWrapper(true) }).factGraph;
+      expect(yes.get(`/flowKnockoutScheduleCQbi` as ConcretePath).complete).toBe(true);
+      expect(yes.get(`/flowKnockoutScheduleCQbi` as ConcretePath).get).toBe(true);
+      const unanswered = setupFactGraph({ ...baseSingle }).factGraph;
+      expect(unanswered.get(`/flowKnockoutScheduleCQbi` as ConcretePath).complete).toBe(false);
+    });
+
+    it(`W-2-only return: knockout is complete false; line 13b $0 is in line 14 (/totalDeductions)`, ({ task }) => {
+      task.meta.testedFactPaths = [
+        `/flowKnockoutScheduleCQbi`,
+        `/qualifiedBusinessIncomeDeduction`,
+        `/totalDeductions`,
+      ];
+      const { factGraph } = setupFactGraph({
+        ...filerWithW2NoDeductionsNoCreditsBaseData,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(false),
+      });
+      const ko = factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath);
+      expect(ko.complete).toBe(true);
+      expect(ko.get).toBe(false);
+      expect(factGraph.get(`/qualifiedBusinessIncomeDeduction` as ConcretePath).get.toString()).toBe(`0.00`);
+      // 2026 draft Form 1040 line 14: "Add lines 12e, 12f, 13a, and 13b."
+      const sum = [
+        `/standardOrItemizedDeductions`,
+        `/nonItemizerCharitableDeduction`,
+        `/schedule1ALine44`,
+        `/qualifiedBusinessIncomeDeduction`,
+      ]
+        .map((p) => Number(factGraph.get(p as ConcretePath).get.toString()))
+        .reduce((a, b) => a + b, 0);
+      expect(Number(factGraph.get(`/totalDeductions` as ConcretePath).get.toString())).toBe(sum);
+    });
+
+    it(`an empty business list ("yes", then no business added) is complete false`, ({ task }) => {
+      task.meta.testedFactPaths = [`/flowKnockoutScheduleCQbi`];
+      const { factGraph } = setupFactGraph({
+        ...baseSingle,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/scheduleCBusinesses': createCollectionWrapper([]),
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      });
+      const ko = factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath);
+      expect(ko.complete).toBe(true);
+      expect(ko.get).toBe(false);
+    });
   });
 
   it(`W-2-only: no Schedule C → zero SE tax`, ({ task }) => {

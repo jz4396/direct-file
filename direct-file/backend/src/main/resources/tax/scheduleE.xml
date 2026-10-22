@@ -256,6 +256,25 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleERentalIsTradeOrBusiness">
+      <Name>Any Part I rental is a trade or business (26 U.S.C. 199A)</Name>
+      <Description>
+        #185: a rental that is a trade or business produces qualified business income for the 26 U.S.C. 199A deduction
+        (https://www.law.cornell.edu/uscode/text/26/199A). 26 CFR 1.199A-1(b)(14)
+        (https://www.law.cornell.edu/cfr/text/26/1.199A-1): "Trade or business means a trade or business that is a trade
+        or business under section 162 (a section 162 trade or business) other than the trade or business of performing
+        services as an employee. In addition, rental or licensing of tangible or intangible property (rental activity) that
+        does not rise to the level of a section 162 trade or business is nevertheless treated as a trade or business for
+        purposes of section 199A, if the property is rented or licensed to a trade or business conducted by the individual
+        or an RPE which is commonly controlled". Rev. Proc. 2019-38 (https://www.irs.gov/pub/irs-drop/rp-19-38.pdf) gives a
+        safe harbor for a rental real estate enterprise with 250 or more hours of rental services a year.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
     <Fact path="/scheduleENetIncome">
       <Name>Schedule E Part I total income or (loss) (line 26 / line 41 to Schedule 1 line 5)</Name>
       <Description>
@@ -388,6 +407,26 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleETradeOrBusinessQbi">
+      <Name>Knockout: Schedule E rental treated as a trade or business (QBI not computed)</Name>
+      <Description>
+        #185: a trade-or-business rental needs the 26 U.S.C. 199A deduction on Form 1040 (2026) draft line 13b,
+        "Qualified business income deduction from Form 8995 or Form 8995-A" (PDF p. 3). Line 13b
+        (taxCalculations /qualifiedBusinessIncomeDeduction) is not computed yet, so a "yes" is stopped instead of filing
+        line 13b as $0. Cites on /scheduleERentalIsTradeOrBusiness. Complete false when there is no Part I income
+        (/hasScheduleEIncome false) or the answer is "no"; incomplete while a filer with Part I income has not answered,
+        and /scheduleESectionIsComplete requires the answer.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/hasScheduleEIncome" />
+          <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleEEitc">
       <Name>Knockout: Schedule E income with the EITC</Name>
       <Description>
@@ -451,6 +490,9 @@
                 </IsComplete>
                 <IsComplete>
                   <Dependency path="/scheduleEProvidesSubstantialServices" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleERentalIsTradeOrBusiness" />
                 </IsComplete>
               </All>
             </Then>

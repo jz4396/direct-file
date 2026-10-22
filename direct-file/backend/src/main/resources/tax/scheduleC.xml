@@ -14,7 +14,7 @@
     https://www.federalregister.gov/d/2025-19763 (PDF: https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf)
   - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
     https://www.irs.gov/instructions/i1040sse
-  - QBI § 199A: explicitly unsupported in this slice (no silent zero) —
+  - QBI § 199A: not computed yet; any Schedule C business is knocked out (/flowKnockoutScheduleCQbi, no silent zero) —
     https://www.law.cornell.edu/uscode/text/26/199A
 
   Implements gap: docs/tax/GAP-SCHEDULE-C.md (PR #3).
@@ -79,9 +79,10 @@
     <Fact path="/wantsQbiDeduction">
       <Name>Wants qualified business income deduction</Name>
       <Description>
-        Explicit § 199A gate. This vertical slice does NOT compute QBI.
-        If true → knockout (no silent zero). Cite: 26 U.S.C. § 199A —
-        https://www.law.cornell.edu/uscode/text/26/199A
+        Display-only interview answer. 26 U.S.C. 199A(a) (https://www.law.cornell.edu/uscode/text/26/199A):
+        "there shall be allowed as a deduction for any taxable year an amount equal to the lesser of" the combined
+        qualified business income amount or 20 percent of taxable income less net capital gain. The deduction is not an
+        election, so this answer does not gate /flowKnockoutScheduleCQbi (#185).
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -90,17 +91,42 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCQbi">
-      <Name>Knockout: QBI § 199A not supported</Name>
+      <Name>Knockout: Schedule C business income needs the QBI deduction (26 U.S.C. 199A)</Name>
       <Description>
-        Explicit non-support for § 199A in this slice. Blast radius: AGI/credits if QBI were silently zeroed.
+        #185: Schedule C net profit or loss from a trade or business is qualified business income under
+        26 U.S.C. 199A(c)(1) and (c)(3)(A) (https://www.law.cornell.edu/uscode/text/26/199A), and the 199A(a)
+        deduction is not elective. A net loss also matters: 199A(c)(2) carries it to the next year. Form 1040 (2026)
+        draft (Created 8/19/26), PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or Form
+        8995-A". Line 13b (taxCalculations /qualifiedBusinessIncomeDeduction) is not computed yet, so every return
+        with a Schedule C business is stopped whatever /wantsQbiDeduction says, instead of filing line 13b as $0.
+
+        Completeness (#186): when the business list is complete this is true if it has any business and complete
+        false if it is empty. Before the list is written it follows /hadSelfEmploymentIncome: complete false on "no",
+        true on "yes" (fails closed while the list is still being filled in), and incomplete while unanswered.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <All>
-          <Dependency path="/hadSelfEmploymentIncome" />
-          <Dependency path="/wantsQbiDeduction" />
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/hasScheduleCBusinesses" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/hadSelfEmploymentIncome" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

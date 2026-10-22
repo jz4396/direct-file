@@ -17,8 +17,9 @@ info:
     body: This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C.
   /info/income/schedule-c/qbi:
     body: >-
-      The qualified business income deduction (Internal Revenue Code section 199A) isn’t supported yet. If you
-      want to claim it, you can’t use this tool for this return.
+      The qualified business income deduction (Internal Revenue Code section 199A) isn’t supported yet. It
+      applies to business income whether or not you choose to claim it, so this tool can’t file a return with
+      self-employment income yet.
   /info/income/schedule-c/loop-intro:
     body: Add one entry for each business or gig activity. We’ll calculate net profit and self-employment tax.
   /info/income/schedule-c/amounts:
@@ -29,8 +30,8 @@ info:
     alertText:
       body:
         - p: >-
-            This tool doesn’t calculate the qualified business income deduction yet. You’ll need another way to
-            file if you want to claim it.
+            This tool doesn’t calculate the qualified business income deduction yet. It applies to all
+            self-employment, gig, and freelance business income, so you’ll need another way to file this return.
 fields:
   /hadSelfEmploymentIncome:
     boolean:
