@@ -2322,6 +2322,7 @@
         not below 35%). IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule. §21(a)(2)(A): "50 percent— (A) reduced (but not below 35 percent) by 1 percentage
         point for each $2,000 or fraction thereof by which the taxpayer's adjusted gross income for the taxable year
         exceeds $15,000"</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>15000</Dollar>
       </Derived>
@@ -2333,6 +2334,7 @@
         "further reduced (but not below 20 percent) by 1 percentage point for each $2,000 ($4,000 in the case of a
         joint return) or fraction thereof by which the taxpayer's adjusted gross income for the taxable year exceeds
         $75,000 ($150,000 in the case of a joint return)."</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>
@@ -3208,6 +3210,7 @@
     <Fact path="/cdccMaximumExclusionForMFS">
       <Description>Maximum dependent care benefits exclusion, MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."</Description>
 
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>3750</Dollar>
       </Derived>
@@ -3216,6 +3219,7 @@
     <Fact path="/cdccMaximumExclusionForNonMFS">
       <Description>Maximum dependent care benefits exclusion, not MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."</Description>
 
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>7500</Dollar>
       </Derived>
@@ -3746,6 +3750,7 @@
 
     <Fact path="/cdccMaxClaimableExpenseWithOneQP">
       <Name>Maximum Claimable Expense With One Qualifying Person</Name>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>3000</Dollar>
       </Derived>
@@ -3753,6 +3758,7 @@
 
     <Fact path="/cdccMaxClaimableExpenseWithTwoQP">
       <Name>Maximum Claimable Expense With Two or More Qualifying Persons</Name>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>6000</Dollar>
       </Derived>
