@@ -1210,7 +1210,7 @@ describe(`The married path`, () => {
           }
         });
 
-        it(`moves to the IP PIN choice question from ssn federal benefits`, ({ task }) => {
+        it(`moves to the status-change question from ssn federal benefits (#182)`, ({ task }) => {
           for (const maritalStatus of maritalStatusVariations) {
             const { factGraph } = setupFactGraph({
               ...modifiedBaseFilerData,
@@ -1225,6 +1225,29 @@ describe(`The married path`, () => {
             expect(
               givenFacts(factGraph).atPath(
                 `/flow/you-and-your-family/spouse/spouse-mfj-ssn-federal-benefits`,
+                spouseId,
+                task
+              )
+            ).toRouteNextTo(`/flow/you-and-your-family/spouse/spouse-mfj-ssn-status-changed`);
+          }
+        });
+
+        it(`moves to the IP PIN choice question from the status-change question (#182)`, ({ task }) => {
+          for (const maritalStatus of maritalStatusVariations) {
+            const { factGraph } = setupFactGraph({
+              ...modifiedBaseFilerData,
+              ...twoFilers,
+              ...maritalStatus.facts,
+              [`/filers/#${spouseId}/isUsCitizenFullYear`]: createBooleanWrapper(false),
+              [`/filers/#${spouseId}/writableCitizenAtEndOfTaxYear`]: createBooleanWrapper(true),
+              [`/filers/#${spouseId}/tin`]: createTinWrapper({ area: `555`, group: `55`, serial: `5555` }),
+              [`/secondaryFilerSsnEmploymentValidity`]: createEnumWrapper(`notValid`, `/ssnEmploymentValidityOptions`),
+              [`/filers/#${spouseId}/writableHasSSNOnlyForBenefits`]: createBooleanWrapper(false),
+              [`/filers/#${spouseId}/writableSsnStatusChangedForCtc`]: createBooleanWrapper(false),
+            });
+            expect(
+              givenFacts(factGraph).atPath(
+                `/flow/you-and-your-family/spouse/spouse-mfj-ssn-status-changed`,
                 spouseId,
                 task
               )
