@@ -1,5 +1,5 @@
-// Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT) and profile B
-// (Florida only). The fixtures are in goldenProfiles.ts. Every expected figure below was worked by hand from the
+// Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
+// (Florida only) and profile C (PA/FL part-year resident with AMT and NIIT). The fixtures are in goldenProfiles.ts. Every expected figure below was worked by hand from the
 // cited source, line by line.
 //
 // Sources (page = PDF page):
@@ -7,8 +7,8 @@
 //      (SHA-256 e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b)
 //      p. 11 §4.01 Table 3 (unmarried): "Over $12,400 but not over $50,400 $1,240 plus 12% of the excess over
 //      $12,400"; "Over $50,400 but not over $105,700 $5,800 plus 22% of the excess over $50,400"; "Over $201,775 but
-//      not over $256,225 $41,024 plus 32% of the excess over $201,775"; "Over $640,600 $192,979.25 plus 37% of the
-//      excess over $640,600".
+//      not over $256,225 $41,024 plus 32% of the excess over $201,775"; "Over $256,225 but not over $640,600 $58,448
+//      plus 35% of the excess over $256,225"; "Over $640,600 $192,979.25 plus 37% of the excess over $640,600".
 //      p. 10 §4.01 Table 1 (joint): "Over $100,800 but not over $211,400 $11,600 plus 22% of the excess over
 //      $100,800". p. 11 Table 3 (unmarried) and pp. 11-12 Table 4 (married filing separately) both: "Over $105,700
 //      but not over $201,775 $17,966 plus 24% of the excess over $105,700".
@@ -40,6 +40,11 @@
 // [3101] IRC §3101(b), https://www.law.cornell.edu/uscode/text/26/3101: (b)(1) "a tax equal to 1.45 percent of the
 //      wages"; (b)(2) "a tax equal to 0.9 percent of wages ... which are in excess of— ... (C) in any other case,
 //      $200,000."
+// [3102] IRC §3102(f)(1), https://www.law.cornell.edu/uscode/text/26/3102: "In the case of any tax imposed by
+//      section 3101(b)(2), subsection (a) shall only apply to the extent to which the taxpayer receives wages from
+//      the employer in excess of $200,000, and the employer may disregard the amount of wages received by such
+//      taxpayer's spouse." So each W-2's box 6 is 1.45% of its box 5 plus 0.9% of that employer's box 5 over
+//      $200,000, whatever the filing status; Form 8959 Part V credits the 0.9% part (line 24, 1040 line 25c).
 // [1411] IRC §1411, https://www.law.cornell.edu/uscode/text/26/1411: (a)(1) "a tax equal to 3.8 percent of the lesser
 //      of— (A) net investment income for such taxable year, or (B) the excess (if any) of— (i) the modified adjusted
 //      gross income for such taxable year, over (ii) the threshold amount"; (b)(1) "in the case of a taxpayer making a
@@ -66,13 +71,21 @@
 //      p. 21 LINE 11: "Subtract Line 10 from Line 9." LINE 12: "Multiply Line 11 by 3.07 percent (0.0307)."
 //      LINE 13: "Enter your total PA tax withheld from Box 17 of your federal Form(s) W2." p. 23 LINE 24: "Add Lines
 //      13, 18, 21, 22, and 23." p. 24 LINE 29: "Subtract Line 12 (and subtract Lines 25 and 27, if you entered amounts
-//      on these lines) from Line 24, and enter the difference here."
+//      on these lines) from Line 24, and enter the difference here." p. 32 PA Schedule B: PA-40 line 3 is
+//      federal line 3b only without Schedule B adjustments; line 4 is "dividend income for a part-year resident
+//      taxpayer during the period the taxpayer was a nonresident". p. 43: "As a nonresident, you do not pay PA
+//      income tax on ordinary interest, ordinary dividends, and any gain you realize on the sale, exchange, or
+//      disposition of intangible personal property, such as stocks and bonds."
+// [SSA] https://www.ssa.gov/employer/randomizationfaqs.html: "SSN randomization will not assign group number 00 or
+//      serial number 0000. SSNs containing group number 00 or serial number 0000 will continue to be invalid."
 // [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
-//      fixture SSNs are in the 900 area, which SSA never issues; the app reads them as neither an SSN nor (with these
-//      group numbers) an ITIN, so EITC is $0 on every profile. Every profile's AGI is also above $19,540. No profile
-//      has a child, so the child tax credit SSN rule (§24(h)(7)) is not reached and CTC is $0.
+//      fixture SSNs other than profile C's are in the 900 area, which SSA never issues; the app reads them as neither
+//      an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile C uses 444-00-4444
+//      (group 00, never issued [SSA]), which the app reads as an SSN. Every profile's AGI is above $19,540, so EITC is
+//      $0 on every profile. No profile has a child, so the child tax credit SSN rule (§24(h)(7)) is not reached and
+//      CTC is $0.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -96,6 +109,8 @@ import {
   profile5AmtAnd8959,
   profile7PaFullYear,
   profile7PaToFlPartYear,
+  profileCPaFlPartYearAmtNiit,
+  profileCPaFlPartYearWagesOnly,
 } from './goldenProfiles.js';
 
 type Fg = ReturnType<typeof setupFactGraph>[`factGraph`];
@@ -128,18 +143,38 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
       }
     }
   });
-  it(`each allowlisted SSN is one the shared upstream fixtures already use`, () => {
+  it(`each allowlisted SSN has group 00 (never issued by SSA) and is one the shared upstream fixtures already use`, () => {
     const testData = fs.readFileSync(path.resolve(__dirname, `../testData.ts`), `utf8`);
     for (const tin of GOLDEN_SSN_ALLOWLIST) {
       const [area, group, serial] = tin.split(`-`);
+      expect(group, tin).toBe(`00`);
       expect(testData, tin).toContain(`area: \`${area}\`, group: \`${group}\`, serial: \`${serial}\``);
     }
     expect(isGoldenTestTin(`123-45-6789`)).toBe(false);
+    expect(isGoldenTestTin(`111-11-1111`)).toBe(false);
+  });
+  it(`every W-2 box 6 is 1.45% of box 5 plus the employer's 0.9% on box 5 over $200,000 [3102]`, () => {
+    let checked = 0;
+    for (const [name, facts] of Object.entries(goldenProfiles)) {
+      const entries = facts as Record<string, { item?: unknown }>;
+      for (const [p, wrapper] of Object.entries(entries)) {
+        if (!p.endsWith(`/writableMedicareWages`)) continue;
+        const box5 = Number((wrapper.item as string | number).toString());
+        const box6Wrapper = entries[p.replace(`/writableMedicareWages`, `/writableMedicareWithholding`)];
+        expect(box6Wrapper, `${name} ${p}`).toBeDefined();
+        const box6 = Number((box6Wrapper.item as string | number).toString());
+        const expected = Math.round(0.0145 * box5 + 0.009 * Math.max(0, box5 - 200000));
+        expect(box6, `${name} ${p}`).toBe(expected);
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
   });
   it(`the 900-area TINs are neither an SSN nor an ITIN to the app, and no profile gets EITC or CTC`, () => {
     for (const [name, facts] of Object.entries(goldenProfiles)) {
       const g = graph(facts);
-      expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(false);
+      const groupZero = name.startsWith(`profileC`);
+      expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(groupZero);
       expect(get(g, `/primaryFiler/tin/isITIN`).get, name).toBe(false);
       expect(get(g, `/eitcQualified`).get, name).toBe(false);
       expect(get(g, `/earnedIncomeCredit`).get.toString(), name).toBe(`0.00`);
@@ -353,7 +388,7 @@ const pdfIncludeWhen = (form: string) => {
 };
 
 describe(`golden end-to-end scenario (synthetic data): profile A, dividends and NIIT`, () => {
-  // Single Florida resident; W-2 box 1 and box 5 $210,000, box 2 $40,000, box 6 $3,045; 1099-DIV box 1a $20,000,
+  // Single Florida resident; W-2 box 1 and box 5 $210,000, box 2 $40,000, box 6 $3,135 [3102]; 1099-DIV box 1a $20,000,
   // box 1b $15,000.
   // Form 1040: line 1a 210,000; line 3a 15,000; line 3b 20,000; line 9 and line 11 (AGI) 230,000; line 12 standard
   //   deduction 16,100 [RP p. 18]; line 15 taxable income 213,900. Schedule B Part II: dividends over $1,500.
@@ -366,12 +401,12 @@ describe(`golden end-to-end scenario (synthetic data): profile A, dividends and 
   //   $500,000 phaseout threshold [RP p. 17]); line 6 139,900. Part III: 17) 139,900 - 15,000 = 124,900
   //   18) 26% = 32,474 (124,900 <= 244,500 [RP p. 16])  30) 15,000  31) 15% = 2,250  34) 0  38) 34,724
   //   39) 26% x 139,900 = 36,374  40) 34,724 = line 7 = line 9; line 10 regular tax 42,584; line 11 AMT 0.
-  // Form 8959 [3101]: line 1 210,000; threshold 200,000; line 6 10,000; line 7 0.9% = 90. Part V: line 19 3,045;
-  //   line 21 1.45% x 210,000 = 3,045; line 22 0; line 24 0.
+  // Form 8959 [3101]: line 1 210,000; threshold 200,000; line 6 10,000; line 7 0.9% = 90. Part V: line 19 3,135;
+  //   line 21 1.45% x 210,000 = 3,045; line 22 90; line 24 90 (1040 line 25c) [3102].
   // Form 8960 [1411]: line 2 dividends 20,000 = line 8 = line 12; line 13 MAGI 230,000; line 14 200,000; line 15
   //   30,000; line 16 smaller of line 12 or 15 = 20,000; line 17 3.8% = 760 (Schedule 2 line 12).
   // Form 1040: Schedule 2 line 21 760 + 90 = 850; line 24 total tax 42,584 + 850 = 43,434; line 33 payments
-  //   40,000; amount owed 3,434.
+  //   40,000 + 90 = 40,090; amount owed 3,344.
   const g = graph(profileADividendsNiit);
   it(`Form 1040 income, deduction and line 16 tax`, () => {
     expectDollars(g, {
@@ -407,10 +442,10 @@ describe(`golden end-to-end scenario (synthetic data): profile A, dividends and 
       '/form8959Line1': `210000.00`,
       '/form8959Line6': `10000.00`,
       '/form8959Line7': `90.00`,
-      '/form8959Line19': `3045.00`,
+      '/form8959Line19': `3135.00`,
       '/form8959Line21': `3045.00`,
-      '/form8959Line22': `0.00`,
-      '/form8959Line24': `0.00`,
+      '/form8959Line22': `90.00`,
+      '/form8959Line24': `90.00`,
     });
     expect(get(g, `/requiresForm8959`).get).toBe(true);
   });
@@ -432,8 +467,9 @@ describe(`golden end-to-end scenario (synthetic data): profile A, dividends and 
     expectDollars(g, {
       '/line21OfSchedule2': `850.00`,
       '/totalTax': `43434.00`,
-      '/totalPayments': `40000.00`,
-      '/balanceDue': `3434.00`,
+      '/otherFormWithholding': `90.00`,
+      '/totalPayments': `40090.00`,
+      '/balanceDue': `3344.00`,
     });
     expect(get(g, `/requiresSchedule2`).get).toBe(true);
   });
@@ -447,7 +483,8 @@ describe(`golden end-to-end scenario (synthetic data): profile A, dividends and 
     //   [RP p. 13]  9) 0  13) 613,700  17) 15,000  18) 2,250  22) tax on 182,800 [RP p. 10]: 11,600 + 22% x 82,000
     //   = 29,640  23) 31,890  24) tax on 197,800: 11,600 + 22% x 97,000 = 32,940  25) 31,890.
     // Form 8960: line 13 230,000, line 14 250,000 [1411 (b)(1)]: line 15 0, line 17 0. Form 8959: threshold
-    //   $250,000 on a joint return [3101 (b)(2)(A)], line 7 0. Total tax 31,890; payments 40,000; refund 8,110.
+    //   $250,000 on a joint return [3101 (b)(2)(A)], line 7 0, but the employer withheld 0.9% on its wages over
+    //   $200,000 [3102] whatever the filing status: line 24 90. Total tax 31,890; payments 40,090; refund 8,200.
     const m = graph(profileADividendsNiitMfj);
     expectDollars(m, {
       '/standardOrItemizedDeductions': `32200.00`,
@@ -458,8 +495,10 @@ describe(`golden end-to-end scenario (synthetic data): profile A, dividends and 
       '/form8960Line15': `0.00`,
       '/form8960Line17': `0.00`,
       '/form8959Line7': `0.00`,
+      '/form8959Line24': `90.00`,
       '/totalTax': `31890.00`,
-      '/overpayment': `8110.00`,
+      '/totalPayments': `40090.00`,
+      '/overpayment': `8200.00`,
     });
     expect(get(m, `/requiresForm8960`).get).toBe(false);
     expectNotStopped(m);
@@ -562,5 +601,172 @@ describe(`golden end-to-end scenario (synthetic data): profile B, Florida only`,
     expect(get(n, `/flowKnockoutFloridaStateWithholding`).get).toBe(true);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutFloridaStateWithholding`);
     expect(get(n, `/flowIsKnockedOut`).get).toBe(true);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile C, FL to PA part-year resident with AMT and NIIT`, () => {
+  // Single; moved from Florida to Pennsylvania on July 1, 2026; SSN 444-00-4444 (group 00 [SSA]).
+  // W-2 #1 (FL job, before the move): box 1 and box 5 $120,000, box 2 $25,000, box 6 $1,740 (1.45% only [3102]),
+  //   no box 16/17, $0 earned while a PA resident.
+  // W-2 #2 (PA job, after the move): box 1, box 5 and box 16 $230,000, box 2 $55,000, box 6 $3,605
+  //   (3,335 + 0.9% x 30,000 = 270 [3102]), box 17 $7,100.
+  // Form 1099-DIV box 1a = box 1b $900,000.
+  // Form 1040: line 1a 350,000; line 3a 900,000; line 3b 900,000; line 9 and line 11 (AGI) 1,250,000; line 12
+  //   standard deduction 16,100 [RP p. 18]; line 15 taxable income 1,233,900.
+  // Line 16, QDCG worksheet [GI p. 38]: 1) 1,233,900  2) 900,000  3) 0  4) 900,000  5) 333,900  6) 49,450 [RP p. 13]
+  //   7) 49,450  8) 49,450  9) 0  10) 900,000  11) 0  12) 900,000  13) 545,500 [RP p. 13]  14) 545,500  15) 333,900
+  //   16) 211,600  17) 211,600  18) 15% = 31,740  19) 211,600  20) 688,400  21) 20% = 137,680
+  //   22) tax on 333,900 [RP p. 11]: 58,448 + 35% x 77,675 = 85,634.25  23) 255,054.25
+  //   24) tax on 1,233,900: 192,979.25 + 37% x 593,300 = 412,500.25  25) smaller = 255,054.25, 255,054 in whole
+  //   dollars.
+  // Form 6251 [6251]: line 2a 16,100 added back; line 4 AMTI 1,250,000; line 5: over the $680,200 complete phaseout
+  //   [RP p. 17], exemption 0; line 6 1,250,000. Part III: 12) 1,250,000  13) 900,000  17) 350,000
+  //   18) 28% x 350,000 - 4,890 = 93,110 [55]  19) 49,450  20) 333,900  21) 0  22) 900,000  23) 0  24) 900,000
+  //   25) 545,500  28) 333,900  29) 211,600  30) 211,600  31) 15% = 31,740  32) 211,600  33) 688,400
+  //   34) 20% = 137,680  38) 93,110 + 31,740 + 137,680 = 262,530  39) 28% x 1,250,000 - 4,890 = 345,110
+  //   40) 262,530 = line 7 = line 9; line 10 regular tax 255,054; line 11 AMT 262,530 - 255,054 = 7,476.
+  // Form 8959 [3101]: line 1 Medicare wages 120,000 + 230,000 = 350,000; threshold 200,000; line 6 150,000; line 7
+  //   0.9% = 1,350. Part V: line 19 box 6 1,740 + 3,605 = 5,345; line 20 350,000; line 21 1.45% = 5,075; line 22
+  //   270; line 24 270 (1040 line 25c). Each employer withholds the 0.9% only on what it paid over $200,000 [3102].
+  // Form 8960 [1411]: line 2 dividends 900,000 = line 8 = line 12; line 13 MAGI 1,250,000; line 14 200,000;
+  //   line 15 1,050,000; line 16 900,000; line 17 3.8% = 34,200.
+  // Form 1040: line 17 7,476; Schedule 2 line 21 34,200 + 1,350 = 35,550; line 24 total tax
+  //   255,054 + 7,476 + 35,550 = 298,080; line 33 payments 25,000 + 55,000 + 270 = 80,270; amount owed 217,810.
+  // PA-40 [PA p. 6, p. 32, p. 43]: a part-year resident is taxed on dividends received while a PA resident only;
+  //   1099-DIVs carry no dates and PA Schedule B (line 4, the nonresident-period dividends) isn't supported, so the
+  //   return stops (/flowKnockoutPaDividends, /flowKnockoutPaScheduleB) instead of filing a PA-40 with line 3 left
+  //   out or overstated. PA-40 line 1a is still the PA W-2's box 16, 230,000 (the FL wages were earned before the move).
+  const g = graph(profileCPaFlPartYearAmtNiit);
+  it(`Form 1040 income, deduction and line 16 tax`, () => {
+    expectDollars(g, {
+      '/wages': `350000.00`,
+      '/ordinaryDividends': `900000.00`,
+      '/qualifiedDividends': `900000.00`,
+      '/totalIncome': `1250000.00`,
+      '/agi': `1250000.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/taxableIncome': `1233900.00`,
+      '/tentativeTaxFromTaxableIncome': `255054.00`,
+    });
+  });
+  it(`Form 6251 AMT`, () => {
+    expectDollars(g, {
+      '/form6251Line2a': `16100.00`,
+      '/form6251Line4': `1250000.00`,
+      '/form6251Line5': `0.00`,
+      '/form6251Line6': `1250000.00`,
+      '/form6251Line17': `350000.00`,
+      '/form6251Line18': `93110.00`,
+      '/form6251Line20': `333900.00`,
+      '/form6251Line21': `0.00`,
+      '/form6251Line31': `31740.00`,
+      '/form6251Line34': `137680.00`,
+      '/form6251Line38': `262530.00`,
+      '/form6251Line39': `345110.00`,
+      '/form6251Line40': `262530.00`,
+      '/form6251Line7': `262530.00`,
+      '/form6251Line9': `262530.00`,
+      '/form6251Line10': `255054.00`,
+      '/amt': `7476.00`,
+      '/schedule2Line2': `7476.00`,
+    });
+    expect(get(g, `/form6251Required`).get).toBe(true);
+  });
+  it(`Form 8959 Additional Medicare Tax, with the 0.9% withheld only by the employer paying over $200,000`, () => {
+    expectDollars(g, {
+      '/form8959Line1': `350000.00`,
+      '/form8959Line6': `150000.00`,
+      '/form8959Line7': `1350.00`,
+      '/line17bAdditionalMedicareTax': `1350.00`,
+      '/form8959Line19': `5345.00`,
+      '/form8959Line21': `5075.00`,
+      '/form8959Line22': `270.00`,
+      '/form8959Line24': `270.00`,
+    });
+    expect(get(g, `/requiresForm8959`).get).toBe(true);
+  });
+  it(`Form 8960 net investment income tax`, () => {
+    expectDollars(g, {
+      '/form8960Line2': `900000.00`,
+      '/form8960Line8': `900000.00`,
+      '/form8960Line12': `900000.00`,
+      '/form8960Line13': `1250000.00`,
+      '/form8960Line14': `200000.00`,
+      '/form8960Line15': `1050000.00`,
+      '/form8960Line16': `900000.00`,
+      '/form8960Line17': `34200.00`,
+      '/schedule2Line6NetInvestmentIncomeTax': `34200.00`,
+    });
+    expect(get(g, `/requiresForm8960`).get).toBe(true);
+  });
+  it(`Form 1040 total tax, payments and amount owed`, () => {
+    expectDollars(g, {
+      '/totalAdditionalTaxesOwed': `7476.00`,
+      '/line21OfSchedule2': `35550.00`,
+      '/totalTax': `298080.00`,
+      '/otherFormWithholding': `270.00`,
+      '/totalWithholding': `80270.00`,
+      '/totalPayments': `80270.00`,
+      '/balanceDue': `217810.00`,
+    });
+    expect(get(g, `/requiresSchedule2`).get).toBe(true);
+  });
+  it(`PA part-year dividends stop the return (no silent zero on PA-40 line 3)`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(true);
+    expect(get(g, `/paResidencyStatusPartYear`).get).toBe(true);
+    expectDollars(g, { '/paLine1a': `230000.00` });
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    for (const p of [`/flowKnockoutPaDividends`, `/flowKnockoutPaScheduleB`, `/flowKnockoutStateReturn`]) {
+      expect(get(g, p).complete, p).toBe(true);
+      expect(get(g, p).get, p).toBe(true);
+    }
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaDividends`);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`clean row: the same move and wages without the dividends files, with Form 8959 and no AMT or NIIT`, () => {
+    // Form 1040: wages 350,000 = AGI; standard deduction 16,100 [RP p. 18]; taxable income 333,900; line 16 tax on
+    //   333,900 [RP p. 11]: 58,448 + 35% x 77,675 = 85,634.25, 85,634 in whole dollars ([GI p. 36]: $100,000 or
+    //   more, no Tax Table).
+    // Form 6251 [6251]: line 4 AMTI 350,000; line 5 exemption 90,100 [RP p. 16] (under the $500,000 threshold
+    //   [RP p. 17]); line 6 259,900; line 7 28% x 259,900 - 4,890 = 67,882 (over 244,500 [RP p. 16]); line 10
+    //   85,634; AMT 0.
+    // Form 8959: as above, line 7 1,350 and line 24 270. Form 8960: NII 0, line 17 0.
+    // Total tax 85,634 + 1,350 = 86,984; payments 80,270; amount owed 6,714.
+    // PA-40 [PA]: line 1a = the PA W-2's box 16, 230,000 (the FL W-2 has $0 earned while a PA resident [PA p. 6]);
+    //   line 9 and line 11 230,000; line 12 3.07% = 7,061.00; line 13 and line 24 7,100; line 29 overpayment 39.00.
+    const w = graph(profileCPaFlPartYearWagesOnly);
+    expectDollars(w, {
+      '/wages': `350000.00`,
+      '/agi': `350000.00`,
+      '/taxableIncome': `333900.00`,
+      '/tentativeTaxFromTaxableIncome': `85634.00`,
+      '/form6251Line4': `350000.00`,
+      '/form6251Line5': `90100.00`,
+      '/form6251Line6': `259900.00`,
+      '/form6251Line7': `67882.00`,
+      '/amt': `0.00`,
+      '/form8959Line7': `1350.00`,
+      '/form8959Line24': `270.00`,
+      '/form8960Line17': `0.00`,
+      '/totalTax': `86984.00`,
+      '/totalPayments': `80270.00`,
+      '/balanceDue': `6714.00`,
+      '/paLine1a': `230000.00`,
+      '/paLine9': `230000.00`,
+      '/paLine11': `230000.00`,
+      '/paLine12': `7061.00`,
+      '/paLine13': `7100.00`,
+      '/paLine24': `7100.00`,
+      '/paLine29': `39.00`,
+      '/stateRefund': `39.00`,
+    });
+    expect(get(w, `/form6251Required`).get).toBe(false);
+    expect(get(w, `/stateReturnIsPaPartYear`).get).toBe(true);
+    expect(get(w, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(w, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(w, `/flowKnockoutStateReturn`).get).toBe(false);
+    expectNotStopped(w);
   });
 });
