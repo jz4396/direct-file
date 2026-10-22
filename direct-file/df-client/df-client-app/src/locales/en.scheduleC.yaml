@@ -7,19 +7,29 @@ subsubcategories:
 headings:
   /heading/income/schedule-c: Self-employment income
   /heading/income/schedule-c/intro: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
-  /heading/income/schedule-c/qbi: Do you want to claim the qualified business income deduction?
+  /heading/income/schedule-c/qbi-carryforward: Do you have a qualified business loss carryforward from a prior year?
+  /heading/income/schedule-c/qbi-cooperative: Are you a patron of an agricultural or horticultural cooperative?
+  /heading/income/schedule-c/material-participation: Did you materially participate in this business?
   /heading/income/schedule-c/loop-intro: Add each business or gig activity
   /heading/income/schedule-c/business-basics: Tell us about this business
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
-  /heading/knockout/schedule-c-qbi: This tool doesn’t yet support the qualified business income deduction
+  /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
 info:
   /info/income/schedule-c/intro:
     body: This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C.
-  /info/income/schedule-c/qbi:
+  /info/income/schedule-c/qbi-carryforward:
     body: >-
-      The qualified business income deduction (Internal Revenue Code section 199A) isn’t supported yet. It
-      applies to business income whether or not you choose to claim it, so this tool can’t file a return with
-      self-employment income yet.
+      We use your business income to figure the qualified business income deduction (Form 8995). Answer yes if your
+      prior-year Form 8995 or 8995-A showed a qualified business loss carryforward or a qualified REIT dividend and
+      publicly traded partnership loss carryforward.
+  /info/income/schedule-c/qbi-cooperative:
+    body: >-
+      Answer yes if you sell products to, or buy supplies through, a farm or garden cooperative and get patronage
+      dividends or other qualified payments from it.
+  /info/income/schedule-c/material-participation:
+    body: >-
+      You materially participate if you work in the business on a regular, continuous, and substantial basis. For
+      example, you worked more than 500 hours in it this year, or you did almost all the work in it.
   /info/income/schedule-c/loop-intro:
     body: Add one entry for each business or gig activity. We’ll calculate net profit and self-employment tax.
   /info/income/schedule-c/amounts:
@@ -30,17 +40,27 @@ info:
     alertText:
       body:
         - p: >-
-            This tool doesn’t calculate the qualified business income deduction yet. It applies to all
-            self-employment, gig, and freelance business income, so you’ll need another way to file this return.
+            This tool figures the qualified business income deduction only with the simplified Form 8995. It can’t
+            handle a prior-year loss carryforward, cooperative payments, taxable income above the Form 8995 limit, or
+            some businesses you materially participate in and some you don’t. You’ll need another way to file this
+            return.
 fields:
   /hadSelfEmploymentIncome:
     boolean:
       "yes": Yes, I had self-employment, gig, or freelance income
       "no": No, I didn’t have self-employment income
-  /wantsQbiDeduction:
+  /qbiHasPriorYearLossCarryforward:
     boolean:
-      "yes": Yes, I want to claim the qualified business income deduction
-      "no": No, I don’t need the qualified business income deduction
+      "yes": Yes, I have a loss carryforward
+      "no": "No"
+  /qbiIsCooperativePatron:
+    boolean:
+      "yes": Yes, I’m a cooperative patron
+      "no": "No"
+  /scheduleCBusinesses/*/materiallyParticipates:
+    boolean:
+      "yes": Yes, I materially participated
+      "no": No, I didn’t materially participate
   /scheduleCBusinesses:
     controls:
       add: Add a business
@@ -79,7 +99,9 @@ checklist:
 dataviews:
   /flow/income/schedule-c:
     /hadSelfEmploymentIncome: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
-    /wantsQbiDeduction: Do you want to claim the qualified business income deduction?
+    /qbiHasPriorYearLossCarryforward: Do you have a qualified business loss carryforward from a prior year?
+    /qbiIsCooperativePatron: Are you a patron of an agricultural or horticultural cooperative?
+    /scheduleCBusinesses/*/materiallyParticipates: Did you materially participate in this business?
     /scheduleCBusinesses/*/filer/fullName: Whose business is it?
     /scheduleCBusinesses/*/businessName: Business or gig activity name
     /scheduleCBusinesses/*/writableGrossReceipts: Gross receipts or sales

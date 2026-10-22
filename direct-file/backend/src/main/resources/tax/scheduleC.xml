@@ -14,7 +14,7 @@
     https://www.federalregister.gov/d/2025-19763 (PDF: https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf)
   - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
     https://www.irs.gov/instructions/i1040sse
-  - QBI § 199A: not computed yet; any Schedule C business is knocked out (/flowKnockoutScheduleCQbi, no silent zero) —
+  - QBI § 199A: computed on Form 8995 (form8995.xml, #87); cases it can't compute are knocked out —
     https://www.law.cornell.edu/uscode/text/26/199A
 
   Implements gap: docs/tax/GAP-SCHEDULE-C.md (PR #3).
@@ -77,56 +77,35 @@
     </Fact>
 
     <Fact path="/wantsQbiDeduction">
-      <Name>Wants qualified business income deduction</Name>
+      <Name>Wants qualified business income deduction (no longer asked)</Name>
       <Description>
-        Display-only interview answer. 26 U.S.C. 199A(a) (https://www.law.cornell.edu/uscode/text/26/199A):
-        "there shall be allowed as a deduction for any taxable year an amount equal to the lesser of" the combined
-        qualified business income amount or 20 percent of taxable income less net capital gain. The deduction is not an
-        election, so this answer does not gate /flowKnockoutScheduleCQbi (#185).
+        Kept so saved returns still load. The 26 U.S.C. 199A(a) deduction is not elective
+        (https://www.law.cornell.edu/uscode/text/26/199A), and Form 8995 (form8995.xml, #87) now computes it, so this
+        answer is not used anywhere.
       </Description>
-      <Export downstreamFacts="true" />
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCQbi">
-      <Name>Knockout: Schedule C business income needs the QBI deduction (26 U.S.C. 199A)</Name>
+      <Name>Knockout: Schedule C QBI deduction case Form 8995 here can't compute</Name>
       <Description>
-        #185: Schedule C net profit or loss from a trade or business is qualified business income under
-        26 U.S.C. 199A(c)(1) and (c)(3)(A) (https://www.law.cornell.edu/uscode/text/26/199A), and the 199A(a)
-        deduction is not elective. A net loss also matters: 199A(c)(2) carries it to the next year. Form 1040 (2026)
-        draft (Created 8/19/26), PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or Form
-        8995-A". Line 13b (taxCalculations /qualifiedBusinessIncomeDeduction) is not computed yet, so every return
-        with a Schedule C business is stopped whatever /wantsQbiDeduction says, instead of filing line 13b as $0.
-
-        Completeness (#186): when the business list is complete this is true if it has any business and complete
-        false if it is empty. Before the list is written it follows /hadSelfEmploymentIncome: complete false on "no",
-        true on "yes" (fails closed while the list is still being filled in), and incomplete while unanswered.
+        #87: Schedule C qualified business income is computed on Form 8995 (form8995.xml). This is true when any Form 8995
+        stop applies: a prior-year loss carryforward, a cooperative patron, active and non-active businesses together,
+        or taxable income before the deduction above the threshold (Form 8995-A). Each part is its own
+        BlockSubmissionOnTrue fact in /flowIsKnockedOut and is complete false without Schedule C income (#186). Used for
+        the Schedule C knockout screen.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <Switch>
-          <Case>
-            <When>
-              <IsComplete>
-                <Dependency path="/scheduleCBusinesses" />
-              </IsComplete>
-            </When>
-            <Then>
-              <Dependency path="/hasScheduleCBusinesses" />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <True />
-            </When>
-            <Then>
-              <Dependency path="/hadSelfEmploymentIncome" />
-            </Then>
-          </Case>
-        </Switch>
+        <Any>
+          <Dependency module="form8995" path="/flowKnockoutQbiPriorYearCarryforward" />
+          <Dependency module="form8995" path="/flowKnockoutQbiCooperativePatron" />
+          <Dependency module="form8995" path="/flowKnockoutQbiMixedParticipation" />
+          <Dependency module="form8995" path="/flowKnockoutQbiAboveThreshold" />
+        </Any>
       </Derived>
     </Fact>
 
@@ -348,7 +327,7 @@
 
     <Fact path="/scheduleCBusinesses/*/isComplete">
       <Name>Schedule C business complete</Name>
-      <Description>Minimum fields for MVP: name, gross receipts, expenses.</Description>
+      <Description>Minimum fields for MVP: name, gross receipts, expenses, and (#87) material participation for Form 8995 line 16.</Description>
       <Derived>
         <All>
           <IsComplete>
@@ -360,7 +339,53 @@
           <IsComplete>
             <Dependency path="../writableTotalExpenses" />
           </IsComplete>
+          <IsComplete>
+            <Dependency path="../materiallyParticipates" />
+          </IsComplete>
         </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/materiallyParticipates">
+      <Name>Filer materially participates in this business</Name>
+      <Description>
+        26 U.S.C. 199A(i)(2)(B): "The term 'active qualified trade or business' means ... any qualified trade or business
+        of the taxpayer in which the taxpayer materially participates (within the meaning of section 469(h))."
+        26 U.S.C. 469(h)(1) (https://www.law.cornell.edu/uscode/text/26/469): material participation means involvement
+        in the operations of the activity "on a basis which is (A) regular, (B) continuous, and (C) substantial."
+        Used for Form 8995 line 16 (minimum deduction).
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/doesNotMateriallyParticipate">
+      <Name>Filer does not materially participate in this business</Name>
+      <Derived>
+        <Not>
+          <Dependency path="../materiallyParticipates" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCActiveBusinesses">
+      <Name>Schedule C businesses with material participation</Name>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Filter path="/scheduleCBusinesses">
+          <Dependency path="materiallyParticipates" />
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCNonActiveBusinesses">
+      <Name>Schedule C businesses without material participation</Name>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Filter path="/scheduleCBusinesses">
+          <Dependency path="doesNotMateriallyParticipate" />
+        </Filter>
       </Derived>
     </Fact>
 

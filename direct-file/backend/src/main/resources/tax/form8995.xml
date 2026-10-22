@@ -1,0 +1,614 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<!--
+  Form 8995, Qualified Business Income Deduction Simplified Computation, TY2026 (filed in 2027). Issue #87.
+
+  Sources (PDF SHA-256 first 16 hex in parentheses):
+  - Form 8995 (2026) draft, Created 5/1/26, https://www.irs.gov/pub/irs-dft/f8995--dft.pdf (d698390e2990de21), PDF p. 2
+    (p. 1 is the draft cover sheet). Lines 1-17 are quoted on each fact below.
+  - Instructions for Form 8995 (2025), https://www.irs.gov/pub/irs-pdf/i8995.pdf (875843baead68f6f).
+  - 26 U.S.C. 199A, https://www.law.cornell.edu/uscode/text/26/199A
+  - Rev. Proc. 2025-32, https://www.irs.gov/pub/irs-drop/rp-25-32.pdf (e9ada115fb43a4af): §2.12 (PDF p. 7) and
+    §3.26 (PDF pp. 21-22).
+  - Form 1040 (2026) draft, Created 8/19/26, https://www.irs.gov/pub/irs-dft/f1040--dft.pdf (e044e765ace334c7), PDF p. 3,
+    line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A".
+
+  Supported slice: qualified business income from the primary filer's Schedule C businesses (a secondary-filer business
+  is already a stop, scheduleC /flowKnockoutScheduleCSpouseBusiness), taxable income before the deduction at or below
+  the threshold, no prior-year loss carryforward, not a cooperative patron. Every other source of 199A income stays a
+  stop with BlockSubmissionOnTrue: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends), PTP and K-1 income
+  (scheduleE /flowKnockoutScheduleEPartII), Schedule E trade-or-business rentals
+  (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). So lines 6-9 are $0 here.
+
+  Each line is rounded to whole dollars as it is computed (26 U.S.C. 6102(a); #202).
+-->
+<FactDictionaryModule>
+  <Facts>
+
+    <!-- ========== Interview ========== -->
+
+    <Fact path="/qbiHasPriorYearLossCarryforward">
+      <Name>Has a prior-year qualified business loss or REIT/PTP loss carryforward</Name>
+      <Description>
+        Form 8995 (2026) draft line 3: "Qualified business net (loss) carryforward from the prior year"; line 7: "Qualified
+        REIT dividends and qualified PTP (loss) carryforward from the prior year". 26 U.S.C. 199A(c)(2): a negative
+        amount "shall be treated as a loss from a qualified trade or business in the succeeding taxable year".
+        Carryforwards are not modeled, so "yes" is a stop (/flowKnockoutQbiPriorYearCarryforward).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/qbiIsCooperativePatron">
+      <Name>Is a patron of an agricultural or horticultural cooperative</Name>
+      <Description>
+        Form 8995 (2026) draft header: "Use this form if your taxable income, before your qualified business income
+        deduction, is at or below $201,750 ($201,775 if married filing separately; $403,500 if married filing jointly),
+        and you aren't a patron of an agricultural or horticultural cooperative." A patron files Form 8995-A, which is not
+        supported (/flowKnockoutQbiCooperativePatron). 26 U.S.C. 199A(b)(7), (g).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8995HasQbi">
+      <Name>Return has Schedule C qualified business income or loss</Name>
+      <Description>
+        Schedule C net profit or loss is qualified business income or loss: 26 U.S.C. 199A(c)(1), (c)(3). Follows
+        scheduleC /scheduleCNetProfitOrLoss for an unset business list: complete false when the self-employment question
+        is unanswered or "no", true on "yes" (the lines then stay incomplete until the list is filled in).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <!-- ========== Parameters ========== -->
+
+    <Fact path="/qbiThresholdAmount">
+      <Name>Section 199A threshold amount (Form 8995 limit)</Name>
+      <Description>
+        Rev. Proc. 2025-32 §3.26, PDF pp. 21-22: "For taxable years beginning in 2026, the threshold amounts under
+        § 199A(e)(2) ... are: Married Individuals Filing Joint Returns $403,500 ... Married Individuals Filing Separate
+        Returns $201,775 ... All Other Returns $201,750". Form 8995 (2026) draft header: "at or below $201,750
+        ($201,775 if married filing separately; $403,500 if married filing jointly)". Above it, Form 8995-A applies.
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dollar>403500</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+            </When>
+            <Then>
+              <Dollar>201775</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>201750</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/qbiMinimumDeductionAmount">
+      <Name>Section 199A(i) minimum deduction</Name>
+      <Description>
+        26 U.S.C. 199A(i)(1): the deduction "shall be equal to the greater of— (A) the amount of such deduction determined
+        without regard to this subsection, or (B) $400." Rev. Proc. 2025-32 §2.12, PDF p. 7: "Section 70105 of the OBBBA
+        amended § 199A(i) to add a minimum deduction of $400 ... The $400 and $1,000 amounts in § 199A(i) will be adjusted
+        for inflation for taxable years beginning after 2026."
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>400</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/qbiMinimumActiveQbiAmount">
+      <Name>Section 199A(i) active QBI floor for the minimum deduction</Name>
+      <Description>
+        26 U.S.C. 199A(i)(2)(A): "a taxpayer whose aggregate qualified business income with respect to all active
+        qualified trades or businesses of the taxpayer for such taxable year is at least $1,000." Rev. Proc. 2025-32
+        §2.12, PDF p. 7 (not indexed for 2026).
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>1000</Dollar>
+      </Derived>
+    </Fact>
+
+    <!-- ========== Form 8995 lines ========== -->
+
+    <Fact path="/form8995Line2">
+      <Name>Form 8995 line 2</Name>
+      <Description>
+        Line 2: "Total qualified business income or (loss). Combine lines 1i through 1v, column (c)." Each Schedule C
+        business's QBI is its net profit or loss reduced by the deductible part of self-employment tax: Instructions for
+        Form 8995 (2025), PDF p. 2: "To figure the total amount of QBI, you must consider all items that are attributable
+        to the trade or business. This includes, but isn't limited to, ... deductible part of self-employment tax,
+        self-employment health insurance deduction, and contributions to qualified retirement plans." Treas. Reg.
+        1.199A-3(b)(1)(vi). The total is scheduleC /scheduleCNetProfitOrLoss minus scheduleSE
+        /deductibleSelfEmploymentTax (Schedule 1 line 15). Schedule 1 lines 16 and 17 are not part of this return.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/form8995HasQbi" />
+            </When>
+            <Then>
+              <Round>
+                <Subtract>
+                  <Minuend>
+                    <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                  </Subtrahends>
+                </Subtract>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line3">
+      <Name>Form 8995 line 3</Name>
+      <Description>Line 3: "Qualified business net (loss) carryforward from the prior year". $0: any carryforward is a stop (/flowKnockoutQbiPriorYearCarryforward).</Description>
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line4">
+      <Name>Form 8995 line 4</Name>
+      <Description>Line 4: "Total qualified business income. Combine lines 2 and 3. If zero or less, enter -0-".</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Add>
+            <Dependency path="/form8995Line2" />
+            <Dependency path="/form8995Line3" />
+          </Add>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line5">
+      <Name>Form 8995 line 5</Name>
+      <Description>Line 5: "Qualified business income component. Multiply line 4 by 20% (0.20)". 26 U.S.C. 199A(b)(2)(A): "20 percent of the taxpayer's qualified business income".</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Rational>20/100</Rational>
+            <Dependency path="/form8995Line4" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line6">
+      <Name>Form 8995 line 6</Name>
+      <Description>Line 6: "Qualified REIT dividends and publicly traded partnership (PTP) income or (loss)". $0: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends) and PTP income (scheduleE /flowKnockoutScheduleEPartII) are stops.</Description>
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line7">
+      <Name>Form 8995 line 7</Name>
+      <Description>Line 7: "Qualified REIT dividends and qualified PTP (loss) carryforward from the prior year". $0: any carryforward is a stop (/flowKnockoutQbiPriorYearCarryforward).</Description>
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line8">
+      <Name>Form 8995 line 8</Name>
+      <Description>Line 8: "Total qualified REIT dividends and PTP income. Combine lines 6 and 7. If zero or less, enter -0-".</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Add>
+            <Dependency path="/form8995Line6" />
+            <Dependency path="/form8995Line7" />
+          </Add>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line9">
+      <Name>Form 8995 line 9</Name>
+      <Description>Line 9: "REIT and PTP component. Multiply line 8 by 20% (0.20)". 26 U.S.C. 199A(b)(1)(B).</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Rational>20/100</Rational>
+            <Dependency path="/form8995Line8" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line10">
+      <Name>Form 8995 line 10</Name>
+      <Description>Line 10: "Qualified business income deduction before the income limitation. Add lines 5 and 9".</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/form8995Line5" />
+          <Dependency path="/form8995Line9" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line11">
+      <Name>Form 8995 line 11</Name>
+      <Description>
+        Line 11: "Taxable income before qualified business income deduction". Instructions for Form 8995 (2025), PDF p. 4,
+        Line 11: "Form 1040 or 1040-SR filers: Form 1040 or 1040-SR, line 11a, minus lines 12e and 13b." On the 2026 draft
+        Form 1040 that is AGI minus every line 14 deduction except 13b: lines 12e (standard or itemized), 12f (charitable,
+        non-itemizer) and 13a (Schedule 1-A line 44). 26 U.S.C. 199A(e)(1): taxable income is "computed ... without regard
+        to any deduction allowable under this section". Not below zero, like Form 1040 line 15.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency module="taxCalculations" path="/agi" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency module="taxCalculations" path="/standardOrItemizedDeductions" />
+              <Dependency module="charitableNonItemizer" path="/nonItemizerCharitableDeduction" />
+              <Dependency module="schedule1A" path="/schedule1ALine44" />
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line12">
+      <Name>Form 8995 line 12</Name>
+      <Description>
+        Line 12: "Enter your net capital gain, if any, increased by any qualified dividends." Instructions for Form 8995
+        (2025), PDF p. 4, Line 12: "Form 1040, 1040-SR, or 1040-NR, line 3a, plus your net capital gain. If you're not
+        required to file Schedule D (Form 1040), your net capital gain is the amount reported on Form 1040, 1040-SR, or
+        1040-NR, line 7a. If you file Schedule D (Form 1040), your net capital gain is the smaller of Schedule D (Form 1040),
+        line 15 or 16, unless line 15 or 16 is zero or less, in which case nothing is added to the qualified dividends."
+        That is the Qualified Dividends and Capital Gain Tax Worksheet line 4 (scheduleD3 /qdcgLine4: line 3a plus the same
+        Schedule D / line 7a amount). 26 U.S.C. 199A(a)(2)(B) and 1(h).
+      </Description>
+      <Derived>
+        <Dependency module="scheduleD3" path="/qdcgLine4" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line13">
+      <Name>Form 8995 line 13</Name>
+      <Description>Line 13: "Subtract line 12 from line 11. If zero or less, enter -0-".</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/form8995Line11" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/form8995Line12" />
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line14">
+      <Name>Form 8995 line 14</Name>
+      <Description>Line 14: "Income limitation. Multiply line 13 by 20% (0.20)". 26 U.S.C. 199A(a)(2): "an amount equal to 20 percent of the excess (if any) of— (A) the taxable income of the taxpayer for the taxable year, over (B) the net capital gain (as defined in section 1(h))".</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Rational>20/100</Rational>
+            <Dependency path="/form8995Line13" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line15">
+      <Name>Form 8995 line 15</Name>
+      <Description>Line 15: "Qualified business income deduction before the minimum deduction for active qualified business income. Enter the smaller of line 10 or line 14". 26 U.S.C. 199A(a): "the lesser of".</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/form8995Line10" />
+          <Dependency path="/form8995Line14" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ActiveQbi">
+      <Name>Aggregate QBI from active trades or businesses</Name>
+      <Description>
+        26 U.S.C. 199A(i)(2)(A): "aggregate qualified business income with respect to all active qualified trades or
+        businesses". When every business is active this is line 2; when none is, $0. A return with both active and
+        non-active businesses would need the self-employment tax deduction apportioned per business, so it is a stop
+        (/flowKnockoutQbiMixedParticipation) and this value is not used.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/form8995HasQbi" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency module="scheduleC" path="/scheduleCNonActiveBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/form8995Line2" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line16">
+      <Name>Form 8995 line 16</Name>
+      <Description>
+        Line 16: "Minimum deduction for active qualified business income (see instructions)". 26 U.S.C. 199A(i): $400
+        (/qbiMinimumDeductionAmount) for an applicable taxpayer, one whose active aggregate QBI is "at least $1,000"
+        (/qbiMinimumActiveQbiAmount); otherwise $0.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <LessThan>
+                  <Left>
+                    <Dependency path="/form8995ActiveQbi" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/qbiMinimumActiveQbiAmount" />
+                  </Right>
+                </LessThan>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/qbiMinimumDeductionAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line17">
+      <Name>Form 8995 line 17</Name>
+      <Description>Line 17: "Qualified business income deduction. Enter the greater of line 15 or line 16. Also enter this amount on the applicable line of your return." That is Form 1040 (2026) draft line 13b (taxCalculations /qualifiedBusinessIncomeDeduction).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/form8995Line15" />
+          <Dependency path="/form8995Line16" />
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line18">
+      <Name>Form 8995 line 18</Name>
+      <Description>Line 18: "Total qualified business (loss) carryforward. Combine lines 2 and 3. If greater than zero, enter -0-". Carried to next year under 26 U.S.C. 199A(c)(2). Kept as a negative amount; the form shows it in parentheses.</Description>
+      <Derived>
+        <LesserOf>
+          <Dollar>0</Dollar>
+          <Add>
+            <Dependency path="/form8995Line2" />
+            <Dependency path="/form8995Line3" />
+          </Add>
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line19">
+      <Name>Form 8995 line 19</Name>
+      <Description>Line 19: "Total qualified REIT dividends and PTP (loss) carryforward. Combine lines 6 and 7. If greater than zero, enter -0-".</Description>
+      <Derived>
+        <LesserOf>
+          <Dollar>0</Dollar>
+          <Add>
+            <Dependency path="/form8995Line6" />
+            <Dependency path="/form8995Line7" />
+          </Add>
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Required">
+      <Name>Form 8995 is filed</Name>
+      <Description>The return has Schedule C qualified business income or loss (a loss still files Form 8995 to report the line 18 carryforward).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/form8995HasQbi" />
+      </Derived>
+    </Fact>
+
+    <!-- ========== Knockouts (BlockSubmissionOnTrue, wired into flow /flowIsKnockedOut) ========== -->
+
+    <Fact path="/flowKnockoutQbiAboveThreshold">
+      <Name>Knockout: taxable income before the QBI deduction is above the Form 8995 threshold (Form 8995-A)</Name>
+      <Description>
+        Form 8995 (2026) draft header: "Use this form if your taxable income, before your qualified business income
+        deduction, is at or below" the threshold (/qbiThresholdAmount). Above it the W-2 wage and UBIA limits and the
+        specified service rules of 26 U.S.C. 199A(b)(2)(B), (b)(3) and (d)(3) apply on Form 8995-A, which is not supported.
+        Complete false without Schedule C income (#186).
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/form8995HasQbi" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="/form8995Line11" />
+            </Left>
+            <Right>
+              <Dependency path="/qbiThresholdAmount" />
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutQbiPriorYearCarryforward">
+      <Name>Knockout: prior-year QBI or REIT/PTP loss carryforward</Name>
+      <Description>Cites on /qbiHasPriorYearLossCarryforward. Complete false without Schedule C income or on "no"; incomplete while a filer with Schedule C income hasn't answered (#186).</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/form8995HasQbi" />
+          <Dependency path="/qbiHasPriorYearLossCarryforward" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutQbiCooperativePatron">
+      <Name>Knockout: patron of an agricultural or horticultural cooperative (Form 8995-A)</Name>
+      <Description>Cites on /qbiIsCooperativePatron. Complete false without Schedule C income or on "no" (#186).</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/form8995HasQbi" />
+          <Dependency path="/qbiIsCooperativePatron" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutQbiMixedParticipation">
+      <Name>Knockout: some Schedule C businesses are active and some are not</Name>
+      <Description>
+        The 26 U.S.C. 199A(i)(2)(A) test counts QBI only from businesses with material participation, and each business's
+        QBI is reduced by its share of the deductible part of self-employment tax (Treas. Reg. 1.199A-3(b)(1)(vi)). That
+        apportionment is not modeled, so a return with both active and non-active businesses is stopped. Complete false
+        without Schedule C income or when every business has the same answer (#186).
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/form8995HasQbi" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="scheduleC" path="/scheduleCActiveBusinesses" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="scheduleC" path="/scheduleCNonActiveBusinesses" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+  </Facts>
+</FactDictionaryModule>

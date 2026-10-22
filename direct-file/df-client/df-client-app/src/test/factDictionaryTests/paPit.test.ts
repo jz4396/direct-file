@@ -224,23 +224,25 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
     const schC = {
       '/formW2s': createCollectionWrapper([]),
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
       '/scheduleCBusinesses': createCollectionWrapper([bizId]),
       [`/scheduleCBusinesses/#${bizId}/businessName`]: createStringWrapper(`Synthetic Business`),
       [`/scheduleCBusinesses/#${bizId}/writableGrossReceipts`]: createDollarWrapper(`10000`),
       [`/scheduleCBusinesses/#${bizId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
+      [`/scheduleCBusinesses/#${bizId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     };
-    it(`non-PA (FL) filer: PA knockout false and only the federal QBI knockout stops the return`, ({ task }) => {
+    it(`non-PA (FL) filer: PA knockout false and it does not knock out the return`, ({ task }) => {
       task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
       const g = build(singleFilerData, { ...schC, ...pa(`fl`) });
       expect(get(g, `/hasScheduleCBusinesses`).get).toBe(true);
       expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
       expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
       expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
-      // #185: the return is still stopped, but by the federal QBI knockout (any Schedule C business), not PA.
-      expect(get(g, `/flowKnockoutScheduleCQbi`).get).toBe(true);
-      expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+      // #87: Form 8995 computes the QBI deduction, so the federal QBI knockout is off too.
+      expect(get(g, `/flowKnockoutScheduleCQbi`).get).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
     });
     it(`PA filer, same income: PA knockout true and /flowIsKnockedOut true`, ({ task }) => {
       task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];

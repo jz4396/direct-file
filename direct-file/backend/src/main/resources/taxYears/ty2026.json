@@ -1832,6 +1832,69 @@
           "quote": "In the case of any tax imposed by section 3101(b)(2), subsection (a) shall only apply to the extent to which the taxpayer receives wages from the employer in excess of $200,000"
         }
       ]
+    },
+    {
+      "fact": "/qbiThresholdAmount",
+      "file": "form8995.xml",
+      "values": [
+        "Dollar:403500",
+        "Dollar:201775",
+        "Dollar:201750"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§3.26",
+          "page": 21,
+          "quote": "For taxable years beginning in 2026, the threshold amounts under § 199A(e)(2) and phase-in range amounts under § 199A(b)(3)(B) and § 199A(d)(3)(A) are: Married Individuals Filing Joint Returns $403,500 $553,500 Married Individuals Filing Separate Returns $201,775 $276,775 All Other Returns $201,750 $276,750",
+          "pageEnd": 22,
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/qbiMinimumDeductionAmount",
+      "file": "form8995.xml",
+      "values": [
+        "Dollar:400"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 199A(i)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/199A",
+          "quote": "the deduction allowed under subsection (a) for the taxable year shall be equal to the greater of— (A) the amount of such deduction determined without regard to this subsection, or (B) $400."
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§2.12",
+          "page": 7,
+          "quote": "Section 70105 of the OBBBA amended § 199A(i) to add a minimum deduction of $400. Additionally, a taxpayer will be required to have a minimum of $1,000 of qualified business income to be eligible for the deduction, effective for taxable years beginning after December 31, 2025. The $400 and $1,000 amounts in § 199A(i) will be adjusted for inflation for taxable years beginning after 2026."
+        }
+      ],
+      "note": "Statutory amount; first indexed for taxable years beginning after 2026."
+    },
+    {
+      "fact": "/qbiMinimumActiveQbiAmount",
+      "file": "form8995.xml",
+      "values": [
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 199A(i)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/199A",
+          "quote": "The term “ applicable taxpayer ” means, with respect to any taxable year, a taxpayer whose aggregate qualified business income with respect to all active qualified trades or businesses of the taxpayer for such taxable year is at least $1,000."
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§2.12",
+          "page": 7,
+          "quote": "a taxpayer will be required to have a minimum of $1,000 of qualified business income to be eligible for the deduction, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "Statutory amount; first indexed for taxable years beginning after 2026."
     }
   ],
   "pendingReview": [

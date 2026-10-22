@@ -258,10 +258,13 @@ describe(`Form 8960 NIIT (#83): stops instead of zeros (BlockSubmissionOnTrue, /
     '/scheduleEWritableExpenses': createDollarWrapper(`4000`),
   };
   const scheduleC = {
+    '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+    '/qbiIsCooperativePatron': createBooleanWrapper(false),
     '/scheduleCBusinesses': createCollectionWrapper([bizId]),
     [`/scheduleCBusinesses/#${bizId}/businessName`]: createStringWrapper(`Consulting`),
     [`/scheduleCBusinesses/#${bizId}/writableGrossReceipts`]: createDollarWrapper(`10000`),
     [`/scheduleCBusinesses/#${bizId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
+    [`/scheduleCBusinesses/#${bizId}/materiallyParticipates`]: createBooleanWrapper(true),
     '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
   };
   const itemizes = {
