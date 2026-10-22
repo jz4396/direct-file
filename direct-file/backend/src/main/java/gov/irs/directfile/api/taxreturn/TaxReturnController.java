@@ -251,7 +251,7 @@ public class TaxReturnController implements TaxReturnApi {
     }
 
     /**
-     * A print-refusing knockout (PdfService#PRINT_REFUSING_KNOCKOUTS) keeps its 400 and knockout paths; anything else
+     * A print-refusing knockout (PrintRefusingKnockouts) keeps its 400 and knockout paths; anything else
      * is logged and becomes the generic PDF error.
      */
     private static ResponseStatusException pdfFailureResponse(Exception e) {

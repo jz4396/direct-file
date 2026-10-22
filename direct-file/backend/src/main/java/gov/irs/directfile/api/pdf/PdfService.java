@@ -52,14 +52,6 @@ public class PdfService {
     private final ConfiguredPdfLookup lookup;
     private static final int DIRECT_FILE_PILOT_YEAR = 2023;
 
-    /**
-     * Knockouts that also stop the printed package; the print is refused unless each is complete and false (see
-     * {@link PrintRefusingKnockouts}). /flowKnockoutForm8949CodeQ: a Form 8949 row with adjustment code Q (section
-     * 1202 exclusion) has section 1202 gain, which is 28-percent rate gain (26 U.S.C. 1(h)(4)(A)(ii), 1(h)(7)) on
-     * Schedule D line 18 and needs the Schedule D Tax Worksheet, which is not computed.
-     */
-    static final List<String> PRINT_REFUSING_KNOCKOUTS = List.of("/flowKnockoutForm8949CodeQ");
-
     @SneakyThrows
     public PdfService(
             PdfServiceProperties properties, IOLocationService ioLocationService, FactGraphService factGraphService) {
@@ -116,7 +108,7 @@ public class PdfService {
         FactEvaluationResult facts;
         try {
             Graph graph = factGraphService.getGraph(taxReturn.getFacts());
-            List<String> printRefusingKnockouts = PrintRefusingKnockouts.refusing(graph, PRINT_REFUSING_KNOCKOUTS);
+            List<String> printRefusingKnockouts = PrintRefusingKnockouts.refusingPaths(graph);
             if (!printRefusingKnockouts.isEmpty()) {
                 log.info("Not printing tax return {}: knockout {}", taxReturn.getId(), printRefusingKnockouts);
                 throw new SubmissionBlockingFactsResponseStatusException(printRefusingKnockouts);
