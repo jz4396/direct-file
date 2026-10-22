@@ -459,6 +459,23 @@ export const RetirementIncomeSubcategory = (
           <KnockoutButton i18nKey='button.knockout' />
         </Screen>
         <Screen
+          route='1099-r-box-7-early-distribution-not-every-form-knockout'
+          condition='/flowKnockoutEarlyDistributionNotOnEveryForm1099R'
+          isKnockout={true}
+        >
+          <IconDisplay name='ErrorOutline' size={9} isCentered />
+          <Heading
+            i18nKey='/heading/knockout/rollovers/1099-r-early-distribution-knockout'
+            batches={[`retirement-1099R-0`]}
+          />
+          <InfoDisplay
+            i18nKey='/info/income/1099R/1099-r-early-distribution-not-every-form-knockout'
+            batches={[`retirement-1099R-0`]}
+          />
+          <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+          <KnockoutButton i18nKey='button.knockout' />
+        </Screen>
+        <Screen
           route='1099-r-box-7-pretax-to-posttax-knockout'
           condition='/flowKnockoutForPreTaxToPostTaxRollover'
           isKnockout={true}
