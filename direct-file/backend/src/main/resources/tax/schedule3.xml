@@ -54,7 +54,12 @@
 
     <Fact path="/sched3Line1">
       <Name>Schedule 3 line 1 foreign tax credit</Name>
-      <Description>Schedule 3 (Form 1040) line 1, foreign tax credit. Only the credit without Form 1116 under the 26 U.S.C. 904(j) election (https://www.law.cornell.edu/uscode/text/26/904) is supported: Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1, "Enter on line 1 the smaller of (a) your total foreign taxes, or (b) the total of the amounts on Form 1040 or 1040-SR, line 16, and Schedule 2, line 1a." Computed in dividends /dividendForeignTaxCredit; every other case stops the return (dividends /flowKnockoutDividendForeignTaxPaid, interest /flowKnockoutHasForeignTaxPaid).</Description>
+      <Description>Schedule 3 (Form 1040) line 1, foreign tax credit. Only the credit without Form 1116 under the 26
+        U.S.C. 904(j) election (https://www.law.cornell.edu/uscode/text/26/904) is supported: Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1, "Enter on line 1 the smaller of (a) your
+        total foreign taxes, or (b) the total of the amounts on Form 1040 or 1040-SR, line 16, and Schedule 2, line 1a."
+        Computed in dividends /dividendForeignTaxCredit; every other case stops the return (dividends
+        /flowKnockoutDividendForeignTaxPaid, interest /flowKnockoutHasForeignTaxPaid).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>

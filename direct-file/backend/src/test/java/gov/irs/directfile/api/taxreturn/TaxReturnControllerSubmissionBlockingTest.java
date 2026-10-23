@@ -2,6 +2,7 @@ package gov.irs.directfile.api.taxreturn;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import ch.qos.logback.classic.Logger;
@@ -30,6 +31,7 @@ import gov.irs.directfile.api.taxreturn.TaxReturnApi.GenericResponseBadData;
 import gov.irs.directfile.api.taxreturn.TaxReturnApi.SignResponseFailed;
 import gov.irs.directfile.api.taxreturn.dto.SignRequestBody;
 import gov.irs.directfile.api.taxreturn.dto.SubmitRequestBody;
+import gov.irs.directfile.api.taxreturn.models.TaxReturn;
 import gov.irs.directfile.api.user.UserService;
 import gov.irs.directfile.api.user.domain.UserInfo;
 import gov.irs.directfile.models.FactTypeWithItem;
@@ -48,6 +50,7 @@ class TaxReturnControllerSubmissionBlockingTest {
     static final String CAUSE_TEXT = "internal-cause-sentinel-9023";
 
     TaxReturnService taxReturnService;
+    PdfService pdfService;
     TaxReturnController controller;
     ValidationExceptionHandlers handlers = new ValidationExceptionHandlers(mock(AuditService.class));
     ObjectMapper objectMapper = new ObjectMapper();
@@ -66,12 +69,13 @@ class TaxReturnControllerSubmissionBlockingTest {
         logAppender.start();
         capturedLoggers.forEach(logger -> logger.addAppender(logAppender));
         taxReturnService = mock(TaxReturnService.class);
+        pdfService = mock(PdfService.class);
         UserService userService = mock(UserService.class);
         when(userService.getCurrentUserInfo()).thenReturn(userInfo);
         controller = new TaxReturnController(
                 taxReturnService,
                 userService,
-                mock(PdfService.class),
+                pdfService,
                 mock(EncryptionCacheWarmingService.class),
                 mock(DataImportService.class));
     }
@@ -197,5 +201,31 @@ class TaxReturnControllerSubmissionBlockingTest {
         assertFalse(json.contains(CAUSE_TEXT), json);
         assertFalse(json.contains(IllegalStateException.class.getSimpleName()), json);
         assertLogsCarryNoSentinel();
+    }
+
+    @Test
+    void pdfRefusedByAPrintRefusingKnockoutKeepsItsPathsAndStatus() throws Exception {
+        TaxReturn taxReturn = new TaxReturn();
+        taxReturn.setTaxYear(2026);
+        when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
+        SubmissionBlockingFactsResponseStatusException refusal =
+                new SubmissionBlockingFactsResponseStatusException(List.of("/flowKnockoutForm8949CodeQ"));
+        when(pdfService.getTaxReturn("es", taxReturn, false)).thenThrow(refusal);
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> controller.pdf(id, " ES "));
+        assertSame(refusal, e);
+        String json = responseBody(e, HttpStatus.BAD_REQUEST);
+        assertTrue(json.contains("\"blockingFacts\":[\"/flowKnockoutForm8949CodeQ\"]"), json);
+    }
+
+    @Test
+    void anyOtherPdfFailureIsStillTheGenericPdfError() throws Exception {
+        TaxReturn taxReturn = new TaxReturn();
+        taxReturn.setTaxYear(2026);
+        when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
+        when(pdfService.getTaxReturn("en", taxReturn, false)).thenThrow(new IllegalStateException(CAUSE_TEXT));
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> controller.pdf(id, "en"));
+        assertFalse(e instanceof SubmissionBlockingFactsResponseStatusException);
+        assertEquals(TaxReturnApi.GetPdfResponseFailedToCreate.code, e.getStatusCode());
     }
 }

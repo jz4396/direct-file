@@ -22,28 +22,46 @@
     <Fact path="/tipsOccupationConfirmed">
       <Description>§224(d)(1): "cash tips received by an individual in an occupation which customarily and regularly
         received tips on or before December 31, 2024, as provided by the Secretary." Asked when a W-2 has box 12 code TP
-        (the occupation code is in box 14b). Placeholder false: no deduction unless confirmed. The screen text also excludes mandatory amounts: 2026 draft
-        Form 1040 instructions, p.102: "Qualified tips do not include service charges, automatic gratuities, or any other
-        mandatory amounts automatically added to a customer's bill by the vendor or the establishment, unless the customer
-        is expressly provided an option to disregard or modify such charges, gratuities, and amounts without consequence."
-        (§224(d)(2)(A): "paid voluntarily without any consequence in the event of nonpayment").</Description>
+        (the occupation code is in box 14b). Placeholder false: no deduction unless confirmed. The screen text also
+        excludes mandatory amounts: 2026 draft
+        Form 1040 instructions, p.102: "Qualified tips do not include service
+        charges, automatic gratuities, or any other
+        mandatory amounts automatically added to a customer's bill by the
+        vendor or the establishment, unless the customer
+        is expressly provided an option to disregard or modify such
+        charges, gratuities, and amounts without consequence."
+        (§224(d)(2)(A): "paid voluntarily without any consequence
+        in the event of nonpayment").</Description>
       <Export downstreamFacts="true" />
-      <Writable><Boolean /></Writable>
-      <Placeholder><False /></Placeholder>
+      <Writable>
+        <Boolean />
+      </Writable>
+      <Placeholder>
+        <False />
+      </Placeholder>
     </Fact>
     <Fact path="/tipsEmployerIsSstb">
       <Description>§224(d)(2)(B): tips from a specified service trade or business (§199A(d)(2)) are not qualified; an
         employee is treated as in an SSTB if the employer is. Placeholder false.</Description>
       <Export downstreamFacts="true" />
-      <Writable><Boolean /></Writable>
-      <Placeholder><False /></Placeholder>
+      <Writable>
+        <Boolean />
+      </Writable>
+      <Placeholder>
+        <False />
+      </Placeholder>
     </Fact>
     <Fact path="/tipsFromSelfEmployment">
-      <Description>§224(c): self-employed tips count only up to net income of the trade or business (Schedule 1-A line 6).
+      <Description>§224(c): self-employed tips count only up to net income of the trade or business (Schedule 1-A line
+        6).
         Not supported. Asked when the return has a Schedule C business. Placeholder false.</Description>
       <Export downstreamFacts="true" />
-      <Writable><Boolean /></Writable>
-      <Placeholder><False /></Placeholder>
+      <Writable>
+        <Boolean />
+      </Writable>
+      <Placeholder>
+        <False />
+      </Placeholder>
     </Fact>
     <Fact path="/tipsSstbInterimRuleApplies">
       <Name>§224 SSTB interim rule (draft Form 1040 instructions p.102)</Name>
@@ -56,27 +74,35 @@
         (https://www.law.cornell.edu/uscode/text/26/224). True while no final SSTB regulations for §224 have been
         published; set to false when they are, which restores the SSTB question and stop below.</Description>
       <Export downstreamFacts="true" />
-      <Derived><True /></Derived>
+      <Derived>
+        <True />
+      </Derived>
     </Fact>
     <Fact path="/flowShowTipsSstbQuestion">
       <Name>Ask the SSTB question</Name>
-      <Description>#57. Asked only when code TP tips are present, the filer confirmed a listed tipped occupation (otherwise
-        line 5 is $0 and the SSTB answer cannot change the return), and the p.102 interim rule no longer applies. While it
+      <Description>#57. Asked only when code TP tips are present, the filer confirmed a listed tipped occupation
+        (otherwise
+        line 5 is $0 and the SSTB answer cannot change the return), and the p.102 interim rule no longer
+        applies. While it
         applies, a confirmed listed occupation is treated as not from an SSTB.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <All>
           <Dependency module="formW2s" path="/hasW2CodeTpTips" />
           <Dependency path="/tipsOccupationConfirmed" />
-          <Not><Dependency path="/tipsSstbInterimRuleApplies" /></Not>
+          <Not>
+            <Dependency path="/tipsSstbInterimRuleApplies" />
+          </Not>
         </All>
       </Derived>
     </Fact>
     <Fact path="/flowKnockoutTipsSstb">
       <Name>Knockout: tips from a specified service trade or business</Name>
       <Description>§224(d)(2)(B): tips from an SSTB (§199A(d)(2)) are not qualified tips. #57: under the p.102 interim
-        rule a filer in a confirmed listed tipped occupation is treated as not in an SSTB, so this stop fires only when the
-        interim rule no longer applies (/flowShowTipsSstbQuestion) and the filer answers that the employer is an SSTB.
+        rule a filer in a confirmed listed tipped occupation is treated as not in an SSTB, so this stop fires only when
+        the
+        interim rule no longer applies (/flowShowTipsSstbQuestion) and the filer answers that the employer is an
+        SSTB.
         Wired into /flowIsKnockedOut in flow.xml.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
@@ -105,8 +131,14 @@
         <Switch>
           <!-- No code TP tips: complete 0 without asking (placeholder answers are incomplete). -->
           <Case>
-            <When><Not><Dependency module="formW2s" path="/hasW2CodeTpTips" /></Not></When>
-            <Then><Dollar>0</Dollar></Then>
+            <When>
+              <Not>
+                <Dependency module="formW2s" path="/hasW2CodeTpTips" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
           </Case>
           <Case>
             <When>
@@ -116,19 +148,26 @@
               </All>
             </When>
             <Then>
-              <CollectionSum><Dependency module="formW2s" path="/formW2s/*/qualifiedTipsForSchedule1A" /></CollectionSum>
+              <CollectionSum>
+                <Dependency module="formW2s" path="/formW2s/*/qualifiedTipsForSchedule1A" />
+              </CollectionSum>
             </Then>
           </Case>
           <Case>
-            <When><True /></When>
-            <Then><Dollar>0</Dollar></Then>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
           </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/schedule1ALine9">
       <Description>Line 9: "Enter the smaller of the amount on line 8 or $25,000" (line 8 = line 5 + line 7; line 7 is
-        0 because self-employed tips are knocked out). §224(b)(1): "shall not exceed $25,000." Per return, not per spouse.</Description>
+        0
+        because self-employed tips are knocked out). §224(b)(1): "shall not exceed $25,000." Per return, not per spouse.</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <LesserOf>
@@ -143,12 +182,20 @@
       <Derived>
         <Switch>
           <Case>
-            <When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When>
-            <Then><Dollar>300000</Dollar></Then>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dollar>300000</Dollar>
+            </Then>
           </Case>
           <Case>
-            <When><True /></When>
-            <Then><Dollar>150000</Dollar></Then>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>150000</Dollar>
+            </Then>
           </Case>
         </Switch>
       </Derived>
@@ -159,8 +206,12 @@
         <GreaterOf>
           <Dollar>0</Dollar>
           <Subtract>
-            <Minuend><Dependency path="/schedule1ALine3" /></Minuend>
-            <Subtrahends><Dependency path="/schedule1ALine11" /></Subtrahends>
+            <Minuend>
+              <Dependency path="/schedule1ALine3" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schedule1ALine11" />
+            </Subtrahends>
           </Subtract>
         </GreaterOf>
       </Derived>
@@ -171,8 +222,12 @@
         "or fraction thereof", so a partial $1,000 is ignored. StepwiseMultiply = floor(x / 1000) x 1.</Description>
       <Derived>
         <StepwiseMultiply>
-          <Multiplicand><Dependency path="/schedule1ALine12" /></Multiplicand>
-          <Rate><Rational>1/1000</Rational></Rate>
+          <Multiplicand>
+            <Dependency path="/schedule1ALine12" />
+          </Multiplicand>
+          <Rate>
+            <Rational>1/1000</Rational>
+          </Rate>
         </StepwiseMultiply>
       </Derived>
     </Fact>
@@ -192,38 +247,57 @@
         <Switch>
           <!-- Short-circuit so returns without code TP tips don't depend on MAGI completeness. -->
           <Case>
-            <When><Not><Dependency module="formW2s" path="/hasW2CodeTpTips" /></Not></When>
-            <Then><Dollar>0</Dollar></Then>
+            <When>
+              <Not>
+                <Dependency module="formW2s" path="/hasW2CodeTpTips" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
           </Case>
           <Case>
-            <When><True /></When>
+            <When>
+              <True />
+            </When>
             <Then>
-        <GreaterOf>
-          <Dollar>0</Dollar>
-          <Subtract>
-            <Minuend><Dependency path="/schedule1ALine9" /></Minuend>
-            <Subtrahends><Dependency path="/schedule1ALine14" /></Subtrahends>
-          </Subtract>
-        </GreaterOf>
-      </Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Subtract>
+                  <Minuend>
+                    <Dependency path="/schedule1ALine9" />
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency path="/schedule1ALine14" />
+                  </Subtrahends>
+                </Subtract>
+              </GreaterOf>
+            </Then>
           </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/schedule1ALine27">
       <Description>Schedule 1-A line 27, qualified overtime compensation deduction (Part III). Placeholder for #52.</Description>
-      <Derived><Dependency module="schedule1AOvertime" path="/schedule1AOvertimeLine27" /></Derived>
+      <Derived>
+        <Dependency module="schedule1AOvertime" path="/schedule1AOvertimeLine27" />
+      </Derived>
     </Fact>
     <Fact path="/schedule1ALine36">
-      <Description>Schedule 1-A line 36, qualified passenger vehicle loan interest deduction (Part IV). #53: computed in carLoanInterest.xml.</Description>
-      <Derived><Dependency module="carLoanInterest" path="/carLoanLine36" /></Derived>
+      <Description>Schedule 1-A line 36, qualified passenger vehicle loan interest deduction (Part IV). #53: computed in
+        carLoanInterest.xml.</Description>
+      <Derived>
+        <Dependency module="carLoanInterest" path="/carLoanLine36" />
+      </Derived>
     </Fact>
 
     <!-- Part V: Enhanced Deduction for Seniors, §151(d)(5)(C). -->
     <Fact path="/schedule1ASeniorAmount">
       <Description>"$6,000 for each qualified individual" — §151(d)(5)(C)(i). Not inflation-indexed.</Description>
       <TaxYear>2026</TaxYear>
-      <Derived><Dollar>6000</Dollar></Derived>
+      <Derived>
+        <Dollar>6000</Dollar>
+      </Derived>
     </Fact>
     <Fact path="/schedule1ALine38">
       <Description>Line 38: "Enter $75,000 ($150,000 if married filing jointly)". §151(d)(5)(C)(iii)(I).</Description>
@@ -231,12 +305,20 @@
       <Derived>
         <Switch>
           <Case>
-            <When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When>
-            <Then><Dollar>150000</Dollar></Then>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dollar>150000</Dollar>
+            </Then>
           </Case>
           <Case>
-            <When><True /></When>
-            <Then><Dollar>75000</Dollar></Then>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>75000</Dollar>
+            </Then>
           </Case>
         </Switch>
       </Derived>
@@ -247,15 +329,20 @@
         <GreaterOf>
           <Dollar>0</Dollar>
           <Subtract>
-            <Minuend><Dependency path="/schedule1ALine3" /></Minuend>
-            <Subtrahends><Dependency path="/schedule1ALine38" /></Subtrahends>
+            <Minuend>
+              <Dependency path="/schedule1ALine3" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schedule1ALine38" />
+            </Subtrahends>
           </Subtract>
         </GreaterOf>
       </Derived>
     </Fact>
     <Fact path="/schedule1ALine40">
       <Description>Line 40: line 39 x 6%. The statute ("6 percent of so much of ... MAGI as exceeds") has no
-        rounding step or $1,000 increments, unlike line 34 for car loan interest.</Description>
+        rounding
+        step or $1,000 increments, unlike line 34 for car loan interest.</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Multiply>
@@ -270,22 +357,30 @@
         <GreaterOf>
           <Dollar>0</Dollar>
           <Subtract>
-            <Minuend><Dependency path="/schedule1ASeniorAmount" /></Minuend>
-            <Subtrahends><Dependency path="/schedule1ALine40" /></Subtrahends>
+            <Minuend>
+              <Dependency path="/schedule1ASeniorAmount" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schedule1ALine40" />
+            </Subtrahends>
           </Subtract>
         </GreaterOf>
       </Derived>
     </Fact>
     <Fact path="/schedule1ASeniorFilingStatusAllowed">
       <Description>§151(d)(5)(C)(v): a married individual (§7703) qualifies only on a joint return. MFS gets 0.
-        HOH filers are treated as unmarried under §7703(b); Single/QSS are unmarried.</Description>
+        HOH
+        filers are treated as unmarried under §7703(b); Single/QSS are unmarried.</Description>
       <Derived>
-        <Not><Dependency module="filingStatus" path="/isFilingStatusMFS" /></Not>
+        <Not>
+          <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+        </Not>
       </Derived>
     </Fact>
     <Fact path="/schedule1APrimaryQualifies">
       <Description>Line 42a test: valid SSN (§151(d)(5)(C)(iv), §24(h)(7)) and age 65 by year end (born before
-        January 2, 1962; age65OrOlder uses the day-before-birthday rule).</Description>
+        January 2,
+        1962; age65OrOlder uses the day-before-birthday rule).</Description>
       <Derived>
         <All>
           <Dependency path="/schedule1ASeniorFilingStatusAllowed" />
@@ -308,12 +403,20 @@
       <Derived>
         <Switch>
           <Case>
-            <When><Dependency path="/schedule1APrimaryQualifies" /></When>
-            <Then><Dependency path="/schedule1ALine41" /></Then>
+            <When>
+              <Dependency path="/schedule1APrimaryQualifies" />
+            </When>
+            <Then>
+              <Dependency path="/schedule1ALine41" />
+            </Then>
           </Case>
           <Case>
-            <When><True /></When>
-            <Then><Dollar>0</Dollar></Then>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
           </Case>
         </Switch>
       </Derived>
@@ -322,12 +425,20 @@
       <Derived>
         <Switch>
           <Case>
-            <When><Dependency path="/schedule1ASpouseQualifies" /></When>
-            <Then><Dependency path="/schedule1ALine41" /></Then>
+            <When>
+              <Dependency path="/schedule1ASpouseQualifies" />
+            </When>
+            <Then>
+              <Dependency path="/schedule1ALine41" />
+            </Then>
           </Case>
           <Case>
-            <When><True /></When>
-            <Then><Dollar>0</Dollar></Then>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
           </Case>
         </Switch>
       </Derived>
@@ -346,7 +457,8 @@
     <!-- Part VI -->
     <Fact path="/schedule1ALine44">
       <Description>Line 44: "Add lines 15, 27, 36, and 43. Enter here and on Form 1040, 1040-SR, or 1040-NR,
-        line 13a". Below the line: allowed with the standard deduction or itemizing.</Description>
+        line 13a".
+        Below the line: allowed with the standard deduction or itemizing.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Round>
@@ -362,8 +474,12 @@
     <Fact path="/requiresSchedule1A">
       <Derived>
         <GreaterThan>
-          <Left><Dependency path="/schedule1ALine44" /></Left>
-          <Right><Dollar>0</Dollar></Right>
+          <Left>
+            <Dependency path="/schedule1ALine44" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
         </GreaterThan>
       </Derived>
     </Fact>

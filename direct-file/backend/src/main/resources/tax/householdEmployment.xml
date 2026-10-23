@@ -4,25 +4,38 @@
     <Fact path="/hasHouseholdEmployeeScheduleH">
       <Name>Meets a Schedule H test for household employees</Name>
       <Description>
-        #159: general household-employee screener, asked in income sources for every return. Before this, the only
-        household-employee question was asked inside the dependent care sections (cdcc /flowKnockoutHouseholdEmployee).
-        Household employment taxes are imposed by 26 U.S.C. 3101 and 3111 (https://www.law.cornell.edu/uscode/text/26/3111)
-        and 3301 (https://www.law.cornell.edu/uscode/text/26/3301), and 26 U.S.C. 3510 (https://www.law.cornell.edu/uscode/text/26/3510)
-        has them reported on the employer's income tax return. 2026 Instructions for Schedule H (Form 1040), early-release
-        draft (https://www.irs.gov/pub/irs-dft/i1040sh--dft.pdf, SHA-256
+        #159: general household-employee screener, asked in income sources for every return. Before this, the
+        only
+        household-employee question was asked inside the dependent care sections (cdcc
+        /flowKnockoutHouseholdEmployee).
+        Household employment taxes are imposed by 26 U.S.C. 3101 and 3111
+        (https://www.law.cornell.edu/uscode/text/26/3111)
+        and 3301 (https://www.law.cornell.edu/uscode/text/26/3301), and
+        26 U.S.C. 3510 (https://www.law.cornell.edu/uscode/text/26/3510)
+        has them reported on the employer's income tax
+        return. 2026 Instructions for Schedule H (Form 1040), early-release
+        draft
+        (https://www.irs.gov/pub/irs-dft/i1040sh--dft.pdf, SHA-256
         685fa1486b3a6e5712c5552da3ef0eb5f7b245dec3d3f28e642e37efe15dbf1e), page 2 (PDF p. 3), "Who Needs To File
         Schedule H?": "You must file Schedule H if you answer "Yes" to any of the questions on lines A, B, and C of
         Schedule H." The TY2026 thresholds come from 2026 Schedule H (Form 1040), early-release draft
         (https://www.irs.gov/pub/irs-dft/f1040sh--dft.pdf, SHA-256
-        0fbdf600ded379d23f381286a3f9b35d15af062c83072b50de149d5c5afb3077), page 1 (PDF p. 2): line A "Did you pay any one
+        0fbdf600ded379d23f381286a3f9b35d15af062c83072b50de149d5c5afb3077), page 1 (PDF p. 2): line A "Did you pay any
+        one
         household employee cash wages of $3,000 or more in 2026?"; line B "Did you withhold federal income tax during
         2026 for any household employee?"; line C "Did you pay total cash wages of $1,000 or more in any calendar
-        quarter of 2025 or 2026 to all household employees?" The $3,000 is the 26 U.S.C. 3121(x) (https://www.law.cornell.edu/uscode/text/26/3121) domestic
-        employee coverage threshold for 2026, as in the draft instructions, page 2 (PDF p. 3): "you paid cash wages of $3,000 or
-        more in 2026 to any one household employee". The $1,000 is the 26 U.S.C. 3306(a)(3)
-        (https://www.law.cornell.edu/uscode/text/26/3306) FUTA test, which is not indexed. The screen asks the three
-        line A-C tests as one question. The line A and C exceptions for wages paid to a spouse, a child under 21, a
-        parent, or anyone under 18 are not asked. A yes stops the return; it is never computed as $0.
+        quarter of 2025 or 2026 to all household employees?" The $3,000 is the 26 U.S.C. 3121(x)
+        (https://www.law.cornell.edu/uscode/text/26/3121) domestic
+        employee coverage threshold for 2026, as in the draft
+        instructions, page 2 (PDF p. 3): "you paid cash wages of $3,000 or
+        more in 2026 to any one household employee".
+        The $1,000 is the 26 U.S.C. 3306(a)(3)
+        (https://www.law.cornell.edu/uscode/text/26/3306) FUTA test, which is not
+        indexed. The screen asks the three
+        line A-C tests as one question. The line A and C exceptions for wages paid to
+        a spouse, a child under 21, a
+        parent, or anyone under 18 are not asked. A yes stops the return; it is never
+        computed as $0.
         Placeholder false so returns that never see the screen are unaffected.
       </Description>
       <Export downstreamFacts="true" />
