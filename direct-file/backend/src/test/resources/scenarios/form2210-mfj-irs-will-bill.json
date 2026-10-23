@@ -258,6 +258,22 @@
         "items": []
       }
     },
+    "/form2210AnnualizedIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form2210FiledJointReturnPriorYear": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/form2210WaiverRequested": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form2210WithholdingOnActualDates": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/formW2s": {
       "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
       "item": {
@@ -415,6 +431,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/hasHouseholdEmployeeScheduleH": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/hasSeenReviewScreen": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
@@ -539,6 +559,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/scheduleAWantsToItemize": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/selfSelectPin": {
       "$type": "gov.irs.factgraph.persisters.PinWrapper",
       "item": {
@@ -578,6 +602,10 @@
     "/socialSecurityReportsIsDone": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
+    },
+    "/soldCapitalAssets": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
     },
     "/someFilerHadNonW2HsaActivity": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
@@ -647,34 +675,6 @@
       "item": false
     },
     "/writableHasPtcQualifyingPlan": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/soldCapitalAssets": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/scheduleAWantsToItemize": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/form2210WaiverRequested": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/form2210AnnualizedIncome": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/form2210WithholdingOnActualDates": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/form2210FiledJointReturnPriorYear": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": true
-    },
-    "/hasHouseholdEmployeeScheduleH": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     }

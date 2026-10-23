@@ -21,28 +21,49 @@
   <Facts>
 
     <Fact path="/form2210Line1">
-      <Description>#92: Form 2210 (2026) draft, https://www.irs.gov/pub/irs-dft/f2210--dft.pdf (SHA-256 d195d1eb96f53224cf37cd19c542d85365cf9d76be9e6479b404cbb66445aad2), p. 1, line 1: "Enter your 2026 tax after credits from Form 1040, 1040-SR, or 1040-NR, line 22."</Description>
+      <Description>#92: Form 2210 (2026) draft, https://www.irs.gov/pub/irs-dft/f2210--dft.pdf (SHA-256
+        d195d1eb96f53224cf37cd19c542d85365cf9d76be9e6479b404cbb66445aad2), p. 1, line 1: "Enter your 2026 tax after
+        credits from Form 1040, 1040-SR, or 1040-NR, line 22."</Description>
       <Derived>
         <Dependency module="taxCalculations" path="/taxLessNonRefundableCredits" />
       </Derived>
     </Fact>
 
     <Fact path="/form2210Line2">
-      <Description>#92: Form 2210 (2026) draft p. 1, line 2: "Other taxes, including self-employment tax and, if applicable, Additional Medicare Tax and/or Net Investment Income Tax (see instructions)". The only Schedule 2 Part II amounts the tool produces are line 4 (self-employment tax), line 5 (the 10% additional tax on a Form 1099-R code 1 early distribution, schedule2 /schedule2Line5), line 6 (net investment income tax), line 11 and line 17b (Additional Medicare Tax); their total is Schedule 2 line 21 (Form 1040 line 23, taxCalculations /line21OfSchedule2). Each belongs on line 2: Instructions for Form 2210 (2025) https://www.irs.gov/pub/irs-pdf/i2210.pdf (SHA-256 7bd6a47494e588fcb422a9ae97970a369fe24fd778ad33b224aeb1cd759e831d) p. 2, Line 2: "Enter the total of the following amounts." For Form 1040 the table lists Schedule 2 "Line 4, Line 8 (additional tax on distributions only), ... Line 11, ..."; the 2025 line 8 is line 5 on the Schedule 2 (Form 1040) 2026 draft, "Additional tax on IRAs or other tax-favored accounts", and the only line 5 amount in scope is that additional tax on distributions. Every other Part II line has no input or stops the return (schedule2 /schedule2Line15, /schedule2Line20).</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, line 2: "Other taxes, including self-employment tax and, if
+        applicable, Additional Medicare Tax and/or Net Investment Income Tax (see instructions)". The only Schedule 2
+        Part II amounts the tool produces are line 4 (self-employment tax), line 5 (the 10% additional tax on a Form
+        1099-R code 1 early distribution, schedule2 /schedule2Line5), line 6 (net investment income tax), line 11 and
+        line 17b (Additional Medicare Tax); their total is Schedule 2 line 21 (Form 1040 line 23, taxCalculations
+        /line21OfSchedule2). Each belongs on line 2: Instructions for Form 2210 (2025)
+        https://www.irs.gov/pub/irs-pdf/i2210.pdf (SHA-256
+        7bd6a47494e588fcb422a9ae97970a369fe24fd778ad33b224aeb1cd759e831d) p. 2, Line 2: "Enter the total of the
+        following amounts." For Form 1040 the table lists Schedule 2 "Line 4, Line 8 (additional tax on distributions
+        only), ... Line 11, ..."; the 2025 line 8 is line 5 on the Schedule 2 (Form 1040) 2026 draft, "Additional tax on
+        IRAs or other tax-favored accounts", and the only line 5 amount in scope is that additional tax on
+        distributions. Every other Part II line has no input or stops the return (schedule2 /schedule2Line15,
+        /schedule2Line20).</Description>
       <Derived>
         <Dependency module="taxCalculations" path="/line21OfSchedule2" />
       </Derived>
     </Fact>
 
     <Fact path="/form2210Line3">
-      <Description>#92: Form 2210 (2026) draft p. 1, line 3: "Refundable credits and other adjustments (see instructions)", entered in parentheses. i2210 (2025) p. 2, Line 3: "Include refundable credits and the refundable portions of other credits you took on your current year tax return here. Those may include, for example: Earned income credit; Additional child tax credit; Refundable part of the American opportunity credit (Form 8863, line 8); ... Premium tax credit (Form 8962)". Those are the parts of Form 1040 line 32 (taxCalculations /totalOtherPaymentsRefundableCredits: lines 27a, 28, 29 and Schedule 3 line 15, which holds only the net premium tax credit).</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, line 3: "Refundable credits and other adjustments (see
+        instructions)", entered in parentheses. i2210 (2025) p. 2, Line 3: "Include refundable credits and the
+        refundable portions of other credits you took on your current year tax return here. Those may include, for
+        example: Earned income credit; Additional child tax credit; Refundable part of the American opportunity credit
+        (Form 8863, line 8); ... Premium tax credit (Form 8962)". Those are the parts of Form 1040 line 32
+        (taxCalculations /totalOtherPaymentsRefundableCredits: lines 27a, 28, 29 and Schedule 3 line 15, which holds
+        only the net premium tax credit).</Description>
       <Derived>
         <Dependency module="taxCalculations" path="/totalOtherPaymentsRefundableCredits" />
       </Derived>
     </Fact>
 
     <Fact path="/form2210Line4">
-      <Description>#92: Form 2210 (2026) draft p. 1, line 4: "Current year tax. Combine lines 1, 2, and 3. If less than $1,000, stop; you don't owe a penalty." Line 3 is a subtraction (entered in parentheses).</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, line 4: "Current year tax. Combine lines 1, 2, and 3. If less than
+        $1,000, stop; you don't owe a penalty." Line 3 is a subtraction (entered in parentheses).</Description>
       <Derived>
         <Subtract>
           <Minuend>
@@ -59,7 +80,10 @@
     </Fact>
 
     <Fact path="/form2210Line5">
-      <Description>#92: Form 2210 (2026) draft p. 1, line 5: "Multiply line 4 by 90% (0.90)". 26 U.S.C. 6654(d)(1)(B)(i), https://www.law.cornell.edu/uscode/text/26/6654: "90 percent of the tax shown on the return for the taxable year". Computed for the record only; line 9 also needs line 8 (prior-year tax), which isn't collected.</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, line 5: "Multiply line 4 by 90% (0.90)". 26 U.S.C.
+        6654(d)(1)(B)(i), https://www.law.cornell.edu/uscode/text/26/6654: "90 percent of the tax shown on the return
+        for the taxable year". Computed for the record only; line 9 also needs line 8 (prior-year tax), which isn't
+        collected.</Description>
       <Derived>
         <Multiply>
           <Dependency path="/form2210Line4" />
@@ -69,14 +93,19 @@
     </Fact>
 
     <Fact path="/form2210Line6">
-      <Description>#92: Form 2210 (2026) draft p. 1, line 6: "Withholding taxes. Don't include estimated tax payments." i2210 (2025) p. 2, Line 6: "Include the taxes withheld shown on the following lines. Form 1040 or 1040-SR, line 25d. ... Also, Schedule 3 (Form 1040), line 11". Form 1040 line 25d is taxCalculations /totalWithholding. Schedule 3 line 11 (excess social security tax withheld) is not produced: more than one W-2 over the wage base for one filer stops the return (formW2s /anyFilerExceedsMaxOasdiWages).</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, line 6: "Withholding taxes. Don't include estimated tax payments."
+        i2210 (2025) p. 2, Line 6: "Include the taxes withheld shown on the following lines. Form 1040 or 1040-SR, line
+        25d. ... Also, Schedule 3 (Form 1040), line 11". Form 1040 line 25d is taxCalculations /totalWithholding.
+        Schedule 3 line 11 (excess social security tax withheld) is not produced: more than one W-2 over the wage base
+        for one filer stops the return (formW2s /anyFilerExceedsMaxOasdiWages).</Description>
       <Derived>
         <Dependency module="taxCalculations" path="/totalWithholding" />
       </Derived>
     </Fact>
 
     <Fact path="/form2210Line7">
-      <Description>#92: Form 2210 (2026) draft p. 1, line 7: "Subtract line 6 from line 4. If less than $1,000, stop; you don't owe a penalty. Don't file Form 2210".</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, line 7: "Subtract line 6 from line 4. If less than $1,000, stop;
+        you don't owe a penalty. Don't file Form 2210".</Description>
       <Derived>
         <Subtract>
           <Minuend>
@@ -90,7 +119,11 @@
     </Fact>
 
     <Fact path="/form2210NoPenaltyThreshold">
-      <Description>#92: $1,000. 26 U.S.C. 6654(e)(1), https://www.law.cornell.edu/uscode/text/26/6654: "No addition to tax shall be imposed under subsection (a) for any taxable year if the tax shown on the return for such taxable year (or, if no return is filed, the tax), reduced by the credit allowable under section 31, is less than $1,000." Statutory, not indexed. Form 2210 (2026) draft p. 1, lines 4 and 7: "If less than $1,000, stop; you don't owe a penalty."</Description>
+      <Description>#92: $1,000. 26 U.S.C. 6654(e)(1), https://www.law.cornell.edu/uscode/text/26/6654: "No addition to
+        tax shall be imposed under subsection (a) for any taxable year if the tax shown on the return for such taxable
+        year (or, if no return is filed, the tax), reduced by the credit allowable under section 31, is less than
+        $1,000." Statutory, not indexed. Form 2210 (2026) draft p. 1, lines 4 and 7: "If less than $1,000, stop; you
+        don't owe a penalty."</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>1000</Dollar>
@@ -98,7 +131,10 @@
     </Fact>
 
     <Fact path="/form2210MayOwePenalty">
-      <Description>#92: Form 2210 (2026) draft p. 1, "Do You Have To File Form 2210? Complete lines 1 through 7 below. Is line 4 or line 7 less than $1,000? Yes: Don't file Form 2210. You don't owe a penalty." True when neither line 4 nor line 7 is under $1,000. Lines 8 and 9 (prior-year safe harbor) can't be computed, so this is the widest set of returns that may owe a penalty.</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, "Do You Have To File Form 2210? Complete lines 1 through 7 below.
+        Is line 4 or line 7 less than $1,000? Yes: Don't file Form 2210. You don't owe a penalty." True when neither
+        line 4 nor line 7 is under $1,000. Lines 8 and 9 (prior-year safe harbor) can't be computed, so this is the
+        widest set of returns that may owe a penalty.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <All>
@@ -123,7 +159,8 @@
     </Fact>
 
     <Fact path="/form2210AskPartII">
-      <Description>#92: Ask the Part II questions only when lines 1-7 are complete and a penalty is possible. Complete (false) whenever the tax isn't complete yet.</Description>
+      <Description>#92: Ask the Part II questions only when lines 1-7 are complete and a penalty is possible. Complete
+        (false) whenever the tax isn't complete yet.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <All>
@@ -136,35 +173,46 @@
     </Fact>
 
     <Fact path="/form2210WaiverRequested">
-      <Description>#92: Form 2210 (2026) draft p. 1, Part II boxes A and B: "A You request a waiver (see instructions) of your entire penalty." "B You request a waiver (see instructions) of part of your penalty." 26 U.S.C. 6654(e)(3): waiver for "casualty, disaster, or other unusual circumstances", or for a filer who retired after reaching age 62 or became disabled.</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, Part II boxes A and B: "A You request a waiver (see instructions)
+        of your entire penalty." "B You request a waiver (see instructions) of part of your penalty." 26 U.S.C.
+        6654(e)(3): waiver for "casualty, disaster, or other unusual circumstances", or for a filer who retired after
+        reaching age 62 or became disabled.</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
 
     <Fact path="/form2210AnnualizedIncome">
-      <Description>#92: Form 2210 (2026) draft p. 1, Part II box C: "Your income varied during the year and your penalty is reduced or eliminated when figured using the annualized income installment method. You must figure the penalty using Schedule AI and file Form 2210." 26 U.S.C. 6654(d)(2).</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, Part II box C: "Your income varied during the year and your penalty
+        is reduced or eliminated when figured using the annualized income installment method. You must figure the
+        penalty using Schedule AI and file Form 2210." 26 U.S.C. 6654(d)(2).</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
 
     <Fact path="/form2210WithholdingOnActualDates">
-      <Description>#92: Form 2210 (2026) draft p. 1, Part II box D: "Your penalty is lower when figured by treating the federal income tax withheld from your income as paid on the dates it was actually withheld, instead of in equal amounts on the payment due dates. You must figure your penalty and file Form 2210." 26 U.S.C. 6654(g)(1).</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, Part II box D: "Your penalty is lower when figured by treating the
+        federal income tax withheld from your income as paid on the dates it was actually withheld, instead of in equal
+        amounts on the payment due dates. You must figure your penalty and file Form 2210." 26 U.S.C. 6654(g)(1).</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
 
     <Fact path="/form2210FiledJointReturnPriorYear">
-      <Description>#92: Whether the filer (for a joint return, the filers together) filed a joint return for 2025. Used for Part II box E only.</Description>
+      <Description>#92: Whether the filer (for a joint return, the filers together) filed a joint return for 2025. Used
+        for Part II box E only.</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
 
     <Fact path="/form2210BoxE">
-      <Description>#92: Form 2210 (2026) draft p. 1, Part II box E: "You filed or are filing a joint return for either 2025 or 2026, but not for both years, and line 8 above is smaller than line 5 above." Line 8 needs prior-year tax, which isn't collected, so the joint-return change alone sets box E. That stops some returns that wouldn't need page 1, and never lets a required page 1 through.</Description>
+      <Description>#92: Form 2210 (2026) draft p. 1, Part II box E: "You filed or are filing a joint return for either
+        2025 or 2026, but not for both years, and line 8 above is smaller than line 5 above." Line 8 needs prior-year
+        tax, which isn't collected, so the joint-return change alone sets box E. That stops some returns that wouldn't
+        need page 1, and never lets a required page 1 through.</Description>
       <Derived>
         <Any>
           <All>
@@ -184,7 +232,9 @@
     </Fact>
 
     <Fact path="/form2210AnyBoxApplies">
-      <Description>#92: True when any Part II box (A through E) applies. Each answer counts only once it's complete, so this is false, not incomplete, while questions are unanswered (/form2210PartIIIsComplete holds the return until they are).</Description>
+      <Description>#92: True when any Part II box (A through E) applies. Each answer counts only once it's complete, so
+        this is false, not incomplete, while questions are unanswered (/form2210PartIIIsComplete holds the return until
+        they are).</Description>
       <Derived>
         <Any>
           <All>
@@ -217,7 +267,9 @@
 
     <Fact path="/flowKnockoutForm2210">
       <Name>Flow knockout: Form 2210 Part II box applies</Name>
-      <Description>#92: A penalty is possible (lines 4 and 7 are $1,000 or more) and a Part II box applies. Boxes B, C and D require figuring the penalty; boxes A and E require page 1, whose line 8 needs prior-year tax. Neither is supported. Complete and false whenever no penalty is possible or no box has been answered yes.</Description>
+      <Description>#92: A penalty is possible (lines 4 and 7 are $1,000 or more) and a Part II box applies. Boxes B, C
+        and D require figuring the penalty; boxes A and E require page 1, whose line 8 needs prior-year tax. Neither is
+        supported. Complete and false whenever no penalty is possible or no box has been answered yes.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -229,7 +281,8 @@
     </Fact>
 
     <Fact path="/form2210ShowIrsWillBillNote">
-      <Description>#92: A penalty is possible and every Part II answer is no. i2210 (2025) p. 1: "The IRS will figure any penalty for underpayment of estimated tax and send you a bill." Line 38 stays blank.</Description>
+      <Description>#92: A penalty is possible and every Part II answer is no. i2210 (2025) p. 1: "The IRS will figure
+        any penalty for underpayment of estimated tax and send you a bill." Line 38 stays blank.</Description>
       <Derived>
         <All>
           <Dependency path="/form2210AskPartII" />
