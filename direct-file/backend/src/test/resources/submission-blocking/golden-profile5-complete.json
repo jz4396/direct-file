@@ -555,6 +555,22 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/form2210WaiverRequested": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form2210AnnualizedIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form2210WithholdingOnActualDates": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form2210FiledJointReturnPriorYear": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/form8949Transactions": {
       "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
       "item": {

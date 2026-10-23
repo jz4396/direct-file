@@ -30,7 +30,11 @@ public final class PrintRefusingKnockouts {
             // PA-source pay in the nonresident period of a PA/FL part-year return: PA-40 IN (2025) p. 43, "If your
             // employer does not report, or incorrectly reports, your PA-taxable compensation, you must use PA
             // Schedule NRH to apportion your compensation". Without PA Schedule NRH the PA-40 would understate line 1a.
-            "/flowKnockoutPaNonresidentPaSourcePay");
+            "/flowKnockoutPaNonresidentPaSourcePay",
+            // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
+            // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
+            // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
+            "/flowKnockoutForm2210");
 
     private PrintRefusingKnockouts() {}
 

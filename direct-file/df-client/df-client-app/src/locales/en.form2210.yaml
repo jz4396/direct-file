@@ -1,0 +1,56 @@
+# Form 2210 Part II questions and the estimated tax penalty note (#92). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    estimated-tax-penalty: Estimated tax penalty
+dataviews:
+  /flow/your-taxes/amount:
+    /form2210WaiverRequested: Do you want to ask the IRS to waive all or part of an estimated tax penalty?
+    /form2210AnnualizedIncome: Do you want to figure the penalty with the annualized income installment method?
+    /form2210WithholdingOnActualDates: Do you want to treat your withholding as paid on the dates it was withheld?
+    /form2210FiledJointReturnPriorYear: "Did you file a joint return for {{/lastTaxYear}}?"
+headings:
+  /heading/your-taxes/amount/est-tax-penalty-waiver:
+    Do you want to ask the IRS to waive all or part of a penalty for not paying enough tax during the year?
+  /heading/your-taxes/amount/est-tax-penalty-annualized:
+    Did your income vary during the year, and do you want to figure the penalty using the annualized income installment
+    method?
+  /heading/your-taxes/amount/est-tax-penalty-withholding-dates:
+    Do you want to figure the penalty treating your federal income tax withholding as paid on the dates it was actually
+    withheld?
+  /heading/your-taxes/amount/est-tax-penalty-joint-prior-year: "Did you file a joint return for {{/lastTaxYear}}?"
+  /heading/your-taxes/amount/est-tax-penalty-joint-prior-year-mfj:
+    "Did you and your spouse file a joint return with each other for {{/lastTaxYear}}?"
+  /heading/your-taxes/amount/est-tax-penalty-irs-will-bill: You may owe an estimated tax penalty
+  /heading/knockout/form-2210: This tool doesn’t yet support Form 2210
+info:
+  /info/your-taxes/amount/est-tax-penalty-waiver:
+    body:
+      - p:
+          The IRS can waive the penalty if you didn’t pay enough because of a casualty, disaster, or other unusual
+          circumstance, or if you retired after reaching age 62 or became disabled in {{/lastTaxYear}} or {{/taxYear}}
+          and had reasonable cause.
+  /info/your-taxes/amount/est-tax-penalty-annualized:
+    body:
+      - p:
+          This method can lower or remove the penalty if you received most of your income late in the year. Answer no if
+          you aren’t sure.
+  /info/your-taxes/amount/est-tax-penalty-withholding-dates:
+    body:
+      - p:
+          Withholding is normally treated as paid in equal amounts on each payment due date. Answer no if you aren’t
+          sure.
+  /info/your-taxes/amount/est-tax-penalty-irs-will-bill:
+    body:
+      - p:
+          The tax on your return, minus your withholding, is $1,000 or more, so you may owe a penalty for not paying
+          enough tax during the year. You don’t need to figure it. The IRS will figure any penalty and send you a bill.
+      - p: Your return leaves the estimated tax penalty line blank.
+  /info/knockout/form-2210:
+    alertText:
+      body:
+        - p:
+            Your answers mean you need to file Form 2210, Underpayment of Estimated Tax by Individuals, with your
+            return. This tool doesn’t support that form yet.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file

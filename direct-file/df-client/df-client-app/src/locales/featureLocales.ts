@@ -39,6 +39,8 @@ import scheduleEicEn from './en.scheduleEic.yaml';
 import scheduleEicEs from './es.scheduleEic.yaml';
 import householdEmploymentEn from './en.householdEmployment.yaml';
 import householdEmploymentEs from './es.householdEmployment.yaml';
+import form2210En from './en.form2210.yaml';
+import form2210Es from './es.form2210.yaml';
 import staticClientEn from './en.staticClient.yaml';
 import staticClientEs from './es.staticClient.yaml';
 
@@ -121,6 +123,8 @@ for (const [locale, overlay] of [
   [esLocale, scheduleEicEs],
   [enLocale, householdEmploymentEn],
   [esLocale, householdEmploymentEs],
+  [enLocale, form2210En],
+  [esLocale, form2210Es],
   [enLocale, staticClientEn],
   [esLocale, staticClientEs],
 ] as const) {

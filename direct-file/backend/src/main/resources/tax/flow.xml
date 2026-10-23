@@ -144,6 +144,7 @@
           <Dependency module="form6251" path="/flowKnockoutAmtPreferenceItems" />
           <Dependency module="form6251" path="/flowKnockoutAmtMfsAddBack" />
           <Dependency module="income" path="/flowKnockoutForm8615" />
+          <Dependency module="form2210" path="/flowKnockoutForm2210" />
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
@@ -724,6 +725,7 @@
             <Dependency path="/creditsSectionComplete" />
             <Dependency module="familyAndHousehold" path="/familyAndHouseholdIsDone" />
             <Dependency path="/flowHasSeenAmount" />
+            <Dependency module="form2210" path="/form2210PartIIIsComplete" />
             <Dependency path="/deductionsSectionComplete" />
             <Dependency module="unemployment" path="/form1099GsIsDone" />
             <Dependency module="formW2s" path="/formW2sIsDone" />

@@ -19,7 +19,7 @@ import {
 } from '../../ContentDeclarations.js';
 
 export const AmountSubcategory = (
-  <Subcategory route='amount' completeIf='/flowHasSeenAmount'>
+  <Subcategory route='amount' completeIf={[`/flowHasSeenAmount`, `/form2210PartIIIsComplete`]}>
     {/* #78 PA-40 core: full-year PA residents. */}
     <SubSubcategory route='pa-40'>
       {/* #123 PA-40 School Code (PA-40 IN p. 5): the district where the filer lived on Dec. 31. */}
@@ -153,6 +153,51 @@ export const AmountSubcategory = (
       <DFAlert i18nKey='/info/knockout/form-8615' headingLevel='h3' type='warning' />
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
+    {/* #92 Form 2210: lines 1-7 are computed; when a penalty is possible, ask the Part II questions. Any box knocks
+        out; with none, the IRS figures any penalty and sends a bill, and Form 1040 line 38 stays blank. */}
+    <SubSubcategory route='estimated-tax-penalty'>
+      <Screen route='est-tax-penalty-waiver' condition='/form2210AskPartII'>
+        <Heading i18nKey='/heading/your-taxes/amount/est-tax-penalty-waiver' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/est-tax-penalty-waiver' />
+        <Boolean path='/form2210WaiverRequested' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='est-tax-penalty-annualized' condition='/form2210AskPartII'>
+        <Heading i18nKey='/heading/your-taxes/amount/est-tax-penalty-annualized' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/est-tax-penalty-annualized' />
+        <Boolean path='/form2210AnnualizedIncome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='est-tax-penalty-withholding-dates' condition='/form2210AskPartII'>
+        <Heading i18nKey='/heading/your-taxes/amount/est-tax-penalty-withholding-dates' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/est-tax-penalty-withholding-dates' />
+        <Boolean path='/form2210WithholdingOnActualDates' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='est-tax-penalty-joint-prior-year' condition='/form2210AskPartII'>
+        <Heading
+          i18nKey='/heading/your-taxes/amount/est-tax-penalty-joint-prior-year'
+          condition={{ operator: `isFalse`, condition: `/isFilingStatusMFJ` }}
+        />
+        <Heading
+          i18nKey='/heading/your-taxes/amount/est-tax-penalty-joint-prior-year-mfj'
+          condition='/isFilingStatusMFJ'
+        />
+        <Boolean path='/form2210FiledJointReturnPriorYear' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='est-tax-penalty-knockout' condition='/flowKnockoutForm2210' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/form-2210' />
+        <DFAlert i18nKey='/info/knockout/form-2210' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='est-tax-penalty-irs-will-bill' condition='/form2210ShowIrsWillBillNote'>
+        <Heading i18nKey='/heading/your-taxes/amount/est-tax-penalty-irs-will-bill' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/est-tax-penalty-irs-will-bill' />
+        <SaveAndOrContinueButton />
+      </Screen>
+    </SubSubcategory>
     <Screen route='tax-amount-intro'>
       <ContextHeading displayOnlyOn='edit' i18nKey='/heading/your-taxes/amount/tax-amount' />
       <Heading i18nKey='/heading/your-taxes/amount/tax-amount-intro' />

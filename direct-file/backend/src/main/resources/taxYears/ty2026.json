@@ -2037,6 +2037,21 @@
           "quote": "the poverty line used shall be the most recently published poverty line as of the 1st day of the regular enrollment period for coverage during such calendar year."
         }
       ]
+    },
+    {
+      "fact": "/form2210NoPenaltyThreshold",
+      "file": "form2210.xml",
+      "values": [
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6654(e)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6654",
+          "quote": "No addition to tax shall be imposed under subsection (a) for any taxable year if the tax shown on the return for such taxable year (or, if no return is filed, the tax), reduced by the credit allowable under section 31, is less than $1,000."
+        }
+      ]
     }
   ],
   "pendingReview": [

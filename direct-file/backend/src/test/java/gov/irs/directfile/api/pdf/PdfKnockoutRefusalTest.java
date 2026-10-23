@@ -134,6 +134,31 @@ class PdfKnockoutRefusalTest {
         assertBuilds(facts);
     }
 
+    /**
+     * Form 2210 (2026) draft, p. 1: "If box B, C, or D applies, you must figure your penalty and file Form 2210." A
+     * Part II box answered yes refuses the package through the real print path; with every answer no it builds.
+     */
+    @Test
+    void form2210PartIIYesIsRefusedByThePrintPath() throws Exception {
+        Map<String, FactTypeWithItem> facts =
+                CreditFormsTy2026PdfSmokeTest.scenarioFacts(PrintRefusingKnockoutsTest.FORM_2210_SCENARIO);
+        assertBuilds(facts);
+        facts.put(
+                "/form2210WaiverRequested",
+                MAPPER.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
+                        FactTypeWithItem.class));
+        for (String language : List.of("en", "es")) {
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
+                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            assertEquals(
+                    List.of(PrintRefusingKnockoutsTest.FORM_2210_KNOCKOUT),
+                    e.getBody().getProperties().get("blockingFacts"));
+        }
+    }
+
     @Test
     void goldenReturnStillBuilds() throws Exception {
         Map<String, FactTypeWithItem> facts = SubmissionBlockingFactsTest.golden();
