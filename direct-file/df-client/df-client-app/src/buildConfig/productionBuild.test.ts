@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { buildInputs } from './buildInputs.js';
-import { findAllScreensArtifacts } from './productionBuildCheck.js';
+import { findAllScreensArtifacts, productionBuildProblems } from './productionBuildCheck.js';
 
 describe(`build inputs`, () => {
   const root = `/app`;
@@ -50,5 +50,35 @@ describe(`findAllScreensArtifacts`, () => {
       `assets/AllScreensContent-789abc.js`,
       `assets/all-screens-def456.js`,
     ]);
+  });
+});
+
+describe(`productionBuildProblems`, () => {
+  let outDir: string;
+
+  beforeEach(() => {
+    outDir = fs.mkdtempSync(path.join(os.tmpdir(), `df-build-problems-`));
+    fs.writeFileSync(path.join(outDir, `index.html`), `<html></html>`);
+  });
+
+  afterEach(() => {
+    fs.rmSync(outDir, { recursive: true, force: true });
+  });
+
+  it(`passes an app-only build`, () => {
+    expect(productionBuildProblems(outDir)).toEqual([]);
+  });
+
+  it(`fails a missing output directory`, () => {
+    expect(productionBuildProblems(path.join(outDir, `missing`))).toEqual([
+      `${path.join(outDir, `missing`)} does not exist`,
+    ]);
+  });
+
+  it(`fails an output with all-screens artifacts and names them`, () => {
+    fs.mkdirSync(path.join(outDir, `all-screens`));
+    const problems = productionBuildProblems(outDir);
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain(`all-screens/`);
   });
 });
