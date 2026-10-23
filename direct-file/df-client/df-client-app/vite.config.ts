@@ -10,6 +10,7 @@ import path from 'path';
 import { createRequire } from 'module';
 import { buildContentSecurityPolicy } from './src/saveState/contentSecurityPolicy';
 import { prepareStaticIndexHtml } from './src/staticClient/staticIndexHtml';
+import { buildInputs } from './src/buildConfig/buildInputs';
 
 // @trussworks/react-uswds 8 publishes an `exports` map without its stylesheet, so the
 // `@trussworks/react-uswds/lib/index.css` specifier must be resolved to the file directly.
@@ -137,21 +138,15 @@ export const configOptions: UserConfig = {
      */
     target: browserslistToEsbuild(['>0.2%', 'not dead', 'not op_mini all']),
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index.html'),
-        'all-screens': path.resolve(__dirname, 'all-screens/index.html'),
-      },
+      input: buildInputs(__dirname, 'production'),
     },
   },
 };
 
 // https://vitejs.dev/config/
-// `--mode static` (static client-only build, src/staticClient) ships only the app page, not the all-screens tool.
-export default defineConfig(({ mode }) =>
-  mode === 'static'
-    ? {
-        ...configOptions,
-        build: { ...configOptions.build, rollupOptions: { input: { main: path.resolve(__dirname, 'index.html') } } },
-      }
-    : configOptions
-);
+// Production and `--mode static` builds ship only the app page; only `--mode development` adds the all-screens
+// tool (see src/buildConfig/buildInputs.ts). The dev server serves all-screens either way.
+export default defineConfig(({ mode }) => ({
+  ...configOptions,
+  build: { ...configOptions.build, rollupOptions: { input: buildInputs(__dirname, mode) } },
+}));

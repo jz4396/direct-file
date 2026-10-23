@@ -1,11 +1,397 @@
 <?xml-model href="./FactDictionaryModule.rng"?>
-<FactDictionaryModule><Facts><Fact path="/totalExemptPrimaryAndSpouseCount"><Name>Total Exempt Primary And Spouse Count</Name><Description>Total Exempt Primary And Spouse Count</Description><Export mef="true" /><Derived><Switch><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFJ" /></When><Then><Int>2</Int></Then></Case><Case><When><True /></When><Then><Int>1</Int></Then></Case></Switch></Derived></Fact><Fact path="/totalExemptionsCount"><Name>Total Exemptions Count</Name><Description>The sum of the number of claimed dependents and total exempt primary and spouse
-        count</Description><Export mef="true" /><Derived><Add><CollectionSum><Dependency path="/totalExemptPrimaryAndSpouseCount" /></CollectionSum><CollectionSum><Dependency module="familyAndHousehold" path="/claimedDependentsCount" /></CollectionSum></Add></Derived></Fact><Fact path="/adjustmentsToIncome"><Name>Adjustments to income</Name><Description>Adjustments to income to report on line 10 of Form 1040 and line 26 of Schedule.</Description><Export downstreamFacts="true" mef="true" /><Derived><Round><Add><Dependency module="studentLoanAdjustment" path="/studentLoanInterestAdjustmentAmount" /><Dependency path="/adjustmentsToIncomeExcludingStudentLoanInterest" /></Add></Round></Derived></Fact><Fact path="/adjustmentsToIncomeExcludingStudentLoanInterest"><Description>The adjustments to income used in the calculatation of non-IRA deduction MAGIs to determine deducible
+<FactDictionaryModule>
+  <Facts>
+    <Fact path="/totalExemptPrimaryAndSpouseCount">
+      <Name>Total Exempt Primary And Spouse Count</Name>
+      <Description>Total Exempt Primary And Spouse Count</Description>
+      <Export mef="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Int>2</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>1</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/totalExemptionsCount">
+      <Name>Total Exemptions Count</Name>
+      <Description>The sum of the number of claimed dependents and total exempt primary and spouse
+        count</Description>
+      <Export mef="true" />
+      <Derived>
+        <Add>
+          <CollectionSum>
+            <Dependency path="/totalExemptPrimaryAndSpouseCount" />
+          </CollectionSum>
+          <CollectionSum>
+            <Dependency module="familyAndHousehold" path="/claimedDependentsCount" />
+          </CollectionSum>
+        </Add>
+      </Derived>
+    </Fact>
+    <Fact path="/adjustmentsToIncome">
+      <Name>Adjustments to income</Name>
+      <Description>Adjustments to income to report on line 10 of Form 1040 and line 26 of Schedule.</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency module="studentLoanAdjustment" path="/studentLoanInterestAdjustmentAmount" />
+            <Dependency path="/adjustmentsToIncomeExcludingStudentLoanInterest" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/adjustmentsToIncomeExcludingStudentLoanInterest">
+      <Description>The adjustments to income used in the calculatation of non-IRA deduction MAGIs to determine deducible
         amounts. Used in the Student Loan Interest Deduction and Social Security Benefits Worksheets. This should
-        include be a sum of Schedule 1, lines 11 through 20, and 23 and 25</Description><Export downstreamFacts="true" /><Derived><Add><!-- Educator Expenses --><Dependency module="educatorAdjustment" path="/educatorExpensesAdjustment" /><!-- Health savings account deduction --><Switch><Case><When><IsComplete><Dependency module="hsa" path="/hsaTotalDeductibleAmount" /></IsComplete></When><Then><Dependency module="hsa" path="/hsaTotalDeductibleAmount" /></Then></Case><Case><When><True /></When><Then><Dollar>0</Dollar></Then></Case></Switch><!-- Certain business expenses of reservists, performing artists, and fee-basis government officials. --><!-- Moving expenses for members of the Armed Forces. Attach Form 3903 --><!-- Deductible part of self-employment tax (Schedule 1 line 15). 26 U.S.C. 164(f) --><Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" /><!-- Self-employed SEP, SIMPLE, and qualified plans --><!-- Self-employed health insurance deduction --><!-- Penalty on early withdrawal of savings (Schedule 1 line 18). 26 U.S.C. 62(a)(9) --><Dependency module="interest" path="/earlyWithdrawalPenaltyTotal" /><!-- Alimony paid --><!-- IRA deduction --><!-- Archer MSA deduction --><!-- Total other adjustments --></Add></Derived></Fact><Fact path="/agi"><Name>Adjusted Gross Income</Name><Description>Total income to report on line 11 of Form 1040.</Description><Export downstreamFacts="true" mef="true" /><Derived><Round><Subtract><Minuend><Dependency module="income" path="/totalIncome" /></Minuend><Subtrahends><Dependency path="/adjustmentsToIncome" /></Subtrahends></Subtract></Round></Derived></Fact><Fact path="/magiForStudentLoanInterestDeduction"><Name>Modified Adjusted Gross Income for Student Loan Interest Deduction</Name><Description>This is AGI, but without student loan interest deduction. Line 4 of the Student Loan Interest
-        Deduction Worksheet used for Schedule 1</Description><Export downstreamFacts="true" /><Derived><Subtract><Minuend><Dependency module="income" path="/totalIncome" /></Minuend><Subtrahends><Dependency path="/adjustmentsToIncomeExcludingStudentLoanInterest" /></Subtrahends></Subtract></Derived></Fact><Fact path="/taxableIncome"><Name>Taxable income</Name><Description>Taxable income as reported on line 15 of Form 1040.</Description><Export mef="true" /><ExportZero /><Derived><Round><GreaterOf><Subtract><Minuend><Dependency path="/agi" /></Minuend><Subtrahends><Dependency path="/totalDeductions" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf></Round></Derived></Fact><Fact path="/qualifiedBusinessIncomeDeduction"><Name>Qualified business income deduction</Name><Description>Qualified business income deductions for line 13 of Form 1040</Description><Derived><Dollar>0</Dollar></Derived></Fact><Fact path="/totalDeductions"><Name>Total deductions</Name><Description>Total deductions as reported on line 14 of Form 1040. #50: 2026 draft 1040 line 14 adds line 13a (Schedule 1-A line 44). #45: also line 12f (§170(p) non-itemizer charitable deduction); line 14 "Add lines 12e, 12f, 13a, and 13b".</Description><Export mef="true" /><Derived><Round><Add><Dependency path="/standardOrItemizedDeductions" /><Dependency module="charitableNonItemizer" path="/nonItemizerCharitableDeduction" /><Dependency module="schedule1A" path="/schedule1ALine44" /></Add></Round></Derived></Fact><Fact path="/wantsStandardDeduction"><Name>Wants standard deduction</Name><Description>Will the taxpayer take the standard deduction? #37: false when itemizing (scheduleA.xml /itemizesDeductions).</Description><Derived><Not><Dependency module="scheduleA" path="/itemizesDeductions" /></Not></Derived></Fact><Fact path="/standardOrItemizedDeductions"><Name>Standard or itemized deductions</Name><Description>The taxpayer's choice of standard or itemized deductions as reported on line 12
+        include be a sum of Schedule 1, lines 11 through 20, and 23 and 25</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add><!-- Educator Expenses -->
+          <Dependency module="educatorAdjustment" path="/educatorExpensesAdjustment" /><!-- Health savings account deduction -->
+          <Switch>
+            <Case>
+              <When>
+                <IsComplete>
+                  <Dependency module="hsa" path="/hsaTotalDeductibleAmount" />
+                </IsComplete>
+              </When>
+              <Then>
+                <Dependency module="hsa" path="/hsaTotalDeductibleAmount" />
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch><!-- Certain business expenses of reservists, performing artists, and fee-basis government officials. --><!-- Moving expenses for members of the Armed Forces. Attach Form 3903 --><!-- Deductible part of self-employment tax (Schedule 1 line 15). 26 U.S.C. 164(f) -->
+          <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" /><!-- Self-employed SEP, SIMPLE, and qualified plans --><!-- Self-employed health insurance deduction --><!-- Penalty on early withdrawal of savings (Schedule 1 line 18). 26 U.S.C. 62(a)(9) -->
+          <Dependency module="interest" path="/earlyWithdrawalPenaltyTotal" /><!-- Alimony paid --><!-- IRA deduction --><!-- Archer MSA deduction --><!-- Total other adjustments -->
+        </Add>
+      </Derived>
+    </Fact>
+    <Fact path="/agi">
+      <Name>Adjusted Gross Income</Name>
+      <Description>Total income to report on line 11 of Form 1040.</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <Derived>
+        <Round>
+          <Subtract>
+            <Minuend>
+              <Dependency module="income" path="/totalIncome" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/adjustmentsToIncome" />
+            </Subtrahends>
+          </Subtract>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/magiForStudentLoanInterestDeduction">
+      <Name>Modified Adjusted Gross Income for Student Loan Interest Deduction</Name>
+      <Description>This is AGI, but without student loan interest deduction. Line 4 of the Student Loan Interest
+        Deduction Worksheet used for Schedule 1</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency module="income" path="/totalIncome" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/adjustmentsToIncomeExcludingStudentLoanInterest" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/taxableIncome">
+      <Name>Taxable income</Name>
+      <Description>Taxable income as reported on line 15 of Form 1040.</Description>
+      <Export mef="true" />
+      <ExportZero />
+      <Derived>
+        <Round>
+          <GreaterOf>
+            <Subtract>
+              <Minuend>
+                <Dependency path="/agi" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/totalDeductions" />
+              </Subtrahends>
+            </Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/qualifiedBusinessIncomeDeduction">
+      <Name>Qualified business income deduction</Name>
+      <Description>Qualified business income deductions for line 13 of Form 1040</Description>
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/totalDeductions">
+      <Name>Total deductions</Name>
+      <Description>Total deductions as reported on line 14 of Form 1040. #50: 2026 draft 1040 line 14 adds line 13a
+        (Schedule 1-A line 44). #45: also line 12f (§170(p) non-itemizer charitable deduction); line 14 "Add lines 12e,
+        12f, 13a, and 13b".</Description>
+      <Export mef="true" />
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/standardOrItemizedDeductions" />
+            <Dependency module="charitableNonItemizer" path="/nonItemizerCharitableDeduction" />
+            <Dependency module="schedule1A" path="/schedule1ALine44" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/wantsStandardDeduction">
+      <Name>Wants standard deduction</Name>
+      <Description>Will the taxpayer take the standard deduction? #37: false when itemizing (scheduleA.xml
+        /itemizesDeductions).</Description>
+      <Derived>
+        <Not>
+          <Dependency module="scheduleA" path="/itemizesDeductions" />
+        </Not>
+      </Derived>
+    </Fact>
+    <Fact path="/standardOrItemizedDeductions">
+      <Name>Standard or itemized deductions</Name>
+      <Description>The taxpayer's choice of standard or itemized deductions as reported on line 12
         of Form 1040.
-        #37: standard deduction, or Schedule A line 18 when itemizing.</Description><Export mef="true" /><Derived><Round><Switch><Case><When><Dependency path="/wantsStandardDeduction" /></When><Then><Dependency module="standardDeduction" path="/standardDeduction" /></Then></Case><Case><When><True /></When><Then><Dependency module="scheduleA" path="/scheduleALine18" /></Then></Case></Switch></Round></Derived></Fact><Fact path="/adjustmentsTotal"><Name>Other Deductions</Name><Description>Deductions such as educator expenses and student loan interest</Description><Derived><Add><Dependency module="educatorAdjustment" path="/educatorExpensesAdjustment" /><Dependency module="studentLoanAdjustment" path="/studentLoanInterestAdjustmentAmount" /></Add></Derived></Fact><Fact path="/hasAdjustments"><Name>Has adjustments</Name><Description>Whether there are adjustments such as educator expenses and student loan interest greater than zero</Description><Derived><GreaterThan><Left><Dependency path="/adjustmentsTotal" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan></Derived></Fact><Fact path="/form8814Included"><Name>8814 Included</Name><Description>Is Form 8814 included</Description><Derived><False /></Derived></Fact><Fact path="/form4972Included"><Name>4972 Included</Name><Description>Is Form 4972 included</Description><Derived><False /></Derived></Fact><Fact path="/formOtherIncluded"><Name>Other Included</Name><Description>Is another form included</Description><Derived><False /></Derived></Fact><Fact path="/otherFormName"><Name>Other Form Name</Name><Description>the name of the other form included</Description><Derived><String></String></Derived></Fact><Fact path="/roundedTaxableIncome"><Name>Rounded taxable income</Name><Description>Income less than $100,000 uses the tax tables from the Instructions for Form
+        #37:
+        standard deduction, or Schedule A line 18 when itemizing.</Description>
+      <Export mef="true" />
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Dependency path="/wantsStandardDeduction" />
+              </When>
+              <Then>
+                <Dependency module="standardDeduction" path="/standardDeduction" />
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dependency module="scheduleA" path="/scheduleALine18" />
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/adjustmentsTotal">
+      <Name>Other Deductions</Name>
+      <Description>Deductions such as educator expenses and student loan interest</Description>
+      <Derived>
+        <Add>
+          <Dependency module="educatorAdjustment" path="/educatorExpensesAdjustment" />
+          <Dependency module="studentLoanAdjustment" path="/studentLoanInterestAdjustmentAmount" />
+        </Add>
+      </Derived>
+    </Fact>
+    <Fact path="/hasAdjustments">
+      <Name>Has adjustments</Name>
+      <Description>Whether there are adjustments such as educator expenses and student loan interest greater than zero</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/adjustmentsTotal" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+    <Fact path="/form8814Included">
+      <Name>8814 Included</Name>
+      <Description>Is Form 8814 included</Description>
+      <Derived>
+        <False />
+      </Derived>
+    </Fact>
+    <Fact path="/form4972Included">
+      <Name>4972 Included</Name>
+      <Description>Is Form 4972 included</Description>
+      <Derived>
+        <False />
+      </Derived>
+    </Fact>
+    <Fact path="/formOtherIncluded">
+      <Name>Other Included</Name>
+      <Description>Is another form included</Description>
+      <Derived>
+        <False />
+      </Derived>
+    </Fact>
+    <Fact path="/otherFormName">
+      <Name>Other Form Name</Name>
+      <Description>the name of the other form included</Description>
+      <Derived>
+        <String></String>
+      </Derived>
+    </Fact>
+    <Fact path="/roundedTaxableIncome">
+      <Name>Rounded taxable income</Name>
+      <Description>Income less than $100,000 uses the tax tables from the Instructions for Form
         1040. This fact selects
         the "midpoint" that corresponds to each entry in the tax tables, for use in calculating
-        tenative tax.</Description><Derived><Switch><!-- No tax if you've got no taxable income --><Case><When><LessThanOrEqual><Left><Dependency path="/taxableIncome" /></Left><Right><Dollar>0</Dollar></Right></LessThanOrEqual></When><Then><Dollar>0</Dollar></Then></Case><!-- There are three hardcoded midpoints for income less than $25 --><Case><When><LessThan><Left><Dependency path="/taxableIncome" /></Left><Right><Dollar>5</Dollar></Right></LessThan></When><Then><Dollar>2.50</Dollar></Then></Case><Case><When><LessThan><Left><Dependency path="/taxableIncome" /></Left><Right><Dollar>15</Dollar></Right></LessThan></When><Then><Dollar>10</Dollar></Then></Case><Case><When><LessThan><Left><Dependency path="/taxableIncome" /></Left><Right><Dollar>25</Dollar></Right></LessThan></When><Then><Dollar>20</Dollar></Then></Case><!-- The tax tables use increments of $25 for income between $25 and $3,000 --><Case><When><LessThan><Left><Dependency path="/taxableIncome" /></Left><Right><Dollar>3000</Dollar></Right></LessThan></When><Then><Add><StepwiseMultiply><Multiplicand><Dependency path="/taxableIncome" /></Multiplicand><Rate><Rational>25/25</Rational><!-- $25 for every whole $25 of income --></Rate></StepwiseMultiply><Dollar>12.50</Dollar><!-- Add $12.50 to find the midpoint of the row --></Add></Then></Case><!-- The tax tables use increments of $50 for income between $3,000 and $100,000 --><Case><When><LessThan><Left><Dependency path="/taxableIncome" /></Left><Right><Dollar>100000</Dollar></Right></LessThan></When><Then><Add><StepwiseMultiply><Multiplicand><Dependency path="/taxableIncome" /></Multiplicand><Rate><Rational>50/50</Rational><!-- $50 for every whole $50 of income --></Rate></StepwiseMultiply><Dollar>25</Dollar><!-- Add $25 to find the midpoint of the row --></Add></Then></Case><!-- Income of $100,000 and over uses the tax computation worksheet --><Case><When><GreaterThanOrEqual><Left><Dependency path="/taxableIncome" /></Left><Right><Dollar>100000</Dollar></Right></GreaterThanOrEqual></When><Then><Dependency path="/taxableIncome" /></Then></Case></Switch></Derived></Fact></Facts></FactDictionaryModule>
+        tenative tax.</Description>
+      <Derived>
+        <Switch><!-- No tax if you've got no taxable income -->
+          <Case>
+            <When>
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency path="/taxableIncome" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </LessThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case><!-- There are three hardcoded midpoints for income less than $25 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/taxableIncome" />
+                </Left>
+                <Right>
+                  <Dollar>5</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>2.50</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/taxableIncome" />
+                </Left>
+                <Right>
+                  <Dollar>15</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>10</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/taxableIncome" />
+                </Left>
+                <Right>
+                  <Dollar>25</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>20</Dollar>
+            </Then>
+          </Case><!-- The tax tables use increments of $25 for income between $25 and $3,000 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/taxableIncome" />
+                </Left>
+                <Right>
+                  <Dollar>3000</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <StepwiseMultiply>
+                  <Multiplicand>
+                    <Dependency path="/taxableIncome" />
+                  </Multiplicand>
+                  <Rate>
+                    <Rational>25/25</Rational><!-- $25 for every whole $25 of income -->
+                  </Rate>
+                </StepwiseMultiply>
+                <Dollar>12.50</Dollar><!-- Add $12.50 to find the midpoint of the row -->
+              </Add>
+            </Then>
+          </Case><!-- The tax tables use increments of $50 for income between $3,000 and $100,000 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/taxableIncome" />
+                </Left>
+                <Right>
+                  <Dollar>100000</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <StepwiseMultiply>
+                  <Multiplicand>
+                    <Dependency path="/taxableIncome" />
+                  </Multiplicand>
+                  <Rate>
+                    <Rational>50/50</Rational><!-- $50 for every whole $50 of income -->
+                  </Rate>
+                </StepwiseMultiply>
+                <Dollar>25</Dollar><!-- Add $25 to find the midpoint of the row -->
+              </Add>
+            </Then>
+          </Case><!-- Income of $100,000 and over uses the tax computation worksheet -->
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/taxableIncome" />
+                </Left>
+                <Right>
+                  <Dollar>100000</Dollar>
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Dependency path="/taxableIncome" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
