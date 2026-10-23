@@ -18,7 +18,7 @@ const amount = `/flow/your-taxes/amount`;
 const w2Id = `4623aac9-6d6f-424e-9ba2-8cdf19d45b10`;
 
 // #80 PA part-year residency routing.
-const graph = (move: `paToFl` | `flToPa` | `other`, w2State: `pa` | `other` = `pa`) =>
+const graph = (move: `paToFl` | `flToPa` | `other`, w2State: `pa` | `other` = `pa`, nonresidentPaPay?: boolean) =>
   setupFactGraph({
     ...baseFilerData,
     ...makeW2Data(50000),
@@ -30,6 +30,9 @@ const graph = (move: `paToFl` | `flToPa` | `other`, w2State: `pa` | `other` = `p
     '/paPartYearMove': createEnumWrapper(move, `/paPartYearMoveOptions`),
     '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    ...(nonresidentPaPay === undefined
+      ? {}
+      : { '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(nonresidentPaPay) }),
   }).factGraph;
 
 describe(`PA part-year residency (#80) flow`, () => {
@@ -53,9 +56,19 @@ describe(`PA part-year residency (#80) flow`, () => {
       `${amount}/pa-part-year-knockout`
     );
   });
-  it(`a supported part-year return continues to the tax amount`, ({ task }) => {
+  it(`a supported part-year return asks about PA-source pay in the nonresident period`, ({ task }) => {
     expect(givenFacts(graph(`paToFl`)).atPath(`${amount}/pa-unsupported-items`, null, task)).toRouteNextTo(
-      `${amount}/tax-amount-intro`
+      `${amount}/pa-part-year-nonresident-pa-pay`
     );
+  });
+  it(`no PA-source pay in the nonresident period continues to the tax amount`, ({ task }) => {
+    expect(
+      givenFacts(graph(`paToFl`, `pa`, false)).atPath(`${amount}/pa-part-year-nonresident-pa-pay`, null, task)
+    ).toRouteNextTo(`${amount}/tax-amount-intro`);
+  });
+  it(`PA-source pay in the nonresident period routes to the PA Schedule NRH knockout`, ({ task }) => {
+    expect(
+      givenFacts(graph(`flToPa`, `pa`, true)).atPath(`${amount}/pa-part-year-nonresident-pa-pay`, null, task)
+    ).toRouteNextTo(`${amount}/pa-part-year-nonresident-pa-pay-knockout`);
   });
 });

@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PrintRefusingKnockoutsTest {
     static final String CODE_Q_KNOCKOUT = "/flowKnockoutForm8949CodeQ";
     static final String SCHEDULE_EIC_KNOCKOUT = "/flowKnockoutScheduleEicWithoutTy2026Template";
+    static final String PA_NRH_KNOCKOUT = "/flowKnockoutPaNonresidentPaSourcePay";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
     /** Lines 4 and 7 are $1,000 or more and every Part II answer is no, so the IRS figures any penalty. */
     static final String FORM_2210_SCENARIO = "form2210-mfj-irs-will-bill.json";
@@ -62,9 +63,14 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheCodeQScheduleEicAndForm2210Knockouts() {
+    void listHoldsTheCodeQScheduleEicPaScheduleNrhAndForm2210Knockouts() {
         assertEquals(
-                List.of(CODE_Q_KNOCKOUT, SCHEDULE_EIC_KNOCKOUT, FORM_2210_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
+                List.of(
+                        CODE_Q_KNOCKOUT,
+                        SCHEDULE_EIC_KNOCKOUT,
+                        PA_NRH_KNOCKOUT,
+                        FORM_2210_KNOCKOUT),
+                PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
                 PrintRefusingKnockouts.FACT_PATHS.size(),
@@ -192,9 +198,9 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * Every backend scenario prints unless it has Schedule EIC. None has a Form 8949 code Q row, and both knockouts
-     * are complete in each, including the two that stop before the EIC questions, so fail-closed refuses no clean
-     * return. The code Q refusal through the real print path is
+     * Every backend scenario prints unless it has Schedule EIC. None has a Form 8949 code Q row or a PA/FL part-year
+     * return, and each knockout is complete in each, including the two that stop before the EIC questions, so
+     * fail-closed refuses no clean return. The code Q refusal through the real print path is
      * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath.
      */
     @Test

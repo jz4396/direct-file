@@ -160,6 +160,7 @@
               <Dependency module="paPit" path="/flowKnockoutPaScheduleA" />
               <Dependency module="paPit" path="/flowKnockoutPaScheduleB" />
               <Dependency module="paPit" path="/flowKnockoutPaScheduleD" />
+              <Dependency module="paPit" path="/flowKnockoutPaNonresidentPaSourcePay" />
             </Any>
           </All>
         </Any>
