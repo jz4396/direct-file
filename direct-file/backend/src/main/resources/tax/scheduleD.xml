@@ -288,6 +288,65 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutForm8949CodeQ">
+      <Export downstreamFacts="true" />
+      <Name>Flow knockout: Form 8949 adjustment code Q (section 1202 exclusion)</Name>
+      <Description>True when any Form 8949 row's code field (column (f)) contains the code letter Q, upper or
+        lower case.
+        Form 8949 instr. (2025) p. 8, code Q: "You sold or exchanged QSB stock and can exclude part
+        of the gain" (the
+        section 1202 exclusion, entered as a negative amount in column (g)). Under IRC
+        §1(h)(4)(A)(ii)
+        (https://www.law.cornell.edu/uscode/text/26/1) 28-percent rate gain includes "section
+        1202 gain", which §1(h)(7)
+        defines as "the excess of (A) the gain which would be excluded from gross
+        income under section 1202 but for the
+        percentage limitation in section 1202(a), over (B) the gain
+        excluded from gross income under section 1202". That
+        amount goes on Schedule D line 18 (Schedule D
+        instr. (2025), Line 18, 28% Rate Gain Worksheet), and a nonzero
+        line 18 means line 20 is No and the tax
+        is figured on the Schedule D Tax Worksheet, which this tool does not
+        compute (scheduleD3.xml uses the
+        Qualified Dividends and Capital Gain Tax Worksheet only). The row does not say
+        which section 1202(a)
+        percentage applies, so any code Q stops the return. A blank code field is complete and not
+        Q; no rows is
+        false.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/form8949Transactions" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/form8949Transactions/*/hasAdjustmentCodeQ" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions">
       <Export downstreamFacts="true" />
       <Name>Form 8949 transactions</Name>
@@ -486,6 +545,29 @@
       </Writable>
     </Fact>
 
+    <Fact path="/form8949Transactions/*/hasAdjustmentCodeQ">
+      <Name>Form 8949 row has adjustment code Q</Name>
+      <Description>True when ../adjustmentCode contains the code letter Q in either case (codes are single
+        letters,
+        entered together, e.g. "BQ" or "Q"). A blank code field is complete and false. Used by
+        /flowKnockoutForm8949CodeQ.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../adjustmentCode" />
+          </IsComplete>
+          <Regex>
+            <Input>
+              <Dependency path="../adjustmentCode" />
+            </Input>
+            <Pattern>
+              <String>[\s\S]*[Qq][\s\S]*</String>
+            </Pattern>
+          </Regex>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions/*/box">
       <Name>Form 8949 checkbox</Name>
       <Description>Which Form 8949 box applies (A–L). Instructions pp.3–4.</Description>
@@ -635,22 +717,64 @@
 
     <Fact path="/form8949Transactions/*/gainOrLoss">
       <Name>Gain or loss</Name>
-      <Description>Form 8949 column (h): column (d) − column (e) ± column (g)
-        (Form 8949 instr. (2025) p.11, "Column
-        (h)—Gain (or Loss)" Examples 1–3).</Description>
+      <Description>Form 8949 column (h): rounded column (d) − rounded column (e) ± rounded column (g) (Form 8949 instr.
+        (2025) p.11, "Column (h)—Gain (or Loss)" Examples 1–3).</Description>
+      <Derived>
+        <Add>
+          <Subtract>
+            <Minuend>
+              <Dependency path="../roundedProceeds" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="../roundedCostBasis" />
+            </Subtrahends>
+          </Subtract>
+          <Dependency path="../roundedAdjustment" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/roundedProceeds">
+      <Name>Form 8949 column (d) rounded to whole dollars</Name>
+      <Description>Form 8949 column (d) Proceeds (sales price), ../proceeds rounded once to whole dollars (50 cents and
+        up round up). Columns (d), (e) and (g) are rounded per row and column (h) is figured from the rounded amounts,
+        so (d) - (e) + (g) = (h) on every row and on every line 2 total and Schedule D line. Each row is an amount
+        entered on Form 8949; Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole
+        dollars, you must round all amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99
+        cents to the next dollar." Gain or loss is (d) - (e) under IRC 1001(a).</Description>
       <Derived>
         <Round>
-          <Add>
-            <Subtract>
-              <Minuend>
-                <Dependency path="../proceeds" />
-              </Minuend>
-              <Subtrahends>
-                <Dependency path="../costBasis" />
-              </Subtrahends>
-            </Subtract>
-            <Dependency path="../adjustment" />
-          </Add>
+          <Dependency path="../proceeds" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/roundedCostBasis">
+      <Name>Form 8949 column (e) rounded to whole dollars</Name>
+      <Description>Form 8949 column (e) Cost or other basis, ../costBasis rounded once to whole dollars (50 cents and up
+        round up). Columns (d), (e) and (g) are rounded per row and column (h) is figured from the rounded amounts, so
+        (d) - (e) + (g) = (h) on every row and on every line 2 total and Schedule D line. Each row is an amount entered
+        on Form 8949; Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole dollars, you
+        must round all amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99 cents to the
+        next dollar." Gain or loss is (d) - (e) under IRC 1001(a).</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../costBasis" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/roundedAdjustment">
+      <Name>Form 8949 column (g) rounded to whole dollars</Name>
+      <Description>Form 8949 column (g) Amount of adjustment, ../adjustment rounded once to whole dollars (50 cents and
+        up round up). Columns (d), (e) and (g) are rounded per row and column (h) is figured from the rounded amounts,
+        so (d) - (e) + (g) = (h) on every row and on every line 2 total and Schedule D line. Each row is an amount
+        entered on Form 8949; Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole
+        dollars, you must round all amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99
+        cents to the next dollar." Gain or loss is (d) - (e) under IRC 1001(a).</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../adjustment" />
         </Round>
       </Derived>
     </Fact>
@@ -711,8 +835,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIProceeds">
       <Name>Form 8949 Part I print: proceeds</Name>
-      <Description>#19 print-only: ../proceeds when the row belongs in Part I (short-term), otherwise no value so the
-        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedProceeds when the row belongs in Part I (short-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -720,7 +844,7 @@
               <Dependency path="../isShortTerm" />
             </When>
             <Then>
-              <Dependency path="../proceeds" />
+              <Dependency path="../roundedProceeds" />
             </Then>
           </Case>
         </Switch>
@@ -729,8 +853,8 @@
 
     <Fact path="/form8949Transactions/*/printPartICostBasis">
       <Name>Form 8949 Part I print: costBasis</Name>
-      <Description>#19 print-only: ../costBasis when the row belongs in Part I (short-term), otherwise no value so the
-        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedCostBasis when the row belongs in Part I (short-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -738,7 +862,7 @@
               <Dependency path="../isShortTerm" />
             </When>
             <Then>
-              <Dependency path="../costBasis" />
+              <Dependency path="../roundedCostBasis" />
             </Then>
           </Case>
         </Switch>
@@ -765,8 +889,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIAdjustment">
       <Name>Form 8949 Part I print: adjustment</Name>
-      <Description>#19 print-only: ../adjustment when the row belongs in Part I (short-term), otherwise no value so the
-        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedAdjustment when the row belongs in Part I (short-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -774,7 +898,7 @@
               <Dependency path="../isShortTerm" />
             </When>
             <Then>
-              <Dependency path="../adjustment" />
+              <Dependency path="../roundedAdjustment" />
             </Then>
           </Case>
         </Switch>
@@ -855,8 +979,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIProceeds">
       <Name>Form 8949 Part II print: proceeds</Name>
-      <Description>#19 print-only: ../proceeds when the row belongs in Part II (long-term), otherwise no value so the
-        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedProceeds when the row belongs in Part II (long-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -864,7 +988,7 @@
               <Dependency path="../isLongTerm" />
             </When>
             <Then>
-              <Dependency path="../proceeds" />
+              <Dependency path="../roundedProceeds" />
             </Then>
           </Case>
         </Switch>
@@ -873,8 +997,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIICostBasis">
       <Name>Form 8949 Part II print: costBasis</Name>
-      <Description>#19 print-only: ../costBasis when the row belongs in Part II (long-term), otherwise no value so the
-        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedCostBasis when the row belongs in Part II (long-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -882,7 +1006,7 @@
               <Dependency path="../isLongTerm" />
             </When>
             <Then>
-              <Dependency path="../costBasis" />
+              <Dependency path="../roundedCostBasis" />
             </Then>
           </Case>
         </Switch>
@@ -909,8 +1033,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIAdjustment">
       <Name>Form 8949 Part II print: adjustment</Name>
-      <Description>#19 print-only: ../adjustment when the row belongs in Part II (long-term), otherwise no value so the
-        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedAdjustment when the row belongs in Part II (long-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -918,7 +1042,7 @@
               <Dependency path="../isLongTerm" />
             </When>
             <Then>
-              <Dependency path="../adjustment" />
+              <Dependency path="../roundedAdjustment" />
             </Then>
           </Case>
         </Switch>
@@ -1671,6 +1795,285 @@
             <Dollar>0</Dollar>
           </Right>
         </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <!-- #35 follow-up: Schedule D lines 1b, 2, 3, 8b, 9 and 10, columns (d), (e) and (g). Column (h) is
+      /scheduleDLine1b etc. in scheduleD2.xml. 2026 draft Form 8949 (irs.gov/pub/irs-dft, Created 4/1/26) Part I and
+      Part II line 2: "Totals. Add the amounts in columns (d), (e), (g), and (h) (subtract negative amounts). Enter each
+      total here and include on your Schedule D, line 1b (if Box A or Box G above is checked), line 2 (if Box B or Box H
+      above is checked), or line 3 (if Box C or Box I above is checked)" (Part II: lines 8b, 9 and 10 for D/J, E/K and
+      F/L). Column (h) = (d) - (e) + (g) is gain or loss under IRC 1001(a), and the short-term/long-term split is IRC
+      1222. Each column sums the per-row whole-dollar amounts (/form8949Transactions/*/roundedProceeds etc.), the same
+      rounded amounts column (h) is figured from, so (d) - (e) + (g) = (h) holds on every line; $0 prints blank. -->
+    <Fact path="/scheduleDLine1bTransactions">
+      <Name>Schedule D line 1b transactions (Form 8949 Box A or Box G)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 1b (Box A or G, isBoxA).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxA" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bProceeds">
+      <Name>Schedule D line 1b column (d)</Name>
+      <Description>Schedule D line 1b column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for
+        Box A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bCostBasis">
+      <Name>Schedule D line 1b column (e)</Name>
+      <Description>Schedule D line 1b column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bAdjustment">
+      <Name>Schedule D line 1b column (g)</Name>
+      <Description>Schedule D line 1b column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Transactions">
+      <Name>Schedule D line 2 transactions (Form 8949 Box B or Box H)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 2 (Box B or H, isBoxB).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxB" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Proceeds">
+      <Name>Schedule D line 2 column (d)</Name>
+      <Description>Schedule D line 2 column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for Box
+        B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2CostBasis">
+      <Name>Schedule D line 2 column (e)</Name>
+      <Description>Schedule D line 2 column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Adjustment">
+      <Name>Schedule D line 2 column (g)</Name>
+      <Description>Schedule D line 2 column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Transactions">
+      <Name>Schedule D line 3 transactions (Form 8949 Box C or Box I)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 3 (Box C or I, isBoxC).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxC" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Proceeds">
+      <Name>Schedule D line 3 column (d)</Name>
+      <Description>Schedule D line 3 column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for Box
+        C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3CostBasis">
+      <Name>Schedule D line 3 column (e)</Name>
+      <Description>Schedule D line 3 column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Adjustment">
+      <Name>Schedule D line 3 column (g)</Name>
+      <Description>Schedule D line 3 column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bTransactions">
+      <Name>Schedule D line 8b transactions (Form 8949 Box D or Box J)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 8b (Box D or J, isBoxD).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxD" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bProceeds">
+      <Name>Schedule D line 8b column (d)</Name>
+      <Description>Schedule D line 8b column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bCostBasis">
+      <Name>Schedule D line 8b column (e)</Name>
+      <Description>Schedule D line 8b column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for
+        Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bAdjustment">
+      <Name>Schedule D line 8b column (g)</Name>
+      <Description>Schedule D line 8b column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Transactions">
+      <Name>Schedule D line 9 transactions (Form 8949 Box E or Box K)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 9 (Box E or K, isBoxE).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxE" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Proceeds">
+      <Name>Schedule D line 9 column (d)</Name>
+      <Description>Schedule D line 9 column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9CostBasis">
+      <Name>Schedule D line 9 column (e)</Name>
+      <Description>Schedule D line 9 column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for Box
+        E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Adjustment">
+      <Name>Schedule D line 9 column (g)</Name>
+      <Description>Schedule D line 9 column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Transactions">
+      <Name>Schedule D line 10 transactions (Form 8949 Box F or Box L)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 10 (Box F or L, isBoxF).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxF" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Proceeds">
+      <Name>Schedule D line 10 column (d)</Name>
+      <Description>Schedule D line 10 column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10CostBasis">
+      <Name>Schedule D line 10 column (e)</Name>
+      <Description>Schedule D line 10 column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for
+        Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Adjustment">
+      <Name>Schedule D line 10 column (g)</Name>
+      <Description>Schedule D line 10 column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
       </Derived>
     </Fact>
 
