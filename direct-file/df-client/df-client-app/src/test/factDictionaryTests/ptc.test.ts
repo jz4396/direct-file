@@ -145,10 +145,12 @@ describe(`Premium tax credit`, () => {
       task.meta.testedFactPaths = [`/householdIncomeAsPercent`];
       const { factGraph } = setupFactGraph({
         ...ptcSingleFiler,
-        ...makeW2Data(6998),
+        ...makeW2Data(7511),
       });
-      expect(factGraph.get(Path.concretePath(`/federalPovertyLevelThreshold`, null)).get.toString()).toBe(`14580.00`);
-      // calculates 6998 * 100 / 14580 = 47.99725652 which should be truncated to give 47, but used to be 48
+      // #91: TY2026 uses the 2025 HHS poverty guidelines, 90 FR 5917 (Jan. 17, 2025),
+      // https://www.govinfo.gov/content/pkg/FR-2025-01-17/pdf/2025-01377.pdf p. 5917: "$15,650" for one person.
+      expect(factGraph.get(Path.concretePath(`/federalPovertyLevelThreshold`, null)).get.toString()).toBe(`15650.00`);
+      // calculates 7511 * 100 / 15650 = 47.9936... which should be truncated to give 47, not rounded to 48
       expect(factGraph.get(Path.concretePath(`/householdIncomeAsPercent`, null)).get).toBe(47);
     });
   });
@@ -163,9 +165,13 @@ describe(`Premium tax credit`, () => {
         ...ptcSingleFiler,
         ...makeW2Data(38337),
       });
-      expect(factGraph.get(Path.concretePath(`/formattedApplicableFigure`, null)).get).toBe(`0.0448`);
-      // calculates Round(38337 * 0.0448) = Round(1717.4976). This used to round to 1718 but it should round down
-      expect(factGraph.get(Path.concretePath(`/ptcAnnualContributionAmount`, null)).get.toString()).toBe(`1717.00`);
+      // #91: 38337 * 100 / 15650 (2025 HHS guideline, 90 FR 5917 p. 5917) = 244.96, truncated to 244%. The
+      // applicable percentage table is still the TY2024 one (ptc.xml /applicableFigure: from 150% to 300% of the
+      // poverty line, 0.04% for each percentage point over 150%; see /flowKnockoutPtcTy2026RulesNotImplemented):
+      // (244 - 150) x 0.0004 = 0.0376.
+      expect(factGraph.get(Path.concretePath(`/formattedApplicableFigure`, null)).get).toBe(`0.0376`);
+      // calculates Round(38337 * 0.0376) = Round(1441.4712), which rounds down
+      expect(factGraph.get(Path.concretePath(`/ptcAnnualContributionAmount`, null)).get.toString()).toBe(`1441.00`);
     });
   });
 });

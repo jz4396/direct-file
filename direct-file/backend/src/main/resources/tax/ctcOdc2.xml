@@ -382,7 +382,7 @@
       <Description>The amount of earned income that must be exceeded in order to receive the
         refundable additional child
         tax credit.</Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>2500</Dollar>
