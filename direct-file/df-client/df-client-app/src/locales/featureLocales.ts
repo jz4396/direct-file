@@ -35,6 +35,8 @@ import interestScheduleBEn from './en.interestScheduleB.yaml';
 import interestScheduleBEs from './es.interestScheduleB.yaml';
 import ctcFilerSsnEn from './en.ctcFilerSsn.yaml';
 import ctcFilerSsnEs from './es.ctcFilerSsn.yaml';
+import scheduleEicEn from './en.scheduleEic.yaml';
+import scheduleEicEs from './es.scheduleEic.yaml';
 import householdEmploymentEn from './en.householdEmployment.yaml';
 import householdEmploymentEs from './es.householdEmployment.yaml';
 import form2210En from './en.form2210.yaml';
@@ -117,6 +119,8 @@ for (const [locale, overlay] of [
   [esLocale, interestScheduleBEs],
   [enLocale, ctcFilerSsnEn],
   [esLocale, ctcFilerSsnEs],
+  [enLocale, scheduleEicEn],
+  [esLocale, scheduleEicEs],
   [enLocale, householdEmploymentEn],
   [esLocale, householdEmploymentEs],
   [enLocale, form2210En],
