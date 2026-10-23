@@ -23,7 +23,10 @@ public final class PrintRefusingKnockouts {
     public static final List<String> FACT_PATHS = List.of(
             // Form 8949 code Q (section 1202 exclusion): section 1202 gain is 28-percent rate gain
             // (26 U.S.C. 1(h)(4)(A)(ii), 1(h)(7)) on Schedule D line 18, which needs the Schedule D Tax Worksheet.
-            "/flowKnockoutForm8949CodeQ");
+            "/flowKnockoutForm8949CodeQ",
+            // Schedule EIC has no TY2026 template; a qualifying child counts only if the return gives the child's
+            // name, age and TIN (26 U.S.C. 32(c)(3)(D)(i)), which Schedule EIC carries.
+            "/flowKnockoutScheduleEicWithoutTy2026Template");
 
     private PrintRefusingKnockouts() {}
 

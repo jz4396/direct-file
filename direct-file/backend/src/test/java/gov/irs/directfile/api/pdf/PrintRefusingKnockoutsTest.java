@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** The shared list of knockouts that stop the printed package, and which paths refuse the print. */
 class PrintRefusingKnockoutsTest {
     static final String CODE_Q_KNOCKOUT = "/flowKnockoutForm8949CodeQ";
+    static final String SCHEDULE_EIC_KNOCKOUT = "/flowKnockoutScheduleEicWithoutTy2026Template";
     static final String SECRET = "value 123-45-6789";
 
     static Result<Object> complete(Object v) {
@@ -57,8 +58,8 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheForm8949CodeQKnockout() {
-        assertEquals(List.of(CODE_Q_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
+    void listHoldsTheCodeQAndScheduleEicKnockouts() {
+        assertEquals(List.of(CODE_Q_KNOCKOUT, SCHEDULE_EIC_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
                 PrintRefusingKnockouts.FACT_PATHS.size(),
@@ -164,21 +165,35 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * Every backend scenario prints: none has a Form 8949 code Q row, and the knockout is complete and false in each,
-     * so fail-closed refuses no clean return. The code Q refusal through the real print path is
+     * Every backend scenario prints unless it has Schedule EIC. None has a Form 8949 code Q row, and both knockouts
+     * are complete in each, including the two that stop before the EIC questions, so fail-closed refuses no clean
+     * return. The code Q refusal through the real print path is
      * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath.
      */
     @Test
-    void everyScenarioStillPrints() throws Exception {
+    void everyScenarioWithoutScheduleEicStillPrints() throws Exception {
         FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
         ObjectMapper mapper = new ObjectMapper();
         Resource[] files = new PathMatchingResourcePatternResolver().getResources("classpath:scenarios/*.json");
         assertTrue(files.length > 100, "scenarios found: " + files.length);
+        int refused = 0;
+        int printed = 0;
         for (Resource file : files) {
             JsonNode root = mapper.readTree(file.getInputStream());
             Map<String, FactTypeWithItem> facts =
                     mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
-            assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(facts)), file.getFilename());
+            Graph graph = fgs.getGraph(facts);
+            Result<Object> schedule = graph.get("/pdfIncludeScheduleEic");
+            boolean withScheduleEic = schedule.complete() && Boolean.TRUE.equals(schedule.get());
+            List<String> paths = PrintRefusingKnockouts.refusingPaths(graph);
+            assertEquals(withScheduleEic ? List.of(SCHEDULE_EIC_KNOCKOUT) : List.of(), paths, file.getFilename());
+            if (withScheduleEic) {
+                refused++;
+            } else {
+                printed++;
+            }
         }
+        assertEquals(50, refused, "scenarios with Schedule EIC");
+        assertEquals(111, printed, "scenarios that print");
     }
 }
