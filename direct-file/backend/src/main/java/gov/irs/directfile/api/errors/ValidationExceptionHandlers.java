@@ -35,6 +35,8 @@ import gov.irs.directfile.api.taxreturn.TaxReturnController;
 public class ValidationExceptionHandlers {
     public record ErrorResponse(String message, Map<String, String> errors) {}
 
+    public static final String UNHANDLED_ERROR_MESSAGE = "An unexpected error occurred.";
+
     private final AuditService auditService;
 
     public ValidationExceptionHandlers(AuditService auditService) {
@@ -103,11 +105,13 @@ public class ValidationExceptionHandlers {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErrorResponse handleUnhandledException(Exception ex, HandlerMethod handlerMethod) {
+        // Exception text can carry internal detail or return data, so the body is fixed and only the class is logged.
+        log.error("Unhandled {}", ex.getClass().getName());
         return logExceptionAndGenerateErrorResponse(
-                handlerMethod.getMethodAnnotation(Auditable.class),
+                handlerMethod == null ? null : handlerMethod.getMethodAnnotation(Auditable.class),
                 ex,
-                String.format("Encountered %s", ex.getClass().getSimpleName()),
-                Map.of(ex.getClass().getName(), generateErrorResponseMessage(ex)));
+                UNHANDLED_ERROR_MESSAGE,
+                Map.of());
     }
 
     private ErrorResponse logExceptionAndGenerateErrorResponse(

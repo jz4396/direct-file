@@ -78,6 +78,9 @@ echo "==> Generating the fact dictionary"
 nocreds npm run --silent generate-fact-dictionary > /dev/null
 echo "==> Building the static client-only bundle (vite build --mode static)"
 nocreds npm run --silent build:static
+# Run explicitly: npm skips the postbuild:static hook when ignore-scripts is set.
+echo "==> Checking dist-static for the all-screens development view"
+nocreds npm run --silent check:production-build -- dist-static
 echo "==> Staging and checking the bundle (no network targets, unofficial-site notice, CSP, headers)"
 nocreds npm run --silent stage:static
 
