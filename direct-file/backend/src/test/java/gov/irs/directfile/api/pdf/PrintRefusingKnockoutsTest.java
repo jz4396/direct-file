@@ -34,6 +34,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class PrintRefusingKnockoutsTest {
     static final String CODE_Q_KNOCKOUT = "/flowKnockoutForm8949CodeQ";
     static final String SCHEDULE_EIC_KNOCKOUT = "/flowKnockoutScheduleEicWithoutTy2026Template";
+    static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
+    /** Lines 4 and 7 are $1,000 or more and every Part II answer is no, so the IRS figures any penalty. */
+    static final String FORM_2210_SCENARIO = "form2210-mfj-irs-will-bill.json";
+
     static final String SECRET = "value 123-45-6789";
 
     static Result<Object> complete(Object v) {
@@ -58,8 +62,9 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheCodeQAndScheduleEicKnockouts() {
-        assertEquals(List.of(CODE_Q_KNOCKOUT, SCHEDULE_EIC_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
+    void listHoldsTheCodeQScheduleEicAndForm2210Knockouts() {
+        assertEquals(
+                List.of(CODE_Q_KNOCKOUT, SCHEDULE_EIC_KNOCKOUT, FORM_2210_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
                 PrintRefusingKnockouts.FACT_PATHS.size(),
@@ -155,6 +160,28 @@ class PrintRefusingKnockoutsTest {
         assertEquals(
                 List.of("/a", "/c", "/d", "/e", "/throws", "/missing"),
                 PrintRefusingKnockouts.refusingPaths(paths, evaluator(results)));
+    }
+
+    /**
+     * Form 2210 (2026) draft, p. 1: "If box B, C, or D applies, you must figure your penalty and file Form 2210." With
+     * no Form 2210 template, a Part II box answered yes refuses the print; with every answer no, the return prints.
+     */
+    @Test
+    void form2210PartIIYesRefusesThePrint() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        Map<String, FactTypeWithItem> facts = CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO);
+        Graph allNo = fgs.getGraph(facts);
+        assertEquals(Boolean.TRUE, allNo.get("/form2210AskPartII").get(), "Part II is asked");
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(allNo), "every Part II answer is no");
+        ObjectMapper mapper = new ObjectMapper();
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        for (String box :
+                List.of("/form2210WaiverRequested", "/form2210AnnualizedIncome", "/form2210WithholdingOnActualDates")) {
+            Map<String, FactTypeWithItem> withYes = new HashMap<>(facts);
+            withYes.put(box, yes);
+            assertEquals(List.of(FORM_2210_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(withYes)), box);
+        }
     }
 
     @Test

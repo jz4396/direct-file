@@ -117,8 +117,8 @@
     "/filers/#35f3405b-b196-46d0-a0f4-f8b4dcaf97ba/tin": {
       "$type": "gov.irs.factgraph.persisters.TinWrapper",
       "item": {
-        "area": "900",
-        "group": "12",
+        "area": "444",
+        "group": "00",
         "serial": "4444"
       }
     },
@@ -171,8 +171,8 @@
     "/filers/#7397cf0a-5866-403e-ba0b-40dcffe442ab/tin": {
       "$type": "gov.irs.factgraph.persisters.TinWrapper",
       "item": {
-        "area": "900",
-        "group": "12",
+        "area": "444",
+        "group": "00",
         "serial": "0333"
       }
     },
@@ -341,8 +341,8 @@
     "/formW2s/#c5d398cc-f754-4049-8bf3-fc1ecc079efb/tin": {
       "$type": "gov.irs.factgraph.persisters.TinWrapper",
       "item": {
-        "area": "900",
-        "group": "12",
+        "area": "444",
+        "group": "00",
         "serial": "0333"
       }
     },

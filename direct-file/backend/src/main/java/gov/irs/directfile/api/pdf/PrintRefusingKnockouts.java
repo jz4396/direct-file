@@ -26,7 +26,11 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutForm8949CodeQ",
             // Schedule EIC has no TY2026 template; a qualifying child counts only if the return gives the child's
             // name, age and TIN (26 U.S.C. 32(c)(3)(D)(i)), which Schedule EIC carries.
-            "/flowKnockoutScheduleEicWithoutTy2026Template");
+            "/flowKnockoutScheduleEicWithoutTy2026Template",
+            // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
+            // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
+            // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
+            "/flowKnockoutForm2210");
 
     private PrintRefusingKnockouts() {}
 
