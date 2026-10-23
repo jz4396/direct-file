@@ -44,8 +44,10 @@
         (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "Section 71305 of the OBBBA removes sec. 36B(f)(2)(B), which
         limited the tax increase from excess advance payments for certain households, effective for taxable years
         beginning after December 31, 2025." /ptcRepaymentLimitation still caps repayment at the TY2024 amounts.
-        (2) Applicable percentage table. Rev. Proc. 2025-25 sec. 3.01 (https://www.irs.gov/pub/irs-drop/rp-25-25.pdf)
-        sets the 2026 table at 2.10% (less than 133%) up to 9.96% (300% through 400%). /applicableFigure still uses the
+        (2)
+        Applicable percentage table. Rev. Proc. 2025-25 sec. 3.01 (https://www.irs.gov/pub/irs-drop/rp-25-25.pdf)
+        sets
+        the 2026 table at 2.10% (less than 133%) up to 9.96% (300% through 400%). /applicableFigure still uses the
         TY2024 table (0% up to 150%, 8.5% at 400% and above, with no 400% limit).
         (3) Federal poverty line: now the 2025 HHS guidelines (#91), see /federalPovertyLineMagicNumberStartingNumber.
         Fixing (1) and (2) is a separate change; until then this knockout stops the return rather than computing the credit

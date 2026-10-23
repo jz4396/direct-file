@@ -211,9 +211,26 @@ public class TaxReturnController implements TaxReturnApi {
         int remotePort = request.getRemotePort();
         String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
 
-        taxReturnService.submit(id, body.facts(), userInfo.id(), userInfo, remoteAddress, remotePort, userAgent);
+        try {
+            taxReturnService.submit(id, body.facts(), userInfo.id(), userInfo, remoteAddress, remotePort, userAgent);
+        } catch (Exception e) {
+            throw signFailureResponse(e);
+        }
 
         return ResponseEntity.accepted().body("Signed request " + id + " was accepted");
+    }
+
+    /**
+     * Keeps any response-status failure (including a submission-blocking refusal with its 400 and list of blocking fact
+     * paths) as is and turns any other sign failure into a fixed 500. Only the exception class is logged: exception
+     * text can carry return data, so it never reaches the log or the response body.
+     */
+    private static ResponseStatusException signFailureResponse(Exception e) {
+        if (e instanceof ResponseStatusException responseStatus) {
+            return responseStatus;
+        }
+        log.error("Tax return sign failed with {}", e.getClass().getName());
+        return new ResponseStatusException(SignResponseFailed.code, SignResponseFailed.description, e);
     }
 
     @Override
@@ -246,10 +263,22 @@ public class TaxReturnController implements TaxReturnApi {
                                             "taxreturn", taxReturn.getTaxYear(), language))
                     .body(new InputStreamResource(stream));
         } catch (Exception e) {
-            log.error("Error: " + e.getMessage(), e);
-            throw new ResponseStatusException(
-                    GetPdfResponseFailedToCreate.code, GetPdfResponseFailedToCreate.description, e);
+            throw pdfFailureResponse(e);
         }
+    }
+
+    /**
+     * A print-refusing knockout (PrintRefusingKnockouts) keeps its 400 and knockout paths; anything else
+     * becomes the generic PDF error. Only the exception class is logged: exception text can carry return data, so
+     * it never reaches the log or the response body.
+     */
+    private static ResponseStatusException pdfFailureResponse(Exception e) {
+        if (e instanceof SubmissionBlockingFactsResponseStatusException printRefused) {
+            return printRefused;
+        }
+        log.error("Tax return PDF failed with {}", e.getClass().getName());
+        return new ResponseStatusException(
+                GetPdfResponseFailedToCreate.code, GetPdfResponseFailedToCreate.description, e);
     }
 
     @Override

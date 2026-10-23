@@ -557,6 +557,12 @@ public interface TaxReturnApi {
         public static final String description = "Unable to complete the requested action.";
     }
 
+    class SignResponseFailed {
+        public static final String codeString = "500";
+        public static final HttpStatusCode code = HttpStatus.valueOf(Integer.parseInt(codeString));
+        public static final String description = "Could not process the signed request.";
+    }
+
     class GetPdfResponseFailedToCreate {
         public static final String codeString = "500";
         public static final HttpStatusCode code = HttpStatus.valueOf(Integer.parseInt(codeString));

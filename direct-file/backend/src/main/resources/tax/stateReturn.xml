@@ -11,13 +11,31 @@
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
-      <Description>#78 state framework: the filer chose Pennsylvania as the one state they lived in and earned income in (full-year). Add /stateReturnIs{XX} per state (e.g. #81 FL).</Description>
+      <Description>#78 state framework: the filer chose Pennsylvania as the one state they lived in and earned income in
+        (full-year). Add /stateReturnIs{XX} per state (e.g. #81 FL).</Description>
       <Export downstreamFacts="true" />
-      <Derived><All><IsComplete><Dependency module="filers" path="/filerResidenceAndIncomeState" /></IsComplete><Equal><Left><Dependency module="filers" path="/filerResidenceAndIncomeState" /></Left><Right><Enum optionsPath="/scopedStateOptions">pa</Enum></Right></Equal></All></Derived>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+          </IsComplete>
+          <Equal>
+            <Left>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/scopedStateOptions">pa</Enum>
+            </Right>
+          </Equal>
+        </All>
+      </Derived>
     </Fact>
     <Fact path="/stateReturnIsFl">
       <Name>State: Florida (no state income tax return)</Name>
-      <Description>#78/#81 state framework: Florida resident (filers /livedInFl, #103). Florida levies no personal income tax (Fla. Const. art. VII, sec. 5(a)), so there is no state return: Florida is not in /stateReturnComputed or the Switches. Its existing W-2 box 17 stop (/flowKnockoutFloridaStateWithholding, formW2s) stays wired directly into /flowIsKnockedOut, unchanged.</Description>
+      <Description>#78/#81 state framework: Florida resident (filers /livedInFl, #103). Florida levies no personal
+        income tax (Fla. Const. art. VII, sec. 5(a)), so there is no state return: Florida is not in
+        /stateReturnComputed or the Switches. Its existing W-2 box 17 stop (/flowKnockoutFloridaStateWithholding,
+        formW2s) stays wired directly into /flowIsKnockedOut, unchanged.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Dependency module="filers" path="/livedInFl" />
@@ -25,57 +43,138 @@
     </Fact>
     <Fact path="/stateReturnIsPaPartYear">
       <Name>State return: Pennsylvania part-year resident</Name>
-      <Description>#80: lived in PA for part of the year and in FL for the rest (paPit /paPartYearSupported). PA-40 IN (2025) p. 6, (P) Part-Year Resident.</Description>
+      <Description>#80: lived in PA for part of the year and in FL for the rest (paPit /paPartYearSupported). PA-40 IN
+        (2025) p. 6, (P) Part-Year Resident.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Dependency module="paPit" path="/paPartYearSupported" /></Derived>
+      <Derived>
+        <Dependency module="paPit" path="/paPartYearSupported" />
+      </Derived>
     </Fact>
     <Fact path="/stateReturnPaFiled">
       <Name>State return: Pennsylvania (full-year or part-year)</Name>
       <Description>#80: a PA-40 is computed, either as a full-year resident (#78) or a PA/FL part-year resident.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Any><Dependency path="/stateReturnIsPa" /><Dependency path="/stateReturnIsPaPartYear" /></Any></Derived>
+      <Derived>
+        <Any>
+          <Dependency path="/stateReturnIsPa" />
+          <Dependency path="/stateReturnIsPaPartYear" />
+        </Any>
+      </Derived>
     </Fact>
     <Fact path="/stateReturnComputed">
       <Name>State return computed by this tool</Name>
-      <Description>#78 state framework: true when this tool computes the resident state return. Add each computed state to the Any.</Description>
+      <Description>#78 state framework: true when this tool computes the resident state return. Add each computed state
+        to the Any.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Any><Dependency path="/stateReturnPaFiled" /></Any></Derived>
+      <Derived>
+        <Any>
+          <Dependency path="/stateReturnPaFiled" />
+        </Any>
+      </Derived>
     </Fact>
     <Fact path="/stateTaxLiability">
       <Name>stateTaxLiability</Name>
       <Description>#78 state framework: State tax liability (PA-40 line 12). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine12" /></Then></Case></Switch></Derived>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnPaFiled" />
+            </When>
+            <Then>
+              <Dependency module="paPit" path="/paLine12" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
     <Fact path="/stateTaxWithheld">
       <Name>stateTaxWithheld</Name>
       <Description>#78 state framework: State tax withheld (PA-40 line 13). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine13" /></Then></Case></Switch></Derived>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnPaFiled" />
+            </When>
+            <Then>
+              <Dependency module="paPit" path="/paLine13" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
     <Fact path="/stateRefund">
       <Name>stateRefund</Name>
       <Description>#78 state framework: State overpayment (PA-40 line 29). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine29" /></Then></Case></Switch></Derived>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnPaFiled" />
+            </When>
+            <Then>
+              <Dependency module="paPit" path="/paLine29" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
     <Fact path="/stateAmountOwed">
       <Name>stateAmountOwed</Name>
       <Description>#78 state framework: State tax due (PA-40 line 26). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Dependency path="/stateReturnPaFiled" /></When><Then><Dependency module="paPit" path="/paLine26" /></Then></Case></Switch></Derived>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnPaFiled" />
+            </When>
+            <Then>
+              <Dependency module="paPit" path="/paLine26" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
     <Fact path="/flowKnockoutStateReturn">
       <Name>Flow knockout: state return items not supported</Name>
-      <Description>#78 state framework: any knockout of the computed state return. Each state adds All(/stateReturnIs{XX}, its knockouts). Wired into flow.xml /flowIsKnockedOut.</Description>
+      <Description>#78 state framework: any knockout of the computed state return. Each state adds
+        All(/stateReturnIs{XX}, its knockouts). Wired into flow.xml /flowIsKnockedOut.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
-      <Derived><Any><All><Dependency path="/stateReturnPaFiled" /><Any><Dependency module="paPit" path="/flowKnockoutPaUnreimbursedEmployeeExpenses" /><Dependency module="paPit" path="/flowKnockoutPaDividends" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" /><Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" /><Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" /><Dependency module="paPit" path="/flowKnockoutPaPartYear" /><Dependency module="paPit" path="/flowKnockoutPaScheduleA" /><Dependency module="paPit" path="/flowKnockoutPaScheduleB" /><Dependency module="paPit" path="/flowKnockoutPaScheduleD" /></Any></All></Any></Derived>
+      <Derived>
+        <Any>
+          <All>
+            <Dependency path="/stateReturnPaFiled" />
+            <Any>
+              <Dependency module="paPit" path="/flowKnockoutPaUnreimbursedEmployeeExpenses" />
+              <Dependency module="paPit" path="/flowKnockoutPaDividends" />
+              <Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" />
+              <Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" />
+              <Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" />
+              <Dependency module="paPit" path="/flowKnockoutPaPartYear" />
+              <Dependency module="paPit" path="/flowKnockoutPaScheduleA" />
+              <Dependency module="paPit" path="/flowKnockoutPaScheduleB" />
+              <Dependency module="paPit" path="/flowKnockoutPaScheduleD" />
+            </Any>
+          </All>
+        </Any>
+      </Derived>
     </Fact>
     <Fact path="/flowShowPaSpQuestion">
       <Name>Show the PA Tax Forgiveness nontaxable income question</Name>
-      <Description>#79: PA return and Eligibility Income so far could still qualify for Schedule SP. #107: full-year or PA/FL part-year return (/stateReturnPaFiled); part-year Eligibility Income includes line 6.</Description>
-      <Derived><All><Dependency path="/stateReturnPaFiled" /><Dependency module="paPit" path="/paSpCouldQualify" /></All></Derived>
+      <Description>#79: PA return and Eligibility Income so far could still qualify for Schedule SP. #107: full-year or
+        PA/FL part-year return (/stateReturnPaFiled); part-year Eligibility Income includes line 6.</Description>
+      <Derived>
+        <All>
+          <Dependency path="/stateReturnPaFiled" />
+          <Dependency module="paPit" path="/paSpCouldQualify" />
+        </All>
+      </Derived>
     </Fact>
   </Facts>
 </FactDictionaryModule>
