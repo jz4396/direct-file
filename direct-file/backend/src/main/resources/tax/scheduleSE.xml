@@ -46,9 +46,16 @@
     <Fact path="/primaryFilerSeNetProfit">
       <Name>Primary filer: Schedule SE line 3</Name>
       <Description>
-        Primary filer's Schedule C net profit or (loss) from all of their businesses (2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
-        1a, 1b, and 2"), floored at $0 for SE tax (no farm or optional methods). Each spouse files their own Schedule SE:
-        2026 draft Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256 8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
+        Primary filer's Schedule C net profit or (loss) from all of their businesses (2026 draft Schedule SE
+        (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
+        1a, 1b, and 2"),
+        floored at $0 for SE tax (no farm or optional methods). Each spouse files their own Schedule SE:
+        2026 draft
+        Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
+        self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all
+        businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
       </Description>
       <Derived>
         <GreaterOf>
@@ -61,7 +68,9 @@
     <Fact path="/primaryFilerSeNetEarnings">
       <Name>Primary filer: net earnings from self-employment (Schedule SE line 4a)</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4a: "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)". 26 U.S.C. 1402(a)(12)
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4a: "If line 3 is more than zero,
+        multiply line 3 by 92.35% (0.9235)". 26 U.S.C. 1402(a)(12)
         (https://www.law.cornell.edu/uscode/text/26/1402#a_12): the deduction equals net earnings times one-half of the
         sum of the 1401(a) and (b) rates, so 1 - (12.4% + 2.9%) / 2 = 0.9235.
       </Description>
@@ -78,8 +87,11 @@
     <Fact path="/primaryFilerSeTaxApplies">
       <Name>Primary filer: SE tax applies</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4c: "If less than $400, stop; you don’t owe self-employment tax." 26 U.S.C. 1402(b)(2)
-        (https://www.law.cornell.edu/uscode/text/26/1402#b_2): no self-employment income when net earnings are "less
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4c: "If less than $400, stop; you don’t
+        owe self-employment tax." 26 U.S.C. 1402(b)(2)
+        (https://www.law.cornell.edu/uscode/text/26/1402#b_2): no
+        self-employment income when net earnings are "less
         than $400". The test is per individual.
       </Description>
       <Derived>
@@ -97,9 +109,12 @@
     <Fact path="/primaryFilerOasdiWagesTotal">
       <Name>Primary filer: total W-2 box 3 social security wages</Name>
       <Description>
-        Sum of the primary filer's W-2 box 3 amounts, part of Schedule SE line 8a ("Total social security wages and tips
-        (total of boxes 3 and 7 on Form(s) W-2)"). 26 U.S.C. 1402(b)(1) (https://www.law.cornell.edu/uscode/text/26/1402#b_1)
-        reduces the base by "the amount of the wages paid to such individual", so only this filer's own W-2s count.
+        Sum of the primary filer's W-2 box 3 amounts, part of Schedule SE line 8a ("Total social security
+        wages and tips
+        (total of boxes 3 and 7 on Form(s) W-2)"). 26 U.S.C. 1402(b)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#b_1)
+        reduces the base by "the amount of the wages paid to such
+        individual", so only this filer's own W-2s count.
       </Description>
       <Derived>
         <Round>
@@ -113,8 +128,10 @@
     <Fact path="/primaryFilerOasdiTipsTotal">
       <Name>Primary filer: total W-2 box 7 social security tips</Name>
       <Description>
-        Sum of the primary filer's W-2 box 7 amounts, the rest of Schedule SE line 8a. 26 U.S.C. 1402(b)(1). Line 8b (Form 4137)
-        and line 8c (Form 8919) have no input: Form 4137 tips stop the return (unreportedTips /flowKnockoutUnreportedTips)
+        Sum of the primary filer's W-2 box 7 amounts, the rest of Schedule SE line 8a. 26 U.S.C. 1402(b)(1).
+        Line 8b (Form 4137)
+        and line 8c (Form 8919) have no input: Form 4137 tips stop the return (unreportedTips
+        /flowKnockoutUnreportedTips)
         and income /wagesFrom8919 is $0.
       </Description>
       <Derived>
@@ -129,8 +146,11 @@
     <Fact path="/primaryFilerSeRemainingSocialSecurityWageBase">
       <Name>Primary filer: Schedule SE line 9</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 7 "$184,500" (/socialSecurityWageBaseTy2026) minus line 8d, not below zero: line 9 "Subtract line
-        8d from line 7. If zero or less, enter -0- here and on line 10". 26 U.S.C. 1402(b)(1)
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 7 "$184,500"
+        (/socialSecurityWageBaseTy2026) minus line 8d, not below zero: line 9 "Subtract line
+        8d from line 7. If zero or
+        less, enter -0- here and on line 10". 26 U.S.C. 1402(b)(1)
         (https://www.law.cornell.edu/uscode/text/26/1402#b_1): self-employment income excludes the part above "(i) an
         amount equal to the contribution and benefit base ... minus (ii) the amount of the wages paid to such individual
         during such taxable years".
@@ -159,7 +179,8 @@
         page 1, line 8a: "Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2) and railroad
         retirement (tier 1) compensation." W-2 box 3 (/primaryFilerOasdiWagesTotal) plus box 7
         (/primaryFilerOasdiTipsTotal) for the person with self-employment income; railroad retirement compensation
-        is not collected. Wage-base coordination under 26 U.S.C. 1402(b)(1). Printed only; the tax itself uses
+        is not
+        collected. Wage-base coordination under 26 U.S.C. 1402(b)(1). Printed only; the tax itself uses
         /primaryFilerSeRemainingSocialSecurityWageBase.
       </Description>
       <Derived>
@@ -219,7 +240,8 @@
     <Fact path="/primaryFilerSeSocialSecurityTaxableEarnings">
       <Name>Primary filer: smaller of Schedule SE line 6 or line 9</Name>
       <Description>
-        Base for Schedule SE line 10 ("Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"); $0 when SE tax
+        Base for Schedule SE line 10 ("Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"); $0 when
+        SE tax
         doesn't apply (line 4c).
       </Description>
       <Derived>
@@ -250,8 +272,11 @@
     <Fact path="/primaryFilerSeSocialSecurityTax">
       <Name>Primary filer: Schedule SE line 10</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 10: "Multiply the smaller of line 6 or line 9 by 12.4% (0.124)". 26 U.S.C. 1401(a)
-        (https://www.law.cornell.edu/uscode/text/26/1401#a): "a tax equal to 12.4 percent of the amount of the
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 10: "Multiply the smaller of line 6 or
+        line 9 by 12.4% (0.124)". 26 U.S.C. 1401(a)
+        (https://www.law.cornell.edu/uscode/text/26/1401#a): "a tax equal to
+        12.4 percent of the amount of the
         self-employment income for such taxable year".
       </Description>
       <Derived>
@@ -267,8 +292,11 @@
     <Fact path="/primaryFilerSeIncome">
       <Name>Primary filer: Schedule SE line 6</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee income has no input), and $0 when line 4c is under $400
-        ("stop; you don’t owe self-employment tax"). Feeds line 11 and Form 8959 line 13.
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
+        income has no input), and $0 when line 4c is under $400
+        ("stop; you don’t owe self-employment tax"). Feeds line
+        11 and Form 8959 line 13.
       </Description>
       <Derived>
         <Switch>
@@ -295,8 +323,11 @@
     <Fact path="/primaryFilerSeMedicareTax">
       <Name>Primary filer: Schedule SE line 11</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 11: "Multiply line 6 by 2.9% (0.029)". 26 U.S.C. 1401(b)(1)
-        (https://www.law.cornell.edu/uscode/text/26/1401#b_1): "2.9 percent of the amount of the self-employment income".
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 11: "Multiply line 6 by 2.9% (0.029)".
+        26 U.S.C. 1401(b)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1401#b_1): "2.9 percent of the amount of the
+        self-employment income".
         No wage base applies.
       </Description>
       <Derived>
@@ -312,7 +343,9 @@
     <Fact path="/primaryFilerSelfEmploymentTax">
       <Name>Primary filer: Schedule SE line 12</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 12: "Self-employment tax. Add lines 10 and 11."
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 12: "Self-employment tax. Add lines 10
+        and 11."
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -326,9 +359,13 @@
     <Fact path="/primaryFilerDeductibleSelfEmploymentTax">
       <Name>Primary filer: Schedule SE line 13</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 13: "Deduction for one-half of self-employment tax. Multiply line 12 by 50% (0.50)", rounded to
-        whole dollars as printed on that filer's Schedule SE. 26 U.S.C. 164(f)(1)
-        (https://www.law.cornell.edu/uscode/text/26/164#f): "an amount equal to one-half of the taxes imposed by section
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 13: "Deduction for one-half of
+        self-employment tax. Multiply line 12 by 50% (0.50)", rounded to
+        whole dollars as printed on that filer's
+        Schedule SE. 26 U.S.C. 164(f)(1)
+        (https://www.law.cornell.edu/uscode/text/26/164#f): "an amount equal to one-half
+        of the taxes imposed by section
         1401 (other than the taxes imposed by section 1401(b)(2))".
       </Description>
       <Export downstreamFacts="true" />
@@ -347,9 +384,16 @@
     <Fact path="/secondaryFilerSeNetProfit">
       <Name>Secondary filer: Schedule SE line 3</Name>
       <Description>
-        Secondary filer's Schedule C net profit or (loss) from all of their businesses (2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
-        1a, 1b, and 2"), floored at $0 for SE tax (no farm or optional methods). Each spouse files their own Schedule SE:
-        2026 draft Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256 8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
+        Secondary filer's Schedule C net profit or (loss) from all of their businesses (2026 draft Schedule
+        SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
+        1a, 1b, and 2"),
+        floored at $0 for SE tax (no farm or optional methods). Each spouse files their own Schedule SE:
+        2026 draft
+        Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
+        self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all
+        businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
       </Description>
       <Derived>
         <GreaterOf>
@@ -362,7 +406,9 @@
     <Fact path="/secondaryFilerSeNetEarnings">
       <Name>Secondary filer: net earnings from self-employment (Schedule SE line 4a)</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4a: "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)". 26 U.S.C. 1402(a)(12)
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4a: "If line 3 is more than zero,
+        multiply line 3 by 92.35% (0.9235)". 26 U.S.C. 1402(a)(12)
         (https://www.law.cornell.edu/uscode/text/26/1402#a_12): the deduction equals net earnings times one-half of the
         sum of the 1401(a) and (b) rates, so 1 - (12.4% + 2.9%) / 2 = 0.9235.
       </Description>
@@ -379,8 +425,11 @@
     <Fact path="/secondaryFilerSeTaxApplies">
       <Name>Secondary filer: SE tax applies</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4c: "If less than $400, stop; you don’t owe self-employment tax." 26 U.S.C. 1402(b)(2)
-        (https://www.law.cornell.edu/uscode/text/26/1402#b_2): no self-employment income when net earnings are "less
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4c: "If less than $400, stop; you don’t
+        owe self-employment tax." 26 U.S.C. 1402(b)(2)
+        (https://www.law.cornell.edu/uscode/text/26/1402#b_2): no
+        self-employment income when net earnings are "less
         than $400". The test is per individual.
       </Description>
       <Derived>
@@ -398,9 +447,12 @@
     <Fact path="/secondaryFilerOasdiWagesTotal">
       <Name>Secondary filer: total W-2 box 3 social security wages</Name>
       <Description>
-        Sum of the secondary filer's W-2 box 3 amounts, part of Schedule SE line 8a ("Total social security wages and tips
-        (total of boxes 3 and 7 on Form(s) W-2)"). 26 U.S.C. 1402(b)(1) (https://www.law.cornell.edu/uscode/text/26/1402#b_1)
-        reduces the base by "the amount of the wages paid to such individual", so only this filer's own W-2s count.
+        Sum of the secondary filer's W-2 box 3 amounts, part of Schedule SE line 8a ("Total social security
+        wages and tips
+        (total of boxes 3 and 7 on Form(s) W-2)"). 26 U.S.C. 1402(b)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#b_1)
+        reduces the base by "the amount of the wages paid to such
+        individual", so only this filer's own W-2s count.
       </Description>
       <Derived>
         <Round>
@@ -414,8 +466,10 @@
     <Fact path="/secondaryFilerOasdiTipsTotal">
       <Name>Secondary filer: total W-2 box 7 social security tips</Name>
       <Description>
-        Sum of the secondary filer's W-2 box 7 amounts, the rest of Schedule SE line 8a. 26 U.S.C. 1402(b)(1). Line 8b (Form 4137)
-        and line 8c (Form 8919) have no input: Form 4137 tips stop the return (unreportedTips /flowKnockoutUnreportedTips)
+        Sum of the secondary filer's W-2 box 7 amounts, the rest of Schedule SE line 8a. 26 U.S.C.
+        1402(b)(1). Line 8b (Form 4137)
+        and line 8c (Form 8919) have no input: Form 4137 tips stop the return
+        (unreportedTips /flowKnockoutUnreportedTips)
         and income /wagesFrom8919 is $0.
       </Description>
       <Derived>
@@ -430,8 +484,11 @@
     <Fact path="/secondaryFilerSeRemainingSocialSecurityWageBase">
       <Name>Secondary filer: Schedule SE line 9</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 7 "$184,500" (/socialSecurityWageBaseTy2026) minus line 8d, not below zero: line 9 "Subtract line
-        8d from line 7. If zero or less, enter -0- here and on line 10". 26 U.S.C. 1402(b)(1)
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 7 "$184,500"
+        (/socialSecurityWageBaseTy2026) minus line 8d, not below zero: line 9 "Subtract line
+        8d from line 7. If zero or
+        less, enter -0- here and on line 10". 26 U.S.C. 1402(b)(1)
         (https://www.law.cornell.edu/uscode/text/26/1402#b_1): self-employment income excludes the part above "(i) an
         amount equal to the contribution and benefit base ... minus (ii) the amount of the wages paid to such individual
         during such taxable years".
@@ -455,7 +512,8 @@
     <Fact path="/secondaryFilerSeSocialSecurityTaxableEarnings">
       <Name>Secondary filer: smaller of Schedule SE line 6 or line 9</Name>
       <Description>
-        Base for Schedule SE line 10 ("Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"); $0 when SE tax
+        Base for Schedule SE line 10 ("Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"); $0 when
+        SE tax
         doesn't apply (line 4c).
       </Description>
       <Derived>
@@ -486,8 +544,11 @@
     <Fact path="/secondaryFilerSeSocialSecurityTax">
       <Name>Secondary filer: Schedule SE line 10</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 10: "Multiply the smaller of line 6 or line 9 by 12.4% (0.124)". 26 U.S.C. 1401(a)
-        (https://www.law.cornell.edu/uscode/text/26/1401#a): "a tax equal to 12.4 percent of the amount of the
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 10: "Multiply the smaller of line 6 or
+        line 9 by 12.4% (0.124)". 26 U.S.C. 1401(a)
+        (https://www.law.cornell.edu/uscode/text/26/1401#a): "a tax equal to
+        12.4 percent of the amount of the
         self-employment income for such taxable year".
       </Description>
       <Derived>
@@ -503,8 +564,11 @@
     <Fact path="/secondaryFilerSeIncome">
       <Name>Secondary filer: Schedule SE line 6</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee income has no input), and $0 when line 4c is under $400
-        ("stop; you don’t owe self-employment tax"). Feeds line 11 and Form 8959 line 13.
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
+        income has no input), and $0 when line 4c is under $400
+        ("stop; you don’t owe self-employment tax"). Feeds line
+        11 and Form 8959 line 13.
       </Description>
       <Derived>
         <Switch>
@@ -531,8 +595,11 @@
     <Fact path="/secondaryFilerSeMedicareTax">
       <Name>Secondary filer: Schedule SE line 11</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 11: "Multiply line 6 by 2.9% (0.029)". 26 U.S.C. 1401(b)(1)
-        (https://www.law.cornell.edu/uscode/text/26/1401#b_1): "2.9 percent of the amount of the self-employment income".
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 11: "Multiply line 6 by 2.9% (0.029)".
+        26 U.S.C. 1401(b)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1401#b_1): "2.9 percent of the amount of the
+        self-employment income".
         No wage base applies.
       </Description>
       <Derived>
@@ -548,7 +615,9 @@
     <Fact path="/secondaryFilerSelfEmploymentTax">
       <Name>Secondary filer: Schedule SE line 12</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 12: "Self-employment tax. Add lines 10 and 11."
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 12: "Self-employment tax. Add lines 10
+        and 11."
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -562,9 +631,13 @@
     <Fact path="/secondaryFilerDeductibleSelfEmploymentTax">
       <Name>Secondary filer: Schedule SE line 13</Name>
       <Description>
-        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 13: "Deduction for one-half of self-employment tax. Multiply line 12 by 50% (0.50)", rounded to
-        whole dollars as printed on that filer's Schedule SE. 26 U.S.C. 164(f)(1)
-        (https://www.law.cornell.edu/uscode/text/26/164#f): "an amount equal to one-half of the taxes imposed by section
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 13: "Deduction for one-half of
+        self-employment tax. Multiply line 12 by 50% (0.50)", rounded to
+        whole dollars as printed on that filer's
+        Schedule SE. 26 U.S.C. 164(f)(1)
+        (https://www.law.cornell.edu/uscode/text/26/164#f): "an amount equal to one-half
+        of the taxes imposed by section
         1401 (other than the taxes imposed by section 1401(b)(2))".
       </Description>
       <Export downstreamFacts="true" />
@@ -583,7 +656,8 @@
     <Fact path="/seNetEarningsFromSelfEmployment">
       <Name>Self-employment income: Schedule SE line 6, combined for both spouses</Name>
       <Description>
-        Sum of each filer's Schedule SE line 6 (/primaryFilerSeIncome + /secondaryFilerSeIncome). Form 8959 line 13 reads
+        Sum of each filer's Schedule SE line 6 (/primaryFilerSeIncome + /secondaryFilerSeIncome). Form 8959
+        line 13 reads
         it: 2026 draft Instructions for Form 8959 (https://www.irs.gov/pub/irs-dft/i8959--dft.pdf, SHA-256
         c5b1661eeb6cb33be840a0a01616d477d2731d2b3928e1bcd3fa13b1494bbaf1), PDF p. 5, Line 13: "Enter your
         self-employment income from Schedule SE (Form 1040), Part I, line 6. Combine amounts from this line if you have
@@ -614,7 +688,11 @@
     <Fact path="/selfEmploymentTax">
       <Name>Self-employment tax (Schedule 2 line 4)</Name>
       <Description>
-        Combined SE tax: each filer's Schedule SE line 12 added together. 2026 draft Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256 8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
+        Combined SE tax: each filer's Schedule SE line 12 added together. 2026 draft Instructions for
+        Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
+        self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all
+        businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
       </Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
@@ -629,9 +707,12 @@
     <Fact path="/deductibleSelfEmploymentTax">
       <Name>Deductible part of self-employment tax (Schedule 1 line 15)</Name>
       <Description>
-        Each filer's Schedule SE line 13 added together. 26 U.S.C. 164(f)(1) gives each individual a deduction of one-half
-        of their own 1401 taxes. 2026 draft Schedule 1 (Form 1040) line 15: "Deductible part of self-employment tax.
-        Attach Schedule SE". Flows to /adjustmentsToIncome (taxCalculations.xml) and to Schedule 8812 line 22 through
+        Each filer's Schedule SE line 13 added together. 26 U.S.C. 164(f)(1) gives each individual a
+        deduction of one-half
+        of their own 1401 taxes. 2026 draft Schedule 1 (Form 1040) line 15: "Deductible part of
+        self-employment tax.
+        Attach Schedule SE". Flows to /adjustmentsToIncome (taxCalculations.xml) and to Schedule
+        8812 line 22 through
         /schedule1Line15.
       </Description>
       <Export downstreamFacts="true" mef="true" />

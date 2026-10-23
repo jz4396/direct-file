@@ -177,13 +177,20 @@
       <Name>Form 8959 line 13: self-employment income (Schedule SE, Part I, line 6)</Name>
       <Description>
         f8959 (2026) line 13: "Self-employment income from Schedule SE (Form 1040), Part I, line 6. If
-        you had a loss, enter -0-". i8959 (2026) p.4, Line 13: "Enter your self-employment income from
-        Schedule SE (Form 1040), Part I, line 6." i8959 (2026) p.1: "A self-employment loss shouldn't be
-        considered for purposes of this tax." Schedule SE line 6 here is scheduleSE
-        /seNetEarningsFromSelfEmployment (each filer's net profit floored at 0, times 92.35%, counted only when
-        that filer's net earnings are $400 or more), read when /seTaxApplies (net earnings of $400 or more, 26 U.S.C. 1402(b)); otherwise there is no
-        self-employment income. #118: each filer's line 6 is added, per i8959 (2026 draft), form page 4 (PDF p. 5), Line 13:
-        "Combine amounts from this line if you have multiple Schedules SE."
+        you had
+        a loss, enter -0-". i8959 (2026) p.4, Line 13: "Enter your self-employment income from
+        Schedule SE (Form 1040),
+        Part I, line 6." i8959 (2026) p.1: "A self-employment loss shouldn't be
+        considered for purposes of this tax."
+        Schedule SE line 6 here is scheduleSE
+        /seNetEarningsFromSelfEmployment (each filer's net profit floored at 0,
+        times 92.35%, counted only when
+        that filer's net earnings are $400 or more), read when /seTaxApplies (net
+        earnings of $400 or more, 26 U.S.C. 1402(b)); otherwise there is no
+        self-employment income. #118: each filer's
+        line 6 is added, per i8959 (2026 draft), form page 4 (PDF p. 5), Line 13:
+        "Combine amounts from this line if you
+        have multiple Schedules SE."
       </Description>
       <ExportZero />
       <Derived>

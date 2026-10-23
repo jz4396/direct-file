@@ -119,11 +119,14 @@
     <Fact path="/scheduleCSecondaryFilerNetProfitOrLoss">
       <Name>Secondary filer's Schedule C net profit or (loss)</Name>
       <Description>
-        #118. Sum of /scheduleCBusinesses/*/netProfitOrLoss for the businesses the secondary filer owns: the line 3 of
+        #118. Sum of /scheduleCBusinesses/*/netProfitOrLoss for the businesses the secondary filer owns: the
+        line 3 of
         that spouse's own Schedule SE. 2026 draft Instructions for Schedule SE, PDF p. 3: "If both spouses have
         self-employment income, each must file a separate Schedule SE." $0 on a return that isn't a joint return
-        (only a joint return reports a spouse's business) or when the filer answered no to self-employment income;
-        incomplete while businesses are still being entered, like /scheduleCNetProfitOrLoss.
+        (only a
+        joint return reports a spouse's business) or when the filer answered no to self-employment income;
+        incomplete
+        while businesses are still being entered, like /scheduleCNetProfitOrLoss.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -191,7 +194,8 @@
     <Fact path="/scheduleCPrimaryFilerNetProfitOrLoss">
       <Name>Primary filer's Schedule C net profit or (loss)</Name>
       <Description>
-        #118. Every business not owned by the secondary filer is the primary filer's (/scheduleCBusinesses/*/filer
+        #118. Every business not owned by the secondary filer is the primary filer's
+        (/scheduleCBusinesses/*/filer
         defaults to the primary filer), so this is /scheduleCNetProfitOrLoss minus
         /scheduleCSecondaryFilerNetProfitOrLoss, and the two always add up to Schedule 1 line 3.
       </Description>
@@ -213,9 +217,12 @@
       <Description>
         Schedule SE is figured per filer (scheduleSE /secondaryFilerSelfEmploymentTax, with that spouse's own
         OASDI base under 26 U.S.C. 1402(b)(1)) and Schedule 2 line 4, Schedule 1 line 15 and Form 8959 line 13
-        combine both. A secondary filer's business still stops the return until the rest of that spouse's path is
-        per spouse: EITC and CDCC earned income with self-employment (Form 2441 lines 4 and 5 are per spouse), and
-        the printed return has no Schedule SE form yet (one per spouse once it does).
+        combine
+        both. A secondary filer's business still stops the return until the rest of that spouse's path is
+        per spouse:
+        EITC and CDCC earned income with self-employment (Form 2441 lines 4 and 5 are per spouse), and
+        the printed return
+        has no Schedule SE form yet (one per spouse once it does).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
