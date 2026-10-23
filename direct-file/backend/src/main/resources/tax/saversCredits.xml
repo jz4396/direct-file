@@ -3,7 +3,18 @@
   <Facts>
     <Fact path="/maxIncomeLimitForMFJ">
       <Description>max income before becoming ineligible as MFJ
-        TY2026 Notice 2025-67, pp. 3-4 (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B). MFJ p. 3: "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for married taxpayers filing a joint return is increased from $47,500 to $48,500; the limitation under section 25B(b)(1)(B) is increased from $51,000 to $52,500; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $79,000 to $80,500." HOH pp. 3-4: "... for taxpayers filing as head of household is increased from $35,625 to $36,375; the limitation under section 25B(b)(1)(B) is increased from $38,250 to $39,375; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $59,250 to $60,375." Other p. 4: "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for all other taxpayers is increased from $23,750 to $24,250; the limitation under section 25B(b)(1)(B) is increased from $25,500 to $26,250; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $39,500 to $40,250." adjusted limitation under
+        TY2026 Notice 2025-67, pp. 3-4
+        (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B).
+        MFJ p. 3: "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement
+        savings contributions credit for married taxpayers filing a joint return is increased from $47,500 to $48,500;
+        the limitation under section 25B(b)(1)(B) is increased from $51,000 to $52,500; and the limitation under
+        sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $79,000 to $80,500." HOH pp. 3-4: "... for taxpayers
+        filing as head of household is increased from $35,625 to $36,375; the limitation under section 25B(b)(1)(B) is
+        increased from $38,250 to $39,375; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased
+        from $59,250 to $60,375." Other p. 4: "The adjusted gross income limitation under section 25B(b)(1)(A) for
+        determining the retirement savings contributions credit for all other taxpayers is increased from $23,750 to
+        $24,250; the limitation under section 25B(b)(1)(B) is increased from $25,500 to $26,250; and the limitation
+        under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $39,500 to $40,250." adjusted limitation under
         25B(b)(1)(C) and 25B(b)(1)(D)
       </Description>
       <TaxYear>2026</TaxYear>
@@ -14,7 +25,9 @@
 
     <Fact path="/maxIncomeLimitForHOH">
       <Description>max income before becoming ineligible as HoH
-        TY2026 Notice 2025-67, pp. 3-4 (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B). (quotes on /maxIncomeLimitForMFJ), adjusted limitation under
+        TY2026 Notice 2025-67, pp. 3-4
+        (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B).
+        (quotes on /maxIncomeLimitForMFJ), adjusted limitation under
         25B(b)(1)(C) and 25B(b)(1)(D)
       </Description>
       <TaxYear>2026</TaxYear>
@@ -25,8 +38,11 @@
 
     <Fact path="/maxIncomeLimitForOther">
       <Description>max income before becoming ineligible as other filing statuses (non HoH or MFJ)
-        TY2026 Notice 2025-67, pp. 3-4 (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B). (quotes on /maxIncomeLimitForMFJ),
-        adjusted limitation under 25B(b)(1)(C) and 25B(b)(1)(D)
+        TY2026 Notice 2025-67,
+        pp. 3-4 (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1)
+        (https://www.law.cornell.edu/uscode/text/26/25B). (quotes on /maxIncomeLimitForMFJ),
+        adjusted limitation under
+        25B(b)(1)(C) and 25B(b)(1)(D)
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -68,7 +84,18 @@
 
     <Fact path="/saversCreditAgiLimitForFiftyPercent">
       <Description>Maximum income at which the applicable percentage is 50%
-        TY2026 Notice 2025-67, pp. 3-4 (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B). MFJ p. 3: "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for married taxpayers filing a joint return is increased from $47,500 to $48,500; the limitation under section 25B(b)(1)(B) is increased from $51,000 to $52,500; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $79,000 to $80,500." HOH pp. 3-4: "... for taxpayers filing as head of household is increased from $35,625 to $36,375; the limitation under section 25B(b)(1)(B) is increased from $38,250 to $39,375; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $59,250 to $60,375." Other p. 4: "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement savings contributions credit for all other taxpayers is increased from $23,750 to $24,250; the limitation under section 25B(b)(1)(B) is increased from $25,500 to $26,250; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $39,500 to $40,250." adjusted limitation under
+        TY2026 Notice 2025-67, pp. 3-4
+        (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B).
+        MFJ p. 3: "The adjusted gross income limitation under section 25B(b)(1)(A) for determining the retirement
+        savings contributions credit for married taxpayers filing a joint return is increased from $47,500 to $48,500;
+        the limitation under section 25B(b)(1)(B) is increased from $51,000 to $52,500; and the limitation under
+        sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $79,000 to $80,500." HOH pp. 3-4: "... for taxpayers
+        filing as head of household is increased from $35,625 to $36,375; the limitation under section 25B(b)(1)(B) is
+        increased from $38,250 to $39,375; and the limitation under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased
+        from $59,250 to $60,375." Other p. 4: "The adjusted gross income limitation under section 25B(b)(1)(A) for
+        determining the retirement savings contributions credit for all other taxpayers is increased from $23,750 to
+        $24,250; the limitation under section 25B(b)(1)(B) is increased from $25,500 to $26,250; and the limitation
+        under sections 25B(b)(1)(C) and 25B(b)(1)(D) is increased from $39,500 to $40,250." adjusted limitation under
         25B(b)(1)(A)
       </Description>
       <TaxYear>2026</TaxYear>
@@ -104,7 +131,9 @@
 
     <Fact path="/saversCreditAgiLimitForTwentyPercent">
       <Description>Maximum income at which the applicable percentage is 20%
-        TY2026 Notice 2025-67, pp. 3-4 (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B). (quotes on /maxIncomeLimitForMFJ), adjusted limitation under
+        TY2026 Notice 2025-67, pp. 3-4
+        (https://www.irs.gov/pub/irs-drop/n-25-67.pdf). IRC §25B(b)(1) (https://www.law.cornell.edu/uscode/text/26/25B).
+        (quotes on /maxIncomeLimitForMFJ), adjusted limitation under
         25B(b)(1)(B)
       </Description>
       <TaxYear>2026</TaxYear>

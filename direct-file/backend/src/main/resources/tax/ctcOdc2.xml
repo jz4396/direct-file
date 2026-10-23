@@ -332,7 +332,8 @@
     <Fact path="/maxActcAmount">
       <Name>Maximum additional child tax credit amount</Name>
       <Description>The maximum additional tax credit per child.
-        Rev. Proc. 2025-32 §4.05(2) p.14: "the amount used in § 24(d)(1)(A) … is $1,700."
+        Rev. Proc. 2025-32 §4.05(2) p.14: "the amount used in §
+        24(d)(1)(A) … is $1,700."
       </Description>
       <TaxYear>2026</TaxYear>
 

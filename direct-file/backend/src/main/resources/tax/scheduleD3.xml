@@ -12,7 +12,8 @@
 
     <Fact path="/qdcgLine1">
       <Name>QDCG line 1</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 1: "Enter the amount from Form 1040 or 1040-SR, line 15."</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 1: "Enter the amount from Form 1040 or
+        1040-SR, line 15."</Description>
       <Derived>
         <Dependency module="taxCalculations" path="/taxableIncome" />
       </Derived>
@@ -20,7 +21,8 @@
 
     <Fact path="/qdcgLine2">
       <Name>QDCG line 2</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 2: "Enter the amount from Form 1040 or 1040-SR, line 3a" (income /qualifiedDividends, total Form 1099-DIV box 1b in whole dollars).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 2: "Enter the amount from Form 1040 or
+        1040-SR, line 3a" (income /qualifiedDividends, total Form 1099-DIV box 1b in whole dollars).</Description>
       <Derived>
         <Dependency module="income" path="/qualifiedDividends" />
       </Derived>
@@ -28,7 +30,13 @@
 
     <Fact path="/qdcgLine3">
       <Name>QDCG line 3</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 3: "Are you filing Schedule D? Yes. Enter the smaller of line 15 or line 16 of Schedule D. If either line 15 or line 16 is blank or a loss, enter -0-. No. Enter the amount from Form 1040 or 1040-SR, line 7a." Schedule D is filed when scheduleD /requiresScheduleD; otherwise line 7a is $0 or, under line 7a Exception 1, the capital gain distributions (income /capitalGainsOrLosses, dividends /capitalGainDistributionsWithoutScheduleD). Before you begin, item 3: "If you don't have to file Schedule D and you received capital gain distributions, be sure you checked the box on Form 1040 or 1040-SR, line 7b" (income /capitalGainsScheduleDNotRequired). IRC §1(h)(11), §1222(11).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 3: "Are you filing Schedule D? Yes.
+        Enter the smaller of line 15 or line 16 of Schedule D. If either line 15 or line 16 is blank or a loss, enter
+        -0-. No. Enter the amount from Form 1040 or 1040-SR, line 7a." Schedule D is filed when scheduleD
+        /requiresScheduleD; otherwise line 7a is $0 or, under line 7a Exception 1, the capital gain distributions
+        (income /capitalGainsOrLosses, dividends /capitalGainDistributionsWithoutScheduleD). Before you begin, item 3:
+        "If you don't have to file Schedule D and you received capital gain distributions, be sure you checked the box
+        on Form 1040 or 1040-SR, line 7b" (income /capitalGainsScheduleDNotRequired). IRC §1(h)(11), §1222(11).</Description>
       <Derived>
         <!-- An unanswered capital assets screener (scheduleD /soldCapitalAssets) falls through to the Schedule D lines, which stay incomplete (no silent $0). -->
         <Switch>
@@ -44,7 +52,10 @@
               </All>
             </When>
             <Then>
-              <GreaterOf><Dependency module="income" path="/capitalGainsOrLosses" /><Dollar>0</Dollar></GreaterOf>
+              <GreaterOf>
+                <Dependency module="income" path="/capitalGainsOrLosses" />
+                <Dollar>0</Dollar>
+              </GreaterOf>
             </Then>
           </Case>
           <Case>
@@ -52,7 +63,13 @@
               <True />
             </When>
             <Then>
-              <GreaterOf><LesserOf><Dependency module="scheduleD2" path="/scheduleDLine15" /><Dependency module="scheduleD2" path="/scheduleDLine16" /></LesserOf><Dollar>0</Dollar></GreaterOf>
+              <GreaterOf>
+                <LesserOf>
+                  <Dependency module="scheduleD2" path="/scheduleDLine15" />
+                  <Dependency module="scheduleD2" path="/scheduleDLine16" />
+                </LesserOf>
+                <Dollar>0</Dollar>
+              </GreaterOf>
             </Then>
           </Case>
         </Switch>
@@ -63,21 +80,36 @@
       <Name>QDCG line 4</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 4: "Add lines 2 and 3".</Description>
       <Derived>
-        <Add><Dependency path="/qdcgLine2" /><Dependency path="/qdcgLine3" /></Add>
+        <Add>
+          <Dependency path="/qdcgLine2" />
+          <Dependency path="/qdcgLine3" />
+        </Add>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine5">
       <Name>QDCG line 5</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 5: "Subtract line 4 from line 1. If zero or less, enter -0-".</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 5: "Subtract line 4 from line 1. If
+        zero or less, enter -0-".</Description>
       <Derived>
-        <GreaterOf><Subtract><Minuend><Dependency path="/qdcgLine1" /></Minuend><Subtrahends><Dependency path="/qdcgLine4" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/qdcgLine1" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/qdcgLine4" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine6">
       <Name>QDCG line 6</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 6: maximum zero rate amount. TY2026 amounts: Rev. Proc. 2025-32 §4.03 p.13 via /capGainsZeroRateAmount (constants4.xml).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 6: maximum zero rate amount. TY2026
+        amounts: Rev. Proc. 2025-32 §4.03 p.13 via /capGainsZeroRateAmount (constants4.xml).</Description>
       <Derived>
         <Dependency module="scheduleD" path="/capGainsZeroRateAmount" />
       </Derived>
@@ -85,33 +117,53 @@
 
     <Fact path="/qdcgLine7">
       <Name>QDCG line 7</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 7: "Enter the smaller of line 1 or line 6".</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 7: "Enter the smaller of line 1 or
+        line 6".</Description>
       <Derived>
-        <LesserOf><Dependency path="/qdcgLine1" /><Dependency path="/qdcgLine6" /></LesserOf>
+        <LesserOf>
+          <Dependency path="/qdcgLine1" />
+          <Dependency path="/qdcgLine6" />
+        </LesserOf>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine8">
       <Name>QDCG line 8</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 8: "Enter the smaller of line 5 or line 7".</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 8: "Enter the smaller of line 5 or
+        line 7".</Description>
       <Derived>
-        <LesserOf><Dependency path="/qdcgLine5" /><Dependency path="/qdcgLine7" /></LesserOf>
+        <LesserOf>
+          <Dependency path="/qdcgLine5" />
+          <Dependency path="/qdcgLine7" />
+        </LesserOf>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine9">
       <Name>QDCG line 9</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 9: "Subtract line 8 from line 7. This amount is taxed at 0%". IRC §1(h)(1)(B).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 9: "Subtract line 8 from line 7. This
+        amount is taxed at 0%". IRC §1(h)(1)(B).</Description>
       <Derived>
-        <Subtract><Minuend><Dependency path="/qdcgLine7" /></Minuend><Subtrahends><Dependency path="/qdcgLine8" /></Subtrahends></Subtract>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/qdcgLine7" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/qdcgLine8" />
+          </Subtrahends>
+        </Subtract>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine10">
       <Name>QDCG line 10</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 10: "Enter the smaller of line 1 or line 4".</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 10: "Enter the smaller of line 1 or
+        line 4".</Description>
       <Derived>
-        <LesserOf><Dependency path="/qdcgLine1" /><Dependency path="/qdcgLine4" /></LesserOf>
+        <LesserOf>
+          <Dependency path="/qdcgLine1" />
+          <Dependency path="/qdcgLine4" />
+        </LesserOf>
       </Derived>
     </Fact>
 
@@ -127,13 +179,21 @@
       <Name>QDCG line 12</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 12: "Subtract line 11 from line 10".</Description>
       <Derived>
-        <Subtract><Minuend><Dependency path="/qdcgLine10" /></Minuend><Subtrahends><Dependency path="/qdcgLine11" /></Subtrahends></Subtract>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/qdcgLine10" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/qdcgLine11" />
+          </Subtrahends>
+        </Subtract>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine13">
       <Name>QDCG line 13</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 13: maximum 15% rate amount. TY2026 amounts: Rev. Proc. 2025-32 §4.03 p.13 via /capGains15RateAmount (constants4.xml).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 13: maximum 15% rate amount. TY2026
+        amounts: Rev. Proc. 2025-32 §4.03 p.13 via /capGains15RateAmount (constants4.xml).</Description>
       <Derived>
         <Dependency module="scheduleD" path="/capGains15RateAmount" />
       </Derived>
@@ -141,9 +201,13 @@
 
     <Fact path="/qdcgLine14">
       <Name>QDCG line 14</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 14: "Enter the smaller of line 1 or line 13".</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 14: "Enter the smaller of line 1 or
+        line 13".</Description>
       <Derived>
-        <LesserOf><Dependency path="/qdcgLine1" /><Dependency path="/qdcgLine13" /></LesserOf>
+        <LesserOf>
+          <Dependency path="/qdcgLine1" />
+          <Dependency path="/qdcgLine13" />
+        </LesserOf>
       </Derived>
     </Fact>
 
@@ -151,31 +215,53 @@
       <Name>QDCG line 15</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 15: "Add lines 5 and 9".</Description>
       <Derived>
-        <Add><Dependency path="/qdcgLine5" /><Dependency path="/qdcgLine9" /></Add>
+        <Add>
+          <Dependency path="/qdcgLine5" />
+          <Dependency path="/qdcgLine9" />
+        </Add>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine16">
       <Name>QDCG line 16</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 16: "Subtract line 15 from line 14. If zero or less, enter -0-".</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 16: "Subtract line 15 from line 14. If
+        zero or less, enter -0-".</Description>
       <Derived>
-        <GreaterOf><Subtract><Minuend><Dependency path="/qdcgLine14" /></Minuend><Subtrahends><Dependency path="/qdcgLine15" /></Subtrahends></Subtract><Dollar>0</Dollar></GreaterOf>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/qdcgLine14" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/qdcgLine15" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine17">
       <Name>QDCG line 17</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 17: "Enter the smaller of line 12 or line 16".</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 17: "Enter the smaller of line 12 or
+        line 16".</Description>
       <Derived>
-        <LesserOf><Dependency path="/qdcgLine12" /><Dependency path="/qdcgLine16" /></LesserOf>
+        <LesserOf>
+          <Dependency path="/qdcgLine12" />
+          <Dependency path="/qdcgLine16" />
+        </LesserOf>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine18">
       <Name>QDCG line 18</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 18: "Multiply line 17 by 15% (0.15)". IRC §1(h)(1)(C).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 18: "Multiply line 17 by 15% (0.15)".
+        IRC §1(h)(1)(C).</Description>
       <Derived>
-        <Multiply><Rational>15/100</Rational><Dependency path="/qdcgLine17" /></Multiply>
+        <Multiply>
+          <Rational>15/100</Rational>
+          <Dependency path="/qdcgLine17" />
+        </Multiply>
       </Derived>
     </Fact>
 
@@ -183,7 +269,10 @@
       <Name>QDCG line 19</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 19: "Add lines 9 and 17".</Description>
       <Derived>
-        <Add><Dependency path="/qdcgLine9" /><Dependency path="/qdcgLine17" /></Add>
+        <Add>
+          <Dependency path="/qdcgLine9" />
+          <Dependency path="/qdcgLine17" />
+        </Add>
       </Derived>
     </Fact>
 
@@ -191,15 +280,26 @@
       <Name>QDCG line 20</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 20: "Subtract line 19 from line 10".</Description>
       <Derived>
-        <Subtract><Minuend><Dependency path="/qdcgLine10" /></Minuend><Subtrahends><Dependency path="/qdcgLine19" /></Subtrahends></Subtract>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/qdcgLine10" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/qdcgLine19" />
+          </Subtrahends>
+        </Subtract>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine21">
       <Name>QDCG line 21</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 21: "Multiply line 20 by 20% (0.20)". IRC §1(h)(1)(D).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 21: "Multiply line 20 by 20% (0.20)".
+        IRC §1(h)(1)(D).</Description>
       <Derived>
-        <Multiply><Rational>20/100</Rational><Dependency path="/qdcgLine20" /></Multiply>
+        <Multiply>
+          <Rational>20/100</Rational>
+          <Dependency path="/qdcgLine20" />
+        </Multiply>
       </Derived>
     </Fact>
 
@@ -207,13 +307,20 @@
       <Name>QDCG line 23</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 23: "Add lines 18, 21, and 22".</Description>
       <Derived>
-        <Add><Dependency path="/qdcgLine18" /><Dependency path="/qdcgLine21" /><Dependency path="/qdcgLine22" /></Add>
+        <Add>
+          <Dependency path="/qdcgLine18" />
+          <Dependency path="/qdcgLine21" />
+          <Dependency path="/qdcgLine22" />
+        </Add>
       </Derived>
     </Fact>
 
     <Fact path="/qdcgLine24">
       <Name>QDCG line 24</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 24: "Figure the tax on the amount on line 1. If the amount on line 1 is less than $100,000, use the Tax Table to figure the tax. If the amount on line 1 is $100,000 or more, use the Tax Computation Worksheet" (taxCalculations /taxOnTaxableIncomeRegularRates, the Form 1040 line 16 tax without this worksheet).</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 24: "Figure the tax on the amount on
+        line 1. If the amount on line 1 is less than $100,000, use the Tax Table to figure the tax. If the amount on
+        line 1 is $100,000 or more, use the Tax Computation Worksheet" (taxCalculations /taxOnTaxableIncomeRegularRates,
+        the Form 1040 line 16 tax without this worksheet).</Description>
       <Derived>
         <Dependency module="taxCalculations" path="/taxOnTaxableIncomeRegularRates" />
       </Derived>
@@ -221,36 +328,1004 @@
 
     <Fact path="/qdcgLine25">
       <Name>QDCG line 25</Name>
-      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 25: "Tax on all taxable income. Enter the smaller of line 23 or line 24."</Description>
+      <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 25: "Tax on all taxable income. Enter
+        the smaller of line 23 or line 24."</Description>
       <Derived>
-        <Round><LesserOf><Dependency path="/qdcgLine23" /><Dependency path="/qdcgLine24" /></LesserOf></Round>
+        <Round>
+          <LesserOf>
+            <Dependency path="/qdcgLine23" />
+            <Dependency path="/qdcgLine24" />
+          </LesserOf>
+        </Round>
       </Derived>
     </Fact>
 
     <Fact path="/usesQdcgTaxWorksheet">
       <Name>Uses QDCG Tax Worksheet</Name>
-      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 36, Line 16, Qualified Dividends and Capital Gain Tax Worksheet: use it "if you don't have to use the Schedule D Tax Worksheet and if any of the following applies. • You reported qualified dividends on Form 1040 or 1040-SR, line 3a. • You don't have to file Schedule D and you reported capital gain distributions on Form 1040 or 1040-SR, line 7a. • You are filing Schedule D, and Schedule D, lines 15 and 16, are both more than zero." Each bullet makes worksheet line 4 (lines 2 + 3) more than $0, so this is line 4 &gt; 0. The Schedule D Tax Worksheet (Schedule D lines 18/19 more than $0, or Form 4952 line 4g) and Form 2555 are out of scope.</Description>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 36, Line 16, Qualified
+        Dividends and Capital Gain Tax Worksheet: use it "if you don't have to use the Schedule D Tax Worksheet and if
+        any of the following applies. • You reported qualified dividends on Form 1040 or 1040-SR, line 3a. • You don't
+        have to file Schedule D and you reported capital gain distributions on Form 1040 or 1040-SR, line 7a. • You are
+        filing Schedule D, and Schedule D, lines 15 and 16, are both more than zero." Each bullet makes worksheet line 4
+        (lines 2 + 3) more than $0, so this is line 4 &gt; 0. The Schedule D Tax Worksheet (Schedule D lines 18/19 more
+        than $0, or Form 4952 line 4g) and Form 2555 are out of scope.</Description>
       <Derived>
-        <GreaterThan><Left><Dependency path="/qdcgLine4" /></Left><Right><Dollar>0</Dollar></Right></GreaterThan>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/qdcgLine4" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
       </Derived>
     </Fact>
 
     <Fact path="/tentativeTaxFromTaxableIncome">
       <Name>Tentative tax from taxable income</Name>
-      <Description>Tax as reported on Form 1040 line 16: QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 25 when it applies, otherwise Tax Table / Tax Computation Worksheet on line 15 (Rev. Proc. 2025-32 §4.01 pp.10–12 rates).</Description>
+      <Description>Tax as reported on Form 1040 line 16: QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line
+        25 when it applies, otherwise Tax Table / Tax Computation Worksheet on line 15 (Rev. Proc. 2025-32 §4.01
+        pp.10–12 rates).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
-        <Round><Switch><Case><When><Dependency path="/usesQdcgTaxWorksheet" /></When><Then><Dependency path="/qdcgLine25" /></Then></Case><Case><When><True /></When><Then><Dependency module="taxCalculations" path="/taxOnTaxableIncomeRegularRates" /></Then></Case></Switch></Round>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Dependency path="/usesQdcgTaxWorksheet" />
+              </When>
+              <Then>
+                <Dependency path="/qdcgLine25" />
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dependency module="taxCalculations" path="/taxOnTaxableIncomeRegularRates" />
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
       </Derived>
     </Fact>
 
-    <Fact path="/qdcgRoundedLine5"><Name>Rounded QDCG worksheet line 5</Name><Description>Income less than $100,000 uses the tax tables from the Instructions for Form
+    <Fact path="/qdcgRoundedLine5">
+      <Name>Rounded QDCG worksheet line 5</Name>
+      <Description>Income less than $100,000 uses the tax tables from the Instructions for Form
         1040. This fact selects
         the "midpoint" that corresponds to each entry in the tax tables, for use in calculating
-        tenative tax.</Description><Derived><Switch><!-- No tax if you've got no taxable income --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgLine5" /></Left><Right><Dollar>0</Dollar></Right></LessThanOrEqual></When><Then><Dollar>0</Dollar></Then></Case><!-- There are three hardcoded midpoints for income less than $25 --><Case><When><LessThan><Left><Dependency path="/qdcgLine5" /></Left><Right><Dollar>5</Dollar></Right></LessThan></When><Then><Dollar>2.50</Dollar></Then></Case><Case><When><LessThan><Left><Dependency path="/qdcgLine5" /></Left><Right><Dollar>15</Dollar></Right></LessThan></When><Then><Dollar>10</Dollar></Then></Case><Case><When><LessThan><Left><Dependency path="/qdcgLine5" /></Left><Right><Dollar>25</Dollar></Right></LessThan></When><Then><Dollar>20</Dollar></Then></Case><!-- The tax tables use increments of $25 for income between $25 and $3,000 --><Case><When><LessThan><Left><Dependency path="/qdcgLine5" /></Left><Right><Dollar>3000</Dollar></Right></LessThan></When><Then><Add><StepwiseMultiply><Multiplicand><Dependency path="/qdcgLine5" /></Multiplicand><Rate><Rational>25/25</Rational><!-- $25 for every whole $25 of income --></Rate></StepwiseMultiply><Dollar>12.50</Dollar><!-- Add $12.50 to find the midpoint of the row --></Add></Then></Case><!-- The tax tables use increments of $50 for income between $3,000 and $100,000 --><Case><When><LessThan><Left><Dependency path="/qdcgLine5" /></Left><Right><Dollar>100000</Dollar></Right></LessThan></When><Then><Add><StepwiseMultiply><Multiplicand><Dependency path="/qdcgLine5" /></Multiplicand><Rate><Rational>50/50</Rational><!-- $50 for every whole $50 of income --></Rate></StepwiseMultiply><Dollar>25</Dollar><!-- Add $25 to find the midpoint of the row --></Add></Then></Case><!-- Income of $100,000 and over uses the tax computation worksheet --><Case><When><GreaterThanOrEqual><Left><Dependency path="/qdcgLine5" /></Left><Right><Dollar>100000</Dollar></Right></GreaterThanOrEqual></When><Then><Dependency path="/qdcgLine5" /></Then></Case></Switch></Derived></Fact>
+        tenative tax.</Description>
+      <Derived>
+        <Switch><!-- No tax if you've got no taxable income -->
+          <Case>
+            <When>
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency path="/qdcgLine5" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </LessThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case><!-- There are three hardcoded midpoints for income less than $25 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/qdcgLine5" />
+                </Left>
+                <Right>
+                  <Dollar>5</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>2.50</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/qdcgLine5" />
+                </Left>
+                <Right>
+                  <Dollar>15</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>10</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/qdcgLine5" />
+                </Left>
+                <Right>
+                  <Dollar>25</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>20</Dollar>
+            </Then>
+          </Case><!-- The tax tables use increments of $25 for income between $25 and $3,000 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/qdcgLine5" />
+                </Left>
+                <Right>
+                  <Dollar>3000</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <StepwiseMultiply>
+                  <Multiplicand>
+                    <Dependency path="/qdcgLine5" />
+                  </Multiplicand>
+                  <Rate>
+                    <Rational>25/25</Rational><!-- $25 for every whole $25 of income -->
+                  </Rate>
+                </StepwiseMultiply>
+                <Dollar>12.50</Dollar><!-- Add $12.50 to find the midpoint of the row -->
+              </Add>
+            </Then>
+          </Case><!-- The tax tables use increments of $50 for income between $3,000 and $100,000 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/qdcgLine5" />
+                </Left>
+                <Right>
+                  <Dollar>100000</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <StepwiseMultiply>
+                  <Multiplicand>
+                    <Dependency path="/qdcgLine5" />
+                  </Multiplicand>
+                  <Rate>
+                    <Rational>50/50</Rational><!-- $50 for every whole $50 of income -->
+                  </Rate>
+                </StepwiseMultiply>
+                <Dollar>25</Dollar><!-- Add $25 to find the midpoint of the row -->
+              </Add>
+            </Then>
+          </Case><!-- Income of $100,000 and over uses the tax computation worksheet -->
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/qdcgLine5" />
+                </Left>
+                <Right>
+                  <Dollar>100000</Dollar>
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Dependency path="/qdcgLine5" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
 
-    <Fact path="/qdcgLine22"><Name>QDCG Tax Worksheet line 22</Name><Description>QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) line 22: "Figure the tax on the amount on line 5" using the Tax Table / Tax Computation Worksheet. Same §1(j)(2) tables as /taxOnTaxableIncomeRegularRates (generated copy, input swapped to line 5).Rev Proc .01 Tax Rate Tables §1(j)(2)(A|B|C|D)TODO: Replace Any/Equal with Include</Description><!-- Rev. Proc. 2025-32 §4.01 pp.10–12 — all four §1(j)(2) tables --><TaxYear>2026</TaxYear><Derived><Round><Switch><!-- MARRIED FILING JOINTLY AND QUALIFIED SURVIVING SPOUSE — Table 1 §1(j)(2)(A) p.10 --><Case><When><Any><Dependency module="filingStatus" path="/isFilingStatusMFJ" /><Dependency module="filingStatus" path="/isFilingStatusQSS" /></Any></When><Then><Switch><!-- Not over $24,800: 10% of the taxable income --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>24800</Dollar></Right></LessThanOrEqual></When><Then><Multiply><Rational>10/100</Rational><Dependency path="/qdcgRoundedLine5" /></Multiply></Then></Case><!-- Over $24,800 but not over $100,800:$2,480 plus 12% of the excess over $24,800 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>100800</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>2480</Dollar><Multiply><Rational>12/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>24800</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $100,800 but not over $211,400:$11,600 plus 22% of the excess over $100,800 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>211400</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>11600</Dollar><Multiply><Rational>22/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>100800</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $211,400 but not over $403,550:$35,932 plus 24% of the excess over $211,400 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>403550</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>35932</Dollar><Multiply><Rational>24/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>211400</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $403,550 but not over $512,450:$82,048 plus 32% of the excess over $403,550 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>512450</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>82048</Dollar><Multiply><Rational>32/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>403550</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $512,450 but not over $768,700:$116,896 plus 35% of the excess over $512,450 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>768700</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>116896</Dollar><Multiply><Rational>35/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>512450</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $768,700:$206,583.50 plus 37% of the excess over $768,700 --><Case><When><GreaterThan><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>768700</Dollar></Right></GreaterThan></When><Then><Add><Dollar>206583.50</Dollar><Multiply><Rational>37/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>768700</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case></Switch></Then></Case><!-- HEAD OF HOUSEHOLD — Table 2 §1(j)(2)(B) pp.10–11 --><Case><When><Dependency module="filingStatus" path="/isFilingStatusHOH" /></When><Then><Switch><!-- Not over $17,700: 10% of the taxable income --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>17700</Dollar></Right></LessThanOrEqual></When><Then><Multiply><Rational>10/100</Rational><Dependency path="/qdcgRoundedLine5" /></Multiply></Then></Case><!-- Over $17,700 but not over $67,450:$1770 plus 12% of the excess over $17,700 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>67450</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>1770</Dollar><Multiply><Rational>12/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>17700</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $67,450 but not over $105,700:$7740 plus 22% of the excess over $67,450 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>105700</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>7740</Dollar><Multiply><Rational>22/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>67450</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $105,700 but not over $201,750:$16155 plus 24% of the excess over $105,700 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>201750</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>16155</Dollar><Multiply><Rational>24/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>105700</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $201,750 but not over $256,200:$39207 plus 32% of the excess over $201,750 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>256200</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>39207</Dollar><Multiply><Rational>32/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>201750</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $256,200 but not over $640,600:$56631 plus 35% of the excess over $256,200 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>640600</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>56631</Dollar><Multiply><Rational>35/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>256200</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $640,600:$191171 plus 37% of the excess over $640,600 --><Case><When><GreaterThan><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>640600</Dollar></Right></GreaterThan></When><Then><Add><Dollar>191171</Dollar><Multiply><Rational>37/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>640600</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case></Switch></Then></Case><!-- SINGLE — Table 3 §1(j)(2)(C) pp.11–12 --><Case><When><Dependency module="filingStatus" path="/isFilingStatusSingle" /></When><Then><Switch><!-- Not over $12,400: 10% of the taxable income --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>12400</Dollar></Right></LessThanOrEqual></When><Then><Multiply><Rational>10/100</Rational><Dependency path="/qdcgRoundedLine5" /></Multiply></Then></Case><!-- Over $12,400 but not over $50,400:$1240 plus 12% of the excess over $12,400 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>50400</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>1240</Dollar><Multiply><Rational>12/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>12400</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $50,400 but not over $105,700:$5800 plus 22% of the excess over $50,400 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>105700</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>5800</Dollar><Multiply><Rational>22/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>50400</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $105,700 but not over $201,775:$17966 plus 24% of the excess over $105,700 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>201775</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>17966</Dollar><Multiply><Rational>24/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>105700</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $201,775 but not over $256,225:$41024 plus 32% of the excess over $201,775 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>256225</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>41024</Dollar><Multiply><Rational>32/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>201775</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $256,225 but not over $640,600:$58448 plus 35% of the excess over $256,225 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>640600</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>58448</Dollar><Multiply><Rational>35/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>256225</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $640,600:$192979.25 plus 37% of the excess over $640,600 --><Case><When><GreaterThan><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>640600</Dollar></Right></GreaterThan></When><Then><Add><Dollar>192979.25</Dollar><Multiply><Rational>37/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>640600</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case></Switch></Then></Case><!-- MARRIED FILING SEPARATELY — Table 4 §1(j)(2)(D) p.12 --><Case><When><Dependency module="filingStatus" path="/isFilingStatusMFS" /></When><Then><Switch><!-- Not over $12,400: 10% of the taxable income --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>12400</Dollar></Right></LessThanOrEqual></When><Then><Multiply><Rational>10/100</Rational><Dependency path="/qdcgRoundedLine5" /></Multiply></Then></Case><!-- Over $12,400 but not over $50,400:$1240 plus 12% of the excess over $12,400 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>50400</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>1240</Dollar><Multiply><Rational>12/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>12400</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $50,400 but not over $105,700:$5800 plus 22% of the excess over $50,400 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>105700</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>5800</Dollar><Multiply><Rational>22/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>50400</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $105,700 but not over $201,775:$17966 plus 24% of the excess over $105,700 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>201775</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>17966</Dollar><Multiply><Rational>24/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>105700</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $201,775 but not over $256,225:$41024 plus 32% of the excess over $201,775 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>256225</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>41024</Dollar><Multiply><Rational>32/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>201775</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $256,225 but not over $384,350:$58448 plus 35% of the excess over $256,225 --><Case><When><LessThanOrEqual><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>384350</Dollar></Right></LessThanOrEqual></When><Then><Add><Dollar>58448</Dollar><Multiply><Rational>35/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>256225</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case><!-- Over $384,350:$103291.75 plus 37% of the excess over $384,350 --><Case><When><GreaterThan><Left><Dependency path="/qdcgRoundedLine5" /></Left><Right><Dollar>384350</Dollar></Right></GreaterThan></When><Then><Add><Dollar>103291.75</Dollar><Multiply><Rational>37/100</Rational><Subtract><Minuend><Dependency path="/qdcgRoundedLine5" /></Minuend><Subtrahends><Dollar>384350</Dollar></Subtrahends></Subtract></Multiply></Add></Then></Case></Switch></Then></Case></Switch></Round></Derived></Fact>
+    <Fact path="/qdcgLine22">
+      <Name>QDCG Tax Worksheet line 22</Name>
+      <Description>QDCG Tax Worksheet (Form 1040 instr. (2025) p.38) line 22: "Figure the tax on the amount on line 5"
+        using the Tax Table / Tax Computation Worksheet. Same §1(j)(2) tables as /taxOnTaxableIncomeRegularRates
+        (generated copy, input swapped to line 5).Rev Proc .01 Tax Rate Tables §1(j)(2)(A|B|C|D)TODO: Replace Any/Equal
+        with Include</Description><!-- Rev. Proc. 2025-32 §4.01 pp.10–12 — all four §1(j)(2) tables -->
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Round>
+          <Switch><!-- MARRIED FILING JOINTLY AND QUALIFIED SURVIVING SPOUSE — Table 1 §1(j)(2)(A) p.10 -->
+            <Case>
+              <When>
+                <Any>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                  <Dependency module="filingStatus" path="/isFilingStatusQSS" />
+                </Any>
+              </When>
+              <Then>
+                <Switch><!-- Not over $24,800: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>24800</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/qdcgRoundedLine5" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $24,800 but not over $100,800:$2,480 plus 12% of the excess over $24,800 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>100800</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>2480</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>24800</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $100,800 but not over $211,400:$11,600 plus 22% of the excess over $100,800 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>211400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>11600</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>100800</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $211,400 but not over $403,550:$35,932 plus 24% of the excess over $211,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>403550</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>35932</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>211400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $403,550 but not over $512,450:$82,048 plus 32% of the excess over $403,550 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>512450</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>82048</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>403550</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $512,450 but not over $768,700:$116,896 plus 35% of the excess over $512,450 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>768700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>116896</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>512450</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $768,700:$206,583.50 plus 37% of the excess over $768,700 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>768700</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>206583.50</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>768700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case><!-- HEAD OF HOUSEHOLD — Table 2 §1(j)(2)(B) pp.10–11 -->
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusHOH" />
+              </When>
+              <Then>
+                <Switch><!-- Not over $17,700: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>17700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/qdcgRoundedLine5" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $17,700 but not over $67,450:$1770 plus 12% of the excess over $17,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>67450</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>1770</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>17700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $67,450 but not over $105,700:$7740 plus 22% of the excess over $67,450 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>105700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>7740</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>67450</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $105,700 but not over $201,750:$16155 plus 24% of the excess over $105,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>201750</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>16155</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>105700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $201,750 but not over $256,200:$39207 plus 32% of the excess over $201,750 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>256200</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>39207</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>201750</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $256,200 but not over $640,600:$56631 plus 35% of the excess over $256,200 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>56631</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>256200</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $640,600:$191171 plus 37% of the excess over $640,600 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>191171</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>640600</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case><!-- SINGLE — Table 3 §1(j)(2)(C) pp.11–12 -->
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+              </When>
+              <Then>
+                <Switch><!-- Not over $12,400: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>12400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/qdcgRoundedLine5" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $12,400 but not over $50,400:$1240 plus 12% of the excess over $12,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>50400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>1240</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>12400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $50,400 but not over $105,700:$5800 plus 22% of the excess over $50,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>105700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>5800</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>50400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $105,700 but not over $201,775:$17966 plus 24% of the excess over $105,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>201775</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>17966</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>105700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $201,775 but not over $256,225:$41024 plus 32% of the excess over $201,775 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>256225</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>41024</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>201775</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $256,225 but not over $640,600:$58448 plus 35% of the excess over $256,225 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>58448</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>256225</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $640,600:$192979.25 plus 37% of the excess over $640,600 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>192979.25</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>640600</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case><!-- MARRIED FILING SEPARATELY — Table 4 §1(j)(2)(D) p.12 -->
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+              </When>
+              <Then>
+                <Switch><!-- Not over $12,400: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>12400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/qdcgRoundedLine5" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $12,400 but not over $50,400:$1240 plus 12% of the excess over $12,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>50400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>1240</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>12400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $50,400 but not over $105,700:$5800 plus 22% of the excess over $50,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>105700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>5800</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>50400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $105,700 but not over $201,775:$17966 plus 24% of the excess over $105,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>201775</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>17966</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>105700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $201,775 but not over $256,225:$41024 plus 32% of the excess over $201,775 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>256225</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>41024</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>201775</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $256,225 but not over $384,350:$58448 plus 35% of the excess over $256,225 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>384350</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>58448</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>256225</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $384,350:$103291.75 plus 37% of the excess over $384,350 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/qdcgRoundedLine5" />
+                        </Left>
+                        <Right>
+                          <Dollar>384350</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>103291.75</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/qdcgRoundedLine5" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>384350</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
 
   </Facts>
 </FactDictionaryModule>

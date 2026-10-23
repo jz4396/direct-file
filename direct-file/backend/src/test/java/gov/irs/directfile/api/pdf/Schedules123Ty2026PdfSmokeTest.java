@@ -211,7 +211,7 @@ class Schedules123Ty2026PdfSmokeTest {
             amount2(s2, "f2_14[0]", 450, "Schedule 2 line 17d");
             amount2(s2, "f2_19[0]", 450, "Schedule 2 line 20");
             amount2(s2, "f2_20[0]", 1166, "Schedule 2 line 21 = 15 + 20");
-            
+
             Map<String, String> f = fieldsOnPages(doc, F1040);
             assertEquals(1166, f1040(f, "Page2[0].f2_16[0]"), "Form 1040 line 23 = Schedule 2 line 21");
             assertEquals(150, f1040(f, "Page1[0].f1_74[0]"), "Form 1040 line 10 = Schedule 1 line 26");

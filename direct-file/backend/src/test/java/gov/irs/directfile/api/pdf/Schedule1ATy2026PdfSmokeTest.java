@@ -99,7 +99,8 @@ class Schedule1ATy2026PdfSmokeTest {
     static final String V2 = "c2222222-2222-4222-8222-222222222222";
     static final String V3 = "c3333333-3333-4333-8333-333333333333";
     /** Synthetic VINs (17 chars, no I/O/Q). Never real. */
-    static final Map<String, String> VINS = Map.of(V1, "1HGCM82633A004352", V2, "2T1BR32E54C000001", V3, "3VWFE21C04M000002");
+    static final Map<String, String> VINS =
+            Map.of(V1, "1HGCM82633A004352", V2, "2T1BR32E54C000001", V3, "3VWFE21C04M000002");
 
     static Map<String, String> vehicle(String id, String interest) {
         Map<String, String> m = new HashMap<>();
@@ -140,7 +141,9 @@ class Schedule1ATy2026PdfSmokeTest {
     /** Value of the first non-blank field whose name ends with the suffix (merge may prefix names). */
     static String value(Map<String, String> byName, String suffix) {
         for (var e : byName.entrySet()) {
-            if (e.getKey().endsWith(suffix) && e.getValue() != null && !e.getValue().isEmpty()) {
+            if (e.getKey().endsWith(suffix)
+                    && e.getValue() != null
+                    && !e.getValue().isEmpty()) {
                 return e.getValue();
             }
         }
@@ -181,7 +184,8 @@ class Schedule1ATy2026PdfSmokeTest {
             // VINs appear only in the two VIN fields.
             long vinFields = f.entrySet().stream()
                     .filter(e -> e.getValue() != null
-                            && (e.getValue().contains(VINS.get(V1)) || e.getValue().contains(VINS.get(V2))))
+                            && (e.getValue().contains(VINS.get(V1))
+                                    || e.getValue().contains(VINS.get(V2))))
                     .count();
             assertEquals(2, vinFields, "VIN only in 28a/28b column (i)");
 
