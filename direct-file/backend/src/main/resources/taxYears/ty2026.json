@@ -52,6 +52,24 @@
       "url": "https://www.law.cornell.edu/uscode/text/5",
       "kind": "statute"
     },
+    "fr-2025-01377": {
+      "title": "90 FR 5917 (Jan. 17, 2025), Annual Update of the HHS Poverty Guidelines",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2025-01-17/pdf/2025-01377.pdf",
+      "kind": "pdf",
+      "sha256": "a239506cedee787b4c164ac17fa43b2ad9a147e3c848cd935c54a692ee2cebce"
+    },
+    "f8880-2026-dft": {
+      "title": "Form 8880 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f8880--dft.pdf",
+      "kind": "pdf",
+      "sha256": "97a6b5b3df449310dbfb1f9574edb06dd2009f1b04d86261bb1c88fc087c9e01"
+    },
+    "i1040gi-2025": {
+      "title": "Instructions for Form 1040 (2025)",
+      "url": "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
+      "kind": "pdf",
+      "sha256": "482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a"
+    },
     "f6251-dft": {
       "title": "Form 6251 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f6251--dft.pdf",
@@ -1832,25 +1850,10 @@
           "quote": "In the case of any tax imposed by section 3101(b)(2), subsection (a) shall only apply to the extent to which the taxpayer receives wages from the employer in excess of $200,000"
         }
       ]
-    }
-  ],
-  "pendingReview": [
-    {
-      "fact": "/saversCreditOctDateForSameYearContribution",
-      "file": "constants.xml",
-      "taggedYear": 2024,
-      "status": "unverified",
-      "values": [
-        "Int:16"
-      ],
-      "note": "Day-of-October cutoff for the Saver's Credit testing period; 2026 source not yet confirmed.",
-      "tracking": "#91"
     },
     {
       "fact": "/hsaExcessContributionsPenalty",
       "file": "constants3.xml",
-      "taggedYear": 2024,
-      "status": "current",
       "values": [
         "String:6%"
       ],
@@ -1861,15 +1864,11 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/4973",
           "quote": "there is imposed for each taxable year a tax in an amount equal to 6 percent of the amount of the excess contributions"
         }
-      ],
-      "note": "Statutory rate, not inflation-adjusted.",
-      "tracking": "#91"
+      ]
     },
     {
       "fact": "/hsaOver55AdditionalCoverageLimit",
       "file": "constants3.xml",
-      "taggedYear": 2024,
-      "status": "current",
       "values": [
         "Dollar:1000"
       ],
@@ -1880,15 +1879,11 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/223",
           "quote": "2009 and thereafter $1,000."
         }
-      ],
-      "note": "Statutory amount, not inflation-adjusted.",
-      "tracking": "#91"
+      ]
     },
     {
       "fact": "/maxOdcAmount",
       "file": "ctcOdc.xml",
-      "taggedYear": 2024,
-      "status": "current",
       "values": [
         "Dollar:500"
       ],
@@ -1899,15 +1894,11 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/24",
           "quote": "shall be increased by $500 for each dependent of the taxpayer (as defined in section 152) other than a qualifying child described in subsection (c)."
         }
-      ],
-      "note": "Statutory amount, not inflation-adjusted.",
-      "tracking": "#91"
+      ]
     },
     {
       "fact": "/dependentCreditPhaseoutThreshold",
       "file": "ctcOdc.xml",
-      "taggedYear": 2024,
-      "status": "current",
       "values": [
         "Dollar:400000",
         "Dollar:200000"
@@ -1919,15 +1910,11 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/24",
           "quote": "the threshold amount shall be $400,000 in the case of a joint return ($200,000 in any other case)."
         }
-      ],
-      "note": "Statutory amount, not inflation-adjusted.",
-      "tracking": "#91"
+      ]
     },
     {
       "fact": "/actcRefundabilityThreshold",
       "file": "ctcOdc2.xml",
-      "taggedYear": 2024,
-      "status": "current",
       "values": [
         "Dollar:2500"
       ],
@@ -1938,10 +1925,121 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/24",
           "quote": "Subsection (d)(1)(B)(i) shall be applied by substituting “$2,500” for “$3,000”."
         }
-      ],
-      "note": "Statutory amount, not inflation-adjusted.",
-      "tracking": "#91"
+      ]
     },
+    {
+      "fact": "/maxStudentLoadDeduction",
+      "file": "studentLoanAdjustment.xml",
+      "values": [
+        "Dollar:2500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 221(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/221",
+          "quote": "the deduction allowed by subsection (a) for the taxable year shall not exceed $2,500."
+        }
+      ]
+    },
+    {
+      "fact": "/saversCreditOctDateForSameYearContribution",
+      "file": "constants.xml",
+      "values": [
+        "Int:15"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 25B(d)(2)(B)(iii)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/25B",
+          "quote": "the period after such taxable year and before the due date (including extensions) for filing the return of tax for such taxable year."
+        },
+        {
+          "source": "irc",
+          "section": "§ 6081(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6081",
+          "quote": "Except in the case of taxpayers who are abroad, no such extension shall be for more than 6 months."
+        },
+        {
+          "source": "f8880-2026-dft",
+          "page": 2,
+          "quote": "Certain distributions received after 2023 and before the due date (including"
+        }
+      ]
+    },
+    {
+      "fact": "/federalPovertyLineMagicNumberStartingNumber",
+      "file": "ptc.xml",
+      "values": [
+        "Dollar:19550",
+        "Dollar:17990",
+        "Dollar:15650"
+      ],
+      "cite": [
+        {
+          "source": "fr-2025-01377",
+          "page": 5917,
+          "quote": "2025 POVERTY GUIDELINES FOR THE 48 CONTIGUOUS STATES AND THE DISTRICT OF COLUMBIA | Persons in family/household 1 | $15,650 | For families/households with more than 8 persons, add $5,500 for each additional person.",
+          "form": "table"
+        },
+        {
+          "source": "fr-2025-01377",
+          "page": 5917,
+          "quote": "2025 POVERTY GUIDELINES FOR ALASKA | Persons in family/household 1 | $19,550 | For families/households with more than 8 persons, add $6,880 for each additional person.",
+          "form": "table"
+        },
+        {
+          "source": "fr-2025-01377",
+          "page": 5917,
+          "quote": "2025 POVERTY GUIDELINES FOR HAWAII | Persons in family/household 1 | $17,990 | For families/households with more than 8 persons, add $6,330 for each additional person.",
+          "form": "table"
+        },
+        {
+          "source": "irc",
+          "section": "§ 36B(d)(3)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/36B",
+          "quote": "the poverty line used shall be the most recently published poverty line as of the 1st day of the regular enrollment period for coverage during such calendar year."
+        }
+      ]
+    },
+    {
+      "fact": "/federalPovertyLineMagicNumberIncrement",
+      "file": "ptc.xml",
+      "values": [
+        "Dollar:6880",
+        "Dollar:6330",
+        "Dollar:5500"
+      ],
+      "cite": [
+        {
+          "source": "fr-2025-01377",
+          "page": 5917,
+          "quote": "2025 POVERTY GUIDELINES FOR THE 48 CONTIGUOUS STATES AND THE DISTRICT OF COLUMBIA | Persons in family/household 1 | $15,650 | For families/households with more than 8 persons, add $5,500 for each additional person.",
+          "form": "table"
+        },
+        {
+          "source": "fr-2025-01377",
+          "page": 5917,
+          "quote": "2025 POVERTY GUIDELINES FOR ALASKA | Persons in family/household 1 | $19,550 | For families/households with more than 8 persons, add $6,880 for each additional person.",
+          "form": "table"
+        },
+        {
+          "source": "fr-2025-01377",
+          "page": 5917,
+          "quote": "2025 POVERTY GUIDELINES FOR HAWAII | Persons in family/household 1 | $17,990 | For families/households with more than 8 persons, add $6,330 for each additional person.",
+          "form": "table"
+        },
+        {
+          "source": "irc",
+          "section": "§ 36B(d)(3)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/36B",
+          "quote": "the poverty line used shall be the most recently published poverty line as of the 1st day of the regular enrollment period for coverage during such calendar year."
+        }
+      ]
+    }
+  ],
+  "pendingReview": [
     {
       "fact": "/pdf8812ContinueFromLine20",
       "file": "ctcOdc3.xml",
@@ -1980,38 +2078,24 @@
       "fact": "/MFSFilingThresholdAmount",
       "file": "filers.xml",
       "taggedYear": 2024,
-      "status": "unverified",
+      "status": "current",
       "values": [
         "Dollar:5"
       ],
-      "note": "Administrative $5 MFS filing threshold; 2026 source not yet confirmed.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/federalPovertyLineMagicNumberStartingNumber",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:18210",
-        "Dollar:16770",
-        "Dollar:14580"
-      ],
-      "note": "Poverty guideline amounts used for TY2024; TY2026 uses the guidelines in effect for the prior year.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/federalPovertyLineMagicNumberIncrement",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:6430",
-        "Dollar:5910",
-        "Dollar:5140"
-      ],
-      "note": "Poverty guideline amounts used for TY2024; TY2026 uses the guidelines in effect for the prior year.",
-      "tracking": "#91"
+      "note": "Administrative $5 married-filing-separately threshold (Chart A). Stays tagged 2024 until the 2026 Form 1040 instructions are published and re-checked.",
+      "tracking": "#91",
+      "cite": [
+        {
+          "source": "i1040gi-2025",
+          "page": 9,
+          "quote": "If you didn’t live with your spouse at the end of 2025 (or on the date your spouse died) and your gross income was at least $5, you must file a return regardless of your age."
+        },
+        {
+          "source": "i1040gi-2025",
+          "page": 9,
+          "quote": "Married filing separately any age $5"
+        }
+      ]
     },
     {
       "fact": "/ptcRepaymentLimitationLessThan200PercentFplSingle",
@@ -2026,10 +2110,10 @@
           "source": "rp-2025-32",
           "section": "§2.04",
           "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
         }
       ],
-      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
       "tracking": "#91"
     },
     {
@@ -2045,10 +2129,10 @@
           "source": "rp-2025-32",
           "section": "§2.04",
           "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
         }
       ],
-      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
       "tracking": "#91"
     },
     {
@@ -2064,10 +2148,10 @@
           "source": "rp-2025-32",
           "section": "§2.04",
           "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
         }
       ],
-      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
       "tracking": "#91"
     },
     {
@@ -2083,10 +2167,10 @@
           "source": "rp-2025-32",
           "section": "§2.04",
           "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
         }
       ],
-      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
       "tracking": "#91"
     },
     {
@@ -2102,10 +2186,10 @@
           "source": "rp-2025-32",
           "section": "§2.04",
           "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
         }
       ],
-      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
+      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
       "tracking": "#91"
     },
     {
@@ -2121,29 +2205,10 @@
           "source": "rp-2025-32",
           "section": "§2.04",
           "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025."
+          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
         }
       ],
-      "note": "TY2024 § 36B(f)(2)(B) repayment cap; the cited provision no longer applies for TY2026.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/maxStudentLoadDeduction",
-      "file": "studentLoanAdjustment.xml",
-      "taggedYear": 2024,
-      "status": "current",
-      "values": [
-        "Dollar:2500"
-      ],
-      "cite": [
-        {
-          "source": "irc",
-          "section": "§ 221(b)(1)",
-          "url": "https://www.law.cornell.edu/uscode/text/26/221",
-          "quote": "the deduction allowed by subsection (a) for the taxable year shall not exceed $2,500."
-        }
-      ],
-      "note": "Statutory amount, not inflation-adjusted.",
+      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
       "tracking": "#91"
     },
     {

@@ -118,7 +118,7 @@
     </Fact>
     <Fact path="/hsaExcessContributionsPenalty">
       <Description>Penalty for excess HSA contributions.</Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <String>6%</String>
       </Derived>
@@ -149,7 +149,7 @@
       <Description>Additional coverage limit for HSA contributions when TP is over 55. See instructions for form 8889
         for details.</Description>
       <Export downstreamFacts="true" />
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>1000</Dollar>
       </Derived>
