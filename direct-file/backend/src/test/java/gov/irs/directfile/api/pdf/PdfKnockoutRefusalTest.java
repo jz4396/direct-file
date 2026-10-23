@@ -16,8 +16,10 @@ import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 
 import gov.irs.directfile.api.config.PdfServiceProperties;
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.io.IOLocationService;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.directfile.api.loaders.service.SubmissionBlockingFactsTest;
@@ -115,10 +117,12 @@ class PdfKnockoutRefusalTest {
         assertTrue(Boolean.TRUE.equals(graph.get("/flowIsKnockedOut").get()), "/flowIsKnockedOut");
 
         for (String language : List.of("en", "es")) {
-            PdfRefusedByKnockoutException e = assertThrows(
-                    PdfRefusedByKnockoutException.class,
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
                     () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
-            assertEquals(List.of(SCHEDULE_EIC_KNOCKOUT), e.getKnockoutFactPaths());
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            assertEquals(
+                    List.of(SCHEDULE_EIC_KNOCKOUT), e.getBody().getProperties().get("blockingFacts"));
         }
     }
 

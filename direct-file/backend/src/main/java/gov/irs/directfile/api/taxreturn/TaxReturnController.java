@@ -24,7 +24,6 @@ import gov.irs.directfile.api.dataimport.model.WrappedPopulatedData;
 import gov.irs.directfile.api.errors.*;
 import gov.irs.directfile.api.events.EventId;
 import gov.irs.directfile.api.io.storagelocations.StorageLocationBuilder;
-import gov.irs.directfile.api.pdf.PdfRefusedByKnockoutException;
 import gov.irs.directfile.api.pdf.PdfService;
 import gov.irs.directfile.api.taxreturn.dto.*;
 import gov.irs.directfile.api.taxreturn.models.TaxReturn;
@@ -263,8 +262,6 @@ public class TaxReturnController implements TaxReturnApi {
                                     + StorageLocationBuilder.getTaxReturnDocumentFilename(
                                             "taxreturn", taxReturn.getTaxYear(), language))
                     .body(new InputStreamResource(stream));
-        } catch (PdfRefusedByKnockoutException e) {
-            throw new SubmissionBlockingFactsResponseStatusException(e.getKnockoutFactPaths(), e);
         } catch (Exception e) {
             throw pdfFailureResponse(e);
         }

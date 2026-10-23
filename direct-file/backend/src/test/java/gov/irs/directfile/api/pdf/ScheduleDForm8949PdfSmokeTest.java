@@ -25,9 +25,11 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.irs.directfile.api.config.PdfServiceProperties;
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.io.IOLocationService;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.directfile.api.taxreturn.models.TaxReturn;
@@ -196,8 +198,7 @@ class ScheduleDForm8949PdfSmokeTest {
      * Form 8949 code Q (Form 8949 instr. (2025) p. 8: "You sold or exchanged QSB stock and can exclude part of the
      * gain"). Section 1202 gain is 28-percent rate gain (IRC 1(h)(4)(A)(ii), 1(h)(7)) on Schedule D line 18, which
      * needs the Schedule D Tax Worksheet this tool does not compute. The print path refuses the package in both
-     * languages and names only the knockout path (the PDF endpoint answers 400 with it as blockingFacts); the same row
-     * with code B still prints (see the loss test).
+     * languages and names only the knockout path; the same row with code B still prints (see the loss test).
      */
     @Test
     void codeQReturnIsRefusedByThePrintPath() throws Exception {
@@ -213,11 +214,14 @@ class ScheduleDForm8949PdfSmokeTest {
                         .put("item", code);
             });
             for (String language : List.of("en", "es")) {
-                PdfRefusedByKnockoutException e = assertThrows(
-                        PdfRefusedByKnockoutException.class,
+                SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                        SubmissionBlockingFactsResponseStatusException.class,
                         () -> pdfService.getTaxReturn(language, taxReturn, false),
                         code + " " + language);
-                assertEquals(List.of("/flowKnockoutForm8949CodeQ"), e.getKnockoutFactPaths());
+                assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+                assertEquals(
+                        List.of("/flowKnockoutForm8949CodeQ"),
+                        e.getBody().getProperties().get("blockingFacts"));
                 assertFalse(e.getMessage().contains("-2500"), e.getMessage());
             }
         }

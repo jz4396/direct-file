@@ -49,16 +49,11 @@ public class SubmissionBlockingFactsResponseStatusException extends ApiResponseS
 
     /** Lists the blocking fact paths (never their values) in the message and as {@code blockingFacts} in the body. */
     public SubmissionBlockingFactsResponseStatusException(List<String> blockingFactPaths) {
-        this(blockingFactPaths, null);
-    }
-
-    /** As {@link #SubmissionBlockingFactsResponseStatusException(List)}, keeping the cause for the server log. */
-    public SubmissionBlockingFactsResponseStatusException(List<String> blockingFactPaths, Throwable cause) {
         super(
                 SubmissionBlockingFacts.code,
                 SubmissionBlockingFacts.description + " " + String.join(", ", blockingFactPaths),
                 ApiErrorKeys.SUBMISSION_BLOCKING_FACTS,
                 Map.of("blockingFacts", List.copyOf(blockingFactPaths)),
-                cause);
+                null);
     }
 }

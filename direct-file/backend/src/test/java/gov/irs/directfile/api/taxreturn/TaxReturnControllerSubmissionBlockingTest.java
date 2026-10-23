@@ -26,7 +26,6 @@ import gov.irs.directfile.api.dataimport.DataImportService;
 import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.errors.TaxReturnNotFoundResponseStatusException;
 import gov.irs.directfile.api.errors.ValidationExceptionHandlers;
-import gov.irs.directfile.api.pdf.PdfRefusedByKnockoutException;
 import gov.irs.directfile.api.pdf.PdfService;
 import gov.irs.directfile.api.taxreturn.TaxReturnApi.GenericResponseBadData;
 import gov.irs.directfile.api.taxreturn.TaxReturnApi.SignResponseFailed;
@@ -163,36 +162,6 @@ class TaxReturnControllerSubmissionBlockingTest {
         assertInstanceOf(IllegalStateException.class, e.getCause());
         String json = responseBody(e, HttpStatus.valueOf(GenericResponseBadData.code.value()));
         assertFalse(json.contains("blockingFacts"), json);
-    }
-
-    @Test
-    void pdfRefusedByKnockoutAnswersWithTheKnockoutPath() throws Exception {
-        TaxReturn taxReturn = new TaxReturn();
-        taxReturn.setTaxYear(2026);
-        when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
-        when(pdfService.getTaxReturn(eq("en"), same(taxReturn), eq(false)))
-                .thenThrow(new PdfRefusedByKnockoutException(List.of("/flowKnockoutScheduleEicWithoutTy2026Template")));
-        SubmissionBlockingFactsResponseStatusException e =
-                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> controller.pdf(id, "en"));
-        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-        assertEquals(
-                List.of("/flowKnockoutScheduleEicWithoutTy2026Template"),
-                e.getBody().getProperties().get("blockingFacts"));
-        responseBody(e, HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    void pdfRefusedByKnockoutListsEveryRefusingPath() throws Exception {
-        TaxReturn taxReturn = new TaxReturn();
-        taxReturn.setTaxYear(2026);
-        when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
-        List<String> paths = List.of("/flowKnockoutScheduleEicWithoutTy2026Template", "/flowKnockoutOther");
-        when(pdfService.getTaxReturn(eq("es"), same(taxReturn), eq(false)))
-                .thenThrow(new PdfRefusedByKnockoutException(paths));
-        SubmissionBlockingFactsResponseStatusException e =
-                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> controller.pdf(id, "es"));
-        assertEquals(paths, e.getBody().getProperties().get("blockingFacts"));
-        responseBody(e, HttpStatus.BAD_REQUEST);
     }
 
     @Test
