@@ -3,7 +3,7 @@ import { forwardRef, useCallback, useEffect, useState } from 'react';
 
 import { BooleanFactProps } from '../../../types/core.js';
 import useFact from '../../../hooks/useFact.js';
-import { ComplexFormControl } from '../../FormControl/index.js';
+import { ComplexFormControl, buildControlErrorId, buildFormControlId } from '../../FormControl/index.js';
 import Translation from '../../Translation/index.js';
 
 const Boolean = forwardRef<HTMLInputElement, BooleanFactProps>(
@@ -32,6 +32,14 @@ const Boolean = forwardRef<HTMLInputElement, BooleanFactProps>(
     const maybeTranslationKeyNo = `fields.${path}${additionalTranslationSuffix}.boolean.no`;
 
     const showError = showFeedback && !isValid;
+    // The fieldset's description is not announced when focus moves straight to an option,
+    // so each option carries the error state and message itself (WCAG 2.1 SC 3.3.1).
+    const errorProps = showError
+      ? {
+          'aria-invalid': true,
+          'aria-describedby': buildControlErrorId(buildFormControlId(concretePath)),
+        }
+      : {};
 
     const [checkboxValue, setCheckboxValue] = useState(!!fact);
 
@@ -72,6 +80,7 @@ const Boolean = forwardRef<HTMLInputElement, BooleanFactProps>(
             checked={checkboxValue}
             disabled={readOnly}
             required={required}
+            {...errorProps}
           />
         ) : (
           <>
@@ -85,6 +94,7 @@ const Boolean = forwardRef<HTMLInputElement, BooleanFactProps>(
               defaultChecked={fact}
               required
               disabled={readOnly}
+              {...errorProps}
             />
             <Radio
               id={`id-${concretePath}-no`}
@@ -98,6 +108,7 @@ const Boolean = forwardRef<HTMLInputElement, BooleanFactProps>(
               defaultChecked={fact === false}
               required
               disabled={readOnly}
+              {...errorProps}
             />
           </>
         )}
