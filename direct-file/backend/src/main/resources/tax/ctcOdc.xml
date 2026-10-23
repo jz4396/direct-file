@@ -363,7 +363,7 @@
     <Fact path="/maxOdcAmount">
       <Name>Maximum credit amount for other dependents</Name>
       <Description>The maximum credit for other dependents, per dependent</Description>
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>500</Dollar>
@@ -391,7 +391,7 @@
         line 9 of Schedule
         8812.</Description>
       <Export mef="true" />
-      <TaxYear>2024</TaxYear>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Switch>
