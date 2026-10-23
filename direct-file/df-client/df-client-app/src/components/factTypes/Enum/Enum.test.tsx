@@ -226,6 +226,38 @@ describe(`Enum`, () => {
 
     const combobox = getByRole(`combobox`);
     expect(combobox).toHaveAttribute(`aria-describedby`);
+    expect(combobox).toHaveAttribute(`aria-invalid`, `true`);
+  });
+
+  it(`marks each radio button invalid and describes it with the error only when there are errors`, () => {
+    mocks.getValues.mockReturnValue([`english`, `spanish`]);
+    mocks.getOptionsPath.mockReturnValue(optionsPath);
+    const errorId = `id-${sharedProps.concretePath}__error-msg`;
+
+    const { getAllByRole, rerender } = render(
+      <Provider store={setupStore()}>
+        <FactGraphContextProvider>
+          <Enum {...sharedProps} />
+        </FactGraphContextProvider>
+      </Provider>
+    );
+    for (const radio of getAllByRole(`radio`)) {
+      expect(radio).not.toHaveAttribute(`aria-invalid`);
+      expect(radio).not.toHaveAttribute(`aria-describedby`);
+    }
+
+    rerender(
+      <Provider store={setupStore()}>
+        <FactGraphContextProvider>
+          <Enum {...{ ...sharedProps, isValid: false, showFeedback: true }} />
+        </FactGraphContextProvider>
+      </Provider>
+    );
+    expect(document.getElementById(errorId)).toBeInTheDocument();
+    for (const radio of getAllByRole(`radio`)) {
+      expect(radio).toHaveAttribute(`aria-invalid`, `true`);
+      expect(radio).toHaveAttribute(`aria-describedby`, errorId);
+    }
   });
 
   afterEach(() => vi.restoreAllMocks());
