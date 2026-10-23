@@ -280,14 +280,22 @@
     -->
     <Fact path="/scheduleEicWithoutTy2026TemplateApplies">
       <Name>The return claims the EIC with a qualifying child, so it needs a TY2026 Schedule EIC</Name>
-      <Description>#208: 26 U.S.C. 32(c)(3)(D)(i) https://www.law.cornell.edu/uscode/text/26/32: "A qualifying child shall not be taken into account under subsection (b) unless the taxpayer includes the name, age, and TIN of the qualifying child on the return of tax for the taxable year." 2026 Schedule EIC (Form 1040) draft https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf (SHA-256 fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3), form page 1 (PDF p. 2): "Complete and attach to Form 1040 or 1040-SR only if you have a qualifying child." Same condition as /pdfIncludeScheduleEic: an earned income credit other than $0 with at least one EIC qualifying child.</Description>
+      <Description>#208: 26 U.S.C. 32(c)(3)(D)(i) https://www.law.cornell.edu/uscode/text/26/32: "A qualifying child
+        shall not be taken into account under subsection (b) unless the taxpayer includes the name, age, and TIN of the
+        qualifying child on the return of tax for the taxable year." 2026 Schedule EIC (Form 1040) draft
+        https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf (SHA-256
+        fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3), form page 1 (PDF p. 2): "Complete and attach
+        to Form 1040 or 1040-SR only if you have a qualifying child." Same condition as /pdfIncludeScheduleEic: an
+        earned income credit other than $0 with at least one EIC qualifying child.</Description>
       <Derived>
         <Dependency path="/pdfIncludeScheduleEic" />
       </Derived>
     </Fact>
     <Fact path="/flowKnockoutScheduleEicWithoutTy2026Template">
       <Name>Knockout: the return needs a TY2026 Schedule EIC, which this tool can't produce yet</Name>
-      <Description>#208: true when /scheduleEicWithoutTy2026TemplateApplies is complete and true. The tool would otherwise print the qualifying child information on the 2024 Schedule EIC. Complete and false when it doesn't apply, so submission checks never see it incomplete.</Description>
+      <Description>#208: true when /scheduleEicWithoutTy2026TemplateApplies is complete and true. The tool would
+        otherwise print the qualifying child information on the 2024 Schedule EIC. Complete and false when it doesn't
+        apply, so submission checks never see it incomplete.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
