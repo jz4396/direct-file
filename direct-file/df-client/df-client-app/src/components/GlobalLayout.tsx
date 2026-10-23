@@ -42,7 +42,8 @@ function GlobalLayout({
 
     i18n.changeLanguage(lang);
     document.documentElement.setAttribute(`lang`, lang);
-    localStorage.setItem(`irs_df_language`, lang);
+    // The static client-only build keeps nothing in browser storage (see initI18n).
+    if (!isStaticClientOnly()) localStorage.setItem(`irs_df_language`, lang);
     setLocale(i18n.language);
   };
 
