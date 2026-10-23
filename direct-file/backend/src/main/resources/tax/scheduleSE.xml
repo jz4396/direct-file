@@ -13,9 +13,13 @@
       <Name>Social Security (OASDI) wage base TY2026</Name>
       <Description>
         TY2026 OASDI contribution and benefit base = $184,500.
-        #166: SSA, "Cost-of-Living Increase and Other Determinations for 2026",
-        90 FR 49047 (Nov. 3, 2025), https://www.federalregister.gov/d/2025-19763 (PDF https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf), p. 49050:
-        "The OASDI contribution and benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning in 2026."
+        #166: SSA, "Cost-of-Living Increase and Other
+        Determinations for 2026",
+        90 FR 49047 (Nov. 3, 2025), https://www.federalregister.gov/d/2025-19763 (PDF
+        https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf), p. 49050:
+        "The OASDI contribution and
+        benefit base is $184,500 for remuneration paid in 2026 and self-employment income earned in tax years beginning
+        in 2026."
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -27,7 +31,8 @@
       <Name>SE tax filing threshold</Name>
       <Description>
         Net earnings from self-employment of $400 or more generally require Schedule SE /
-        SE tax. Cite: 26 U.S.C. § 1402; Schedule SE instructions.
+        SE tax. Cite: 26
+        U.S.C. § 1402; Schedule SE instructions.
       </Description>
       <Derived>
         <Dollar>400</Dollar>
@@ -40,7 +45,8 @@
       <Name>Net profit subject to SE tax before 92.35%</Name>
       <Description>
         Positive Schedule C net profit subject to SE tax (MVP: no farm/optional methods).
-        Cite: 26 U.S.C. § 1402(a); Schedule SE.
+        Cite: 26 U.S.C. §
+        1402(a); Schedule SE.
       </Description>
       <Derived>
         <GreaterOf>
@@ -54,11 +60,15 @@
       <Name>Net earnings from self-employment</Name>
       <Description>
         Schedule SE: net profit × 92.35% (0.9235).
-        Cite: Schedule SE instructions (multiply by 92.35%); reflects employer-equivalent portion
-        already excluded via the 7.65% reduction embedded in 92.35% (= 100% − 7.65%).
+        Cite: Schedule SE instructions (multiply by 92.35%);
+        reflects employer-equivalent portion
+        already excluded via the 7.65% reduction embedded in 92.35% (= 100% −
+        7.65%).
         Authority: 26 U.S.C. § 1402(a)(12): deduction "equal to the product of (A) the taxpayer's net
-        earnings from self-employment ... and (B) one-half of the sum of the rates imposed by
-        subsections (a) and (b) of section 1401" = 1 - (12.4% + 2.9%) / 2 = 0.9235.
+        earnings
+        from self-employment ... and (B) one-half of the sum of the rates imposed by
+        subsections (a) and (b) of section
+        1401" = 1 - (12.4% + 2.9%) / 2 = 0.9235.
         Rational 9235/10000 = 0.9235.
       </Description>
       <Export downstreamFacts="true" mef="true" />
@@ -94,7 +104,8 @@
       <Name>Primary filer total OASDI wages (W-2 Box 3)</Name>
       <Description>
         Sum of primary filer W-2 social security wages for Schedule SE wage-base coordination.
-        Cite: Schedule SE — Social Security wages reduce remaining wage base for the 12.4% portion.
+        Cite: Schedule
+        SE — Social Security wages reduce remaining wage base for the 12.4% portion.
       </Description>
       <Derived>
         <Round>
@@ -109,8 +120,10 @@
       <Name>Primary filer total Social Security tips (W-2 Box 7)</Name>
       <Description>
         Sum of primary filer W-2 box 7 social security tips. Schedule SE line 8a is
-        "Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2)".
-        Cite: 26 U.S.C. § 1402(b)(1); 2025/2026 Instructions for Schedule SE, line 8.
+        "Total social security
+        wages and tips (total of boxes 3 and 7 on Form(s) W-2)".
+        Cite: 26 U.S.C. § 1402(b)(1); 2025/2026 Instructions for
+        Schedule SE, line 8.
       </Description>
       <Derived>
         <Round>
@@ -125,9 +138,12 @@
       <Name>Remaining Social Security wage base for SE</Name>
       <Description>
         max(0, TY2026 wage base $184,500 − (W-2 box 3 OASDI wages + W-2 box 7 OASDI tips)).
-        Schedule SE line 8 (8a W-2 boxes 3 + 7; 8b Form 4137 and 8c Form 8919 are out of scope:
-        Form 8919 wages are hard-coded $0 in income.xml and 4137-type tips are not collected).
-        Cite: 26 U.S.C. § 1402(b)(1); Instructions for Schedule SE, line 8;
+        Schedule SE line 8
+        (8a W-2 boxes 3 + 7; 8b Form 4137 and 8c Form 8919 are out of scope:
+        Form 8919 wages are hard-coded $0 in
+        income.xml and 4137-type tips are not collected).
+        Cite: 26 U.S.C. § 1402(b)(1); Instructions for Schedule SE,
+        line 8;
         TY2026 wage base: see /socialSecurityWageBaseTy2026 (90 FR 49047, p. 49050).
       </Description>
       <Derived>
@@ -149,11 +165,13 @@
     <Fact path="/scheduleSELine8a">
       <Name>Schedule SE line 8a: Total social security wages and tips</Name>
       <Description>
-        #89. 2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, created 4/27/26), form
+        #89. 2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, created 4/27/26),
+        form
         page 1, line 8a: "Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2) and railroad
         retirement (tier 1) compensation." W-2 box 3 (/primaryFilerOasdiWagesTotal) plus box 7
         (/primaryFilerOasdiTipsTotal) for the person with self-employment income; railroad retirement compensation
-        is not collected. Wage-base coordination under 26 U.S.C. 1402(b)(1). Printed only; the tax itself uses
+        is not
+        collected. Wage-base coordination under 26 U.S.C. 1402(b)(1). Printed only; the tax itself uses
         /seRemainingSocialSecurityWageBase.
       </Description>
       <Derived>
@@ -169,12 +187,17 @@
     <Fact path="/scheduleSELine8d">
       <Name>Schedule SE line 8d</Name>
       <Description>
-        #89. 2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf), form page 1, line 8d:
+        #89. 2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf), form page 1, line
+        8d:
         "Add lines 8a, 8b, and 8c." Line 8b (Form 4137 unreported tips) stops the return
-        (unreportedTips /flowKnockoutUnreportedTips) and line 8c (Form 8919 wages) has no input (income
-        /wagesFrom8919 is $0), so line 8d = line 8a. Line 8a says "If $184,500 or more, skip lines 8b through 10,
-        and go to line 11", so line 8d is $0 (printed blank) when line 8a is at least the TY2026 wage base
-        (/socialSecurityWageBaseTy2026, $184,500; 90 FR 49047, p. 49050; 26 U.S.C. 1402(b)(1)).
+        (unreportedTips
+        /flowKnockoutUnreportedTips) and line 8c (Form 8919 wages) has no input (income
+        /wagesFrom8919 is $0), so line 8d
+        = line 8a. Line 8a says "If $184,500 or more, skip lines 8b through 10,
+        and go to line 11", so line 8d is $0
+        (printed blank) when line 8a is at least the TY2026 wage base
+        (/socialSecurityWageBaseTy2026, $184,500; 90 FR
+        49047, p. 49050; 26 U.S.C. 1402(b)(1)).
       </Description>
       <Derived>
         <Switch>
@@ -209,8 +232,10 @@
       <Name>SE earnings subject to 12.4% Social Security tax</Name>
       <Description>
         Lesser of net earnings from SE and remaining Social Security wage base.
-        Rate authority: 26 U.S.C. § 1401(a) — 12.4% on self-employment income.
-        Quote (§ 1401(a)): "a tax equal to 12.4 percent of the amount of the self-employment income…"
+        Rate authority: 26 U.S.C. §
+        1401(a) — 12.4% on self-employment income.
+        Quote (§ 1401(a)): "a tax equal to 12.4 percent of the amount of the
+        self-employment income…"
         https://www.law.cornell.edu/uscode/text/26/1401
       </Description>
       <Derived>
@@ -259,7 +284,8 @@
       <Name>SE earnings subject to 2.9% Medicare tax</Name>
       <Description>
         Net earnings from SE when SE tax applies (no wage base for HI after 1993).
-        Cite: 26 U.S.C. § 1401(b); SSA note that HI has no limitation after 1993.
+        Cite: 26 U.S.C. § 1401(b);
+        SSA note that HI has no limitation after 1993.
       </Description>
       <Derived>
         <Switch>
@@ -288,7 +314,8 @@
       <Description>
         2.9% × SE Medicare taxable earnings. Cite: 26 U.S.C. § 1401(b).
         Rational 29/1000 = 0.029.
-        Note: Additional 0.9% Medicare tax above threshold is OUT OF SCOPE in this slice (explicit).
+        Note:
+        Additional 0.9% Medicare tax above threshold is OUT OF SCOPE in this slice (explicit).
       </Description>
       <Export mef="true" />
       <Derived>
@@ -305,7 +332,8 @@
       <Name>Self-employment tax</Name>
       <Description>
         Total SE tax = Social Security portion + Medicare portion.
-        Schedule SE → Schedule 2 (other taxes) → Form 1040.
+        Schedule SE → Schedule 2 (other taxes) →
+        Form 1040.
         Cite: 26 U.S.C. § 1401; Schedule SE instructions.
       </Description>
       <Export downstreamFacts="true" mef="true" />
@@ -324,9 +352,12 @@
       <Name>Deductible part of self-employment tax</Name>
       <Description>
         Employer-equivalent portion = one-half of SE tax. Schedule 1 adjustment.
-        Cite: 26 U.S.C. § 164(f) — https://www.law.cornell.edu/uscode/text/26/164#f
-        Quote (§ 164(f)(1)): "there shall be allowed as a deduction for the taxable year an amount equal to
-        one-half of the taxes imposed by section 1401 (other than the taxes imposed by section 1401(b)(2))".
+        Cite: 26 U.S.C. § 164(f) —
+        https://www.law.cornell.edu/uscode/text/26/164#f
+        Quote (§ 164(f)(1)): "there shall be allowed as a deduction for
+        the taxable year an amount equal to
+        one-half of the taxes imposed by section 1401 (other than the taxes imposed
+        by section 1401(b)(2))".
         Flows to Schedule 1 line 15 → /adjustmentsToIncome (taxCalculations.xml).
       </Description>
       <Export downstreamFacts="true" mef="true" />

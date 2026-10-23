@@ -28,7 +28,8 @@
       <Name>Schedule C businesses</Name>
       <Description>
         One or more sole-proprietor / gig businesses reported on Schedule C.
-        Gross income inclusion authority: 26 U.S.C. § 61.
+        Gross income inclusion authority:
+        26 U.S.C. § 61.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -67,7 +68,8 @@
       <Name>Had self-employment / gig / freelance income</Name>
       <Description>
         Interview gate: whether the filer (or spouse) had self-employment, gig, or freelance income
-        that belongs on Schedule C. Gap evidence Pub 6048 excluded this from upstream Direct File:
+        that
+        belongs on Schedule C. Gap evidence Pub 6048 excluded this from upstream Direct File:
         https://www.irs.gov/pub/irs-pdf/p6048.pdf
       </Description>
       <Export downstreamFacts="true" />
@@ -80,7 +82,8 @@
       <Name>Wants qualified business income deduction</Name>
       <Description>
         Explicit § 199A gate. This vertical slice does NOT compute QBI.
-        If true → knockout (no silent zero). Cite: 26 U.S.C. § 199A —
+        If true → knockout (no silent zero).
+        Cite: 26 U.S.C. § 199A —
         https://www.law.cornell.edu/uscode/text/26/199A
       </Description>
       <Export downstreamFacts="true" />
@@ -118,7 +121,8 @@
       <Description>
         Schedule SE is computed per individual (26 U.S.C. 1402(b); each spouse has a separate OASDI
         contribution and benefit base). This slice runs one Schedule SE coordinated against the
-        primary filer's W-2 OASDI wages only, so any business owned by the secondary filer is
+        primary filer's W-2 OASDI
+        wages only, so any business owned by the secondary filer is
         explicitly knocked out rather than mis-computed.
       </Description>
       <BlockSubmissionOnTrue />
@@ -140,22 +144,41 @@
     <Fact path="/flowKnockoutScheduleCEarnedIncomeCredits">
       <Name>Knockout: Schedule C cases the EITC, CDCC or ACTC earned income can't yet figure</Name>
       <Description>
-        #117. The EITC (eitc /eitcEarnedIncomeWithoutCombatPay), the CDCC (income /primaryFilerEarnedIncomeForCdccBase)
-        and the ACTC (income /earnedIncomeWithAllCombatPay) add /scheduleCNetProfitForEarnedIncome. Still stopped:
-        - A Schedule C net loss. Both sources say a loss reduces earned income: Instructions for Form 1040 (2025), PDF
-          p. 47, EIC Worksheet B, line 1e and line 4b ("Combine lines 1e, 2c, 3, and 4a"), and the 2026 draft
-          Instructions for Form 2441, PDF p. 5 ("You must reduce your earned income by any loss from self-employment").
-          /scheduleCNetProfitForEarnedIncome is floored at $0, so a loss stops the return when the EITC could apply
-          (AGI below the EITC completed phaseout, eitc /belowEitcAgiLimit, or eitc /eitcQualified), the CDCC applies
-          or the CTC applies. A loss can lower earned income below the EITC limit even when wages alone are above it,
-          so the EITC test is on AGI, which already includes the loss.
-        - A joint return with any Schedule C result and the CDCC: Form 2441 lines 4 and 5 need each spouse's
-          Schedule SE line 3 and Schedule 1 line 15 share ("If filing jointly, figure your and your spouse's earned
-          income separately"), and Schedule SE is not yet figured per spouse.
-        Stopped elsewhere: a spouse-owned business (/flowKnockoutScheduleCSpouseBusiness) and statutory employees
-        (formW2s /flowKnockoutStatutoryEmployee). Church employee income, Forms 4361/4029 and the optional methods have
-        no input in this tool. Complete and false when there is no Schedule C or the Schedule C result is a profit on a
-        return that isn't a joint return claiming the CDCC.
+        #117. The EITC (eitc /eitcEarnedIncomeWithoutCombatPay), the CDCC (income
+        /primaryFilerEarnedIncomeForCdccBase)
+        and the ACTC (income /earnedIncomeWithAllCombatPay) add
+        /scheduleCNetProfitForEarnedIncome. Still stopped:
+        - A Schedule C net loss. Both sources say a loss reduces
+        earned income: Instructions for Form 1040 (2025), PDF
+        p. 47, EIC Worksheet B, line 1e and line 4b ("Combine lines
+        1e, 2c, 3, and 4a"), and the 2026 draft
+        Instructions for Form 2441, PDF p. 5 ("You must reduce your earned income
+        by any loss from self-employment").
+        /scheduleCNetProfitForEarnedIncome is floored at $0, so a loss stops the
+        return when the EITC could apply
+        (AGI below the EITC completed phaseout, eitc /belowEitcAgiLimit, or eitc
+        /eitcQualified), the CDCC applies
+        or the CTC applies. A loss can lower earned income below the EITC limit even
+        when wages alone are above it,
+        so the EITC test is on AGI, which already includes the loss.
+        - A joint return with
+        any Schedule C result and the CDCC:
+        Form 2441 lines 4 and 5 need each spouse's
+        Schedule SE line 3 and Schedule 1
+        line 15 share ("If filing jointly, figure your and your spouse's earned
+        income separately"), and Schedule SE is
+        not yet figured per spouse.
+        Stopped elsewhere: a spouse-owned business
+        (/flowKnockoutScheduleCSpouseBusiness) and
+        statutory employees
+        (formW2s /flowKnockoutStatutoryEmployee). Church
+        employee income, Forms 4361/4029 and the
+        optional methods have
+        no input in this tool. Complete and false when
+        there is no Schedule C or the Schedule C
+        result is a profit on a
+        return that isn't a joint return claiming the
+        CDCC.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -224,7 +247,8 @@
       <Name>Gross receipts or sales</Name>
       <Description>
         Schedule C Part I gross receipts (cash MVP). Inclusion: 26 U.S.C. § 61.
-        Cite Schedule C instructions PDF page for the line rule used in the implementation PR notes.
+        Cite Schedule C instructions
+        PDF page for the line rule used in the implementation PR notes.
       </Description>
       <Writable>
         <Dollar />
@@ -262,9 +286,11 @@
       <Name>Total business expenses (MVP)</Name>
       <Description>
         MVP expense bucket (sum of deductible trade/business expenses). Authority: 26 U.S.C. § 162
-        (ordinary and necessary expenses paid or incurred in carrying on a trade or business) —
+        (ordinary
+        and necessary expenses paid or incurred in carrying on a trade or business) —
         https://www.law.cornell.edu/uscode/text/26/162
-        Category-level Schedule C Part II lines can replace this bucket in a later PR.
+        Category-level Schedule C Part II lines can replace this bucket in
+        a later PR.
       </Description>
       <Writable>
         <Dollar />
@@ -302,7 +328,8 @@
       <Name>Net profit or (loss)</Name>
       <Description>
         Schedule C net profit (loss) = gross receipts − expenses.
-        Flows to Schedule 1, line 3 (business income or loss).
+        Flows to Schedule 1, line 3 (business income
+        or loss).
         Gross: § 61; expenses: § 162.
       </Description>
       <Export mef="true" />
@@ -343,7 +370,8 @@
     <Fact path="/scheduleCNetProfitOrLoss">
       <Name>Total Schedule C net profit or (loss)</Name>
       <Description>
-        Sum of Schedule C net profit/(loss) for Schedule 1 line 3 → Form 1040 line 8 (via Schedule 1 line 10).
+        Sum of Schedule C net profit/(loss) for Schedule 1 line 3 → Form 1040 line 8 (via Schedule 1 line
+        10).
         Cite: Schedule C instructions; Form 1040 Schedule 1 line 3.
       </Description>
       <Export downstreamFacts="true" mef="true" />
@@ -409,16 +437,23 @@
     <Fact path="/scheduleCNetProfitForEarnedIncome">
       <Name>Schedule C net profit included in earned income</Name>
       <Description>
-        Earned income from self-employment for the EITC, CDCC and ACTC = Schedule C net profit (Schedule SE line 3)
+        Earned income from self-employment for the EITC, CDCC and ACTC = Schedule C net profit (Schedule SE
+        line 3)
         minus the deductible part of SE tax (Schedule 1 line 15, Schedule SE line 13), 26 U.S.C. 32(c)(2)(A)(ii)
         (https://www.law.cornell.edu/uscode/text/26/32#c_2_A): "net earnings from self-employment ... determined with
         regard to the deduction allowed to the taxpayer by section 164(f)". Instructions for Form 1040 (2025), PDF
-        p. 47, EIC Worksheet B, Part 1: "1a. Enter the amount from Schedule SE, Part I, line 3. ... d. Enter the
-        amount from Schedule SE, Part I, line 13. ... e. Subtract line 1d from line 1c." Under $400 of net earnings no
-        SE tax applies, so this is the Schedule C line 31 net profit (Worksheet B Part 2, line 2b). 2026 draft
-        Instructions for Form 2441, PDF p. 5, lines 4 and 5: "2. The amount shown on Schedule SE (Form 1040), line 3,
-        minus any deduction you claim on Schedule 1 (Form 1040), line 15." #117: floored at $0 because a loss is not
-        modeled; a loss stops the return wherever it would change a credit (/flowKnockoutScheduleCEarnedIncomeCredits).
+        p. 47,
+        EIC Worksheet B, Part 1: "1a. Enter the amount from Schedule SE, Part I, line 3. ... d. Enter the
+        amount from
+        Schedule SE, Part I, line 13. ... e. Subtract line 1d from line 1c." Under $400 of net earnings no
+        SE tax
+        applies, so this is the Schedule C line 31 net profit (Worksheet B Part 2, line 2b). 2026 draft
+        Instructions for
+        Form 2441, PDF p. 5, lines 4 and 5: "2. The amount shown on Schedule SE (Form 1040), line 3,
+        minus any deduction
+        you claim on Schedule 1 (Form 1040), line 15." #117: floored at $0 because a loss is not
+        modeled; a loss stops
+        the return wherever it would change a credit (/flowKnockoutScheduleCEarnedIncomeCredits).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>

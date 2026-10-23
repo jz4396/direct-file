@@ -9,7 +9,10 @@ import {
 } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
+import {
+  submissionBlockingFacts,
+  submissionBlockingFactsRequiringValue,
+} from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 import {
   baseFilerData,
   filerWithW2NoDeductionsNoCreditsBaseData,
@@ -314,6 +317,65 @@ describe(`Schedule D / Form 8949 — adjustment column (g)`, () => {
   });
 });
 
+describe(`Schedule D / Form 8949 — cents are rounded per row so every line adds up`, () => {
+  // Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole dollars, you must round all
+  // amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99 cents to the next dollar."
+  // Each Form 8949 row rounds (d), (e) and (g) once; (h) = (d) − (e) + (g) from those amounts (IRC §1001(a)), and the
+  // Schedule D line totals add the same rounded row amounts. Proceeds 10.40 → 10, basis 0.60 → 1, (h) = 9.
+  it(`Part I line 1b and Part II line 8b: (d) 10 − (e) 1 + (g) 0 = (h) 9`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8949Transactions/*/roundedProceeds`,
+      `/form8949Transactions/*/roundedCostBasis`,
+      `/form8949Transactions/*/roundedAdjustment`,
+      `/form8949Transactions/*/gainOrLoss`,
+      `/scheduleDLine1bProceeds`,
+      `/scheduleDLine1bCostBasis`,
+      `/scheduleDLine1bAdjustment`,
+      `/scheduleDLine1b`,
+      `/scheduleDLine8bProceeds`,
+      `/scheduleDLine8bCostBasis`,
+      `/scheduleDLine8bAdjustment`,
+      `/scheduleDLine8b`,
+      `/scheduleDLine16`,
+    ];
+    const { factGraph } = setupFactGraph({
+      ...singleFilerData,
+      '/form8949Transactions': createCollectionWrapper([tx1, tx2]),
+      ...tx(tx1, {
+        description: `ST cents`,
+        proceeds: `10.40`,
+        costBasis: `0.60`,
+        box: `A`,
+        holdingPeriod: `shortTerm`,
+      }),
+      ...tx(tx2, {
+        description: `LT cents`,
+        proceeds: `10.40`,
+        costBasis: `0.60`,
+        box: `D`,
+        holdingPeriod: `longTerm`,
+      }),
+      '/form8949TransactionsIsDone': createBooleanWrapper(true),
+    });
+    const at = (path: string) => factGraph.get(path as ConcretePath).get.toString();
+    for (const id of [tx1, tx2]) {
+      expect(at(`/form8949Transactions/#${id}/roundedProceeds`)).toBe(`10.00`);
+      expect(at(`/form8949Transactions/#${id}/roundedCostBasis`)).toBe(`1.00`);
+      expect(at(`/form8949Transactions/#${id}/roundedAdjustment`)).toBe(`0.00`);
+      expect(at(`/form8949Transactions/#${id}/gainOrLoss`)).toBe(`9.00`);
+    }
+    for (const line of [`1b`, `8b`]) {
+      expect(at(`/scheduleDLine${line}Proceeds`)).toBe(`10.00`);
+      expect(at(`/scheduleDLine${line}CostBasis`)).toBe(`1.00`);
+      expect(at(`/scheduleDLine${line}Adjustment`)).toBe(`0.00`);
+      expect(at(`/scheduleDLine${line}`)).toBe(`9.00`);
+    }
+    expect(at(`/scheduleDLine7`)).toBe(`9.00`);
+    expect(at(`/scheduleDLine15`)).toBe(`9.00`);
+    expect(at(`/scheduleDLine16`)).toBe(`18.00`);
+  });
+});
+
 const get = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], path: string) =>
   fg.get(path as ConcretePath).get.toString();
 
@@ -559,5 +621,82 @@ describe(`Schedule D — special capital gains knockouts (#21)`, () => {
       '/form8949TransactionsIsDone': createBooleanWrapper(true),
     });
     expect(factGraph.get(`/scheduleDLine16` as ConcretePath).get.toString()).toBe(`2000.00`);
+  });
+});
+
+describe(`Schedule D — Form 8949 code Q (section 1202 gain) knockout`, () => {
+  // Form 8949 instr. (2025) p. 8, code Q: "You sold or exchanged QSB stock and can exclude part of the gain".
+  // IRC §1(h)(4)(A)(ii): 28-percent rate gain includes section 1202 gain (§1(h)(7)), which goes on Schedule D
+  // line 18 and needs the Schedule D Tax Worksheet, which this tool does not compute.
+  const KNOCKOUT = `/flowKnockoutForm8949CodeQ`;
+  const rowQ = `/form8949Transactions/#${tx1}/hasAdjustmentCodeQ`;
+  const ltGain = (code?: string) => ({
+    ...singleFilerData,
+    '/form8949Transactions': createCollectionWrapper([tx1]),
+    ...tx(tx1, {
+      description: `100 sh QSB Co`,
+      proceeds: `10000`,
+      costBasis: `5000`,
+      box: `D`,
+      holdingPeriod: `longTerm`,
+      ...(code === undefined ? {} : { adjustment: `-2500` }),
+    }),
+    ...(code === undefined ? {} : { [`/form8949Transactions/#${tx1}/adjustmentCode`]: createStringWrapper(code) }),
+    '/form8949TransactionsIsDone': createBooleanWrapper(true),
+  });
+  const result = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], p: string) => fg.get(p as ConcretePath);
+
+  it(`is a nested blocking fact covered by /flowIsKnockedOut`, () => {
+    expect(submissionBlockingFacts).toContain(KNOCKOUT);
+    expect(submissionBlockingFactsRequiringValue).not.toContain(KNOCKOUT);
+  });
+
+  for (const code of [`Q`, `q`, `BQ`, `QW`, `b,q`, `B Q`]) {
+    it(`code "${code}" knocks out, blocks submission and leaves line 20 unchecked`, ({ task }) => {
+      task.meta.testedFactPaths = [KNOCKOUT, `/flowIsKnockedOut`, `/scheduleDLine20Yes`];
+      const { factGraph } = setupFactGraph(ltGain(code));
+      expect(result(factGraph, rowQ).complete).toBe(true);
+      expect(result(factGraph, rowQ).get).toBe(true);
+      expect(result(factGraph, KNOCKOUT).complete).toBe(true);
+      expect(result(factGraph, KNOCKOUT).get).toBe(true);
+      expect(result(factGraph, `/flowIsKnockedOut`).get).toBe(true);
+      expect(result(factGraph, `/scheduleDLine17Yes`).get).toBe(true);
+      expect(result(factGraph, `/scheduleDLine20Yes`).get).toBe(false);
+    });
+  }
+
+  for (const code of [`B`, `BW`, `L`, `H`, undefined]) {
+    it(`code ${code === undefined ? `left blank` : `"${code}"`} is complete and false; line 20 Yes`, ({ task }) => {
+      task.meta.testedFactPaths = [KNOCKOUT, `/scheduleDLine20Yes`];
+      const { factGraph } = setupFactGraph(ltGain(code));
+      expect(result(factGraph, rowQ).complete).toBe(true);
+      expect(result(factGraph, rowQ).get).toBe(false);
+      expect(result(factGraph, KNOCKOUT).complete).toBe(true);
+      expect(result(factGraph, KNOCKOUT).get).toBe(false);
+      expect(result(factGraph, `/scheduleDLine17Yes`).get).toBe(true);
+      expect(result(factGraph, `/scheduleDLine20Yes`).complete).toBe(true);
+      expect(result(factGraph, `/scheduleDLine20Yes`).get).toBe(true);
+    });
+  }
+
+  it(`no Form 8949 rows, or no collection at all: complete and false`, ({ task }) => {
+    task.meta.testedFactPaths = [KNOCKOUT];
+    for (const data of [
+      { ...singleFilerData, '/form8949Transactions': createCollectionWrapper([]) },
+      singleFilerData,
+    ]) {
+      const { factGraph } = setupFactGraph(data);
+      expect(result(factGraph, KNOCKOUT).complete).toBe(true);
+      expect(result(factGraph, KNOCKOUT).get).toBe(false);
+    }
+  });
+
+  it(`line 20 stays unchecked when the collectibles or unrecaptured 1250 gain knockout (#21) applies`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleDLine20Yes`];
+    for (const answer of [`/soldCollectibles`, `/hasUnrecapturedSection1250Gain`]) {
+      const { factGraph } = setupFactGraph({ ...ltGain(`B`), [answer]: createBooleanWrapper(true) });
+      expect(result(factGraph, `/flowIsKnockedOut`).get).toBe(true);
+      expect(result(factGraph, `/scheduleDLine20Yes`).get).toBe(false);
+    }
   });
 });
