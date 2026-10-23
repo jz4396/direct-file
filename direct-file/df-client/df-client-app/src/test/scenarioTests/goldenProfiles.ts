@@ -1,5 +1,5 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
-// (Florida only) and profile C (PA/FL part-year resident with AMT and NIIT). Every name, SSN, address, EIN and payer
+// (Florida only) and profile C (PA to FL part-year resident with AMT and NIIT). Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
 // hand-computed in goldenProfiles.test.ts.
@@ -76,7 +76,7 @@ const single = (p: Person, home: Home) => ({
   '/writableHasAdvancedPtc': createBooleanWrapper(false),
 });
 
-type W2 = {
+export type W2 = {
   id: string;
   employer: string;
   ein: [string, string];
@@ -197,6 +197,7 @@ export const profile7PaToFlPartYear = {
   '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
   '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
   '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+  '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
   ...w2s(
     riley.ssn,
     {
@@ -313,58 +314,70 @@ export const profileBFloridaStateWithholding = {
   }),
 };
 
+/** One Form 8949 box D (long-term, basis reported) sale. */
+export const form8949Sale = (id: string, acquired: string, sold: string, proceeds: number, basis: number) => ({
+  '/form8949Transactions': createCollectionWrapper([id]),
+  [`/form8949Transactions/#${id}/description`]: createStringWrapper(`100 sh Example Index Fund`),
+  [`/form8949Transactions/#${id}/dateAcquired`]: createDayWrapper(acquired),
+  [`/form8949Transactions/#${id}/dateSold`]: createDayWrapper(sold),
+  [`/form8949Transactions/#${id}/proceeds`]: createDollarWrapper(`${proceeds}`),
+  [`/form8949Transactions/#${id}/costBasis`]: createDollarWrapper(`${basis}`),
+  [`/form8949Transactions/#${id}/box`]: createEnumWrapper(`D`, `/form8949BoxOptions`),
+  [`/form8949Transactions/#${id}/holdingPeriod`]: createEnumWrapper(`longTerm`, `/form8949HoldingPeriodOptions`),
+  [`/form8949Transactions/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+  '/form8949TransactionsIsDone': createBooleanWrapper(true),
+});
+
 /**
- * Profile C: single, moved from Florida to Pennsylvania on July 1, 2026 (PA part-year resident). Two W-2s: a Florida
- * job before the move and a PA job after it, $350,000 of Medicare wages in all (Form 8959), plus $900,000 of
- * qualified dividends (Form 6251 AMT and Form 8960 NIIT). The PA return can't take part-year dividends yet, so this
- * profile must stop (/flowKnockoutPaDividends), not file a PA-40 that leaves them out.
+ * Profile C: single, moved from Pennsylvania to Florida on July 1, 2026 (PA part-year resident). A PA W-2 for the PA
+ * period and a FL W-2 for the FL period, plus a $350,000 long-term gain from a sale in the FL period: Form 6251 AMT
+ * inside the exemption phaseout (the 50% rate), Form 8960 NIIT on the gain, and a PA-40 that leaves the gain out
+ * (a nonresident is not taxed on gains from intangible property).
  */
 const quinn: Person = { first: `Quinn`, last: `Example`, ssn: [`444`, `00`, `4444`], dob: `1979-09-12` };
-const profileCWages = w2s(
-  quinn.ssn,
-  {
-    id: `13500000-0000-4000-8000-000000000c01`,
-    employer: `Example Coastal Services Inc`,
-    ein: [`00`, `0000301`],
-    box1: 120000,
-    box2: 25000,
-    box5: 120000,
-    // 1.45% x 120,000; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
-    box6: 1740,
-    paPartYearState: `fl`,
-    residentPeriodWages: 0,
-  },
-  {
-    id: `13500000-0000-4000-8000-000000000c02`,
-    employer: `Sample Manufacturing Co`,
-    ein: [`00`, `0000302`],
-    box1: 230000,
-    box2: 55000,
-    box5: 230000,
-    // 1.45% x 230,000 = 3,335, plus 0.9% x (230,000 - 200,000) = 270 (IRC §3102(f)(1)).
-    box6: 3605,
-    box16: 230000,
-    box17: 7100,
-    paPartYearState: `pa`,
-  }
-);
-const profileCBase = {
-  ...single(quinn, { street: `123 Example St`, city: `Harrisburg`, zip: `17101`, state: `PA` }),
+export const profileCPaW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000c01`,
+  employer: `Sample Manufacturing Co`,
+  ein: [`00`, `0000301`],
+  box1: 150000,
+  box2: 30000,
+  box5: 150000,
+  // 1.45% x 150,000; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
+  box6: 2175,
+  box16: 150000,
+  box17: 4700,
+  paPartYearState: `pa`,
+};
+export const profileCFlW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000c02`,
+  employer: `Example Coastal Services Inc`,
+  ein: [`00`, `0000302`],
+  box1: 100000,
+  box2: 20000,
+  box5: 100000,
+  // 1.45% x 100,000; no 0.9% (under $200,000 from this employer).
+  box6: 1450,
+  paPartYearState: `fl`,
+  residentPeriodWages: 0,
+};
+export const profileCSaleId = `13500000-0000-4000-8000-000000000c03`;
+export const profileCPaToFlAmtNiit = {
+  ...single(quinn, { street: `123 Example St`, city: `Tallahassee`, zip: `32301`, state: `FL` }),
   '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
-  '/paPartYearMove': createEnumWrapper(`flToPa`, `/paPartYearMoveOptions`),
+  '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
   '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
-  '/paSchoolDistrictCode': createStringWrapper(`22275`),
-  ...profileCWages,
+  '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+  ...w2s(quinn.ssn, profileCPaW2, profileCFlW2),
+  ...form8949Sale(profileCSaleId, `2020-03-02`, `2026-09-15`, 450000, 100000),
 };
 
-/** Profile C: FL to PA part-year resident with AMT and NIIT (stops on the PA part-year dividends). */
-export const profileCPaFlPartYearAmtNiit = {
-  ...profileCBase,
-  ...qualifiedDividends(`13500000-0000-4000-8000-000000000c03`, `Example Index Fund`, 900000, 900000),
+/** Profile C negative-row inputs (each row in goldenProfiles.test.ts changes one thing). */
+export const profileCRows = {
+  w2s: (...forms: W2[]) => w2s(quinn.ssn, ...forms),
+  interest,
+  qualifiedDividends,
+  spouse: () => spouse(morgan),
 };
-
-/** Profile C clean row: the same FL to PA move and wages, no investment income. */
-export const profileCPaFlPartYearWagesOnly = profileCBase;
 
 export const goldenProfiles = {
   profileADividendsNiit,
@@ -375,6 +388,5 @@ export const goldenProfiles = {
   profile5AmtAnd8959,
   profile7PaFullYear,
   profile7PaToFlPartYear,
-  profileCPaFlPartYearAmtNiit,
-  profileCPaFlPartYearWagesOnly,
+  profileCPaToFlAmtNiit,
 };

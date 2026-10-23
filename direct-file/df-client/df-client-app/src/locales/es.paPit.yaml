@@ -25,6 +25,8 @@ dataviews:
     /paHasSpNontaxableIncome:
       ¿Tiene ingresos no tributables que cuentan para la Condonación de Impuestos de Pensilvania?
     /paPartYearResidentInterest: Intereses recibidos mientras era residente de Pensilvania
+    /paPartYearHasNonresidentPaSourcePay:
+      Pago por trabajo en Pensilvania mientras vivía en Florida, no incluido en el encasillado 16
     /paHasUnreimbursedEmployeeExpenses:
       ¿Desea deducir gastos de negocio no reembolsados como empleado en su declaración de Pensilvania?
     /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
@@ -58,6 +60,11 @@ headings:
   /heading/your-taxes/amount/pa-part-year-interest: ¿Qué parte de sus intereses recibió mientras vivía en Pensilvania?
   /heading/knockout/pa-part-year:
     Esta herramienta aún no admite su declaración de Pensilvania como residente parte del año
+  /heading/your-taxes/amount/pa-part-year-nonresident-pa-pay:
+    Mientras vivía en Florida, ¿ganó pago por trabajo que hizo en Pensilvania que no está incluido en el encasillado 16
+    de un Formulario W-2 de Pensilvania?
+  /heading/knockout/pa-part-year-nonresident-pa-pay:
+    Esta herramienta aún no admite el pago de Pensilvania que ganó mientras vivía en Florida
   /heading/your-taxes/amount/pa-school-district:
     "¿Cuál es el código del distrito escolar de Pensilvania en el que vivía el 31 de diciembre de {{/taxYear}}?"
   /heading/knockout/pa-schedule-a: Esta herramienta aún no admite el Anexo A de PA para sus ingresos de intereses
@@ -172,6 +179,23 @@ info:
             "Esto incluye: una declaración conjunta, una fecha de mudanza que no sea posterior al 1 de enero y en
             {{/taxYear}}, un Formulario W-2 de un estado que no sea Pensilvania ni Florida, o un Formulario W-2 de
             Florida con impuesto estatal sobre los ingresos retenido en el encasillado 17."
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/your-taxes/amount/pa-part-year-nonresident-pa-pay:
+    body:
+      - p:
+          Pensilvania grava el pago por trabajo que hace en Pensilvania, aunque viva en otro estado. Responda sí si,
+          después de mudarse a Florida (o antes de mudarse a Pensilvania), trabajó en Pensilvania y ese pago no está
+          incluido en el encasillado 16 de un Formulario W-2 de Pensilvania. Por ejemplo, un empleador de Florida le
+          pagó por días que trabajó en Pensilvania.
+  /info/knockout/pa-part-year-nonresident-pa-pay:
+    alertText:
+      body:
+        - p:
+            Pensilvania requiere el Anexo NRH de PA para calcular el pago por trabajo que hizo en Pensilvania mientras
+            vivía en otro estado, y esta herramienta aún no admite ese anexo.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
