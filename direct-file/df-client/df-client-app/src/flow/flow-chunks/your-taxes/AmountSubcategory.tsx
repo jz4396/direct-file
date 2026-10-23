@@ -78,6 +78,23 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-part-year' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* #135 PA-source pay in the nonresident period needs PA Schedule NRH (PA-40 IN p. 43): ask, and knock out on yes. */}
+      <Screen route='pa-part-year-nonresident-pa-pay' condition='/stateReturnIsPaPartYear'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-part-year-nonresident-pa-pay' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-part-year-nonresident-pa-pay' />
+        <Boolean path='/paPartYearHasNonresidentPaSourcePay' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen
+        route='pa-part-year-nonresident-pa-pay-knockout'
+        condition='/flowKnockoutPaNonresidentPaSourcePay'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-part-year-nonresident-pa-pay' />
+        <DFAlert i18nKey='/info/knockout/pa-part-year-nonresident-pa-pay' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='pa-unsupported-items-knockout' condition='/flowKnockoutPaUnsupportedItems' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-unsupported-items' />

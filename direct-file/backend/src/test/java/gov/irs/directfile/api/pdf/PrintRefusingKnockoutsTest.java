@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PrintRefusingKnockoutsTest {
     static final String CODE_Q_KNOCKOUT = "/flowKnockoutForm8949CodeQ";
     static final String SCHEDULE_EIC_KNOCKOUT = "/flowKnockoutScheduleEicWithoutTy2026Template";
+    static final String PA_NRH_KNOCKOUT = "/flowKnockoutPaNonresidentPaSourcePay";
     static final String SECRET = "value 123-45-6789";
 
     static Result<Object> complete(Object v) {
@@ -58,8 +59,9 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheCodeQAndScheduleEicKnockouts() {
-        assertEquals(List.of(CODE_Q_KNOCKOUT, SCHEDULE_EIC_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
+    void listHoldsTheCodeQScheduleEicAndPaScheduleNrhKnockouts() {
+        assertEquals(
+                List.of(CODE_Q_KNOCKOUT, SCHEDULE_EIC_KNOCKOUT, PA_NRH_KNOCKOUT), PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
                 PrintRefusingKnockouts.FACT_PATHS.size(),
@@ -165,9 +167,9 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * Every backend scenario prints unless it has Schedule EIC. None has a Form 8949 code Q row, and both knockouts
-     * are complete in each, including the two that stop before the EIC questions, so fail-closed refuses no clean
-     * return. The code Q refusal through the real print path is
+     * Every backend scenario prints unless it has Schedule EIC. None has a Form 8949 code Q row or a PA/FL part-year
+     * return, and each knockout is complete in each, including the two that stop before the EIC questions, so
+     * fail-closed refuses no clean return. The code Q refusal through the real print path is
      * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath.
      */
     @Test

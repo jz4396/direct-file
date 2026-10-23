@@ -1656,5 +1656,42 @@
         </All>
       </Derived>
     </Fact>
+    <Fact path="/paPartYearHasNonresidentPaSourcePay">
+      <Name>PA part-year: pay for work in PA while not a PA resident that is not in a PA W-2's box 16</Name>
+      <Description>#135: PA-40 IN (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 43, Compensation: "As a nonresident, you pay PA income tax on compensation for services you perform in
+        Pennsylvania. Your PA employer should report and withhold PA tax from the exact amount of your PA-taxable
+        compensation. If your employer does not report, or incorrectly reports, your PA-taxable compensation, you must
+        use PA Schedule NRH to apportion your compensation and any allowable employee business expenses." A FL W-2 only
+        asks for pay earned while a PA resident (/formW2s/*/paPartYearResidentPeriodWages), so pay for work done
+        in PA
+        during the FL period would otherwise be $0 on PA-40 line 1a. Yes stops the return
+        (/flowKnockoutPaNonresidentPaSourcePay) until PA Schedule NRH is supported.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/flowKnockoutPaNonresidentPaSourcePay">
+      <Name>Flow knockout: PA-source pay in the nonresident period (PA Schedule NRH)</Name>
+      <Description>#135: yes to /paPartYearHasNonresidentPaSourcePay on a PA/FL part-year return. PA-40 IN (2025) p. 43:
+        "If your employer does not report, or incorrectly reports, your PA-taxable compensation, you must use PA
+        Schedule NRH to apportion your compensation". This tool doesn't produce PA Schedule NRH. Complete and false when
+        there is no PA return or it is not a PA/FL part-year return. 72 P.S. §7302(b): a nonresident is taxed on "each
+        of the classes of income hereinafter enumerated in section 303 from sources within this Commonwealth". Wired
+        into stateReturn /flowKnockoutStateReturn.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+          <Dependency path="/paPartYearSupported" />
+          <IsComplete>
+            <Dependency path="/paPartYearHasNonresidentPaSourcePay" />
+          </IsComplete>
+          <Dependency path="/paPartYearHasNonresidentPaSourcePay" />
+        </All>
+      </Derived>
+    </Fact>
   </Facts>
 </FactDictionaryModule>
