@@ -269,13 +269,14 @@ public class TaxReturnController implements TaxReturnApi {
 
     /**
      * A print-refusing knockout (PrintRefusingKnockouts) keeps its 400 and knockout paths; anything else
-     * is logged and becomes the generic PDF error.
+     * becomes the generic PDF error. Only the exception class is logged: exception text can carry return data, so
+     * it never reaches the log or the response body.
      */
     private static ResponseStatusException pdfFailureResponse(Exception e) {
         if (e instanceof SubmissionBlockingFactsResponseStatusException printRefused) {
             return printRefused;
         }
-        log.error("Error: " + e.getMessage(), e);
+        log.error("Tax return PDF failed with {}", e.getClass().getName());
         return new ResponseStatusException(
                 GetPdfResponseFailedToCreate.code, GetPdfResponseFailedToCreate.description, e);
     }

@@ -42,8 +42,9 @@ import static org.mockito.Mockito.*;
 
 /**
  * Both the sign and submit endpoints answer a submission-blocking refusal with its 400 and fact paths (#181), and
- * submit wraps any other failure in the generic bad-data status while sign answers it with a fixed 500. No response
- * body or log line echoes the underlying exception text or any fact value.
+ * submit wraps any other failure in the generic bad-data status while sign answers it with a fixed 500. A PDF failure
+ * other than a print-refusing knockout becomes the generic PDF error. No response body or log line echoes the
+ * underlying exception text or any fact value.
  */
 class TaxReturnControllerSubmissionBlockingTest {
     static final String FACT_VALUE = "fact-value-sentinel-4417";
@@ -86,8 +87,12 @@ class TaxReturnControllerSubmissionBlockingTest {
         logAppender.stop();
     }
 
-    /** Asserts that no captured log line, argument or attached stack trace carries a sentinel string. */
+    /**
+     * Asserts that at least one log line was captured and that no captured log line, argument or attached stack
+     * trace carries a sentinel string, so the check cannot pass on an empty capture.
+     */
     void assertLogsCarryNoSentinel() {
+        assertFalse(logAppender.list.isEmpty(), "expected at least one captured log line");
         for (ILoggingEvent event : logAppender.list) {
             StringBuilder text = new StringBuilder(event.getFormattedMessage());
             for (IThrowableProxy proxy = event.getThrowableProxy(); proxy != null; proxy = proxy.getCause()) {
@@ -223,9 +228,17 @@ class TaxReturnControllerSubmissionBlockingTest {
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026);
         when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
-        when(pdfService.getTaxReturn("en", taxReturn, false)).thenThrow(new IllegalStateException(CAUSE_TEXT));
+        when(pdfService.getTaxReturn("en", taxReturn, false))
+                .thenThrow(new IllegalStateException(CAUSE_TEXT + " " + FACT_VALUE));
         ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> controller.pdf(id, "en"));
         assertFalse(e instanceof SubmissionBlockingFactsResponseStatusException);
         assertEquals(TaxReturnApi.GetPdfResponseFailedToCreate.code, e.getStatusCode());
+        assertEquals(TaxReturnApi.GetPdfResponseFailedToCreate.description, e.getReason());
+        String json = responseBody(e, HttpStatus.valueOf(TaxReturnApi.GetPdfResponseFailedToCreate.code.value()));
+        assertFalse(json.contains("blockingFacts"), json);
+        assertTrue(logAppender.list.stream()
+                .anyMatch(event -> event.getFormattedMessage().contains(IllegalStateException.class.getName())));
+        assertTrue(logAppender.list.stream().allMatch(event -> event.getThrowableProxy() == null));
+        assertLogsCarryNoSentinel();
     }
 }
