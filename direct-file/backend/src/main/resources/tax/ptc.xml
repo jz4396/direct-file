@@ -49,9 +49,12 @@
         sets
         the 2026 table at 2.10% (less than 133%) up to 9.96% (300% through 400%). /applicableFigure still uses the
         TY2024 table (0% up to 150%, 8.5% at 400% and above, with no 400% limit).
-        (3) Federal poverty line: now the 2025 HHS guidelines (#91), see /federalPovertyLineMagicNumberStartingNumber.
-        Fixing (1) and (2) is a separate change; until then this knockout stops the return rather than computing the credit
-        or the repayment under the wrong rules.</Description>
+        (3) Federal poverty line: now the 2025
+        HHS guidelines (#91), see /federalPovertyLineMagicNumberStartingNumber.
+        Fixing (1) and (2) is a separate change;
+        until then this knockout stops the return rather than computing the credit
+        or the repayment under the wrong
+        rules.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -1228,9 +1231,12 @@
       <Description>Federal poverty line for a household of one, by residence (Alaska, Hawaii, other). #91: for TY2026,
         the 2025 HHS poverty guidelines, 90 FR 5917 (Jan. 17, 2025),
         https://www.govinfo.gov/content/pkg/FR-2025-01-17/pdf/2025-01377.pdf p. 5917: $15,650 (48 contiguous states
-        and DC), $19,550 (Alaska), $17,990 (Hawaii). 26 U.S.C. 36B(d)(3)(B): "the poverty line used shall be the
-        most recently published poverty line as of the 1st day of the regular enrollment period for coverage during
-        such calendar year" (enrollment for 2026 coverage opened in November 2025).</Description>
+        and
+        DC), $19,550 (Alaska), $17,990 (Hawaii). 26 U.S.C. 36B(d)(3)(B): "the poverty line used shall be the
+        most
+        recently published poverty line as of the 1st day of the regular enrollment period for coverage during
+        such
+        calendar year" (enrollment for 2026 coverage opened in November 2025).</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
@@ -1264,8 +1270,10 @@
 
     <Fact path="/federalPovertyLineMagicNumberIncrement">
       <Description>Federal poverty line increase for each additional person, by residence. #91: 2025 HHS
-        poverty guidelines, 90 FR 5917 (Jan. 17, 2025) p. 5917, "add $5,500 for each additional person" (48 contiguous
-        states and DC), "$6,880" (Alaska), "$6,330" (Hawaii). See /federalPovertyLineMagicNumberStartingNumber.</Description>
+        poverty
+        guidelines, 90 FR 5917 (Jan. 17, 2025) p. 5917, "add $5,500 for each additional person" (48 contiguous
+        states and
+        DC), "$6,880" (Alaska), "$6,330" (Hawaii). See /federalPovertyLineMagicNumberStartingNumber.</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
