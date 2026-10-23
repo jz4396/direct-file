@@ -561,16 +561,26 @@ public class TaxReturnService {
             throw new UneditableTaxReturnResponseStatusException();
         }
 
-        if (factGraphService.hasSubmissionBlockingFacts(graph)) {
-            log.error("Submission blocking facts are true for tax return {}", taxReturn.getId());
-            throw new SubmissionBlockingFactsResponseStatusException();
-        }
+        assertNoSubmissionBlockingFacts(graph, taxReturn.getId());
         Boolean isResubmitting = getFactGraphIsResubmitting(graph);
         if (Boolean.TRUE.equals(isResubmitting)
                 && taxReturn.getTaxReturnSubmissions().isEmpty()) {
             log.error("Cannot resubmit tax return that has never been submitted. Tax return id: {}", taxReturn.getId());
             throw new InvalidDataException(String.format(
                     "Cannot resubmit tax return that has never been submitted. Tax return id: %s", taxReturn.getId()));
+        }
+    }
+
+    /**
+     * Refuses signing, submission and resubmission when a submission-blocking fact stops the return (see
+     * FactGraphService#submissionBlockingFactPaths). Runs on the graph built from this request's facts, before anything
+     * is saved or enqueued. Logs and returns fact paths only.
+     */
+    private void assertNoSubmissionBlockingFacts(Graph graph, UUID taxReturnId) {
+        List<String> blockingFactPaths = factGraphService.submissionBlockingFactPaths(graph);
+        if (!blockingFactPaths.isEmpty()) {
+            log.error("Submission blocking facts are true for tax return {}: {}", taxReturnId, blockingFactPaths);
+            throw new SubmissionBlockingFactsResponseStatusException(blockingFactPaths);
         }
     }
 
@@ -584,6 +594,7 @@ public class TaxReturnService {
             int port,
             String userAgent)
             throws UnknownHostException, InvalidStateForTimezoneException {
+        assertNoSubmissionBlockingFacts(graph, taxReturn.getId());
 
         TaxReturn taxReturnSaved = taxReturnRepo.save(taxReturn);
         TaxReturnSubmission trs = taxReturnSaved.addTaxReturnSubmission();

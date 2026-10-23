@@ -179,7 +179,7 @@ public class TaxReturnController implements TaxReturnApi {
             taxReturn = taxReturnService.submit(
                     id, body.getFacts(), userInfo.id(), userInfo, remoteAddress, remotePort, userAgent);
         } catch (Exception e) {
-            throw new ResponseStatusException(GenericResponseBadData.code, GenericResponseBadData.description, e);
+            throw submitFailureResponse(e);
         }
 
         return ResponseEntity.accepted()
@@ -189,6 +189,17 @@ public class TaxReturnController implements TaxReturnApi {
                         + userInfo.id()
                         + " at "
                         + taxReturn.getMostRecentSubmitTime());
+    }
+
+    /**
+     * Keeps a submission-blocking refusal as is (its 400 and list of blocking fact paths) and wraps any other submit
+     * failure in the generic bad-data error.
+     */
+    private static ResponseStatusException submitFailureResponse(Exception e) {
+        if (e instanceof SubmissionBlockingFactsResponseStatusException blocking) {
+            return blocking;
+        }
+        return new ResponseStatusException(GenericResponseBadData.code, GenericResponseBadData.description, e);
     }
 
     @Override
