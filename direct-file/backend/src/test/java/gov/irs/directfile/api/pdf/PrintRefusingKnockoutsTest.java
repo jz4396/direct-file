@@ -66,10 +66,10 @@ class PrintRefusingKnockoutsTest {
     void listHoldsTheCodeQScheduleEicPaScheduleNrhAndForm2210Knockouts() {
         assertEquals(
                 List.of(
-                        CODE_Q_KNOCKOUT,
-                        SCHEDULE_EIC_KNOCKOUT,
-                        PA_NRH_KNOCKOUT,
-                        FORM_2210_KNOCKOUT),
+                        CODE_Q_KNOCKOUT, // Form 8949 code Q
+                        SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
+                        PA_NRH_KNOCKOUT, // PA Schedule NRH
+                        FORM_2210_KNOCKOUT), // Form 2210 Part II box B, C, D, A or E
                 PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
