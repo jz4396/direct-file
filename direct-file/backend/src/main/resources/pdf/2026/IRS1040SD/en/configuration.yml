@@ -8,7 +8,11 @@
 # after filling (PdfForm.skipLeadingPages). The draft's AcroForm field names, widget rectangles and line captions match
 # the 2025 form this map was first written against (#19), so the field map itself is unchanged.
 # AcroForm field names and tooltips re-read with pypdf from the committed 2026 draft.
-# Column (h) only for lines 1b/2/3/8b/9/10; line 13 capital gain distributions; lines 6/14 carryover; Part III lines 16 and 21.
+# Lines 1b/2/3/8b/9/10 print columns (d), (e), (g) and (h): the Form 8949 line 2 totals for that box pair (scheduleD.xml
+# /scheduleDLine1bProceeds etc.); line 13 capital gain distributions; lines 6/14 carryover; Part III lines 16, 17, 20,
+# 21 and 22 (scheduleD2.xml). Not mapped, left blank: lines 1a/8a (every sale is listed on Form 8949), 4/5/11/12 (no
+# Form 4797/6252/4684/6781/8824/2439 or Schedule K-1 input), 18/19 and 20 No (collectibles and unrecaptured section
+# 1250 gain stop the return, #21), and the qualified opportunity fund question (no input collected).
 # Draft cites (file page = PDF page incl. cover): p. 2 line 7 "Net short-term capital gain or (loss). Combine lines 1a
 # through 6 in column (h)"; p. 2 line 15 "Net long-term capital gain or (loss). Combine lines 8a through 14 in column (h)";
 # p. 3 line 16 "Combine lines 7 and 15 and enter the result"; p. 3 line 21 "If line 16 is a loss, enter here and on
@@ -26,24 +30,48 @@ form:
       f1_2[0]: /primaryFiler/tin
       Table_PartI[0]:
         Row1b[0]:
-          f1_10[0]: /scheduleDLine1b
+          f1_7[0]: /scheduleDLine1bProceeds # (d)
+          f1_8[0]: /scheduleDLine1bCostBasis # (e)
+          f1_9[0]: /scheduleDLine1bAdjustment # (g)
+          f1_10[0]: /scheduleDLine1b # (h)
         Row2[0]:
-          f1_14[0]: /scheduleDLine2
+          f1_11[0]: /scheduleDLine2Proceeds # (d)
+          f1_12[0]: /scheduleDLine2CostBasis # (e)
+          f1_13[0]: /scheduleDLine2Adjustment # (g)
+          f1_14[0]: /scheduleDLine2 # (h)
         Row3[0]:
-          f1_18[0]: /scheduleDLine3
+          f1_15[0]: /scheduleDLine3Proceeds # (d)
+          f1_16[0]: /scheduleDLine3CostBasis # (e)
+          f1_17[0]: /scheduleDLine3Adjustment # (g)
+          f1_18[0]: /scheduleDLine3 # (h)
       f1_21[0]: /scheduleDLine6
       f1_22[0]: /scheduleDLine7
       Table_PartII[0]:
         Row8b[0]:
-          f1_30[0]: /scheduleDLine8b
+          f1_27[0]: /scheduleDLine8bProceeds # (d)
+          f1_28[0]: /scheduleDLine8bCostBasis # (e)
+          f1_29[0]: /scheduleDLine8bAdjustment # (g)
+          f1_30[0]: /scheduleDLine8b # (h)
         Row9[0]:
-          f1_34[0]: /scheduleDLine9
+          f1_31[0]: /scheduleDLine9Proceeds # (d)
+          f1_32[0]: /scheduleDLine9CostBasis # (e)
+          f1_33[0]: /scheduleDLine9Adjustment # (g)
+          f1_34[0]: /scheduleDLine9 # (h)
         Row10[0]:
-          f1_38[0]: /scheduleDLine10
+          f1_35[0]: /scheduleDLine10Proceeds # (d)
+          f1_36[0]: /scheduleDLine10CostBasis # (e)
+          f1_37[0]: /scheduleDLine10Adjustment # (g)
+          f1_38[0]: /scheduleDLine10 # (h)
       f1_41[0]: /scheduleDLine13 # line 13 capital gain distributions (#86b); f1_39/f1_40 are lines 11/12
       f1_42[0]: /scheduleDLine14
       f1_43[0]: /scheduleDLine15
     Page2[0]:
-      # Line 16 = f2_1; line 21 (positive) = f2_4. Lines 18/19 (f2_2/f2_3) are knocked out by #21.
+      # Line 16 = f2_1; line 21 (positive) = f2_4. Lines 18/19 (f2_2/f2_3) are knocked out by #21
+      # (collectibles, unrecaptured 1250 gain, 1099-DIV boxes 2b-2d) and Form 8949 code Q (section 1202 gain).
       f2_1[0]: /scheduleDLine16
+      c2_1[0]: /scheduleDLine17Yes # 17 "Are lines 15 and 16 both gains? Yes."
+      c2_1[1]: /scheduleDLine17No # 17 "No. Skip lines 18 through 21, and go to line 22."
+      c2_2[0]: /scheduleDLine20Yes # 20 "Are lines 18 and 19 both zero or blank and you are not filing Form 4952? Yes."
       f2_4[0]: /scheduleDLine21
+      c2_3[0]: /scheduleDLine22Yes # 22 "Do you have qualified dividends on Form 1040 ... line 3a? Yes."
+      c2_3[1]: /scheduleDLine22No # 22 "No. Complete the rest of Form 1040, 1040-SR, or 1040-NR."
