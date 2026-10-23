@@ -317,6 +317,65 @@ describe(`Schedule D / Form 8949 — adjustment column (g)`, () => {
   });
 });
 
+describe(`Schedule D / Form 8949 — cents are rounded per row so every line adds up`, () => {
+  // Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole dollars, you must round all
+  // amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99 cents to the next dollar."
+  // Each Form 8949 row rounds (d), (e) and (g) once; (h) = (d) − (e) + (g) from those amounts (IRC §1001(a)), and the
+  // Schedule D line totals add the same rounded row amounts. Proceeds 10.40 → 10, basis 0.60 → 1, (h) = 9.
+  it(`Part I line 1b and Part II line 8b: (d) 10 − (e) 1 + (g) 0 = (h) 9`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8949Transactions/*/roundedProceeds`,
+      `/form8949Transactions/*/roundedCostBasis`,
+      `/form8949Transactions/*/roundedAdjustment`,
+      `/form8949Transactions/*/gainOrLoss`,
+      `/scheduleDLine1bProceeds`,
+      `/scheduleDLine1bCostBasis`,
+      `/scheduleDLine1bAdjustment`,
+      `/scheduleDLine1b`,
+      `/scheduleDLine8bProceeds`,
+      `/scheduleDLine8bCostBasis`,
+      `/scheduleDLine8bAdjustment`,
+      `/scheduleDLine8b`,
+      `/scheduleDLine16`,
+    ];
+    const { factGraph } = setupFactGraph({
+      ...singleFilerData,
+      '/form8949Transactions': createCollectionWrapper([tx1, tx2]),
+      ...tx(tx1, {
+        description: `ST cents`,
+        proceeds: `10.40`,
+        costBasis: `0.60`,
+        box: `A`,
+        holdingPeriod: `shortTerm`,
+      }),
+      ...tx(tx2, {
+        description: `LT cents`,
+        proceeds: `10.40`,
+        costBasis: `0.60`,
+        box: `D`,
+        holdingPeriod: `longTerm`,
+      }),
+      '/form8949TransactionsIsDone': createBooleanWrapper(true),
+    });
+    const at = (path: string) => factGraph.get(path as ConcretePath).get.toString();
+    for (const id of [tx1, tx2]) {
+      expect(at(`/form8949Transactions/#${id}/roundedProceeds`)).toBe(`10.00`);
+      expect(at(`/form8949Transactions/#${id}/roundedCostBasis`)).toBe(`1.00`);
+      expect(at(`/form8949Transactions/#${id}/roundedAdjustment`)).toBe(`0.00`);
+      expect(at(`/form8949Transactions/#${id}/gainOrLoss`)).toBe(`9.00`);
+    }
+    for (const line of [`1b`, `8b`]) {
+      expect(at(`/scheduleDLine${line}Proceeds`)).toBe(`10.00`);
+      expect(at(`/scheduleDLine${line}CostBasis`)).toBe(`1.00`);
+      expect(at(`/scheduleDLine${line}Adjustment`)).toBe(`0.00`);
+      expect(at(`/scheduleDLine${line}`)).toBe(`9.00`);
+    }
+    expect(at(`/scheduleDLine7`)).toBe(`9.00`);
+    expect(at(`/scheduleDLine15`)).toBe(`9.00`);
+    expect(at(`/scheduleDLine16`)).toBe(`18.00`);
+  });
+});
+
 const get = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], path: string) =>
   fg.get(path as ConcretePath).get.toString();
 
@@ -622,7 +681,10 @@ describe(`Schedule D — Form 8949 code Q (section 1202 gain) knockout`, () => {
 
   it(`no Form 8949 rows, or no collection at all: complete and false`, ({ task }) => {
     task.meta.testedFactPaths = [KNOCKOUT];
-    for (const data of [{ ...singleFilerData, '/form8949Transactions': createCollectionWrapper([]) }, singleFilerData]) {
+    for (const data of [
+      { ...singleFilerData, '/form8949Transactions': createCollectionWrapper([]) },
+      singleFilerData,
+    ]) {
       const { factGraph } = setupFactGraph(data);
       expect(result(factGraph, KNOCKOUT).complete).toBe(true);
       expect(result(factGraph, KNOCKOUT).get).toBe(false);

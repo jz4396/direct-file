@@ -138,6 +138,63 @@ class ScheduleDForm8949PdfSmokeTest {
     }
 
     /**
+     * Cents on both rows: proceeds 10.40 and basis 0.60 on the Box A row (Part I) and on the Box D row (Part II). Each
+     * row's columns (d), (e) and (g) are rounded once to whole dollars (Form 1040 instr. (2025), "Rounding Off to Whole
+     * Dollars": drop amounts under 50 cents, increase 50 to 99 cents to the next dollar), so (d) 10 and (e) 1, and
+     * column (h) is figured from those amounts: 10 - 1 + 0 = 9 (IRC 1001(a)). Form 8949 line 2 and Schedule D lines 1b
+     * and 8b add the same rounded row amounts, so (d) - (e) + (g) = (h) on every line: lines 7 and 15 are 9 and line 16
+     * is 18.
+     */
+    @Test
+    void centsAreRoundedPerRowSoEachLineAddsUp() throws Exception {
+        byte[] bytes = render(
+                facts -> {
+                    for (String id :
+                            List.of("a1111111-1111-4111-8111-111111111111", "a2222222-2222-4222-8222-222222222222")) {
+                        String tx = "/form8949Transactions/#" + id + "/";
+                        ((ObjectNode) facts.get(tx + "proceeds")).put("item", "10.40");
+                        ((ObjectNode) facts.get(tx + "costBasis")).put("item", "0.60");
+                    }
+                },
+                "schedule-d-8949-cents-smoke.pdf");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> byName = new java.util.HashMap<>();
+            for (PDField f : doc.getDocumentCatalog().getAcroForm().getFieldTree()) {
+                byName.put(f.getFullyQualifiedName(), f.getValueAsString());
+            }
+            // Form 8949 Part I row and line 2: (d) 10, (e) 1, (g) blank, (h) 9.
+            assertEquals("10", digits(byName, "Table_Line1_Part1[0].Row1[0].f1_06[0]"), "8949 Part I row (d)");
+            assertEquals("1", digits(byName, "Table_Line1_Part1[0].Row1[0].f1_07[0]"), "8949 Part I row (e)");
+            assertEquals("", digits(byName, "Table_Line1_Part1[0].Row1[0].f1_09[0]"), "8949 Part I row (g)");
+            assertEquals("9", digits(byName, "Table_Line1_Part1[0].Row1[0].f1_10[0]"), "8949 Part I row (h)");
+            assertEquals(1, count(byName, "Page1[0].f1_91[0]", "10"), byName::toString);
+            assertEquals(1, count(byName, "Page1[0].f1_92[0]", "1"), byName::toString);
+            assertEquals(1, count(byName, "Page1[0].f1_95[0]", "9"), byName::toString);
+            // Form 8949 Part II row and line 2: (d) 10, (e) 1, (g) blank, (h) 9.
+            assertEquals("10", digits(byName, "Table_Line1_Part2[0].Row1[0].f2_06[0]"), "8949 Part II row (d)");
+            assertEquals("1", digits(byName, "Table_Line1_Part2[0].Row1[0].f2_07[0]"), "8949 Part II row (e)");
+            assertEquals("", digits(byName, "Table_Line1_Part2[0].Row1[0].f2_09[0]"), "8949 Part II row (g)");
+            assertEquals("9", digits(byName, "Table_Line1_Part2[0].Row1[0].f2_10[0]"), "8949 Part II row (h)");
+            assertEquals(1, count(byName, "Page2[0].f2_91[0]", "10"), byName::toString);
+            assertEquals(1, count(byName, "Page2[0].f2_92[0]", "1"), byName::toString);
+            assertEquals(1, count(byName, "Page2[0].f2_95[0]", "9"), byName::toString);
+            // Schedule D line 1b (Part I) and line 8b (Part II): (d) 10 - (e) 1 + (g) 0 = (h) 9.
+            assertEquals("10", digits(byName, "Row1b[0].f1_7[0]"), "Sch D line 1b (d)");
+            assertEquals("1", digits(byName, "Row1b[0].f1_8[0]"), "Sch D line 1b (e)");
+            assertEquals("", digits(byName, "Row1b[0].f1_9[0]"), "Sch D line 1b (g)");
+            assertEquals("9", digits(byName, "Row1b[0].f1_10[0]"), "Sch D line 1b (h)");
+            assertEquals("10", digits(byName, "Row8b[0].f1_27[0]"), "Sch D line 8b (d)");
+            assertEquals("1", digits(byName, "Row8b[0].f1_28[0]"), "Sch D line 8b (e)");
+            assertEquals("", digits(byName, "Row8b[0].f1_29[0]"), "Sch D line 8b (g)");
+            assertEquals("9", digits(byName, "Row8b[0].f1_30[0]"), "Sch D line 8b (h)");
+            // Lines 7, 15 and 16.
+            assertEquals(1, count(byName, "Page1[0].f1_22[0]", "9"), "Sch D line 7");
+            assertEquals(1, count(byName, "Page1[0].f1_43[0]", "9"), "Sch D line 15");
+            assertEquals(1, count(byName, "Page2[0].f2_1[0]", "18"), "Sch D line 16");
+        }
+    }
+
+    /**
      * Form 8949 code Q (Form 8949 instr. (2025) p. 8: "You sold or exchanged QSB stock and can exclude part of the
      * gain"). Section 1202 gain is 28-percent rate gain (IRC 1(h)(4)(A)(ii), 1(h)(7)) on Schedule D line 18, which
      * needs the Schedule D Tax Worksheet this tool does not compute. The print path refuses the package in both
