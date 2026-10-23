@@ -111,7 +111,8 @@
 
     <Fact path="/dividendReports/secondaryFilerUsedWithoutMFJ">
       <Name>Any spouse's Form 1099-DIV on a return that is not joint</Name>
-      <Description>Only a joint return includes the spouse's income (26 U.S.C. 6013(d)(3): on a joint return "the tax shall be computed on the aggregate income").</Description>
+      <Description>Only a joint return includes the spouse's income (26 U.S.C. 6013(d)(3): on a joint return "the tax
+        shall be computed on the aggregate income").</Description>
       <BlockSubmissionOnTrue />
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
@@ -149,7 +150,9 @@
 
     <Fact path="/dividendReports/*/payer">
       <Name>Form 1099-DIV payer</Name>
-      <Description>Payer's name. Also the Schedule B (Form 1040) Part II line 5 payer name when Schedule B is required: Instructions for Schedule B (Form 1040) (2025) p. 2, Line 5: "List on line 5 each payer's name and the amount of ordinary dividends you received."</Description>
+      <Description>Payer's name. Also the Schedule B (Form 1040) Part II line 5 payer name when Schedule B is required:
+        Instructions for Schedule B (Form 1040) (2025) p. 2, Line 5: "List on line 5 each payer's name and the amount of
+        ordinary dividends you received."</Description>
       <Export mef="true" />
       <Writable>
         <String />
@@ -166,8 +169,11 @@
 
     <Fact path="/dividendReports/*/ordinaryDividends">
       <Name>1099-DIV box 1a: total ordinary dividends</Name>
-      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 1a. Shows total ordinary dividends that are taxable. Include this amount on the
-        “Ordinary dividends” line of Form 1040 or 1040-SR." Gross income includes dividends: 26 U.S.C. 61(a)(7)
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 1a. Shows total ordinary dividends that are taxable.
+        Include this amount on the
+        “Ordinary dividends” line of Form 1040 or 1040-SR." Gross income includes dividends:
+        26 U.S.C. 61(a)(7)
         (https://www.law.cornell.edu/uscode/text/26/61).</Description>
       <Writable>
         <Dollar />
@@ -179,7 +185,9 @@
 
     <Fact path="/dividendReports/*/roundedOrdinaryDividends">
       <Name>1099-DIV box 1a, whole dollars</Name>
-      <Description>Box 1a rounded to whole dollars, the Schedule B (Form 1040) Part II line 5 amount for this payer. Instructions for Schedule B (Form 1040) (2025) p. 2, Line 5: "Report on line 5 all of your ordinary dividends. This amount should be shown in box 1a of your Forms 1099-DIV or substitute statements."</Description>
+      <Description>Box 1a rounded to whole dollars, the Schedule B (Form 1040) Part II line 5 amount for this payer.
+        Instructions for Schedule B (Form 1040) (2025) p. 2, Line 5: "Report on line 5 all of your ordinary dividends.
+        This amount should be shown in box 1a of your Forms 1099-DIV or substitute statements."</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -191,7 +199,8 @@
 
     <Fact path="/dividendReports/*/writableQualifiedDividends">
       <Name>1099-DIV box 1b: qualified dividends (as entered)</Name>
-      <Description>Box 1b on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/qualifiedDividends downstream.</Description>
+      <Description>Box 1b on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/qualifiedDividends
+        downstream.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -202,7 +211,11 @@
 
     <Fact path="/dividendReports/*/qualifiedDividends">
       <Name>1099-DIV box 1b: qualified dividends</Name>
-      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 1b. Shows the portion of the amount in box 1a that may be eligible for reduced capital gains rates." Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 3a: "Generally, these dividends are shown in box 1b of Form(s) 1099-DIV." 26 U.S.C. 1(h)(11) (https://www.law.cornell.edu/uscode/text/26/1).</Description>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 1b. Shows the portion of the amount in box 1a that may
+        be eligible for reduced capital gains rates." Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 3a: "Generally, these dividends are shown in box 1b of
+        Form(s) 1099-DIV." 26 U.S.C. 1(h)(11) (https://www.law.cornell.edu/uscode/text/26/1).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -229,7 +242,8 @@
 
     <Fact path="/dividendReports/*/writableCapitalGainDistributions">
       <Name>1099-DIV box 2a: total capital gain distributions (as entered)</Name>
-      <Description>Box 2a on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/capitalGainDistributions downstream.</Description>
+      <Description>Box 2a on the 1099-DIV. Optional; left blank means $0. Use
+        /dividendReports/*/capitalGainDistributions downstream.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -240,7 +254,10 @@
 
     <Fact path="/dividendReports/*/capitalGainDistributions">
       <Name>1099-DIV box 2a: total capital gain distributions</Name>
-      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 2a. Shows total capital gain distributions from a regulated investment company (RIC) or real estate investment trust (REIT)." Not computed in this module: any amount stops the return (/flowKnockoutCapitalGainDistributions).</Description>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 2a. Shows total capital gain distributions from a
+        regulated investment company (RIC) or real estate investment trust (REIT)." Not computed in this module: any
+        amount stops the return (/flowKnockoutCapitalGainDistributions).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -267,7 +284,8 @@
 
     <Fact path="/dividendReports/*/writableNondividendDistributions">
       <Name>1099-DIV box 3: nondividend distributions (as entered)</Name>
-      <Description>Box 3 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/nondividendDistributions downstream.</Description>
+      <Description>Box 3 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/nondividendDistributions
+        downstream.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -278,7 +296,12 @@
 
     <Fact path="/dividendReports/*/nondividendDistributions">
       <Name>1099-DIV box 3: nondividend distributions</Name>
-      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 3. Shows a return of capital. To the extent of your cost (or other basis) in the stock, the distribution reduces your basis and is not taxable. Any amount received in excess of your basis is taxable to you as capital gain." 26 U.S.C. 301(c)(2)-(3) (https://www.law.cornell.edu/uscode/text/26/301). Not income while it does not exceed basis; above basis stops the return (/flowKnockoutNondividendDistributionsOverBasis).</Description>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 3. Shows a return of capital. To the extent of your cost
+        (or other basis) in the stock, the distribution reduces your basis and is not taxable. Any amount received in
+        excess of your basis is taxable to you as capital gain." 26 U.S.C. 301(c)(2)-(3)
+        (https://www.law.cornell.edu/uscode/text/26/301). Not income while it does not exceed basis; above basis stops
+        the return (/flowKnockoutNondividendDistributionsOverBasis).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -305,7 +328,8 @@
 
     <Fact path="/dividendReports/*/writableFederalTaxWithheld">
       <Name>1099-DIV box 4: federal income tax withheld (as entered)</Name>
-      <Description>Box 4 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/federalTaxWithheld downstream.</Description>
+      <Description>Box 4 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/federalTaxWithheld
+        downstream.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -316,7 +340,14 @@
 
     <Fact path="/dividendReports/*/federalTaxWithheld">
       <Name>1099-DIV box 4: federal income tax withheld</Name>
-      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 4. Shows backup withholding. ... Include this amount on your income tax return as tax withheld." Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 39, Line 25b: "If you received a 2025 Form 1099 showing federal income tax withheld on dividends ... include the amount withheld in the total on line 25b. This should be shown in box 4 of Form 1099". 26 U.S.C. 31(c) (https://www.law.cornell.edu/uscode/text/26/31): "Any credit allowed by subsection (a) for any amount withheld under section 3406 shall be allowed for the taxable year of the recipient of the income in which the income is received."</Description>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 4. Shows backup withholding. ... Include this amount on
+        your income tax return as tax withheld." Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p.
+        39, Line 25b: "If you received a 2025 Form 1099 showing federal income tax withheld on dividends ... include the
+        amount withheld in the total on line 25b. This should be shown in box 4 of Form 1099". 26 U.S.C. 31(c)
+        (https://www.law.cornell.edu/uscode/text/26/31): "Any credit allowed by subsection (a) for any amount withheld
+        under section 3406 shall be allowed for the taxable year of the recipient of the income in which the income is
+        received."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -343,7 +374,8 @@
 
     <Fact path="/dividendReports/*/writableSection199ADividends">
       <Name>1099-DIV box 5: section 199A dividends (as entered)</Name>
-      <Description>Box 5 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/section199ADividends downstream.</Description>
+      <Description>Box 5 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/section199ADividends
+        downstream.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -354,7 +386,12 @@
 
     <Fact path="/dividendReports/*/section199ADividends">
       <Name>1099-DIV box 5: section 199A dividends</Name>
-      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 5. Shows the portion of the amount in box 1a that may be eligible for the 20% qualified business income deduction under section 199A. See the instructions for Form 8995 and Form 8995-A." 26 U.S.C. 199A(b)(1)(B) and (e)(3) (https://www.law.cornell.edu/uscode/text/26/199A). The QBI deduction (Form 1040 line 13b, taxCalculations /qualifiedBusinessIncomeDeduction) is not modeled ($0), so any amount stops the return (/flowKnockoutSection199ADividends).</Description>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 5. Shows the portion of the amount in box 1a that may be
+        eligible for the 20% qualified business income deduction under section 199A. See the instructions for Form 8995
+        and Form 8995-A." 26 U.S.C. 199A(b)(1)(B) and (e)(3) (https://www.law.cornell.edu/uscode/text/26/199A). The QBI
+        deduction (Form 1040 line 13b, taxCalculations /qualifiedBusinessIncomeDeduction) is not modeled ($0), so any
+        amount stops the return (/flowKnockoutSection199ADividends).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -381,7 +418,8 @@
 
     <Fact path="/dividendReports/*/writableForeignTaxPaid">
       <Name>1099-DIV box 7: foreign tax paid (as entered)</Name>
-      <Description>Box 7 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/foreignTaxPaid downstream.</Description>
+      <Description>Box 7 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/foreignTaxPaid
+        downstream.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -392,7 +430,10 @@
 
     <Fact path="/dividendReports/*/foreignTaxPaid">
       <Name>1099-DIV box 7: foreign tax paid</Name>
-      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 7. Shows the foreign tax that you may be able to claim as a deduction or a credit on Form 1040 or 1040-SR." Any amount stops the return (/flowKnockoutDividendForeignTaxPaid).</Description>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 7. Shows the foreign tax that you may be able to claim
+        as a deduction or a credit on Form 1040 or 1040-SR." Any amount stops the return
+        (/flowKnockoutDividendForeignTaxPaid).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -419,7 +460,13 @@
 
     <Fact path="/dividendReports/*/hasUnsupportedBoxes">
       <Name>1099-DIV has an amount in an unsupported box</Name>
-      <Description>Yes if the form has an amount in box 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 12, 13, 14, 15 or 16, a country in box 8, or box 11 (FATCA) checked. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured section 1250 gain", 2c "Section 1202 gain", 2d "Collectibles (28%) gain", 2e/2f section 897, box 6 "your share of expenses of a nonpublicly offered RIC ... This amount is included in box 1a", boxes 9-10 liquidation distributions, box 11 FATCA, box 12 exempt-interest dividends, box 13 specified private activity bond interest dividends, boxes 14-16 state tax withheld.</Description>
+      <Description>Yes if the form has an amount in box 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 12, 13, 14, 15 or 16, a country in
+        box 8, or box 11 (FATCA) checked. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured section 1250 gain", 2c "Section 1202
+        gain", 2d "Collectibles (28%) gain", 2e/2f section 897, box 6 "your share of expenses of a nonpublicly offered
+        RIC ... This amount is included in box 1a", boxes 9-10 liquidation distributions, box 11 FATCA, box 12
+        exempt-interest dividends, box 13 specified private activity bond interest dividends, boxes 14-16 state tax
+        withheld.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -427,7 +474,9 @@
 
     <Fact path="/dividendReports/*/receivedAsNominee">
       <Name>Dividends received as a nominee</Name>
-      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: "You must fill in and attach Schedule B if the total is over $1,500 or you received, as a nominee, ordinary dividends that actually belong to someone else." Schedule B Part II nominee subtraction is not modeled here.</Description>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: "You must fill in
+        and attach Schedule B if the total is over $1,500 or you received, as a nominee, ordinary dividends that
+        actually belong to someone else." Schedule B Part II nominee subtraction is not modeled here.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -435,7 +484,13 @@
 
     <Fact path="/dividendReports/*/qualifiedDividendsHoldingPeriodNotMet">
       <Name>Some box 1b dividends aren't qualified dividends</Name>
-      <Description>Asked when box 1b is more than $0. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3a, Exception: "Some dividends may be reported as qualified dividends in box 1b of Form 1099-DIV but aren’t qualified dividends. These include ... Dividends you received on any share of stock that you held for less than 61 days during the 121-day period that began 60 days before the ex-dividend date", the preferred stock 91/181-day rule, related-payment obligations (including short sales) and payments in lieu of dividends. 26 U.S.C. 1(h)(11)(B)(iii) (https://www.law.cornell.edu/uscode/text/26/1).</Description>
+      <Description>Asked when box 1b is more than $0. Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3a, Exception: "Some dividends may be reported as
+        qualified dividends in box 1b of Form 1099-DIV but aren’t qualified dividends. These include ... Dividends you
+        received on any share of stock that you held for less than 61 days during the 121-day period that began 60 days
+        before the ex-dividend date", the preferred stock 91/181-day rule, related-payment obligations (including short
+        sales) and payments in lieu of dividends. 26 U.S.C. 1(h)(11)(B)(iii)
+        (https://www.law.cornell.edu/uscode/text/26/1).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -443,7 +498,11 @@
 
     <Fact path="/dividendReports/*/nondividendDistributionsExceedBasis">
       <Name>Box 3 is more than the basis of the shares</Name>
-      <Description>Asked when box 3 is more than $0. 26 U.S.C. 301(c)(3)(A) (https://www.law.cornell.edu/uscode/text/26/301): the nondividend portion "to the extent that it exceeds the adjusted basis of the stock, shall be treated as gain from the sale or exchange of property." Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Nondividend Distributions: "After you get back all of your cost (or other basis), you must report these distributions as capital gains on Form 8949."</Description>
+      <Description>Asked when box 3 is more than $0. 26 U.S.C. 301(c)(3)(A)
+        (https://www.law.cornell.edu/uscode/text/26/301): the nondividend portion "to the extent that it exceeds the
+        adjusted basis of the stock, shall be treated as gain from the sale or exchange of property." Form 1040 instr.
+        (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Nondividend Distributions: "After you get back all of
+        your cost (or other basis), you must report these distributions as capital gains on Form 8949."</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -493,7 +552,16 @@
 
     <Fact path="/dividendReports/*/foreignTaxElectionRequirementsMet">
       <Name>Foreign tax qualifies for the credit without Form 1116</Name>
-      <Description>Asked when box 7 is more than $0. Yes means all five requirements in Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1, Exception, apply ("1. All of your foreign source gross income was from interest and dividends and all of that income and the foreign tax paid on it were reported to you on Form 1099-INT, Form 1099-DIV, or Schedule K-3"; "3. You held the stock or bonds on which the dividends or interest were paid for at least 16 days and weren’t obligated to pay these amounts to someone else."; "4. You aren’t filing Form 4563 or excluding income from sources within Puerto Rico."; "5. All of your foreign taxes were: a. Legally owed and not eligible for a refund or reduced tax rate under a tax treaty, and b. Paid to countries that are recognized by the United States and don’t support terrorism."); requirement 2, the dollar limit, is computed (/dividendForeignTaxElectionLimit). 26 U.S.C. 904(j)(2) (https://www.law.cornell.edu/uscode/text/26/904). No stops the return (Form 1116).</Description>
+      <Description>Asked when box 7 is more than $0. Yes means all five requirements in Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1, Exception, apply ("1. All of your foreign
+        source gross income was from interest and dividends and all of that income and the foreign tax paid on it were
+        reported to you on Form 1099-INT, Form 1099-DIV, or Schedule K-3"; "3. You held the stock or bonds on which the
+        dividends or interest were paid for at least 16 days and weren’t obligated to pay these amounts to someone
+        else."; "4. You aren’t filing Form 4563 or excluding income from sources within Puerto Rico."; "5. All of your
+        foreign taxes were: a. Legally owed and not eligible for a refund or reduced tax rate under a tax treaty, and b.
+        Paid to countries that are recognized by the United States and don’t support terrorism."); requirement 2, the
+        dollar limit, is computed (/dividendForeignTaxElectionLimit). 26 U.S.C. 904(j)(2)
+        (https://www.law.cornell.edu/uscode/text/26/904). No stops the return (Form 1116).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -501,7 +569,8 @@
 
     <Fact path="/dividendReports/*/amountsInconsistent">
       <Name>Box 1b or box 5 is larger than box 1a</Name>
-      <Description>Box 1b and box 5 are each "the portion of the amount in box 1a" (Form 1099-DIV instructions for recipient), so neither can exceed box 1a.</Description>
+      <Description>Box 1b and box 5 are each "the portion of the amount in box 1a" (Form 1099-DIV instructions for
+        recipient), so neither can exceed box 1a.</Description>
       <Derived>
         <Any>
           <GreaterThan>
@@ -623,7 +692,9 @@
 
     <Fact path="/totalOrdinaryDividends">
       <Name>Total ordinary dividends (1099-DIV box 1a)</Name>
-      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: "Each payer should send you a Form 1099-DIV. Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of Form(s) 1099-DIV." Feeds income /ordinaryDividends.</Description>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: "Each payer
+        should send you a Form 1099-DIV. Enter your total ordinary dividends on line 3b. This amount should be shown in
+        box 1a of Form(s) 1099-DIV." Feeds income /ordinaryDividends.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
@@ -654,7 +725,11 @@
 
     <Fact path="/totalQualifiedDividends">
       <Name>Total qualified dividends (1099-DIV box 1b)</Name>
-      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 3a: "Enter your total qualified dividends on line 3a. Qualified dividends are also included in the ordinary dividend total required to be shown on line 3b. ... Generally, these dividends are shown in box 1b of Form(s) 1099-DIV." Feeds income /qualifiedDividends. Box 1b amounts that are not qualified (p. 26 Exception) stop the return (/flowKnockoutQualifiedDividendsHoldingPeriod).</Description>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 3a: "Enter your total
+        qualified dividends on line 3a. Qualified dividends are also included in the ordinary dividend total required to
+        be shown on line 3b. ... Generally, these dividends are shown in box 1b of Form(s) 1099-DIV." Feeds income
+        /qualifiedDividends. Box 1b amounts that are not qualified (p. 26 Exception) stop the return
+        (/flowKnockoutQualifiedDividendsHoldingPeriod).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
@@ -685,7 +760,11 @@
 
     <Fact path="/totalCapitalGainDistributions">
       <Name>Total capital gain distributions (1099-DIV box 2a)</Name>
-      <Description>Form 1099-DIV box 2a total. Form 1040 line 7a when line 7a Exception 1 applies (/capitalGainDistributionsWithoutScheduleD), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13). Schedule D instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2, Capital Gain Distributions: "Enter on Schedule D, line 13, the total capital gain distributions paid to you during the year, regardless of how long you held your investment. This amount is shown in box 2a of Form 1099-DIV."</Description>
+      <Description>Form 1099-DIV box 2a total. Form 1040 line 7a when line 7a Exception 1 applies
+        (/capitalGainDistributionsWithoutScheduleD), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13).
+        Schedule D instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2, Capital Gain Distributions: "Enter on
+        Schedule D, line 13, the total capital gain distributions paid to you during the year, regardless of how long
+        you held your investment. This amount is shown in box 2a of Form 1099-DIV."</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
@@ -716,7 +795,9 @@
 
     <Fact path="/totalNondividendDistributions">
       <Name>Total nondividend distributions (1099-DIV box 3)</Name>
-      <Description>26 U.S.C. 301(c)(2) (https://www.law.cornell.edu/uscode/text/26/301): "That portion of the distribution which is not a dividend shall be applied against and reduce the adjusted basis of the stock." Not income; not on Form 1040.</Description>
+      <Description>26 U.S.C. 301(c)(2) (https://www.law.cornell.edu/uscode/text/26/301): "That portion of the
+        distribution which is not a dividend shall be applied against and reduce the adjusted basis of the stock." Not
+        income; not on Form 1040.</Description>
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
         <Switch>
@@ -746,7 +827,8 @@
 
     <Fact path="/totalDividendFederalTaxWithheld">
       <Name>Total federal income tax withheld on 1099-DIV (box 4)</Name>
-      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 39, Line 25b (see /dividendReports/*/federalTaxWithheld). Feeds taxCalculations /form1099Withholding.</Description>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 39, Line 25b (see
+        /dividendReports/*/federalTaxWithheld). Feeds taxCalculations /form1099Withholding.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
@@ -854,7 +936,13 @@
 
     <Fact path="/flowKnockoutDividendUnsupportedBoxes">
       <Name>Knockout: 1099-DIV box this tool can't compute</Name>
-      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes. Boxes 2b-2d need the Schedule D Tax Worksheet or Form 8949/Schedule D (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1 requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or box 2d (collectibles (28%) gain)"), 2e/2f are section 897 amounts, box 6 needs the nonpublicly offered RIC expense treatment, boxes 9-10 are liquidation distributions (basis recovery), box 11 FATCA may require Form 8938, box 12 exempt-interest dividends belong on line 2a and box 13 on Form 6251, and boxes 14-16 are state withholding. None is modeled.</Description>
+      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes. Boxes 2b-2d need the Schedule D Tax Worksheet or Form
+        8949/Schedule D (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1
+        requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202
+        gain), or box 2d (collectibles (28%) gain)"), 2e/2f are section 897 amounts, box 6 needs the nonpublicly offered
+        RIC expense treatment, boxes 9-10 are liquidation distributions (basis recovery), box 11 FATCA may require Form
+        8938, box 12 exempt-interest dividends belong on line 2a and box 13 on Form 6251, and boxes 14-16 are state
+        withholding. None is modeled.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -898,7 +986,18 @@
 
     <Fact path="/capitalGainDistributionsWithoutScheduleD">
       <Name>Capital gain distributions go directly on Form 1040 line 7a</Name>
-      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1: "You don't have to file Form 8949 or Schedule D if you aren't deferring any capital gain by investing in a qualified opportunity fund and both of the following apply. 1. You have no capital losses, and your only capital gains are capital gain distributions from Form(s) 1099-DIV, box 2a (or substitute statements); and 2. None of the Form(s) 1099-DIV (or substitute statements) have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or box 2d (collectibles (28%) gain)." p. 33: "If Exception 1 applies, enter your total capital gain distributions (from box 2a of Form(s) 1099-DIV) on line 7a and check the box "Schedule D not required" on line 7b." True when box 2a is more than $0 and Schedule D isn't otherwise required (scheduleD /requiresScheduleD: no Form 8949 transaction, which also covers qualified opportunity fund deferral, and no capital loss carryover). Boxes 2b-2d stop the return (/flowKnockoutDividendUnsupportedBoxes) and so does a nominee (/flowKnockoutDividendNominee), so condition 2 and the nominee rule always hold on a supported return. When Schedule D is required, box 2a goes on Schedule D line 13 instead (scheduleD2 /scheduleDLine13).</Description>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1: "You
+        don't have to file Form 8949 or Schedule D if you aren't deferring any capital gain by investing in a qualified
+        opportunity fund and both of the following apply. 1. You have no capital losses, and your only capital gains are
+        capital gain distributions from Form(s) 1099-DIV, box 2a (or substitute statements); and 2. None of the Form(s)
+        1099-DIV (or substitute statements) have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section
+        1202 gain), or box 2d (collectibles (28%) gain)." p. 33: "If Exception 1 applies, enter your total capital gain
+        distributions (from box 2a of Form(s) 1099-DIV) on line 7a and check the box "Schedule D not required" on line
+        7b." True when box 2a is more than $0 and Schedule D isn't otherwise required (scheduleD /requiresScheduleD: no
+        Form 8949 transaction, which also covers qualified opportunity fund deferral, and no capital loss carryover).
+        Boxes 2b-2d stop the return (/flowKnockoutDividendUnsupportedBoxes) and so does a nominee
+        (/flowKnockoutDividendNominee), so condition 2 and the nominee rule always hold on a supported return. When
+        Schedule D is required, box 2a goes on Schedule D line 13 instead (scheduleD2 /scheduleDLine13).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <All>
@@ -919,7 +1018,10 @@
 
     <Fact path="/flowKnockoutNondividendDistributionsOverBasis">
       <Name>Knockout: 1099-DIV box 3 above basis</Name>
-      <Description>Yes to /dividendReports/*/nondividendDistributionsExceedBasis. The excess is capital gain (26 U.S.C. 301(c)(3)(A), https://www.law.cornell.edu/uscode/text/26/301) reported on Form 8949 (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Nondividend Distributions); stock basis is not collected here. At or below basis box 3 is not income (301(c)(2)).</Description>
+      <Description>Yes to /dividendReports/*/nondividendDistributionsExceedBasis. The excess is capital gain (26 U.S.C.
+        301(c)(3)(A), https://www.law.cornell.edu/uscode/text/26/301) reported on Form 8949 (Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Nondividend Distributions); stock basis is not collected
+        here. At or below basis box 3 is not income (301(c)(2)).</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -963,7 +1065,10 @@
 
     <Fact path="/flowKnockoutQualifiedDividendsHoldingPeriod">
       <Name>Knockout: box 1b dividends that aren't qualified</Name>
-      <Description>Yes to /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet. Line 3a would have to be less than box 1b by the nonqualified part (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3a Exception; 26 U.S.C. 1(h)(11)(B)(iii), https://www.law.cornell.edu/uscode/text/26/1); the per-share holding-period split is not collected.</Description>
+      <Description>Yes to /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet. Line 3a would have to be less than
+        box 1b by the nonqualified part (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line
+        3a Exception; 26 U.S.C. 1(h)(11)(B)(iii), https://www.law.cornell.edu/uscode/text/26/1); the per-share
+        holding-period split is not collected.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1007,7 +1112,10 @@
 
     <Fact path="/flowKnockoutSection199ADividends">
       <Name>Knockout: 1099-DIV box 5 section 199A dividends</Name>
-      <Description>Qualified REIT dividends are part of the 26 U.S.C. 199A(b)(1)(B) combined QBI amount (https://www.law.cornell.edu/uscode/text/26/199A), claimed on Form 8995 or 8995-A and Form 1040 line 13b. QBI is not modeled (taxCalculations /qualifiedBusinessIncomeDeduction is $0), so any amount stops the return rather than dropping the deduction.</Description>
+      <Description>Qualified REIT dividends are part of the 26 U.S.C. 199A(b)(1)(B) combined QBI amount
+        (https://www.law.cornell.edu/uscode/text/26/199A), claimed on Form 8995 or 8995-A and Form 1040 line 13b. QBI is
+        not modeled (taxCalculations /qualifiedBusinessIncomeDeduction is $0), so any amount stops the return rather
+        than dropping the deduction.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1039,7 +1147,11 @@
 
     <Fact path="/dividendForeignTaxElectionLimit">
       <Name>Foreign tax limit for the credit without Form 1116</Name>
-      <Description>26 U.S.C. 904(j)(2)(B) (https://www.law.cornell.edu/uscode/text/26/904): "the amount of the creditable foreign taxes paid or accrued by the individual during the taxable year does not exceed $300 ($600 in the case of a joint return)". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1, Exception 2: "The total of your foreign taxes wasn't more than $300 (not more than $600 if married filing jointly)." Statutory, not indexed.</Description>
+      <Description>26 U.S.C. 904(j)(2)(B) (https://www.law.cornell.edu/uscode/text/26/904): "the amount of the
+        creditable foreign taxes paid or accrued by the individual during the taxable year does not exceed $300 ($600 in
+        the case of a joint return)". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115,
+        Schedule 3 Line 1, Exception 2: "The total of your foreign taxes wasn't more than $300 (not more than $600 if
+        married filing jointly)." Statutory, not indexed.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -1064,7 +1176,15 @@
 
     <Fact path="/dividendForeignTaxCredit">
       <Name>Foreign tax credit without Form 1116 (Schedule 3 line 1)</Name>
-      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1: "Do you meet all five requirements just listed? Yes. Enter on line 1 the smaller of (a) your total foreign taxes, or (b) the total of the amounts on Form 1040 or 1040-SR, line 16, and Schedule 2, line 1a." (a) is total 1099-DIV box 7 in whole dollars (1099-INT box 6 stops the return, interest /flowKnockoutHasForeignTaxPaid, so box 7 is the only foreign tax). (b) is scheduleD3 /tentativeTaxFromTaxableIncome (line 16) plus the excess advance premium tax credit repayment (schedule2 /schedule2Line1z; it is the only Schedule 2 Part I line 1 item in scope, so line 1a and line 1z are the same amount). 26 U.S.C. 901(a), 904(j) (https://www.law.cornell.edu/uscode/text/26/904). Every case that does not meet 904(j) stops the return (/flowKnockoutDividendForeignTaxPaid).</Description>
+      <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1: "Do
+        you meet all five requirements just listed? Yes. Enter on line 1 the smaller of (a) your total foreign taxes, or
+        (b) the total of the amounts on Form 1040 or 1040-SR, line 16, and Schedule 2, line 1a." (a) is total 1099-DIV
+        box 7 in whole dollars (1099-INT box 6 stops the return, interest /flowKnockoutHasForeignTaxPaid, so box 7 is
+        the only foreign tax). (b) is scheduleD3 /tentativeTaxFromTaxableIncome (line 16) plus the excess advance
+        premium tax credit repayment (schedule2 /schedule2Line1z; it is the only Schedule 2 Part I line 1 item in scope,
+        so line 1a and line 1z are the same amount). 26 U.S.C. 901(a), 904(j)
+        (https://www.law.cornell.edu/uscode/text/26/904). Every case that does not meet 904(j) stops the return
+        (/flowKnockoutDividendForeignTaxPaid).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <LesserOf>
@@ -1081,7 +1201,17 @@
 
     <Fact path="/flowKnockoutDividendForeignTaxPaid">
       <Name>Knockout: 1099-DIV box 7 foreign tax that needs Form 1116</Name>
-      <Description>Box 7 is claimed on Schedule 3 line 1 without Form 1116 only under the 26 U.S.C. 904(j) election (https://www.law.cornell.edu/uscode/text/26/904): (j)(2) "(A) the entire amount of such individual’s gross income for the taxable year from sources without the United States consists of qualified passive income, (B) the amount of the creditable foreign taxes paid or accrued by the individual during the taxable year does not exceed $300 ($600 in the case of a joint return), and (C) such individual elects to have this subsection apply". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1: "No. See Form 1116 to find out if you can take the credit". Form 1116 is not supported, so the return stops when (1) any 1099-DIV with box 7 is answered no to the requirements (/dividendReports/*/foreignTaxElectionRequirementsMet), or (2) total box 7 is more than /dividendForeignTaxElectionLimit, or (3) there is box 7 tax and Form 6251 line 7 is more than $0: the AMT foreign tax credit (Form 6251 line 8) is not computed, and Form 6251 (2026) draft line 10 subtracts Schedule 3 line 1.</Description>
+      <Description>Box 7 is claimed on Schedule 3 line 1 without Form 1116 only under the 26 U.S.C. 904(j) election
+        (https://www.law.cornell.edu/uscode/text/26/904): (j)(2) "(A) the entire amount of such individual’s gross
+        income for the taxable year from sources without the United States consists of qualified passive income, (B) the
+        amount of the creditable foreign taxes paid or accrued by the individual during the taxable year does not exceed
+        $300 ($600 in the case of a joint return), and (C) such individual elects to have this subsection apply". Form
+        1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 Line 1: "No. See Form 1116 to
+        find out if you can take the credit". Form 1116 is not supported, so the return stops when (1) any 1099-DIV with
+        box 7 is answered no to the requirements (/dividendReports/*/foreignTaxElectionRequirementsMet), or (2) total
+        box 7 is more than /dividendForeignTaxElectionLimit, or (3) there is box 7 tax and Form 6251 line 7 is more than
+        $0: the AMT foreign tax credit (Form 6251 line 8) is not computed, and Form 6251 (2026) draft line 10 subtracts
+        Schedule 3 line 1.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1148,7 +1278,10 @@
 
     <Fact path="/flowKnockoutDividendNominee">
       <Name>Knockout: dividends received as a nominee</Name>
-      <Description>Yes to /dividendReports/*/receivedAsNominee. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: Schedule B is required if "you received, as a nominee, ordinary dividends that actually belong to someone else"; the Schedule B Part II nominee subtraction is not modeled here.</Description>
+      <Description>Yes to /dividendReports/*/receivedAsNominee. Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: Schedule B is required if "you received, as a
+        nominee, ordinary dividends that actually belong to someone else"; the Schedule B Part II nominee subtraction is
+        not modeled here.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1192,7 +1325,9 @@
 
     <Fact path="/flowKnockoutDividendAmountsInconsistent">
       <Name>Knockout: 1099-DIV box 1b or 5 larger than box 1a</Name>
-      <Description>Box 1b and box 5 are each "the portion of the amount in box 1a" (Form 1099-DIV instructions for recipient). A larger amount means the form was entered incorrectly; stop rather than compute lines 3a and 3b from it.</Description>
+      <Description>Box 1b and box 5 are each "the portion of the amount in box 1a" (Form 1099-DIV instructions for
+        recipient). A larger amount means the form was entered incorrectly; stop rather than compute lines 3a and 3b
+        from it.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>

@@ -140,6 +140,7 @@
           <Dependency module="scheduleD" path="/flowKnockoutCapitalAssets" />
           <Dependency module="scheduleD" path="/flowKnockoutCollectibles" />
           <Dependency module="scheduleD" path="/flowKnockoutUnrecaptured1250Gain" />
+          <Dependency module="scheduleD" path="/flowKnockoutForm8949CodeQ" />
           <Dependency module="form6251" path="/flowKnockoutAmtPreferenceItems" />
           <Dependency module="form6251" path="/flowKnockoutAmtMfsAddBack" />
           <Dependency module="income" path="/flowKnockoutForm8615" />

@@ -157,4 +157,30 @@ class TaxReturnControllerSubmissionBlockingTest {
         assertEquals(paths, e.getBody().getProperties().get("blockingFacts"));
         responseBody(e, HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    void pdfRefusedByAPrintRefusingKnockoutKeepsItsPathsAndStatus() throws Exception {
+        TaxReturn taxReturn = new TaxReturn();
+        taxReturn.setTaxYear(2026);
+        when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
+        SubmissionBlockingFactsResponseStatusException refusal =
+                new SubmissionBlockingFactsResponseStatusException(List.of("/flowKnockoutForm8949CodeQ"));
+        when(pdfService.getTaxReturn("es", taxReturn, false)).thenThrow(refusal);
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> controller.pdf(id, " ES "));
+        assertSame(refusal, e);
+        String json = responseBody(e, HttpStatus.BAD_REQUEST);
+        assertTrue(json.contains("\"blockingFacts\":[\"/flowKnockoutForm8949CodeQ\"]"), json);
+    }
+
+    @Test
+    void anyOtherPdfFailureIsStillTheGenericPdfError() throws Exception {
+        TaxReturn taxReturn = new TaxReturn();
+        taxReturn.setTaxYear(2026);
+        when(taxReturnService.findByIdAndUserId(id, userInfo.id())).thenReturn(Optional.of(taxReturn));
+        when(pdfService.getTaxReturn("en", taxReturn, false)).thenThrow(new IllegalStateException(CAUSE_TEXT));
+        ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> controller.pdf(id, "en"));
+        assertFalse(e instanceof SubmissionBlockingFactsResponseStatusException);
+        assertEquals(TaxReturnApi.GetPdfResponseFailedToCreate.code, e.getStatusCode());
+    }
 }
