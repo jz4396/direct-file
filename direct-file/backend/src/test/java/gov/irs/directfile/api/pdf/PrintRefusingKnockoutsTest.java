@@ -194,6 +194,6 @@ class PrintRefusingKnockoutsTest {
             }
         }
         assertEquals(50, refused, "scenarios with Schedule EIC");
-        assertEquals(111, printed, "scenarios that print");
+        assertEquals(112, printed, "scenarios that print");
     }
 }
