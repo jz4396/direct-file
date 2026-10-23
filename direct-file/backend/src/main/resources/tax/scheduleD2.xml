@@ -7,7 +7,8 @@
     <!-- Schedule D Part I — short-term (boxes A/B/C → lines 1b/2/3; line 7 net) -->
     <Fact path="/scheduleDLine1b">
       <Name>Schedule D line 1b</Name>
-      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box A or Box G checked" (ST, basis reported). Form 8949 instr. (2025) p.3.</Description>
+      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box A or Box G checked" (ST, basis reported).
+        Form 8949 instr. (2025) p.3.</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -20,8 +21,8 @@
               </When>
               <Then>
                 <CollectionSum>
-            <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxA" />
-          </CollectionSum>
+                  <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxA" />
+                </CollectionSum>
               </Then>
             </Case>
             <Case>
@@ -41,7 +42,8 @@
 
     <Fact path="/scheduleDLine2">
       <Name>Schedule D line 2</Name>
-      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box B or Box H checked" (ST, basis not reported). Form 8949 instr. (2025) p.3.</Description>
+      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box B or Box H checked" (ST, basis not reported).
+        Form 8949 instr. (2025) p.3.</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -54,8 +56,8 @@
               </When>
               <Then>
                 <CollectionSum>
-            <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxB" />
-          </CollectionSum>
+                  <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxB" />
+                </CollectionSum>
               </Then>
             </Case>
             <Case>
@@ -75,7 +77,8 @@
 
     <Fact path="/scheduleDLine3">
       <Name>Schedule D line 3</Name>
-      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box C or Box I checked" (ST, no 1099-B). Form 8949 instr. (2025) p.3.</Description>
+      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box C or Box I checked" (ST, no 1099-B). Form
+        8949 instr. (2025) p.3.</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -88,8 +91,8 @@
               </When>
               <Then>
                 <CollectionSum>
-            <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxC" />
-          </CollectionSum>
+                  <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxC" />
+                </CollectionSum>
               </Then>
             </Case>
             <Case>
@@ -110,7 +113,8 @@
     <Fact path="/scheduleDLine6">
       <Name>Schedule D line 6 — short-term capital loss carryover</Name>
       <Description>Prior-year short-term capital loss carryover (Capital Loss Carryover Worksheet,
-        Schedule D instr. (2025) p.10). Shown in parentheses on the form; IRC §1212(b)(1)(A).</Description>
+        Schedule D instr.
+        (2025) p.10). Shown in parentheses on the form; IRC §1212(b)(1)(A).</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -121,7 +125,8 @@
     <Fact path="/scheduleDLine7">
       <Name>Schedule D line 7 — net short-term capital gain or loss</Name>
       <Description>Schedule D Part I line 7: combine lines 1a through 6 (lines 1a/4/5 = $0 in scope;
-        line 6 short-term carryover is subtracted). Schedule D instr. (2025) p.10 (lines 6/14).</Description>
+        line 6 short-term
+        carryover is subtracted). Schedule D instr. (2025) p.10 (lines 6/14).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
@@ -145,7 +150,8 @@
     <!-- Schedule D Part II — long-term (boxes D/E/F → lines 8b/9/10; line 15 net) -->
     <Fact path="/scheduleDLine8b">
       <Name>Schedule D line 8b</Name>
-      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box D or Box J checked" (LT, basis reported). Form 8949 instr. (2025) pp.3–4.</Description>
+      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box D or Box J checked" (LT, basis reported).
+        Form 8949 instr. (2025) pp.3–4.</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -158,8 +164,8 @@
               </When>
               <Then>
                 <CollectionSum>
-            <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxD" />
-          </CollectionSum>
+                  <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxD" />
+                </CollectionSum>
               </Then>
             </Case>
             <Case>
@@ -179,7 +185,8 @@
 
     <Fact path="/scheduleDLine9">
       <Name>Schedule D line 9</Name>
-      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box E or Box K checked" (LT, basis not reported). Form 8949 instr. (2025) pp.3–4.</Description>
+      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box E or Box K checked" (LT, basis not reported).
+        Form 8949 instr. (2025) pp.3–4.</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -192,8 +199,8 @@
               </When>
               <Then>
                 <CollectionSum>
-            <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxE" />
-          </CollectionSum>
+                  <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxE" />
+                </CollectionSum>
               </Then>
             </Case>
             <Case>
@@ -213,7 +220,8 @@
 
     <Fact path="/scheduleDLine10">
       <Name>Schedule D line 10</Name>
-      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box F or Box L checked" (LT, no 1099-B). Form 8949 instr. (2025) pp.3–4.</Description>
+      <Description>Schedule D (2025): line label "...Form(s) 8949 with Box F or Box L checked" (LT, no 1099-B). Form
+        8949 instr. (2025) pp.3–4.</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -226,8 +234,8 @@
               </When>
               <Then>
                 <CollectionSum>
-            <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxF" />
-          </CollectionSum>
+                  <Dependency module="scheduleD" path="/form8949Transactions/*/gainOrLossBoxF" />
+                </CollectionSum>
               </Then>
             </Case>
             <Case>
@@ -248,7 +256,8 @@
     <Fact path="/scheduleDLine14">
       <Name>Schedule D line 14 — long-term capital loss carryover</Name>
       <Description>Prior-year long-term capital loss carryover (Capital Loss Carryover Worksheet,
-        Schedule D instr. (2025) p.10). Shown in parentheses on the form; IRC §1212(b)(1)(B).</Description>
+        Schedule D instr.
+        (2025) p.10). Shown in parentheses on the form; IRC §1212(b)(1)(B).</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -258,7 +267,13 @@
 
     <Fact path="/scheduleDLine13">
       <Name>Schedule D line 13 — capital gain distributions</Name>
-      <Description>#86b: Schedule D Part II line 13. Schedule D instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2, Capital Gain Distributions: "Enter on Schedule D, line 13, the total capital gain distributions paid to you during the year, regardless of how long you held your investment. This amount is shown in box 2a of Form 1099-DIV." p. 11, Line 13: "See Capital Gain Distributions, earlier." Total 1099-DIV box 2a in whole dollars (dividends /totalCapitalGainDistributions), only when Schedule D is filed; otherwise box 2a goes directly on Form 1040 line 7a (dividends /capitalGainDistributionsWithoutScheduleD). Form 2439 box 1a is not supported.</Description>
+      <Description>#86b: Schedule D Part II line 13. Schedule D instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2, Capital Gain Distributions: "Enter on Schedule D, line 13, the
+        total capital gain distributions paid to you during the year, regardless of how long you held your investment.
+        This amount is shown in box 2a of Form 1099-DIV." p. 11, Line 13: "See Capital Gain Distributions, earlier."
+        Total 1099-DIV box 2a in whole dollars (dividends /totalCapitalGainDistributions), only when Schedule D is
+        filed; otherwise box 2a goes directly on Form 1040 line 7a (dividends
+        /capitalGainDistributionsWithoutScheduleD). Form 2439 box 1a is not supported.</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
@@ -288,7 +303,8 @@
     <Fact path="/scheduleDLine15">
       <Name>Schedule D line 15 — net long-term capital gain or loss</Name>
       <Description>Schedule D Part II line 15: combine lines 8a through 14 (lines 8a/11/12/13 = $0 in scope;
-        line 14 long-term carryover is subtracted). Schedule D instr. (2025) p.10 (lines 6/14).</Description>
+        line 14
+        long-term carryover is subtracted). Schedule D instr. (2025) p.10 (lines 6/14).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
@@ -299,7 +315,7 @@
                 <Dependency path="/scheduleDLine8b" />
                 <Dependency path="/scheduleDLine9" />
                 <Dependency path="/scheduleDLine10" />
-            <Dependency path="/scheduleDLine13" />
+                <Dependency path="/scheduleDLine13" />
               </Add>
             </Minuend>
             <Subtrahends>
@@ -329,8 +345,10 @@
     <Fact path="/scheduleDLine21">
       <Name>Schedule D line 21 — capital loss limitation</Name>
       <Description>If line 16 is a loss, the deductible amount against ordinary income is the lesser of
-        the loss or the §1211(b) limit ($3,000 / $1,500 MFS). Schedule D instr. (2025) p.14 (Line 21);
-        IRC §1211(b). Shown as a positive amount on the form.</Description>
+        the loss or the
+        §1211(b) limit ($3,000 / $1,500 MFS). Schedule D instr. (2025) p.14 (Line 21);
+        IRC §1211(b). Shown as a positive
+        amount on the form.</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
@@ -377,7 +395,8 @@
     <Fact path="/capitalGainsOrLossesFor1040">
       <Name>Capital gains or losses for Form 1040 line 7</Name>
       <Description>Form 1040 line 7: net capital gain, or limited net capital loss after §1211(b).
-        If Schedule D line 16 ≥ 0 → line 16; if loss → GreaterOf(line 16, −limit).</Description>
+        If Schedule D line 16
+        ≥ 0 → line 16; if loss → GreaterOf(line 16, −limit).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
@@ -410,7 +429,8 @@
     <Fact path="/hasNetLongTermCapitalGain">
       <Name>Has net long-term capital gain</Name>
       <Description>True when Schedule D line 15 &gt; 0 — preferential §1(h) rates may apply
-        (breakpoints Rev. Proc. 2025-32 §4.03 p.13). Feeds the QDCG Tax Worksheet in scheduleD3.xml.</Description>
+        (breakpoints Rev. Proc.
+        2025-32 §4.03 p.13). Feeds the QDCG Tax Worksheet in scheduleD3.xml.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <GreaterThan>
