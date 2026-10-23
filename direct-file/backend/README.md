@@ -82,6 +82,10 @@ Backend relies on locally installed Maven packages in order to build; therefore,
 INSTALL_MEF=0 ../scripts/build-project.sh
 ```
 
+Run from `backend`, the script first generates the client's submission-blocking list with
+`(cd ../df-client/df-client-app && npm ci && npm run generate-fact-dictionary)`, so it needs Node and npm. The
+backend tests compare that list with the server's; see [Running tests](#running-tests).
+
 #### Spring Boot Maven plugin
 
 [Spring Boot](https://docs.spring.io/spring-boot/)  
@@ -195,8 +199,14 @@ To add additional profiles to the mock service, add JSON files to `/src/main/res
 Run the test suite that is executed in CI with:
 
 ```bash
+(cd ../df-client/df-client-app && npm ci && npm run generate-fact-dictionary)
 ./mvnw test
 ```
+
+`SubmissionBlockingFactsTest.clientGeneratedListsEqualTheServerLists` compares the server's submission-blocking facts
+with the client's generated list (`df-client/df-client-app/src/fact-dictionary/generated/submissionBlockingFacts.ts`).
+That file is gitignored, so generate it first, as above; the test fails, rather than skips, when it is missing. A build
+without the client sources (the Docker image) excludes the test with `-DexcludedGroups=client-generated`.
 
 ## Database migrations
 

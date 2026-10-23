@@ -45,11 +45,13 @@ RUN ./mvnw dependency:resolve
 COPY src/ /build/src/
 # SKIP_CHECKS=true (set only by docker-compose.local.yaml) builds the jar
 # without running tests or the spotless check; every other build runs both.
+# The build context has no df-client sources, so tests that read the client's
+# generated files (JUnit tag client-generated) run in the checkout, not here.
 ARG SKIP_CHECKS=false
 RUN if [ "$SKIP_CHECKS" = "true" ]; then \
       ./mvnw package -DskipTests -Dspotless.check.skip=true; \
     else \
-      ./mvnw package; \
+      ./mvnw package -DexcludedGroups=client-generated; \
     fi
 
 # 6. bundle backend api jar into runnable image
