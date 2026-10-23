@@ -275,7 +275,8 @@
 
     <Fact path="/form1099Rs/*/hasUnsupportedDistributionCode">
       <Description>Whether the 1099R has a distribution that Direct file does not support yet. #116: code 1 alone is
-        supported (the 10% additional tax goes on Schedule 2 line 5; see /earlyDistributionAdditionalTax). Note: if you change this
+        supported (the 10% additional tax goes on Schedule 2 line 5; see /earlyDistributionAdditionalTax). Note: if you
+        change this
         fact, review that the newly supported codes are correctly included in facts like
         ../hasDistributionCodeIncludedInSaversCredit and ../isFullyOrPartlyTaxablePension</Description>
       <Derived>
@@ -1599,7 +1600,8 @@
         (https://www.law.cornell.edu/uscode/text/26/25B#d_2_A): contributions "shall be reduced (but not below zero) by
         the aggregate distributions received by the individual during the testing period from any entity of a type to
         which contributions under paragraph (1) may be made"; only trustee-to-trustee transfers and rollovers are left
-        out, and those are handled by the rollover facts. This fact also drives isFullyOrPartlyTaxablePension, so a code 1
+        out, and those are handled by the rollover facts. This fact also drives isFullyOrPartlyTaxablePension, so a code
+        1
         taxable amount is reported on Form 1040 line 5b.</Description>
       <Derived>
         <Any>
@@ -3399,7 +3401,8 @@
     <Fact path="/form1099Rs/*/hasEarlyDistributionCodeWithAnotherCode">
       <Description>#116: box 7 as entered has code 1 together with any other character. distributionCode drops
         characters outside /form1099RsDistributionCodeValidChars, so 1J, 1S, 1P, 1T or 1Q would otherwise read as code 1
-        alone. Each of those needs Form 5329 or Roth rules this tool doesn't model, so it is unsupported. False while box 7
+        alone. Each of those needs Form 5329 or Roth rules this tool doesn't model, so it is unsupported. False while
+        box 7
         is blank.</Description>
       <Derived>
         <Switch>
@@ -3506,7 +3509,8 @@
     </Fact>
 
     <Fact path="/earlyDistributionTaxableAmount">
-      <Description>#116: sum of box 2a taxable amounts (as reported on Form 1040 line 5b, see isFullyOrPartlyTaxablePension)
+      <Description>#116: sum of box 2a taxable amounts (as reported on Form 1040 line 5b, see
+        isFullyOrPartlyTaxablePension)
         of the code 1 Forms 1099-R.</Description>
       <Derived>
         <CollectionSum>
@@ -3518,28 +3522,40 @@
     <Fact path="/earlyDistributionAdditionalTax">
       <Name>10% additional tax on early distributions (Schedule 2 line 5)</Name>
       <Description>#116: Schedule 2 line 5 = 10% of /earlyDistributionTaxableAmount.
-        26 U.S.C. 72(t)(1) (https://www.law.cornell.edu/uscode/text/26/72#t_1): "the taxpayer’s tax under this chapter for
-        the taxable year in which such amount is received shall be increased by an amount equal to 10 percent of the
-        portion of such amount which is includible in gross income."
-        2026 draft Instructions for Form 5329 (https://www.irs.gov/pub/irs-dft/i5329--dft.pdf, SHA-256
-        55f531aad380ec1ac63cc697e0f5d0cd603c503e18cebd9fb04b0bd46633aa35), PDF p. 2, Who Must File: "if distribution code 1
-        is correctly shown in box 7a of all your Forms 1099-R and you owe the additional tax on the full amount shown on
-        each Form 1099-R, you don’t have to file Form 5329. Instead, see the instructions for Schedule 2 (Form 1040), line
+        26 U.S.C. 72(t)(1)
+        (https://www.law.cornell.edu/uscode/text/26/72#t_1): "the taxpayer’s tax under this chapter for
+        the taxable year
+        in which such amount is received shall be increased by an amount equal to 10 percent of the
+        portion of such
+        amount which is includible in gross income."
+        2026 draft Instructions for Form 5329
+        (https://www.irs.gov/pub/irs-dft/i5329--dft.pdf, SHA-256
+        55f531aad380ec1ac63cc697e0f5d0cd603c503e18cebd9fb04b0bd46633aa35), PDF p. 2, Who Must File: "if distribution
+        code 1
+        is correctly shown in box 7a of all your Forms 1099-R and you owe the additional tax on the full amount
+        shown on
+        each Form 1099-R, you don’t have to file Form 5329. Instead, see the instructions for Schedule 2 (Form
+        1040), line
         5, ... for how to report the 10% additional tax directly on that line."
-        2026 draft Schedule 2 (Form 1040) (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf, SHA-256
+        2026 draft Schedule 2 (Form
+        1040) (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf, SHA-256
         0e3d4faa4b96f692bc31119d2c86189c3d8b9263e8f3aaaf7c3da371887ebc56), line 5: "Additional tax on IRAs or other
         tax-favored accounts. Attach Form 5329 if required. If not required, check here".
-        The taxable amount: Instructions for Form 1040 (2025) (https://www.irs.gov/pub/irs-pdf/i1040gi.pdf, SHA-256
+        The taxable amount:
+        Instructions for Form 1040 (2025) (https://www.irs.gov/pub/irs-pdf/i1040gi.pdf, SHA-256
         482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a), PDF p. 112, Schedule 2 line 8 (the 2025 line
-        number; line 5 on the 2026 draft form): "multiply the taxable amount of the distribution by 10% (0.10) and enter the
+        number; line 5 on the 2026 draft form): "multiply the taxable amount of the distribution by 10% (0.10) and enter
+        the
         result on line 8. The taxable amount of the distribution is the part of the distribution you reported on Form
         1040, 1040-SR, or 1040-NR, line 4b or 5b, or on Form 4972. Also check the box on line 8". No 2026 Form 1040
         instructions draft is posted yet (irs-dft/i1040gi--dft.pdf is the 2025 edition); re-check the line number when
         it is.
-        In scope: code 1 alone on every Form 1099-R, the filer says no exception applies, not an IRA/SEP/SIMPLE (that
+        In scope: code 1 alone on every Form 1099-R, the filer says no exception applies, not an IRA/SEP/SIMPLE
+        (that
         checkbox stops the return, /knockoutIraSepSimple). Out of scope and stopped: a claimed exception
         (/flowKnockoutRetirementQualifiedEarlyDistribution, needs Form 5329 Part I line 2); code 1 on some but not all
-        Forms 1099-R (/flowKnockoutEarlyDistributionNotOnEveryForm1099R); code 1 combined with another code, including J,
+        Forms 1099-R (/flowKnockoutEarlyDistributionNotOnEveryForm1099R); code 1 combined with another code, including
+        J,
         B, S, P, T and Q (/knockoutForForm1099RDistributionCode); box 2b taxable amount not determined
         (/flowKnockoutRetirementTaxableAmountNotDetermined). The 25% rate of 72(t)(6) needs code S, which is stopped.
         Rounded to whole dollars, half up: Instructions for Form 1040 (2025), PDF p. 23, Rounding Off to Whole Dollars:
@@ -3558,8 +3574,10 @@
     <Fact path="/flowKnockoutEarlyDistributionNotOnEveryForm1099R">
       <Name>Knockout when code 1 is not on every Form 1099-R</Name>
       <Description>#116: the 2026 draft Instructions for Form 5329, PDF p. 2, let the 10% additional tax go directly on
-        Schedule 2 line 5 only "if distribution code 1 is correctly shown in box 7a of all your Forms 1099-R". A return with
-        a code 1 Form 1099-R and any Form 1099-R with another code is stopped. Complete and false when there is no code 1
+        Schedule 2 line 5 only "if distribution code 1 is correctly shown in box 7a of all your Forms 1099-R". A return
+        with
+        a code 1 Form 1099-R and any Form 1099-R with another code is stopped. Complete and false when there is no
+        code 1
         Form 1099-R.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />

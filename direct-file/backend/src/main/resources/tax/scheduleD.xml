@@ -21,8 +21,10 @@
     <Fact path="/form8949BoxOptions">
       <Name>Form 8949 box options</Name>
       <Description>Form 8949 Part I boxes A–C / G–I and Part II boxes D–F / J–L.
-        Instructions for Form 8949 (2025) pp.3–4: Box A/G basis reported to IRS; B/H basis not
-        reported; C/I no 1099-B/DA (C/F exclude digital — use I/L). Digital G–L added 2025.</Description>
+        Instructions for Form 8949 (2025)
+        pp.3–4: Box A/G basis reported to IRS; B/H basis not
+        reported; C/I no 1099-B/DA (C/F exclude digital — use I/L).
+        Digital G–L added 2025.</Description>
       <Derived>
         <EnumOptions>
           <String>A</String>
@@ -44,7 +46,8 @@
     <Fact path="/form8949HoldingPeriodOptions">
       <Name>Holding period options</Name>
       <Description>IRC §1222 — short-term (held ≤1 year) vs long-term (held &gt;1 year).
-        Form 8949 Part I = short-term; Part II = long-term (Form 8949 instr. (2025) p.3).</Description>
+        Form 8949 Part I = short-term;
+        Part II = long-term (Form 8949 instr. (2025) p.3).</Description>
       <Derived>
         <EnumOptions>
           <String>shortTerm</String>
@@ -57,8 +60,10 @@
       <Export downstreamFacts="true" />
       <Name>Capital loss limit against ordinary income</Name>
       <Description>IRC §1211(b): losses allowed only to the extent of gains plus the lower of
-        (1) $3,000 ($1,500 if MFS), or (2) excess of losses over gains.
-        Schedule D instr. (2025) p.3: "You can deduct capital losses up to the amount of your
+        (1) $3,000 ($1,500 if MFS),
+        or (2) excess of losses over gains.
+        Schedule D instr. (2025) p.3: "You can deduct capital losses up to the amount
+        of your
         capital gains plus $3,000 ($1,500 if married filing separately)."</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -107,7 +112,8 @@
       <Export downstreamFacts="true" />
       <Name>Selected max zero rate amount (preferential CG)</Name>
       <Description>Rev. Proc. 2025-32 §4.03 p.13 — filing-status-selected maximum zero rate amount
-        under §1(j)(5)(B). Selects the PR #2 constants4.xml facts (no duplicated dollar amounts).</Description>
+        under §1(j)(5)(B).
+        Selects the PR #2 constants4.xml facts (no duplicated dollar amounts).</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
@@ -158,7 +164,8 @@
       <Export downstreamFacts="true" />
       <Name>Selected max 15% rate amount (preferential CG)</Name>
       <Description>Rev. Proc. 2025-32 §4.03 p.13 — filing-status-selected maximum 15% rate amount.
-        Above this breakpoint, 20% rate applies under §1(h)(1)(D). Selects the PR #2 constants4.xml facts.</Description>
+        Above this breakpoint,
+        20% rate applies under §1(h)(1)(D). Selects the PR #2 constants4.xml facts.</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
@@ -208,9 +215,12 @@
     <Fact path="/soldCapitalAssets">
       <Export downstreamFacts="true" />
       <Name>Sold stock or other capital assets</Name>
-      <Description>Screener (#28): in the tax year, did the filer sell or exchange stock, bonds, digital assets (crypto), or other capital
-        assets, or receive a Form 1099-B or Form 1099-DA? Schedule D instr. (2025) p. D-1: "Use Schedule D: To figure the overall gain
-        or loss from transactions reported on Form 8949". Unset is not treated as no.</Description>
+      <Description>Screener (#28): in the tax year, did the filer sell or exchange stock, bonds, digital assets
+        (crypto), or other capital
+        assets, or receive a Form 1099-B or Form 1099-DA? Schedule D instr. (2025) p. D-1:
+        "Use Schedule D: To figure the overall gain
+        or loss from transactions reported on Form 8949". Unset is not
+        treated as no.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -229,7 +239,8 @@
     <Fact path="/soldCollectibles">
       <Export downstreamFacts="true" />
       <Name>Sold collectibles</Name>
-      <Description>#21: collectibles (28%) gain, e.g. Form 1099-DIV box 2d or a Schedule K-1, taxed up to 28%. IRC §1(h)(4)-(5); Schedule D instr. (2025) p. D-11, Line 18 (28% Rate Gain Worksheet).</Description>
+      <Description>#21: collectibles (28%) gain, e.g. Form 1099-DIV box 2d or a Schedule K-1, taxed up to 28%. IRC
+        §1(h)(4)-(5); Schedule D instr. (2025) p. D-11, Line 18 (28% Rate Gain Worksheet).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -238,7 +249,8 @@
     <Fact path="/hasUnrecapturedSection1250Gain">
       <Export downstreamFacts="true" />
       <Name>Has unrecaptured section 1250 gain</Name>
-      <Description>#21: unrecaptured §1250 gain, e.g. Form 1099-DIV box 2b or a Schedule K-1, taxed up to 25%. IRC §1(h)(1)(E), §1(h)(6); Schedule D instr. (2025) p. D-11, Line 19.</Description>
+      <Description>#21: unrecaptured §1250 gain, e.g. Form 1099-DIV box 2b or a Schedule K-1, taxed up to 25%. IRC
+        §1(h)(1)(E), §1(h)(6); Schedule D instr. (2025) p. D-11, Line 19.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -247,7 +259,8 @@
     <Fact path="/flowKnockoutCollectibles">
       <Export downstreamFacts="true" />
       <Name>Flow knockout: collectibles</Name>
-      <Description>#21: yes to /soldCollectibles. Phase A: the Schedule D Tax Worksheet is not implemented, so a yes blocks submission instead of silently using the 0/15/20% QDCG worksheet.</Description>
+      <Description>#21: yes to /soldCollectibles. Phase A: the Schedule D Tax Worksheet is not implemented, so a yes
+        blocks submission instead of silently using the 0/15/20% QDCG worksheet.</Description>
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
@@ -262,7 +275,8 @@
     <Fact path="/flowKnockoutUnrecaptured1250Gain">
       <Export downstreamFacts="true" />
       <Name>Flow knockout: unrecaptured section 1250 gain</Name>
-      <Description>#21: yes to /hasUnrecapturedSection1250Gain. Phase A: the Schedule D Tax Worksheet is not implemented, so a yes blocks submission instead of silently using the 0/15/20% QDCG worksheet.</Description>
+      <Description>#21: yes to /hasUnrecapturedSection1250Gain. Phase A: the Schedule D Tax Worksheet is not
+        implemented, so a yes blocks submission instead of silently using the 0/15/20% QDCG worksheet.</Description>
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
@@ -274,11 +288,71 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutForm8949CodeQ">
+      <Export downstreamFacts="true" />
+      <Name>Flow knockout: Form 8949 adjustment code Q (section 1202 exclusion)</Name>
+      <Description>True when any Form 8949 row's code field (column (f)) contains the code letter Q, upper or
+        lower case.
+        Form 8949 instr. (2025) p. 8, code Q: "You sold or exchanged QSB stock and can exclude part
+        of the gain" (the
+        section 1202 exclusion, entered as a negative amount in column (g)). Under IRC
+        §1(h)(4)(A)(ii)
+        (https://www.law.cornell.edu/uscode/text/26/1) 28-percent rate gain includes "section
+        1202 gain", which §1(h)(7)
+        defines as "the excess of (A) the gain which would be excluded from gross
+        income under section 1202 but for the
+        percentage limitation in section 1202(a), over (B) the gain
+        excluded from gross income under section 1202". That
+        amount goes on Schedule D line 18 (Schedule D
+        instr. (2025), Line 18, 28% Rate Gain Worksheet), and a nonzero
+        line 18 means line 20 is No and the tax
+        is figured on the Schedule D Tax Worksheet, which this tool does not
+        compute (scheduleD3.xml uses the
+        Qualified Dividends and Capital Gain Tax Worksheet only). The row does not say
+        which section 1202(a)
+        percentage applies, so any code Q stops the return. A blank code field is complete and not
+        Q; no rows is
+        false.</Description>
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/form8949Transactions" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/form8949Transactions/*/hasAdjustmentCodeQ" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions">
       <Export downstreamFacts="true" />
       <Name>Form 8949 transactions</Name>
       <Description>Manual capital asset dispositions reported on Form 8949 then totaled on Schedule D.
-        Form 8949 instr. (2025) pp.1–3: report sales/exchanges of capital assets.</Description>
+        Form 8949 instr.
+        (2025) pp.1–3: report sales/exchanges of capital assets.</Description>
       <Writable>
         <Collection />
       </Writable>
@@ -336,7 +410,8 @@
     <Fact path="/requiresScheduleD">
       <Name>Requires Schedule D</Name>
       <Description>Schedule D is required when there is Form 8949 activity (Schedule D instr. (2025) p.11:
-        complete Form 8949 before Schedule D lines 1b/2/3/8b/9/10) or a prior-year capital loss
+        complete Form
+        8949 before Schedule D lines 1b/2/3/8b/9/10) or a prior-year capital loss
         carryover (Schedule D lines 6/14).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
@@ -368,7 +443,10 @@
 
     <Fact path="/form8949Transactions/*/dateAcquiredIsVariousOrInherited">
       <Name>Date acquired is VARIOUS or INHERITED</Name>
-      <Description>#60: Form 8949 instr. (2025) p. 6, column (b): "Enter "INHERITED" in column (b)" for inherited property, and for a block "acquired through several different purchases, you may report the sale on one row and enter "VARIOUS" in column (b)." Our ../dateAcquired is a single Day, so phase A stops instead of printing a made-up date.</Description>
+      <Description>#60: Form 8949 instr. (2025) p. 6, column (b): "Enter "INHERITED" in column (b)" for inherited
+        property, and for a block "acquired through several different purchases, you may report the sale on one row and
+        enter "VARIOUS" in column (b)." Our ../dateAcquired is a single Day, so phase A stops instead of printing a
+        made-up date.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -379,7 +457,8 @@
 
     <Fact path="/flowKnockoutForm8949DateAcquiredVariousOrInherited">
       <Name>Knockout: Form 8949 date acquired VARIOUS or INHERITED</Name>
-      <Description>#60: any 8949 row whose date acquired is VARIOUS or INHERITED (Form 8949 instr. (2025) p. 6, column (b)) blocks submission until column (b) can carry those values.</Description>
+      <Description>#60: any 8949 row whose date acquired is VARIOUS or INHERITED (Form 8949 instr. (2025) p. 6, column
+        (b)) blocks submission until column (b) can carry those values.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -466,6 +545,29 @@
       </Writable>
     </Fact>
 
+    <Fact path="/form8949Transactions/*/hasAdjustmentCodeQ">
+      <Name>Form 8949 row has adjustment code Q</Name>
+      <Description>True when ../adjustmentCode contains the code letter Q in either case (codes are single
+        letters,
+        entered together, e.g. "BQ" or "Q"). A blank code field is complete and false. Used by
+        /flowKnockoutForm8949CodeQ.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../adjustmentCode" />
+          </IsComplete>
+          <Regex>
+            <Input>
+              <Dependency path="../adjustmentCode" />
+            </Input>
+            <Pattern>
+              <String>[\s\S]*[Qq][\s\S]*</String>
+            </Pattern>
+          </Regex>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8949Transactions/*/box">
       <Name>Form 8949 checkbox</Name>
       <Description>Which Form 8949 box applies (A–L). Instructions pp.3–4.</Description>
@@ -477,7 +579,8 @@
     <Fact path="/form8949Transactions/*/holdingPeriod">
       <Name>Holding period</Name>
       <Description>shortTerm → Form 8949 Part I / Schedule D Part I;
-        longTerm → Form 8949 Part II / Schedule D Part II. IRC §1222.</Description>
+        longTerm → Form 8949 Part II / Schedule D Part II.
+        IRC §1222.</Description>
       <Writable>
         <Enum optionsPath="/form8949HoldingPeriodOptions" />
       </Writable>
@@ -494,47 +597,192 @@
     <Fact path="/form8949Transactions/*/paSoldWhilePaResident">
       <Name>PA part-year: sold during the PA residency period</Name>
       <Description>#80: moved PA to FL: sold before the move date; moved FL to PA: sold on or after it.</Description>
-      <Derived><Switch><Case><When><Dependency module="paPit" path="/paPartYearMovedOut" /></When><Then><LessThan><Left><Dependency path="../dateSold" /></Left><Right><Dependency module="paPit" path="/paPartYearMoveDate" /></Right></LessThan></Then></Case><Case><When><True /></When><Then><Not><LessThan><Left><Dependency path="../dateSold" /></Left><Right><Dependency module="paPit" path="/paPartYearMoveDate" /></Right></LessThan></Not></Then></Case></Switch></Derived>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="paPit" path="/paPartYearMovedOut" />
+            </When>
+            <Then>
+              <LessThan>
+                <Left>
+                  <Dependency path="../dateSold" />
+                </Left>
+                <Right>
+                  <Dependency module="paPit" path="/paPartYearMoveDate" />
+                </Right>
+              </LessThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Not>
+                <LessThan>
+                  <Left>
+                    <Dependency path="../dateSold" />
+                  </Left>
+                  <Right>
+                    <Dependency module="paPit" path="/paPartYearMoveDate" />
+                  </Right>
+                </LessThan>
+              </Not>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
 
     <Fact path="/form8949Transactions/*/paGainOrLoss">
       <Name>PA-40 line 5 amount from this sale</Name>
-      <Description>#78: column (h). #80 part-year: only sales in the PA residency period; PA-40 IN (2025) p. 43, a nonresident does not pay PA tax on "any gain you realize on the sale, exchange, or disposition of intangible personal property, such as stocks and bonds."</Description>
+      <Description>#78: column (h). #80 part-year: only sales in the PA residency period; PA-40 IN (2025) p. 43, a
+        nonresident does not pay PA tax on "any gain you realize on the sale, exchange, or disposition of intangible
+        personal property, such as stocks and bonds."</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Not><Dependency module="paPit" path="/paPartYearSupported" /></Not></When><Then><Dependency path="../gainOrLoss" /></Then></Case><Case><When><Dependency path="../paSoldWhilePaResident" /></When><Then><Dependency path="../gainOrLoss" /></Then></Case><Case><When><True /></When><Then><Dollar>0</Dollar></Then></Case></Switch></Derived>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="paPit" path="/paPartYearSupported" />
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../paSoldWhilePaResident" />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
 
     <Fact path="/form8949Transactions/*/paSpNonPaPeriodGainOrLoss">
       <Name>PA Schedule SP line 6: gain or loss from this sale while living outside PA</Name>
-      <Description>#107: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf p. 38, line 6: "6. Non-PA income. Part-year residents and nonresidents must complete this line. Enter the total of all income, not already reported on this schedule, that you (and your spouse, if applicable) earned, received or realized while residing outside Pennsylvania." A part-year resident's sale dated outside the PA residency period (not /form8949Transactions/*/paSoldWhilePaResident) is not on PA-40 line 5, so its column (h) amount goes to line 6. Full-year residents and PA-period sales: $0.</Description>
+      <Description>#107: PA-40 IN (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 38, line 6: "6. Non-PA income. Part-year residents and nonresidents must complete this line. Enter the total
+        of all income, not already reported on this schedule, that you (and your spouse, if applicable) earned, received
+        or realized while residing outside Pennsylvania." A part-year resident's sale dated outside the PA residency
+        period (not /form8949Transactions/*/paSoldWhilePaResident) is not on PA-40 line 5, so its column (h) amount goes
+        to line 6. Full-year residents and PA-period sales: $0.</Description>
       <Export downstreamFacts="true" />
-      <Derived><Switch><Case><When><Not><Dependency module="paPit" path="/paPartYearSupported" /></Not></When><Then><Dollar>0</Dollar></Then></Case><Case><When><Dependency path="../paSoldWhilePaResident" /></When><Then><Dollar>0</Dollar></Then></Case><Case><When><True /></When><Then><Dependency path="../gainOrLoss" /></Then></Case></Switch></Derived>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="paPit" path="/paPartYearSupported" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../paSoldWhilePaResident" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="../gainOrLoss" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
 
     <Fact path="/form8949Transactions/*/gainOrLoss">
       <Name>Gain or loss</Name>
-      <Description>Form 8949 column (h): column (d) − column (e) ± column (g)
-        (Form 8949 instr. (2025) p.11, "Column (h)—Gain (or Loss)" Examples 1–3).</Description>
+      <Description>Form 8949 column (h): rounded column (d) − rounded column (e) ± rounded column (g) (Form 8949 instr.
+        (2025) p.11, "Column (h)—Gain (or Loss)" Examples 1–3).</Description>
+      <Derived>
+        <Add>
+          <Subtract>
+            <Minuend>
+              <Dependency path="../roundedProceeds" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="../roundedCostBasis" />
+            </Subtrahends>
+          </Subtract>
+          <Dependency path="../roundedAdjustment" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/roundedProceeds">
+      <Name>Form 8949 column (d) rounded to whole dollars</Name>
+      <Description>Form 8949 column (d) Proceeds (sales price), ../proceeds rounded once to whole dollars (50 cents and
+        up round up). Columns (d), (e) and (g) are rounded per row and column (h) is figured from the rounded amounts,
+        so (d) - (e) + (g) = (h) on every row and on every line 2 total and Schedule D line. Each row is an amount
+        entered on Form 8949; Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole
+        dollars, you must round all amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99
+        cents to the next dollar." Gain or loss is (d) - (e) under IRC 1001(a).</Description>
       <Derived>
         <Round>
-          <Add>
-            <Subtract>
-              <Minuend>
-                <Dependency path="../proceeds" />
-              </Minuend>
-              <Subtrahends>
-                <Dependency path="../costBasis" />
-              </Subtrahends>
-            </Subtract>
-            <Dependency path="../adjustment" />
-          </Add>
+          <Dependency path="../proceeds" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/roundedCostBasis">
+      <Name>Form 8949 column (e) rounded to whole dollars</Name>
+      <Description>Form 8949 column (e) Cost or other basis, ../costBasis rounded once to whole dollars (50 cents and up
+        round up). Columns (d), (e) and (g) are rounded per row and column (h) is figured from the rounded amounts, so
+        (d) - (e) + (g) = (h) on every row and on every line 2 total and Schedule D line. Each row is an amount entered
+        on Form 8949; Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole dollars, you
+        must round all amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99 cents to the
+        next dollar." Gain or loss is (d) - (e) under IRC 1001(a).</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../costBasis" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/roundedAdjustment">
+      <Name>Form 8949 column (g) rounded to whole dollars</Name>
+      <Description>Form 8949 column (g) Amount of adjustment, ../adjustment rounded once to whole dollars (50 cents and
+        up round up). Columns (d), (e) and (g) are rounded per row and column (h) is figured from the rounded amounts,
+        so (d) - (e) + (g) = (h) on every row and on every line 2 total and Schedule D line. Each row is an amount
+        entered on Form 8949; Form 1040 instr. (2025), "Rounding Off to Whole Dollars": "If you do round to whole
+        dollars, you must round all amounts. To round, drop amounts under 50 cents and increase amounts from 50 to 99
+        cents to the next dollar." Gain or loss is (d) - (e) under IRC 1001(a).</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../adjustment" />
         </Round>
       </Derived>
     </Fact>
 
     <Fact path="/form8949Transactions/*/printPartIDescription">
       <Name>Form 8949 Part I print: description</Name>
-      <Description>#19 print-only: ../description when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../description when the row belongs in Part I (short-term), otherwise no value so the
+        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -551,7 +799,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIDateAcquired">
       <Name>Form 8949 Part I print: dateAcquired</Name>
-      <Description>#19 print-only: ../dateAcquired when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../dateAcquired when the row belongs in Part I (short-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -568,7 +817,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIDateSold">
       <Name>Form 8949 Part I print: dateSold</Name>
-      <Description>#19 print-only: ../dateSold when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../dateSold when the row belongs in Part I (short-term), otherwise no value so the
+        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -585,7 +835,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIProceeds">
       <Name>Form 8949 Part I print: proceeds</Name>
-      <Description>#19 print-only: ../proceeds when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedProceeds when the row belongs in Part I (short-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -593,7 +844,7 @@
               <Dependency path="../isShortTerm" />
             </When>
             <Then>
-              <Dependency path="../proceeds" />
+              <Dependency path="../roundedProceeds" />
             </Then>
           </Case>
         </Switch>
@@ -602,7 +853,8 @@
 
     <Fact path="/form8949Transactions/*/printPartICostBasis">
       <Name>Form 8949 Part I print: costBasis</Name>
-      <Description>#19 print-only: ../costBasis when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedCostBasis when the row belongs in Part I (short-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -610,7 +862,7 @@
               <Dependency path="../isShortTerm" />
             </When>
             <Then>
-              <Dependency path="../costBasis" />
+              <Dependency path="../roundedCostBasis" />
             </Then>
           </Case>
         </Switch>
@@ -619,7 +871,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIAdjustmentCode">
       <Name>Form 8949 Part I print: adjustmentCode</Name>
-      <Description>#19 print-only: ../adjustmentCode when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../adjustmentCode when the row belongs in Part I (short-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -636,7 +889,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIAdjustment">
       <Name>Form 8949 Part I print: adjustment</Name>
-      <Description>#19 print-only: ../adjustment when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedAdjustment when the row belongs in Part I (short-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -644,7 +898,7 @@
               <Dependency path="../isShortTerm" />
             </When>
             <Then>
-              <Dependency path="../adjustment" />
+              <Dependency path="../roundedAdjustment" />
             </Then>
           </Case>
         </Switch>
@@ -653,7 +907,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIGainOrLoss">
       <Name>Form 8949 Part I print: gainOrLoss</Name>
-      <Description>#19 print-only: ../gainOrLoss when the row belongs in Part I (short-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../gainOrLoss when the row belongs in Part I (short-term), otherwise no value so the
+        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -670,7 +925,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIDescription">
       <Name>Form 8949 Part II print: description</Name>
-      <Description>#19 print-only: ../description when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../description when the row belongs in Part II (long-term), otherwise no value so the
+        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -687,7 +943,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIDateAcquired">
       <Name>Form 8949 Part II print: dateAcquired</Name>
-      <Description>#19 print-only: ../dateAcquired when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../dateAcquired when the row belongs in Part II (long-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -704,7 +961,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIDateSold">
       <Name>Form 8949 Part II print: dateSold</Name>
-      <Description>#19 print-only: ../dateSold when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../dateSold when the row belongs in Part II (long-term), otherwise no value so the
+        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -721,7 +979,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIProceeds">
       <Name>Form 8949 Part II print: proceeds</Name>
-      <Description>#19 print-only: ../proceeds when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedProceeds when the row belongs in Part II (long-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -729,7 +988,7 @@
               <Dependency path="../isLongTerm" />
             </When>
             <Then>
-              <Dependency path="../proceeds" />
+              <Dependency path="../roundedProceeds" />
             </Then>
           </Case>
         </Switch>
@@ -738,7 +997,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIICostBasis">
       <Name>Form 8949 Part II print: costBasis</Name>
-      <Description>#19 print-only: ../costBasis when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedCostBasis when the row belongs in Part II (long-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -746,7 +1006,7 @@
               <Dependency path="../isLongTerm" />
             </When>
             <Then>
-              <Dependency path="../costBasis" />
+              <Dependency path="../roundedCostBasis" />
             </Then>
           </Case>
         </Switch>
@@ -755,7 +1015,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIAdjustmentCode">
       <Name>Form 8949 Part II print: adjustmentCode</Name>
-      <Description>#19 print-only: ../adjustmentCode when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../adjustmentCode when the row belongs in Part II (long-term), otherwise no value so
+        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -772,7 +1033,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIAdjustment">
       <Name>Form 8949 Part II print: adjustment</Name>
-      <Description>#19 print-only: ../adjustment when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../roundedAdjustment when the row belongs in Part II (long-term), otherwise no value
+        so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -780,7 +1042,7 @@
               <Dependency path="../isLongTerm" />
             </When>
             <Then>
-              <Dependency path="../adjustment" />
+              <Dependency path="../roundedAdjustment" />
             </Then>
           </Case>
         </Switch>
@@ -789,7 +1051,8 @@
 
     <Fact path="/form8949Transactions/*/printPartIIGainOrLoss">
       <Name>Form 8949 Part II print: gainOrLoss</Name>
-      <Description>#19 print-only: ../gainOrLoss when the row belongs in Part II (long-term), otherwise no value so the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>#19 print-only: ../gainOrLoss when the row belongs in Part II (long-term), otherwise no value so the
+        PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -884,7 +1147,8 @@
 
     <Fact path="/form8949Transactions/*/isBoxA">
       <Description>Box A or G — both total to the same Schedule D line (Schedule D 2025 line labels;
-        Form 8949 instr. (2025) pp.3–4: G is the digital-asset/1099-DA counterpart of A).</Description>
+        Form 8949 instr.
+        (2025) pp.3–4: G is the digital-asset/1099-DA counterpart of A).</Description>
       <Derived>
         <Any>
           <Equal>
@@ -908,7 +1172,8 @@
     </Fact>
     <Fact path="/form8949Transactions/*/isBoxB">
       <Description>Box B or H — both total to the same Schedule D line (Schedule D 2025 line labels;
-        Form 8949 instr. (2025) pp.3–4: H is the digital-asset/1099-DA counterpart of B).</Description>
+        Form 8949 instr.
+        (2025) pp.3–4: H is the digital-asset/1099-DA counterpart of B).</Description>
       <Derived>
         <Any>
           <Equal>
@@ -932,7 +1197,8 @@
     </Fact>
     <Fact path="/form8949Transactions/*/isBoxC">
       <Description>Box C or I — both total to the same Schedule D line (Schedule D 2025 line labels;
-        Form 8949 instr. (2025) pp.3–4: I is the digital-asset/1099-DA counterpart of C).</Description>
+        Form 8949 instr.
+        (2025) pp.3–4: I is the digital-asset/1099-DA counterpart of C).</Description>
       <Derived>
         <Any>
           <Equal>
@@ -956,7 +1222,8 @@
     </Fact>
     <Fact path="/form8949Transactions/*/isBoxD">
       <Description>Box D or J — both total to the same Schedule D line (Schedule D 2025 line labels;
-        Form 8949 instr. (2025) pp.3–4: J is the digital-asset/1099-DA counterpart of D).</Description>
+        Form 8949 instr.
+        (2025) pp.3–4: J is the digital-asset/1099-DA counterpart of D).</Description>
       <Derived>
         <Any>
           <Equal>
@@ -980,7 +1247,8 @@
     </Fact>
     <Fact path="/form8949Transactions/*/isBoxE">
       <Description>Box E or K — both total to the same Schedule D line (Schedule D 2025 line labels;
-        Form 8949 instr. (2025) pp.3–4: K is the digital-asset/1099-DA counterpart of E).</Description>
+        Form 8949 instr.
+        (2025) pp.3–4: K is the digital-asset/1099-DA counterpart of E).</Description>
       <Derived>
         <Any>
           <Equal>
@@ -1004,7 +1272,8 @@
     </Fact>
     <Fact path="/form8949Transactions/*/isBoxF">
       <Description>Box F or L — both total to the same Schedule D line (Schedule D 2025 line labels;
-        Form 8949 instr. (2025) pp.3–4: L is the digital-asset/1099-DA counterpart of F).</Description>
+        Form 8949 instr.
+        (2025) pp.3–4: L is the digital-asset/1099-DA counterpart of F).</Description>
       <Derived>
         <Any>
           <Equal>
@@ -1381,7 +1650,8 @@
     <Fact path="/form8949Transactions/*/isShortTermBox">
       <Name>Box is a Part I (short-term) box</Name>
       <Description>Boxes A/B/C/G/H/I are Part I (short-term); D/E/F/J/K/L are Part II (long-term).
-        Form 8949 instr. (2025) pp.3–4.</Description>
+        Form 8949 instr.
+        (2025) pp.3–4.</Description>
       <Derived>
         <Any>
           <Dependency path="../isBoxA" />
@@ -1394,8 +1664,10 @@
     <Fact path="/form8949Transactions/*/hasBoxHoldingPeriodMismatch">
       <Name>Box does not match holding period</Name>
       <Description>IRC §1222: short-term (held 1 year or less) goes in Part I, long-term in Part II.
-        A Part II box with a short-term holding period (or vice versa) would put the gain on the wrong
-        Schedule D line, so it blocks submission.</Description>
+        A Part II box with a
+        short-term holding period (or vice versa) would put the gain on the wrong
+        Schedule D line, so it blocks
+        submission.</Description>
       <Derived>
         <Not>
           <Equal>
@@ -1523,6 +1795,285 @@
             <Dollar>0</Dollar>
           </Right>
         </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <!-- #35 follow-up: Schedule D lines 1b, 2, 3, 8b, 9 and 10, columns (d), (e) and (g). Column (h) is
+      /scheduleDLine1b etc. in scheduleD2.xml. 2026 draft Form 8949 (irs.gov/pub/irs-dft, Created 4/1/26) Part I and
+      Part II line 2: "Totals. Add the amounts in columns (d), (e), (g), and (h) (subtract negative amounts). Enter each
+      total here and include on your Schedule D, line 1b (if Box A or Box G above is checked), line 2 (if Box B or Box H
+      above is checked), or line 3 (if Box C or Box I above is checked)" (Part II: lines 8b, 9 and 10 for D/J, E/K and
+      F/L). Column (h) = (d) - (e) + (g) is gain or loss under IRC 1001(a), and the short-term/long-term split is IRC
+      1222. Each column sums the per-row whole-dollar amounts (/form8949Transactions/*/roundedProceeds etc.), the same
+      rounded amounts column (h) is figured from, so (d) - (e) + (g) = (h) holds on every line; $0 prints blank. -->
+    <Fact path="/scheduleDLine1bTransactions">
+      <Name>Schedule D line 1b transactions (Form 8949 Box A or Box G)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 1b (Box A or G, isBoxA).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxA" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bProceeds">
+      <Name>Schedule D line 1b column (d)</Name>
+      <Description>Schedule D line 1b column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for
+        Box A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bCostBasis">
+      <Name>Schedule D line 1b column (e)</Name>
+      <Description>Schedule D line 1b column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine1bAdjustment">
+      <Name>Schedule D line 1b column (g)</Name>
+      <Description>Schedule D line 1b column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box A and Box G.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine1bTransactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Transactions">
+      <Name>Schedule D line 2 transactions (Form 8949 Box B or Box H)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 2 (Box B or H, isBoxB).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxB" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Proceeds">
+      <Name>Schedule D line 2 column (d)</Name>
+      <Description>Schedule D line 2 column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for Box
+        B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2CostBasis">
+      <Name>Schedule D line 2 column (e)</Name>
+      <Description>Schedule D line 2 column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine2Adjustment">
+      <Name>Schedule D line 2 column (g)</Name>
+      <Description>Schedule D line 2 column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box B and Box H.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine2Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Transactions">
+      <Name>Schedule D line 3 transactions (Form 8949 Box C or Box I)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 3 (Box C or I, isBoxC).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxC" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Proceeds">
+      <Name>Schedule D line 3 column (d)</Name>
+      <Description>Schedule D line 3 column (d) Proceeds (sales price): Form 8949 Part I line 2 column (d) total for Box
+        C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3CostBasis">
+      <Name>Schedule D line 3 column (e)</Name>
+      <Description>Schedule D line 3 column (e) Cost (or other basis): Form 8949 Part I line 2 column (e) total for Box
+        C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine3Adjustment">
+      <Name>Schedule D line 3 column (g)</Name>
+      <Description>Schedule D line 3 column (g) Adjustments to gain or loss: Form 8949 Part I line 2 column (g) total
+        for Box C and Box I.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine3Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bTransactions">
+      <Name>Schedule D line 8b transactions (Form 8949 Box D or Box J)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 8b (Box D or J, isBoxD).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxD" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bProceeds">
+      <Name>Schedule D line 8b column (d)</Name>
+      <Description>Schedule D line 8b column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bCostBasis">
+      <Name>Schedule D line 8b column (e)</Name>
+      <Description>Schedule D line 8b column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for
+        Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine8bAdjustment">
+      <Name>Schedule D line 8b column (g)</Name>
+      <Description>Schedule D line 8b column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box D and Box J.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine8bTransactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Transactions">
+      <Name>Schedule D line 9 transactions (Form 8949 Box E or Box K)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 9 (Box E or K, isBoxE).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxE" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Proceeds">
+      <Name>Schedule D line 9 column (d)</Name>
+      <Description>Schedule D line 9 column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9CostBasis">
+      <Name>Schedule D line 9 column (e)</Name>
+      <Description>Schedule D line 9 column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for Box
+        E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine9Adjustment">
+      <Name>Schedule D line 9 column (g)</Name>
+      <Description>Schedule D line 9 column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box E and Box K.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine9Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Transactions">
+      <Name>Schedule D line 10 transactions (Form 8949 Box F or Box L)</Name>
+      <Description>Form 8949 rows whose box totals to Schedule D line 10 (Box F or L, isBoxF).</Description>
+      <Derived>
+        <Filter path="/form8949Transactions">
+          <Dependency path="isBoxF" />
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Proceeds">
+      <Name>Schedule D line 10 column (d)</Name>
+      <Description>Schedule D line 10 column (d) Proceeds (sales price): Form 8949 Part II line 2 column (d) total for
+        Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/roundedProceeds" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10CostBasis">
+      <Name>Schedule D line 10 column (e)</Name>
+      <Description>Schedule D line 10 column (e) Cost (or other basis): Form 8949 Part II line 2 column (e) total for
+        Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/roundedCostBasis" />
+          </CollectionSum>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/scheduleDLine10Adjustment">
+      <Name>Schedule D line 10 column (g)</Name>
+      <Description>Schedule D line 10 column (g) Adjustments to gain or loss: Form 8949 Part II line 2 column (g) total
+        for Box F and Box L.</Description>
+      <Derived>
+        <Round>
+          <CollectionSum>
+            <Dependency path="/scheduleDLine10Transactions/*/roundedAdjustment" />
+          </CollectionSum>
+        </Round>
       </Derived>
     </Fact>
 

@@ -102,7 +102,10 @@
 
     <Fact path="/maxIndividualEducatorExpensesLimit">
       <Name>Maximum Deduction for educator expenses</Name>
-      <Description>The maximum deduction an individual can take for educator expense. #91: TY2026 $350. Rev. Proc. 2025-32 sec. 4.12, p. 17 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "For taxable years beginning in 2026, under sec. 62(a)(2)(D), the amount of the deduction allowed under sec. 162 that consists of expenses paid or incurred by an eligible educator ... is $350."</Description>
+      <Description>The maximum deduction an individual can take for educator expense. #91: TY2026 $350. Rev. Proc.
+        2025-32 sec. 4.12, p. 17 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "For taxable years beginning in 2026,
+        under sec. 62(a)(2)(D), the amount of the deduction allowed under sec. 162 that consists of expenses paid or
+        incurred by an eligible educator ... is $350."</Description>
       <TaxYear>2026</TaxYear>
 
       <Derived>
