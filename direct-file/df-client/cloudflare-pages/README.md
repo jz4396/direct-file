@@ -53,14 +53,17 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
   first): headless Chrome against the staged site, served on 127.0.0.1 with its own `_headers` and `_redirects`.
   It types unique marker values into the interview (name, date of birth, address, phone) and imports a golden
   end-to-end scenario (synthetic data) save file with a marker TIN and wage amount. It asserts that every request
-  from the page and its workers is a same-origin static asset `GET` with no body and no marker (plain, URL-encoded
-  or base64); that nothing goes to the `.invalid` API origin or any other origin; that a deliberate `fetch`,
-  `XMLHttpRequest`, `sendBeacon`, `WebSocket`, `EventSource`, cross-origin image and form post are all refused;
-  that the CSP response header has `connect-src`, `form-action` and `frame-ancestors` `'none'`; and that
-  `localStorage`, `sessionStorage`, IndexedDB, Cache Storage, cookies and service workers are empty after the
-  session and after a reload. Only "Save on this device" writes, one AES-GCM envelope with no marker in it, and
-  "Clear all data on this device" removes it. It uses the installed Google Chrome (or `CHROME_PATH`) through
-  `playwright-core`, downloads no browser and makes no request off 127.0.0.1.
+  from the page and its workers is a same-origin `GET` with no body, for a staged file unless it is a page load,
+  and with no marker in it (plain, JSON-escaped, URL-encoded, UTF-16, base64 or base64url, and the TIN even split
+  into its parts); that nothing goes to the `.invalid` API origin or any other origin and no WebSocket opens; that
+  a deliberate `fetch`, `XMLHttpRequest`, `sendBeacon`, `WebSocket`, `EventSource`, cross-origin image and form
+  post are all refused; that the CSP response header has `connect-src`, `form-action` and `frame-ancestors`
+  `'none'`; and that `localStorage`, `sessionStorage`, IndexedDB, Cache Storage, the origin private file system,
+  cookies and service workers are empty after switching to Español, after the session and after a reload. Only
+  "Save on this device" writes: one envelope with exactly the expected fields (PBKDF2-SHA-256 at the configured
+  iterations, 16-byte salt, 12-byte IV, base64 AES-GCM ciphertext that opens with the passphrase only) and no
+  marker, and "Clear all data on this device" removes it. It uses the installed Google Chrome (or `CHROME_PATH`)
+  through `playwright-core`, downloads no browser and makes no request off 127.0.0.1.
 - `src/staticClient/staticBranding.test.tsx`: in static mode the layout shows the notice (English and Spanish), with
   no close control, no government banner, no IRS logo and no agency footer. The regular build still shows them.
 - `src/staticClient/pagesConfig.test.ts`: the `_headers` CSP matches the CSP builder; `X-Robots-Tag`, `robots.txt`,

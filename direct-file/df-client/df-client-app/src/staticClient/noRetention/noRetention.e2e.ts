@@ -8,7 +8,13 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { scenarioFactGraphJson } from '../../saveState/saveStateTestUtils.js';
 import { createSaveState } from '../../saveState/saveStateSchema.js';
 import { DEVICE_SAVE_KEY } from '../../saveState/deviceSaveStore.js';
-import { isEncryptedEnvelope } from '../../saveState/saveStateCrypto.js';
+import {
+  decryptText,
+  ENCRYPTED_FORMAT,
+  ENCRYPTED_VERSION,
+  PBKDF2_ITERATIONS,
+  type EncryptedEnvelope,
+} from '../../saveState/saveStateCrypto.js';
 import { startStagedSiteServer, type StagedSiteServer } from './stagedSiteServer.js';
 
 /**
@@ -20,18 +26,23 @@ import { startStagedSiteServer, type StagedSiteServer } from './stagedSiteServer
  * (synthetic data) save file carrying a TIN and a wage amount. Every value typed or imported is a unique marker.
  *
  * Asserted for the whole session, across every page, worker and service worker in the browser context:
- * - every request is a same-origin GET for a static asset with no body; a query string appears only on a reload of
- *   an interview URL, and then holds only the app's own collection-item ids (random UUIDs);
+ * - every request is a same-origin GET with no body; every one but a page load is for a file of the staged site; a
+ *   query string appears only on a reload of an interview URL, and then holds only the app's own collection-item ids
+ *   (random UUIDs);
  * - no request to the `.invalid` API origin or any other origin; nothing reaches a second local "collector" server,
  *   even when the page deliberately tries fetch, XMLHttpRequest, sendBeacon, WebSocket, EventSource, a
- *   cross-origin image and a form post to it;
- * - no request URL, header or body contains a marker, in plain text, URL-encoded or base64;
+ *   cross-origin image and a form post to it; no WebSocket is opened to any host;
+ * - no request URL, header or body contains a marker: plain, JSON-escaped, URL-encoded, UTF-16, base64 or
+ *   base64url, and the TIN even when split into its parts (the search itself is tested first);
  * - the CSP is sent as a response header with connect-src, form-action and frame-ancestors 'none' and no unsafe-*
  *   script source;
- * - after the session and again after a reload, localStorage, sessionStorage, IndexedDB, Cache Storage, cookies and
- *   service-worker registrations are empty and the return is gone;
- * - only an explicit "Save on this device" writes, and what it writes is one AES-GCM envelope with no marker and
- *   no passphrase in it; "Clear all data on this device" removes it, and nothing comes back after a reload.
+ * - after switching to Español, after the session and again after a reload, localStorage, sessionStorage,
+ *   IndexedDB, Cache Storage, the origin private file system, cookies and service-worker registrations are empty,
+ *   and after the reload the return is gone;
+ * - only an explicit "Save on this device" writes, and what it writes is one envelope with exactly the expected
+ *   fields: PBKDF2-SHA-256 at the configured iterations, a 16-byte salt, a 12-byte IV and a base64 AES-GCM
+ *   ciphertext that opens with the passphrase only; no marker or passphrase is in it; "Clear all data on this
+ *   device" removes it, and nothing comes back after a reload.
  *
  * Chrome comes from CHROME_PATH, or else Playwright's `chrome` channel (the installed Google Chrome). No browser is
  * downloaded, and nothing outside 127.0.0.1 is contacted: requests to any other host are aborted and fail the test.
@@ -80,32 +91,137 @@ const MARKERS = [
   `73,519.47`,
 ];
 const PASSPHRASE = `lantern orchard granite 42`;
+/** Standard base64 (what `btoa` writes), padded. */
+const BASE64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+const base64Bytes = (value: unknown) => {
+  expect(typeof value).toBe(`string`);
+  expect(value).toMatch(BASE64);
+  return Buffer.from(value as string, `base64`);
+};
+/** AES-GCM appends a 16-byte tag, so the ciphertext is at least that long. */
+const GCM_TAG_BYTES = 16;
+
+/**
+ * The stored value is ciphertext and its public parameters only: exactly the envelope fields, PBKDF2-SHA-256 at the
+ * configured iterations, a 16-byte salt and a 12-byte IV, and a base64 AES-GCM ciphertext. No other field can hold a
+ * string longer than the salt, so nothing readable sits next to the ciphertext. It must also open with the
+ * passphrase (and only with it), so it really is the encrypted return.
+ */
+async function assertEncryptedEnvelope(value: string, expectedMarkers: string[]) {
+  const envelope = JSON.parse(value) as EncryptedEnvelope;
+  expect(Object.keys(envelope).sort()).toEqual([`cipher`, `ciphertext`, `format`, `kdf`, `version`]);
+  expect(envelope.format).toBe(ENCRYPTED_FORMAT);
+  expect(envelope.version).toBe(ENCRYPTED_VERSION);
+  expect(Object.keys(envelope.kdf).sort()).toEqual([`hash`, `iterations`, `name`, `salt`]);
+  expect(envelope.kdf).toMatchObject({ name: `PBKDF2`, hash: `SHA-256`, iterations: PBKDF2_ITERATIONS });
+  expect(Object.keys(envelope.cipher).sort()).toEqual([`iv`, `name`]);
+  expect(envelope.cipher.name).toBe(`AES-GCM`);
+  expect(base64Bytes(envelope.kdf.salt).length).toBe(16);
+  expect(base64Bytes(envelope.cipher.iv).length).toBe(12);
+  expect(base64Bytes(envelope.ciphertext).length).toBeGreaterThan(GCM_TAG_BYTES);
+  const strings: string[] = [];
+  JSON.stringify({ ...envelope, ciphertext: null }, (_k, v) => (typeof v === `string` && strings.push(v), v));
+  expect(strings.filter((v) => v.length > envelope.kdf.salt.length)).toEqual([]);
+
+  const plaintext = await decryptText(envelope, PASSPHRASE);
+  expect(findMarkers(plaintext)).toEqual(expect.arrayContaining(expectedMarkers));
+  await expect(decryptText(envelope, `${PASSPHRASE} wrong`)).rejects.toThrow();
+}
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** A marker as it could appear in a request: plain, lowercased, URL-encoded, or inside base64 (any alignment). */
+/**
+ * The TIN as its three parts in any order, with only non-digits between them (dashes, spaces, JSON keys and quotes,
+ * escapes, NULs of UTF-16), so a TIN split up or stored as separate fields is still found.
+ */
+const TIN_PARTS = (() => {
+  const { area, group, serial } = FILE.tin;
+  const orders = [
+    [area, group, serial],
+    [area, serial, group],
+    [group, area, serial],
+    [group, serial, area],
+    [serial, area, group],
+    [serial, group, area],
+  ];
+  return new RegExp(orders.map((o) => `(?<!\\d)${o.join(`\\D{0,40}`)}(?!\\d)`).join(`|`));
+})();
+const TIN_SPLIT = `TIN ${FILE.tin.area}-${FILE.tin.group}-${FILE.tin.serial} in parts`;
+
+const latin1 = (b: Buffer) => b.toString(`latin1`);
+const swapBytes = (b: Buffer) => {
+  const out = Buffer.from(b);
+  out.swap16();
+  return out;
+};
+
+/**
+ * A marker as it could appear in a request: as text (plain, lowercased, JSON-escaped once or twice), each in UTF-8,
+ * UTF-16LE and UTF-16BE bytes, and each of those raw, URL-encoded, or inside base64/base64url at any alignment (raw
+ * and URL-encoded).
+ */
 function encodings(marker: string): string[] {
-  const forms = new Set([
-    marker,
-    marker.toLowerCase(),
-    encodeURIComponent(marker),
-    encodeURIComponent(marker).replace(/%20/g, `+`),
-  ]);
-  for (const pad of [``, `a`, `aa`]) {
-    const b64 = Buffer.from(pad + marker).toString(`base64`);
-    // Drop the characters that depend on the bytes around the marker.
-    const start = pad.length === 0 ? 0 : pad.length === 1 ? 3 : 4;
-    const core = b64.slice(start, b64.length - 4);
-    if (core.length >= 8) {
-      forms.add(core);
-      forms.add(core.replace(/\+/g, `-`).replace(/\//g, `_`));
+  const texts = new Set([marker, marker.toLowerCase()]);
+  for (const text of [...texts]) {
+    const once = JSON.stringify(text).slice(1, -1);
+    texts.add(once);
+    texts.add(JSON.stringify(once).slice(1, -1));
+  }
+  const forms = new Set<string>();
+  for (const text of texts) {
+    const utf16le = Buffer.from(text, `utf16le`);
+    for (const bytes of [Buffer.from(text, `utf8`), utf16le, swapBytes(utf16le)]) {
+      const raw = latin1(bytes);
+      forms.add(raw);
+      forms.add(encodeURIComponent(raw));
+      forms.add(encodeURIComponent(raw).replace(/%20/g, `+`));
+      for (const pad of [0, 1, 2]) {
+        const b64 = Buffer.concat([Buffer.alloc(pad, 0x61), bytes]).toString(`base64`);
+        // Drop the characters that depend on the bytes around the marker.
+        const core = b64.slice(pad === 0 ? 0 : pad + 2, b64.length - 4);
+        if (core.length >= 8) {
+          for (const c of [core, core.replace(/\+/g, `-`).replace(/\//g, `_`)]) {
+            forms.add(c);
+            forms.add(encodeURIComponent(c));
+          }
+        }
+      }
     }
   }
   return [...forms];
 }
 const MARKER_FORMS = MARKERS.flatMap((m) => encodings(m).map((form) => ({ marker: m, form })));
-const findMarkers = (text: string) => [
-  ...new Set(MARKER_FORMS.filter(({ form }) => text.includes(form)).map((f) => f.marker)),
-];
+
+/** Every way to read `text`: as is, URL-decoded, without NULs (UTF-16), and each base64-looking run decoded. */
+function views(text: string): string[] {
+  const out = new Set([text]);
+  const add = (v: string) => {
+    out.add(v);
+    out.add(v.replace(/\0/g, ``));
+  };
+  add(text);
+  try {
+    add(decodeURIComponent(text.replace(/\+/g, ` `)));
+  } catch {
+    // Not URL-encoded text.
+  }
+  for (const v of [...out]) {
+    for (const run of v.match(/[A-Za-z0-9+/_-]{12,}/g) ?? []) {
+      const std = run.replace(/-/g, `+`).replace(/_/g, `/`);
+      for (let shift = 0; shift < 4; shift++) {
+        add(latin1(Buffer.from(std.slice(shift), `base64`)));
+      }
+    }
+  }
+  return [...out];
+}
+
+const findMarkers = (text: string) => {
+  const all = views(text);
+  const found = new Set(MARKER_FORMS.filter(({ form }) => all.some((v) => v.includes(form))).map((f) => f.marker));
+  if (all.some((v) => TIN_PARTS.test(v))) found.add(TIN_SPLIT);
+  return [...found];
+};
 
 /** The scenario's facts with the markers written into the primary filer and the W-2. */
 function markerSaveFile(): string {
@@ -195,6 +311,13 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
       aborted.push(`${route.request().method()} ${url}`);
       return route.abort(`blockedbyclient`);
     });
+    // `route` does not see WebSockets: fail those closed separately, whatever the host.
+    const webSockets: string[] = [];
+    await context.routeWebSocket(/.*/, (ws) => {
+      webSockets.push(`routed ${ws.url()}`);
+      return ws.close();
+    });
+    context.on(`page`, (p) => p.on(`websocket`, (ws) => webSockets.push(`opened ${ws.url()}`)));
     const page = await context.newPage();
     page.setDefaultTimeout(20_000);
     const recorded = () =>
@@ -210,7 +333,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
           })
         )
       );
-    return { context, page, recorded, aborted };
+    return { context, page, recorded, aborted, webSockets };
   }
 
   const snapshotStorage = async (context: BrowserContext, page: Page) => {
@@ -223,6 +346,15 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
         cacheStorage: await caches.keys(),
         serviceWorkers: (await navigator.serviceWorker.getRegistrations()).map((r) => r.scope),
         documentCookie: document.cookie,
+        // Origin private file system.
+        opfs: await (async () => {
+          const names: string[] = [];
+          const root = (await navigator.storage.getDirectory()) as FileSystemDirectoryHandle & {
+            keys(): AsyncIterable<string>;
+          };
+          for await (const name of root.keys()) names.push(name);
+          return names;
+        })(),
       };
     });
     const cookies = (await context.cookies()).map((c) => `${c.name}=${c.value}`);
@@ -236,6 +368,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     cacheStorage: [],
     serviceWorkers: [],
     documentCookie: ``,
+    opfs: [],
     cookies: [],
     contextServiceWorkers: [],
   };
@@ -244,7 +377,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
    * `deliberate` are the exfiltration attempts made on purpose; each must have been refused by the browser itself
    * (CSP), so it never reached the network. Every other request must be a plain same-origin asset GET.
    */
-  async function assertNetwork(recorded: () => Promise<Recorded[]>, aborted: string[]) {
+  async function assertNetwork(recorded: () => Promise<Recorded[]>, aborted: string[], webSockets: string[]) {
     const all = await recorded();
     expect(all.length).toBeGreaterThan(0);
     // blob: URLs are the in-page save file downloads; they never leave the browser.
@@ -254,6 +387,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(deliberate.filter((r) => !/csp/i.test(r.failure ?? ``)).map((r) => [r.url, r.failure])).toEqual([]);
     const sent = network.filter((r) => !deliberate.includes(r));
     expect(aborted).toEqual([]);
+    expect(webSockets).toEqual([]);
     expect(sent.filter((r) => !r.url.startsWith(`${site.origin}/`)).map((r) => r.url)).toEqual([]);
     expect(sent.filter((r) => r.url.includes(`.invalid`)).map((r) => r.url)).toEqual([]);
     expect(sent.filter((r) => r.method !== `GET`).map((r) => `${r.method} ${r.url}`)).toEqual([]);
@@ -264,6 +398,13 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
       return r.resourceType !== `document` || [...searchParams.values()].some((v) => !UUID.test(v));
     });
     expect(badQuery.map((r) => r.url)).toEqual([]);
+    // Anything but a page load must be a file of the staged site (no made-up path can carry data).
+    const notStaged = sent.filter((r) => {
+      if (r.resourceType === `document`) return false;
+      const file = path.join(SITE_DIR, decodeURIComponent(new URL(r.url).pathname));
+      return !file.startsWith(`${SITE_DIR}${path.sep}`) || !fs.statSync(file, { throwIfNoEntry: false })?.isFile();
+    });
+    expect(notStaged.map((r) => `${r.resourceType} ${r.url}`)).toEqual([]);
     const leaks = sent.flatMap((r) =>
       findMarkers(`${r.url}\n${r.headers}\n${r.body ?? ``}`).map((m) => `${m} in ${r.url}`)
     );
@@ -318,8 +459,45 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     await statusShows(page, t.import.done);
   };
 
+  it(`the marker search finds every encoding it claims to`, () => {
+    const b64 = (b: Buffer) => b.toString(`base64`);
+    const utf16le = (text: string) => Buffer.from(text, `utf16le`);
+    const utf16be = (text: string) => swapBytes(utf16le(text));
+    const fragment = { area: FILE.tin.area, group: FILE.tin.group, serial: FILE.tin.serial };
+    const cases: [string, string][] = [
+      [`x-a: Zephyrcanary`, UI.lastName],
+      [`/assets/zephyrcanary.js`, UI.lastName],
+      [`?q=${encodeURIComponent(UI.street)}`, `Vantablue`],
+      [`?q=${encodeURIComponent(JSON.stringify(JSON.stringify({ fragment })))}`, TIN_JSON],
+      [JSON.stringify(JSON.stringify(JSON.stringify(fragment))), TIN_JSON],
+      [`{"v":"${JSON.stringify(`"${PHONE_JSON}"`).slice(1, -1)}"}`, PHONE_JSON],
+      [latin1(utf16le(`id ${FILE.lastName}`)), FILE.lastName],
+      [latin1(utf16be(FILE.firstName)), FILE.firstName],
+      [encodeURIComponent(latin1(utf16le(FILE.wages))), FILE.wages],
+      [`x=${b64(utf16le(`..${FILE.lastName}`))}`, FILE.lastName],
+      [`x=${b64(utf16be(`.${PHONE_JSON}`))}`, PHONE_JSON],
+      [
+        `/p/${b64(Buffer.from(`ab${UI.firstName}`))
+          .replace(/\+/g, `-`)
+          .replace(/\//g, `_`)}`,
+        UI.firstName,
+      ],
+      [`x=${encodeURIComponent(b64(Buffer.from(`?>${FILE.wages}`)))}`, FILE.wages],
+      [`tin 900 70 0001`, TIN_SPLIT],
+      [`{"serial":"0001","note":"x","area":"900","group":"70"}`, TIN_SPLIT],
+      [latin1(utf16le(`900/70/0001`)), TIN_SPLIT],
+      [`h=${b64(Buffer.from(`group=70&area=900&serial=0001`))}`, TIN_SPLIT],
+    ];
+    for (const [text, marker] of cases)
+      expect([text, findMarkers(text)]).toEqual([text, expect.arrayContaining([marker])]);
+    // No false alarms on what the site normally sends.
+    expect(
+      findMarkers(`GET /df/file/assets/index-9a0f7c1d.js {"accept":"*/*","sec-ch-ua":"Chromium";v="141"}`)
+    ).toEqual([]);
+  });
+
   it(`keeps nothing after the session or a reload, and sends nothing`, async () => {
-    const { context, page, recorded, aborted } = await newSession();
+    const { context, page, recorded, aborted, webSockets } = await newSession();
     const home = await page.goto(`${site.origin}/df/file/home`);
 
     // The CSP is enforced from the response header, not only the <meta> tag.
@@ -427,6 +605,13 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
       form: `refused`,
     });
 
+    // Switching to Español (and back) changes the page language but stores nothing.
+    await page.getByRole(`button`, { name: /Español/ }).click();
+    await page.waitForFunction(() => document.documentElement.lang === `es-US`);
+    expect(await snapshotStorage(context, page)).toEqual(EMPTY);
+    await page.getByRole(`button`, { name: /English/ }).click();
+    await page.waitForFunction(() => document.documentElement.lang === `en`);
+
     // Nothing is kept on the device during the session...
     expect(await snapshotStorage(context, page)).toEqual(EMPTY);
     // ...or after a reload, and the return is gone.
@@ -437,12 +622,12 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(findMarkers(await page.content())).toEqual([]);
     expect(await snapshotStorage(context, page)).toEqual(EMPTY);
 
-    await assertNetwork(recorded, aborted);
+    await assertNetwork(recorded, aborted, webSockets);
     await context.close();
   }, 180_000);
 
   it(`writes only an encrypted copy on an explicit save, and "Clear all data" removes it`, async () => {
-    const { context, page, recorded, aborted } = await newSession();
+    const { context, page, recorded, aborted, webSockets } = await newSession();
     await page.goto(`${site.origin}/df/file/home`);
     await startReturn(page);
     await openDeviceData(page);
@@ -457,7 +642,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
       expect({ ...stored, localStorage: [] }).toEqual(EMPTY);
       expect(stored.localStorage.map(([k]) => k)).toEqual([DEVICE_SAVE_KEY]);
       const value = stored.localStorage[0][1];
-      expect(isEncryptedEnvelope(JSON.parse(value))).toBe(true);
+      await assertEncryptedEnvelope(value, [FILE.firstName, FILE.lastName, TIN_JSON, FILE.wages]);
       expect(findMarkers(value)).toEqual([]);
       expect(value).not.toContain(PASSPHRASE);
       expect(findMarkers(JSON.stringify(stored))).toEqual([]);
@@ -484,7 +669,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     await page.goto(`${site.origin}/df/file/home`);
     expect(await snapshotStorage(context, page)).toEqual(EMPTY);
 
-    await assertNetwork(recorded, aborted);
+    await assertNetwork(recorded, aborted, webSockets);
     await context.close();
   }, 180_000);
 });
