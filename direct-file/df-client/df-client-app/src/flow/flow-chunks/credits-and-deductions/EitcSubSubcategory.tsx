@@ -9,6 +9,7 @@ import {
   Heading,
   HelpLink,
   IconDisplay,
+  KnockoutButton,
   IpPin,
   SaveAndOrContinueButton,
   SaveAndOrContinueAndSetFactButton,
@@ -410,6 +411,16 @@ export const EitcSubSubcategory = (
           i18nKey='dataviews./flow/credits-and-deductions/credits.assertions.eitcQualifiedNoChildren'
           conditions={[`/hasZeroEitcQualifyingChildren`, `/eitcQualified`]}
         />
+        <Screen
+          route='schedule-eic-without-ty2026-template-knockout'
+          condition='/flowKnockoutScheduleEicWithoutTy2026Template'
+          isKnockout={true}
+        >
+          <IconDisplay name='ErrorOutline' size={9} isCentered />
+          <Heading i18nKey='/heading/knockout/schedule-eic-without-ty2026-template' />
+          <DFAlert i18nKey='/info/knockout/schedule-eic-without-ty2026-template' headingLevel='h2' type='warning' />
+          <KnockoutButton i18nKey='button.knockout' />
+        </Screen>
         <Screen route='eitc-qualified'>
           <ContextHeading displayOnlyOn='edit' i18nKey='/heading/credits-and-deductions/credits/eitc' />
           <Heading i18nKey='/heading/credits-and-deductions/credits/eitc-qualified' />

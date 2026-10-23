@@ -1,0 +1,15 @@
+# Schedule EIC without a TY2026 template (#208). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/knockout/schedule-eic-without-ty2026-template:
+    This tool can’t yet prepare or print a return that claims the Earned Income Tax Credit with a qualifying child
+info:
+  /info/knockout/schedule-eic-without-ty2026-template:
+    alertText:
+      body:
+        - p:
+            To claim the Earned Income Tax Credit with a qualifying child, your return must include Schedule EIC with
+            each qualifying child’s name, Social Security number and year of birth. This tool can’t produce the 2026
+            Schedule EIC yet.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
