@@ -43,6 +43,15 @@ type FormFieldElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaEleme
 const isFieldInError = (field: FormFieldElement) =>
   field.getAttribute(`aria-invalid`) === `true` || (field.willValidate && !field.validity.valid);
 
+export type FocusOnErrorOptions = {
+  /**
+   * Scroll the window to the top after moving focus instead of scrolling the focused element into
+   * view. Used on screens with a single field, where scrolling the field into view would cut off its
+   * label and the question above it.
+   */
+  scrollToTop?: boolean;
+};
+
 /**
  * Find and focus the error summary box or, when a screen has no summary, the first field in error.
  *
@@ -53,17 +62,21 @@ const isFieldInError = (field: FormFieldElement) =>
  * it (WCAG 2.1 SC 3.3.1). A field counts as in error when it fails its own fact validation
  * (`aria-invalid`), not only when it fails the browser's constraint validation; otherwise a
  * single amount with a format error (for example too many cents digits) never receives focus.
+ *
+ * Scrolling happens in the same deferred step, after focus, so the requested scroll position is the
+ * final one.
  */
-export const focusOnErrorOrSummary = () => {
+export const focusOnErrorOrSummary = ({ scrollToTop = false }: FocusOnErrorOptions = {}) => {
   window.setTimeout(() => {
     const summary = document.getElementById(ERROR_SUMMARY_ID);
-    if (summary) {
-      scrollToRef(summary);
-      return;
+    const fields = summary ? [] : Array.from(document.querySelectorAll<FormFieldElement>(`input,select,textarea`));
+    const target = summary ?? fields.find(isFieldInError);
+    if (scrollToTop) {
+      target?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0 });
+    } else if (target) {
+      scrollToRef(target);
     }
-    const fields = Array.from(document.querySelectorAll<FormFieldElement>(`input,select,textarea`));
-    const firstFieldInError = fields.find(isFieldInError);
-    if (firstFieldInError) scrollToRef(firstFieldInError);
   }, 0);
 };
 

@@ -72,7 +72,7 @@ export type ScreenButtonProps = ScreenButtonDeclaration & {
   screenHasFacts: boolean;
   factValidity: Map<ConcretePath, boolean>;
   setShowFeedback: Dispatch<SetStateAction<boolean>>;
-  focusOnErrorOrSummary: () => void;
+  focusOnErrorOrSummary: (options?: { scrollToTop?: boolean }) => void;
   taxId?: string;
 };
 

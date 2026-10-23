@@ -62,6 +62,35 @@ function recordFocusAnnouncements() {
   return { snapshots, stop: () => document.removeEventListener(`focusin`, listener) };
 }
 
+type ScrollEvent = { kind: `focus` | `scrollTo` | `scrollIntoView`; target?: Element; top?: number };
+
+/** Record focus moves and scroll calls in the order they happen. */
+function recordFocusAndScroll() {
+  const events: ScrollEvent[] = [];
+  const onFocus = (event: FocusEvent) => events.push({ kind: `focus`, target: event.target as Element });
+  document.addEventListener(`focusin`, onFocus);
+  const scrollTo = vi.spyOn(window, `scrollTo`).mockImplementation(((options?: ScrollToOptions) => {
+    events.push({ kind: `scrollTo`, top: options?.top });
+  }) as typeof window.scrollTo);
+  const scrollIntoView = vi.spyOn(Element.prototype, `scrollIntoView`).mockImplementation(function (this: Element) {
+    events.push({ kind: `scrollIntoView`, target: this });
+  });
+  return {
+    events,
+    stop: () => {
+      document.removeEventListener(`focusin`, onFocus);
+      scrollTo.mockRestore();
+      scrollIntoView.mockRestore();
+    },
+  };
+}
+
+async function flushDeferredFocus() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+}
+
 async function pressSave() {
   await act(async () => {
     fireEvent.click(screen.getByRole(`button`, { name: /save|continue/i }));
@@ -132,5 +161,52 @@ describe(`Income screens: focus and error identification after Save`, () => {
     await pressSave();
     const summary = await screen.findByRole(`alert`);
     await waitFor(() => expect(summary).toHaveFocus());
+  });
+
+  /*
+   * On a screen with a single field, scrolling the focused field into view cuts off its label and the
+   * question above it, so the window is scrolled to the top. That scroll must come after focus moves
+   * (and after any scroll focus causes), or the label ends up off screen.
+   */
+  it.each([
+    [`1099-INT box 1 amount`, `1099-int-add-box-1`, () => screen.getByRole(`textbox`, { name: /Box 1/ }), `12.345`],
+    [`1099-INT nominee yes/no`, `1099-int-nominee`, () => screen.getByRole(`radio`, { name: /yes/i }), null],
+  ])(
+    `on a single-field screen, focuses the field first and scrolls to the top last (%s)`,
+    async (_name, route, getField, value) => {
+      await renderIncomeScreen(route);
+      const field = getField();
+      if (value !== null) fireEvent.change(field, { target: { value } });
+
+      const recorder = recordFocusAndScroll();
+      await pressSave();
+      await waitFor(() => expect(field).toHaveFocus());
+      await flushDeferredFocus();
+      recorder.stop();
+
+      const { events } = recorder;
+      const focusIndex = events.findIndex((e) => e.kind === `focus` && e.target === field);
+      expect(focusIndex).toBeGreaterThanOrEqual(0);
+      const afterFocus = events.slice(focusIndex + 1);
+      expect(afterFocus.filter((e) => e.kind === `scrollIntoView`)).toEqual([]);
+      expect(events.at(-1)).toEqual({ kind: `scrollTo`, top: 0 });
+      expect(field).toHaveFocus();
+    }
+  );
+
+  it(`on a screen with several fields, scrolls the error summary into view, not to the top`, async () => {
+    await renderIncomeScreen(`w2-add-boxes-1-8`);
+    const [firstAmount] = screen.getAllByRole(`textbox`);
+    fireEvent.change(firstAmount, { target: { value: `1.2.3` } });
+
+    const recorder = recordFocusAndScroll();
+    await pressSave();
+    const summary = await screen.findByRole(`alert`);
+    await waitFor(() => expect(summary).toHaveFocus());
+    await flushDeferredFocus();
+    recorder.stop();
+
+    expect(recorder.events.some((e) => e.kind === `scrollIntoView` && e.target === summary)).toBe(true);
+    expect(recorder.events.some((e) => e.kind === `scrollTo`)).toBe(false);
   });
 });

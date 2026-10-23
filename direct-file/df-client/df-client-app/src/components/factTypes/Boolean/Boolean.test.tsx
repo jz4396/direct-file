@@ -156,6 +156,72 @@ for (const inputType of [`radio`, `checkbox`]) {
       });
     }
 
+    describe(`error identification (WCAG 2.1 SC 3.3.1, 4.1.2)`, () => {
+      const describedText = (element: Element) =>
+        (element.getAttribute(`aria-describedby`) ?? ``)
+          .split(/\s+/)
+          .filter((id) => id.length > 0)
+          .map((id) => document.getElementById(id)?.textContent ?? ``)
+          .join(` `);
+
+      it(`marks each ${inputType} invalid and describes it with the error message when in error`, () => {
+        const { getAllByRole } = renderControl({ showFeedback: true, isValid: false });
+        for (const option of getAllByRole(inputType)) {
+          expect(option).toHaveAttribute(`aria-invalid`, `true`);
+          expect(describedText(option)).toContain(`enums.messages.requiredField`);
+        }
+      });
+
+      it(`does not mark the ${inputType} invalid before feedback is shown`, () => {
+        const { getAllByRole } = renderControl({ showFeedback: false, isValid: false });
+        for (const option of getAllByRole(inputType)) {
+          expect(option).not.toHaveAttribute(`aria-invalid`);
+          expect(option).not.toHaveAttribute(`aria-describedby`);
+        }
+      });
+
+      it(`uses a distinct error message id for each item in a repeated collection`, () => {
+        const itemPaths = [
+          `/familyAndHousehold/#11111111-1111-4111-8111-111111111111/livedApartAllYear`,
+          `/familyAndHousehold/#22222222-2222-4222-8222-222222222222/livedApartAllYear`,
+        ] as ConcretePath[];
+        const { container } = render(
+          <Provider store={setupStore()}>
+            <FactGraphContextProvider>
+              {itemPaths.map((concretePath) => (
+                <Boolean
+                  key={concretePath}
+                  collectionId={null}
+                  {...sharedProps}
+                  concretePath={concretePath}
+                  showFeedback
+                  isValid={false}
+                  inputType={inputType as `radio` | `checkbox`}
+                />
+              ))}
+            </FactGraphContextProvider>
+          </Provider>
+        );
+
+        const ids = Array.from(container.querySelectorAll(`[id]`)).map((element) => element.id);
+        expect(new Set(ids).size).toBe(ids.length);
+
+        const errorIdsByItem = itemPaths.map((concretePath) => {
+          const options = Array.from(container.querySelectorAll(`input`)).filter((input) =>
+            input.id.includes(concretePath)
+          );
+          expect(options.length).toBeGreaterThan(0);
+          const errorIds = new Set(options.map((option) => option.getAttribute(`aria-describedby`)));
+          expect(errorIds.size).toBe(1);
+          const [errorId] = Array.from(errorIds);
+          expect(errorId).toBeTruthy();
+          expect(document.getElementById(errorId as string)).toHaveTextContent(`enums.messages.requiredField`);
+          return errorId;
+        });
+        expect(errorIdsByItem[0]).not.toBe(errorIdsByItem[1]);
+      });
+    });
+
     afterEach(() => {
       vi.restoreAllMocks();
     });
