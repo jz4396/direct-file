@@ -4414,40 +4414,40 @@ info:
   /info/income/income-sources-not-supported:
     body:
       - p: Here are some items not yet supported in Direct File.
-      - h3: Foreign
+      - h2: Foreign
       - ul:
           - li: Foreign and U.S. territorial sources
           - li: Foreign and U.S. territorial financial accounts, financial assets, or trusts
           - li: Gifts of more than $100,000 from foreign estates or nonresidents
-      - h3: Investment
+      - h2: Investment
       - ul:
           - li: Capital gains and losses (Forms 1099-B and 1099-S)
           - li: Original issue discount (Form 1099-OID)
           - li: Estates and trusts
-      - h3: Retirement
+      - h2: Retirement
       - ul:
           - li: Individual Retirement Arrangement (IRA) contributions or distributions
           - li: Railroad Retirement Board benefits (Form RRB-1099)
-      - h3: Business
+      - h2: Business
       - ul:
           - li: Income from a sole proprietorship
           - li: Partnership or S-Corporation income (Schedule K-1)
-      - h3: Gig work or independent contractor
+      - h2: Gig work or independent contractor
       - ul:
           - li: Gig economy (Form 1099-K)
           - li: Independent contractor (Form 1099-NEC)
           - li: Self-employment
-      - h3: Property
+      - h2: Property
       - ul:
           - li: Rentals
           - li: Royalties (Form 1099-MISC)
           - li: Seller-financed mortgage interest (Forms 1099-INT and 1098)
-      - h3: Government payments
+      - h2: Government payments
       - ul:
           - li: State or local tax refunds, credits, or offsets (Form 1099-G, Box 2)
           - li: Taxable grants (Form 1099-G, box 6)
           - li: Other government payments (Form 1099-MISC, box 3)
-      - h3: Other
+      - h2: Other
       - ul:
           - li: Gambling winnings (Form W-2G)
           - li: Debt cancellation (Form 1099-C)

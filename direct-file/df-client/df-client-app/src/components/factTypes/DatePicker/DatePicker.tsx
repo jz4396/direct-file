@@ -8,7 +8,7 @@ import useFact from '../../../hooks/useFact.js';
 import { useFactControl } from '../../../hooks/useFactControl.js';
 import type { DayValidationFailure, Day } from '@irs/js-factgraph-scala';
 import { ComplexFormControl, buildFormControlId, buildHintId, buildHintKey } from '../../FormControl/index.js';
-import Hint from '../../HelperText/Hint.js';
+import Hint, { resolveHintKeys } from '../../HelperText/Hint.js';
 import Translation from '../../Translation/index.js';
 import { getFactStringLimit } from '../../../factgraph/factLimitHelpers.js';
 import { useFactGraph } from '../../../factgraph/FactGraphContext.js';
@@ -220,7 +220,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerFactProps>(
       year: lockYear || sfgYear || 0,
     });
 
-    const { t } = useTranslation(`translation`);
+    const { t, i18n } = useTranslation(`translation`);
 
     const onFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -244,7 +244,9 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerFactProps>(
     }, [date, required]);
 
     const showError = showFeedback && !isValid;
-    const hintId = buildHintId(buildFormControlId(concretePath));
+    const hintI18nKey = hintKey || buildHintKey(path);
+    // Only describe the fieldset by the hint when <Hint> renders one.
+    const hintId = resolveHintKeys(hintI18nKey, i18n) ? buildHintId(buildFormControlId(concretePath)) : undefined;
 
     const errorMessage =
       validationError !== `` ? (
@@ -269,7 +271,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerFactProps>(
         labelledBy='legend'
         hintId={hintId}
       >
-        <Hint hintId={hintId} i18nKey={hintKey || buildHintKey(path)} collectionId={collectionId} />
+        {hintId && <Hint hintId={hintId} i18nKey={hintI18nKey} collectionId={collectionId} />}
         <DateInputGroup id={`id-${concretePath}`}>
           <DateInput
             id='month'
