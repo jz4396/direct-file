@@ -145,16 +145,26 @@
     <Fact path="/qualifiedBusinessIncomeDeduction">
       <Name>Qualified business income deduction</Name>
       <Description>#87: Form 1040 (2026) draft (Created 8/19/26), https://www.irs.gov/pub/irs-dft/f1040--dft.pdf
-        PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A" (line 13a is
-        Schedule 1-A line 44). 26 U.S.C. 199A(a) (https://www.law.cornell.edu/uscode/text/26/199A): "there shall be
-        allowed as a deduction for any taxable year an amount equal to the lesser of" the combined qualified business
-        income amount or 20 percent of taxable income less net capital gain; it is not elective. Form 8995 line 17
-        (form8995 /form8995Line17: "Qualified business income deduction. Enter the greater of line 15 or line 16. Also
-        enter this amount on the applicable line of your return.") when the return has Schedule C qualified business
-        income; $0 otherwise. Every source of 199A income that Form 8995 here does not compute stays a stop with
-        BlockSubmissionOnTrue: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends), a Schedule E
-        trade-or-business rental (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi), K-1 / PTP income (scheduleE
-        /flowKnockoutScheduleEPartII), and the Form 8995-A and carryforward cases (form8995 /flowKnockoutQbi*).</Description>
+        PDF p.
+        3, line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A" (line 13a is
+        Schedule 1-A line
+        44). 26 U.S.C. 199A(a) (https://www.law.cornell.edu/uscode/text/26/199A): "there shall be
+        allowed as a deduction
+        for any taxable year an amount equal to the lesser of" the combined qualified business
+        income amount or 20
+        percent of taxable income less net capital gain; it is not elective. Form 8995 line 17
+        (form8995 /form8995Line17:
+        "Qualified business income deduction. Enter the greater of line 15 or line 16. Also
+        enter this amount on the
+        applicable line of your return.") when the return has Schedule C qualified business
+        income; $0 otherwise. Every
+        source of 199A income that Form 8995 here does not compute stays a stop with
+        BlockSubmissionOnTrue: 1099-DIV box
+        5 (dividends /flowKnockoutSection199ADividends), a Schedule E
+        trade-or-business rental (scheduleE
+        /flowKnockoutScheduleETradeOrBusinessQbi), K-1 / PTP income (scheduleE
+        /flowKnockoutScheduleEPartII), and the
+        Form 8995-A and carryforward cases (form8995 /flowKnockoutQbi*).</Description>
       <Derived>
         <Switch>
           <Case>

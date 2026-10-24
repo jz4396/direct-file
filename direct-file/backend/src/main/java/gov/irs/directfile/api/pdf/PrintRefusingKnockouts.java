@@ -38,7 +38,16 @@ public final class PrintRefusingKnockouts {
             // Schedule E rental treated as a trade or business: Form 1040 (2026) draft, PDF p. 3, line 13b, "Qualified
             // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
             // not computed yet, so the package would print it as $0.
-            "/flowKnockoutScheduleETradeOrBusinessQbi");
+            "/flowKnockoutScheduleETradeOrBusinessQbi",
+            // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
+            // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)
+            // threshold; above it Form 8995-A applies. A prior-year QBI loss carryforward (Form 8995 line 3), a
+            // cooperative patron (199A(b)(7), (g)) and a mix of active and non-active businesses (199A(i)(2)) are not
+            // modeled either. Each would print line 13b at a value the package can't support.
+            "/flowKnockoutQbiAboveThreshold",
+            "/flowKnockoutQbiPriorYearCarryforward",
+            "/flowKnockoutQbiCooperativePatron",
+            "/flowKnockoutQbiMixedParticipation");
 
     private PrintRefusingKnockouts() {}
 

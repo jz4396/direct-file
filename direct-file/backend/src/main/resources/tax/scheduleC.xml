@@ -93,10 +93,14 @@
     <Fact path="/flowKnockoutScheduleCQbi">
       <Name>Knockout: Schedule C QBI deduction case Form 8995 here can't compute</Name>
       <Description>
-        #87: Schedule C qualified business income is computed on Form 8995 (form8995.xml). This is true when any Form 8995
-        stop applies: a prior-year loss carryforward, a cooperative patron, active and non-active businesses together,
-        or taxable income before the deduction above the threshold (Form 8995-A). Each part is its own
-        BlockSubmissionOnTrue fact in /flowIsKnockedOut and is complete false without Schedule C income (#186). Used for
+        #87: Schedule C qualified business income is computed on Form 8995 (form8995.xml). This is true when
+        any Form 8995
+        stop applies: a prior-year loss carryforward, a cooperative patron, active and non-active
+        businesses together,
+        or taxable income before the deduction above the threshold (Form 8995-A). Each part is its
+        own
+        BlockSubmissionOnTrue fact in /flowIsKnockedOut and is complete false without Schedule C income (#186). Used
+        for
         the Schedule C knockout screen.
       </Description>
       <BlockSubmissionOnTrue />
@@ -452,7 +456,8 @@
 
     <Fact path="/scheduleCBusinesses/*/isComplete">
       <Name>Schedule C business complete</Name>
-      <Description>Minimum fields for MVP: name, gross receipts, expenses, and (#87) material participation for Form 8995 line 16.</Description>
+      <Description>Minimum fields for MVP: name, gross receipts, expenses, and (#87) material participation for Form
+        8995 line 16.</Description>
       <Derived>
         <All>
           <IsComplete>
@@ -474,10 +479,14 @@
     <Fact path="/scheduleCBusinesses/*/materiallyParticipates">
       <Name>Filer materially participates in this business</Name>
       <Description>
-        26 U.S.C. 199A(i)(2)(B): "The term 'active qualified trade or business' means ... any qualified trade or business
-        of the taxpayer in which the taxpayer materially participates (within the meaning of section 469(h))."
-        26 U.S.C. 469(h)(1) (https://www.law.cornell.edu/uscode/text/26/469): material participation means involvement
-        in the operations of the activity "on a basis which is (A) regular, (B) continuous, and (C) substantial."
+        26 U.S.C. 199A(i)(2)(B): "The term 'active qualified trade or business' means ... any qualified trade
+        or business
+        of the taxpayer in which the taxpayer materially participates (within the meaning of section
+        469(h))."
+        26 U.S.C. 469(h)(1) (https://www.law.cornell.edu/uscode/text/26/469): material participation means
+        involvement
+        in the operations of the activity "on a basis which is (A) regular, (B) continuous, and (C)
+        substantial."
         Used for Form 8995 line 16 (minimum deduction).
       </Description>
       <Writable>

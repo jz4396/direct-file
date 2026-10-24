@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import scala.Option;
@@ -37,6 +38,10 @@ class PrintRefusingKnockoutsTest {
     static final String PA_NRH_KNOCKOUT = "/flowKnockoutPaNonresidentPaSourcePay";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
     static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
+    static final String QBI_ABOVE_THRESHOLD_KNOCKOUT = "/flowKnockoutQbiAboveThreshold";
+    static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
+    static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
+    static final String QBI_MIXED_PARTICIPATION_KNOCKOUT = "/flowKnockoutQbiMixedParticipation";
     /** Lines 4 and 7 are $1,000 or more and every Part II answer is no, so the IRS figures any penalty. */
     static final String FORM_2210_SCENARIO = "form2210-mfj-irs-will-bill.json";
 
@@ -64,14 +69,18 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210AndScheduleEQbiKnockouts() {
+    void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210AndQbiKnockouts() {
         assertEquals(
                 List.of(
                         CODE_Q_KNOCKOUT, // Form 8949 code Q
                         SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
                         PA_NRH_KNOCKOUT, // PA Schedule NRH
                         FORM_2210_KNOCKOUT, // Form 2210 Part II box B, C, D, A or E
-                        SCHEDULE_E_QBI_KNOCKOUT), // Schedule E rental treated as a trade or business (line 13b)
+                        SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
+                        QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
+                        QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
+                        QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
+                        QBI_MIXED_PARTICIPATION_KNOCKOUT), // active and non-active businesses
                 PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -224,6 +233,43 @@ class PrintRefusingKnockoutsTest {
         Graph graph = fgs.getGraph(answeredYes);
         assertEquals(Boolean.TRUE, graph.get(SCHEDULE_E_QBI_KNOCKOUT).get());
         assertTrue(PrintRefusingKnockouts.refusingPaths(graph).contains(SCHEDULE_E_QBI_KNOCKOUT), "trade or business");
+    }
+
+    /**
+     * Form 8995 (2026) draft header: "Use this form if your taxable income, before your qualified business income
+     * deduction, is at or below" the threshold. A Schedule C return that Form 8995 here computes prints; a carryforward
+     * or cooperative yes, or an unanswered question, refuses the print.
+     */
+    @Test
+    void form8995StopsRefuseThePrint() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        // The same base return the Schedule SE smoke test prints, plus one Schedule C business.
+        Map<String, FactTypeWithItem> facts = mapper.convertValue(
+                mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream())
+                        .get("facts"),
+                new TypeReference<Map<String, FactTypeWithItem>>() {});
+        for (var e : ScheduleSETy2026PdfSmokeTest.selfEmployed("20000.00", "20000.00", "30000.00")
+                .entrySet()) {
+            facts.put(e.getKey(), mapper.readValue(e.getValue(), FactTypeWithItem.class));
+        }
+        Graph computed = fgs.getGraph(facts);
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(computed), "Form 8995 computes line 13b");
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        Map<String, FactTypeWithItem> carryforward = new HashMap<>(facts);
+        carryforward.put("/qbiHasPriorYearLossCarryforward", yes);
+        assertEquals(
+                List.of(QBI_CARRYFORWARD_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(carryforward)));
+        Map<String, FactTypeWithItem> cooperative = new HashMap<>(facts);
+        cooperative.put("/qbiIsCooperativePatron", yes);
+        assertEquals(
+                List.of(QBI_COOPERATIVE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(cooperative)));
+        Map<String, FactTypeWithItem> unanswered = new HashMap<>(facts);
+        unanswered.remove("/qbiHasPriorYearLossCarryforward");
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(unanswered)).contains(QBI_CARRYFORWARD_KNOCKOUT),
+                "unanswered fails closed");
     }
 
     @Test

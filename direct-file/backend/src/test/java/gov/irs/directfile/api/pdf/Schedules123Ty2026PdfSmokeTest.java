@@ -1,14 +1,24 @@
 package gov.irs.directfile.api.pdf;
 
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
+
+import gov.irs.factgraph.Graph;
+
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
+import gov.irs.directfile.api.loaders.service.FactGraphService;
+import gov.irs.directfile.models.FactTypeWithItem;
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.amount;
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.blank;
@@ -24,6 +34,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -95,7 +106,7 @@ class Schedules123Ty2026PdfSmokeTest {
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableGrossReceipts", dollar(gross));
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableTotalExpenses", dollar(expenses));
         m.put("/scheduleCBusinessesIsDone", bool(true));
-        return m;
+        return ScheduleSETy2026PdfSmokeTest.qbiAnswers(m, BIZ);
     }
 
     static Map<String, String> selfEmployedOverThreshold() {
@@ -222,29 +233,36 @@ class Schedules123Ty2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Scenario B is over the 26 U.S.C. 199A(e)(2) threshold (Rev. Proc. 2025-32 §3.26, PDF pp. 21-22: $201,750 for
+     * a single filer), so Form 8995 does not apply (Form 8995 (2026) draft: "Use this form if your taxable income,
+     * before your qualified business income deduction, is at or below" the threshold) and Form 1040 line 13b is not
+     * computed: the print is refused by /flowKnockoutQbiAboveThreshold. The Schedule 2 amounts the scenario was built
+     * to check are still asserted on the fact graph.
+     */
     @Test
-    void selfEmploymentOverTheThresholdPrintsLines4And11() throws Exception {
-        byte[] bytes = generate(selfEmployedOverThreshold());
-        try (PDDocument doc = Loader.loadPDF(bytes)) {
-            Map<String, String> s1 = page(doc, SCH1);
-            amount(s1, "f1_07[0]", 40000, "Schedule 1 line 3 (Schedule C)");
-            amount(s1, "f1_38[0]", 40000, "Schedule 1 line 10");
-            amount2(s1, "f2_05[0]", 536, "Schedule 1 line 15 deductible part of SE tax");
-            amount2(s1, "f2_30[0]", 686, "Schedule 1 line 26 = 15 + 18");
+    void selfEmploymentOverTheQbiThresholdRefusesThePrint() throws Exception {
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class, () -> generate(selfEmployedOverThreshold()));
+        assertTrue(e.getMessage().contains("/flowKnockoutQbiAboveThreshold"), e.getMessage());
 
-            Map<String, String> s2 = page(doc, SCH2);
-            amount(s2, "f1_15[0]", 1071, "Schedule 2 line 4 SE tax (Medicare part only)");
-            amount(s2, "f1_17[0]", 2236, "Schedule 2 line 6");
-            amount(s2, "f1_22[0]", 332, "Schedule 2 line 11 (Form 8959 line 18)");
-            amount2(s2, "f2_07[0]", 3639, "Schedule 2 line 15 = 4 + 6 + 11");
-            amount2(s2, "f2_19[0]", 450, "Schedule 2 line 20");
-            amount2(s2, "f2_20[0]", 4089, "Schedule 2 line 21");
-
-            Map<String, String> f = fieldsOnPages(doc, F1040);
-            assertEquals(40000, f1040(f, "Page1[0].f1_72[0]"), "Form 1040 line 8 = Schedule 1 line 10");
-            assertEquals(686, f1040(f, "Page1[0].f1_74[0]"), "Form 1040 line 10 = Schedule 1 line 26");
-            assertEquals(4089, f1040(f, "Page2[0].f2_16[0]"), "Form 1040 line 23 = Schedule 2 line 21");
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, FactTypeWithItem> facts = mapper.convertValue(
+                mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream())
+                        .get("facts"),
+                new TypeReference<Map<String, FactTypeWithItem>>() {});
+        for (var entry : selfEmployedOverThreshold().entrySet()) {
+            facts.put(entry.getKey(), mapper.readValue(entry.getValue(), FactTypeWithItem.class));
         }
+        Graph graph = fgs.getGraph(facts);
+        assertEquals(Boolean.TRUE, graph.get("/flowKnockoutQbiAboveThreshold").get());
+        assertEquals(0, new BigDecimal("1071").compareTo(dollars(graph, "/schedule2Line4")), "Schedule 2 line 4");
+        assertEquals(0, new BigDecimal("3639").compareTo(dollars(graph, "/schedule2Line15")), "Schedule 2 line 15");
+    }
+
+    private static BigDecimal dollars(Graph graph, String path) {
+        return new BigDecimal(graph.get(path).get().toString());
     }
 
     @Test

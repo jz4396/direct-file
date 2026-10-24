@@ -363,6 +363,7 @@ class Ty2026PdfPackageTest {
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableGrossReceipts", dollar(profit));
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableTotalExpenses", dollar("0.00"));
         m.put("/scheduleCBusinessesIsDone", bool(true));
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(m, BIZ);
         syntheticFiler(m);
         m.put("/filers/#" + W2 + "/tin", CTC_FILER_SSN);
         m.put("/formW2s/#" + W2 + "/tin", CTC_FILER_SSN);
