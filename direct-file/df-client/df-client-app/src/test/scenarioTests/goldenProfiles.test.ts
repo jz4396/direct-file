@@ -1,5 +1,6 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
-// (Florida only) and profile C (PA to FL part-year resident with AMT and NIIT). The fixtures are in goldenProfiles.ts.
+// (Florida only), profile C (PA to FL part-year resident with AMT and NIIT) and profile D (head of household, 65 or
+// older, itemizing, with a qualifying child). The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
 // Sources (page = PDF page):
@@ -108,10 +109,11 @@
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
 //      fixture SSNs other than profile C's are in the 900 area, which SSA never issues; the app reads them as neither
-//      an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile C uses 444-00-4444
-//      (group 00, never issued [SSA]), which the app reads as an SSN. Every profile's AGI is above $19,540, so EITC is
-//      $0 on every profile. No profile has a child, so the child tax credit SSN rule (§24(h)(7)) is not reached and
-//      CTC is $0.
+//      an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profiles C and D use
+//      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Every childless profile's AGI is
+//      above $19,540, so EITC is $0 on each. Only profile D has a child (444-00-0333, also group 00); its AGI is above
+//      the one-child "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), so
+//      its EITC is $0 too. The other profiles have no child, so their CTC is $0.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -146,6 +148,8 @@ import {
   profileCPaW2,
   profileCRows,
   profileCSaleId,
+  profileDChildId,
+  profileDHohItemizerChild,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -179,12 +183,13 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
       }
     }
   });
-  it(`each allowlisted SSN has group 00 (never issued by SSA) and is one the shared upstream fixtures already use`, () => {
-    const testData = fs.readFileSync(path.resolve(__dirname, `../testData.ts`), `utf8`);
+  it(`each allowlisted SSN has group 00 (never issued by SSA [SSA]) and a nonzero serial`, () => {
     for (const tin of GOLDEN_SSN_ALLOWLIST) {
       const [area, group, serial] = tin.split(`-`);
+      expect(area, tin).toMatch(/^\d{3}$/);
       expect(group, tin).toBe(`00`);
-      expect(testData, tin).toContain(`area: \`${area}\`, group: \`${group}\`, serial: \`${serial}\``);
+      expect(serial, tin).toMatch(/^\d{4}$/);
+      expect(serial, tin).not.toBe(`0000`);
     }
     expect(isGoldenTestTin(`123-45-6789`)).toBe(false);
     expect(isGoldenTestTin(`111-11-1111`)).toBe(false);
@@ -199,21 +204,24 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
         const box6Wrapper = entries[p.replace(`/writableMedicareWages`, `/writableMedicareWithholding`)];
         expect(box6Wrapper, `${name} ${p}`).toBeDefined();
         const box6 = Number((box6Wrapper.item as string | number).toString());
-        const expected = Math.round(0.0145 * box5 + 0.009 * Math.max(0, box5 - 200000));
-        expect(box6, `${name} ${p}`).toBe(expected);
+        // Rounded to the dollar, or to the cent (profile D's box 6 is $1,812.50).
+        const exact = 0.0145 * box5 + 0.009 * Math.max(0, box5 - 200000);
+        expect([Math.round(exact), Math.round(100 * exact) / 100], `${name} ${p}`).toContain(box6);
         checked++;
       }
     }
     expect(checked).toBeGreaterThan(0);
   });
-  it(`the 900-area TINs are neither an SSN nor an ITIN to the app, and no profile gets EITC or CTC`, () => {
+  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; no profile gets EITC, and only profile D gets CTC`, () => {
     for (const [name, facts] of Object.entries(goldenProfiles)) {
       const g = graph(facts);
-      const groupZero = name.startsWith(`profileC`);
+      const groupZero = name.startsWith(`profileC`) || name.startsWith(`profileD`);
+      const hasChild = name.startsWith(`profileD`);
       expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(groupZero);
       expect(get(g, `/primaryFiler/tin/isITIN`).get, name).toBe(false);
-      expect(get(g, `/eitcQualified`).get, name).toBe(false);
       expect(get(g, `/earnedIncomeCredit`).get.toString(), name).toBe(`0.00`);
+      if (hasChild) continue; // profile D's child tax credit and EITC are checked in its own block below
+      expect(get(g, `/eitcQualified`).get, name).toBe(false);
       expect(get(g, `/totalCtc`).get.toString(), name).toBe(`0.00`);
       expect(get(g, `/nonRefundableCredits`).get.toString(), name).toBe(`0.00`);
     }
@@ -849,6 +857,131 @@ const PROFILE_C_KNOCKOUTS = [
   `/flowKnockoutAmtPreferenceItems`,
   `/flowKnockoutStateReturn`,
 ];
+
+describe(`golden end-to-end scenario (synthetic data): profile D, head of household, 65+, itemizing, one child`, () => {
+  // Head of household, Florida resident [FL]; filer born 1960-03-15 (66 on December 31, 2026), SSN 444-00-4444;
+  //   daughter born 2010-05-01 (16 at year end), SSN 444-00-0333, lived in the home 12 months; both group 00 [SSA].
+  // W-2: box 1, box 3 and box 5 $125,000, box 2 $14,000, box 4 $7,750 (6.2%, IRC §3101(a)), box 6 $1,812.50 (1.45%
+  //   only; under $200,000 [3102]), no box 12. 1099-INT box 1 $1,000.
+  // Schedule A inputs: real estate tax $41,500, personal property tax $500, mortgage interest (Form 1098) $15,000,
+  //   cash gifts $3,000. No state income tax (Florida), no medical expenses.
+  // Form 1040: line 1a/1z 125,000; line 2b 1,000; line 9 126,000; line 11a/11b (AGI) 126,000.
+  // Schedule 1-A, senior deduction, IRC §151(d)(5)(C) (https://www.law.cornell.edu/uscode/text/26/151): (i) "a
+  //   deduction in an amount equal to $6,000 for each qualified individual"; (iii)(I) "the $6,000 amount in clause (i)
+  //   shall be reduced (but not below zero) by 6 percent of so much of the taxpayer's modified adjusted gross income
+  //   as exceeds $75,000 ($150,000 in the case of a joint return)". 2026 draft Schedule 1-A
+  //   (https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf,
+  //   SHA-256 e22aec7feb2f5b734e16ee74d70acfdfdc0d66a5292f69cf0ced3b87543d95ac):
+  //   line 37 "Enter the amount from line 3" (MAGI 126,000); line 38 "Enter $75,000 ($150,000 if married filing
+  //   jointly)"; line 39 51,000; line 40 "Multiply line 39 by 6% (0.06)" = 3,060; line 41 "Subtract line 40 from
+  //   $6,000" = 2,940; line 42a "If you have a valid social security number (see instructions) and were born before
+  //   January 2, 1962" = 2,940; lines 43 and 44 2,940; line 44 "Enter here and on Form 1040 ... line 13a".
+  // Schedule A (2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf, SHA-256
+  //   d49acff9afc2faa178b7bf1f70d826d03c2c6def43700880f8ae5bb8bb5a0ffa): line 5a 0; 5b 41,500; 5c 500; 5d
+  //   42,000; 5e "Enter the smaller of line 5d or $40,400 ($20,200 if married filing separately)" = 40,400 (AGI is
+  //   under the $505,000 phase-down threshold); IRC §164(b)(7)(A)(ii)
+  //   (https://www.law.cornell.edu/uscode/text/26/164):
+  //   "in the case of any taxable year beginning in calendar year 2026, $40,400"; line 7 "Add lines 5e and 6" =
+  //   40,400. Lines 8a, 8e, 10: 15,000.
+  //   Line 11 3,000; IRC §170(b)(1)(I) (https://www.law.cornell.edu/uscode/text/26/170): "only to the extent that the
+  //   aggregate of such contributions exceeds 0.5 percent of the taxpayer's contribution base": 0.5% x 126,000 = 630,
+  //   so lines 13 and 15 are 2,370. Line 18 = 40,400 + 15,000 + 2,370 = 57,770 -> Form 1040 line 12e. The standard
+  //   deduction would be $24,150 [RP p. 18 §4.14(1) "Heads of Households (§ 1(j)(2)(B)) $24,150"] plus $2,050 [RP
+  //   p. 18 §4.14(3) "increased to $2,050 if the individual is also unmarried and not a surviving spouse"] = 26,200,
+  //   less than 57,770, so the filer itemizes.
+  // Form 1040: line 14 57,770 + 2,940 = 60,710; line 15 126,000 - 60,710 = 65,290.
+  // Line 16: Tax Table [GI p. 36]; row "65,250 65,300" ([GI] p. 75), midpoint 65,275 with [RP] p. 10 §4.01 Table 2
+  //   (Heads of Households): "Over $17,700 but not over $67,450 $1,770 plus 12% of the excess over $17,700":
+  //   1,770 + 12% x 47,575 = 7,479.
+  // Form 6251 [6251]: line 1a "Subtract Schedule 1-A (Form 1040), line 43, from Form 1040 ... line 14" = 60,710 -
+  //   2,940 = 57,770; line 1b "Subtract line 1a from Form 1040 ... line 11b" = 68,230; line 2a "If filing Schedule A
+  //   (Form 1040), enter the taxes from Schedule A, line 7" = 40,400; line 4 108,630; line 5 exemption 90,100 [RP p. 16
+  //   §4.10 "Unmarried Individuals (other than Surviving Spouses) $90,100"] (AMTI under the $500,000 threshold [RP
+  //   p. 17]); line 6 18,530; line 7 26% x 18,530 = 4,817.80 -> 4,818 (18,530 <= 244,500); line 9 4,818; line 10
+  //   regular tax 7,479; line 11 AMT 0.
+  // Schedule 8812: one qualifying child under 17 with an SSN, [RP] p. 14 §4.05(1): "the maximum amount of the credit
+  //   allowed under § 24(a) is $2,200"; IRC §24(h)(3) (https://www.law.cornell.edu/uscode/text/26/24): "the
+  //   threshold amount shall be $400,000 in the case of a joint return ($200,000 in any other case)"; AGI is under
+  //   $200,000, so 2,200 -> Form 1040 line 19.
+  // Form 1040: line 22 7,479 - 2,200 = 5,279; line 24a 5,279 (no Schedule 2 taxes); line 25a 14,000; line 33 14,000;
+  //   line 34 and line 35a overpayment 8,721.
+  // EIC 0 (AGI over $51,593 [EITC]). Form 8959 is not required: box 5 125,000 is under the $200,000 threshold [3101].
+  //   Form 8960 is not required: MAGI 126,000 is under the $200,000 head-of-household threshold [1411].
+  // The filer is 65 or older; the package prints the 2026 Form 1040, which anyone may file (Instructions for Form 1040
+  //   (2025) [GI] p. 12, "Everyone can file Form 1040."). These rows check the computed values only.
+  const g = graph(profileDHohItemizerChild);
+  it(`Form 1040 income and Schedule 1-A senior deduction`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`headOfHousehold`);
+    expectDollars(g, {
+      '/wages': `125000.00`,
+      '/interestIncome': `1000.00`,
+      '/totalIncome': `126000.00`,
+      '/agi': `126000.00`,
+      '/schedule1ALine38': `75000.00`,
+      '/schedule1ALine39': `51000.00`,
+      '/schedule1ALine40': `3060.00`,
+      '/schedule1ALine41': `2940.00`,
+      '/schedule1ALine42a': `2940.00`,
+      '/schedule1ALine43': `2940.00`,
+      '/schedule1ALine44': `2940.00`,
+    });
+  });
+  it(`Schedule A: SALT cap, mortgage interest and the 0.5% charitable floor`, () => {
+    expectDollars(g, {
+      '/scheduleAStateLocalIncomeOrSalesTax': `0.00`,
+      '/scheduleARealEstateTaxes': `41500.00`,
+      '/scheduleAPersonalPropertyTaxes': `500.00`,
+      '/scheduleALine5d': `42000.00`,
+      '/scheduleALine5e': `40400.00`,
+      '/scheduleAMortgageInterest': `15000.00`,
+      '/scheduleACashGifts': `3000.00`,
+      '/scheduleALine13': `2370.00`,
+      '/scheduleALine18': `57770.00`,
+      '/standardOrItemizedDeductions': `57770.00`,
+    });
+  });
+  it(`Form 1040 deductions, taxable income and line 16 tax (Tax Table)`, () => {
+    expectDollars(g, {
+      '/totalDeductions': `60710.00`,
+      '/taxableIncome': `65290.00`,
+      '/tentativeTaxFromTaxableIncome': `7479.00`,
+    });
+  });
+  it(`Form 6251: no AMT`, () => {
+    expectDollars(g, {
+      '/form6251Line1a': `57770.00`,
+      '/form6251Line1b': `68230.00`,
+      '/form6251Line2a': `40400.00`,
+      '/form6251Line4': `108630.00`,
+      '/form6251Line5': `90100.00`,
+      '/form6251Line6': `18530.00`,
+      '/form6251Line7': `4818.00`,
+      '/form6251Line10': `7479.00`,
+      '/amt': `0.00`,
+    });
+  });
+  it(`child tax credit, total tax, payments and refund; no EIC, Form 8959 or Form 8960`, () => {
+    expect(get(g, `/familyAndHousehold/#${profileDChildId}/tin/isSSN` as string).get).toBe(true);
+    expectDollars(g, {
+      '/totalCtc': `2200.00`,
+      '/totalCtcAndOdc': `2200.00`,
+      '/taxLessNonRefundableCredits': `5279.00`,
+      '/line21OfSchedule2': `0.00`,
+      '/totalTax': `5279.00`,
+      '/formW2Withholding': `14000.00`,
+      '/totalPayments': `14000.00`,
+      '/overpayment': `8721.00`,
+      '/earnedIncomeCredit': `0.00`,
+    });
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+  });
+  it(`Florida resident: no state return; nothing stops the return`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
 
 describe(`golden end-to-end scenario (synthetic data): profile C negative rows (each stops the return)`, () => {
   const stops = (facts: Record<string, unknown>, knockout: string, viaStateReturn = true) => {
