@@ -2,6 +2,7 @@ import { ComponentProps, Dispatch, SetStateAction, useId } from 'react';
 import { ConcretePath, JSeither } from '@irs/js-factgraph-scala';
 import { FormGroup, InputGroup, InputPrefix, TextInput, InputSuffix } from '@trussworks/react-uswds';
 import { useFactControl } from '../../hooks/useFactControl.js';
+import { resolveHintKeys } from '../HelperText/Hint.js';
 import { buildControlErrorId, buildFormControlId, buildHintId, buildHintKey, sanitizeString } from './helpers.js';
 import Translation from '../Translation/index.js';
 import type { FactLimit } from '../../factgraph/factLimitHelpers.js';
@@ -72,7 +73,9 @@ export function SimpleTextFormControl({
   const controlId = (controlIdOverride as ReturnType<typeof buildFormControlId>) ?? buildFormControlId(concretePath);
   const showError = !!errorMessage;
 
-  const hintKeyExists = i18n.exists((hintKey as string) || buildHintKey(path));
+  // Point aria-describedby at the hint only when FormFieldWrapper renders one (it skips read-only fields
+  // and keys with no hint text), so the description never refers to a missing or empty element.
+  const hintKeyExists = !readOnly && resolveHintKeys(hintKey || buildHintKey(path), i18n) !== null;
   const labelId = useId();
   const labelOverrideKey = labelConfig?.type === `config` ? labelConfig.i18nKey : undefined;
 
