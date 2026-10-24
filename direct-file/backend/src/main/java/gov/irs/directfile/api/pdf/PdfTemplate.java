@@ -27,7 +27,6 @@ abstract class PdfTemplate {
     // Order by Attachment Sequence Number (ASN) in upper right of IRS forms.
     protected static List<PdfTemplate> templateList = List.of(
             new Irs1040PdfForm("IRS1040"),
-            new Irs1040PdfForm("IRS1040SR"),
             new PdfTable("DEPENDENTS_STATEMENT"),
 
             // ASN 01

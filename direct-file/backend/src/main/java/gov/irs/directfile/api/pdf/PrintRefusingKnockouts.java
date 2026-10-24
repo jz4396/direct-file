@@ -34,7 +34,16 @@ public final class PrintRefusingKnockouts {
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
-            "/flowKnockoutForm2210");
+            "/flowKnockoutForm2210",
+            // Schedule C business: Instructions for Schedule C (2025) p. 2, "Use Schedule C (Form 1040) to report
+            // income or (loss) from a business you operated or a profession you practiced as a sole proprietor", and
+            // the 2026 draft Schedule 1 line 3 reads "Attach Schedule C". There is no Schedule C template, so the
+            // package would omit it.
+            "/flowKnockoutScheduleCWithoutTy2026Template",
+            // EIC (26 U.S.C. 32), ACTC (24(d)) or refundable AOTC (25A(i)) on Form 1040 lines 27a-29: the 2026 draft
+            // Form 1040 says "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A", and line 32b is
+            // the "Amount from Schedule 3-A". There is no Schedule 3-A template and no line 32b fact.
+            "/flowKnockoutSchedule3AWithoutTy2026Template");
 
     private PrintRefusingKnockouts() {}
 

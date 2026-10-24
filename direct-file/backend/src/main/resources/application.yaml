@@ -248,22 +248,8 @@ direct-file:
         configuration-location: pdf/2024/IRS1040/es/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
-      - name: IRS1040SR
-        year: 2026
-        language-code: en
-        location: pdf/2024/IRS1040SR/en/f1040s-p.pdf
-        location-type: classpath
-        configuration-location: pdf/2024/IRS1040SR/en/configuration.yml
-        configuration-location-type: classpath
-        cache-in-memory: true
-      - name: IRS1040SR
-        year: 2026
-        language-code: es
-        location: pdf/2024/IRS1040SR/es/f1040srs-p.pdf
-        location-type: classpath
-        configuration-location: pdf/2024/IRS1040SR/es/configuration.yml
-        configuration-location-type: classpath
-        cache-in-memory: true
+      # #89: no IRS1040SR for 2026. Form 1040 prints for every filer, 65 or older too: Instructions for Form 1040
+      # (2025), p. 12, "Everyone can file Form 1040." There is no 2026 Form 1040-SR template.
       - name: DEPENDENTS_STATEMENT
         year: 2026
         language-code: en
