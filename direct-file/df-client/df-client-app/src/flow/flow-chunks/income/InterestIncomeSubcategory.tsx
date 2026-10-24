@@ -250,34 +250,42 @@ export const InterestIncomeSubcategory = (
             condition={{ condition: `data-import`, section: `has-one-1099-int`, operator: `isFalse` }}
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/facta'
             condition='/interestReports/hasRequiredFactaFilings'
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-6-ko'
             condition='/flowKnockoutHasForeignTaxPaid'
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-8-ko'
             condition='/flowKnockoutTaxExemptInterest'
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-9-ko'
             condition='/interestReports/*/specifiedPrivateActivityBondInterest'
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-10-ko'
             condition='/interestReports/*/marketDiscount'
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-11-ko'
             condition='/interestReports/*/bondPremium'
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-12-ko'
             condition='/interestReports/*/bondPremiumOnTreasuryObligations'
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-13-ko'
             condition='/interestReports/*/bondPremiumOnTaxExemptBond'
           />

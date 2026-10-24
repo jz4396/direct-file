@@ -39,12 +39,7 @@ public class CacheService {
                 redisTemplate.opsForValue().set(remoteCacheKeyString, serializedValue);
             }
         } catch (Exception e) {
-            log.error(
-                    "Unable to set data from Redis. {}: {} {} {}",
-                    e.getClass(),
-                    e.getMessage(),
-                    e.getCause(),
-                    e.getStackTrace());
+            log.error("Unable to set data from Redis. {}", e.getClass().getName());
         }
     }
 
@@ -55,12 +50,7 @@ public class CacheService {
             String serializedValue = redisTemplate.opsForValue().get(remoteCacheKeyString);
             return (serializedValue != null) ? objectMapper.readValue(serializedValue, clazz) : null;
         } catch (Exception e) {
-            log.error(
-                    "Unable to fetch data from Redis. {}: {} {} {}",
-                    e.getClass(),
-                    e.getMessage(),
-                    e.getCause(),
-                    e.getStackTrace());
+            log.error("Unable to fetch data from Redis. {}", e.getClass().getName());
             return null;
         }
     }
@@ -71,7 +61,7 @@ public class CacheService {
             log.info("Clearing cache key {}", remoteCacheKeyString);
             redisTemplate.delete(remoteCacheKeyString);
         } catch (Exception e) {
-            log.error("Unable to clear key from Redis. {}: {}", e.getClass(), e.getMessage());
+            log.error("Unable to clear key from Redis. {}", e.getClass().getName());
         }
     }
 
@@ -84,12 +74,7 @@ public class CacheService {
                 redisTemplate.delete(keys);
             }
         } catch (Exception e) {
-            log.error(
-                    "Unable to clear data from Redis. {}: {} {} {}",
-                    e.getClass(),
-                    e.getMessage(),
-                    e.getCause(),
-                    e.getStackTrace());
+            log.error("Unable to clear data from Redis. {}", e.getClass().getName());
         }
     }
 }

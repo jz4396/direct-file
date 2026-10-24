@@ -61,7 +61,8 @@ const Enum = forwardRef<HTMLInputElement, EnumFactProps>(
     };
 
     const showError = showFeedback && !isValid;
-    const errorId = showError ? buildControlErrorId(buildFormControlId(concretePath)) : undefined;
+    const controlId = buildFormControlId(concretePath);
+    const errorId = showError ? buildControlErrorId(controlId) : undefined;
     // The fieldset's description is not announced when focus moves straight to an option,
     // so each control carries the error state and message itself (WCAG 2.1 SC 3.3.1).
     const errorProps = showError ? { 'aria-invalid': true, 'aria-describedby': errorId } : {};
@@ -98,7 +99,9 @@ const Enum = forwardRef<HTMLInputElement, EnumFactProps>(
     if (shouldRenderAsSelect) {
       content = (
         <Select
-          id={path}
+          // The concrete path, not the abstract one: an abstract collection path has a `*` in it, and the
+          // label's htmlFor (ComplexFormControl) uses the same id.
+          id={controlId}
           name={path}
           validationStatus={showError ? `error` : undefined}
           onChange={(event) => handleValueChange(event.target.value)}
