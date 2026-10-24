@@ -1,5 +1,6 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
-// (Florida only) and profile C (PA to FL part-year resident with AMT and NIIT). Every name, SSN, address, EIN and payer
+// (Florida only), profile C (PA to FL part-year resident with AMT and NIIT) and profile D (head of household, 65 or
+// older, itemizing, with a qualifying child). Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
 // hand-computed in goldenProfiles.test.ts.
@@ -18,6 +19,7 @@ import {
 import {
   baseFilerData,
   filerWithW2NoDeductionsNoCreditsBaseData,
+  makeChildData,
   mfjFilerData,
   mfsFilerData,
   primaryFilerId,
@@ -31,10 +33,10 @@ export const GOLDEN_SSN_PATTERN = /^9\d{2}-?\d{2}-?\d{4}$/;
  * SSN-shaped test numbers a golden profile may use where the fact graph must read a TIN as an SSN (a 9xx area is
  * never an SSN to the fact graph, Tin.isSSN). Each one has group number 00, which SSA never assigns:
  * https://www.ssa.gov/employer/randomizationfaqs.html "SSN randomization will not assign group number 00 or serial
- * number 0000. SSNs containing group number 00 or serial number 0000 will continue to be invalid." Each is also one
- * the shared upstream fixtures in src/test/testData.ts already use; goldenProfiles.test.ts checks both.
+ * number 0000. SSNs containing group number 00 or serial number 0000 will continue to be invalid."
+ * goldenProfiles.test.ts checks the group number.
  */
-export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`444-00-4444`];
+export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`444-00-4444`, `444-00-0333`];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
 
@@ -84,6 +86,8 @@ export type W2 = {
   ein: [string, string];
   box1: number;
   box2: number;
+  box3?: number;
+  box4?: number;
   box5?: number;
   box6?: number;
   box16?: number;
@@ -112,6 +116,8 @@ const w2s = (ssn: [string, string, string], ...forms: W2[]) => {
       [`${p}/writableDependentCareBenefits`]: createDollarWrapper(`0`),
       [`${p}/writableWages`]: createDollarWrapper(`${f.box1}`),
       [`${p}/writableFederalWithholding`]: createDollarWrapper(`${f.box2}`),
+      ...(f.box3 === undefined ? {} : { [`${p}/writableOasdiWages`]: createDollarWrapper(`${f.box3}`) }),
+      ...(f.box4 === undefined ? {} : { [`${p}/writableOasdiWithholding`]: createDollarWrapper(`${f.box4}`) }),
       ...(f.box5 === undefined ? {} : { [`${p}/writableMedicareWages`]: createDollarWrapper(`${f.box5}`) }),
       ...(f.box6 === undefined ? {} : { [`${p}/writableMedicareWithholding`]: createDollarWrapper(`${f.box6}`) }),
       ...(f.box16 === undefined && f.box17 === undefined
@@ -389,6 +395,61 @@ export const profileCRows = {
   spouse: () => spouse(morgan),
 };
 
+/**
+ * Profile D: head of household, Florida resident, filer born March 15, 1960 (66 at the end of 2026), one daughter
+ * born May 1, 2010 who lived in the home all year. W-2 wages $125,000 and $1,000 of Form 1099-INT interest; itemizes
+ * $41,500 of real estate tax, $500 of personal property tax, $15,000 of mortgage interest and $3,000 of cash gifts:
+ * the $40,400 SALT cap, the 0.5%-of-AGI charitable floor, the Schedule 1-A senior deduction phaseout, Form 6251 with
+ * no AMT, and the child tax credit.
+ */
+const dana: Person = { first: `Dana`, last: `Example`, ssn: [`444`, `00`, `4444`], dob: `1960-03-15` };
+export const profileDChildId = `13500000-0000-4000-8000-000000000d03`;
+export const profileDW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000d01`,
+  employer: `Example Coastal Services Inc`,
+  ein: [`00`, `0000401`],
+  box1: 125000,
+  box2: 14000,
+  box3: 125000,
+  // 6.2% x 125,000 (IRC §3101(a), https://www.law.cornell.edu/uscode/text/26/3101).
+  box4: 7750,
+  box5: 125000,
+  // 1.45% x 125,000 = 1,812.50; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
+  box6: 1812.5,
+};
+export const profileDHohItemizerChild = {
+  ...single(dana, { street: `123 Example St`, city: `Gainesville`, zip: `32601`, state: `FL` }),
+  '/maritalStatus': createEnumWrapper(`single`, `/maritalStatusOptions`),
+  '/filingStatus': createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  '/familyAndHousehold': createCollectionWrapper([profileDChildId]),
+  ...makeChildData(profileDChildId, `2010-05-01`),
+  [`/familyAndHousehold/#${profileDChildId}/firstName`]: createStringWrapper(`Riley`),
+  [`/familyAndHousehold/#${profileDChildId}/lastName`]: createStringWrapper(`Example`),
+  [`/familyAndHousehold/#${profileDChildId}/monthsLivedWithTPInUS`]: createEnumWrapper(
+    `twelve`,
+    `/monthsLivedWithTPInUSOptions`
+  ),
+  [`/familyAndHousehold/#${profileDChildId}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial: `0333` }),
+  [`/familyAndHousehold/#${profileDChildId}/hasIpPin`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${profileDChildId}/unableToCareForSelf`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${profileDChildId}/tpPaidMostOfHomeUpkeep`]: createBooleanWrapper(true),
+  '/hohQualifyingPerson': createCollectionItemWrapper(profileDChildId),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(false),
+  '/receivedImproperClaims': createBooleanWrapper(false),
+  ...w2s(dana.ssn, profileDW2),
+  ...interest(`13500000-0000-4000-8000-000000000d02`, `Example Savings Bank`, 1000),
+  '/scheduleAWantsToItemize': createBooleanWrapper(true),
+  '/scheduleAWritableMedical': createDollarWrapper(`0`),
+  '/scheduleAWritableStateLocalIncomeOrSalesTax': createDollarWrapper(`0`),
+  '/scheduleAWritableRealEstateTaxes': createDollarWrapper(`41500`),
+  '/scheduleAWritablePersonalPropertyTaxes': createDollarWrapper(`500`),
+  '/scheduleAWritableMortgageInterest': createDollarWrapper(`15000`),
+  '/scheduleAWritableCashGifts': createDollarWrapper(`3000`),
+  '/scheduleAWritableElectsToItemize': createBooleanWrapper(false),
+  '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -399,4 +460,5 @@ export const goldenProfiles = {
   profile7PaFullYear,
   profile7PaToFlPartYear,
   profileCPaToFlAmtNiit,
+  profileDHohItemizerChild,
 };
