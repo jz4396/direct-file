@@ -38,7 +38,16 @@ public final class PrintRefusingKnockouts {
             // Schedule E rental treated as a trade or business: Form 1040 (2026) draft, PDF p. 3, line 13b, "Qualified
             // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
             // not computed yet, so the package would print it as $0.
-            "/flowKnockoutScheduleETradeOrBusinessQbi");
+            "/flowKnockoutScheduleETradeOrBusinessQbi",
+            // Schedule C business: Instructions for Schedule C (2025) p. 2, "Use Schedule C (Form 1040) to report
+            // income or (loss) from a business you operated or a profession you practiced as a sole proprietor", and
+            // the 2026 draft Schedule 1 line 3 reads "Attach Schedule C". There is no Schedule C template, so the
+            // package would omit it.
+            "/flowKnockoutScheduleCWithoutTy2026Template",
+            // EIC (26 U.S.C. 32), ACTC (24(d)) or refundable AOTC (25A(i)) on Form 1040 lines 27a-29: the 2026 draft
+            // Form 1040 says "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A", and line 32b is
+            // the "Amount from Schedule 3-A". There is no Schedule 3-A template and no line 32b fact.
+            "/flowKnockoutSchedule3AWithoutTy2026Template");
 
     private PrintRefusingKnockouts() {}
 
