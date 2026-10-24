@@ -11,10 +11,12 @@
  * robots.txt (Disallow: /) goes to the root and replaces the client's own. The IRS logo files and the favicon/
  * directory (the IRS seal icons and the manifest) are left out: the static build is an unofficial preview and
  * doesn't reference them.
- * Exits non-zero, and deploy.sh stops, if the check finds a problem.
+ * Refuses to stage (and removes any previously staged site) if dist-static/ holds the all-screens development view
+ * (buildConfig/productionBuildCheck.ts). Exits non-zero, and deploy.sh stops, if either check finds a problem.
  */
 import fs from 'fs';
 import path from 'path';
+import { productionBuildProblems } from '../buildConfig/productionBuildCheck.js';
 import { checkStaticBundle, IRS_LOGO_FILES, isIconAsset } from './checkStaticBundle.js';
 
 export const DIST = path.resolve(`dist-static`);
@@ -24,6 +26,9 @@ export const OUT = path.join(PAGES, `out`);
 export function stageStaticSite(dist = DIST, out = OUT, pages = PAGES): string[] {
   if (!fs.existsSync(path.join(dist, `index.html`))) return [`${dist}/index.html not found: run npm run build:static`];
   fs.rmSync(out, { recursive: true, force: true });
+  // Checked here as well as in the post-build hook, which npm skips when ignore-scripts is set.
+  const refused = productionBuildProblems(dist);
+  if (refused.length) return refused;
   fs.mkdirSync(path.join(out, `df`), { recursive: true });
   // favicon/ holds the IRS seal icons, favicon.ico, the web app manifest and browserconfig.xml; none are staged.
   fs.cpSync(dist, path.join(out, `df`, `file`), {

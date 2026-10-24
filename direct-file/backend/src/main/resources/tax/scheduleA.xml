@@ -4,7 +4,9 @@
     <Fact path="/scheduleAWantsToItemize">
       <Export downstreamFacts="true" />
       <Name>Wants to check itemized deductions</Name>
-      <Description>#37 screener: does the filer want to enter Schedule A expenses (medical, state/local taxes, mortgage interest, cash gifts) to compare itemizing with the standard deduction (IRC §63(e), https://www.law.cornell.edu/uscode/text/26/63)? Must be answered; no silent default.</Description>
+      <Description>#37 screener: does the filer want to enter Schedule A expenses (medical, state/local taxes, mortgage
+        interest, cash gifts) to compare itemizing with the standard deduction (IRC §63(e),
+        https://www.law.cornell.edu/uscode/text/26/63)? Must be answered; no silent default.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -12,7 +14,8 @@
 
     <Fact path="/scheduleAWritableMedical">
       <Name>Schedule A medical and dental expenses (input)</Name>
-      <Description>#37: medical and dental expenses, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1.</Description>
+      <Description>#37: medical and dental expenses, Schedule A (Form 1040) 2026 draft,
+        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1.</Description>
       <Writable>
         <Dollar />
       </Writable>
@@ -21,7 +24,10 @@
     <Fact path="/scheduleAMedical">
       <Export downstreamFacts="true" />
       <Name>Schedule A medical and dental expenses</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1; $0 when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to whole dollars, you must round all amounts."</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 1; $0
+        when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to
+        whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -48,7 +54,8 @@
 
     <Fact path="/scheduleAWritableStateLocalIncomeOrSalesTax">
       <Name>Schedule A state and local income taxes or general sales taxes (input)</Name>
-      <Description>#37: state and local income taxes or general sales taxes, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a.</Description>
+      <Description>#37: state and local income taxes or general sales taxes, Schedule A (Form 1040) 2026 draft,
+        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a.</Description>
       <Writable>
         <Dollar />
       </Writable>
@@ -57,7 +64,13 @@
     <Fact path="/scheduleAStateLocalIncomeOrSalesTax">
       <Export downstreamFacts="true" />
       <Name>Schedule A state and local income taxes or general sales taxes</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a; $0 when the filer chose not to itemize. #202: line 5a is rounded to whole dollars here, so lines 5d ("Add lines 5a through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR 301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a; $0
+        when the filer chose not to itemize. #202: line 5a is rounded to whole dollars here, so lines 5d ("Add lines 5a
+        through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless
+        it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR
+        301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040
+        (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -84,7 +97,8 @@
 
     <Fact path="/scheduleAWritableRealEstateTaxes">
       <Name>Schedule A state and local real estate taxes (input)</Name>
-      <Description>#37: state and local real estate taxes, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b.</Description>
+      <Description>#37: state and local real estate taxes, Schedule A (Form 1040) 2026 draft,
+        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b.</Description>
       <Writable>
         <Dollar />
       </Writable>
@@ -93,7 +107,13 @@
     <Fact path="/scheduleARealEstateTaxes">
       <Export downstreamFacts="true" />
       <Name>Schedule A state and local real estate taxes</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b; $0 when the filer chose not to itemize. #202: line 5b is rounded to whole dollars here, so lines 5d ("Add lines 5a through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR 301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5b; $0
+        when the filer chose not to itemize. #202: line 5b is rounded to whole dollars here, so lines 5d ("Add lines 5a
+        through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless
+        it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR
+        301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040
+        (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -120,7 +140,8 @@
 
     <Fact path="/scheduleAWritablePersonalPropertyTaxes">
       <Name>Schedule A state and local personal property taxes (input)</Name>
-      <Description>#37: state and local personal property taxes, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c.</Description>
+      <Description>#37: state and local personal property taxes, Schedule A (Form 1040) 2026 draft,
+        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c.</Description>
       <Writable>
         <Dollar />
       </Writable>
@@ -129,7 +150,13 @@
     <Fact path="/scheduleAPersonalPropertyTaxes">
       <Export downstreamFacts="true" />
       <Name>Schedule A state and local personal property taxes</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c; $0 when the filer chose not to itemize. #202: line 5c is rounded to whole dollars here, so lines 5d ("Add lines 5a through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR 301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040 (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5c; $0
+        when the filer chose not to itemize. #202: line 5c is rounded to whole dollars here, so lines 5d ("Add lines 5a
+        through 5c"), 5e, 7 and Form 6251 line 2a add already-rounded lines. 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be disregarded unless
+        it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1"; 26 CFR
+        301.6102-1(a) (https://www.law.cornell.edu/cfr/text/26/301.6102-1) rounds half up. Instructions for Form 1040
+        (2025), p. 23, Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -156,7 +183,8 @@
 
     <Fact path="/scheduleAWritableMortgageInterest">
       <Name>Schedule A home mortgage interest and points reported on Form 1098 (input)</Name>
-      <Description>#37: home mortgage interest and points reported on Form 1098, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a.</Description>
+      <Description>#37: home mortgage interest and points reported on Form 1098, Schedule A (Form 1040) 2026 draft,
+        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a.</Description>
       <Writable>
         <Dollar />
       </Writable>
@@ -165,7 +193,10 @@
     <Fact path="/scheduleAMortgageInterest">
       <Export downstreamFacts="true" />
       <Name>Schedule A home mortgage interest and points reported on Form 1098</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a; $0 when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to whole dollars, you must round all amounts."</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 8a; $0
+        when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to
+        whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -192,7 +223,8 @@
 
     <Fact path="/scheduleAWritableCashGifts">
       <Name>Schedule A gifts to charity by cash or check (input)</Name>
-      <Description>#37: gifts to charity by cash or check, Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11.</Description>
+      <Description>#37: gifts to charity by cash or check, Schedule A (Form 1040) 2026 draft,
+        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11.</Description>
       <Writable>
         <Dollar />
       </Writable>
@@ -201,7 +233,10 @@
     <Fact path="/scheduleACashGifts">
       <Export downstreamFacts="true" />
       <Name>Schedule A gifts to charity by cash or check</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11; $0 when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to whole dollars, you must round all amounts."</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 11; $0
+        when the filer chose not to itemize. #202: rounded to whole dollars as the line is computed. 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102); Instructions for Form 1040 (2025), p. 23: "If you do round to
+        whole dollars, you must round all amounts."</Description>
       <Derived>
         <Switch>
           <Case>
@@ -228,7 +263,8 @@
 
     <Fact path="/scheduleAWritableElectsToItemize">
       <Name>Elects to itemize</Name>
-      <Description>#37: Schedule A line 19: "If you elect to itemize deductions even though they are less than your standard deduction, check this box".</Description>
+      <Description>#37: Schedule A line 19: "If you elect to itemize deductions even though they are less than your
+        standard deduction, check this box".</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -237,7 +273,10 @@
     <Fact path="/scheduleAHasUnsupportedItems">
       <Export downstreamFacts="true" />
       <Name>Has unsupported itemized deductions</Name>
-      <Description>#37 MVP scope screen: mortgage debt over $750,000 ($375,000 MFS) or interest not on Form 1098 (IRC §163(h)(3)(F), https://www.law.cornell.edu/uscode/text/26/163), investment interest (line 9), noncash gifts (line 12; Form 8283 over $500), carryovers (line 14), casualty and theft losses (line 16), other itemized deductions (line 17), other taxes (line 6), or foreign income excluded under §911/931/933 (MAGI for §164(b)(7)).</Description>
+      <Description>#37 MVP scope screen: mortgage debt over $750,000 ($375,000 MFS) or interest not on Form 1098 (IRC
+        §163(h)(3)(F), https://www.law.cornell.edu/uscode/text/26/163), investment interest (line 9), noncash gifts
+        (line 12; Form 8283 over $500), carryovers (line 14), casualty and theft losses (line 16), other itemized
+        deductions (line 17), other taxes (line 6), or foreign income excluded under §911/931/933 (MAGI for §164(b)(7)).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -245,7 +284,8 @@
 
     <Fact path="/scheduleALine3">
       <Name>Schedule A line 3 (PDF)</Name>
-      <Description>#67: printed value of Schedule A (Form 1040) 2026 draft line 3 "Multiply line 2 by 7.5% (0.075)", line 2 = Form 1040 line 11b (AGI). Same expression /scheduleALine4 subtracts; IRC §213(a).</Description>
+      <Description>#67: printed value of Schedule A (Form 1040) 2026 draft line 3 "Multiply line 2 by 7.5% (0.075)",
+        line 2 = Form 1040 line 11b (AGI). Same expression /scheduleALine4 subtracts; IRC §213(a).</Description>
       <Derived>
         <Round>
           <Multiply>
@@ -257,7 +297,9 @@
     </Fact>
     <Fact path="/scheduleALine18AnswerNo">
       <Name>Schedule A line 18 "No" box (PDF)</Name>
-      <Description>#67: line 18 "Is the amount on Form 1040 or 1040-SR, line 11b, minus the amounts on lines 13a and 13b of that form, more than $384,350?" The Yes branch (IRC §68) is the /flowKnockoutScheduleAOverallLimit stop, so a printable itemized return always answers No.</Description>
+      <Description>#67: line 18 "Is the amount on Form 1040 or 1040-SR, line 11b, minus the amounts on lines 13a and 13b
+        of that form, more than $384,350?" The Yes branch (IRC §68) is the /flowKnockoutScheduleAOverallLimit stop, so a
+        printable itemized return always answers No.</Description>
       <Derived>
         <Not>
           <Dependency path="/flowKnockoutScheduleAOverallLimit" />
@@ -267,7 +309,10 @@
     <Fact path="/scheduleALine4">
       <Export downstreamFacts="true" />
       <Name>Schedule A line 4 medical deduction</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf p. 1, line 3 "Multiply line 2 by 7.5% (0.075)"; line 4 = line 1 minus line 3, not below zero. IRC §213(a) (https://www.law.cornell.edu/uscode/text/26/213): "to the extent that such expenses exceed 7.5 percent of adjusted gross income."</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf p. 1, line 3
+        "Multiply line 2 by 7.5% (0.075)"; line 4 = line 1 minus line 3, not below zero. IRC §213(a)
+        (https://www.law.cornell.edu/uscode/text/26/213): "to the extent that such expenses exceed 7.5 percent of
+        adjusted gross income."</Description>
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>
@@ -291,7 +336,8 @@
     <Fact path="/scheduleALine5d">
       <Export downstreamFacts="true" />
       <Name>Schedule A line 5d</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5d "Add lines 5a through 5c".</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5d "Add
+        lines 5a through 5c".</Description>
       <Derived>
         <Add>
           <Dependency path="/scheduleAStateLocalIncomeOrSalesTax" />
@@ -303,7 +349,10 @@
 
     <Fact path="/scheduleASaltThreshold">
       <Name>SALT MAGI threshold</Name>
-      <Description>#37: IRC §164(b)(7)(B)(ii)(II) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/164): "in the case of any taxable year beginning in calendar year 2026, $505,000"; (B)(i): "half the threshold amount in the case of a married individual filing a separate return".</Description>
+      <Description>#37: IRC §164(b)(7)(B)(ii)(II) as amended by P.L. 119-21
+        (https://www.law.cornell.edu/uscode/text/26/164): "in the case of any taxable year beginning in calendar year
+        2026, $505,000"; (B)(i): "half the threshold amount in the case of a married individual filing a separate
+        return".</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
@@ -329,7 +378,10 @@
 
     <Fact path="/scheduleASaltLimitBeforeMfsHalving">
       <Name>SALT applicable limitation amount after phasedown</Name>
-      <Description>#37: IRC §164(b)(7)(A)(ii): "$40,400" for 2026; (B)(i): "reduced by 30 percent of the excess (if any) of the taxpayer's modified adjusted gross income over the threshold amount"; (B)(iii): "shall not result in the applicable limitation amount being less than $10,000". MAGI = AGI here (no §911/931/933 exclusions; those knock out).</Description>
+      <Description>#37: IRC §164(b)(7)(A)(ii): "$40,400" for 2026; (B)(i): "reduced by 30 percent of the excess (if any)
+        of the taxpayer's modified adjusted gross income over the threshold amount"; (B)(iii): "shall not result in the
+        applicable limitation amount being less than $10,000". MAGI = AGI here (no §911/931/933 exclusions; those knock
+        out).</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <GreaterOf>
@@ -362,7 +414,9 @@
     <Fact path="/scheduleASaltLimit">
       <Export downstreamFacts="true" />
       <Name>SALT limit</Name>
-      <Description>#37: IRC §164(b)(6)(B): "shall not exceed the applicable limitation amount (half the applicable limitation amount in the case of a married individual filing a separate return)". Gives $40,400 / $20,200 MFS (Schedule A 2026 draft line 5e) and a $10,000 / $5,000 MFS floor.</Description>
+      <Description>#37: IRC §164(b)(6)(B): "shall not exceed the applicable limitation amount (half the applicable
+        limitation amount in the case of a married individual filing a separate return)". Gives $40,400 / $20,200 MFS
+        (Schedule A 2026 draft line 5e) and a $10,000 / $5,000 MFS floor.</Description>
       <Derived>
         <Round>
           <Switch>
@@ -397,7 +451,9 @@
     <Fact path="/scheduleALine5e">
       <Export downstreamFacts="true" />
       <Name>Schedule A line 5e SALT deduction</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf p. 1, line 5e: "Enter the smaller of line 5d or $40,400 ($20,200 if married filing separately). If Form 1040 or 1040-SR, line 11b, is more than $505,000 ($252,500 if married filing separately) ... see instructions".</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf p. 1, line
+        5e: "Enter the smaller of line 5d or $40,400 ($20,200 if married filing separately). If Form 1040 or 1040-SR,
+        line 11b, is more than $505,000 ($252,500 if married filing separately) ... see instructions".</Description>
       <Derived>
         <LesserOf>
           <Dependency path="/scheduleALine5d" />
@@ -409,7 +465,10 @@
     <Fact path="/scheduleALine13">
       <Export downstreamFacts="true" />
       <Name>Schedule A line 13 cash gifts after 0.5% floor</Name>
-      <Description>#37: IRC §170(b)(1)(I) as added by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/170): "shall be allowed only to the extent that the aggregate of such contributions exceeds 0.5 percent of the taxpayer's contribution base". Contribution base = AGI (no NOL carryback in scope). The 60% cash limit (§170(b)(1)(G)) is a knockout.</Description>
+      <Description>#37: IRC §170(b)(1)(I) as added by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/170):
+        "shall be allowed only to the extent that the aggregate of such contributions exceeds 0.5 percent of the
+        taxpayer's contribution base". Contribution base = AGI (no NOL carryback in scope). The 60% cash limit
+        (§170(b)(1)(G)) is a knockout.</Description>
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>
@@ -433,7 +492,9 @@
     <Fact path="/scheduleALine18">
       <Export downstreamFacts="true" />
       <Name>Schedule A line 18 total itemized deductions</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 18 (No branch): "Add the amounts in far-right column for lines 4 through 17z." MVP lines: 4, 5e, 8a (line 10), 13 (line 15).</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 18 (No
+        branch): "Add the amounts in far-right column for lines 4 through 17z." MVP lines: 4, 5e, 8a (line 10), 13 (line
+        15).</Description>
       <Derived>
         <Round>
           <Add>
@@ -449,7 +510,10 @@
     <Fact path="/itemizesDeductions">
       <Export downstreamFacts="true" />
       <Name>Itemizes deductions</Name>
-      <Description>#37: itemize when Schedule A line 18 is more than the standard deduction, or when the filer elects to (line 19). IRC §63(e) (https://www.law.cornell.edu/uscode/text/26/63). Standard deduction: Rev. Proc. 2025-32 p. 18. #45: compared with the standard deduction plus the §170(p) line 12f amount, since that is only available without itemizing.</Description>
+      <Description>#37: itemize when Schedule A line 18 is more than the standard deduction, or when the filer elects to
+        (line 19). IRC §63(e) (https://www.law.cornell.edu/uscode/text/26/63). Standard deduction: Rev. Proc. 2025-32 p.
+        18. #45: compared with the standard deduction plus the §170(p) line 12f amount, since that is only available
+        without itemizing.</Description>
       <Derived>
         <All>
           <Dependency path="/scheduleAWantsToItemize" />
@@ -492,7 +556,8 @@
     <Fact path="/flowKnockoutScheduleACharitableLimit">
       <Export downstreamFacts="true" />
       <Name>Knockout: cash gifts over 60% of AGI</Name>
-      <Description>#37: IRC §170(b)(1)(G)(i): cash gifts are allowed only up to "60 percent of the taxpayer's contribution base"; the limitation worksheet and carryover are out of MVP scope.</Description>
+      <Description>#37: IRC §170(b)(1)(G)(i): cash gifts are allowed only up to "60 percent of the taxpayer's
+        contribution base"; the limitation worksheet and carryover are out of MVP scope.</Description>
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
@@ -515,7 +580,10 @@
     <Fact path="/flowKnockoutScheduleAOverallLimit">
       <Export downstreamFacts="true" />
       <Name>Knockout: §68 overall limitation</Name>
-      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 18: "Is the amount on Form 1040 or 1040-SR, line 11b, minus the amounts on lines 13a and 13b of that form, more than $384,350? ... Yes. Your deductions may be limited." IRC §68(a) as amended (https://www.law.cornell.edu/uscode/text/26/68), 2/37 reduction. Not in MVP scope.</Description>
+      <Description>#37: Schedule A (Form 1040) 2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 18: "Is
+        the amount on Form 1040 or 1040-SR, line 11b, minus the amounts on lines 13a and 13b of that form, more than
+        $384,350? ... Yes. Your deductions may be limited." IRC §68(a) as amended
+        (https://www.law.cornell.edu/uscode/text/26/68), 2/37 reduction. Not in MVP scope.</Description>
       <BlockSubmissionOnTrue />
       <TaxYear>2026</TaxYear>
       <Derived>

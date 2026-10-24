@@ -10,6 +10,10 @@ import { baseFilerData, makeW2Data, primaryFilerId, singleFilerData } from '../t
  * disregarded unless it amounts to one-half dollar or more, in which case the amount ... shall be increased by $1";
  * 26 CFR 301.6102-1(a) rounds half up. Instructions for Form 1040 (2025), p. 23: "If you do round to whole dollars,
  * you must round all amounts."
+ * Senior deduction: 26 U.S.C. 151(d)(5)(C) (https://www.law.cornell.edu/uscode/text/26/151): "$6,000 for each
+ * qualified individual", reduced by 6% of MAGI over $75,000; 2026 draft Schedule 1-A
+ * (https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf) line 38 "Enter $75,000 ($150,000 if married filing jointly)",
+ * line 40 "Multiply line 39 by 6% (0.06)", line 41 "Subtract line 40 from $6,000".
  * Golden end-to-end scenario (synthetic data): Single, age 66, wages $87,325, Schedule A 5a $4,321.40,
  * 5b $3,210.40, mortgage interest $12,000.00.
  */

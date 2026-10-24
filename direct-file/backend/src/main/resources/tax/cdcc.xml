@@ -2319,8 +2319,12 @@
     <Fact path="/cdccCareExpensesFallOffThreshold">
       <Name>Care Expenses Fall Off Threshold</Name>
       <Description>AGI above which the 50% applicable percentage starts reducing (1 point per $2,000 or fraction,
-        not below 35%). IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule. §21(a)(2)(A): "50 percent— (A) reduced (but not below 35 percent) by 1 percentage
-        point for each $2,000 or fraction thereof by which the taxpayer's adjusted gross income for the taxable year
+        not
+        below 35%). IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form
+        2441 instr. (draft) p. 6, 2026 Phaseout Schedule. §21(a)(2)(A): "50 percent— (A) reduced (but not below 35
+        percent) by 1 percentage
+        point for each $2,000 or fraction thereof by which the taxpayer's adjusted gross income
+        for the taxable year
         exceeds $15,000"</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -2330,9 +2334,13 @@
 
     <Fact path="/cdccCareExpensesSecondPhaseoutThreshold">
       <Name>Care Expenses second phaseout threshold</Name>
-      <Description>TY2026: AGI above which the 35% rate is further reduced toward 20%. IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule. §21(a)(2)(B):
-        "further reduced (but not below 20 percent) by 1 percentage point for each $2,000 ($4,000 in the case of a
-        joint return) or fraction thereof by which the taxpayer's adjusted gross income for the taxable year exceeds
+      <Description>TY2026: AGI above which the 35% rate is further reduced toward 20%. IRC §21(a)(2) as amended by P.L.
+        119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout
+        Schedule. §21(a)(2)(B):
+        "further reduced (but not below 20 percent) by 1 percentage point for each $2,000 ($4,000
+        in the case of a
+        joint return) or fraction thereof by which the taxpayer's adjusted gross income for the taxable
+        year exceeds
         $75,000 ($150,000 in the case of a joint return)."</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -2359,7 +2367,8 @@
 
     <Fact path="/cdccCareExpensesSecondPhaseoutStep">
       <Name>Care Expenses second phaseout step</Name>
-      <Description>TY2026: $4,000 per point on a joint return, $2,000 otherwise. IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule.</Description>
+      <Description>TY2026: $4,000 per point on a joint return, $2,000 otherwise. IRC §21(a)(2) as amended by P.L. 119-21
+        (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -2396,7 +2405,8 @@
     <Fact path="/cdccCareExpensesDecimalAmount">
       <Name>Care Expenses Decimal Amount</Name>
       <Description>
-        Form 2441, Line 8 (TY2026). IRC §21(a)(2) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule.
+        Form 2441, Line 8 (TY2026). IRC §21(a)(2) as amended by P.L. 119-21
+        (https://www.law.cornell.edu/uscode/text/26/21); 2026 Form 2441 instr. (draft) p. 6, 2026 Phaseout Schedule.
         Draft instr. What's New (p. 2): "the maximum percentage used to figure the credit for child and dependent care
         expenses is increased from 35% to 50% ... For 2026, the 20% minimum percentage doesn't apply until adjusted
         gross income exceeds $206,000 for joint filers and $103,000 for other filers."
@@ -2456,31 +2466,31 @@
                   </Minuend>
                   <Subtrahends>
                     <Divide>
-                    <Dividend>
-                      <StepwiseMultiply>
-                        <Multiplicand>
-                          <Subtract>
-                            <Minuend>
-                              <Dependency module="taxCalculations" path="/agi" />
-                            </Minuend>
-                            <Subtrahends>
+                      <Dividend>
+                        <StepwiseMultiply>
+                          <Multiplicand>
+                            <Subtract>
+                              <Minuend>
+                                <Dependency module="taxCalculations" path="/agi" />
+                              </Minuend>
+                              <Subtrahends>
                               <!-- "or fraction thereof": the next point drops one cent over each step -->
-                              <Add>
-                                <Dependency path="/cdccCareExpensesFallOffThreshold" />
-                                <Dollar>0.01</Dollar>
-                              </Add>
-                            </Subtrahends>
-                          </Subtract>
-                        </Multiplicand>
-                        <Rate>
-                          <Rational>1/2000</Rational>
-                        </Rate>
-                      </StepwiseMultiply>
-                    </Dividend>
-                    <Divisors>
-                      <Int>100</Int>
-                    </Divisors>
-                  </Divide>
+                                <Add>
+                                  <Dependency path="/cdccCareExpensesFallOffThreshold" />
+                                  <Dollar>0.01</Dollar>
+                                </Add>
+                              </Subtrahends>
+                            </Subtract>
+                          </Multiplicand>
+                          <Rate>
+                            <Rational>1/2000</Rational>
+                          </Rate>
+                        </StepwiseMultiply>
+                      </Dividend>
+                      <Divisors>
+                        <Int>100</Int>
+                      </Divisors>
+                    </Divide>
                   </Subtrahends>
                 </Subtract>
               </GreaterOf>
@@ -2500,31 +2510,31 @@
                   </Minuend>
                   <Subtrahends>
                     <Divide>
-                    <Dividend>
-                      <StepwiseMultiply>
-                        <Multiplicand>
-                          <Subtract>
-                            <Minuend>
-                              <Dependency module="taxCalculations" path="/agi" />
-                            </Minuend>
-                            <Subtrahends>
+                      <Dividend>
+                        <StepwiseMultiply>
+                          <Multiplicand>
+                            <Subtract>
+                              <Minuend>
+                                <Dependency module="taxCalculations" path="/agi" />
+                              </Minuend>
+                              <Subtrahends>
                               <!-- "or fraction thereof": the next point drops one cent over each step -->
-                              <Add>
-                                <Dependency path="/cdccCareExpensesSecondPhaseoutThreshold" />
-                                <Dollar>0.01</Dollar>
-                              </Add>
-                            </Subtrahends>
-                          </Subtract>
-                        </Multiplicand>
-                        <Rate>
-                          <Dependency path="/cdccCareExpensesSecondPhaseoutStep" />
-                        </Rate>
-                      </StepwiseMultiply>
-                    </Dividend>
-                    <Divisors>
-                      <Int>100</Int>
-                    </Divisors>
-                  </Divide>
+                                <Add>
+                                  <Dependency path="/cdccCareExpensesSecondPhaseoutThreshold" />
+                                  <Dollar>0.01</Dollar>
+                                </Add>
+                              </Subtrahends>
+                            </Subtract>
+                          </Multiplicand>
+                          <Rate>
+                            <Dependency path="/cdccCareExpensesSecondPhaseoutStep" />
+                          </Rate>
+                        </StepwiseMultiply>
+                      </Dividend>
+                      <Divisors>
+                        <Int>100</Int>
+                      </Divisors>
+                    </Divide>
                   </Subtrahends>
                 </Subtract>
               </GreaterOf>
@@ -3208,7 +3218,9 @@
     </Fact>
 
     <Fact path="/cdccMaximumExclusionForMFS">
-      <Description>Maximum dependent care benefits exclusion, MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."</Description>
+      <Description>Maximum dependent care benefits exclusion, MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21
+        (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate
+        return by a married individual)."</Description>
 
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -3217,7 +3229,9 @@
     </Fact>
 
     <Fact path="/cdccMaximumExclusionForNonMFS">
-      <Description>Maximum dependent care benefits exclusion, not MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21 (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate return by a married individual)."</Description>
+      <Description>Maximum dependent care benefits exclusion, not MFS (TY2026). §129(a)(2)(A) as amended by P.L. 119-21
+        (https://www.law.cornell.edu/uscode/text/26/129): "shall not exceed $7,500 ($3,750 in the case of a separate
+        return by a married individual)."</Description>
 
       <TaxYear>2026</TaxYear>
       <Derived>

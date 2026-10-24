@@ -90,18 +90,11 @@ const SaveAndOrContinueButton: FC<ScreenButtonProps> = ({
         } else {
           setSmoothScroll(true);
           setShowFeedback(true);
-          focusOnErrorOrSummary();
-          {
-            /* 
-              If there is a single field on the Screen, focus is sent to the field
-              with focusOnErrorOrSummary(). However, focus alone results in the
-              label getting cut off by the top of the browser, so we scroll to 
-              the top and keep things consistent.
-          */
-          }
-          if (factsCount === 1) {
-            window.scrollTo({ top: 0 });
-          }
+          // If there is a single field on the Screen, focus is sent to the field. However,
+          // scrolling the field into view cuts off its label at the top of the browser, so we
+          // scroll to the top instead and keep things consistent. The scroll happens after focus
+          // moves so that it is the final scroll position.
+          focusOnErrorOrSummary({ scrollToTop: factsCount === 1 });
         }
       } else {
         setSmoothScroll(false);

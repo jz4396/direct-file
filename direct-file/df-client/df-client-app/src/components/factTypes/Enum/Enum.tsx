@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useFactControl } from '../../../hooks/useFactControl.js';
 import { useEnumOptions } from '../../../hooks/useEnumOptions.js';
 import Translation from '../../Translation/index.js';
-import { ComplexFormControl, buildFormControlId } from '../../FormControl/index.js';
+import { ComplexFormControl, buildControlErrorId, buildFormControlId } from '../../FormControl/index.js';
 import DFAlert from '../../Alert/DFAlert.js';
 
 const Enum = forwardRef<HTMLInputElement, EnumFactProps>(
@@ -61,6 +61,10 @@ const Enum = forwardRef<HTMLInputElement, EnumFactProps>(
     };
 
     const showError = showFeedback && !isValid;
+    const errorId = showError ? buildControlErrorId(buildFormControlId(concretePath)) : undefined;
+    // The fieldset's description is not announced when focus moves straight to an option,
+    // so each control carries the error state and message itself (WCAG 2.1 SC 3.3.1).
+    const errorProps = showError ? { 'aria-invalid': true, 'aria-describedby': errorId } : {};
 
     if (!values || values.length === 0) {
       return (
@@ -92,8 +96,6 @@ const Enum = forwardRef<HTMLInputElement, EnumFactProps>(
     const shouldRenderAsSelect = renderAs ? renderAs === `select` : values.length > 7;
 
     if (shouldRenderAsSelect) {
-      const controlId = buildFormControlId(concretePath);
-      const errorId = showError ? `${controlId}__error-msg` : undefined;
       content = (
         <Select
           id={path}
@@ -101,7 +103,7 @@ const Enum = forwardRef<HTMLInputElement, EnumFactProps>(
           validationStatus={showError ? `error` : undefined}
           onChange={(event) => handleValueChange(event.target.value)}
           value={selectedValue}
-          aria-describedby={errorId}
+          {...errorProps}
           required={required}
           disabled={readOnly}
           autoComplete={autoComplete}
@@ -131,6 +133,7 @@ const Enum = forwardRef<HTMLInputElement, EnumFactProps>(
           required
           disabled={readOnly}
           autoComplete={autoComplete}
+          {...errorProps}
         />
       ));
     }
