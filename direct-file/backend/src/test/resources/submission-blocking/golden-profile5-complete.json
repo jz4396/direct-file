@@ -580,6 +580,22 @@
     "/hasHsaMedicalSavingsAccountType": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000000501/statutoryEmployee": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000000501/thirdPartySickPay": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000000501/hasRRTACodes": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/hasHouseholdEmployeeScheduleH": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
     }
   }
 }

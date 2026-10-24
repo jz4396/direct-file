@@ -35,6 +35,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
 /flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/collectibles-sold
+/flow/income/income-sources/unrecaptured-1250-gain
 /flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/household-employees
 /flow/income/income-sources/ira-contributions
@@ -92,11 +94,7 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/marketplace-breather
 /flow/credits-and-deductions/credits/qualified-marketplace-plan
 /flow/credits-and-deductions/credits/ptc-not-qualified-no-aptc
-/flow/credits-and-deductions/credits/edc-breather
-/flow/credits-and-deductions/credits/edc-nontaxable-payments
-/flow/credits-and-deductions/credits/edc-add-nontaxable-payment
-/flow/credits-and-deductions/credits/edc-qualified
-/flow/credits-and-deductions/credits/credit-summary-qualified
+/flow/credits-and-deductions/credits/credit-summary-not-qualified
 Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
@@ -109,15 +107,15 @@ Subcategory: /flow/your-taxes/amount
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/payment-intro
-/flow/your-taxes/payment-method/payment-method-choice
-/flow/your-taxes/payment-method/payment-outro
+/flow/your-taxes/payment-method/refund-intro
+/flow/your-taxes/payment-method/refund-method-choice
+/flow/your-taxes/payment-method/refund-mailing-address
+/flow/your-taxes/payment-method/refund-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice
 /flow/your-taxes/other-preferences/comms-different-language-choice
 /flow/your-taxes/other-preferences/comms-different-format-choice
-/flow/your-taxes/other-preferences/presidential-fund
 Category: /flow/complete
 Subcategory: /flow/complete/review
 /flow/complete/review/review

@@ -113,8 +113,10 @@ describe(`submission-blocking facts`, () => {
     expect(submissionBlockingFactPaths(goldenWith(STATE_RETURN_KNOCKOUT, incomplete))).toEqual([]);
   });
 
-  it(`passes a placeholder false /flowIsKnockedOut (known gap, https://github.com/jz4396/direct-file/issues/186)`, () => {
-    expect(submissionBlockingFactPaths(goldenWith(KNOCKED_OUT, () => placeholder(false)))).toEqual([]);
+  it(`blocks a placeholder false top-level fact (strict, https://github.com/jz4396/direct-file/issues/186)`, () => {
+    expect(submissionBlockingFactPaths(goldenWith(KNOCKED_OUT, () => placeholder(false)))).toEqual([KNOCKED_OUT]);
+    expect(submissionBlockingFactPaths(goldenWith(INVALID_TIN, () => placeholder(false)))).toEqual([INVALID_TIN]);
+    expect(submissionBlockingFactPaths(goldenWith(KNOCKED_OUT, () => complete(false)))).toEqual([]);
   });
 
   it(`blocks when a blocking fact fails to evaluate`, () => {

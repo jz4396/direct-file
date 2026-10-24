@@ -358,10 +358,29 @@
       <BlockSubmissionOnTrue />
 
       <Derived>
-        <Any>
-          <Dependency path="/hasHsaExcessContributionsPreviousYear" />
-          <Dependency path="/hasHsaWithdrawnExcessContributionsYesNo" />
-        </Any>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/someFilerHasSomeHsaActivityNotConsideringKos" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Any>
+                <Dependency path="/hasHsaExcessContributionsPreviousYear" />
+                <Dependency path="/hasHsaWithdrawnExcessContributionsYesNo" />
+              </Any>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -372,15 +391,34 @@
       <BlockSubmissionOnTrue />
 
       <Derived>
-        <All>
-          <Not>
-            <Dependency path="/flowToExcessContributionsPreviousYear" />
-          </Not>
-          <Not>
-            <Dependency path="/flowToHsaExcessContributions" />
-          </Not>
-          <Dependency path="/hasHsaMedicalSavingsAccountTypeDerived" />
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/someFilerHasSomeHsaActivityNotConsideringKos" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <All>
+                <Not>
+                  <Dependency path="/flowToExcessContributionsPreviousYear" />
+                </Not>
+                <Not>
+                  <Dependency path="/flowToHsaExcessContributions" />
+                </Not>
+                <Dependency path="/hasHsaMedicalSavingsAccountTypeDerived" />
+              </All>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -791,6 +829,14 @@
               <Dependency path="../writableMfsLine6Check" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -809,7 +855,26 @@
       <BlockSubmissionOnTrue />
 
       <Derived>
-        <Dependency path="/primaryFiler/causesHsaMfsLine6Knockout" />
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/someFilerHasSomeHsaActivityNotConsideringKos" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/primaryFiler/causesHsaMfsLine6Knockout" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -1050,16 +1115,35 @@
       <BlockSubmissionOnTrue />
 
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <Dependency path="/hsaDistributions/*/causesEarningsOnExcessContributionsKO" />
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/someFilerCanHaveDistribution" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/hsaDistributions/*/causesEarningsOnExcessContributionsKO" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -1212,7 +1296,26 @@
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
-        <Dependency path="/flowKnockoutHsaDistributionsNotNormal" />
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/someFilerCanHaveDistribution" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/flowKnockoutHsaDistributionsNotNormal" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -1439,16 +1542,37 @@
       <BlockSubmissionOnTrue />
 
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <Dependency path="/hsaDistributions/*/hasDistributionsWithoutHsaActivity" />
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hsaDistributions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/hsaDistributions/*/hasDistributionsWithoutHsaActivity" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -1458,16 +1582,37 @@
       <BlockSubmissionOnTrue />
 
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <Dependency path="/hsaDistributions/*/secondaryFilerUsedWithoutMFJ" />
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hsaDistributions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/hsaDistributions/*/secondaryFilerUsedWithoutMFJ" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -2295,16 +2440,35 @@
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <Dependency path="/hsaDistributions/*/causesUnqualifiedDistributionsKnockout" />
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/someFilerCanHaveDistribution" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/hsaDistributions/*/causesUnqualifiedDistributionsKnockout" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -2333,16 +2497,35 @@
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <Dependency path="/hsaDistributions/*/causesFmvKnockout" />
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/someFilerCanHaveDistribution" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/hsaDistributions/*/causesFmvKnockout" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -3412,6 +3595,14 @@
               <Dependency path="../hasMadeQualifiedHsaFundingDistribution" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3424,7 +3615,10 @@
       <Derived>
         <Any>
           <Dependency path="/primaryFiler/hasMadeQualifiedHsaFundingDistributionDerived" />
-          <Dependency path="/secondaryFiler/hasMadeQualifiedHsaFundingDistributionDerived" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency path="/secondaryFiler/hasMadeQualifiedHsaFundingDistributionDerived" />
+          </All>
         </Any>
       </Derived>
     </Fact>

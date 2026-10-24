@@ -70,6 +70,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
 /flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/collectibles-sold
+/flow/income/income-sources/unrecaptured-1250-gain
 /flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/household-employees
 /flow/income/income-sources/ira-contributions
@@ -133,17 +135,20 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/marketplace-breather
 /flow/credits-and-deductions/credits/qualified-marketplace-plan
 /flow/credits-and-deductions/credits/ptc-not-qualified-no-aptc
-/flow/credits-and-deductions/credits/edc-breather
-/flow/credits-and-deductions/credits/edc-disability-intro-screen
-/flow/credits-and-deductions/credits/edc-permanent-total-disability
 /flow/credits-and-deductions/credits/ctc-intro
 /flow/credits-and-deductions/credits/ctc-improper-claims
 /flow/credits-and-deductions/credits/ctc-qualified
+/flow/credits-and-deductions/credits/credit-summary-qualified
 Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-y-n
+/flow/your-taxes/amount/schedule-3a-without-ty2026-template-knockout
+/flow/your-taxes/amount/tax-amount-intro
+/flow/your-taxes/amount/tax-amount-number
+/flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/amount
+/flow/your-taxes/amount/schedule-3a-without-ty2026-template-knockout
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation

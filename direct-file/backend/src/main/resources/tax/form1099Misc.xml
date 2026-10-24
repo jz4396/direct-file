@@ -224,16 +224,37 @@
       <Export downstreamFacts="true" />
 
       <Derived>
-        <GreaterThan>
-          <Left>
-            <CollectionSize>
-              <Dependency path="/form1099Miscs" />
-            </CollectionSize>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/form1099Miscs" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/form1099Miscs" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -294,16 +315,37 @@
       <Description>Whether secondary filer has forms when primary filer is not filing jointly</Description>
       <BlockSubmissionOnTrue />
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <Dependency path="/form1099Miscs/*/secondaryFilerUsedWithoutMFJ" />
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/form1099Miscs" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/form1099Miscs/*/secondaryFilerUsedWithoutMFJ" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

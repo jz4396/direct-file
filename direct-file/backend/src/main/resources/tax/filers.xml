@@ -3615,10 +3615,29 @@
       <Export downstreamFacts="true" />
 
       <Derived>
-        <All>
-          <Dependency path="/spouseItemizes" />
-          <Dependency path="/MFSSpouseFilingReturnDerived" />
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <All>
+                <Dependency path="/MFSSpouseFilingReturnDerived" />
+                <Dependency path="/spouseItemizes" />
+              </All>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

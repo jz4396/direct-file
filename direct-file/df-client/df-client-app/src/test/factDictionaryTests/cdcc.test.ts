@@ -592,11 +592,52 @@ describe(`For CDCC, a filer`, () => {
 
     const _baseData = baseData;
     describe(`Worksheet A routing`, () => {
+      // The Worksheet A questions are asked only when /cdccMaybeHasQualifyingExpenses is true (#186), so the
+      // return has a qualifying person with expenses.
       const baseData = {
         ..._baseData,
         ...makeW2Data(50000, w2Id),
         [Path.concretePath(`/formW2s`, null)]: createCollectionWrapper([w2Id]),
+        ...eligibilityData[filingStatus][0].eligibilityDatum,
+        ...(filingStatus === FilingStatus.MFS
+          ? {
+              '/MFSLivingSpouseFilingReturn': createBooleanWrapper(false),
+              '/MFSSpouseHasGrossIncome': createBooleanWrapper(false),
+              '/MFSSpouse65OrOlder': createBooleanWrapper(false),
+              ...livedApartFacts,
+            }
+          : {}),
+        ...makeClaimedChild(dependentId, {
+          [`/unableToCareForSelf`]: createBooleanWrapper(true),
+          [`/residencyDuration`]: createEnumWrapper(`allYear`, `residencyDurationOptions`),
+          [`/tpPaidMostOfHomeUpkeep`]: createBooleanWrapper(true),
+        }),
+        [Path.concretePath(`/familyAndHousehold`, null)]: createCollectionWrapper([dependentId]),
+        [Path.concretePath(`/writableCdccHasQualifyingExpenses`, null)]: createBooleanWrapper(true),
+        [Path.concretePath(`/familyAndHousehold/*/cdccHasDependentCareExpenses`, dependentId)]:
+          createBooleanWrapper(true),
+        [Path.concretePath(`/familyAndHousehold/*/cdccHadExpensesPaidToQualifyingProvider`, dependentId)]:
+          createBooleanWrapper(true),
+        [Path.concretePath(`/familyAndHousehold/*/writableCdccQualifyingExpenseAmount`, dependentId)]:
+          createDollarWrapper(`2000`),
       };
+
+      it(`asks the Worksheet A questions for this return`, () => {
+        const { factGraph } = setupFactGraph(baseData);
+        const gate = factGraph.get(`/cdccMaybeHasQualifyingExpenses` as ConcretePath);
+        expect(gate.complete).toBe(true);
+        expect(gate.get).toBe(true);
+      });
+
+      it(`is a complete false when there are no qualifying expenses (not applicable, #186)`, () => {
+        const { factGraph } = setupFactGraph({
+          ...baseData,
+          [Path.concretePath(`/writableCdccHasQualifyingExpenses`, null)]: createBooleanWrapper(false),
+        });
+        const fact = factGraph.get(`/knockoutCdccWorksheetA` as ConcretePath);
+        expect(fact.complete).toBe(true);
+        expect(fact.get).toBe(false);
+      });
 
       it(`is a knockout when conditions for requiring Worksheet A are met`, () => {
         const { factGraph } = setupFactGraph({
@@ -2628,6 +2669,7 @@ describe(`For /flowKnockoutBenefitsDistribution, with filers`, () => {
     [`/writableCdccTotalQualifiedDependentCareExpenses`]: createDollarWrapper(`6000.00`),
     [Path.concretePath(`/hasCdccCarryoverAmountFromPriorTaxYear`, null)]: createBooleanWrapper(false),
     [Path.concretePath(`/writableHasCdccForfeitedCredits`, null)]: createBooleanWrapper(false),
+    [`/writableCdccHasQualifyingExpenses`]: createBooleanWrapper(true),
   };
 
   describe(`Where both received dependent care benefits`, () => {
@@ -2642,6 +2684,16 @@ describe(`For /flowKnockoutBenefitsDistribution, with filers`, () => {
         const { factGraph } = setupFactGraph(w2sBelowBenefitCap);
         const fact = factGraph.get(Path.concretePath(`/flowKnockoutBenefitsDistribution`, null));
         expect(fact.get).toBe(true);
+      });
+
+      it(`is a complete false without qualifying expenses for the credit (not applicable, #186)`, () => {
+        const { factGraph } = setupFactGraph({
+          ...w2sBelowBenefitCap,
+          [`/writableCdccHasQualifyingExpenses`]: createBooleanWrapper(false),
+        });
+        const fact = factGraph.get(Path.concretePath(`/flowKnockoutBenefitsDistribution`, null));
+        expect(fact.complete).toBe(true);
+        expect(fact.get).toBe(false);
       });
     });
 

@@ -549,16 +549,7 @@
                 <Int>0</Int>
               </Right>
             </GreaterThan>
-            <GreaterThan>
-              <Left>
-                <CollectionSize>
-                  <Dependency module="form1099Misc" path="/form1099Miscs" />
-                </CollectionSize>
-              </Left>
-              <Right>
-                <Int>0</Int>
-              </Right>
-            </GreaterThan>
+            <Dependency module="form1099Misc" path="/has1099Misc" />
             <GreaterThan>
               <Left>
                 <Dependency module="interest" path="/taxExemptInterest" />
@@ -579,16 +570,7 @@
             </GreaterThan>
             <All>
               <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
-              <GreaterThan>
-                <Left>
-                  <CollectionSize>
-                    <Dependency module="scheduleD" path="/form8949Transactions" />
-                  </CollectionSize>
-                </Left>
-                <Right>
-                  <Int>0</Int>
-                </Right>
-              </GreaterThan>
+              <Dependency module="scheduleD" path="/hasForm8949Transactions" />
             </All>
           </Any>
         </All>
@@ -768,30 +750,25 @@
         <All>
           <Dependency module="stateReturn" path="/stateReturnPaFiled" />
           <Any>
-            <Not>
-              <Equal>
-                <Left>
-                  <Dependency path="/paLine5" />
-                </Left>
-                <Right>
-                  <Dollar>0</Dollar>
-                </Right>
-              </Equal>
-            </Not>
+            <!-- #186: /paLine5 sums Form 8949 rows, so it is read only when there are rows. -->
+            <All>
+              <Dependency module="scheduleD" path="/hasForm8949Transactions" />
+              <Not>
+                <Equal>
+                  <Left>
+                    <Dependency path="/paLine5" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </Equal>
+              </Not>
+            </All>
             <All>
               <Not>
                 <Dependency path="/paPartYearSupported" />
               </Not>
-              <GreaterThan>
-                <Left>
-                  <CollectionSize>
-                    <Dependency module="scheduleD" path="/form8949Transactions" />
-                  </CollectionSize>
-                </Left>
-                <Right>
-                  <Int>0</Int>
-                </Right>
-              </GreaterThan>
+              <Dependency module="scheduleD" path="/hasForm8949Transactions" />
             </All>
             <All>
               <Dependency path="/paPartYearSupported" />

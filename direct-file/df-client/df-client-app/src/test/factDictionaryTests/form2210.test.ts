@@ -244,11 +244,7 @@ describe(`Form 2210 (#92): each Part II box knocks out (BlockSubmissionOnTrue, /
 
   it(`the same yes under $1,000 does nothing`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutForm2210`];
-    const fg = withLine7(
-      singleFilerData,
-      999,
-      answers(true, { '/form2210WaiverRequested': createBooleanWrapper(true) })
-    );
+    const fg = withLine7(`single`, 999, answers(true, { '/form2210WaiverRequested': createBooleanWrapper(true) }));
     expect(val(fg, `/flowKnockoutForm2210`)).toBe(false);
   });
 });
