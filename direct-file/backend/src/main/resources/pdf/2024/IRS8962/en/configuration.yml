@@ -118,7 +118,7 @@ form:
       f1_92[0]: /totalAptcAmountTaken
       f1_93[0]: /netPtcAmountWhenZeroOrPositive
       f1_94[0]: /netPtcAmountWhenNegative
-      f1_95[0]: /ptcRepaymentLimitation
+      # f1_95[0]: line 28 (no repayment limitation fact for TY2026)
       f1_96[0]: /lesserOfNetPtcAmountAndRepaymentLimitation
     Page2[0]:
       # f2_1[0]:

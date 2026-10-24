@@ -35,30 +35,296 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutPtcTy2026RulesNotImplemented">
-      <Name>Knockout: TY2026 premium tax credit rules not yet implemented</Name>
-      <Description>#91: blocks submission for any return that must file Form 8962 until the TY2026 premium tax credit
-        rules are implemented. The PTC facts in this module still follow the TY2024 rules, and three of those rules
-        changed for TY2026:
-        (1) Repayment limitation removed. Rev. Proc. 2025-32 sec. 2.04, p. 5
-        (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "Section 71305 of the OBBBA removes sec. 36B(f)(2)(B), which
-        limited the tax increase from excess advance payments for certain households, effective for taxable years
-        beginning after December 31, 2025." /ptcRepaymentLimitation still caps repayment at the TY2024 amounts.
-        (2)
-        Applicable percentage table. Rev. Proc. 2025-25 sec. 3.01 (https://www.irs.gov/pub/irs-drop/rp-25-25.pdf)
-        sets
-        the 2026 table at 2.10% (less than 133%) up to 9.96% (300% through 400%). /applicableFigure still uses the
-        TY2024 table (0% up to 150%, 8.5% at 400% and above, with no 400% limit).
-        (3) Federal poverty line: now the 2025
-        HHS guidelines (#91), see /federalPovertyLineMagicNumberStartingNumber.
-        Fixing (1) and (2) is a separate change;
-        until then this knockout stops the return rather than computing the credit
-        or the repayment under the wrong
-        rules.</Description>
+    <Fact path="/form8962NeededOrUnresolved">
+      <Description>#88: the guard for the Form 8962 knockouts. First, true when the qualifying-plan answer is yes
+        and no
+        Form 1095-A is entered (for example after deleting the only one): /needsToFileForm8962 then reads a
+        definite no
+        from the empty collection, yet any advance payments still have to be reconciled. Otherwise it is
+        /needsToFileForm8962 once that is complete; while that is not, it fails closed: true when a Form 1095-A has been
+        entered, false otherwise. A return with advance payments of the premium tax credit therefore cannot print
+        without its Form 8962 lines (Form 8962 (2026) draft, https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, PDF p. 1,
+        line 27: "Excess advance payment of PTC. If line 25 is greater than line 24, subtract line 24 from line 25.
+        Enter the difference here and on Schedule 2 (Form 1040), line 1a"). False with no Form 1095-A and no yes, so a
+        return that never reaches the premium tax credit section is unaffected.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/writableHasPtcQualifyingPlan" />
+                </IsComplete>
+                <Dependency path="/writableHasPtcQualifyingPlan" />
+                <Not>
+                  <All>
+                    <IsComplete>
+                      <Dependency path="/has1095A" />
+                    </IsComplete>
+                    <Dependency path="/has1095A" />
+                  </All>
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/needsToFileForm8962" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/needsToFileForm8962" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Any>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/has1095A" />
+                  </IsComplete>
+                  <Dependency path="/has1095A" />
+                </All>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/writableHasPtcQualifyingPlan" />
+                  </IsComplete>
+                  <Dependency path="/writableHasPtcQualifyingPlan" />
+                </All>
+              </Any>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutForm8962WithoutTy2026Template">
+      <Name>Knockout: the return needs a TY2026 Form 8962, which this tool can't produce yet</Name>
+      <Description>#88: true when Form 8962 is needed. Form 8962 (2026) draft, Created 4/21/26
+        (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, SHA-256
+        5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35), PDF p. 1: "Attach to Form 1040, 1040-SR, or
+        1040-NR." The only Form 8962 template here is the 2024 form, whose Part III still has the repayment limitation
+        lines that the 2026 draft marks "Reserved for future use" (lines 28-29; Rev. Proc. 2025-32 sec. 2.04,
+        https://www.irs.gov/pub/irs-drop/rp-25-32.pdf, PDF p. 5). Same pattern as eitc
+        /flowKnockoutScheduleEicWithoutTy2026Template. Complete and false only when Form 8962 is known not to be needed;
+        fails closed through /form8962NeededOrUnresolved while that is unresolved.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/form8962NeededOrUnresolved" />
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutPtcAllocationOfPolicyAmounts">
+      <Name>Knockout: Form 8962 Part IV allocation of policy amounts</Name>
+      <Description>#88: Form 8962 (2026) draft, Created 4/21/26 (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf), PDF
+        p.
+        1, line 9: "Are you allocating policy amounts with another taxpayer ... Yes. Skip to Part IV, Allocation of
+        Policy Amounts". Part IV (shared policy allocation, Treas. Reg. 1.36B-4(a)(1)(ii)) is not computed. True when
+        /needsAllocations or /dependentTpRequiresAllocations is true; complete false otherwise.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
-        <Dependency path="/needsToFileForm8962" />
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency path="/needsAllocations" />
+            </IsComplete>
+            <Dependency path="/needsAllocations" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="/dependentTpRequiresAllocations" />
+            </IsComplete>
+            <Dependency path="/dependentTpRequiresAllocations" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutPtcAlternativeCalculationForYearOfMarriage">
+      <Name>Knockout: Form 8962 Part V alternative calculation for year of marriage</Name>
+      <Description>#88: Form 8962 (2026) draft, PDF p. 1, line 9: "... or do you want to use the alternative calculation
+        for year of marriage? ... Yes. Skip to ... Part V, Alternative Calculation for Year of Marriage." Part V (Treas.
+        Reg. 1.36B-4(b)) is not computed. True when /wantsToUseAltCalculations is true; complete false otherwise.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency path="/wantsToUseAltCalculations" />
+            </IsComplete>
+            <Dependency path="/wantsToUseAltCalculations" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutPtcSelfEmployedHealthInsurance">
+      <Name>Knockout: premium tax credit with self-employment income</Name>
+      <Description>#88: a return that files Form 8962 and has Schedule C net profit may claim the self-employed health
+        insurance deduction (26 U.S.C. 162(l), https://www.law.cornell.edu/uscode/text/26/162) for the same Marketplace
+        premiums. The deduction and the credit depend on each other (Rev. Proc. 2014-41 iterative or simplified
+        calculation); i8962 (2025) (https://www.irs.gov/pub/irs-pdf/i8962.pdf), PDF p. 18: "If you are self-employed and
+        are claiming the self-employed health insurance deduction, see Self-Employed Health Insurance Deduction and PTC
+        in
+        Pub. 974". That calculation is not supported, so the return stops instead of computing the credit without the
+        deduction. Complete false when Form 8962 is not needed (/form8962NeededOrUnresolved false) or Schedule C net
+        profit is not more than $0.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/form8962NeededOrUnresolved" />
+          <GreaterThan>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl">
+      <Name>Knockout: Form 8962 line 5 below 100%</Name>
+      <Description>#88: 26 U.S.C. 36B(c)(1)(A) (https://www.law.cornell.edu/uscode/text/26/36B): an applicable
+        taxpayer's
+        household income "equals or exceeds 100 percent but does not exceed 400 percent" of the poverty line.
+        The
+        exceptions for income under 100% (the estimated-income rule of Treas. Reg. 1.36B-2(b)(6), and 36B(c)(1)(B)
+        for
+        lawfully present aliens, "[(B) Repealed. Pub. L. 119-21, § 71302(a)]" for taxable years beginning after
+        2025)
+        are not computed; Form 8962 (2026) draft, PDF p. 1, line 6: "(See instructions if you entered less than
+        100%.)".
+        True when Form 8962 is needed, or unresolved on a return with a Form 1095-A (/form8962NeededOrUnresolved),
+        and
+        line 5 is less than 100; complete false otherwise.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/form8962NeededOrUnresolved" />
+          <Dependency path="/isBelow100PercentFederalPovertyLevel" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod">
+      <Description>(writable) Whether any Marketplace plan on Form 1095-A was enrolled in during a special enrollment
+        period offered on the basis of expected household income</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/enrolledDuringIncomeBasedSpecialEnrollmentPeriod">
+      <Description>#88: 26 U.S.C. 36B(c)(3)(A)(iii) (https://www.law.cornell.edu/uscode/text/26/36B), added by Pub. L.
+        119-21 sec. 71304(a) for "plan years beginning after December 31, 2025": a qualified health plan "shall not
+        include any plan enrolled in during a special enrollment period provided for by an Exchange-- (I) on the basis
+        of the relationship of the individual's expected household income to such a percentage of the poverty line (or
+        such other amount) as is prescribed by the Secretary of Health and Human Services for purposes of such period,
+        and (II) not in connection with the occurrence of an event or change in circumstances". Asked only when Form
+        8962 is needed.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/needsToFileForm8962" />
+                </IsComplete>
+                <Dependency path="/needsToFileForm8962" />
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/enrolledDuringIncomeBasedSpecialEnrollmentPeriodIsComplete">
+      <Description>#88: the income-based special enrollment period question is answered whenever Form 8962 is needed.</Description>
+      <Derived>
+        <Any>
+          <Not>
+            <All>
+              <IsComplete>
+                <Dependency path="/needsToFileForm8962" />
+              </IsComplete>
+              <Dependency path="/needsToFileForm8962" />
+            </All>
+          </Not>
+          <IsComplete>
+            <Dependency path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
+          </IsComplete>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod">
+      <Name>Knockout: plan enrolled in during an income-based special enrollment period</Name>
+      <Description>#88: 26 U.S.C. 36B(c)(3)(A)(iii), see /enrolledDuringIncomeBasedSpecialEnrollmentPeriod. Such a plan
+        is not a qualified health plan, so its months are not coverage months; separating those months from the rest of
+        the Form 1095-A is not supported. Fails closed: true on "yes" and true while the question is unanswered on a
+        return that needs Form 8962; complete false only on "no" or when Form 8962 is not needed (same
+        /needsToFileForm8962
+        guard as /flowKnockoutForm8962WithoutTy2026Template).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/form8962NeededOrUnresolved" />
+                <IsComplete>
+                  <Dependency path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/form8962NeededOrUnresolved" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -115,6 +381,7 @@
             </All>
           </Any>
           <Dependency path="/uniqueCircumstancesIsComplete" />
+          <Dependency path="/enrolledDuringIncomeBasedSpecialEnrollmentPeriodIsComplete" />
         </All>
       </Derived>
     </Fact>
@@ -1518,171 +1785,189 @@
       </Derived>
     </Fact>
 
-    <Fact path="/applicableFigure">
-      <Description>Applicable figure based on table 2 for Form 8962 instructions</Description>
+    <Fact path="/applicableFigureUnrounded">
+      <Name>Form 8962 line 7 applicable figure before rounding</Name>
+      <Description>#88: Form 8962 (2026) draft, Created 4/21/26 (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf), PDF
+        p.
+        1, line 7: "Applicable figure. Using your line 5 percentage, locate your "applicable figure" on the table in
+        the
+        instructions". Rev. Proc. 2025-25 sec. 3.01 (https://www.irs.gov/pub/irs-drop/rp-25-25.pdf), PDF p. 3,
+        Applicable Percentage Table for taxable years beginning in 2026 (initial / final percentage): less than 133%,
+        2.10% / 2.10%; at least 133% but less than 150%, 3.14% / 4.19%; at least 150% but less than 200%, 4.19% /
+        6.60%;
+        at least 200% but less than 250%, 6.60% / 8.44%; at least 250% but less than 300%, 8.44% / 9.96%; at
+        least 300%
+        but not more than 400%, 9.96% / 9.96%. The 2021-2025 table of 26 U.S.C. 36B(b)(3)(A)(iii)
+        (https://www.law.cornell.edu/uscode/text/26/36B) applies only "after December 31, 2020, and before January 1,
+        2026". Within a tier the percentage "increases on a sliding scale in a linear manner" (Treas. Reg.
+        1.36B-3(g)(1)): initial + (line 5 - tier floor) x (final - initial) / tier width, computed exactly here and
+        rounded
+        half up to a whole hundredth of a percent (4 decimals, the precision of the line 7 table) in
+        /applicableFigure. Line 5 of 401
+        (over 400%) is not an applicable taxpayer under 36B(c)(1)(A), "does not exceed
+        400 percent"; the 9.96% figure is
+        kept for that case only so the fact stays complete, and lines 11d and 12-23(d)
+        are $0 (see
+        /annualMaxPremiumAssitance).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <LessThanOrEqual>
+              <LessThan>
+                <Left>
+                  <Dependency path="/householdIncomeAsPercent" />
+                </Left>
+                <Right>
+                  <Int>133</Int>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Rational>210/10000</Rational>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
                 <Left>
                   <Dependency path="/householdIncomeAsPercent" />
                 </Left>
                 <Right>
                   <Int>150</Int>
                 </Right>
-              </LessThanOrEqual>
+              </LessThan>
             </When>
             <Then>
-              <Rational>0/10000</Rational>
+              <Add>
+                <Rational>314/10000</Rational>
+                <Multiply>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="/householdIncomeAsPercent" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Int>133</Int>
+                    </Subtrahends>
+                  </Subtract>
+                  <Rational>105/170000</Rational>
+                </Multiply>
+              </Add>
             </Then>
           </Case>
           <Case>
             <When>
-              <LessThanOrEqual>
+              <LessThan>
+                <Left>
+                  <Dependency path="/householdIncomeAsPercent" />
+                </Left>
+                <Right>
+                  <Int>200</Int>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <Rational>419/10000</Rational>
+                <Multiply>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="/householdIncomeAsPercent" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Int>150</Int>
+                    </Subtrahends>
+                  </Subtract>
+                  <Rational>241/500000</Rational>
+                </Multiply>
+              </Add>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/householdIncomeAsPercent" />
+                </Left>
+                <Right>
+                  <Int>250</Int>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <Rational>660/10000</Rational>
+                <Multiply>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="/householdIncomeAsPercent" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Int>200</Int>
+                    </Subtrahends>
+                  </Subtract>
+                  <Rational>184/500000</Rational>
+                </Multiply>
+              </Add>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
                 <Left>
                   <Dependency path="/householdIncomeAsPercent" />
                 </Left>
                 <Right>
                   <Int>300</Int>
                 </Right>
-              </LessThanOrEqual>
+              </LessThan>
             </When>
             <Then>
-              <Multiply>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/householdIncomeAsPercent" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Int>150</Int>
-                  </Subtrahends>
-                </Subtract>
-                <Rational>4/10000</Rational>
-              </Multiply>
+              <Add>
+                <Rational>844/10000</Rational>
+                <Multiply>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="/householdIncomeAsPercent" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Int>250</Int>
+                    </Subtrahends>
+                  </Subtract>
+                  <Rational>152/500000</Rational>
+                </Multiply>
+              </Add>
             </Then>
           </Case>
           <Case>
             <When>
-              <LessThanOrEqual>
-                <Left>
-                  <Dependency path="/householdIncomeAsPercent" />
-                </Left>
-                <Right>
-                  <Int>399</Int>
-                </Right>
-              </LessThanOrEqual>
+              <True />
             </When>
             <Then>
-              <Switch>
-                <Case>
-                  <!-- TODO: consider adding isOdd/isEven helper method for Ints in Scala, as it would simplify this -->
-                  <!-- Is odd and needs to add an extra 0.00005 -->
-                  <When>
-                    <NotEqual>
-                      <Left>
-                        <StepwiseMultiply>
-                          <Multiplicand>
-                            <Multiply>
-                              <Subtract>
-                                <Minuend>
-                                  <Dependency path="/householdIncomeAsPercent" />
-                                </Minuend>
-                                <Subtrahends>
-                                  <Int>300</Int>
-                                </Subtrahends>
-                              </Subtract>
-                              <Dollar>25</Dollar>
-                            </Multiply>
-                          </Multiplicand>
-                          <Rate>
-                            <Rational>1/10</Rational>
-                          </Rate>
-                        </StepwiseMultiply>
-                      </Left>
-                      <Right>
-                        <StepwiseMultiply>
-                          <Multiplicand>
-                            <Add>
-                              <Multiply>
-                                <Subtract>
-                                  <Minuend>
-                                    <Dependency path="/householdIncomeAsPercent" />
-                                  </Minuend>
-                                  <Subtrahends>
-                                    <Int>300</Int>
-                                  </Subtrahends>
-                                </Subtract>
-                                <Dollar>25</Dollar>
-                              </Multiply>
-                              <Dollar>5</Dollar>
-                            </Add>
-                          </Multiplicand>
-                          <Rate>
-                            <Rational>1/10</Rational>
-                          </Rate>
-                        </StepwiseMultiply>
-                      </Right>
-                    </NotEqual>
-                  </When>
-                  <Then>
-                    <Add>
-                      <Multiply>
-                        <Rational>25/100000</Rational>
-                        <Subtract>
-                          <Minuend>
-                            <Dependency path="/householdIncomeAsPercent" />
-                          </Minuend>
-                          <Subtrahends>
-                            <Int>300</Int>
-                          </Subtrahends>
-                        </Subtract>
-                      </Multiply>
-                      <Rational>5/100000</Rational>
-                      <Rational>600/10000</Rational>
-                    </Add>
-                  </Then>
-                </Case>
-                <Case>
-                  <When>
-                    <True />
-                  </When>
-                  <Then>
-                    <Add>
-                      <Rational>600/10000</Rational>
-                      <Multiply>
-                        <Rational>25/100000</Rational>
-                        <Subtract>
-                          <Minuend>
-                            <Dependency path="/householdIncomeAsPercent" />
-                          </Minuend>
-                          <Subtrahends>
-                            <Int>300</Int>
-                          </Subtrahends>
-                        </Subtract>
-                      </Multiply>
-                    </Add>
-                  </Then>
-                </Case>
-              </Switch>
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <GreaterThanOrEqual>
-                <Left>
-                  <Dependency path="/householdIncomeAsPercent" />
-                </Left>
-                <Right>
-                  <Int>400</Int>
-                </Right>
-              </GreaterThanOrEqual>
-            </When>
-            <Then>
-              <Rational>850/10000</Rational>
+              <Rational>996/10000</Rational>
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/applicableFigure">
+      <Name>Form 8962 line 7: applicable figure</Name>
+      <Description>#88: /applicableFigureUnrounded rounded half up to 4 decimals (a whole hundredth of a percent), the
+        precision of the applicable figure table for Form 8962 line 7.</Description>
+      <Derived>
+        <Multiply>
+          <RoundToInt>
+            <Multiply>
+              <Multiply>
+                <Dependency path="/applicableFigureUnrounded" />
+                <Int>10000</Int>
+              </Multiply>
+              <Dollar>1</Dollar>
+            </Multiply>
+          </RoundToInt>
+          <Rational>1/10000</Rational>
+        </Multiply>
       </Derived>
     </Fact>
 
@@ -6587,7 +6872,15 @@
     </Fact>
 
     <Fact path="/annualMaxPremiumAssitance">
-      <Description>Annual max premium assitance, Form 8962 Line 11d</Description>
+      <Description>Annual max premium assistance, Form 8962 line 11d. #88: $0 when line 5 is 401. Form 8962 (2026)
+        draft, PDF p. 1, line 6: "Did you enter 401% on line 5? ... Yes. You are not eligible to take the PTC."
+        26 U.S.C.
+        36B(c)(1)(A): an applicable taxpayer's household income "equals or exceeds 100 percent but does not
+        exceed 400
+        percent" of the poverty line; the 36B(c)(1)(E) suspension of that limit applies only "before
+        January 1, 2026".
+        With line 11d (and 12-23(d)) at $0 the credit on line 24 is $0 and all advance payments are
+        repaid on line 27.</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -6615,17 +6908,34 @@
                     <True />
                   </When>
                   <Then>
-                    <GreaterOf>
-                      <Dollar>0</Dollar>
-                      <Subtract>
-                        <Minuend>
-                          <Dependency path="/totalAnnualSlcspPremium" />
-                        </Minuend>
-                        <Subtrahends>
-                          <Dependency path="/ptcAnnualContributionAmount" />
-                        </Subtrahends>
-                      </Subtract>
-                    </GreaterOf>
+                    <Switch>
+                      <Case>
+                        <When>
+                          <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                        </When>
+                        <Then>
+                          <Dollar>0</Dollar>
+                        </Then>
+                      </Case>
+                      <Case>
+                        <When>
+                          <True />
+                        </When>
+                        <Then>
+                          <GreaterOf>
+                            <Dollar>0</Dollar>
+                            <Subtract>
+                              <Minuend>
+                                <Dependency path="/totalAnnualSlcspPremium" />
+                              </Minuend>
+                              <Subtrahends>
+                                <Dependency path="/ptcAnnualContributionAmount" />
+                              </Subtrahends>
+                            </Subtract>
+                          </GreaterOf>
+                        </Then>
+                      </Case>
+                    </Switch>
                   </Then>
                 </Case>
               </Switch>
@@ -7788,7 +8098,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForJan">
-      <Description>The monthly PTC max premium assitance for Jan</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Jan</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7801,17 +8112,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForJan" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForJan" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForJan" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForJan" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -7819,7 +8147,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForFeb">
-      <Description>The monthly PTC max premium assitance for Feb</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Feb</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7832,17 +8161,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForFeb" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForFeb" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForFeb" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForFeb" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -7850,7 +8196,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForMar">
-      <Description>The monthly PTC max premium assitance for Mar</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Mar</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7863,17 +8210,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForMar" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForMar" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForMar" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForMar" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -7881,7 +8245,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForApr">
-      <Description>The monthly PTC max premium assitance for Apr</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Apr</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7894,17 +8259,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForApr" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForApr" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForApr" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForApr" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -7912,7 +8294,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForMay">
-      <Description>The monthly PTC max premium assitance for May</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for May</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7925,17 +8308,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForMay" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForMay" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForMay" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForMay" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -7943,7 +8343,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForJun">
-      <Description>The monthly PTC max premium assitance for Jun</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Jun</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7956,17 +8357,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForJun" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForJun" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForJun" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForJun" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -7974,7 +8392,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForJul">
-      <Description>The monthly PTC max premium assitance for Jul</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Jul</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7987,17 +8406,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForJul" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForJul" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForJul" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForJul" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -8005,7 +8441,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForAug">
-      <Description>The monthly PTC max premium assitance for Aug</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Aug</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8018,17 +8455,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForAug" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForAug" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForAug" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForAug" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -8036,7 +8490,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForSep">
-      <Description>The monthly PTC max premium assitance for Sep</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Sep</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8049,17 +8504,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForSep" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForSep" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForSep" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForSep" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -8067,7 +8539,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForOct">
-      <Description>The monthly PTC max premium assitance for Oct</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Oct</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8080,17 +8553,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForOct" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForOct" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForOct" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForOct" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -8098,7 +8588,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForNov">
-      <Description>The monthly PTC max premium assitance for Nov</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Nov</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8111,17 +8602,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForNov" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForNov" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForNov" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForNov" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -8129,7 +8637,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForDec">
-      <Description>The monthly PTC max premium assitance for Dec</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Dec</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8142,17 +8651,34 @@
               </All>
             </When>
             <Then>
-              <GreaterOf>
-                <Dollar>0</Dollar>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="/monthlyPtcSlcspPremiumForDec" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="/monthlyPtcContributionAmountForDec" />
-                  </Subtrahends>
-                </Subtract>
-              </GreaterOf>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+                  </When>
+                  <Then>
+                    <Dollar>0</Dollar>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <GreaterOf>
+                      <Dollar>0</Dollar>
+                      <Subtract>
+                        <Minuend>
+                          <Dependency path="/monthlyPtcSlcspPremiumForDec" />
+                        </Minuend>
+                        <Subtrahends>
+                          <Dependency path="/monthlyPtcContributionAmountForDec" />
+                        </Subtrahends>
+                      </Subtract>
+                    </GreaterOf>
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
         </Switch>
@@ -9399,232 +9925,12 @@
       </Derived>
     </Fact>
 
-    <!-- We could simply these and ptcRepaymentLimitation but chosing to be verbose to increase flexibility if the
-    proportions don't stay the same -->
-    <Fact path="/ptcRepaymentLimitationLessThan200PercentFplSingle">
-      <Description>Repayment limitation based on lt 200% FPL (federal poverty limit) and single Rev Proc .07 Refundable
-        Credit for Coverage Under a Qualified Health Plan § 36B(f)(2)(B)</Description>
-      <TaxYear>2024</TaxYear>
-      <Derived>
-        <Dollar>375</Dollar>
-      </Derived>
-    </Fact>
-
-    <Fact path="/ptcRepaymentLimitationLessThan200PercentFplOther">
-      <Description>Repayment limitation lt 200% FPL and not signle Rev Proc .07 Refundable Credit for Coverage Under a
-        Qualified Health Plan § 36B(f)(2)(B)</Description>
-      <TaxYear>2024</TaxYear>
-      <Derived>
-        <Dollar>750</Dollar>
-      </Derived>
-    </Fact>
-
-    <Fact path="/ptcRepaymentLimitationLessThan300PercentFplSingle">
-      <Description>Repayment limitation based on lt 300% FPL and single Rev Proc .07 Refundable Credit for Coverage
-        Under a Qualified Health Plan § 36B(f)(2)(B)</Description>
-      <TaxYear>2024</TaxYear>
-      <Derived>
-        <Dollar>950</Dollar>
-      </Derived>
-    </Fact>
-
-    <Fact path="/ptcRepaymentLimitationLessThan300PercentFplOther">
-      <Description>Repayment limitation lt 300% FPL and not signle Rev Proc .07 Refundable Credit for Coverage Under a
-        Qualified Health Plan § 36B(f)(2)(B)</Description>
-      <TaxYear>2024</TaxYear>
-      <Derived>
-        <Dollar>1900</Dollar>
-      </Derived>
-    </Fact>
-
-    <Fact path="/ptcRepaymentLimitationLessThan400PercentFplSingle">
-      <Description>Repayment limitation based on lt 400% FPL and single Rev Proc .07 Refundable Credit for Coverage
-        Under a Qualified Health Plan § 36B(f)(2)(B)</Description>
-      <TaxYear>2024</TaxYear>
-      <Derived>
-        <Dollar>1575</Dollar>
-      </Derived>
-    </Fact>
-
-    <Fact path="/ptcRepaymentLimitationLessThan400PercentFplOther">
-      <Description>Repayment limitation lt 400% FPL and not signle Rev Proc .07 Refundable Credit for Coverage Under a
-        Qualified Health Plan § 36B(f)(2)(B)</Description>
-      <TaxYear>2024</TaxYear>
-      <Derived>
-        <Dollar>3150</Dollar>
-      </Derived>
-    </Fact>
-
-    <Fact path="/ptcRepaymentLimitation">
-      <Description>PTC repayment limitation, Line 28</Description>
-      <Export mef="true" />
-      <Derived>
-        <Switch>
-          <!-- Workaround to ensure this line is blank when tax family size is 0 -->
-          <Case>
-            <When>
-              <Dependency path="/taxFamilySizeIsZero" />
-            </When>
-            <Then>
-              <Dollar>0</Dollar>
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <All>
-                <IsComplete>
-                  <Dependency path="/netPtcAmountWhenNegative" />
-                </IsComplete>
-                <LessThan>
-                  <Left>
-                    <Dependency path="/householdIncomeAsPercent" />
-                  </Left>
-                  <Right>
-                    <Int>200</Int>
-                  </Right>
-                </LessThan>
-              </All>
-            </When>
-            <Then>
-              <Switch>
-                <Case>
-                  <When>
-                    <Dependency module="filingStatus" path="/isFilingStatusSingle" />
-                  </When>
-                  <Then>
-                    <Dependency path="/ptcRepaymentLimitationLessThan200PercentFplSingle" />
-                  </Then>
-                </Case>
-                <Case>
-                  <When>
-                    <True />
-                  </When>
-                  <Then>
-                    <Dependency path="/ptcRepaymentLimitationLessThan200PercentFplOther" />
-                  </Then>
-                </Case>
-              </Switch>
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <All>
-                <IsComplete>
-                  <Dependency path="/netPtcAmountWhenNegative" />
-                </IsComplete>
-                <LessThan>
-                  <Left>
-                    <Dependency path="/householdIncomeAsPercent" />
-                  </Left>
-                  <Right>
-                    <Int>300</Int>
-                  </Right>
-                </LessThan>
-              </All>
-            </When>
-            <Then>
-              <Switch>
-                <Case>
-                  <When>
-                    <Dependency module="filingStatus" path="/isFilingStatusSingle" />
-                  </When>
-                  <Then>
-                    <Dependency path="/ptcRepaymentLimitationLessThan300PercentFplSingle" />
-                  </Then>
-                </Case>
-                <Case>
-                  <When>
-                    <True />
-                  </When>
-                  <Then>
-                    <Dependency path="/ptcRepaymentLimitationLessThan300PercentFplOther" />
-                  </Then>
-                </Case>
-              </Switch>
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <All>
-                <IsComplete>
-                  <Dependency path="/netPtcAmountWhenNegative" />
-                </IsComplete>
-                <LessThan>
-                  <Left>
-                    <Dependency path="/householdIncomeAsPercent" />
-                  </Left>
-                  <Right>
-                    <Int>400</Int>
-                  </Right>
-                </LessThan>
-              </All>
-            </When>
-            <Then>
-              <Switch>
-                <Case>
-                  <When>
-                    <Dependency module="filingStatus" path="/isFilingStatusSingle" />
-                  </When>
-                  <Then>
-                    <Dependency path="/ptcRepaymentLimitationLessThan400PercentFplSingle" />
-                  </Then>
-                </Case>
-                <Case>
-                  <When>
-                    <True />
-                  </When>
-                  <Then>
-                    <Dependency path="/ptcRepaymentLimitationLessThan400PercentFplOther" />
-                  </Then>
-                </Case>
-              </Switch>
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <All>
-                <IsComplete>
-                  <Dependency path="/netPtcAmountWhenNegative" />
-                </IsComplete>
-                <GreaterThanOrEqual>
-                  <Left>
-                    <Dependency path="/householdIncomeAsPercent" />
-                  </Left>
-                  <Right>
-                    <Int>400</Int>
-                  </Right>
-                </GreaterThanOrEqual>
-              </All>
-            </When>
-            <Then>
-              <Dollar>0</Dollar>
-            </Then>
-          </Case>
-        </Switch>
-      </Derived>
-    </Fact>
-
     <Fact path="/isRepaymentLimitationIsActive">
-      <Description>When the repayment limitation is active</Description>
+      <Description>#88: always false for TY2026. 26 U.S.C. 36B(f)(2)(B) is removed for taxable years beginning after
+        December 31, 2025 (Rev. Proc. 2025-32 sec. 2.04, PDF p. 5, see /lesserOfNetPtcAmountAndRepaymentLimitation), so
+        no repayment limitation screen applies and Form 8962 lines 28-29 ("Reserved for future use") stay blank.</Description>
       <Derived>
-        <All>
-          <Equal>
-            <Left>
-              <Dependency path="/ptcRepaymentLimitation" />
-            </Left>
-            <Right>
-              <Dependency path="/lesserOfNetPtcAmountAndRepaymentLimitation" />
-            </Right>
-          </Equal>
-          <LessThan>
-            <Left>
-              <Dependency path="/ptcRepaymentLimitation" />
-            </Left>
-            <Right>
-              <Dependency path="/netPtcAmountWhenNegative" />
-            </Right>
-          </LessThan>
-        </All>
+        <False />
       </Derived>
     </Fact>
 
@@ -9648,8 +9954,17 @@
     </Fact>
 
     <Fact path="/lesserOfNetPtcAmountAndRepaymentLimitation">
-      <Description>The lesser of the net PTC amount and the repayment limitation, used on Form 1040 Schedule 2, Line 1a
-        and on Form 8962 Line 29</Description>
+      <Name>Form 8962 line 27: excess advance payment of PTC</Name>
+      <Description>#88: the full excess advance PTC (Form 8962 line 27), reported on Schedule 2 (Form 1040) line 1a. No
+        repayment limitation applies for TY2026. Rev. Proc. 2025-32 sec. 2.04
+        (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf), PDF p. 5: "Section 71305 of the OBBBA removes § 36B(f)(2)(B),
+        which limited the tax increase from excess advance payments for certain households, effective for taxable
+        years
+        beginning after December 31, 2025." Form 8962 (2026) draft (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf),
+        PDF
+        p. 1, line 27: "Excess advance payment of PTC. If line 25 is greater than line 24, subtract line 24 from line
+        25. Enter the difference here and on Schedule 2 (Form 1040), line 1a"; lines 28 and 29: "Reserved for future
+        use". The fact keeps its name because Schedule 2 and the result screens read it.</Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -9660,39 +9975,7 @@
               </IsComplete>
             </When>
             <Then>
-              <Switch>
-                <Case>
-                  <When>
-                    <All>
-                      <IsComplete>
-                        <Dependency path="/ptcRepaymentLimitation" />
-                      </IsComplete>
-                      <NotEqual>
-                        <Left>
-                          <Dependency path="/ptcRepaymentLimitation" />
-                        </Left>
-                        <Right>
-                          <Dollar>0</Dollar>
-                        </Right>
-                      </NotEqual>
-                    </All>
-                  </When>
-                  <Then>
-                    <LesserOf>
-                      <Dependency path="/netPtcAmountWhenNegative" />
-                      <Dependency path="/ptcRepaymentLimitation" />
-                    </LesserOf>
-                  </Then>
-                </Case>
-                <Case>
-                  <When>
-                    <True />
-                  </When>
-                  <Then>
-                    <Dependency path="/netPtcAmountWhenNegative" />
-                  </Then>
-                </Case>
-              </Switch>
+              <Dependency path="/netPtcAmountWhenNegative" />
             </Then>
           </Case>
           <Case>

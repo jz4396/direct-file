@@ -157,8 +157,8 @@ class CreditFormsTy2026PdfSmokeTest {
         return generate(scenario, scenarioFacts(scenario));
     }
 
-    static byte[] generate(String scenario, Map<String, FactTypeWithItem> typed) throws Exception {
-        FactGraphService fgs = factGraphService();
+    /** The real PdfService over application.yaml's direct-file.pdfs settings. */
+    static PdfService pdfService(FactGraphService fgs) throws Exception {
         StandardEnvironment env = new StandardEnvironment();
         for (PropertySource<?> ps :
                 new YamlPropertySourceLoader().load("app", new ClassPathResource("application.yaml"))) {
@@ -168,6 +168,12 @@ class CreditFormsTy2026PdfSmokeTest {
                 .bind("direct-file.pdfs", PdfServiceProperties.class)
                 .get();
         PdfService pdfService = new PdfService(props, new IOLocationService(null), fgs);
+        return pdfService;
+    }
+
+    static byte[] generate(String scenario, Map<String, FactTypeWithItem> typed) throws Exception {
+        FactGraphService fgs = factGraphService();
+        PdfService pdfService = pdfService(fgs);
 
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026);

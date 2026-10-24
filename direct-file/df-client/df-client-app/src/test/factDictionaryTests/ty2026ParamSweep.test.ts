@@ -65,31 +65,37 @@ describe(`#91 TY2026 writable limits`, () => {
   });
 });
 
-describe(`#91 TY2026 premium tax credit knockout`, () => {
+describe(`#88 TY2026 premium tax credit scenarios`, () => {
   const scenarioDir = path.resolve(__dirname, `backend-scenarios`);
   const ptcScenarios = fs.readdirSync(scenarioDir).filter((f) => f.startsWith(`ptc-`) && f.endsWith(`.json`));
+  const knockouts = [
+    `/flowKnockoutPtcAllocationOfPolicyAmounts`,
+    `/flowKnockoutPtcAlternativeCalculationForYearOfMarriage`,
+    `/flowKnockoutPtcSelfEmployedHealthInsurance`,
+    `/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl`,
+    `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
+  ];
 
   it(`has PTC scenarios to check`, () => {
     expect(ptcScenarios.length).toBeGreaterThan(0);
   });
 
-  it.each(ptcScenarios)(`%s: knocked out whenever Form 8962 is needed`, (file) => {
+  it.each(ptcScenarios)(`%s: no repayment limitation applies (Rev. Proc. 2025-32 sec. 2.04, p. 5)`, (file) => {
     const facts = JSON.parse(fs.readFileSync(path.join(scenarioDir, file), `utf-8`)).facts;
     const { factGraph } = setupFactGraph(facts);
     const at = (p: string) => factGraph.get(Path.concretePath(p as never, null) as ConcretePath);
-    const needs8962 = at(`/needsToFileForm8962`);
-    const ko = at(`/flowKnockoutPtcTy2026RulesNotImplemented`);
-    if (needs8962.complete && needs8962.get === true) {
-      expect(ko.get).toBe(true);
-      expect(at(`/flowIsKnockedOut`).get).toBe(true);
-    } else {
-      expect(ko.complete && ko.get === true).toBe(false);
+    const excess = at(`/netPtcAmountWhenNegative`);
+    if (excess.complete) {
+      expect(at(`/lesserOfNetPtcAmountAndRepaymentLimitation`).get.toString()).toBe(excess.get.toString());
     }
+    expect(at(`/isRepaymentLimitationIsActive`).get).toBe(false);
   });
 
-  it(`a return with no Marketplace coverage is not knocked out by it`, () => {
-    const k = fg().get(Path.concretePath(`/flowKnockoutPtcTy2026RulesNotImplemented` as never, null) as ConcretePath);
-    expect(k.complete && k.get === true).toBe(false);
+  it(`a return with no Marketplace coverage is not knocked out by any PTC knockout`, () => {
+    for (const k of knockouts) {
+      const r = fg().get(Path.concretePath(k as never, null) as ConcretePath);
+      expect(r.complete && r.get === true, k).toBe(false);
+    }
   });
 });
 

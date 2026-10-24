@@ -13604,6 +13604,29 @@ info:
       - p: >-
           Dijiste que quieres usar el <LinkAltCalc>cálculo alternativo para el año del matrimonio</LinkAltCalc> para
           calcular tu Crédito tributario de prima, lo cual Direct File no acepta todavía.
+  /info/credits-and-deductions/credits/ptc-income-based-sep:
+    body:
+      - p:
+          Algunos Mercados permiten que las personas con un ingreso familiar esperado más bajo se inscriban fuera del
+          período de inscripción abierta. Esto es diferente de un período de inscripción especial después de un evento
+          de vida, como mudarte, casarte o perder otra cobertura médica.
+  /info/credits-and-deductions/credits/ptc-income-based-sep-ko:
+    body:
+      - p:
+          Dijiste que te inscribiste en un plan del Mercado durante un período de inscripción especial basado en el
+          ingreso familiar que esperabas. El Crédito Tributario de Prima no se permite para ese plan, y Direct File aún
+          no acepta esta situación.
+  /info/credits-and-deductions/credits/ptc-below-100-fpl-ko:
+    body:
+      - p:
+          El ingreso de tu familia es menos del 100% del nivel federal de pobreza para el tamaño de tu familia
+          tributaria. Direct File aún no acepta el cálculo del Crédito Tributario de Prima en esta situación.
+  /info/credits-and-deductions/credits/ptc-self-employed-ko:
+    body:
+      - p:
+          Tienes ingresos de trabajo por cuenta propia y cobertura del Mercado. Es posible que puedas deducir parte de
+          tus primas como seguro médico para trabajadores por cuenta propia, lo cual cambia tu Crédito Tributario de
+          Prima. Direct File aún no acepta esta situación.
   /info/credits-and-deductions/credits/ptc-alt-calc-excess-aptc:
     body:
       - p: >-
@@ -18634,6 +18657,10 @@ fields:
     boolean:
       "yes": Sí, quiero usar el cálculo alternativo <strong>sin Direct File</strong>
       "no": No, quiero continuar usando Direct File para presentar mis impuestos
+  /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod:
+    boolean:
+      "yes": Sí
+      "no": "No"
   /1095As/*/writableAptcAnnualAmount:
     name: <strong>Columna C, línea 33</strong> - Total anual
   /1095As/*/writablePtcMonthlyAptcPremiumJan:
@@ -22034,6 +22061,9 @@ headings:
     Tendrás que devolver toda o parte de la diferencia.<br /><br />Si te casaste en el {{/taxYear}}, podrías usar el
     cálculo alternativo para el año del matrimonio para reducir la cantidad que debes devolver. Direct File aún no
     acepta este tipo de situación tributaria.<br /><br />¿Quieres usar el cálculo alternativo?
+  /heading/credits-and-deductions/credits/ptc-income-based-sep: >-
+    ¿Te inscribiste en alguno de tus planes del Mercado durante un período de inscripción especial basado en el
+    ingreso familiar que esperabas?
   /heading/credits-and-deductions/credits/ptc-end-of-1095-a: >-
     Agregaste tu Formulario 1095-A para la póliza del Mercado {{/1095As/*/policyNumber}}.<br /><br />Continuemos.
   /heading/credits-and-deductions/credits/ptc-annual-aptc: >-
@@ -23829,6 +23859,7 @@ dataviews:
       En algún momento del  {{/taxYear}}, ¿Te inscribiste en un plan de salud del Mercado que califica para el Crédito
       tributario de prima (PTC)?
     /writableWantsToUseAltCalculations: ¿Quieres usar el cálculo alternativo?
+    /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod: ¿Se inscribió durante un período de inscripción especial basado en el ingreso?
     /1095As/*/writableAptcAnnualAmount: Pago anual adelantado del PTC
     /1095As/*/writablePtcMonthlyAptcPremiumJan: Pago adelantado del PTC de enero
     /1095As/*/writablePtcMonthlyAptcPremiumFeb: Pago adelantado del PTC de febrero
@@ -25004,6 +25035,7 @@ subsubcategories:
       El estatus tuyo o de {{/secondaryFiler/firstName}} como hijo calificado para el Crédito tributario por ingreso del
       trabajo (EITC)
     alt-calc-marriage: Cálculo alternativo para el año del matrimonio
+    ptc-2026-eligibility: Elegibilidad para el Crédito Tributario de Prima en 2026
     disability: Información sobre la discapacidad de {{/filers/*/firstName}}
     ptc-eligibility: Cobertura del Mercado
     disability__errorLinkTextOverride: Información de discapacidad
