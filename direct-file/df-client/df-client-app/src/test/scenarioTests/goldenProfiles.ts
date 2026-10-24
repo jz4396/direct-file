@@ -66,7 +66,9 @@ const single = (p: Person, home: Home) => ({
   '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
   '/paHasUnsupportedItems': createBooleanWrapper(false),
   // Interview answers that clear the remaining screening questions (all "no").
+  '/someFilerHadNonW2HsaActivity': createBooleanWrapper(false),
   '/writablePrimaryFilerHadNonW2HsaActivity': createBooleanWrapper(false),
+  '/hasHouseholdEmployeeScheduleH': createBooleanWrapper(false),
   '/writableHasHsaExcessContributionsPreviousYear': createBooleanWrapper(false),
   '/writableHasHsaWithdrawnExcessContributionsYesNo': createBooleanWrapper(false),
   '/writableHasPtcQualifyingPlan': createBooleanWrapper(false),
@@ -104,6 +106,9 @@ const w2s = (ssn: [string, string, string], ...forms: W2[]) => {
       [`${p}/ein`]: createEinWrapper(...f.ein),
       [`${p}/employerAddress`]: createAddressWrapper(`500 Sample Ave`, `Harrisburg`, `17101`, `PA`),
       [`${p}/addressMatchesReturn`]: createBooleanWrapper(true),
+      [`${p}/statutoryEmployee`]: createBooleanWrapper(false),
+      [`${p}/thirdPartySickPay`]: createBooleanWrapper(false),
+      [`${p}/hasRRTACodes`]: createBooleanWrapper(false),
       [`${p}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
       [`${p}/tin`]: createTinWrapper({ area: ssn[0], group: ssn[1], serial: ssn[2] }),
       [`${p}/nonstandardOrCorrectedChoice`]: createEnumWrapper(`neither`, `/form1099RsNonstandardCorrectedOptions`),
@@ -262,6 +267,10 @@ export const profileADividendsNiitMfj = {
   ...profileADividendsNiit,
   ...mfjFilerData,
   ...spouse(morgan),
+  // Spouse state-scope screening answers: same state as the filer, no Alaska PFD, no income forms.
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`noForms`, `/primaryFilerW2And1099IntStateOptions`),
   [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(casey.dob),
 };
 
@@ -325,6 +334,7 @@ export const form8949Sale = (id: string, acquired: string, sold: string, proceed
   '/form8949Transactions': createCollectionWrapper([id]),
   [`/form8949Transactions/#${id}/description`]: createStringWrapper(`100 sh Example Index Fund`),
   [`/form8949Transactions/#${id}/dateAcquired`]: createDayWrapper(acquired),
+  [`/form8949Transactions/#${id}/dateAcquiredIsVariousOrInherited`]: createBooleanWrapper(false),
   [`/form8949Transactions/#${id}/dateSold`]: createDayWrapper(sold),
   [`/form8949Transactions/#${id}/proceeds`]: createDollarWrapper(`${proceeds}`),
   [`/form8949Transactions/#${id}/costBasis`]: createDollarWrapper(`${basis}`),

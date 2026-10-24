@@ -12,7 +12,6 @@ d0d519e75b3f35e085fd37f1eca756216152784928eade469f78de352433068b  pdf/2024/DF109
 66e73ca4519e32f749f12886bf5ec351336c3a6ec82f1aeb13a186629abec539  pdf/2024/FORM9000/en/f9000_2021.pdf  pages=1  mapped=8  unmapped=6
 ecc111f5155e6a2da3ece6a5ab77969e1d7d090924b8172dbc5dada6eeb29223  pdf/2024/FORM9000/es/f9000sp_2021.pdf  pages=1  mapped=8  unmapped=6
 0c102f78d7b1288312d8e0f668bb73b0e6d222549631980cf3e7edaeb4cb31ff  pdf/2024/IRS1040/es/f1040sp.pdf  pages=2  mapped=121  unmapped=19
-4f0abad0c95fcbf6925bef4ddf153dd3313ea4fb69a27ec478a8416753384f01  pdf/2024/IRS1040EIC/en/f1040sei-p.pdf  pages=1  mapped=36  unmapped=3
 3b1ad3481c9a307da422e152040eb84e1afa7004c8365295ca7fb908a283473e  pdf/2024/IRS1040EIC/es/f1040sep-p.pdf  pages=1  mapped=36  unmapped=3
 a57ced963ccc7e14dc5e199ac0ebac958abb1ea3b4e35bc07ed6b27d06db14e2  pdf/2024/IRS1040S1/es/f1040s1s.pdf  pages=2  mapped=11  unmapped=57
 edaed659fd890b23be223d30ac9a373d52cf403294a6fd4c735fd23387d8b5e6  pdf/2024/IRS1040S2/es/f1040s2s.pdf  pages=2  mapped=5  unmapped=55
@@ -30,6 +29,7 @@ bc23aa51f00e0e15846427555f2281a3eb26bbcf09e3d26a35265155c5cc64e7  pdf/2024/ODC_D
 68759fbaeb811546c88ff6f42c3b8b3bf59da048d80229d741e40ec6588a5822  pdf/2024/SCHEDULE_LEP/es/f1040les-p.pdf  pages=1  mapped=23  unmapped=0
 c4e19ea548313a3fa930e46e6c61cc72c22c3e2eca838939ceeaaad79c23d508  pdf/2024/SCHEDULE_R/en/f1040sr_accessible.pdf  pages=2  mapped=27  unmapped=0
 e044e765ace334c76bda7910bd3193fc813c7789d06340124359b885c98d58d0  pdf/2026/IRS1040/en/f1040--dft.pdf  pages=3  mapped=130  unmapped=77
+fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3  pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf  pages=3  mapped=35  unmapped=3
 a017a1b717d1c70ff8d831ef8b73c730e5b24f147c394c37f792035a9df22fad  pdf/2026/IRS1040S1/en/f1040s1--dft.pdf  pages=3  mapped=16  unmapped=56
 e22aec7feb2f5b734e16ee74d70acfdfdc0d66a5292f69cf0ced3b87543d95ac  pdf/2026/IRS1040S1A/en/f1040s1a--dft.pdf  pages=4  mapped=47  unmapped=138
 0e3d4faa4b96f692bc31119d2c86189c3d8b9263e8f3aaaf7c3da371887ebc56  pdf/2026/IRS1040S2/en/f1040s2--dft.pdf  pages=3  mapped=16  unmapped=52

@@ -118,10 +118,29 @@
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
-        <All>
-          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
-          <Dependency path="/tipsFromSelfEmployment" />
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <All>
+                <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+                <Dependency path="/tipsFromSelfEmployment" />
+              </All>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
     <Fact path="/schedule1ALine5">

@@ -535,11 +535,13 @@ class PrintRefusingKnockoutsTest {
             }
         }
         assertEquals(50, withScheduleEic, "scenarios with Schedule EIC");
-        assertEquals(59, withSchedule3A, "scenarios with Schedule 3-A");
+        // #186: the screener answers complete the EIC or ACTC in mfj-11k, ticket-12386, ticket-6192-ctc and
+        // ticket-6718, so those four now need Schedule 3-A (they read incomplete, and the knockout false, before).
+        assertEquals(63, withSchedule3A, "scenarios with Schedule 3-A");
         assertEquals(FORM_8962_SCENARIO_COUNT, form8962Refused, "scenarios with Form 8962");
-        // 103 print without the Form 8962 stops; six of the seven Form 8962 scenarios print otherwise (no Schedule EIC,
-        // Form 8995, Schedule C or Schedule 3-A), so 97.
-        assertEquals(97, printed, "scenarios that print");
+        // 99 print without the Form 8962 stops; six of the seven Form 8962 scenarios have no other refusing knockout,
+        // so 93.
+        assertEquals(93, printed, "scenarios that print");
     }
 
     /**

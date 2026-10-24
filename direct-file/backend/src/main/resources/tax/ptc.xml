@@ -835,7 +835,15 @@
               </All>
             </When>
             <Then>
-              <Dependency path="/writableDependentsRequiredToFile " />
+              <Dependency path="/writableDependentsRequiredToFile" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
             </Then>
           </Case>
         </Switch>
@@ -10035,6 +10043,14 @@
             </When>
             <Then>
               <Dependency path="/writableWantsToUseAltCalculations" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
             </Then>
           </Case>
         </Switch>

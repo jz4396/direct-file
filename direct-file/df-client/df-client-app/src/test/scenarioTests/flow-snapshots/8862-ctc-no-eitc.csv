@@ -88,6 +88,8 @@ Subcategory: /flow/income/income-sources
 /flow/income/income-sources/digital-assets-received
 /flow/income/income-sources/digital-assets-disposed
 /flow/income/income-sources/capital-assets-sold
+/flow/income/income-sources/collectibles-sold
+/flow/income/income-sources/unrecaptured-1250-gain
 /flow/income/income-sources/amt-preference-items
 /flow/income/income-sources/household-employees
 /flow/income/income-sources/ira-contributions
@@ -164,9 +166,10 @@ Subcategory: /flow/your-taxes/amount
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/payment-intro
-/flow/your-taxes/payment-method/payment-method-choice
-/flow/your-taxes/payment-method/payment-outro
+/flow/your-taxes/payment-method/refund-intro
+/flow/your-taxes/payment-method/refund-method-choice
+/flow/your-taxes/payment-method/refund-direct-deposit
+/flow/your-taxes/payment-method/refund-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice

@@ -133,14 +133,11 @@ public class FactGraphService {
      *
      * <ul>
      *   <li>any blocking fact whose value is {@code true} refuses, whether the result is complete or a placeholder;
-     *   <li>a top-level blocking fact ({@link TaxDictionaryDigest#getSubmissionBlockingFactsRequiringValue()}) with
-     *       no value, a non-Boolean value, or an evaluation error refuses (fail closed);
+     *   <li>a top-level blocking fact ({@link TaxDictionaryDigest#getSubmissionBlockingFactsRequiringValue()}) passes
+     *       only on a complete {@code false}; no value, a placeholder or other incomplete value, a non-Boolean value,
+     *       or an evaluation error refuses (fail closed);
      *   <li>any other blocking fact that errors during evaluation refuses.
      * </ul>
-     *
-     * <p>Known fail-open (https://github.com/jz4396/direct-file/issues/186): a placeholder {@code false} passes, so
-     * {@code /flowIsKnockedOut} passes while some of its knockouts are incomplete. Several knockouts never become
-     * complete when they don't apply, so requiring a complete {@code false} would refuse every return.
      */
     public static List<String> submissionBlockingFactPaths(
             final TaxDictionaryDigest digest, final Function<String, Result<Object>> evaluate) {
@@ -159,7 +156,7 @@ public class FactGraphService {
                 Object value = hasValue ? result.get() : null;
                 if (Boolean.TRUE.equals(value)) {
                     blocking.add(path);
-                } else if (requiresValue && !Boolean.FALSE.equals(value)) {
+                } else if (requiresValue && !(result.complete() && Boolean.FALSE.equals(value))) {
                     blocking.add(path);
                 }
             } catch (RuntimeException e) {
