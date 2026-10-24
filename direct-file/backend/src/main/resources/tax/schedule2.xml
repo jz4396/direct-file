@@ -65,7 +65,8 @@
     </Fact>
 
     <Fact path="/schedule2Line1z">
-      <Description>#77: Schedule 2 line 1z (excess advance premium tax credit repayment, the only Part I line 1 item in scope). Form 6251 line 10 adds "Schedule 2 (Form 1040), line 1z".</Description>
+      <Description>#77: Schedule 2 line 1z (excess advance premium tax credit repayment, the only Part I line 1 item in
+        scope). Form 6251 line 10 adds "Schedule 2 (Form 1040), line 1z".</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -94,12 +95,18 @@
     <Fact path="/schedule2Line6NetInvestmentIncomeTax">
       <Name>Schedule 2 line 6: Net investment income tax</Name>
       <Description>#83. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf,
-        form page 1 = PDF p. 2), Part II Section A, line 6: "Net investment income tax. Attach Form 8960".
-        (Line 12 on the 2026 draft is "Section 965 net tax liability installment from Form 965-A"; the NIIT
-        line is 6.) Line 6 confirmed in code review. i8960 (2026 draft) p. 22, Line 17: "If you file Form 1040 or 1040-SR, include this amount on
-        Schedule 2 (Form 1040), line 6." f8960 (2026 draft) line 17: "Enter here and include on your tax
-        return". Line 6 is in line 15 ("Add lines 4 through 11 and line 14"), which flows to line 21 ("Add lines
-        15 and 20. These are your total additional taxes. Enter here and on Form 1040 or 1040-SR, line 23"),
+        form page 1
+        = PDF p. 2), Part II Section A, line 6: "Net investment income tax. Attach Form 8960".
+        (Line 12 on the 2026 draft
+        is "Section 965 net tax liability installment from Form 965-A"; the NIIT
+        line is 6.) Line 6 confirmed in code
+        review. i8960 (2026 draft) p. 22, Line 17: "If you file Form 1040 or 1040-SR, include this amount on
+        Schedule 2
+        (Form 1040), line 6." f8960 (2026 draft) line 17: "Enter here and include on your tax
+        return". Line 6 is in line
+        15 ("Add lines 4 through 11 and line 14"), which flows to line 21 ("Add lines
+        15 and 20. These are your total
+        additional taxes. Enter here and on Form 1040 or 1040-SR, line 23"),
         taxCalculations /line21OfSchedule2.</Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
@@ -110,9 +117,12 @@
     <Fact path="/line11AdditionalMedicareTax">
       <Name>Schedule 2 line 11: Additional Medicare Tax on self-employment income</Name>
       <Description>#82. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf)
-        line 11: "Additional Medicare Tax on self-employment income. Attach Form 8959". f8959 (2026) line 18:
-        "Enter here and on Schedule 2 (Form 1040), line 11". Line 11 is in Part I Section A (line 15 = lines
-        4 through 11 and 14), which flows to line 21 and Form 1040 line 23 (taxCalculations /line21OfSchedule2).</Description>
+        line 11:
+        "Additional Medicare Tax on self-employment income. Attach Form 8959". f8959 (2026) line 18:
+        "Enter here and on
+        Schedule 2 (Form 1040), line 11". Line 11 is in Part I Section A (line 15 = lines
+        4 through 11 and 14), which
+        flows to line 21 and Form 1040 line 23 (taxCalculations /line21OfSchedule2).</Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
         <Dependency module="form8959" path="/form8959Line18" />
@@ -122,9 +132,12 @@
     <Fact path="/line17bAdditionalMedicareTax">
       <Name>Schedule 2 line 17b: Additional Medicare tax on Medicare wages and RRTA compensation</Name>
       <Description>#82. Schedule 2 (Form 1040) 2026 draft line 17b: "Additional Medicare tax on Medicare
-        wages and RRTA compensation. Attach Form 8959". f8959 (2026) line 12: "Also enter this amount on
-        Schedule 2 (Form 1040), line 17b". Line 17b is in line 17d, then line 20, then line 21 ("Add lines 15
-        and 20. These are your total additional taxes. Enter here and on Form 1040 or 1040-SR, line 23").</Description>
+        wages and RRTA
+        compensation. Attach Form 8959". f8959 (2026) line 12: "Also enter this amount on
+        Schedule 2 (Form 1040), line
+        17b". Line 17b is in line 17d, then line 20, then line 21 ("Add lines 15
+        and 20. These are your total additional
+        taxes. Enter here and on Form 1040 or 1040-SR, line 23").</Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
         <Dependency module="form8959" path="/form8959Line12" />
@@ -132,7 +145,8 @@
     </Fact>
 
     <Fact path="/schedule2Line2">
-      <Description>#77: Schedule 2 line 2, alternative minimum tax. Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, line 11: "Enter here and on Schedule 2 (Form 1040), line 2".</Description>
+      <Description>#77: Schedule 2 line 2, alternative minimum tax. Form 6251 (2026) draft,
+        https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, line 11: "Enter here and on Schedule 2 (Form 1040), line 2".</Description>
       <Export mef="true" />
       <Derived>
         <Dependency module="form6251" path="/amt" />
@@ -141,7 +155,11 @@
 
     <Fact path="/schedule2Line4">
       <Name>Schedule 2 line 4: Self-employment tax</Name>
-      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 1 (PDF p. 2), Part II Section A, line 4: "Self-employment tax. Attach Schedule SE". Same amount as scheduleSE /selfEmploymentTax (26 U.S.C. 1401). Printed without ExportZero so a return with no Schedule SE leaves line 4 blank. The line 4 exemption checkboxes (Forms 4361 and 4029, "3 (specify)") are not printed: the interview doesn't offer either exemption.</Description>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page
+        1 (PDF p. 2), Part II Section A, line 4: "Self-employment tax. Attach Schedule SE". Same amount as scheduleSE
+        /selfEmploymentTax (26 U.S.C. 1401). Printed without ExportZero so a return with no Schedule SE leaves line 4
+        blank. The line 4 exemption checkboxes (Forms 4361 and 4029, "3 (specify)") are not printed: the interview
+        doesn't offer either exemption.</Description>
       <Derived>
         <Dependency module="scheduleSE" path="/selfEmploymentTax" />
       </Derived>
@@ -149,7 +167,14 @@
 
     <Fact path="/schedule2Line5">
       <Name>Schedule 2 line 5: Additional tax on IRAs or other tax-favored accounts</Name>
-      <Description>#116. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf, SHA-256 0e3d4faa4b96f692bc31119d2c86189c3d8b9263e8f3aaaf7c3da371887ebc56), form page 1 (PDF p. 2), line 5: "Additional tax on IRAs or other tax-favored accounts. Attach Form 5329 if required. If not required, check here". The only line 5 amount in scope is the 26 U.S.C. 72(t)(1) 10% additional tax on Form 1099-R code 1 distributions reported without Form 5329 (form1099Rs /earlyDistributionAdditionalTax, with its cites). Every case that needs Form 5329 stops the return, so the "not required" box is checked whenever line 5 has an amount (/schedule2Line5Form5329NotRequired). Printed without ExportZero, so line 5 is blank when there is no code 1 distribution.</Description>
+      <Description>#116. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf, SHA-256
+        0e3d4faa4b96f692bc31119d2c86189c3d8b9263e8f3aaaf7c3da371887ebc56), form page 1 (PDF p. 2), line 5: "Additional
+        tax on IRAs or other tax-favored accounts. Attach Form 5329 if required. If not required, check here". The only
+        line 5 amount in scope is the 26 U.S.C. 72(t)(1) 10% additional tax on Form 1099-R code 1 distributions reported
+        without Form 5329 (form1099Rs /earlyDistributionAdditionalTax, with its cites). Every case that needs Form 5329
+        stops the return, so the "not required" box is checked whenever line 5 has an amount
+        (/schedule2Line5Form5329NotRequired). Printed without ExportZero, so line 5 is blank when there is no code 1
+        distribution.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Dependency module="form1099Rs" path="/earlyDistributionAdditionalTax" />
@@ -158,7 +183,11 @@
 
     <Fact path="/schedule2Line5Form5329NotRequired">
       <Name>Schedule 2 line 5: Form 5329 not required</Name>
-      <Description>#116. Schedule 2 (Form 1040) 2026 draft, line 5: "If not required, check here". 2026 draft Instructions for Form 5329 (https://www.irs.gov/pub/irs-dft/i5329--dft.pdf), PDF p. 2: "if distribution code 1 is correctly shown in box 7a of all your Forms 1099-R and you owe the additional tax on the full amount shown on each Form 1099-R, you don’t have to file Form 5329." True when /schedule2Line5 is more than $0; every Form 5329 case stops the return.</Description>
+      <Description>#116. Schedule 2 (Form 1040) 2026 draft, line 5: "If not required, check here". 2026 draft
+        Instructions for Form 5329 (https://www.irs.gov/pub/irs-dft/i5329--dft.pdf), PDF p. 2: "if distribution code 1
+        is correctly shown in box 7a of all your Forms 1099-R and you owe the additional tax on the full amount shown on
+        each Form 1099-R, you don’t have to file Form 5329." True when /schedule2Line5 is more than $0; every Form 5329
+        case stops the return.</Description>
       <Derived>
         <GreaterThan>
           <Left>
@@ -173,7 +202,11 @@
 
     <Fact path="/schedule2Line15">
       <Name>Schedule 2 line 15</Name>
-      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 15: "Add lines 4 through 11 and line 14". In scope: line 4 (/schedule2Line4), line 5 (/schedule2Line5, #116), line 6 (/schedule2Line6NetInvestmentIncomeTax) and line 11 (/line11AdditionalMedicareTax). Lines 7-10 and 13a-13z (so line 14) have no input or stop the return (see pdf/2026/IRS1040S2/en/configuration.yml), so they are $0.</Description>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page
+        2 (PDF p. 3), line 15: "Add lines 4 through 11 and line 14". In scope: line 4 (/schedule2Line4), line 5
+        (/schedule2Line5, #116), line 6 (/schedule2Line6NetInvestmentIncomeTax) and line 11
+        (/line11AdditionalMedicareTax). Lines 7-10 and 13a-13z (so line 14) have no input or stop the return (see
+        pdf/2026/IRS1040S2/en/configuration.yml), so they are $0.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Round>
@@ -189,7 +222,12 @@
 
     <Fact path="/schedule2Line17d">
       <Name>Schedule 2 line 17d</Name>
-      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 17d: "Total other employment taxes. Add lines 17a through 17c". Only line 17b (/line17bAdditionalMedicareTax) is in scope: 17a household employment taxes (Schedule H) stop the return when the general household-employee question in income sources is yes (householdEmployment /flowKnockoutScheduleH) or the household employee question in the dependent care sections is yes (cdcc /flowKnockoutHouseholdEmployee) and 17c uncollected tax from W-2 box 12 codes A, B, M and N stops it too (formW2s /knockoutForBox12Value).</Description>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page
+        2 (PDF p. 3), line 17d: "Total other employment taxes. Add lines 17a through 17c". Only line 17b
+        (/line17bAdditionalMedicareTax) is in scope: 17a household employment taxes (Schedule H) stop the return when
+        the general household-employee question in income sources is yes (householdEmployment /flowKnockoutScheduleH) or
+        the household employee question in the dependent care sections is yes (cdcc /flowKnockoutHouseholdEmployee) and
+        17c uncollected tax from W-2 box 12 codes A, B, M and N stops it too (formW2s /knockoutForBox12Value).</Description>
       <Derived>
         <Round>
           <Dependency path="/line17bAdditionalMedicareTax" />
@@ -199,7 +237,10 @@
 
     <Fact path="/schedule2Line20">
       <Name>Schedule 2 line 20</Name>
-      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page 2 (PDF p. 3), line 20: "Total additional employment and other taxes. Add lines 16c, 17d, 18, and 19c". Line 16c (Forms 4137 and 8919), line 18 (Form 5329 excess contributions) and line 19c (Form 8621) have no input or stop the return, so line 20 = line 17d.</Description>
+      <Description>#119. Schedule 2 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s2--dft.pdf), form page
+        2 (PDF p. 3), line 20: "Total additional employment and other taxes. Add lines 16c, 17d, 18, and 19c". Line 16c
+        (Forms 4137 and 8919), line 18 (Form 5329 excess contributions) and line 19c (Form 8621) have no input or stop
+        the return, so line 20 = line 17d.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Dependency path="/schedule2Line17d" />

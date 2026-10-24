@@ -188,13 +188,20 @@
     <Fact path="/saversCreditOctDateForSameYearContribution">
       <Name>Saver's Credit October Date</Name>
       <Description>Day of October shown in "before October N" for the Saver's Credit testing period: a distribution
-        made in the following year before October N (on or before October N - 1) reduces the credit, and one made on
-        or after October N does not. #91: 26 U.S.C. 25B(d)(2)(B)(iii), https://www.law.cornell.edu/uscode/text/26/25B,
-        the testing period includes "the period after such taxable year and before the due date (including
-        extensions) for filing the return". For TY2026 the due date is April 15, 2027 (/defaultTaxDay) and the
-        extension is 6 months (26 U.S.C. 6081(a)), so the extended due date is Friday, October 15, 2027, and N = 15:
-        October 14, 2027 is in the testing period and October 15, 2027 is not. Form 8880 (2026) draft line 4:
-        "Certain distributions received after 2023 and before the due date (including extensions)".</Description>
+        made
+        in the following year before October N (on or before October N - 1) reduces the credit, and one made on
+        or after
+        October N does not. #91: 26 U.S.C. 25B(d)(2)(B)(iii), https://www.law.cornell.edu/uscode/text/26/25B,
+        the testing
+        period includes "the period after such taxable year and before the due date (including
+        extensions) for filing the
+        return". For TY2026 the due date is April 15, 2027 (/defaultTaxDay) and the
+        extension is 6 months (26 U.S.C.
+        6081(a)), so the extended due date is Friday, October 15, 2027, and N = 15:
+        October 14, 2027 is in the testing
+        period and October 15, 2027 is not. Form 8880 (2026) draft line 4:
+        "Certain distributions received after 2023 and
+        before the due date (including extensions)".</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Int>15</Int>

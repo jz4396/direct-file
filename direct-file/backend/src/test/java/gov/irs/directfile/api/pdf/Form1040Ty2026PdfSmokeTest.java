@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -100,7 +101,8 @@ class Form1040Ty2026PdfSmokeTest {
     static final String V2 = "c2222222-2222-4222-8222-222222222222";
     static final String V3 = "c3333333-3333-4333-8333-333333333333";
     /** Synthetic VINs (17 chars, no I/O/Q). Never real. */
-    static final Map<String, String> VINS = Map.of(V1, "1HGCM82633A004352", V2, "2T1BR32E54C000001", V3, "3VWFE21C04M000002");
+    static final Map<String, String> VINS =
+            Map.of(V1, "1HGCM82633A004352", V2, "2T1BR32E54C000001", V3, "3VWFE21C04M000002");
 
     static Map<String, String> vehicle(String id, String interest) {
         Map<String, String> m = new HashMap<>();
@@ -141,7 +143,9 @@ class Form1040Ty2026PdfSmokeTest {
     /** Value of the first non-blank field whose name ends with the suffix (merge may prefix names). */
     static String value(Map<String, String> byName, String suffix) {
         for (var e : byName.entrySet()) {
-            if (e.getKey().endsWith(suffix) && e.getValue() != null && !e.getValue().isEmpty()) {
+            if (e.getKey().endsWith(suffix)
+                    && e.getValue() != null
+                    && !e.getValue().isEmpty()) {
                 return e.getValue();
             }
         }
@@ -180,8 +184,16 @@ class Form1040Ty2026PdfSmokeTest {
             // The draft's cover sheet ("Caution: DRAFT—NOT FOR FILING ... begins on the next page") must not print.
             String text = new PDFTextStripper().getText(doc);
             assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
-            // The VIN never prints on Form 1040 itself (it belongs on Schedule 1-A, #66).
-            assertFalse(f.values().stream().anyMatch(v -> v != null && v.contains(VINS.get(V1))), "no VIN on 1040");
+            // The field map covers the whole package (Form 1040 plus attached schedules). Form 1040 has no VIN field;
+            // the VIN prints only on Schedule 1-A Part IV line 28a column (i) (IRC 163(h)(4)(B)(iii)).
+            List<String> vinFields = f.entrySet().stream()
+                    .filter(e -> e.getValue() != null && e.getValue().contains(VINS.get(V1)))
+                    .map(Map.Entry::getKey)
+                    .toList();
+            assertEquals(1, vinFields.size(), "VIN prints in exactly one field: " + vinFields);
+            assertTrue(
+                    vinFields.get(0).endsWith("Table_Line28a[0].Line28a[0].VIN-1_Comb[0].f3_01[0]"),
+                    "VIN is on Schedule 1-A line 28a(i), not Form 1040: " + vinFields);
         }
     }
 }

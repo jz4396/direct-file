@@ -38,7 +38,8 @@
     <Fact path="/flowKnockoutPtcAllocationOfPolicyAmounts">
       <Name>Knockout: Form 8962 Part IV allocation of policy amounts</Name>
       <Description>#88: Form 8962 (2026) draft, Created 4/21/26 (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf), PDF
-        p. 1, line 9: "Are you allocating policy amounts with another taxpayer ... Yes. Skip to Part IV, Allocation of
+        p.
+        1, line 9: "Are you allocating policy amounts with another taxpayer ... Yes. Skip to Part IV, Allocation of
         Policy Amounts". Part IV (shared policy allocation, Treas. Reg. 1.36B-4(a)(1)(ii)) is not computed. True when
         /needsAllocations or /dependentTpRequiresAllocations is true; complete false otherwise.</Description>
       <Export downstreamFacts="true" />
@@ -86,7 +87,8 @@
         insurance deduction (26 U.S.C. 162(l), https://www.law.cornell.edu/uscode/text/26/162) for the same Marketplace
         premiums. The deduction and the credit depend on each other (Rev. Proc. 2014-41 iterative or simplified
         calculation); i8962 (2025) (https://www.irs.gov/pub/irs-pdf/i8962.pdf), PDF p. 18: "If you are self-employed and
-        are claiming the self-employed health insurance deduction, see Self-Employed Health Insurance Deduction and PTC in
+        are claiming the self-employed health insurance deduction, see Self-Employed Health Insurance Deduction and PTC
+        in
         Pub. 974". That calculation is not supported, so the return stops instead of computing the credit without the
         deduction. Complete false when Form 8962 is not needed or Schedule C net profit is not more than $0.</Description>
       <Export downstreamFacts="true" />
@@ -111,12 +113,17 @@
 
     <Fact path="/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl">
       <Name>Knockout: Form 8962 line 5 below 100%</Name>
-      <Description>#88: 26 U.S.C. 36B(c)(1)(A) (https://www.law.cornell.edu/uscode/text/26/36B): an applicable taxpayer's
-        household income "equals or exceeds 100 percent but does not exceed 400 percent" of the poverty line. The
-        exceptions for income under 100% (the estimated-income rule of Treas. Reg. 1.36B-2(b)(6), and 36B(c)(1)(B) for
+      <Description>#88: 26 U.S.C. 36B(c)(1)(A) (https://www.law.cornell.edu/uscode/text/26/36B): an applicable
+        taxpayer's
+        household income "equals or exceeds 100 percent but does not exceed 400 percent" of the poverty line.
+        The
+        exceptions for income under 100% (the estimated-income rule of Treas. Reg. 1.36B-2(b)(6), and 36B(c)(1)(B)
+        for
         lawfully present aliens, "[(B) Repealed. Pub. L. 119-21, § 71302(a)]" for taxable years beginning after
-        2025) are not computed; Form 8962 (2026) draft, PDF p. 1, line 6: "(See instructions if you entered less than
-        100%.)". True when Form 8962 is needed and line 5 is less than 100; complete false otherwise.</Description>
+        2025)
+        are not computed; Form 8962 (2026) draft, PDF p. 1, line 6: "(See instructions if you entered less than
+        100%.)".
+        True when Form 8962 is needed and line 5 is less than 100; complete false otherwise.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -152,10 +159,10 @@
           <Case>
             <When>
               <All>
-              <IsComplete>
+                <IsComplete>
+                  <Dependency path="/needsToFileForm8962" />
+                </IsComplete>
                 <Dependency path="/needsToFileForm8962" />
-              </IsComplete>
-              <Dependency path="/needsToFileForm8962" />
               </All>
             </When>
             <Then>
@@ -1374,9 +1381,12 @@
       <Description>Federal poverty line for a household of one, by residence (Alaska, Hawaii, other). #91: for TY2026,
         the 2025 HHS poverty guidelines, 90 FR 5917 (Jan. 17, 2025),
         https://www.govinfo.gov/content/pkg/FR-2025-01-17/pdf/2025-01377.pdf p. 5917: $15,650 (48 contiguous states
-        and DC), $19,550 (Alaska), $17,990 (Hawaii). 26 U.S.C. 36B(d)(3)(B): "the poverty line used shall be the
-        most recently published poverty line as of the 1st day of the regular enrollment period for coverage during
-        such calendar year" (enrollment for 2026 coverage opened in November 2025).</Description>
+        and
+        DC), $19,550 (Alaska), $17,990 (Hawaii). 26 U.S.C. 36B(d)(3)(B): "the poverty line used shall be the
+        most
+        recently published poverty line as of the 1st day of the regular enrollment period for coverage during
+        such
+        calendar year" (enrollment for 2026 coverage opened in November 2025).</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
@@ -1410,8 +1420,10 @@
 
     <Fact path="/federalPovertyLineMagicNumberIncrement">
       <Description>Federal poverty line increase for each additional person, by residence. #91: 2025 HHS
-        poverty guidelines, 90 FR 5917 (Jan. 17, 2025) p. 5917, "add $5,500 for each additional person" (48 contiguous
-        states and DC), "$6,880" (Alaska), "$6,330" (Hawaii). See /federalPovertyLineMagicNumberStartingNumber.</Description>
+        poverty
+        guidelines, 90 FR 5917 (Jan. 17, 2025) p. 5917, "add $5,500 for each additional person" (48 contiguous
+        states and
+        DC), "$6,880" (Alaska), "$6,330" (Hawaii). See /federalPovertyLineMagicNumberStartingNumber.</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
@@ -1651,18 +1663,26 @@
     <Fact path="/applicableFigureUnrounded">
       <Name>Form 8962 line 7 applicable figure before rounding</Name>
       <Description>#88: Form 8962 (2026) draft, Created 4/21/26 (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf), PDF
-        p. 1, line 7: "Applicable figure. Using your line 5 percentage, locate your "applicable figure" on the table in
-        the instructions". Rev. Proc. 2025-25 sec. 3.01 (https://www.irs.gov/pub/irs-drop/rp-25-25.pdf), PDF p. 3,
+        p.
+        1, line 7: "Applicable figure. Using your line 5 percentage, locate your "applicable figure" on the table in
+        the
+        instructions". Rev. Proc. 2025-25 sec. 3.01 (https://www.irs.gov/pub/irs-drop/rp-25-25.pdf), PDF p. 3,
         Applicable Percentage Table for taxable years beginning in 2026 (initial / final percentage): less than 133%,
         2.10% / 2.10%; at least 133% but less than 150%, 3.14% / 4.19%; at least 150% but less than 200%, 4.19% /
-        6.60%; at least 200% but less than 250%, 6.60% / 8.44%; at least 250% but less than 300%, 8.44% / 9.96%; at
-        least 300% but not more than 400%, 9.96% / 9.96%. The 2021-2025 table of 26 U.S.C. 36B(b)(3)(A)(iii)
+        6.60%;
+        at least 200% but less than 250%, 6.60% / 8.44%; at least 250% but less than 300%, 8.44% / 9.96%; at
+        least 300%
+        but not more than 400%, 9.96% / 9.96%. The 2021-2025 table of 26 U.S.C. 36B(b)(3)(A)(iii)
         (https://www.law.cornell.edu/uscode/text/26/36B) applies only "after December 31, 2020, and before January 1,
         2026". Within a tier the percentage "increases on a sliding scale in a linear manner" (Treas. Reg.
-        1.36B-3(g)(1)): initial + (line 5 - tier floor) x (final - initial) / tier width, computed exactly here and rounded
-        half up to a whole hundredth of a percent (4 decimals, the precision of the line 7 table) in /applicableFigure. Line 5 of 401
-        (over 400%) is not an applicable taxpayer under 36B(c)(1)(A), "does not exceed 400 percent"; the 9.96% figure is
-        kept for that case only so the fact stays complete, and lines 11d and 12-23(d) are $0 (see
+        1.36B-3(g)(1)): initial + (line 5 - tier floor) x (final - initial) / tier width, computed exactly here and
+        rounded
+        half up to a whole hundredth of a percent (4 decimals, the precision of the line 7 table) in
+        /applicableFigure. Line 5 of 401
+        (over 400%) is not an applicable taxpayer under 36B(c)(1)(A), "does not exceed
+        400 percent"; the 9.96% figure is
+        kept for that case only so the fact stays complete, and lines 11d and 12-23(d)
+        are $0 (see
         /annualMaxPremiumAssitance).</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -6729,9 +6749,12 @@
     <Fact path="/annualMaxPremiumAssitance">
       <Description>Annual max premium assistance, Form 8962 line 11d. #88: $0 when line 5 is 401. Form 8962 (2026)
         draft, PDF p. 1, line 6: "Did you enter 401% on line 5? ... Yes. You are not eligible to take the PTC."
-        26 U.S.C. 36B(c)(1)(A): an applicable taxpayer's household income "equals or exceeds 100 percent but does not
-        exceed 400 percent" of the poverty line; the 36B(c)(1)(E) suspension of that limit applies only "before
-        January 1, 2026". With line 11d (and 12-23(d)) at $0 the credit on line 24 is $0 and all advance payments are
+        26 U.S.C.
+        36B(c)(1)(A): an applicable taxpayer's household income "equals or exceeds 100 percent but does not
+        exceed 400
+        percent" of the poverty line; the 36B(c)(1)(E) suspension of that limit applies only "before
+        January 1, 2026".
+        With line 11d (and 12-23(d)) at $0 the credit on line 24 is $0 and all advance payments are
         repaid on line 27.</Description>
       <Export mef="true" />
       <ExportZero />
@@ -7950,7 +7973,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForJan">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Jan</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Jan</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -7998,7 +8022,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForFeb">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Feb</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Feb</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8046,7 +8071,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForMar">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Mar</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Mar</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8094,7 +8120,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForApr">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Apr</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Apr</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8142,7 +8169,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForMay">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for May</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for May</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8190,7 +8218,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForJun">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Jun</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Jun</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8238,7 +8267,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForJul">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Jul</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Jul</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8286,7 +8316,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForAug">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Aug</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Aug</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8334,7 +8365,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForSep">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Sep</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Sep</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8382,7 +8414,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForOct">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Oct</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Oct</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8430,7 +8463,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForNov">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Nov</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Nov</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -8478,7 +8512,8 @@
     </Fact>
 
     <Fact path="/monthlyPtcMaxPremiumAssitanceForDec">
-      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium assitance for Dec</Description>
+      <Description>#88: $0 when Form 8962 line 5 is 401 (see /annualMaxPremiumAssitance). The monthly PTC max premium
+        assitance for Dec</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -9799,8 +9834,10 @@
         repayment limitation applies for TY2026. Rev. Proc. 2025-32 sec. 2.04
         (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf), PDF p. 5: "Section 71305 of the OBBBA removes § 36B(f)(2)(B),
         which limited the tax increase from excess advance payments for certain households, effective for taxable
-        years beginning after December 31, 2025." Form 8962 (2026) draft (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf),
-        PDF p. 1, line 27: "Excess advance payment of PTC. If line 25 is greater than line 24, subtract line 24 from line
+        years
+        beginning after December 31, 2025." Form 8962 (2026) draft (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf),
+        PDF
+        p. 1, line 27: "Excess advance payment of PTC. If line 25 is greater than line 24, subtract line 24 from line
         25. Enter the difference here and on Schedule 2 (Form 1040), line 1a"; lines 28 and 29: "Reserved for future
         use". The fact keeps its name because Schedule 2 and the result screens read it.</Description>
       <Export mef="true" downstreamFacts="true" />

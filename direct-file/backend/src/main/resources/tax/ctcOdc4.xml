@@ -203,13 +203,20 @@
     <Fact path="/actcSelfEmploymentAndOtherTaxes">
       <Name>Schedule 8812 line 22 amount</Name>
       <Description>Schedule 8812 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf), page 2,
-        Part II-B, line 22: "Enter the total of the amounts from Schedule 1 (Form 1040), line 15; Schedule 2 (Form 1040),
+        Part
+        II-B, line 22: "Enter the total of the amounts from Schedule 1 (Form 1040), line 15; Schedule 2 (Form 1040),
         line 16c; and Schedule 2 (Form 1040), line 17c". 26 U.S.C. 24(d)(2)(A)(ii) counts as social security taxes
-        "50 percent of the taxes imposed by section 1401 on the self-employment income of the taxpayer", which is the
-        26 U.S.C. 164(f) deduction on Schedule 1 line 15 (income /schedule1Line15 = scheduleSE /deductibleSelfEmploymentTax,
-        the whole-return amount). Schedule 2 line 16c (Forms 4137 and 8919) and line 17c (uncollected tax from W-2 box 12
-        codes A, B, M and N) are always zero on a supported return: unreported tips stop the return
-        (/flowKnockoutUnreportedTips) and so do those box 12 codes (formW2s /knockoutForBox12Value), so neither is
+        "50
+        percent of the taxes imposed by section 1401 on the self-employment income of the taxpayer", which is the
+        26
+        U.S.C. 164(f) deduction on Schedule 1 line 15 (income /schedule1Line15 = scheduleSE
+        /deductibleSelfEmploymentTax,
+        the whole-return amount). Schedule 2 line 16c (Forms 4137 and 8919) and line 17c
+        (uncollected tax from W-2 box 12
+        codes A, B, M and N) are always zero on a supported return: unreported tips stop
+        the return
+        (/flowKnockoutUnreportedTips) and so do those box 12 codes (formW2s /knockoutForBox12Value), so
+        neither is
         added here.</Description>
       <Derived>
         <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
@@ -219,8 +226,10 @@
       <Name>Schedule 8812 line 23 amount</Name>
       <Description>Schedule 8812 (Form 1040) 2026 draft, page 2, Part II-B, line 23: "Add lines 21 and 22". Line 21 is
         withheld social security, Medicare and Additional Medicare taxes from Form(s) W-2, boxes 4 and 6
-        (formW2s /socialSecurityTaxesWithheld); line 22 is /actcSelfEmploymentAndOtherTaxes. Together they are the
-        social security taxes of 26 U.S.C. 24(d)(2)(A)(i) and (ii) used for the three-or-more-children amount of
+        (formW2s
+        /socialSecurityTaxesWithheld); line 22 is /actcSelfEmploymentAndOtherTaxes. Together they are the
+        social security
+        taxes of 26 U.S.C. 24(d)(2)(A)(i) and (ii) used for the three-or-more-children amount of
         24(d)(1)(B)(ii).</Description>
       <Derived>
         <Add>
@@ -232,7 +241,8 @@
     <Fact path="/pdf8812Line22">
       <Name>Display value for PDF Schedule 8812, Line 22</Name>
       <Description>Schedule 1 line 15 (+ Schedule 2 lines 16c and 17c, zero on a supported return) if completing
-        Part II-B; undefined otherwise.</Description>
+        Part
+        II-B; undefined otherwise.</Description>
       <Derived>
         <Switch>
           <Case>

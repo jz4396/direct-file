@@ -29,11 +29,14 @@
     <Fact path="/form8960Line1">
       <Name>Form 8960 line 1: taxable interest</Name>
       <Description>
-        26 U.S.C. 1411(c)(1)(A)(i): NII includes "gross income from interest, dividends, annuities, royalties,
+        26 U.S.C. 1411(c)(1)(A)(i): NII includes "gross income from interest, dividends, annuities,
+        royalties,
         and rents". i8960 (2026 draft) p. 7 (PDF p. 8), Line 1: "Enter your taxable interest. Include the
         applicable amount from your return: Form 1040 or 1040-SR, line 2b." interest /interestIncome is Form
-        1040 line 2b. Interest earned in the ordinary course of a non-section 1411 trade or business (line 7
-        adjustment) can only arise with a Schedule C, which /flowKnockoutForm8960Unsupported stops.
+        1040 line
+        2b. Interest earned in the ordinary course of a non-section 1411 trade or business (line 7
+        adjustment) can only
+        arise with a Schedule C, which /flowKnockoutForm8960Unsupported stops.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -46,8 +49,10 @@
       <Description>
         26 U.S.C. 1411(c)(1)(A)(i) ("dividends"). i8960 (2026 draft) p. 7 (PDF p. 8), Line 2: "Enter your
         ordinary dividends. Include the applicable amount from your return: Form 1040 or 1040-SR, line 3b."
-        Wired to income /ordinaryDividends (Form 1040 line 3b; $0 until the dividends epic lands), so the line
-        follows automatically when 1099-DIV is supported.
+        Wired to
+        income /ordinaryDividends (Form 1040 line 3b; $0 until the dividends epic lands), so the line
+        follows
+        automatically when 1099-DIV is supported.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -60,11 +65,16 @@
       <Description>
         26 U.S.C. 1411(c)(5): NII "shall not include any distribution from a plan or arrangement described in
         section 401(a), 403(a), 403(b), 408, 408A, or 457(b)." i8960 (2026 draft) p. 8 (PDF p. 9), Line 3:
-        "Amounts subject to NIIT should be identified with code D in box 7a. If code D is shown in box 7a of Form
-        1099-R, enter the taxable amount reported in box 2a of Form 1099-R on Form 8960, line 3." The 1099-R
-        module accepts only box 7 codes 2, 7, G, H, B and 4G (form1099Rs /hasUnsupportedDistributionCode); any
-        code D 1099-R is stopped by /knockoutForForm1099RDistributionCode (BlockSubmissionOnTrue), so a return
-        that reaches submission has no line 3 amount. $0 by construction, not a default.
+        "Amounts
+        subject to NIIT should be identified with code D in box 7a. If code D is shown in box 7a of Form
+        1099-R, enter
+        the taxable amount reported in box 2a of Form 1099-R on Form 8960, line 3." The 1099-R
+        module accepts only box 7
+        codes 2, 7, G, H, B and 4G (form1099Rs /hasUnsupportedDistributionCode); any
+        code D 1099-R is stopped by
+        /knockoutForForm1099RDistributionCode (BlockSubmissionOnTrue), so a return
+        that reaches submission has no line 3
+        amount. $0 by construction, not a default.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -75,10 +85,13 @@
     <Fact path="/form8960Line4a">
       <Name>Form 8960 line 4a: rental real estate, royalties, partnerships, S corporations, trusts, trades or businesses</Name>
       <Description>
-        i8960 (2026 draft) p. 8 (PDF p. 9), Line 4a: "Enter the applicable amounts from your return. Schedule 1
+        i8960 (2026 draft) p. 8 (PDF p. 9), Line 4a: "Enter the applicable amounts from your return. Schedule
+        1
         (Form 1040), line 3. Schedule 1 (Form 1040), line 5. Schedule 1 (Form 1040), line 6." Schedule 1 line 3
-        is scheduleC /scheduleCNetProfitOrLoss and line 5 is scheduleE /scheduleENetIncome (income /otherIncome);
-        line 6 (farm) is not supported. Whenever either is present and MAGI is over the threshold, the line 4b
+        is
+        scheduleC /scheduleCNetProfitOrLoss and line 5 is scheduleE /scheduleENetIncome (income /otherIncome);
+        line 6
+        (farm) is not supported. Whenever either is present and MAGI is over the threshold, the line 4b
         trade-or-business adjustment can't be computed and /flowKnockoutForm8960Unsupported stops the return.
       </Description>
       <Export mef="true" />
@@ -95,9 +108,12 @@
       <Description>
         f8960 (2026 draft) line 4c: "Combine lines 4a and 4b". Line 4b ("Adjustment for net income or loss
         derived in the ordinary course of a non-section 1411 trade or business included on line 4a") requires the
-        26 U.S.C. 1411(c)(2) passive-activity / trading classification, which is not collected: when line 4a can
-        be nonzero and the threshold is exceeded, /flowKnockoutForm8960Unsupported stops the return. Line 4b is
-        therefore never used on a submitted return with tax on Form 8960, and line 4c = line 4a.
+        26
+        U.S.C. 1411(c)(2) passive-activity / trading classification, which is not collected: when line 4a can
+        be nonzero
+        and the threshold is exceeded, /flowKnockoutForm8960Unsupported stops the return. Line 4b is
+        therefore never used
+        on a submitted return with tax on Form 8960, and line 4c = line 4a.
       </Description>
       <Derived>
         <Dependency path="/form8960Line4a" />
@@ -107,14 +123,19 @@
     <Fact path="/form8960Line5a">
       <Name>Form 8960 line 5a: net gain or loss from disposition of property</Name>
       <Description>
-        26 U.S.C. 1411(c)(1)(A)(iii): "net gain (to the extent taken into account in computing taxable income)
+        26 U.S.C. 1411(c)(1)(A)(iii): "net gain (to the extent taken into account in computing taxable
+        income)
         attributable to the disposition of property". i8960 (2026 draft) p. 9 (PDF p. 10), Line 5a: "Figure and
         enter your net gain or loss from the disposition of property by combining the following amounts from your
         return. Form 1040 or 1040-SR, line 7a, and Schedule 1 (Form 1040), line 4." income /capitalGainsOrLosses
-        is the Form 1040 capital gain or loss line (after the 26 U.S.C. 1211(b) loss limit). Schedule 1 line 4
-        (Form 4797) is not supported. Line 5b (gain on property held in a non-section 1411 trade or business)
-        can only arise with a Schedule C or Schedule E, which /flowKnockoutForm8960Unsupported stops; line 5c
-        (partnership interests and S corporation stock) needs K-1 data, stopped by scheduleE
+        is the
+        Form 1040 capital gain or loss line (after the 26 U.S.C. 1211(b) loss limit). Schedule 1 line 4
+        (Form 4797) is
+        not supported. Line 5b (gain on property held in a non-section 1411 trade or business)
+        can only arise with a
+        Schedule C or Schedule E, which /flowKnockoutForm8960Unsupported stops; line 5c
+        (partnership interests and S
+        corporation stock) needs K-1 data, stopped by scheduleE
         /flowKnockoutScheduleEPartII. So line 5d = line 5a.
       </Description>
       <Export mef="true" />
@@ -126,10 +147,13 @@
     <Fact path="/form8960Line8">
       <Name>Form 8960 line 8: total investment income</Name>
       <Description>
-        f8960 (2026 draft) line 8: "Total investment income. Combine lines 1, 2, 3, 4c, 5d, 6, and 7." Line 5d
+        f8960 (2026 draft) line 8: "Total investment income. Combine lines 1, 2, 3, 4c, 5d, 6, and 7." Line
+        5d
         = line 5a (see /form8960Line5a). Line 6 (CFC and PFIC adjustments) and line 7 (other modifications) have
-        no source in the app: CFC/PFIC holdings, self-charged interest and non-section 1411 business interest
-        aren't collected, and the business cases are stopped by /flowKnockoutForm8960Unsupported.
+        no
+        source in the app: CFC/PFIC holdings, self-charged interest and non-section 1411 business interest
+        aren't
+        collected, and the business cases are stopped by /flowKnockoutForm8960Unsupported.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -148,14 +172,20 @@
     <Fact path="/form8960Line10">
       <Name>Form 8960 line 10: additional modifications</Name>
       <Description>
-        f8960 (2026 draft) line 10: "Additional modifications (see instructions)". i8960 (2026 draft) p. 13 (PDF
+        f8960 (2026 draft) line 10: "Additional modifications (see instructions)". i8960 (2026 draft) p. 13
+        (PDF
         p. 14): "Note: The early withdrawal penalty reported on Schedule 1 (Form 1040), line 18, is reported on Form
         8960, line 10." Treas. Reg. 1.1411-4(f)(2)(iii) (https://www.law.cornell.edu/cfr/text/26/1.1411-4):
-        "Penalty on early withdrawal of savings. Deductions described in section 62(a)(9) are taken into account in
-        determining net investment income". Line 10 = interest /earlyWithdrawalPenaltyTotal (Schedule 1 line 18).
-        The other line 10 items (section 62(a)(4) rent and royalty deductions, section 62(a)(1) deductions of a
-        section 1411 trade or business, and the section 1411 NOL amount) only arise with Schedule E or Schedule C,
-        which /flowKnockoutForm8960Unsupported stops over the threshold, or are not in the app (no NOL deduction).
+        "Penalty on
+        early withdrawal of savings. Deductions described in section 62(a)(9) are taken into account in
+        determining net
+        investment income". Line 10 = interest /earlyWithdrawalPenaltyTotal (Schedule 1 line 18).
+        The other line 10 items
+        (section 62(a)(4) rent and royalty deductions, section 62(a)(1) deductions of a
+        section 1411 trade or business,
+        and the section 1411 NOL amount) only arise with Schedule E or Schedule C,
+        which /flowKnockoutForm8960Unsupported
+        stops over the threshold, or are not in the app (no NOL deduction).
       </Description>
       <Export mef="true" />
       <Derived>
@@ -166,22 +196,36 @@
     <Fact path="/form8960Line11">
       <Name>Form 8960 line 11: total deductions and modifications</Name>
       <Description>
-        26 U.S.C. 1411(c)(1)(B): NII is reduced by "the deductions allowed by this subtitle which are properly
+        26 U.S.C. 1411(c)(1)(B): NII is reduced by "the deductions allowed by this subtitle which are
+        properly
         allocable to such gross income or net gain". f8960 (2026 draft) line 11: "Total deductions and
         modifications. Add lines 9d and 10." i8960 (2026 draft) p. 18 (PDF p. 19), Line 9a: "Enter on Form 8960,
-        line 9a, the interest expense you paid or accrued during the tax year deducted on Schedule A (Form 1040),
-        line 9." Line 9b: "Include state, local, and foreign income taxes you paid for the tax year that are
-        attributable to NII ... See the Instructions for Schedule A (Form 1040)". 1411(c)(1)(B) is not limited to
-        itemized deductions. Treas. Reg. 1.1411-4(f) (https://www.law.cornell.edu/cfr/text/26/1.1411-4): (f)(1)(i)
-        "only properly allocable deductions described in this paragraph (f) may be taken into account"; (f)(2)
-        "Properly allocable deductions described in section 62" are section 62(a)(4) deductions allocable to rents
-        and royalties, section 62(a)(1) deductions of a 1.1411-5 trade or business, (f)(2)(iii) "Penalty on early
-        withdrawal of savings. Deductions described in section 62(a)(9) are taken into account in determining net
-        investment income", and the (f)(2)(iv) section 1411 NOL amount. Lines 9a-9c come from Schedule A, so for a
-        filer who takes the standard deduction (taxCalculations /wantsStandardDeduction) lines 9a-9d are $0.
-        An itemizer over the threshold is stopped by /flowKnockoutForm8960Unsupported (the allocation and the
-        Lines 9 and 10 Section 68 Limitation Worksheet, i8960 p. 19, are not modeled). So line 11 = line 9d ($0)
-        + line 10 (/form8960Line10, the Schedule 1 line 18 early withdrawal penalty).
+        line 9a,
+        the interest expense you paid or accrued during the tax year deducted on Schedule A (Form 1040),
+        line 9." Line
+        9b: "Include state, local, and foreign income taxes you paid for the tax year that are
+        attributable to NII ...
+        See the Instructions for Schedule A (Form 1040)". 1411(c)(1)(B) is not limited to
+        itemized deductions. Treas.
+        Reg. 1.1411-4(f) (https://www.law.cornell.edu/cfr/text/26/1.1411-4): (f)(1)(i)
+        "only properly allocable
+        deductions described in this paragraph (f) may be taken into account"; (f)(2)
+        "Properly allocable deductions
+        described in section 62" are section 62(a)(4) deductions allocable to rents
+        and royalties, section 62(a)(1)
+        deductions of a 1.1411-5 trade or business, (f)(2)(iii) "Penalty on early
+        withdrawal of savings. Deductions
+        described in section 62(a)(9) are taken into account in determining net
+        investment income", and the (f)(2)(iv)
+        section 1411 NOL amount. Lines 9a-9c come from Schedule A, so for a
+        filer who takes the standard deduction
+        (taxCalculations /wantsStandardDeduction) lines 9a-9d are $0.
+        An itemizer over the threshold is stopped by
+        /flowKnockoutForm8960Unsupported (the allocation and the
+        Lines 9 and 10 Section 68 Limitation Worksheet, i8960 p.
+        19, are not modeled). So line 11 = line 9d ($0)
+        + line 10 (/form8960Line10, the Schedule 1 line 18 early
+        withdrawal penalty).
       </Description>
       <Export mef="true" />
       <Derived>
@@ -194,7 +238,8 @@
     <Fact path="/form8960Line12">
       <Name>Form 8960 line 12: net investment income</Name>
       <Description>f8960 (2026 draft) line 12: "Net investment income. Subtract Part II, line 11, from Part I,
-        line 8. Individuals, complete lines 13-17. ... If zero or less, enter -0-".</Description>
+        line 8.
+        Individuals, complete lines 13-17. ... If zero or less, enter -0-".</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -215,11 +260,14 @@
     <Fact path="/form8960Line13">
       <Name>Form 8960 line 13: modified adjusted gross income</Name>
       <Description>
-        26 U.S.C. 1411(d): MAGI "means adjusted gross income increased by the excess of" the section 911(a)(1)
+        26 U.S.C. 1411(d): MAGI "means adjusted gross income increased by the excess of" the section
+        911(a)(1)
         exclusion over the related deductions. i8960 (2026 draft) p. 21 (PDF p. 22), Line 13: "If you didn't
         exclude any amounts from your gross income under section 911 and you don't own an interest in a CFC or
-        PFIC, your MAGI is your AGI as reported on Form 1040 or 1040-SR." Form 2555 and CFC/PFIC interests are not
-        collected anywhere in the app, so MAGI = taxCalculations /agi (Form 1040 line 11).
+        PFIC, your
+        MAGI is your AGI as reported on Form 1040 or 1040-SR." Form 2555 and CFC/PFIC interests are not
+        collected
+        anywhere in the app, so MAGI = taxCalculations /agi (Form 1040 line 11).
       </Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
@@ -230,14 +278,20 @@
     <Fact path="/form8960Line14">
       <Name>Form 8960 line 14: threshold based on filing status</Name>
       <Description>
-        26 U.S.C. 1411(b): "the term 'threshold amount' means- (1) in the case of a taxpayer making a joint return
+        26 U.S.C. 1411(b): "the term 'threshold amount' means- (1) in the case of a taxpayer making a joint
+        return
         under section 6013 or a surviving spouse (as defined in section 2(a)), $250,000, (2) in the case of a
         married taxpayer (as defined in section 7703) filing a separate return, 1/2 of the dollar amount
-        determined under paragraph (1), and (3) in any other case, $200,000." Not indexed for inflation (fixed
-        statutory amounts; no cost-of-living clause in 1411(b)). Cross-check, i8960 (2026 draft) p. 22 (PDF
-        p. 23), Line 14: MFJ $250,000; QSS $250,000; MFS $125,000; Single or Head of household $200,000. The
-        dollar amounts are the interest-module facts /netInvestmentIncomeThresholdForMfjOrQss,
-        /netInvestmentIncomeThresholdForMfs and /netInvestmentIncomeThresholdForSingleOrHoh, which cite 1411(b).
+        determined under
+        paragraph (1), and (3) in any other case, $200,000." Not indexed for inflation (fixed
+        statutory amounts; no
+        cost-of-living clause in 1411(b)). Cross-check, i8960 (2026 draft) p. 22 (PDF
+        p. 23), Line 14: MFJ $250,000; QSS
+        $250,000; MFS $125,000; Single or Head of household $200,000. The
+        dollar amounts are the interest-module facts
+        /netInvestmentIncomeThresholdForMfjOrQss,
+        /netInvestmentIncomeThresholdForMfs and
+        /netInvestmentIncomeThresholdForSingleOrHoh, which cite 1411(b).
       </Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
@@ -276,8 +330,10 @@
     <Fact path="/form8960Line15">
       <Name>Form 8960 line 15</Name>
       <Description>f8960 (2026 draft) line 15: "Subtract line 14 from line 13. If zero or less, enter -0-".
-        26 U.S.C. 1411(a)(1)(B): "the excess (if any) of- (i) the modified adjusted gross income for such taxable
-        year, over (ii) the threshold amount."</Description>
+        26 U.S.C.
+        1411(a)(1)(B): "the excess (if any) of- (i) the modified adjusted gross income for such taxable
+        year, over (ii)
+        the threshold amount."</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
@@ -298,8 +354,10 @@
     <Fact path="/form8960Line16">
       <Name>Form 8960 line 16</Name>
       <Description>f8960 (2026 draft) line 16: "Enter the smaller of line 12 or line 15". 26 U.S.C.
-        1411(a)(1): "a tax equal to 3.8 percent of the lesser of- (A) net investment income for such taxable
-        year, or (B) the excess (if any) of" MAGI over the threshold amount.</Description>
+        1411(a)(1): "a tax
+        equal to 3.8 percent of the lesser of- (A) net investment income for such taxable
+        year, or (B) the excess (if
+        any) of" MAGI over the threshold amount.</Description>
       <Export mef="true" />
       <Derived>
         <LesserOf>
@@ -314,8 +372,10 @@
       <Description>
         f8960 (2026 draft) line 17: "Net investment income tax for individuals. Multiply line 16 by 3.8%
         (0.038). Enter here and include on your tax return". 26 U.S.C. 1411(a)(1): "a tax equal to 3.8 percent".
-        i8960 (2026 draft) p. 22 (PDF p. 23), Line 17: "If you file Form 1040 or 1040-SR, include this amount on
-        Schedule 2 (Form 1040), line 6." Rounded to whole dollars like the other Schedule 2 lines.
+        i8960
+        (2026 draft) p. 22 (PDF p. 23), Line 17: "If you file Form 1040 or 1040-SR, include this amount on
+        Schedule 2
+        (Form 1040), line 6." Rounded to whole dollars like the other Schedule 2 lines.
       </Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
@@ -347,7 +407,8 @@
     <Fact path="/requiresForm8960">
       <Name>Form 8960 is required</Name>
       <Description>i8960 (2026 draft) p. 1 (PDF p. 2), Who Must File: "Attach Form 8960 to your return if your
-        modified adjusted gross income (MAGI) is greater than the applicable threshold amount."</Description>
+        modified
+        adjusted gross income (MAGI) is greater than the applicable threshold amount."</Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
         <Dependency path="/form8960MagiOverThreshold" />
@@ -359,21 +420,31 @@
     <Fact path="/flowKnockoutForm8960Unsupported">
       <Name>Knockout: Net Investment Income Tax that Direct File can't compute</Name>
       <Description>
-        No silent zeros on Form 8960. When MAGI is over the 26 U.S.C. 1411(b) threshold, stop the return if it
+        No silent zeros on Form 8960. When MAGI is over the 26 U.S.C. 1411(b) threshold, stop the return if
+        it
         has any of:
-        (1) a Schedule C business (Schedule 1 line 3, Form 8960 line 4a). Whether its income is NII depends on
+        (1) a Schedule C business (Schedule 1 line 3, Form 8960 line 4a). Whether its income is NII depends
+        on
         1411(c)(1)(A)(ii) and (c)(2) ("a passive activity (within the meaning of section 469) with respect to the
         taxpayer" or trading in financial instruments or commodities), the line 4b adjustment (i8960 (2026 draft)
-        p. 8, Line 4b), 1411(c)(6) (items taken into account for SE income) and line 5b/7 business carve-outs.
-        None of these classifications are collected.
-        (2) Schedule E Part I rents or royalties (Schedule 1 line 5, line 4a). Rents and royalties are NII under
-        1411(c)(1)(A)(i) "other than such income which is derived in the ordinary course of a trade or business
-        not described in paragraph (2)"; the rental trade-or-business / real estate professional / grouping
+        p. 8,
+        Line 4b), 1411(c)(6) (items taken into account for SE income) and line 5b/7 business carve-outs.
+        None of these
+        classifications are collected.
+        (2) Schedule E Part I rents or royalties (Schedule 1 line 5, line 4a). Rents and
+        royalties are NII under
+        1411(c)(1)(A)(i) "other than such income which is derived in the ordinary course of a
+        trade or business
+        not described in paragraph (2)"; the rental trade-or-business / real estate professional /
+        grouping
         rules and the 469 passive-loss interaction aren't modeled. (Parts II-IV K-1 income from partnerships, S
         corporations, estates and trusts is already stopped by scheduleE /flowKnockoutScheduleEPartII.)
-        (3) itemized deductions (scheduleA /itemizesDeductions): Part II lines 9a-9c and 10 allocations (1411(c)(1)(B)
-        "properly allocable"; Treas. Reg. 1.1411-4(f)) and the i8960 Section 68 worksheet aren't modeled.
-        At or under the threshold, line 15 is $0, so line 17 is $0 whatever line 12 is, and nothing is stopped.
+        (3) itemized
+        deductions (scheduleA /itemizesDeductions): Part II lines 9a-9c and 10 allocations (1411(c)(1)(B)
+        "properly
+        allocable"; Treas. Reg. 1.1411-4(f)) and the i8960 Section 68 worksheet aren't modeled.
+        At or under the
+        threshold, line 15 is $0, so line 17 is $0 whatever line 12 is, and nothing is stopped.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />

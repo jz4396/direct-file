@@ -52,6 +52,24 @@
       "url": "https://www.law.cornell.edu/uscode/text/5",
       "kind": "statute"
     },
+    "fr-2025-01377": {
+      "title": "90 FR 5917 (Jan. 17, 2025), Annual Update of the HHS Poverty Guidelines",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2025-01-17/pdf/2025-01377.pdf",
+      "kind": "pdf",
+      "sha256": "a239506cedee787b4c164ac17fa43b2ad9a147e3c848cd935c54a692ee2cebce"
+    },
+    "f8880-2026-dft": {
+      "title": "Form 8880 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f8880--dft.pdf",
+      "kind": "pdf",
+      "sha256": "97a6b5b3df449310dbfb1f9574edb06dd2009f1b04d86261bb1c88fc087c9e01"
+    },
+    "i1040gi-2025": {
+      "title": "Instructions for Form 1040 (2025)",
+      "url": "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
+      "kind": "pdf",
+      "sha256": "482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a"
+    },
     "f6251-dft": {
       "title": "Form 6251 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f6251--dft.pdf",
@@ -81,24 +99,6 @@
       "url": "https://www.irs.gov/pub/irs-pdf/i8960.pdf",
       "kind": "pdf",
       "sha256": "b10fbb23ff4a053db197285497a00914c558e3ae0cdf5c956b7c0c7867376428"
-    },
-    "fr-2025-01377": {
-      "title": "90 FR 5917 (Jan. 17, 2025), Annual Update of the HHS Poverty Guidelines",
-      "url": "https://www.govinfo.gov/content/pkg/FR-2025-01-17/pdf/2025-01377.pdf",
-      "kind": "pdf",
-      "sha256": "a239506cedee787b4c164ac17fa43b2ad9a147e3c848cd935c54a692ee2cebce"
-    },
-    "f8880-2026-dft": {
-      "title": "Form 8880 (2026), draft",
-      "url": "https://www.irs.gov/pub/irs-dft/f8880--dft.pdf",
-      "kind": "pdf",
-      "sha256": "97a6b5b3df449310dbfb1f9574edb06dd2009f1b04d86261bb1c88fc087c9e01"
-    },
-    "i1040gi-2025": {
-      "title": "Instructions for Form 1040 (2025)",
-      "url": "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
-      "kind": "pdf",
-      "sha256": "482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a"
     },
     "rp-2025-25": {
       "title": "Rev. Proc. 2025-25, Applicable Percentage Table and Required Contribution Percentage for 2026",
@@ -2047,6 +2047,21 @@
           "section": "§ 36B(d)(3)(B)",
           "url": "https://www.law.cornell.edu/uscode/text/26/36B",
           "quote": "the poverty line used shall be the most recently published poverty line as of the 1st day of the regular enrollment period for coverage during such calendar year."
+        }
+      ]
+    },
+    {
+      "fact": "/form2210NoPenaltyThreshold",
+      "file": "form2210.xml",
+      "values": [
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6654(e)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6654",
+          "quote": "No addition to tax shall be imposed under subsection (a) for any taxable year if the tax shown on the return for such taxable year (or, if no return is filed, the tax), reduced by the credit allowable under section 31, is less than $1,000."
         }
       ]
     },

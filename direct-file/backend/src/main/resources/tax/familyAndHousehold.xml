@@ -2666,8 +2666,10 @@
       <Name>Gross income limit</Name>
       <Description>The gross income limit for purposes of the qualifying relative gross income test referenced in
         §152(d)(1)(B).
-        #91: TY2026 $5,300. Rev. Proc. 2025-32 sec. 4.23, p. 20 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf):
-        "For taxable years beginning in 2026, the exemption amount referred to in sec. 152(d)(1)(B) is $5,300."
+        #91: TY2026 $5,300. Rev. Proc. 2025-32 sec. 4.23, p. 20
+        (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf):
+        "For taxable years beginning in 2026, the exemption amount
+        referred to in sec. 152(d)(1)(B) is $5,300."
       </Description>
       <TaxYear>2026</TaxYear>
 
@@ -3858,7 +3860,9 @@
 
     <Fact path="/familyAndHousehold/*/meetsChildCtcTests">
       <Name>Meets the child tests for the Child Tax Credit</Name>
-      <Description>The dependent meets the Child Tax Credit tests that depend on the child (claimed qualifying child under 17, citizenship/residency, SSN valid for employment), before the filer SSN requirement of IRC §24(h)(7)(A)(i).</Description>
+      <Description>The dependent meets the Child Tax Credit tests that depend on the child (claimed qualifying child
+        under 17, citizenship/residency, SSN valid for employment), before the filer SSN requirement of IRC
+        §24(h)(7)(A)(i).</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -3889,7 +3893,12 @@
 
     <Fact path="/familyAndHousehold/*/eligibleCtc">
       <Name>Eligible for the Child Tax Credit</Name>
-      <Description>The dependent is eligible for the Child Tax Credit (CTC): the child tests (../meetsChildCtcTests) and the filer SSN requirement (#182, IRC §24(h)(7)(A)(i), https://www.law.cornell.edu/uscode/text/26/24; cites on /filerSsnRequirementForCtcMet). A child who fails only the filer requirement isn't eligibleCtc, so /familyAndHousehold/*/eligibleOdc applies: IRC §24(h)(4)(C), "In the case of any qualifying child with respect to whom a credit is not allowed under this section by reason of paragraph (7), such child shall be treated as a dependent to whom subparagraph (A) applies."</Description>
+      <Description>The dependent is eligible for the Child Tax Credit (CTC): the child tests (../meetsChildCtcTests) and
+        the filer SSN requirement (#182, IRC §24(h)(7)(A)(i), https://www.law.cornell.edu/uscode/text/26/24; cites on
+        /filerSsnRequirementForCtcMet). A child who fails only the filer requirement isn't eligibleCtc, so
+        /familyAndHousehold/*/eligibleOdc applies: IRC §24(h)(4)(C), "In the case of any qualifying child with respect
+        to whom a credit is not allowed under this section by reason of paragraph (7), such child shall be treated as a
+        dependent to whom subparagraph (A) applies."</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -4998,14 +5007,22 @@
 
     <Fact path="/familyAndHousehold/*/paSpDependentChild">
       <Name>PA Schedule SP dependent child</Name>
-      <Description>#79: PA-40 IN (2025) p. 37: a claimed dependent who is a natural, adopted, step- or foster child, or a grandchild ("grandChildOrOtherDescendantOfChild").</Description>
+      <Description>#79: PA-40 IN (2025) p. 37: a claimed dependent who is a natural, adopted, step- or foster child, or
+        a grandchild ("grandChildOrOtherDescendantOfChild").</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <All>
           <Dependency path="../isClaimedDependent" />
           <Any>
             <Dependency path="../isBiologicalAdoptedFosterOrStepchild" />
-            <Equal><Left><Dependency module="dependentsRelationship" path="../relationship" /></Left><Right><Enum optionsPath="/relationshipOptions">grandChildOrOtherDescendantOfChild</Enum></Right></Equal>
+            <Equal>
+              <Left>
+                <Dependency module="dependentsRelationship" path="../relationship" />
+              </Left>
+              <Right>
+                <Enum optionsPath="/relationshipOptions">grandChildOrOtherDescendantOfChild</Enum>
+              </Right>
+            </Equal>
           </Any>
         </All>
       </Derived>

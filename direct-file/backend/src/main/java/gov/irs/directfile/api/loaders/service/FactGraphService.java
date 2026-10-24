@@ -2,6 +2,7 @@ package gov.irs.directfile.api.loaders.service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -71,7 +72,18 @@ public class FactGraphService {
         }
         log.info("Loading fact graph configuration from resource directory \"{}\"", factDictionaryXmlPattern);
         Resource[] resources = applicationContext.getResources(factDictionaryXmlPattern);
-        _digest = new XmlProcessor().process(factDictionaryXmlPattern, resources);
+        TaxDictionaryDigest digest = new XmlProcessor().process(factDictionaryXmlPattern, resources);
+        if (digest.getSubmissionBlockingFacts().isEmpty()
+                || digest.getSubmissionBlockingFactsRequiringValue().isEmpty()) {
+            // Without this list the server would accept any return for signing and submission.
+            throw new IllegalStateException(
+                    "No <BlockSubmissionOnTrue /> facts loaded from " + factDictionaryXmlPattern);
+        }
+        log.info(
+                "Loaded {} submission-blocking facts ({} must be false)",
+                digest.getSubmissionBlockingFacts().size(),
+                digest.getSubmissionBlockingFactsRequiringValue().size());
+        _digest = digest;
         exportZeroDollarFacts = _digest.getExportZeroFacts();
 
         _factDictionary = new FactGraphLoader().createFactDictionary(_digest);
@@ -104,16 +116,61 @@ public class FactGraphService {
     }
 
     public boolean hasSubmissionBlockingFacts(final Graph factGraph) {
-        // If any fact marked as "<BlockSubmissionOnTrue />" in the digest is true, this
-        // method will return true
+        return !submissionBlockingFactPaths(factGraph).isEmpty();
+    }
 
-        for (TaxFact fact : _digest.getSubmissionBlockingFacts()) {
-            var result = factGraph.get(fact.path());
-            if (result.hasValue() && result.get().equals(true)) {
-                return true;
+    /**
+     * Paths of the submission-blocking facts that stop this return from being signed or submitted, in path order. Empty
+     * means the return may proceed. Only paths are returned, never values.
+     */
+    public List<String> submissionBlockingFactPaths(final Graph factGraph) {
+        return submissionBlockingFactPaths(_digest, factGraph::get);
+    }
+
+    /**
+     * Server-side submission gate over every fact marked {@code <BlockSubmissionOnTrue />} (the list the client's
+     * {@code submissionBlockingFactsAreFalse} condition uses, generated from the same XML):
+     *
+     * <ul>
+     *   <li>any blocking fact whose value is {@code true} refuses, whether the result is complete or a placeholder;
+     *   <li>a top-level blocking fact ({@link TaxDictionaryDigest#getSubmissionBlockingFactsRequiringValue()}) with
+     *       no value, a non-Boolean value, or an evaluation error refuses (fail closed);
+     *   <li>any other blocking fact that errors during evaluation refuses.
+     * </ul>
+     *
+     * <p>Known fail-open (https://github.com/jz4396/direct-file/issues/186): a placeholder {@code false} passes, so
+     * {@code /flowIsKnockedOut} passes while some of its knockouts are incomplete. Several knockouts never become
+     * complete when they don't apply, so requiring a complete {@code false} would refuse every return.
+     */
+    public static List<String> submissionBlockingFactPaths(
+            final TaxDictionaryDigest digest, final Function<String, Result<Object>> evaluate) {
+        if (digest.getSubmissionBlockingFacts().isEmpty()) {
+            // Fact dictionary loading disabled or broken: refuse rather than accept every return.
+            throw new IllegalStateException("No submission-blocking facts are loaded");
+        }
+        List<String> blocking = new ArrayList<>();
+        Set<String> requiringValue = digest.getSubmissionBlockingFactsRequiringValue();
+        for (TaxFact fact : digest.getSubmissionBlockingFacts()) {
+            String path = fact.path();
+            boolean requiresValue = requiringValue.contains(path);
+            try {
+                Result<Object> result = evaluate.apply(path);
+                boolean hasValue = result != null && result.hasValue();
+                Object value = hasValue ? result.get() : null;
+                if (Boolean.TRUE.equals(value)) {
+                    blocking.add(path);
+                } else if (requiresValue && !Boolean.FALSE.equals(value)) {
+                    blocking.add(path);
+                }
+            } catch (RuntimeException e) {
+                log.warn(
+                        "Submission-blocking fact {} could not be evaluated ({})",
+                        path,
+                        e.getClass().getSimpleName());
+                blocking.add(path);
             }
         }
-        return false;
+        return blocking;
     }
 
     public GraphSetResult setFacts(final Map<String, Object> writableValues) {

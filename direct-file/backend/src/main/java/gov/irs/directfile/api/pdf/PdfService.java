@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import gov.irs.factgraph.Graph;
 
 import gov.irs.directfile.api.config.PdfServiceProperties;
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.io.IOLocationException;
 import gov.irs.directfile.api.io.IOLocationService;
 import gov.irs.directfile.api.io.documentstore.DocumentNotFoundException;
@@ -107,6 +108,11 @@ public class PdfService {
         FactEvaluationResult facts;
         try {
             Graph graph = factGraphService.getGraph(taxReturn.getFacts());
+            List<String> printRefusingKnockouts = PrintRefusingKnockouts.refusingPaths(graph);
+            if (!printRefusingKnockouts.isEmpty()) {
+                log.info("Not printing tax return {}: knockout {}", taxReturn.getId(), printRefusingKnockouts);
+                throw new SubmissionBlockingFactsResponseStatusException(printRefusingKnockouts);
+            }
             facts = factGraphService.extractFacts(factPaths, graph);
         } catch (JsonProcessingException e) {
             throw new PdfCreationException("Could not parse JSON for tax return " + taxReturn.getId(), e);

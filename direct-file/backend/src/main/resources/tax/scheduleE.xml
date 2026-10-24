@@ -24,8 +24,10 @@
     <Fact path="/hadScheduleEIncome">
       <Name>Had rental real estate or royalty income (Schedule E Part I)</Name>
       <Description>
-        Interview gate. Schedule E instructions (2026 draft) printed p. 2 (PDF p. 3): "Use Schedule E (Form 1040) to
-        report income or loss from rental real estate, royalties, ...". Gross income: 26 U.S.C. 61(a)(5), (a)(6).
+        Interview gate. Schedule E instructions (2026 draft) printed p. 2 (PDF p. 3): "Use Schedule E (Form
+        1040) to
+        report income or loss from rental real estate, royalties, ...". Gross income: 26 U.S.C. 61(a)(5),
+        (a)(6).
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -64,7 +66,8 @@
     <Fact path="/scheduleEWritableRents">
       <Name>Rents received (Schedule E line 3, all properties)</Name>
       <Description>
-        Instructions (2026 draft) printed p. 6 (PDF p. 7), Line 3: "If you received rental income from real estate
+        Instructions (2026 draft) printed p. 6 (PDF p. 7), Line 3: "If you received rental income from real
+        estate
         (including personal property leased with real estate), report the income on line 3." 26 U.S.C. 61(a)(5).
       </Description>
       <Writable>
@@ -77,7 +80,8 @@
 
     <Fact path="/scheduleERents">
       <Name>Rents received (Schedule E line 3, all properties) (derived)</Name>
-      <Description>Rents received (Schedule E line 3, all properties), defaulting to $0 while unanswered so sums stay computable.</Description>
+      <Description>Rents received (Schedule E line 3, all properties), defaulting to $0 while unanswered so sums stay
+        computable.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -105,7 +109,8 @@
     <Fact path="/scheduleEWritableRoyalties">
       <Name>Royalties received (Schedule E line 4, all properties)</Name>
       <Description>
-        Instructions (2026 draft) printed p. 7 (PDF p. 8), Line 4: "Report on line 4 royalties from oil, gas, or mineral
+        Instructions (2026 draft) printed p. 7 (PDF p. 8), Line 4: "Report on line 4 royalties from oil, gas,
+        or mineral
         properties (not including operating interests); copyrights; ... and patents." 26 U.S.C. 61(a)(6).
       </Description>
       <Writable>
@@ -118,7 +123,8 @@
 
     <Fact path="/scheduleERoyalties">
       <Name>Royalties received (Schedule E line 4, all properties) (derived)</Name>
-      <Description>Royalties received (Schedule E line 4, all properties), defaulting to $0 while unanswered so sums stay computable.</Description>
+      <Description>Royalties received (Schedule E line 4, all properties), defaulting to $0 while unanswered so sums
+        stay computable.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -146,8 +152,10 @@
     <Fact path="/scheduleEWritableExpenses">
       <Name>Total expenses excluding depreciation (Schedule E lines 5-17 and 19, all properties)</Name>
       <Description>
-        Schedule E line 20 total expenses, with line 18 (depreciation or depletion) always $0 in this slice because any
-        depreciation is knocked out. Deductibility: 26 U.S.C. 212 (ordinary and necessary expenses for the production
+        Schedule E line 20 total expenses, with line 18 (depreciation or depletion) always $0 in this slice
+        because any
+        depreciation is knocked out. Deductibility: 26 U.S.C. 212 (ordinary and necessary expenses for the
+        production
         or collection of income / management of property held for the production of income).
       </Description>
       <Writable>
@@ -160,7 +168,8 @@
 
     <Fact path="/scheduleEExpenses">
       <Name>Total expenses excluding depreciation (Schedule E lines 5-17 and 19, all properties) (derived)</Name>
-      <Description>Total expenses excluding depreciation (Schedule E lines 5-17 and 19, all properties), defaulting to $0 while unanswered so sums stay computable.</Description>
+      <Description>Total expenses excluding depreciation (Schedule E lines 5-17 and 19, all properties), defaulting to
+        $0 while unanswered so sums stay computable.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -188,10 +197,14 @@
     <Fact path="/scheduleEAnyPropertyLoss">
       <Name>Any single Part I property had a loss</Name>
       <Description>
-        Asked because a loss on one property can be hidden by profit on another in the totals. Instructions (2026 draft)
-        printed p. 9 (PDF p. 10), Line 22: "If you have a rental real estate loss from a passive activity (defined earlier),
-        the amount of loss you can deduct may be limited by the passive activity loss rules. You may need to complete Form
-        8582". 26 U.S.C. 469; at-risk 465 (Line 21: "use Form 6198"); excess business loss 461(l) (Form 461).
+        Asked because a loss on one property can be hidden by profit on another in the totals. Instructions
+        (2026 draft)
+        printed p. 9 (PDF p. 10), Line 22: "If you have a rental real estate loss from a passive activity
+        (defined earlier),
+        the amount of loss you can deduct may be limited by the passive activity loss rules. You may
+        need to complete Form
+        8582". 26 U.S.C. 469; at-risk 465 (Line 21: "use Form 6198"); excess business loss 461(l)
+        (Form 461).
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -202,10 +215,14 @@
     <Fact path="/scheduleEHasDepreciation">
       <Name>Claims depreciation, amortization, depletion, or vehicle expenses</Name>
       <Description>
-        Instructions (2026 draft) printed p. 9 (PDF p. 10), Line 18: "See the Instructions for Form 4562 to figure the
-        amount of depreciation to enter on line 18." Printed p. 8 (PDF p. 9): "If you claim any auto expenses (actual or
-        the standard mileage rate), you must complete Part V of Form 4562". Form 4562 is not supported, so the TY2026
-        mileage rates (72.5 / 76 cents) and section 179 limits ($2,560,000 / $4,090,000) on printed p. 1 are not used.
+        Instructions (2026 draft) printed p. 9 (PDF p. 10), Line 18: "See the Instructions for Form 4562 to
+        figure the
+        amount of depreciation to enter on line 18." Printed p. 8 (PDF p. 9): "If you claim any auto expenses
+        (actual or
+        the standard mileage rate), you must complete Part V of Form 4562". Form 4562 is not supported, so the
+        TY2026
+        mileage rates (72.5 / 76 cents) and section 179 limits ($2,560,000 / $4,090,000) on printed p. 1 are not
+        used.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -216,8 +233,10 @@
     <Fact path="/scheduleEHasPersonalUse">
       <Name>Any personal-use days at a rental dwelling unit</Name>
       <Description>
-        Instructions (2026 draft) printed p. 6 (PDF p. 7), Line 2: "If you rented out a dwelling unit that you also used
-        for personal purposes during the year, you may not be able to deduct all the expenses for the rental part."
+        Instructions (2026 draft) printed p. 6 (PDF p. 7), Line 2: "If you rented out a dwelling unit that
+        you also used
+        for personal purposes during the year, you may not be able to deduct all the expenses for the
+        rental part."
         26 U.S.C. 280A(c)(5), (e): expense allocation / limits when the unit is used as a residence:
         https://www.law.cornell.edu/uscode/text/26/280A
       </Description>
@@ -230,14 +249,20 @@
     <Fact path="/scheduleEProvidesSubstantialServices">
       <Name>Provides substantial services to renters (cleaning, linens, maid service)</Name>
       <Description>
-        Instructions for Schedule E (2026 draft) printed p. 7 (PDF p. 8), Line 3: "Generally, rental real estate
-        activity is reported on Schedule E even if it is also a trade or business activity; however, if you provided
-        significant services to the renter, such as maid service, report the rental activity on Schedule C, not on
+        Instructions for Schedule E (2026 draft) printed p. 7 (PDF p. 8), Line 3: "Generally, rental real
+        estate
+        activity is reported on Schedule E even if it is also a trade or business activity; however, if you
+        provided
+        significant services to the renter, such as maid service, report the rental activity on Schedule C, not
+        on
         Schedule E. Significant services do not include the furnishing of heat and light, cleaning of public areas,
         trash collection, or similar services." On Schedule C the profit can be subject to self-employment tax
-        (26 U.S.C. 1401). 26 U.S.C. 1402(a)(1) excludes "rentals from real estate" from net earnings from
-        self-employment; the Schedule C routing above is what takes substantial-service rentals out of that
-        exclusion, so reporting the profit here with $0 SE tax could understate tax.
+        (26 U.S.C.
+        1401). 26 U.S.C. 1402(a)(1) excludes "rentals from real estate" from net earnings from
+        self-employment; the
+        Schedule C routing above is what takes substantial-service rentals out of that
+        exclusion, so reporting the profit
+        here with $0 SE tax could understate tax.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -248,7 +273,8 @@
     <Fact path="/scheduleEHasPartIIIncome">
       <Name>Has partnership, S corporation, estate, trust, or REMIC income (Schedule E Parts II-IV)</Name>
       <Description>
-        Parts II-IV (K-1 income) are out of scope for this MVP (spec PR #8, item 4: "block with clear message").
+        Parts II-IV (K-1 income) are out of scope for this MVP (spec PR #8, item 4: "block with clear
+        message").
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -259,11 +285,15 @@
     <Fact path="/scheduleENetIncome">
       <Name>Schedule E Part I total income or (loss) (line 26 / line 41 to Schedule 1 line 5)</Name>
       <Description>
-        Line 21 per property = (line 3 rents and/or line 4 royalties) - line 20 total expenses; line 26 combines them.
-        Schedule E (2026) draft p. 1, line 21: "Subtract line 20 from line 3 (rents) and/or 4 (royalties)"; line 26:
-        "Total rental real estate and royalty income or (loss). ... Schedule 1 (Form 1040), line 5." Because every loss
+        Line 21 per property = (line 3 rents and/or line 4 royalties) - line 20 total expenses; line 26
+        combines them.
+        Schedule E (2026) draft p. 1, line 21: "Subtract line 20 from line 3 (rents) and/or 4
+        (royalties)"; line 26:
+        "Total rental real estate and royalty income or (loss). ... Schedule 1 (Form 1040), line
+        5." Because every loss
         is knocked out, lines 22 and 25 (passive-loss limits) are always zero here.
-        $0 when the gate is unanswered or no.
+        $0 when the
+        gate is unanswered or no.
       </Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
@@ -304,8 +334,10 @@
     <Fact path="/flowKnockoutScheduleELoss">
       <Name>Knockout: Schedule E rental or royalty loss</Name>
       <Description>
-        Any net loss (total or on any one property) is unsupported: passive activity loss limits (26 U.S.C. 469, Form 8582),
-        at-risk limits (26 U.S.C. 465, Form 6198), and excess business loss (26 U.S.C. 461(l), Form 461). Cites on
+        Any net loss (total or on any one property) is unsupported: passive activity loss limits (26 U.S.C.
+        469, Form 8582),
+        at-risk limits (26 U.S.C. 465, Form 6198), and excess business loss (26 U.S.C. 461(l), Form
+        461). Cites on
         /scheduleEAnyPropertyLoss.
       </Description>
       <BlockSubmissionOnTrue />
@@ -361,7 +393,8 @@
     <Fact path="/flowKnockoutScheduleESubstantialServices">
       <Name>Knockout: rental with substantial services (belongs on Schedule C with SE tax)</Name>
       <Description>
-        Belongs on Schedule C and is subject to SE tax, not Schedule E. Cites on /scheduleEProvidesSubstantialServices.
+        Belongs on Schedule C and is subject to SE tax, not Schedule E. Cites on
+        /scheduleEProvidesSubstantialServices.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -391,9 +424,12 @@
     <Fact path="/flowKnockoutScheduleEEitc">
       <Name>Knockout: Schedule E income with the EITC</Name>
       <Description>
-        26 U.S.C. 32(i)(2)(C): disqualified income includes "the excess (if any) of— (i) gross income from rents or
-        royalties not derived in the ordinary course of a trade or business, over (ii) the sum of" the allocable deductions. The eitc modules do not include
-        Schedule E in the investment-income test yet, so any nonzero Schedule E result with EITC eligibility is knocked out.
+        26 U.S.C. 32(i)(2)(C): disqualified income includes "the excess (if any) of— (i) gross income from
+        rents or
+        royalties not derived in the ordinary course of a trade or business, over (ii) the sum of" the allocable
+        deductions. The eitc modules do not include
+        Schedule E in the investment-income test yet, so any nonzero Schedule
+        E result with EITC eligibility is knocked out.
         https://www.law.cornell.edu/uscode/text/26/32
       </Description>
       <BlockSubmissionOnTrue />

@@ -50,9 +50,12 @@
     <Fact path="/hasForeignAccounts">
       <Name>Interest of signature authorization in a foreign financial account</Name>
       <Description>Schedule B (Form 1040) line 7a, question 1: at any time during the tax year, did you have a
-        financial interest in or signature authority over a financial account located in a foreign country?
-        Instructions for Schedule B (Form 1040) (2025) p. 2, Line 7a—Question 1: "Check the 'Yes' box even if you
-        aren't required to file FinCEN Form 114."</Description>
+        financial
+        interest in or signature authority over a financial account located in a foreign country?
+        Instructions for
+        Schedule B (Form 1040) (2025) p. 2, Line 7a—Question 1: "Check the 'Yes' box even if you
+        aren't required to file
+        FinCEN Form 114."</Description>
       <Export mef="true" />
 
       <Writable>
@@ -95,7 +98,8 @@
     <Fact path="/flowShouldAskForeignTrustsTransactions">
       <Name>Ask about distributions from or transfers to a foreign trust</Name>
       <Description>The second half of Schedule B (Form 1040) line 8 is asked only after "No" to line 7a and "No"
-        to the foreign trust grantor question. Any earlier "Yes" already leads to the knockout.</Description>
+        to the
+        foreign trust grantor question. Any earlier "Yes" already leads to the knockout.</Description>
 
       <Derived>
         <All>
@@ -108,7 +112,8 @@
     <Fact path="/hasForeignTrustsTransactions">
       <Name>Did the TP have any transactions with a foreign trust?</Name>
       <Description>Part of Schedule B (Form 1040) line 8: during the tax year, did you receive a distribution from,
-        or were you a transferor to, a foreign trust?</Description>
+        or
+        were you a transferor to, a foreign trust?</Description>
 
       <Writable>
         <Boolean />
@@ -156,13 +161,20 @@
 
     <Fact path="/hasForeignAccountsOrTrusts">
       <Description>The TP answered "Yes" to Schedule B (Form 1040) line 7a (question 1) or line 8. Either answer
-        makes Schedule B required and knocks the return out (see /flowIsKnockedOut), because the follow-up filings
-        are not supported. Instructions for Schedule B (Form 1040) (2025) p. 3, Line 7a—Question 2: a U.S. person
-        "must file the form if the aggregate value of foreign financial accounts exceeds $10,000 at any time during
-        2025" (FinCEN Form 114, line 7b country list); p. 2, Part III: "Regardless of whether you are required to
-        file FinCEN Form 114 (FBAR), you may be required to file Form 8938"; p. 3, Line 8: "If you were the grantor
-        of, or transferor to, a foreign trust that existed during 2025, you may have to file Form 3520." Because
-        any "Yes" knocks out, line 7a question 2 and line 7b are never reached on a supported return.</Description>
+        makes
+        Schedule B required and knocks the return out (see /flowIsKnockedOut), because the follow-up filings
+        are not
+        supported. Instructions for Schedule B (Form 1040) (2025) p. 3, Line 7a—Question 2: a U.S. person
+        "must file the
+        form if the aggregate value of foreign financial accounts exceeds $10,000 at any time during
+        2025" (FinCEN Form
+        114, line 7b country list); p. 2, Part III: "Regardless of whether you are required to
+        file FinCEN Form 114
+        (FBAR), you may be required to file Form 8938"; p. 3, Line 8: "If you were the grantor
+        of, or transferor to, a
+        foreign trust that existed during 2025, you may have to file Form 3520." Because
+        any "Yes" knocks out, line 7a
+        question 2 and line 7b are never reached on a supported return.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -511,8 +523,10 @@
       <Name>Qualified Dividends</Name>
       <Description>Qualified dividend income to report on line 3a of Form 1040. #86: total of Form 1099-DIV box 1b
         (dividends /totalQualifiedDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
-        p. 25, Line 3a: "Enter your total qualified dividends on line 3a. ... Generally, these dividends are shown in
-        box 1b of Form(s) 1099-DIV." Taxed through the QDCG Tax Worksheet (scheduleD3 /qdcgLine2).</Description>
+        p. 25,
+        Line 3a: "Enter your total qualified dividends on line 3a. ... Generally, these dividends are shown in
+        box 1b of
+        Form(s) 1099-DIV." Taxed through the QDCG Tax Worksheet (scheduleD3 /qdcgLine2).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Round>
@@ -525,8 +539,10 @@
       <Name>Ordinary dividends</Name>
       <Description>Ordinary dividend income to report on line 3b of Form 1040. #86: total of Form 1099-DIV box 1a
         (dividends /totalOrdinaryDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
-        p. 26, Line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
-        Form(s) 1099-DIV." 26 U.S.C. 61(a)(7) (https://www.law.cornell.edu/uscode/text/26/61).</Description>
+        p. 26,
+        Line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
+        Form(s)
+        1099-DIV." 26 U.S.C. 61(a)(7) (https://www.law.cornell.edu/uscode/text/26/61).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Round>
@@ -715,7 +731,12 @@
 
     <Fact path="/form8615UnearnedIncome">
       <Name>Unearned income for the Form 8615 test</Name>
-      <Description>Instructions for Form 8615 (2026 draft) https://www.irs.gov/pub/irs-dft/i8615--dft.pdf, Unearned Income: "It includes taxable interest, dividends, capital gains (including capital gain distributions), rents, royalties, pension and annuity income, taxable scholarship and fellowship grants not reported on Form W-2, unemployment compensation, alimony, the taxable part of social security and pension payments". In scope: Form 1040 lines 2b, 3b, 4b, 5b, 6b, 7 (gains only) and Schedule 1 lines 5 (rents and royalties, gains only), 7 and 8 (other income, such as the Alaska PFD).</Description>
+      <Description>Instructions for Form 8615 (2026 draft) https://www.irs.gov/pub/irs-dft/i8615--dft.pdf, Unearned
+        Income: "It includes taxable interest, dividends, capital gains (including capital gain distributions), rents,
+        royalties, pension and annuity income, taxable scholarship and fellowship grants not reported on Form W-2,
+        unemployment compensation, alimony, the taxable part of social security and pension payments". In scope: Form
+        1040 lines 2b, 3b, 4b, 5b, 6b, 7 (gains only) and Schedule 1 lines 5 (rents and royalties, gains only), 7 and 8
+        (other income, such as the Alaska PFD).</Description>
       <Derived>
         <Add>
           <Dependency module="interest" path="/interestIncome" />
@@ -739,7 +760,25 @@
 
     <Fact path="/flowKnockoutForm8615">
       <Name>Knockout: tax for certain children who have unearned income (Form 8615)</Name>
-      <Description>Form 8615 is not supported. Instructions for Form 8615 (2026 draft) https://www.irs.gov/pub/irs-dft/i8615--dft.pdf, Who Must File: "1. The child had more than $2,700 of unearned income. 2. The child is required to file a tax return. 3. The child either: a. Was under age 18 at the end of 2026, b. Was age 18 at the end of 2026 and didn't have earned income that was more than half of the child's support, or c. Was a full-time student at least age 19 and under age 24 at the end of 2026 and didn't have earned income that was more than half of the child's support." and the child doesn't file a joint return. TY2026 figure: $2,700 = 2 x $1,350. Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.02, p. 12: "For taxable years beginning in 2026, the amount in § 1(g)(4)(A)(ii)(I), which is used to reduce the net unearned income reported on the child's return that is subject to the "kiddie tax," is $1,350." 26 U.S.C. 1(g)(4)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/1) subtracts that amount plus "the greater of the amount described in subclause (I)" or connected itemized deductions, so net unearned income is more than $0 only above 2 x $1,350; the 2026 draft instructions (title "2026 Instructions for Form 8615") state the same $2,700. 26 U.S.C. 1(g)(2)(A)(ii) brings in an 18-year-old, and a full-time student under 24, only when "earned income ... does not exceed one-half of the amount of the individual's support"; support isn't asked, so an 18-year-old always stops, even with wages. Support and whether a parent was alive aren't asked, so this stops every return that could meet the test: not filing jointly, unearned income (/form8615UnearnedIncome) over $2,700, and the primary filer under 24 at the end of the year, unless 19 or older and answered no to being a student. Form 8814 (a parent's election to report a child's interest and dividends) is optional, so a parent who does not make it files without it.</Description>
+      <Description>Form 8615 is not supported. Instructions for Form 8615 (2026 draft)
+        https://www.irs.gov/pub/irs-dft/i8615--dft.pdf, Who Must File: "1. The child had more than $2,700 of unearned
+        income. 2. The child is required to file a tax return. 3. The child either: a. Was under age 18 at the end of
+        2026, b. Was age 18 at the end of 2026 and didn't have earned income that was more than half of the child's
+        support, or c. Was a full-time student at least age 19 and under age 24 at the end of 2026 and didn't have
+        earned income that was more than half of the child's support." and the child doesn't file a joint return. TY2026
+        figure: $2,700 = 2 x $1,350. Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf) §4.02, p. 12:
+        "For taxable years beginning in 2026, the amount in § 1(g)(4)(A)(ii)(I), which is used to reduce the net
+        unearned income reported on the child's return that is subject to the "kiddie tax," is $1,350." 26 U.S.C.
+        1(g)(4)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/1) subtracts that amount plus "the greater of the
+        amount described in subclause (I)" or connected itemized deductions, so net unearned income is more than $0 only
+        above 2 x $1,350; the 2026 draft instructions (title "2026 Instructions for Form 8615") state the same $2,700.
+        26 U.S.C. 1(g)(2)(A)(ii) brings in an 18-year-old, and a full-time student under 24, only when "earned income
+        ... does not exceed one-half of the amount of the individual's support"; support isn't asked, so an 18-year-old
+        always stops, even with wages. Support and whether a parent was alive aren't asked, so this stops every return
+        that could meet the test: not filing jointly, unearned income (/form8615UnearnedIncome) over $2,700, and the
+        primary filer under 24 at the end of the year, unless 19 or older and answered no to being a student. Form 8814
+        (a parent's election to report a child's interest and dividends) is optional, so a parent who does not make it
+        files without it.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -785,7 +824,10 @@
 
     <Fact path="/capitalGainsScheduleDNotRequired">
       <Name>Capital Gains Schedule D Not Required</Name>
-      <Description>Form 1040 line 7b "Schedule D not required" box. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33, Line 7b: "If Exception 1 applies, check the "Schedule D not required" box on line 7b." Exception 1 (p. 31) is dividends /capitalGainDistributionsWithoutScheduleD; every Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p. 11).</Description>
+      <Description>Form 1040 line 7b "Schedule D not required" box. Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33, Line 7b: "If Exception 1 applies, check the "Schedule D not
+        required" box on line 7b." Exception 1 (p. 31) is dividends /capitalGainDistributionsWithoutScheduleD; every
+        Form 8949 transaction requires Schedule D (Schedule D instr. (2025) p. 11).</Description>
       <Export mef="true" />
       <Derived>
         <Dependency module="dividends" path="/capitalGainDistributionsWithoutScheduleD" />
@@ -795,11 +837,15 @@
     <Fact path="/capitalGainsOrLosses">
       <Name>Capital Gains or Losses</Name>
       <Description>Form 1040 line 7a. #86b: under line 7a Exception 1 (dividends
-        /capitalGainDistributionsWithoutScheduleD), Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33: "If Exception 1 applies, enter
-        your total capital gain distributions (from box 2a of Form(s) 1099-DIV) on line 7a" (whole dollars, p. 23).
+        /capitalGainDistributionsWithoutScheduleD), Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        p. 33: "If Exception 1 applies, enter
+        your total capital gain distributions (from box 2a of Form(s) 1099-DIV) on
+        line 7a" (whole dollars, p. 23).
         Otherwise total capital gains or losses from Schedule D
-        (after IRC §1211(b) limitation). See scheduleD module /capitalGainsOrLossesFor1040.
-        Preferential 0/15/20% tax on net capital gain: QDCG Tax Worksheet in scheduleD3.xml
+        (after IRC §1211(b)
+        limitation). See scheduleD module /capitalGainsOrLossesFor1040.
+        Preferential 0/15/20% tax on net capital gain:
+        QDCG Tax Worksheet in scheduleD3.xml
         (breakpoints Rev. Proc. 2025-32 §4.03 p.13).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
@@ -870,7 +916,10 @@
 
     <Fact path="/schedule1Line3">
       <Name>Schedule 1 line 3: Business income or (loss)</Name>
-      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 1 (PDF p. 2), Part I, line 3: "Business income or (loss). Attach Schedule C". Same amount as scheduleC /scheduleCNetProfitOrLoss (Schedule C line 31). Printed without ExportZero so a Schedule 1 with no Schedule C leaves line 3 blank.</Description>
+      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page
+        1 (PDF p. 2), Part I, line 3: "Business income or (loss). Attach Schedule C". Same amount as scheduleC
+        /scheduleCNetProfitOrLoss (Schedule C line 31). Printed without ExportZero so a Schedule 1 with no Schedule C
+        leaves line 3 blank.</Description>
       <Derived>
         <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
       </Derived>
@@ -878,7 +927,11 @@
 
     <Fact path="/schedule1Line5">
       <Name>Schedule 1 line 5: Rental real estate, royalties, partnerships, S corporations, trusts, etc.</Name>
-      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 1 (PDF p. 2), Part I, line 5: "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach Schedule E". Same amount as scheduleE /scheduleENetIncome (Schedule E Part I only; Part II stops the return, scheduleE /flowKnockoutScheduleEPartII). Printed without ExportZero so a Schedule 1 with no Schedule E leaves line 5 blank.</Description>
+      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page
+        1 (PDF p. 2), Part I, line 5: "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach
+        Schedule E". Same amount as scheduleE /scheduleENetIncome (Schedule E Part I only; Part II stops the return,
+        scheduleE /flowKnockoutScheduleEPartII). Printed without ExportZero so a Schedule 1 with no Schedule E leaves
+        line 5 blank.</Description>
       <Derived>
         <Dependency module="scheduleE" path="/scheduleENetIncome" />
       </Derived>
@@ -886,7 +939,10 @@
 
     <Fact path="/schedule1Line15">
       <Name>Schedule 1 line 15: Deductible part of self-employment tax</Name>
-      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 2 (PDF p. 3), Part II, line 15: "Deductible part of self-employment tax. Attach Schedule SE". Same amount as scheduleSE /deductibleSelfEmploymentTax (26 U.S.C. 164(f)), already in taxCalculations /adjustmentsToIncome (line 26). Printed without ExportZero so a Schedule 1 with no Schedule SE leaves line 15 blank.</Description>
+      <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page
+        2 (PDF p. 3), Part II, line 15: "Deductible part of self-employment tax. Attach Schedule SE". Same amount as
+        scheduleSE /deductibleSelfEmploymentTax (26 U.S.C. 164(f)), already in taxCalculations /adjustmentsToIncome
+        (line 26). Printed without ExportZero so a Schedule 1 with no Schedule SE leaves line 15 blank.</Description>
       <Derived>
         <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
       </Derived>
@@ -1332,7 +1388,8 @@
       <Description>#117: the primary filer's line 1 earned income (/primaryFilerEmployerIncomeSubtotalBase) plus net
         earnings from self-employment (scheduleC /scheduleCNetProfitForEarnedIncome). Every Schedule C business is the
         primary filer's while a spouse-owned business stops the return (scheduleC /flowKnockoutScheduleCSpouseBusiness).
-        26 U.S.C. 21(d)(1) (https://www.law.cornell.edu/uscode/text/26/21#d_1): expenses can't exceed "(A) in the case of
+        26 U.S.C. 21(d)(1) (https://www.law.cornell.edu/uscode/text/26/21#d_1): expenses can't exceed "(A) in the case
+        of
         a taxpayer who is not married at the close of such year, such individual's earned income for such year, or (B)
         in the case of a taxpayer who is married at the close of such year, the lesser of such individual's earned
         income or the earned income of his spouse for such year"; 21(e)(1) uses the 32(c)(2) definition of earned

@@ -3,7 +3,10 @@ import { assertNever } from 'assert-never';
 import * as sfg from '@irs/js-factgraph-scala';
 import { Path } from './Path.js';
 import { Path as FDPath } from '../fact-dictionary/Path.js';
-import { submissionBlockingFacts } from '../fact-dictionary/submissionBlockingFacts.js';
+import {
+  submissionBlockingFacts,
+  submissionBlockingFactsRequiringValue,
+} from '../fact-dictionary/generated/submissionBlockingFacts.js';
 import { RootState, store } from '../redux/store.js';
 import { stripNonNumeric } from '../misc/misc.js';
 import { DataImportProfile } from '../redux/slices/data-import/dataImportProfileTypes.js';
@@ -102,17 +105,34 @@ class FeatureFlagCondition {
   }
 }
 
+const requiringValue = new Set<string>(submissionBlockingFactsRequiringValue);
+
+/**
+ * Submission-blocking facts that stop this return, using the same rule the backend enforces on sign and submit
+ * (FactGraphService.submissionBlockingFactPaths). Every fact marked <BlockSubmissionOnTrue /> blocks when its value is
+ * true, complete or placeholder. A top-level one (submissionBlockingFactsRequiringValue) also blocks with no value or a
+ * non-boolean value, and any blocking fact that throws while being evaluated blocks.
+ *
+ * Known fail-open (https://github.com/jz4396/direct-file/issues/186): a placeholder false passes, so /flowIsKnockedOut
+ * passes while some of its knockouts are still incomplete.
+ */
+export function submissionBlockingFactPaths(factGraph: sfg.FactGraph): string[] {
+  return submissionBlockingFacts.filter((path) => {
+    try {
+      const result = factGraph.get(Path.concretePath(path, null));
+      const value = result.hasValue ? result.get : undefined;
+      if (value === true) return true;
+      return requiringValue.has(path) && value !== false;
+    } catch {
+      return true;
+    }
+  });
+}
+
 class RejectableFactCondition {
   public factPath: undefined;
   evaluate(factGraph: sfg.FactGraph) {
-    // this is every fact marked <BlockSubmissionOnTrue /> in the fact dictionary
-    // If any of them are true, this condition evaluates to false
-    return submissionBlockingFacts.every((path) => {
-      const result = factGraph.get(Path.concretePath(path, null));
-      // We do not check for completeness here -- some submission blocking facts (at least `/flowIsKnockedOut`)
-      // use placeholder values, and we want to allow people through the tax return.
-      return result.hasValue && result.get == false;
-    });
+    return submissionBlockingFactPaths(factGraph).length === 0;
   }
 }
 
