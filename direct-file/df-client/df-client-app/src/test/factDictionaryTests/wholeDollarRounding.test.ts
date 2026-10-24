@@ -1,8 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
-import { createBooleanWrapper, createDayWrapper, createDollarWrapper } from '../persistenceWrappers.js';
+import {
+  createBooleanWrapper,
+  createCollectionWrapper,
+  createDayWrapper,
+  createDollarWrapper,
+  createStringWrapper,
+} from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { baseFilerData, makeW2Data, primaryFilerId, singleFilerData } from '../testData.js';
+import {
+  baseFilerData,
+  filerWithW2NoDeductionsNoCreditsBaseData,
+  makeW2Data,
+  primaryFilerId,
+  singleFilerData,
+} from '../testData.js';
 
 /**
  * #202: round each form line as it is computed, not only the totals.
@@ -129,5 +141,103 @@ describe(`#202 whole-dollar rounding: Schedule 1-A line 40 and Schedule A lines 
     expect(val(fg, `/scheduleAMedical`)).toBe(`100.00`);
     expect(val(fg, `/scheduleAMortgageInterest`)).toBe(`12001.00`);
     expect(val(fg, `/scheduleACashGifts`)).toBe(`251.00`);
+  });
+});
+
+/**
+ * Schedule 1-A Part IV (car loan interest), 2026 draft Schedule 1-A (https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf):
+ * line 28a/28b column (iii) per vehicle, line 29 "Add lines 28a and 28b, column (iii)", line 30 "Enter the smaller of
+ * the amount on line 29 or $10,000", line 36 deduction, line 44 total. Instructions for Form 1040 (2025), p. 23,
+ * Rounding Off to Whole Dollars: "To round, drop amounts under 50 cents and increase amounts from 50 to 99 cents to the
+ * next dollar." Synthetic VINs only (17 chars, no I/O/Q).
+ */
+describe(`#202 whole-dollar rounding: Schedule 1-A Part IV lines 28a, 28b, 29, 30, 36 and 44`, () => {
+  const V1 = `c1111111-1111-4111-8111-111111111111`;
+  const V2 = `c2222222-2222-4222-8222-222222222222`;
+  const VINS: Record<string, string> = { [V1]: `1HGCM82633A004352`, [V2]: `2T1BR32E54C000001` };
+  const vehicle = (id: string, interest: string) => ({
+    [`/carLoans/#${id}/isNewVehicle`]: createBooleanWrapper(true),
+    [`/carLoans/#${id}/usAssembly`]: createBooleanWrapper(true),
+    [`/carLoans/#${id}/after2024`]: createBooleanWrapper(true),
+    [`/carLoans/#${id}/hasBusinessUse`]: createBooleanWrapper(false),
+    [`/carLoans/#${id}/isLease`]: createBooleanWrapper(false),
+    [`/carLoans/#${id}/hasOtherExceptions`]: createBooleanWrapper(false),
+    [`/carLoans/#${id}/vin`]: createStringWrapper(VINS[id]),
+    [`/carLoans/#${id}/writableInterest`]: createDollarWrapper(interest),
+  });
+  const noW2 = Object.fromEntries(
+    Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+  );
+  const carGraph = (...interest: string[]) =>
+    setupFactGraph({
+      ...noW2,
+      ...baseFilerData,
+      ...singleFilerData,
+      ...makeW2Data(60000),
+      ...(interest.length
+        ? {
+            '/carLoanHadInterest': createBooleanWrapper(true),
+            '/carLoans': createCollectionWrapper([V1, V2].slice(0, interest.length)),
+            ...Object.assign({}, ...interest.map((amt, i) => vehicle([V1, V2][i], amt))),
+          }
+        : {}),
+    }).factGraph;
+  const partIv = [
+    `/carLoans/*/line28Interest`,
+    `/carLoanLine29`,
+    `/carLoanLine30`,
+    `/carLoanLine36`,
+    `/schedule1ALine36`,
+    `/schedule1ALine44`,
+  ];
+  const line44Delta = (fg: ReturnType<typeof carGraph>) =>
+    Number(val(fg, `/schedule1ALine44`)) - Number(val(carGraph(), `/schedule1ALine44`));
+
+  it(`one vehicle, $1,234.56: line 28a 1,235, lines 29, 30, 36 1,235, line 44 up by 1,235`, ({ task }) => {
+    task.meta.testedFactPaths = partIv;
+    const fg = carGraph(`1234.56`);
+    expect(val(fg, `/carLoans/#${V1}/line28Interest`)).toBe(`1235.00`);
+    expect(val(fg, `/carLoanLine29`)).toBe(`1235.00`);
+    expect(val(fg, `/carLoanLine30`)).toBe(`1235.00`);
+    expect(val(fg, `/carLoanLine36`)).toBe(`1235.00`);
+    expect(val(fg, `/schedule1ALine36`)).toBe(`1235.00`);
+    expect(val(fg, `/schedule1ALine44`)).toMatch(/\.00$/);
+    expect(line44Delta(fg)).toBe(1235);
+  });
+
+  it(`two vehicles, $1,234.50 and $2,000.49: 28a 1,235, 28b 2,000, line 29 = printed 28a + 28b = 3,235`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = partIv;
+    const fg = carGraph(`1234.50`, `2000.49`);
+    expect(val(fg, `/carLoans/#${V1}/line28Interest`)).toBe(`1235.00`);
+    expect(val(fg, `/carLoans/#${V2}/line28Interest`)).toBe(`2000.00`);
+    expect(val(fg, `/carLoanLine29`)).toBe(`3235.00`);
+    expect(val(fg, `/carLoanLine30`)).toBe(`3235.00`);
+    expect(val(fg, `/carLoanLine36`)).toBe(`3235.00`);
+    expect(line44Delta(fg)).toBe(3235);
+  });
+
+  it(`two vehicles, $100.40 each: rows 100 and 100, line 29 200 (sum of the printed rows, not round(200.80))`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = partIv;
+    const fg = carGraph(`100.40`, `100.40`);
+    expect(val(fg, `/carLoans/#${V1}/line28Interest`)).toBe(`100.00`);
+    expect(val(fg, `/carLoans/#${V2}/line28Interest`)).toBe(`100.00`);
+    expect(val(fg, `/carLoanLine29`)).toBe(`200.00`);
+    expect(val(fg, `/carLoanLine30`)).toBe(`200.00`);
+    expect(val(fg, `/carLoanLine36`)).toBe(`200.00`);
+    expect(line44Delta(fg)).toBe(200);
+  });
+
+  it(`$10,000.50 rounds to 10,001 on line 28a; line 30 caps at 10,000`, ({ task }) => {
+    task.meta.testedFactPaths = partIv;
+    const fg = carGraph(`10000.50`);
+    expect(val(fg, `/carLoans/#${V1}/line28Interest`)).toBe(`10001.00`);
+    expect(val(fg, `/carLoanLine29`)).toBe(`10001.00`);
+    expect(val(fg, `/carLoanLine30`)).toBe(`10000.00`);
+    expect(val(fg, `/carLoanLine36`)).toBe(`10000.00`);
+    expect(line44Delta(fg)).toBe(10000);
   });
 });

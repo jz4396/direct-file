@@ -337,7 +337,11 @@
       <Name>Schedule 1-A line 28 column (iii), this vehicle</Name>
       <Description>#69: this vehicle's row (28a, 28b, ...) column (iii) "Schedule 1-A" interest: ../writableInterest
         when the vehicle is QPVLI, $0 when it is not (foreign final assembly or pre-2025 loan, 163(h)(4)(D) and (B)(i)).
-        Incomplete while any answer is missing (no silent $0).</Description>
+        Incomplete while any answer is missing (no silent $0). #202: rounded to whole dollars, because the row prints
+        on its own line and lines 29 and 30 are figured from the rows. Instructions for Form 1040 (2025), p. 23,
+        Rounding Off to Whole Dollars: "If you do round to whole dollars, you must round all amounts. To round, drop
+        amounts under 50 cents and increase amounts from 50 to 99 cents to the next dollar." 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102) rounds half up.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -345,7 +349,9 @@
               <Dependency path="../qualifies" />
             </When>
             <Then>
-              <Dependency path="../writableInterest" />
+              <Round>
+                <Dependency path="../writableInterest" />
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -398,7 +404,8 @@
 
     <Fact path="/carLoanLine29">
       <Name>Schedule 1-A line 29</Name>
-      <Description>#53/#69: line 29 "Add lines 28a and 28b, column (iii)", summed over every vehicle in /carLoans. $0
+      <Description>#53/#69: line 29 "Add lines 28a and 28b, column (iii)", summed over every vehicle in /carLoans. #202: the rows are already whole dollars, so
+        line 29 equals the printed 28a + 28b. $0
         when the gate is unanswered or no. Gate yes with no vehicle entered has no value (incomplete), so it cannot
         become a silent $0.</Description>
       <Derived>
