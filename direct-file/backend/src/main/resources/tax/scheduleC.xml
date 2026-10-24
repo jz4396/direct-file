@@ -115,6 +115,44 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleCWithoutTy2026Template">
+      <Name>Knockout: the return needs a TY2026 Schedule C, which this tool can't print yet</Name>
+      <Description>#89: true when /hasScheduleCBusinesses is complete and true. A sole proprietor reports the business
+        on Schedule C: Instructions for Schedule C (2025), PDF p. 2 (SHA-256
+        b5536db91498a450572e37078d7d5ee8fdc400e385d4fee3a26c230a33e399b6), "Use Schedule C (Form 1040) to report income
+        or (loss) from a business you operated or a profession you practiced as a sole proprietor." The 2026 draft
+        Schedule 1, line 3, reads "Business income or (loss). Attach Schedule C", and the 2026 draft Schedule SE, line
+        2, "Net profit or (loss) from Schedule C, line 31". There is no Schedule C template (2026 draft
+        f1040sc--dft.pdf, SHA-256 287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224, is not in the repo),
+        so the package would omit it. Complete and false when there is no Schedule C business, so submission checks
+        never see it incomplete. Remove this fact, its /flowIsKnockedOut entry and its PrintRefusingKnockouts entry when
+        the template and field map land.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/hasScheduleCBusinesses" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCSecondaryFilerBusinesses">
       <Name>Schedule C businesses owned by the secondary filer</Name>
       <Derived>

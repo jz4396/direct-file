@@ -173,9 +173,8 @@ class CreditFormsTy2026PdfSmokeTest {
         taxReturn.setTaxYear(2026);
         taxReturn.setFactsWithoutDirtyingEntity(typed);
         byte[] bytes;
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
-            bytes = in.readAllBytes();
-        }
+        // #89: an ACTC return needs Schedule 3-A and is refused by the public path; its other forms are still filled.
+        bytes = PrintRefusingKnockoutsTest.printForFieldMaps(pdfService, taxReturn, fgs.getGraph(typed));
         String out = System.getProperty("pdf.smoke.out");
         if (out != null) {
             Files.write(Path.of(out, "credit-forms-ty2026-" + scenario.replace(".json", ".pdf")), bytes);

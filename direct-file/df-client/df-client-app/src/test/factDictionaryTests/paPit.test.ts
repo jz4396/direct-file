@@ -233,11 +233,14 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       [`/scheduleCBusinesses/#${bizId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     };
-    it(`non-PA (FL) filer: PA knockout false; only the federal Form 8995 knockout stops the return`, ({ task }) => {
+    it(`non-PA (FL) filer: PA knockout false; only federal knockouts (Form 8995, #89 Schedule C) stop the return`, ({
+      task,
+    }) => {
       task.meta.testedFactPaths = [
         `/flowKnockoutPaUnsupportedIncome`,
         `/flowKnockoutStateReturn`,
         `/flowKnockoutForm8995WithoutTy2026Template`,
+        `/flowKnockoutScheduleCWithoutTy2026Template`,
         `/flowIsKnockedOut`,
       ];
       const g = build(singleFilerData, { ...schC, ...pa(`fl`) });
@@ -251,6 +254,9 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       // your return." There is no TY2026 Form 8995 template or MeF mapping, so a return that must attach it is stopped.
       expect(get(g, `/form8995Required`).get).toBe(true);
       expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+      // #89: Schedule C has no template, so any Schedule C return is also refused for print (Instructions for
+      // Schedule C (2025), p. 2).
+      expect(get(g, `/flowKnockoutScheduleCWithoutTy2026Template`).get).toBe(true);
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
     it(`PA filer, same income: PA knockout true and /flowIsKnockedOut true`, ({ task }) => {

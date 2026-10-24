@@ -1,0 +1,26 @@
+# Schedule C and Schedule 3-A without a TY2026 template (#89). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/knockout/schedule-c-without-ty2026-template:
+    This tool can’t yet prepare or print a return with self-employment, gig or freelance income
+  /heading/knockout/schedule-3a-without-ty2026-template:
+    This tool can’t yet prepare or print a return that claims the Earned Income Tax Credit or the refundable Child Tax
+    Credit
+info:
+  /info/knockout/schedule-c-without-ty2026-template:
+    alertText:
+      body:
+        - p:
+            Income from a business, gig or freelance work goes on Schedule C, which must be included with your return.
+            This tool can’t produce the 2026 Schedule C yet.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/schedule-3a-without-ty2026-template:
+    alertText:
+      body:
+        - p:
+            For 2026, a return that claims the Earned Income Tax Credit or the refundable part of the Child Tax Credit
+            must include the new Schedule 3-A. This tool can’t produce Schedule 3-A yet.
+        - p: <Link1>Find other ways to file your federal taxes.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file

@@ -153,6 +153,8 @@
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCWithoutTy2026Template" />
+          <Dependency module="taxCalculations" path="/flowKnockoutSchedule3AWithoutTy2026Template" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />

@@ -43,6 +43,8 @@ import form2210En from './en.form2210.yaml';
 import form2210Es from './es.form2210.yaml';
 import staticClientEn from './en.staticClient.yaml';
 import staticClientEs from './es.staticClient.yaml';
+import printCompletenessEn from './en.printCompleteness.yaml';
+import printCompletenessEs from './es.printCompleteness.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -127,6 +129,8 @@ for (const [locale, overlay] of [
   [esLocale, form2210Es],
   [enLocale, staticClientEn],
   [esLocale, staticClientEs],
+  [enLocale, printCompletenessEn],
+  [esLocale, printCompletenessEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }

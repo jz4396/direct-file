@@ -31,7 +31,6 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.cents;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
-import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generateRefusedForForm8995;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -244,7 +243,8 @@ class Schedules123Ty2026PdfSmokeTest {
     @Test
     void selfEmploymentOverTheQbiThresholdRefusesThePrint() throws Exception {
         SubmissionBlockingFactsResponseStatusException e = assertThrows(
-                SubmissionBlockingFactsResponseStatusException.class, () -> generate(selfEmployedOverThreshold()));
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> ScheduleATy2026PdfSmokeTest.generatePublicPrint(selfEmployedOverThreshold()));
         assertTrue(e.getMessage().contains("/flowKnockoutQbiAboveThreshold"), e.getMessage());
 
         FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
@@ -268,7 +268,7 @@ class Schedules123Ty2026PdfSmokeTest {
 
     @Test
     void selfEmploymentAndForeignTaxPrintSchedule3() throws Exception {
-        byte[] bytes = generateRefusedForForm8995(selfEmployedWithForeignTax());
+        byte[] bytes = generate(selfEmployedWithForeignTax());
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             Map<String, String> s1 = page(doc, SCH1);
             amount(s1, "f1_07[0]", 10000, "Schedule 1 line 3");

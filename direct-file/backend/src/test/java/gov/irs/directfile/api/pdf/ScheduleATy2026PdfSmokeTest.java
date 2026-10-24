@@ -44,16 +44,12 @@ class ScheduleATy2026PdfSmokeTest {
         return generate(extraFactsJson, false);
     }
 
-    /**
-     * For a Schedule C return, which the print path refuses with the Form 8995 knockout only (no TY2026 Form 8995
-     * template or MeF mapping): asserts that refusal, then fills the templates. See
-     * {@link Form8995RefusedReturnTemplateFill}.
-     */
-    static byte[] generateRefusedForForm8995(Map<String, String> extraFactsJson) throws Exception {
+    /** The public print path only, with no field-map fill: refused returns throw. */
+    static byte[] generatePublicPrint(Map<String, String> extraFactsJson) throws Exception {
         return generate(extraFactsJson, true);
     }
 
-    private static byte[] generate(Map<String, String> extraFactsJson, boolean refusedForForm8995) throws Exception {
+    private static byte[] generate(Map<String, String> extraFactsJson, boolean publicPrintOnly) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         GenericApplicationContext ctx = new GenericApplicationContext();
         ctx.refresh();
@@ -84,12 +80,13 @@ class ScheduleATy2026PdfSmokeTest {
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026); // configured-pdfs bucket; the IRS1040 en template itself is the 2026 draft
         taxReturn.setFactsWithoutDirtyingEntity(facts);
-        if (refusedForForm8995) {
-            return Form8995RefusedReturnTemplateFill.fill(pdfService, factGraphService, taxReturn);
+        if (publicPrintOnly) {
+            try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
+                return in.readAllBytes();
+            }
         }
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
-            return in.readAllBytes();
-        }
+        // #89: a Schedule C return (Schedule SE tests) is refused by the public path; its other forms are still filled.
+        return PrintRefusingKnockoutsTest.printForFieldMaps(pdfService, taxReturn, factGraphService.getGraph(facts));
     }
 
     static String bool(boolean b) {
