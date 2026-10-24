@@ -1,7 +1,7 @@
 # #65: 2026 Form 1040, early-release draft (https://www.irs.gov/pub/irs-dft/f1040--dft.pdf), committed byte-identical
 # to irs.gov. Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; customMaps.template.skipLeadingPages
 # drops it after filling (PdfForm.skipLeadingPages). Field captions quoted from the PDF's own tooltips.
-includeWhen: /pdfNotOver65SRIndicator
+includeWhen: /pdfIncludeForm1040
 customMaps:
   template:
     skipLeadingPages: "1"

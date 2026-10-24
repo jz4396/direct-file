@@ -63,6 +63,18 @@ public class PdfService {
 
     public InputStream getTaxReturn(String languageString, TaxReturn taxReturn, boolean useStorage)
             throws PdfCreationException {
+        return getTaxReturn(languageString, taxReturn, useStorage, PrintRefusingKnockouts.FACT_PATHS);
+    }
+
+    /**
+     * {@link #getTaxReturn(String, TaxReturn, boolean)} refusing on the given knockouts instead of every
+     * {@link PrintRefusingKnockouts#FACT_PATHS} entry. Package-private so the field-map tests can still fill a form
+     * whose package is refused only because another form has no template yet; callers outside the tests use the
+     * public method.
+     */
+    InputStream getTaxReturn(
+            String languageString, TaxReturn taxReturn, boolean useStorage, List<String> printRefusingKnockoutPaths)
+            throws PdfCreationException {
         int year = taxReturn.getTaxYear();
         final String baseName = "taxreturn";
         PdfLanguages language = PdfLanguages.fromString(languageString);
@@ -108,7 +120,8 @@ public class PdfService {
         FactEvaluationResult facts;
         try {
             Graph graph = factGraphService.getGraph(taxReturn.getFacts());
-            List<String> printRefusingKnockouts = PrintRefusingKnockouts.refusingPaths(graph);
+            List<String> printRefusingKnockouts =
+                    PrintRefusingKnockouts.refusingPaths(printRefusingKnockoutPaths, path -> graph.get(path));
             if (!printRefusingKnockouts.isEmpty()) {
                 log.info("Not printing tax return {}: knockout {}", taxReturn.getId(), printRefusingKnockouts);
                 throw new SubmissionBlockingFactsResponseStatusException(printRefusingKnockouts);
