@@ -231,7 +231,9 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       [`/scheduleCBusinesses/#${bizId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     };
-    it(`non-PA (FL) filer: PA knockout false and only the federal QBI knockout stops the return`, ({ task }) => {
+    it(`non-PA (FL) filer: PA knockout false; only federal knockouts (QBI, #89 Schedule C) stop the return`, ({
+      task,
+    }) => {
       task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
       const g = build(singleFilerData, { ...schC, ...pa(`fl`) });
       expect(get(g, `/hasScheduleCBusinesses`).get).toBe(true);
@@ -240,6 +242,9 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
       // #185: the return is still stopped, but by the federal QBI knockout (any Schedule C business), not PA.
       expect(get(g, `/flowKnockoutScheduleCQbi`).get).toBe(true);
+      // #89: Schedule C has no template, so any Schedule C return is also refused for print (Instructions for
+      // Schedule C (2025), p. 2).
+      expect(get(g, `/flowKnockoutScheduleCWithoutTy2026Template`).get).toBe(true);
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
     it(`PA filer, same income: PA knockout true and /flowIsKnockedOut true`, ({ task }) => {
