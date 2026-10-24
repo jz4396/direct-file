@@ -3955,6 +3955,7 @@
       <Description>Amount per month designated as income for a tp who was a student or disabled with
         one CDCC qualifying
         person</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>250</Dollar>
@@ -3966,6 +3967,7 @@
         student or disabled
         with more than one CDCC qualifying person
       </Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>500</Dollar>
