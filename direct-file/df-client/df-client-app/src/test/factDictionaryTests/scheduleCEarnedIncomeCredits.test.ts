@@ -89,12 +89,14 @@ const careFor = (amount: number) => ({
 
 const scheduleC = (gross: number, expenses: number, owner = primaryFilerId) => ({
   '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-  '/wantsQbiDeduction': createBooleanWrapper(false),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
   '/scheduleCBusinesses': createCollectionWrapper([businessId]),
   [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(owner),
   [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Sample Services`),
   [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`${gross}`),
   [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`${expenses}`),
+  [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
   '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
 });
 

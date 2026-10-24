@@ -132,9 +132,11 @@ class Ty2026PdfPackageTest {
     static final List<String> CTC_CHILD_SERIALS = List.of("1111", "2222", "3333");
 
     static final String FAMILY = "hoh-cdcc.json";
-    /** #89: the self-employed family needs Schedule C and Schedule 3-A, neither of which has a template yet. */
-    static final List<String> SCHEDULE_C_AND_3A =
-            List.of(PrintRefusingKnockoutsTest.SCHEDULE_C_KNOCKOUT, PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT);
+    /** The self-employed family needs Form 8995 (#87), Schedule C and Schedule 3-A (#89), none of which has a template yet. */
+    static final List<String> SCHEDULE_C_AND_3A = List.of(
+            PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT,
+            PrintRefusingKnockoutsTest.SCHEDULE_C_KNOCKOUT,
+            PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT);
 
     static final String SAVER = "single-simple-savers-credit.json";
     static final String HSA = "hsa-single-filer-contributions-only.json";
@@ -370,6 +372,7 @@ class Ty2026PdfPackageTest {
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableGrossReceipts", dollar(profit));
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableTotalExpenses", dollar("0.00"));
         m.put("/scheduleCBusinessesIsDone", bool(true));
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(m, BIZ);
         syntheticFiler(m);
         m.put("/filers/#" + W2 + "/tin", CTC_FILER_SSN);
         m.put("/formW2s/#" + W2 + "/tin", CTC_FILER_SSN);

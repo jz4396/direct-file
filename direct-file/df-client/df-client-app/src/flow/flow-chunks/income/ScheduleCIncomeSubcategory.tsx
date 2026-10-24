@@ -45,10 +45,17 @@ export const ScheduleCIncomeSubcategory = (
         <SaveAndOrContinueButton />
       </Screen>
 
-      <Screen route='schedule-c-qbi' condition='/hadSelfEmploymentIncome'>
-        <Heading i18nKey='/heading/income/schedule-c/qbi' />
-        <InfoDisplay i18nKey='/info/income/schedule-c/qbi' />
-        <Boolean path='/wantsQbiDeduction' />
+      <Screen route='schedule-c-qbi-carryforward' condition='/hadSelfEmploymentIncome'>
+        <Heading i18nKey='/heading/income/schedule-c/qbi-carryforward' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/qbi-carryforward' />
+        <Boolean path='/qbiHasPriorYearLossCarryforward' />
+        <SaveAndOrContinueButton />
+      </Screen>
+
+      <Screen route='schedule-c-qbi-cooperative' condition='/hadSelfEmploymentIncome'>
+        <Heading i18nKey='/heading/income/schedule-c/qbi-cooperative' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/qbi-cooperative' />
+        <Boolean path='/qbiIsCooperativePatron' />
         <SaveAndOrContinueButton />
       </Screen>
 
@@ -92,8 +99,25 @@ export const ScheduleCIncomeSubcategory = (
           <Dollar path='/scheduleCBusinesses/*/writableTotalExpenses' />
           <SaveAndOrContinueButton />
         </Screen>
+        <Screen route='schedule-c-material-participation'>
+          <Heading i18nKey='/heading/income/schedule-c/material-participation' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/material-participation' />
+          <Boolean path='/scheduleCBusinesses/*/materiallyParticipates' />
+          <SaveAndOrContinueButton />
+        </Screen>
       </SubSubcategory>
     </CollectionLoop>
+
+    <Screen
+      route='schedule-c-qbi-participation-knockout'
+      condition='/flowKnockoutQbiMixedParticipation'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-c-qbi' />
+      <DFAlert i18nKey='/info/knockout/schedule-c-qbi' headingLevel='h2' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
 
     {/* #89: no Schedule C template, so a return with a business can't be printed or filed here yet. */}
     <Screen
