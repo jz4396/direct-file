@@ -35,17 +35,19 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutForm8962WithoutTy2026Template">
-      <Name>Knockout: the return needs a TY2026 Form 8962, which this tool can't produce yet</Name>
-      <Description>#88: true when Form 8962 is needed. Form 8962 (2026) draft, Created 4/21/26
-        (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, SHA-256
-        5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35), PDF p. 1: "Attach to Form 1040, 1040-SR, or
-        1040-NR." The only Form 8962 template here is the 2024 form, whose Part III still has the repayment limitation
-        lines that the 2026 draft marks "Reserved for future use" (lines 28-29; Rev. Proc. 2025-32 sec. 2.04,
-        https://www.irs.gov/pub/irs-drop/rp-25-32.pdf, PDF p. 5). Same pattern as eitc
-        /flowKnockoutScheduleEicWithoutTy2026Template. Complete and false when Form 8962 is not needed.</Description>
-      <BlockSubmissionOnTrue />
-      <Export downstreamFacts="true" />
+    <Fact path="/form8962NeededOrUnresolved">
+      <Description>#88: the guard for the Form 8962 knockouts. It is /needsToFileForm8962 once that is complete. While
+        it
+        is not, it fails closed: true when a Form 1095-A has been entered or the qualifying-plan answer is yes, so a
+        return with advance payments of the premium tax credit cannot print or submit without its Form 8962 lines
+        (Form
+        8962 (2026) draft, https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, PDF p. 1, line 27: "Excess advance
+        payment of
+        PTC. If line 25 is greater than line 24, subtract line 24 from line 25. Enter the difference here and
+        on Schedule
+        2 (Form 1040), line 1a"). False with no Form 1095-A and no yes, so a
+        return that never reaches the premium tax
+        credit section is unaffected.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -60,6 +62,27 @@
           </Case>
           <Case>
             <When>
+              <Any>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/has1095A" />
+                  </IsComplete>
+                  <Dependency path="/has1095A" />
+                </All>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/writableHasPtcQualifyingPlan" />
+                  </IsComplete>
+                  <Dependency path="/writableHasPtcQualifyingPlan" />
+                </All>
+              </Any>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <True />
             </When>
             <Then>
@@ -67,6 +90,23 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutForm8962WithoutTy2026Template">
+      <Name>Knockout: the return needs a TY2026 Form 8962, which this tool can't produce yet</Name>
+      <Description>#88: true when Form 8962 is needed. Form 8962 (2026) draft, Created 4/21/26
+        (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, SHA-256
+        5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35), PDF p. 1: "Attach to Form 1040, 1040-SR, or
+        1040-NR." The only Form 8962 template here is the 2024 form, whose Part III still has the repayment limitation
+        lines that the 2026 draft marks "Reserved for future use" (lines 28-29; Rev. Proc. 2025-32 sec. 2.04,
+        https://www.irs.gov/pub/irs-drop/rp-25-32.pdf, PDF p. 5). Same pattern as eitc
+        /flowKnockoutScheduleEicWithoutTy2026Template. Complete and false only when Form 8962 is known not to be needed;
+        fails closed through /form8962NeededOrUnresolved while that is unresolved.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/form8962NeededOrUnresolved" />
       </Derived>
     </Fact>
     <Fact path="/flowKnockoutPtcAllocationOfPolicyAmounts">
@@ -124,15 +164,13 @@
         are claiming the self-employed health insurance deduction, see Self-Employed Health Insurance Deduction and PTC
         in
         Pub. 974". That calculation is not supported, so the return stops instead of computing the credit without the
-        deduction. Complete false when Form 8962 is not needed or Schedule C net profit is not more than $0.</Description>
+        deduction. Complete false when Form 8962 is not needed (/form8962NeededOrUnresolved false) or Schedule C net
+        profit is not more than $0.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
-          <IsComplete>
-            <Dependency path="/needsToFileForm8962" />
-          </IsComplete>
-          <Dependency path="/needsToFileForm8962" />
+          <Dependency path="/form8962NeededOrUnresolved" />
           <GreaterThan>
             <Left>
               <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
@@ -157,15 +195,14 @@
         2025)
         are not computed; Form 8962 (2026) draft, PDF p. 1, line 6: "(See instructions if you entered less than
         100%.)".
-        True when Form 8962 is needed and line 5 is less than 100; complete false otherwise.</Description>
+        True when Form 8962 is needed, or unresolved on a return with a Form 1095-A (/form8962NeededOrUnresolved),
+        and
+        line 5 is less than 100; complete false otherwise.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
-          <IsComplete>
-            <Dependency path="/needsToFileForm8962" />
-          </IsComplete>
-          <Dependency path="/needsToFileForm8962" />
+          <Dependency path="/form8962NeededOrUnresolved" />
           <Dependency path="/isBelow100PercentFederalPovertyLevel" />
         </All>
       </Derived>
@@ -241,10 +278,7 @@
           <Case>
             <When>
               <All>
-                <IsComplete>
-                  <Dependency path="/needsToFileForm8962" />
-                </IsComplete>
-                <Dependency path="/needsToFileForm8962" />
+                <Dependency path="/form8962NeededOrUnresolved" />
                 <IsComplete>
                   <Dependency path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
                 </IsComplete>
@@ -256,12 +290,7 @@
           </Case>
           <Case>
             <When>
-              <All>
-                <IsComplete>
-                  <Dependency path="/needsToFileForm8962" />
-                </IsComplete>
-                <Dependency path="/needsToFileForm8962" />
-              </All>
+              <Dependency path="/form8962NeededOrUnresolved" />
             </When>
             <Then>
               <True />

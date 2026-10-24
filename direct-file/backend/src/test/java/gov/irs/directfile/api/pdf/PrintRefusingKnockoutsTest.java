@@ -298,6 +298,40 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
+     * A Form 1095-A return with $4,500 of advance payments whose /needsToFileForm8962 is unresolved (the dependent
+     * answer or the qualifying-plan answer missing) must not print: its Schedule 2 line 1a would read $0 instead of the
+     * Form 8962 line 27 excess (Form 8962 (2026) draft, PDF p. 1, line 27: "Enter the difference here and on Schedule 2
+     * (Form 1040), line 1a"). The guard /form8962NeededOrUnresolved fails closed, so the template knockout refuses.
+     */
+    @Test
+    void unresolvedForm8962ReturnIsRefusedByThePrintPath() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        PdfService pdfService = CreditFormsTy2026PdfSmokeTest.pdfService(fgs);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, FactTypeWithItem> facts = scenarioFacts(mapper, PTC_SCENARIO);
+        for (String missing : List.of("/canBeClaimed", "/writableHasPtcQualifyingPlan")) {
+            Map<String, FactTypeWithItem> unresolved = new HashMap<>(facts);
+            unresolved.keySet().removeIf(k -> k.endsWith(missing));
+            assertTrue(unresolved.size() < facts.size(), missing);
+            Graph graph = fgs.getGraph(unresolved);
+            assertFalse(graph.get("/needsToFileForm8962").complete(), missing);
+            Result<Object> template = graph.get(FORM_8962_TEMPLATE_KNOCKOUT);
+            assertTrue(template.complete() && Boolean.TRUE.equals(template.get()), missing);
+            assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get(), missing);
+            List<String> refused = PrintRefusingKnockouts.refusingPaths(graph);
+            assertTrue(refused.contains(FORM_8962_TEMPLATE_KNOCKOUT), missing + " " + refused);
+            TaxReturn taxReturn = new TaxReturn();
+            taxReturn.setTaxYear(2026);
+            taxReturn.setFactsWithoutDirtyingEntity(unresolved);
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
+                    () -> pdfService.getTaxReturn("en", taxReturn, false),
+                    missing);
+            assertEquals(refused, e.getBody().getProperties().get("blockingFacts"), missing);
+        }
+    }
+
+    /**
      * Form 1040 (2026) draft, PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A".
      * A Schedule E rental treated as a trade or business (26 CFR 1.199A-1(b)(14)) has qualified business income, and
      * line 13b is not computed yet, so a yes refuses the print; a no, or no Part I income, prints.

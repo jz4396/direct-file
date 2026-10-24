@@ -226,6 +226,38 @@ describe(`Form 8962 (2026) knockouts`, () => {
     ).toBe(`false`);
   });
 
+  it(`unresolved /needsToFileForm8962 on a return with a Form 1095-A fails closed`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8962NeededOrUnresolved`,
+      TEMPLATE_KNOCKOUT,
+      `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
+    ];
+    // $4,500 of advance payments: answered, Schedule 2 line 1a is the $566 excess (Form 8962 (2026) draft line 27).
+    const answered = ptcReturn(31300, 5000, 6000, 4500) as Record<string, unknown>;
+    expect(val(fg(answered), `/lesserOfNetPtcAmountAndRepaymentLimitation`)).toBe(`566.00`);
+    const without = (key: string) => Object.fromEntries(Object.entries(answered).filter(([k]) => k !== key));
+    for (const missing of [`/filers/#${primaryFilerId}/canBeClaimed`, `/writableHasPtcQualifyingPlan`]) {
+      const g = fg(without(missing));
+      expect(raw(g, `/needsToFileForm8962`).complete, missing).toBe(false);
+      expect(val(g, `/form8962NeededOrUnresolved`), missing).toBe(`true`);
+      expect(val(g, TEMPLATE_KNOCKOUT), missing).toBe(`true`);
+      expect(val(g, `/flowIsKnockedOut`), missing).toBe(`true`);
+      // The guard is true, so each knockout's own condition decides: "no" to the special enrollment period question
+      // stays false, and leaving it unanswered fails closed.
+      expect(val(g, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`), missing).toBe(`false`);
+      const sepOpen = fg(
+        Object.fromEntries(
+          Object.entries(without(missing)).filter(
+            ([k]) => k !== `/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod`
+          )
+        )
+      );
+      expect(val(sepOpen, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`), missing).toBe(`true`);
+      expect(val(sepOpen, TEMPLATE_KNOCKOUT), missing).toBe(`true`);
+      expect(val(sepOpen, `/flowIsKnockedOut`), missing).toBe(`true`);
+    }
+  });
+
   it(`Schedule C net profit with Form 8962 knocks out (self-employed health insurance deduction)`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutPtcSelfEmployedHealthInsurance`];
     const se = (expenses: number) => ({
