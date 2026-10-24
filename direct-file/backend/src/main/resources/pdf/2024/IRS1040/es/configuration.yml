@@ -1,4 +1,4 @@
-includeWhen: /pdfNotOver65SRIndicator
+includeWhen: /pdfIncludeForm1040
 form:
   topmostSubform[0]:
     Page1[0]:
