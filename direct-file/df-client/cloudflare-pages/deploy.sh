@@ -28,7 +28,6 @@ DRY_RUN=0
 if [[ "${1:-}" == "--dry-run" ]]; then DRY_RUN=1; fi
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP="$HERE/../df-client-app"
 OUT="$HERE/out"
 PROJECT="${CF_PAGES_PROJECT:-direct-file-static}"
 BRANCH="${CF_PAGES_BRANCH:-main}"
@@ -71,18 +70,10 @@ fi
 # No wrangler usage metrics.
 export WRANGLER_SEND_METRICS=false
 # Build, check and install without the Cloudflare credentials in the environment.
-nocreds() { env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID "$@"; }
+nocreds() { env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID -u CLOUDFLARE_API_KEY "$@"; }
 
-cd "$APP"
-echo "==> Generating the fact dictionary"
-nocreds npm run --silent generate-fact-dictionary > /dev/null
-echo "==> Building the static client-only bundle (vite build --mode static)"
-nocreds npm run --silent build:static
-# Run explicitly: npm skips the postbuild:static hook when ignore-scripts is set.
-echo "==> Checking dist-static for the all-screens development view"
-nocreds npm run --silent check:production-build -- dist-static
-echo "==> Staging and checking the bundle (no network targets, unofficial-site notice, CSP, headers)"
-nocreds npm run --silent stage:static
+# Generate, build, check for the all-screens view, stage and check the bundle (build.sh).
+nocreds "$HERE/build.sh"
 
 if [[ "$NODE_OK" -eq 1 ]]; then
   echo "==> Installing the pinned deploy tooling (npm ci --ignore-scripts)"
@@ -93,6 +84,11 @@ if [[ "$NODE_OK" -eq 1 ]]; then
     exit 1
   fi
 fi
+
+# With the credentials in its environment (unless this is a dry run), so it can look for their exact values.
+# It prints file names only.
+echo "==> Checking the staged site for the deploy credentials and Cloudflare tokens"
+node "$HERE/checkNoSecrets.mjs" "$OUT"
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   if [[ "$NODE_OK" -eq 0 ]]; then

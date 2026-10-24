@@ -20,7 +20,8 @@ import {
 /**
  * Per-tax-year parameter file (backend/src/main/resources/taxYears). The TY2026 file is the
  * source of truth for every fact tagged <TaxYear>2026</TaxYear>; each entry carries the
- * authority for its values (Rev. Proc. 2025-32 page and quote, or IRC section and quote).
+ * authority for its values: a Rev. Proc. 2025-32 or IRS form/instructions page and quote, an IRC
+ * section and quote, or the HHS poverty guidelines notice (Federal Register page and quote).
  */
 const registry = loadTaxYearRegistry();
 const config = loadTaxYearConfig(registry.currentTaxYear);
@@ -168,6 +169,37 @@ describe(`validation catches`, () => {
     if (!entry) throw new Error(`missing /MFSFilingThresholdAmount`);
     delete entry.cite;
     expect(validateConfig(c, facts)).toEqual([`/MFSFilingThresholdAmount: no cite`]);
+  });
+});
+
+describe(`accepted authorities`, () => {
+  const onlyFrom = (fact: string, source: string) => {
+    const c = clone(config);
+    const p = param(c, fact);
+    p.cite = p.cite.filter((x) => x.source === source);
+    expect(p.cite.length).toBeGreaterThan(0);
+    return c;
+  };
+
+  it(`a statute cite (IRC section, URL, and quote) with no Rev. Proc. cite`, () => {
+    expect(config.sources[`irc`].kind).toBe(`statute`);
+    for (const fact of [`/scheduleASaltLimitBeforeMfsHalving`, `/schedule1ALine9`, `/edcExemptionAmount`]) {
+      expect(param(config, fact).cite.every((x) => x.source === `irc`)).toBe(true);
+      expect(validateConfig(onlyFrom(fact, `irc`), facts)).toEqual([]);
+    }
+  });
+
+  it(`the HHS poverty guidelines notice (Federal Register page and quote) as the source of a dollar amount`, () => {
+    expect(config.sources[`fr-2025-01377`].kind).toBe(`pdf`);
+    for (const fact of [`/federalPovertyLineMagicNumberStartingNumber`, `/federalPovertyLineMagicNumberIncrement`]) {
+      expect(validateConfig(onlyFrom(fact, `fr-2025-01377`), facts)).toEqual([]);
+    }
+  });
+
+  it(`but not a statute cite whose quote lacks the amount`, () => {
+    const c = clone(config);
+    param(c, `/seNetEarningsThreshold`).cite[0].quote = `the net earnings from self-employment`;
+    expect(validateConfig(c, facts)).toEqual([`/seNetEarningsThreshold: cited quotes do not contain $400`]);
   });
 });
 

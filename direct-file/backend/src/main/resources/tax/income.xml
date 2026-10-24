@@ -779,6 +779,7 @@
         primary filer under 24 at the end of the year, unless 19 or older and answered no to being a student. Form 8814
         (a parent's election to report a child's interest and dividends) is optional, so a parent who does not make it
         files without it.</Description>
+      <TaxYear>2026</TaxYear>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -1932,6 +1933,7 @@
     <Fact path="/cdccDisabledOrInSchoolIncomePerMonthWithMultipleQps">
       <Description>Amount per month considered income for a taxpayer who was disabled or a student. Used for the purpose
         of determining earned income for CDCC</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>500</Dollar>
@@ -1941,6 +1943,7 @@
     <Fact path="/cdccDisabledOrInSchoolIncomePerMonthWithOneQp">
       <Description>Amount per month considered income for a taxpayer who was disabled or a student. Used for the purpose
         of determining earned income for CDCC</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>250</Dollar>
