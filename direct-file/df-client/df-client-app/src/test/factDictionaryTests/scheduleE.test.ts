@@ -21,6 +21,7 @@ const supported = {
   '/scheduleEHasPersonalUse': createBooleanWrapper(false),
   '/scheduleEHasDepreciation': createBooleanWrapper(false),
   '/scheduleEAnyPropertyLoss': createBooleanWrapper(false),
+  '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(false),
   '/scheduleEWritableRents': createDollarWrapper(`12000`),
   '/scheduleEWritableRoyalties': createDollarWrapper(`500`),
   '/scheduleEWritableExpenses': createDollarWrapper(`4000`),
@@ -86,6 +87,11 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       `/flowKnockoutScheduleESubstantialServices`,
       { '/scheduleEProvidesSubstantialServices': createBooleanWrapper(true) },
     ],
+    [
+      `rental treated as a trade or business (199A QBI not computed, #185)`,
+      `/flowKnockoutScheduleETradeOrBusinessQbi`,
+      { '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(true) },
+    ],
   ];
   for (const [label, ko, extra] of cases) {
     it(`knocks out ${label} on an otherwise clean return`, ({ task }) => {
@@ -97,6 +103,24 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
   }
+
+  it(`#185: trade-or-business question is complete false without Part I income and required with it`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutScheduleETradeOrBusinessQbi`, `/scheduleESectionIsComplete`];
+    const base = fg();
+    const no = fg({ '/hadScheduleEIncome': createBooleanWrapper(false) });
+    for (const g of [base, no]) {
+      expect(get(g, `/flowKnockoutScheduleETradeOrBusinessQbi`).complete).toBe(true);
+      expect(get(g, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(false);
+    }
+    const { '/scheduleERentalIsTradeOrBusiness': _omit, ...unanswered } = supported;
+    const g = fg(unanswered);
+    // An unanswered question never passes: the knockout stays incomplete and the section can't complete.
+    expect(get(g, `/flowKnockoutScheduleETradeOrBusinessQbi`).complete).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(false);
+    const answeredNo = fg(supported);
+    expect(get(answeredNo, `/flowKnockoutScheduleETradeOrBusinessQbi`).complete).toBe(true);
+    expect(get(answeredNo, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(false);
+  });
 
   it(`EITC-qualifying return with rental profit is knocked out (32(i)(2)(C))`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutScheduleEEitc`, `/flowIsKnockedOut`];

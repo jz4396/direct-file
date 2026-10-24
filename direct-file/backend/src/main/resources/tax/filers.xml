@@ -5491,6 +5491,19 @@
       </Derived>
     </Fact>
 
+    <Fact path="/pdfIncludeForm1040">
+      <Name>Print Form 1040</Name>
+      <Description>#89: the TY2026 package prints the 2026 draft Form 1040 for every filer, including filers 65 or
+        older, instead of the 2024 Form 1040-SR template. Instructions for Form 1040 (2025), PDF p. 12 (SHA-256
+        482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a): "Everyone can file Form 1040. Form 1040-SR is
+        available to you if you were born before January 2, 1961." The 2026 draft Form 1040 line 12d boxes ("Were born
+        before January 2, 1962", "Are blind") carry the additional standard deduction checks (26 U.S.C. 63(f)).
+        /xmlOver65SRIndicator still sets the e-file return type.</Description>
+      <Derived>
+        <True />
+      </Derived>
+    </Fact>
+
     <Fact path="/secondaryFilerIsBlindIndicatorXml">
       <Export mef="true" />
       <Derived>

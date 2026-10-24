@@ -1152,6 +1152,7 @@
         the case of a joint return)". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115,
         Schedule 3 Line 1, Exception 2: "The total of your foreign taxes wasn't more than $300 (not more than $600 if
         married filing jointly)." Statutory, not indexed.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>

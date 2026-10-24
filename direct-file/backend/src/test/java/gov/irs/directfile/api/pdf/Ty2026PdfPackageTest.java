@@ -132,6 +132,10 @@ class Ty2026PdfPackageTest {
     static final List<String> CTC_CHILD_SERIALS = List.of("1111", "2222", "3333");
 
     static final String FAMILY = "hoh-cdcc.json";
+    /** #89: the self-employed family needs Schedule C and Schedule 3-A, neither of which has a template yet. */
+    static final List<String> SCHEDULE_C_AND_3A =
+            List.of(PrintRefusingKnockoutsTest.SCHEDULE_C_KNOCKOUT, PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT);
+
     static final String SAVER = "single-simple-savers-credit.json";
     static final String HSA = "hsa-single-filer-contributions-only.json";
 
@@ -163,7 +167,6 @@ class Ty2026PdfPackageTest {
      * printed by a scenario below or listed here, so a new template fails this test until it is covered.
      */
     static final Map<String, String> EXCLUDED = Map.ofEntries(
-            Map.entry("IRS1040SR", "2024 Form 1040-SR template only (filer 65 or older); no 2026 form committed"),
             Map.entry("DEPENDENTS_STATEMENT", "2024 statement template only (more than 4 dependents)"),
             Map.entry("SCHEDULE_R", "2024 Schedule R template only; no 2026 form committed"),
             // Form 2441 attachments (more than three qualifying persons or care providers; Part I line 1c due
@@ -419,16 +422,63 @@ class Ty2026PdfPackageTest {
         Set<String> printed = new TreeSet<>();
         for (Map<String, String> s :
                 List.of(investor(), itemizer(), paTaxForgiveness(), selfEmployedFamily("4000.00"))) {
-            printed.addAll(render(s, null).forms.keySet());
+            printed.addAll(render(s, null, null).forms.keySet());
         }
         for (String s : List.of(FAMILY, SAVER, HSA)) {
-            printed.addAll(renderFacts(scenarioFile(s), null).forms.keySet());
+            printed.addAll(renderFacts(scenarioFile(s), null, null).forms.keySet());
         }
         assertEquals(PAGES.keySet(), printed, "forms printed across the scenarios");
         Set<String> notPrinted = new TreeSet<>(templates.keySet());
         notPrinted.removeAll(printed);
         assertEquals(
                 new TreeSet<>(EXCLUDED.keySet()), notPrinted, "every other English template is listed as excluded");
+    }
+
+    /**
+     * #89: a filer born before January 2, 1962 gets the 2026 Form 1040, not the 2024 Form 1040-SR. Instructions for
+     * Form 1040 (2025), PDF p. 12: "Everyone can file Form 1040. Form 1040-SR is available to you if you were born
+     * before January 2, 1961." No 2026 Form 1040-SR is configured; the 26 U.S.C. 63(f) age box is Form 1040 line 12d
+     * "Were born before January 2, 1962." Restoring the 1040-SR template (or its /pdfNotOver65SRIndicator condition on
+     * Form 1040) fails the form list below.
+     */
+    @Test
+    void filer65OrOlderPrintsThe2026Form1040() throws Exception {
+        Map<String, String> scenario = investor();
+        scenario.put("/filers/#" + W2 + "/dateOfBirth", PaPit40ScheduleSpTy2026PdfSmokeTest.day("1955-03-01"));
+        var graph = factGraphService.getGraph(withSmokeFixture(scenario));
+        assertEquals(Boolean.TRUE, graph.get("/primaryFiler/age65OrOlder").get(), "65 or older at the end of 2026");
+        assertEquals(Boolean.TRUE, graph.get("/pdfIncludeForm1040").get());
+
+        assertFalse(templates.containsKey("IRS1040SR"), "no TY2026 Form 1040-SR is configured");
+        assertTrue(templates.get("IRS1040").getLocation().startsWith("pdf/2026/"), "Form 1040 is the 2026 template");
+        assertFalse(
+                PdfTemplate.templateList.stream().anyMatch(t -> "IRS1040SR".equals(t.templateName)),
+                "no IRS1040SR in the print order");
+
+        Pkg pkg = render(scenario, "e2e-ty2026-65-or-older.pdf");
+        assertTrue(pkg.forms.containsKey("IRS1040"), "Form 1040 prints");
+        assertEquals(1, pkg.forms.get("IRS1040").size(), "one Form 1040");
+        assertFalse(pkg.forms.containsKey("IRS1040SR"), "no Form 1040-SR");
+        assertTrue(checked(pkg.fields("IRS1040", 0), "c2_5[0]"), "line 12d: born before January 2, 1962");
+
+        TaxReturn es = new TaxReturn();
+        es.setTaxYear(TAX_YEAR);
+        es.setFactsWithoutDirtyingEntity(withSmokeFixture(scenario));
+        try (InputStream in = pdfService.getTaxReturn("es", es, false);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            assertTrue(doc.getNumberOfPages() > 0, "the Spanish package prints too");
+        }
+    }
+
+    static Map<String, FactTypeWithItem> withSmokeFixture(Map<String, String> scenario) throws Exception {
+        JsonNode root =
+                MAPPER.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
+        Map<String, FactTypeWithItem> facts =
+                MAPPER.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
+        for (var e : scenario.entrySet()) {
+            facts.put(e.getKey(), MAPPER.readValue(e.getValue(), FactTypeWithItem.class));
+        }
+        return facts;
     }
 
     @Test
@@ -722,7 +772,8 @@ class Ty2026PdfPackageTest {
                         .submissionBlockingFactPaths(factGraphService.getGraph(facts))
                         .contains(CreditFormsTy2026PdfSmokeTest.INVALID_TIN),
                 "sign/submit gate doesn't name " + CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
-        Pkg pkg = renderFacts(facts, "e2e-ty2026-family.pdf").filerSsn(CTC_FILER_SSN_DASHED);
+        Pkg pkg = renderFacts(facts, "e2e-ty2026-family.pdf", List.of(PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT))
+                .filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s3 = pkg.fields("IRS1040S3", 0);
@@ -774,7 +825,8 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyPartIIBPrintsLines22And23() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("4000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf").filerSsn(CTC_FILER_SSN_DASHED);
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf", SCHEDULE_C_AND_3A)
+                .filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
                 "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
@@ -816,7 +868,8 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyLine20OverLine25() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("10000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf").filerSsn(CTC_FILER_SSN_DASHED);
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf", SCHEDULE_C_AND_3A)
+                .filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
                 "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
@@ -997,6 +1050,11 @@ class Ty2026PdfPackageTest {
     }
 
     static Pkg render(Map<String, String> scenario, String outName) throws Exception {
+        return render(scenario, outName, List.of());
+    }
+
+    /** {@link #render(Map, String)} expecting the public print path to refuse with exactly {@code refusedBy}. */
+    static Pkg render(Map<String, String> scenario, String outName, List<String> refusedBy) throws Exception {
         JsonNode root =
                 MAPPER.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
         Map<String, FactTypeWithItem> facts =
@@ -1004,20 +1062,33 @@ class Ty2026PdfPackageTest {
         for (var e : scenario.entrySet()) {
             facts.put(e.getKey(), MAPPER.readValue(e.getValue(), FactTypeWithItem.class));
         }
-        return renderFacts(facts, outName);
+        return renderFacts(facts, outName, refusedBy);
     }
 
     static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName) throws Exception {
+        return renderFacts(facts, outName, List.of());
+    }
+
+    /**
+     * Renders the package. {@code refusedBy} is what the public print path refuses with: empty for a package that
+     * prints, or #89 knockouts for a form with no template yet ({@link PrintRefusingKnockoutsTest#TEMPLATE_PENDING}),
+     * or null for any of those. The package is then filled with only those left out of the refusal check, so the field
+     * maps of the forms that do have templates stay tested; every other knockout still refuses.
+     */
+    static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName, List<String> refusedBy)
+            throws Exception {
 
         // No submission-blocking check here: printing is not filing. Sign and submit enforce
         // FactGraphService#submissionBlockingFactPaths.
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(TAX_YEAR);
         taxReturn.setFactsWithoutDirtyingEntity(facts);
-        byte[] bytes;
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
-            bytes = in.readAllBytes();
+        List<String> refused = PrintRefusingKnockouts.refusingPaths(factGraphService.getGraph(facts));
+        if (refusedBy != null) {
+            assertEquals(refusedBy, refused, "the public print path refuses with");
         }
+        byte[] bytes =
+                PrintRefusingKnockoutsTest.printForFieldMaps(pdfService, taxReturn, factGraphService.getGraph(facts));
         String out = System.getProperty("pdf.smoke.out");
         if (out != null && outName != null) {
             Files.write(Path.of(out, outName), bytes);

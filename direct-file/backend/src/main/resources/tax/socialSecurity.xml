@@ -199,6 +199,7 @@
     <Fact path="/maximumSocialSecurityBenefitsRepaidSupported">
       <Name>Maximum Social Security Benefits Repaid Supported</Name>
       <Description>The maximum dollar amount of social security benefits repaid that is supported.</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>3000</Dollar>
@@ -783,6 +784,7 @@
         will confuse you.
 
         Values specified in §86(c)(1).</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Switch>
@@ -830,6 +832,7 @@
 
         Values are equal to the difference between the base amount
         specified in §86(c)(1) and the adjusted base amount specified in §86(c)(2).</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Switch>

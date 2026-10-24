@@ -94,5 +94,17 @@ export const ScheduleCIncomeSubcategory = (
         </Screen>
       </SubSubcategory>
     </CollectionLoop>
+
+    {/* #89: no Schedule C template, so a return with a business can't be printed or filed here yet. */}
+    <Screen
+      route='schedule-c-without-ty2026-template-knockout'
+      condition='/flowKnockoutScheduleCWithoutTy2026Template'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-c-without-ty2026-template' />
+      <DFAlert i18nKey='/info/knockout/schedule-c-without-ty2026-template' headingLevel='h2' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
   </Subcategory>
 );

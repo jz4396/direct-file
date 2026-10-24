@@ -148,12 +148,15 @@
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCWithoutTy2026Template" />
+          <Dependency module="taxCalculations" path="/flowKnockoutSchedule3AWithoutTy2026Template" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleESubstantialServices" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEEitc" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleETradeOrBusinessQbi" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanUsedVehicle" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanBusinessUse" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanLease" />

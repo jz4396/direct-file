@@ -25,8 +25,18 @@ boolean `enabled` fails backend startup and the client's registry loader; there 
   PDF sources also need a `page` (and `pageEnd` if the quote crosses a page); IRC cites need a
   `section` such as `§ 1211(b)(1)` and its section URL. `form: "table"` marks a row-by-row
   transcription of a table rather than verbatim prose.
+- A cite does not have to be Rev. Proc. 2025-32. Accepted sources are Rev. Procs. and Notices,
+  IRS forms and instructions (including drafts, pinned by `sha256`), the Internal Revenue Code
+  (`kind: "statute"`), and the HHS poverty guidelines notice in the Federal Register. Statutory
+  amounts that are not indexed (the SALT cap, Schedule 1-A amounts, § 22, § 86, § 21(d)(2)) cite
+  the IRC section; the federal poverty line cites the HHS notice.
 - Every dollar amount and percentage rate a parameter holds must appear in one of its quotes,
-  written as the source prints it (`$32,200`, `$206,583.50`, `22%`).
+  written as the source prints it (`$32,200`, `$206,583.50`, `22%`; statute text may write
+  `22 percent`).
+- A non-zero `<Dollar>` literal in a fact that has no `<TaxYear>` tag fails
+  `src/test/factDictionaryTests/untaggedDollarLiterals.test.ts` unless that test lists the fact
+  as `structural` (rounding, cents, unit conversion) or `remaining` (a tax-law amount that still
+  needs a source or a review), with a reason.
 - `pendingReview` lists facts that are still tagged with an earlier year, with their TY status
   (`current`, `stale`, `structural`, `unverified`), a note and the tracking issue. A `current`
   entry needs a cite like a parameter.
