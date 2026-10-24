@@ -4,8 +4,13 @@
  * backend/src/main/resources/taxYears/registry.json lists the tax years this build supports and
  * names one parameter file per year (e.g. ty2026.json). A parameter file holds, for every fact
  * that carries <TaxYear>YYYY</TaxYear> in the fact dictionary, the fact's literal values in
- * document order and the authority for them (a Rev. Proc./Notice/Publication page and quote, or
- * an IRC section and quote).
+ * document order and the authority for them. A parameter does not have to cite Rev. Proc. 2025-32:
+ * any of these is accepted, alone or together:
+ *   - a `pdf` source (Rev. Proc., Notice, IRS form or instructions, or the HHS poverty guidelines
+ *     notice in the Federal Register) with a page and a quote;
+ *   - a `statute` source (the Internal Revenue Code) with a section like "§ 1211(b)(1)", a URL for
+ *     that section, and a quote.
+ * Every dollar amount and rate the parameter holds must appear in one of its quotes.
  *
  * The parameter file is the source of truth for the values. applyYearConfig.ts writes them into
  * the fact dictionary XML; yearConfig.test.ts fails if the XML and the file disagree, if a
