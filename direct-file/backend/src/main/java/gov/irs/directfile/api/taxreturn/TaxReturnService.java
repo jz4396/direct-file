@@ -229,11 +229,9 @@ public class TaxReturnService {
         }
         addEmailAndTinToFactGraph(userId, facts, loggedInEmail, tin);
         if (!factGraphService.factsParseCorrectly(facts)) {
-            String message =
-                    String.format("Facts did not parse correctly, cannot create tax return for user: %s.", userId);
-            log.error(message);
+            log.error("Facts did not parse correctly, cannot create tax return for user: {}.", userId);
 
-            throw new FactGraphParseResponseStatusException(message);
+            throw new FactGraphParseResponseStatusException();
         }
 
         DataImportBehavior behavior = dataImportGatingService.getBehavior(loggedInEmail);
@@ -333,8 +331,7 @@ public class TaxReturnService {
         if (existingTaxReturn.isEmpty()) {
             log.error("Cannot update tax return {} for user: {}. Tax Return does not exist.", taxReturnId, userId);
 
-            throw new TaxReturnNotFoundResponseStatusException(
-                    String.format("Tax return %s does not exist.", taxReturnId));
+            throw new TaxReturnNotFoundResponseStatusException();
         }
 
         TaxReturn taxReturn = existingTaxReturn.get();
