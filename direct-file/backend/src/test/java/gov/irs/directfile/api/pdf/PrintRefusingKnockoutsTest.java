@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -301,7 +302,8 @@ class PrintRefusingKnockoutsTest {
      * A Form 1095-A return with $4,500 of advance payments whose /needsToFileForm8962 is unresolved (the dependent
      * answer or the qualifying-plan answer missing) must not print: its Schedule 2 line 1a would read $0 instead of the
      * Form 8962 line 27 excess (Form 8962 (2026) draft, PDF p. 1, line 27: "Enter the difference here and on Schedule 2
-     * (Form 1040), line 1a"). The guard /form8962NeededOrUnresolved fails closed, so the template knockout refuses.
+     * (Form 1040), line 1a"). The same holds for a qualifying-plan yes whose only Form 1095-A was deleted. The guard
+     * /form8962NeededOrUnresolved fails closed, so the template knockout refuses.
      */
     @Test
     void unresolvedForm8962ReturnIsRefusedByThePrintPath() throws Exception {
@@ -309,12 +311,38 @@ class PrintRefusingKnockoutsTest {
         PdfService pdfService = CreditFormsTy2026PdfSmokeTest.pdfService(fgs);
         ObjectMapper mapper = new ObjectMapper();
         Map<String, FactTypeWithItem> facts = scenarioFacts(mapper, PTC_SCENARIO);
+        Map<String, FactTypeWithItem> emptied = new HashMap<>(facts);
+        emptied.keySet().removeIf(k -> k.startsWith("/1095As/"));
+        emptied.put(
+                "/1095As",
+                mapper.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.CollectionWrapper\",\"item\":{\"items\":[]}}",
+                        FactTypeWithItem.class));
+        emptied.put(
+                "/1095AsIsDone",
+                mapper.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
+                        FactTypeWithItem.class));
+        // The qualifying-plan answer is yes but the only Form 1095-A was deleted: /needsToFileForm8962 is a definite
+        // no, and the guard still refuses.
+        Map<String, Map<String, FactTypeWithItem>> cases = new LinkedHashMap<>();
         for (String missing : List.of("/canBeClaimed", "/writableHasPtcQualifyingPlan")) {
             Map<String, FactTypeWithItem> unresolved = new HashMap<>(facts);
             unresolved.keySet().removeIf(k -> k.endsWith(missing));
             assertTrue(unresolved.size() < facts.size(), missing);
+            cases.put(missing, unresolved);
+        }
+        cases.put("empty /1095As", emptied);
+        for (Map.Entry<String, Map<String, FactTypeWithItem>> c : cases.entrySet()) {
+            String missing = c.getKey();
+            Map<String, FactTypeWithItem> unresolved = c.getValue();
             Graph graph = fgs.getGraph(unresolved);
-            assertFalse(graph.get("/needsToFileForm8962").complete(), missing);
+            Result<Object> needs = graph.get("/needsToFileForm8962");
+            if (missing.startsWith("empty")) {
+                assertTrue(needs.complete() && Boolean.FALSE.equals(needs.get()), missing);
+            } else {
+                assertFalse(needs.complete(), missing);
+            }
             Result<Object> template = graph.get(FORM_8962_TEMPLATE_KNOCKOUT);
             assertTrue(template.complete() && Boolean.TRUE.equals(template.get()), missing);
             assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get(), missing);
@@ -539,8 +567,6 @@ class PrintRefusingKnockoutsTest {
         // ticket-6718, so those four now need Schedule 3-A (they read incomplete, and the knockout false, before).
         assertEquals(63, withSchedule3A, "scenarios with Schedule 3-A");
         assertEquals(FORM_8962_SCENARIO_COUNT, form8962Refused, "scenarios with Form 8962");
-        // 99 print without the Form 8962 stops; six of the seven Form 8962 scenarios have no other refusing knockout,
-        // so 93.
         assertEquals(93, printed, "scenarios that print");
     }
 

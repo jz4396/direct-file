@@ -258,6 +258,27 @@ describe(`Form 8962 (2026) knockouts`, () => {
     }
   });
 
+  it(`qualifying plan yes with an empty Form 1095-A list fails closed`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8962NeededOrUnresolved`, TEMPLATE_KNOCKOUT];
+    // The only 1095-A deleted: /needsToFileForm8962 reads a definite no from the empty collection.
+    for (const advance of [true, false]) {
+      const emptied = Object.fromEntries(
+        Object.entries(ptcReturn(31300, 5000, 6000, 4500)).filter(([k]) => !k.startsWith(`/1095As/`))
+      );
+      const g = fg({
+        ...emptied,
+        '/1095As': createCollectionWrapper([]),
+        '/1095AsIsDone': createBooleanWrapper(true),
+        '/writableHasAdvancedPtc': createBooleanWrapper(advance),
+      });
+      expect(val(g, `/writableHasPtcQualifyingPlan`)).toBe(`true`);
+      expect(val(g, `/needsToFileForm8962`), `${advance}`).toBe(`false`);
+      expect(val(g, `/form8962NeededOrUnresolved`), `${advance}`).toBe(`true`);
+      expect(val(g, TEMPLATE_KNOCKOUT), `${advance}`).toBe(`true`);
+      expect(val(g, `/flowIsKnockedOut`), `${advance}`).toBe(`true`);
+    }
+  });
+
   it(`Schedule C net profit with Form 8962 knocks out (self-employed health insurance deduction)`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutPtcSelfEmployedHealthInsurance`];
     const se = (expenses: number) => ({

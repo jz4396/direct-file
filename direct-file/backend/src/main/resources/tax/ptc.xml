@@ -36,20 +36,40 @@
     </Fact>
 
     <Fact path="/form8962NeededOrUnresolved">
-      <Description>#88: the guard for the Form 8962 knockouts. It is /needsToFileForm8962 once that is complete. While
-        it
-        is not, it fails closed: true when a Form 1095-A has been entered or the qualifying-plan answer is yes, so a
-        return with advance payments of the premium tax credit cannot print or submit without its Form 8962 lines
-        (Form
-        8962 (2026) draft, https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, PDF p. 1, line 27: "Excess advance
-        payment of
-        PTC. If line 25 is greater than line 24, subtract line 24 from line 25. Enter the difference here and
-        on Schedule
-        2 (Form 1040), line 1a"). False with no Form 1095-A and no yes, so a
-        return that never reaches the premium tax
-        credit section is unaffected.</Description>
+      <Description>#88: the guard for the Form 8962 knockouts. First, true when the qualifying-plan answer is yes
+        and no
+        Form 1095-A is entered (for example after deleting the only one): /needsToFileForm8962 then reads a
+        definite no
+        from the empty collection, yet any advance payments still have to be reconciled. Otherwise it is
+        /needsToFileForm8962 once that is complete; while that is not, it fails closed: true when a Form 1095-A has been
+        entered, false otherwise. A return with advance payments of the premium tax credit therefore cannot print
+        without its Form 8962 lines (Form 8962 (2026) draft, https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, PDF p. 1,
+        line 27: "Excess advance payment of PTC. If line 25 is greater than line 24, subtract line 24 from line 25.
+        Enter the difference here and on Schedule 2 (Form 1040), line 1a"). False with no Form 1095-A and no yes, so a
+        return that never reaches the premium tax credit section is unaffected.</Description>
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/writableHasPtcQualifyingPlan" />
+                </IsComplete>
+                <Dependency path="/writableHasPtcQualifyingPlan" />
+                <Not>
+                  <All>
+                    <IsComplete>
+                      <Dependency path="/has1095A" />
+                    </IsComplete>
+                    <Dependency path="/has1095A" />
+                  </All>
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
           <Case>
             <When>
               <IsComplete>
