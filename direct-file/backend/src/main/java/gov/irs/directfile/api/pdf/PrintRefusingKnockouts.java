@@ -39,6 +39,24 @@ public final class PrintRefusingKnockouts {
             // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
             // not computed yet, so the package would print it as $0.
             "/flowKnockoutScheduleETradeOrBusinessQbi",
+            // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
+            // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)
+            // threshold; above it Form 8995-A applies. A prior-year QBI loss carryforward (Form 8995 line 3), a
+            // cooperative patron (199A(b)(7), (g)) and a mix of active and non-active businesses (199A(i)(2)) are not
+            // modeled either. Each would print line 13b at a value the package can't support.
+            "/flowKnockoutQbiAboveThreshold",
+            "/flowKnockoutQbiPriorYearCarryforward",
+            "/flowKnockoutQbiCooperativePatron",
+            "/flowKnockoutQbiMixedParticipation",
+            // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
+            // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
+            "/flowKnockoutScheduleCQbi",
+            // Form 8995 goes with every return that has Schedule C QBI or loss: Instructions for Form 1040 (2025)
+            // draft,
+            // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your
+            // return."; 2026 Instructions for Form 8995 draft, PDF p. 6, line 18, "This is the amount to be carried
+            // forward to the next year." There is no TY2026 Form 8995 template or MeF mapping, so it would be left off.
+            "/flowKnockoutForm8995WithoutTy2026Template",
             // Schedule C business: Instructions for Schedule C (2025) p. 2, "Use Schedule C (Form 1040) to report
             // income or (loss) from a business you operated or a profession you practiced as a sole proprietor", and
             // the 2026 draft Schedule 1 line 3 reads "Attach Schedule C". There is no Schedule C template, so the

@@ -154,6 +154,15 @@ describe(`Schedule 1-A Part III — overtime figured from records, switch ON (#6
     expect(get(single(70000, `10000`, selfFigured(`statementPremium`, `3000`)), `/schedule1ALine27`)).toBe(`12500.00`);
   });
 
+  it(`#202: $10,000 total time-and-a-half pay → $3,333.33 self-figured, line 17 rounds to $3,333`, ({ task }) => {
+    task.meta.testedFactPaths = [`/overtimeSelfFiguredAmount`, `/schedule1AOvertimeLine17`, `/schedule1ALine27`];
+    // Instructions for Form 1040 (2025), p. 23: include cents when adding, "round off only the total".
+    const fg = noTT(70000, selfFigured(`statementTotalTimeAndHalf`, `10000`));
+    expect(get(fg, `/overtimeSelfFiguredAmount`)).toBe(`3333.33`);
+    expect(get(fg, `/schedule1AOvertimeLine17`)).toBe(`3333.00`);
+    expect(get(fg, `/schedule1ALine27`)).toBe(`3333.00`);
+  });
+
   it(`self-figured only, over the cap: $40,000 total time-and-a-half pay → $13,333.33 → $12,500`, ({ task }) => {
     task.meta.testedFactPaths = [`/schedule1AOvertimeLine21`];
     expect(get(noTT(90000, selfFigured(`statementTotalTimeAndHalf`, `40000`)), `/schedule1AOvertimeLine21`)).toBe(

@@ -754,7 +754,10 @@
                   <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
                 </IsComplete>
                 <IsComplete>
-                  <Dependency module="scheduleC" path="/wantsQbiDeduction" />
+                  <Dependency module="form8995" path="/qbiHasPriorYearLossCarryforward" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency module="form8995" path="/qbiIsCooperativePatron" />
                 </IsComplete>
                 <Dependency module="scheduleC" path="/scheduleCBusinessesIsDone" />
                 <Not>
