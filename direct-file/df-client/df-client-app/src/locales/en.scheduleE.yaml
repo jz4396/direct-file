@@ -18,6 +18,8 @@ headings:
   /heading/knockout/schedule-e-personal-use: This tool doesn’t yet support rentals you also used personally
   /heading/knockout/schedule-e-depreciation: This tool doesn’t yet support depreciation or vehicle expenses
   /heading/knockout/schedule-e-loss: This tool doesn’t yet support rental or royalty losses
+  /heading/income/schedule-e/trade-or-business: Is any of your rentals a trade or business for the qualified business income deduction?
+  /heading/knockout/schedule-e-trade-or-business: This tool doesn’t yet support the qualified business income deduction for rentals
   /heading/knockout/schedule-e-eitc: This tool can’t yet check the Earned Income Tax Credit with rental or royalty income
 info:
   /info/income/schedule-e/intro:
@@ -77,6 +79,17 @@ info:
         - p: >-
             Rental and royalty income counts toward the investment income limit for the Earned Income Tax Credit. This
             tool doesn’t include it in that test yet. You’ll need another way to file this return.
+  /info/income/schedule-e/trade-or-business:
+    body: >-
+      Answer yes if you treat a rental as a trade or business, for example because you or others performed 250 or
+      more hours of rental services during the year, or because you rent property to a business you or your family
+      commonly control.
+  /info/knockout/schedule-e-trade-or-business:
+    alertText:
+      body:
+        - p: >-
+            A rental that is a trade or business can qualify for the qualified business income deduction (Form 8995).
+            This tool doesn’t calculate that deduction yet. You’ll need another way to file this return.
 fields:
   /hadScheduleEIncome:
     boolean:
@@ -102,6 +115,10 @@ fields:
     boolean:
       "yes": Yes, at least one property had a loss
       "no": No, every property had a profit or broke even
+  /scheduleERentalIsTradeOrBusiness:
+    boolean:
+      "yes": Yes, at least one rental is a trade or business
+      "no": "No"
   /scheduleEWritableRents:
     name: Total rents received
   /scheduleEWritableRoyalties:
@@ -125,3 +142,4 @@ dataviews:
     /scheduleEWritableExpenses: Total expenses (not including depreciation)
     /scheduleEAnyPropertyLoss: Did any single property have a loss?
     /scheduleEProvidesSubstantialServices: Did you provide substantial services, such as cleaning, linens, or maid service?
+    /scheduleERentalIsTradeOrBusiness: Is any rental a trade or business for the qualified business income deduction?
