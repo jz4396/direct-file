@@ -14,7 +14,7 @@
     https://www.federalregister.gov/d/2025-19763 (PDF: https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf)
   - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
     https://www.irs.gov/instructions/i1040sse
-  - QBI § 199A: explicitly unsupported in this slice (no silent zero) —
+  - QBI § 199A: computed on Form 8995 (form8995.xml, #87); cases it can't compute are knocked out —
     https://www.law.cornell.edu/uscode/text/26/199A
 
   Implements gap: docs/tax/GAP-SCHEDULE-C.md (PR #3).
@@ -79,31 +79,77 @@
     </Fact>
 
     <Fact path="/wantsQbiDeduction">
-      <Name>Wants qualified business income deduction</Name>
+      <Name>Wants qualified business income deduction (no longer asked)</Name>
       <Description>
-        Explicit § 199A gate. This vertical slice does NOT compute QBI.
-        If true → knockout (no silent zero).
-        Cite: 26 U.S.C. § 199A —
-        https://www.law.cornell.edu/uscode/text/26/199A
+        Kept so saved returns still load. The 26 U.S.C. 199A(a) deduction is not elective
+        (https://www.law.cornell.edu/uscode/text/26/199A), and Form 8995 (form8995.xml, #87) now computes it, so this
+        answer is not used anywhere.
       </Description>
-      <Export downstreamFacts="true" />
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCQbi">
-      <Name>Knockout: QBI § 199A not supported</Name>
+      <Name>Knockout: Schedule C QBI deduction case Form 8995 here can't compute</Name>
       <Description>
-        Explicit non-support for § 199A in this slice. Blast radius: AGI/credits if QBI were silently zeroed.
+        #87: Schedule C qualified business income is computed on Form 8995 (form8995.xml). This is true when
+        any Form 8995
+        stop applies: a prior-year loss carryforward, a cooperative patron, active and non-active
+        businesses together,
+        or taxable income before the deduction above the threshold (Form 8995-A). Each part is its
+        own
+        BlockSubmissionOnTrue fact in /flowIsKnockedOut and is complete false without Schedule C income (#186). Used
+        for
+        the Schedule C knockout screen.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <All>
-          <Dependency path="/hadSelfEmploymentIncome" />
-          <Dependency path="/wantsQbiDeduction" />
-        </All>
+        <Any>
+          <Dependency module="form8995" path="/flowKnockoutQbiPriorYearCarryforward" />
+          <Dependency module="form8995" path="/flowKnockoutQbiCooperativePatron" />
+          <Dependency module="form8995" path="/flowKnockoutQbiMixedParticipation" />
+          <Dependency module="form8995" path="/flowKnockoutQbiAboveThreshold" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleCWithoutTy2026Template">
+      <Name>Knockout: the return needs a TY2026 Schedule C, which this tool can't print yet</Name>
+      <Description>#89: true when /hasScheduleCBusinesses is complete and true. A sole proprietor reports the business
+        on Schedule C: Instructions for Schedule C (2025), PDF p. 2 (SHA-256
+        b5536db91498a450572e37078d7d5ee8fdc400e385d4fee3a26c230a33e399b6), "Use Schedule C (Form 1040) to report income
+        or (loss) from a business you operated or a profession you practiced as a sole proprietor." The 2026 draft
+        Schedule 1, line 3, reads "Business income or (loss). Attach Schedule C", and the 2026 draft Schedule SE, line
+        2, "Net profit or (loss) from Schedule C, line 31". There is no Schedule C template (2026 draft
+        f1040sc--dft.pdf, SHA-256 287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224, is not in the repo),
+        so the package would omit it. Complete and false when there is no Schedule C business, so submission checks
+        never see it incomplete. Remove this fact, its /flowIsKnockedOut entry and its PrintRefusingKnockouts entry when
+        the template and field map land.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/hasScheduleCBusinesses" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -448,7 +494,8 @@
 
     <Fact path="/scheduleCBusinesses/*/isComplete">
       <Name>Schedule C business complete</Name>
-      <Description>Minimum fields for MVP: name, gross receipts, expenses.</Description>
+      <Description>Minimum fields for MVP: name, gross receipts, expenses, and (#87) material participation for Form
+        8995 line 16.</Description>
       <Derived>
         <All>
           <IsComplete>
@@ -460,7 +507,57 @@
           <IsComplete>
             <Dependency path="../writableTotalExpenses" />
           </IsComplete>
+          <IsComplete>
+            <Dependency path="../materiallyParticipates" />
+          </IsComplete>
         </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/materiallyParticipates">
+      <Name>Filer materially participates in this business</Name>
+      <Description>
+        26 U.S.C. 199A(i)(2)(B): "The term 'active qualified trade or business' means ... any qualified trade
+        or business
+        of the taxpayer in which the taxpayer materially participates (within the meaning of section
+        469(h))."
+        26 U.S.C. 469(h)(1) (https://www.law.cornell.edu/uscode/text/26/469): material participation means
+        involvement
+        in the operations of the activity "on a basis which is (A) regular, (B) continuous, and (C)
+        substantial."
+        Used for Form 8995 line 16 (minimum deduction).
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/doesNotMateriallyParticipate">
+      <Name>Filer does not materially participate in this business</Name>
+      <Derived>
+        <Not>
+          <Dependency path="../materiallyParticipates" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCActiveBusinesses">
+      <Name>Schedule C businesses with material participation</Name>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Filter path="/scheduleCBusinesses">
+          <Dependency path="materiallyParticipates" />
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCNonActiveBusinesses">
+      <Name>Schedule C businesses without material participation</Name>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Filter path="/scheduleCBusinesses">
+          <Dependency path="doesNotMateriallyParticipate" />
+        </Filter>
       </Derived>
     </Fact>
 

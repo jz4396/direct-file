@@ -100,6 +100,18 @@
       "kind": "pdf",
       "sha256": "b10fbb23ff4a053db197285497a00914c558e3ae0cdf5c956b7c0c7867376428"
     },
+    "f1040sb-dft": {
+      "title": "Schedule B (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f1040sb--dft.pdf",
+      "kind": "pdf",
+      "sha256": "aa6272f6b3b8a8c6a2aa6ef9d1069f1edb88fb9df4df60278d198da89cdfd93f"
+    },
+    "i8615-dft": {
+      "title": "Instructions for Form 8615 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/i8615--dft.pdf",
+      "kind": "pdf",
+      "sha256": "ac1ec51a5367dfa8187ea9fef43fb6cbf87b4ca1324bf3084c5557407a03160f"
+    },
     "rp-2025-25": {
       "title": "Rev. Proc. 2025-25, Applicable Percentage Table and Required Contribution Percentage for 2026",
       "url": "https://www.irs.gov/pub/irs-drop/rp-25-25.pdf",
@@ -2110,6 +2122,400 @@
         }
       ],
       "note": "Tier floors are Ints (percent of the poverty line). Table percentages are Rationals over 10000 (2.10% = 210/10000); each tier's slope is (final - initial) / tier width per percentage point (e.g. (4.19% - 3.14%) / 17 = 105/170000), the linear sliding scale of Treas. Reg. 1.36B-3(g)(1). /applicableFigure rounds the result to 4 decimals."
+    },
+    {
+      "fact": "/qbiThresholdAmount",
+      "file": "form8995.xml",
+      "values": [
+        "Dollar:403500",
+        "Dollar:201775",
+        "Dollar:201750"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§3.26",
+          "page": 21,
+          "quote": "For taxable years beginning in 2026, the threshold amounts under § 199A(e)(2) and phase-in range amounts under § 199A(b)(3)(B) and § 199A(d)(3)(A) are: Married Individuals Filing Joint Returns $403,500 $553,500 Married Individuals Filing Separate Returns $201,775 $276,775 All Other Returns $201,750 $276,750",
+          "pageEnd": 22,
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/qbiMinimumDeductionAmount",
+      "file": "form8995.xml",
+      "values": [
+        "Dollar:400"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 199A(i)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/199A",
+          "quote": "the deduction allowed under subsection (a) for the taxable year shall be equal to the greater of— (A) the amount of such deduction determined without regard to this subsection, or (B) $400."
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§2.12",
+          "page": 7,
+          "quote": "Section 70105 of the OBBBA amended § 199A(i) to add a minimum deduction of $400. Additionally, a taxpayer will be required to have a minimum of $1,000 of qualified business income to be eligible for the deduction, effective for taxable years beginning after December 31, 2025. The $400 and $1,000 amounts in § 199A(i) will be adjusted for inflation for taxable years beginning after 2026."
+        }
+      ],
+      "note": "Statutory amount; first indexed for taxable years beginning after 2026."
+    },
+    {
+      "fact": "/qbiMinimumActiveQbiAmount",
+      "file": "form8995.xml",
+      "values": [
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 199A(i)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/199A",
+          "quote": "The term “ applicable taxpayer ” means, with respect to any taxable year, a taxpayer whose aggregate qualified business income with respect to all active qualified trades or businesses of the taxpayer for such taxable year is at least $1,000."
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§2.12",
+          "page": 7,
+          "quote": "a taxpayer will be required to have a minimum of $1,000 of qualified business income to be eligible for the deduction, effective for taxable years beginning after December 31, 2025."
+        }
+      ],
+      "note": "Statutory amount; first indexed for taxable years beginning after 2026."
+    },
+    {
+      "fact": "/seNetEarningsThreshold",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Dollar:400"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1402(b)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1402",
+          "quote": "the net earnings from self-employment, if such net earnings for the taxable year are less than $400."
+        }
+      ]
+    },
+    {
+      "fact": "/dividendForeignTaxElectionLimit",
+      "file": "dividends.xml",
+      "values": [
+        "Dollar:600",
+        "Dollar:300"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 904(j)(2)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/904",
+          "quote": "the amount of the creditable foreign taxes paid or accrued by the individual during the taxable year does not exceed $300 ($600 in the case of a joint return)"
+        }
+      ]
+    },
+    {
+      "fact": "/presidentalCampaignDesignationAmount",
+      "file": "refundPrefs.xml",
+      "values": [
+        "Dollar:3"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6096(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6096",
+          "quote": "Every individual (other than a nonresident alien) whose income tax liability for the taxable year is $3 or more may designate that $3 shall be paid over to the Presidential Election Campaign Fund"
+        }
+      ]
+    },
+    {
+      "fact": "/saversMaxCreditLimit",
+      "file": "saversCredits.xml",
+      "values": [
+        "Dollar:2000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 25B(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/25B",
+          "quote": "an amount equal to the applicable percentage of so much of the qualified retirement savings contributions of the eligible individual for the taxable year as do not exceed $2,000."
+        },
+        {
+          "source": "f8880-2026-dft",
+          "section": "Line 6",
+          "page": 2,
+          "quote": "In each column, enter the smaller of line 5 or $2,000"
+        }
+      ]
+    },
+    {
+      "fact": "/saversMaxCreditAmountNotMFJ",
+      "file": "saversCredits.xml",
+      "values": [
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "f8880-2026-dft",
+          "section": "Purpose of Form",
+          "page": 3,
+          "quote": "The maximum amount of the credit is $1,000 ($2,000 if married filing jointly)."
+        },
+        {
+          "source": "irc",
+          "section": "§ 25B(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/25B",
+          "quote": "if the adjusted gross income of the taxpayer is not over $30,000, 50 percent"
+        }
+      ]
+    },
+    {
+      "fact": "/edcExemptionAmount",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:5000",
+        "Dollar:7500",
+        "Dollar:10000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(d)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "(1) $7,500 in the case of a single individual, (2) $10,000 in the case of a joint return, or (3) $5,000 in the case of a married individual filing a separate return"
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxSingleHohQssNontaxableLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:5000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "(i) $5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual, (ii) $7,500 in the case of a joint return where both spouses are qualified individuals, or (iii) $3,750 in the case of a married individual filing a separate return."
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxMfsNontaxableLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:3750"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "(i) $5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual, (ii) $7,500 in the case of a joint return where both spouses are qualified individuals, or (iii) $3,750 in the case of a married individual filing a separate return."
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxMfjBothNontaxableLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:7500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "(i) $5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual, (ii) $7,500 in the case of a joint return where both spouses are qualified individuals, or (iii) $3,750 in the case of a married individual filing a separate return."
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxMfjOnlyOneNontaxableLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:5000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "(i) $5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual, (ii) $7,500 in the case of a joint return where both spouses are qualified individuals, or (iii) $3,750 in the case of a married individual filing a separate return."
+        }
+      ]
+    },
+    {
+      "fact": "/socialSecurityBenefitsWkshtLine8",
+      "file": "socialSecurity.xml",
+      "values": [
+        "Dollar:32000",
+        "Dollar:25000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 86(c)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/86",
+          "quote": "(A) except as otherwise provided in this paragraph, $25,000, (B) $32,000 in the case of a joint return"
+        }
+      ]
+    },
+    {
+      "fact": "/socialSecurityBenefitsWkshtLine10",
+      "file": "socialSecurity.xml",
+      "values": [
+        "Dollar:12000",
+        "Dollar:9000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 86(c)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/86",
+          "quote": "(A) except as otherwise provided in this paragraph, $34,000, (B) $44,000 in the case of a joint return"
+        },
+        {
+          "source": "i1040gi-2025",
+          "section": "Social Security Benefits Worksheet, line 10",
+          "page": 32,
+          "quote": "Enter $12,000 if married filing jointly; $9,000 if single, head of household, qualifying surviving spouse, or married filing separately and you lived apart from your spouse for all of 2025"
+        }
+      ]
+    },
+    {
+      "fact": "/maximumSocialSecurityBenefitsRepaidSupported",
+      "file": "socialSecurity.xml",
+      "values": [
+        "Dollar:3000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1341(a)(3)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1341",
+          "quote": "the amount of such deduction exceeds $3,000"
+        }
+      ]
+    },
+    {
+      "fact": "/maximumRepaymentUnemploymentCompensation",
+      "file": "unemployment.xml",
+      "values": [
+        "Dollar:3000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1341(a)(3)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1341",
+          "quote": "the amount of such deduction exceeds $3,000"
+        }
+      ]
+    },
+    {
+      "fact": "/monthlyIncomeForStudentOrDisabledWithOneQualifyingPerson",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:250"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(d)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "to be gainfully employed and to have earned income of not less than— (A) $250 if subsection (c)(1) applies for the taxable year, or (B) $500 if subsection (c)(2) applies for the taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/monthlyIncomeForStudentOrDisabledWithMoreThanOneQualifyingPerson",
+      "file": "cdcc.xml",
+      "values": [
+        "Dollar:500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(d)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "to be gainfully employed and to have earned income of not less than— (A) $250 if subsection (c)(1) applies for the taxable year, or (B) $500 if subsection (c)(2) applies for the taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccDisabledOrInSchoolIncomePerMonthWithOneQp",
+      "file": "income.xml",
+      "values": [
+        "Dollar:250"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(d)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "to be gainfully employed and to have earned income of not less than— (A) $250 if subsection (c)(1) applies for the taxable year, or (B) $500 if subsection (c)(2) applies for the taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccDisabledOrInSchoolIncomePerMonthWithMultipleQps",
+      "file": "income.xml",
+      "values": [
+        "Dollar:500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(d)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "to be gainfully employed and to have earned income of not less than— (A) $250 if subsection (c)(1) applies for the taxable year, or (B) $500 if subsection (c)(2) applies for the taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/flowKnockoutForm8615",
+      "file": "income.xml",
+      "values": [
+        "Dollar:2700",
+        "Int:24",
+        "Int:18"
+      ],
+      "cite": [
+        {
+          "source": "i8615-dft",
+          "section": "Who Must File",
+          "page": 2,
+          "quote": "1. The child had more than $2,700 of unearned income. 2. The child is required to file a tax return. 3. The child either: a. Was under age 18 at the end of 2026, b. Was age 18 at the end of 2026 and didn't have earned income that was more than half of the child's support, or c. Was a full-time student at least age 19 and under age 24 at the end of 2026 and didn't have earned income that was more than half of the child's support."
+        },
+        {
+          "source": "rp-2025-32",
+          "section": "§4.02",
+          "page": 12,
+          "quote": "For taxable years beginning in 2026, the amount in § 1(g)(4)(A)(ii)(I), which is used to reduce the net unearned income reported on the child's return that is subject to the \"kiddie tax,\" is $1,350."
+        }
+      ]
+    },
+    {
+      "fact": "/maximumTaxableInterestIncomeBeforeScheduleB",
+      "file": "interest.xml",
+      "values": [
+        "Dollar:1500"
+      ],
+      "cite": [
+        {
+          "source": "f1040sb-dft",
+          "section": "Part III",
+          "page": 2,
+          "quote": "You must complete this part if you (a) had over $1,500 of taxable interest or ordinary dividends"
+        }
+      ]
     }
   ],
   "pendingReview": [

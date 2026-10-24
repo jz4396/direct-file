@@ -63,7 +63,7 @@ export function ComplexFormControl({
           <>
             {showError && <QuietErrorMessage id={errorId}>{errorMessage}</QuietErrorMessage>}
 
-            <Label htmlFor={labelFor ? labelFor : `${path}`}>
+            <Label htmlFor={labelFor ?? controlId}>
               <Translation i18nKey={`fields.${path}.name`} collectionId={null} />
               {` `}
               {required && <RequiredMarker />}

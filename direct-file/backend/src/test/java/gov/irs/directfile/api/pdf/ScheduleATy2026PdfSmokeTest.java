@@ -41,6 +41,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ScheduleATy2026PdfSmokeTest {
 
     static byte[] generate(Map<String, String> extraFactsJson) throws Exception {
+        return generate(extraFactsJson, false);
+    }
+
+    /** The public print path only, with no field-map fill: refused returns throw. */
+    static byte[] generatePublicPrint(Map<String, String> extraFactsJson) throws Exception {
+        return generate(extraFactsJson, true);
+    }
+
+    private static byte[] generate(Map<String, String> extraFactsJson, boolean publicPrintOnly) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         GenericApplicationContext ctx = new GenericApplicationContext();
         ctx.refresh();
@@ -71,9 +80,13 @@ class ScheduleATy2026PdfSmokeTest {
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026); // configured-pdfs bucket; the IRS1040 en template itself is the 2026 draft
         taxReturn.setFactsWithoutDirtyingEntity(facts);
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
-            return in.readAllBytes();
+        if (publicPrintOnly) {
+            try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
+                return in.readAllBytes();
+            }
         }
+        // #89: a Schedule C return (Schedule SE tests) is refused by the public path; its other forms are still filled.
+        return PrintRefusingKnockoutsTest.printForFieldMaps(pdfService, taxReturn, factGraphService.getGraph(facts));
     }
 
     static String bool(boolean b) {

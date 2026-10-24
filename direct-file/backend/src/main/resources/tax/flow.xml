@@ -139,6 +139,11 @@
           <Dependency module="cdcc" path="/flowKnockoutHouseholdEmployee" />
           <Dependency module="householdEmployment" path="/flowKnockoutScheduleH" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
+          <Dependency module="form8995" path="/flowKnockoutQbiAboveThreshold" />
+          <Dependency module="form8995" path="/flowKnockoutQbiPriorYearCarryforward" />
+          <Dependency module="form8995" path="/flowKnockoutQbiCooperativePatron" />
+          <Dependency module="form8995" path="/flowKnockoutQbiMixedParticipation" />
+          <Dependency module="form8995" path="/flowKnockoutForm8995WithoutTy2026Template" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleAUnsupported" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleACharitableLimit" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleAOverallLimit" />
@@ -153,12 +158,15 @@
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCWithoutTy2026Template" />
+          <Dependency module="taxCalculations" path="/flowKnockoutSchedule3AWithoutTy2026Template" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleESubstantialServices" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEEitc" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleETradeOrBusinessQbi" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanUsedVehicle" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanBusinessUse" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanLease" />

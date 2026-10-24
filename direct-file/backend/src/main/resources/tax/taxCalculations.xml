@@ -144,16 +144,55 @@
     </Fact>
     <Fact path="/qualifiedBusinessIncomeDeduction">
       <Name>Qualified business income deduction</Name>
-      <Description>Qualified business income deductions for line 13 of Form 1040</Description>
+      <Description>#87: Form 1040 (2026) draft (Created 8/19/26), https://www.irs.gov/pub/irs-dft/f1040--dft.pdf
+        PDF p.
+        3, line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A" (line 13a is
+        Schedule 1-A line
+        44). 26 U.S.C. 199A(a) (https://www.law.cornell.edu/uscode/text/26/199A): "there shall be
+        allowed as a deduction
+        for any taxable year an amount equal to the lesser of" the combined qualified business
+        income amount or 20
+        percent of taxable income less net capital gain; it is not elective. Form 8995 line 17
+        (form8995 /form8995Line17:
+        "Qualified business income deduction. Enter the greater of line 15 or line 16. Also
+        enter this amount on the
+        applicable line of your return.") when the return has Schedule C qualified business
+        income; $0 otherwise. Every
+        source of 199A income that Form 8995 here does not compute stays a stop with
+        BlockSubmissionOnTrue: 1099-DIV box
+        5 (dividends /flowKnockoutSection199ADividends), a Schedule E
+        trade-or-business rental (scheduleE
+        /flowKnockoutScheduleETradeOrBusinessQbi), K-1 / PTP income (scheduleE
+        /flowKnockoutScheduleEPartII), and the
+        Form 8995-A and carryforward cases (form8995 /flowKnockoutQbi*).</Description>
       <Derived>
-        <Dollar>0</Dollar>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="form8995" path="/form8995HasQbi" />
+            </When>
+            <Then>
+              <Dependency module="form8995" path="/form8995Line17" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
     <Fact path="/totalDeductions">
       <Name>Total deductions</Name>
       <Description>Total deductions as reported on line 14 of Form 1040. #50: 2026 draft 1040 line 14 adds line 13a
         (Schedule 1-A line 44). #45: also line 12f (§170(p) non-itemizer charitable deduction); line 14 "Add lines 12e,
-        12f, 13a, and 13b".</Description>
+        12f, 13a, and 13b". #185: line 13b (/qualifiedBusinessIncomeDeduction) is now part of the sum, per the
+        same 2026
+        draft Form 1040 line 14 text.</Description>
       <Export mef="true" />
       <Derived>
         <Round>
@@ -161,6 +200,7 @@
             <Dependency path="/standardOrItemizedDeductions" />
             <Dependency module="charitableNonItemizer" path="/nonItemizerCharitableDeduction" />
             <Dependency module="schedule1A" path="/schedule1ALine44" />
+            <Dependency path="/qualifiedBusinessIncomeDeduction" />
           </Add>
         </Round>
       </Derived>

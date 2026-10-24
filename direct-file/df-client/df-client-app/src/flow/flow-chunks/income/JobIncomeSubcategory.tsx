@@ -261,31 +261,37 @@ export const JobIncomeSubcategory = (
             batches={[`data-import-w2`]}
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/social-security-wages-accordion'
             condition={`/anyFilerExceedsMaxOasdiWages`}
             batches={[`data-import-w2`]}
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/form-8959-unsupported-accordion'
             condition='/flowKnockoutForm8959Unsupported'
             batches={[`data-import-w2`]}
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/allocated-tips-primary-filer-accordion'
             condition='/formW2WithAllocatedTips'
             batches={[`data-import-w2`]}
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/w2-nonqualified-plan-ko-accordion'
             condition='/flowKnockoutNonQualifiedPlans'
             batches={[`data-import-w2`]}
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/third-party-sick-pay-accordion'
             condition='/flowKnockoutThirdPartySickPay'
             batches={[`data-import-w2`]}
           />
           <DFAccordion
+            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/statutory-employee-accordion'
             condition='/flowKnockoutStatutoryEmployee'
             batches={[`data-import-w2`]}

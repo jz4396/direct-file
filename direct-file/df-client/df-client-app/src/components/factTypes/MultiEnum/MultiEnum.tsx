@@ -99,7 +99,7 @@ const MultiEnum = forwardRef<HTMLInputElement, MultiEnumProps>(
         {commonOptionValues.map(({ value, translationKey, maybeCustomTranslationKey }) => (
           <Checkbox
             key={`${path}/${value}`}
-            id={`${path}/${value}`}
+            id={`${concretePath}/${value}`}
             label={<Translation i18nKey={[maybeCustomTranslationKey, translationKey]} collectionId={collectionId} />}
             name={path}
             value={value}

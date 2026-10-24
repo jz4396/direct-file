@@ -95,11 +95,13 @@ const business = (id: string, filer: string, profit: number) => ({
   [`/scheduleCBusinesses/#${id}/businessName`]: createStringWrapper(`Gig Work ${id.slice(-1)}`),
   [`/scheduleCBusinesses/#${id}/writableGrossReceipts`]: createDollarWrapper(`${profit}`),
   [`/scheduleCBusinesses/#${id}/writableTotalExpenses`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${id}/materiallyParticipates`]: createBooleanWrapper(true),
 });
 
 const scheduleC = (...b: { id: string; filer: string; profit: number }[]) => ({
   '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-  '/wantsQbiDeduction': createBooleanWrapper(false),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
   '/scheduleCBusinesses': createCollectionWrapper(b.map((x) => x.id)),
   ...Object.assign({}, ...b.map((x) => business(x.id, x.filer, x.profit))),
   '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
@@ -111,7 +113,7 @@ const dollars = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], path: strin
   return r.get.toString();
 };
 
-/** The Schedule C stops that could apply here: none does (QBI not requested; no EITC or CDCC; MAGI under 1411(b)). */
+/** The Schedule C stops that could apply here: none does (Form 8995 computes QBI; no EITC or CDCC; MAGI under 1411(b)). */
 const scheduleCKnockouts = [
   `/flowKnockoutScheduleCEarnedIncomeCredits`,
   `/flowKnockoutScheduleCQbi`,

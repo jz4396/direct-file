@@ -69,7 +69,20 @@ class ScheduleSETy2026PdfSmokeTest {
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableGrossReceipts", dollar(profit));
         m.put("/scheduleCBusinesses/#" + BIZ + "/writableTotalExpenses", dollar("0.00"));
         m.put("/scheduleCBusinessesIsDone", bool(true));
+        qbiAnswers(m, BIZ);
+        Schedules123Ty2026PdfSmokeTest.standardDeduction(m);
         return Ty2026PdfPackageTest.syntheticFiler(m);
+    }
+
+    /**
+     * The Form 8995 questions for one Schedule C business: the filer materially participates, has no prior-year
+     * qualified business loss carryforward and is not a cooperative patron (26 U.S.C. 199A(c)(2), 199A(g)).
+     */
+    static Map<String, String> qbiAnswers(Map<String, String> m, String biz) {
+        m.put("/scheduleCBusinesses/#" + biz + "/materiallyParticipates", bool(true));
+        m.put("/qbiHasPriorYearLossCarryforward", bool(false));
+        m.put("/qbiIsCooperativePatron", bool(false));
+        return m;
     }
 
     /** Value of the one field on these pages whose fully qualified name ends with {@code suffix}. */

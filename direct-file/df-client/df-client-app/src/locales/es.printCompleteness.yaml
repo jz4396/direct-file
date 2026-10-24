@@ -1,0 +1,28 @@
+# Schedule C and Schedule 3-A without a TY2026 template (#89). Overlay merged by locales/featureLocales.ts.
+headings:
+  /heading/knockout/schedule-c-without-ty2026-template:
+    Esta herramienta aún no puede preparar ni imprimir una declaración con ingresos de trabajo por cuenta propia,
+    esporádico o independiente
+  /heading/knockout/schedule-3a-without-ty2026-template:
+    Esta herramienta aún no puede preparar ni imprimir una declaración que reclame el Crédito tributario por ingreso del
+    trabajo o la parte reembolsable del Crédito tributario por hijos
+info:
+  /info/knockout/schedule-c-without-ty2026-template:
+    alertText:
+      body:
+        - p:
+            Los ingresos de un negocio, de trabajos esporádicos o de trabajo independiente se declaran en el Anexo C,
+            que debe incluirse con su declaración. Esta herramienta aún no puede producir el Anexo C de 2026.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file
+  /info/knockout/schedule-3a-without-ty2026-template:
+    alertText:
+      body:
+        - p:
+            Para 2026, una declaración que reclame el Crédito tributario por ingreso del trabajo o la parte reembolsable
+            del Crédito tributario por hijos debe incluir el nuevo Anexo 3-A. Esta herramienta aún no puede producir el
+            Anexo 3-A.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file

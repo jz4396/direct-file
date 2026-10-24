@@ -7,20 +7,32 @@ subsubcategories:
 headings:
   /heading/income/schedule-c: Ingresos de trabajo por cuenta propia
   /heading/income/schedule-c/intro: ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en {{/taxYear}}?
-  /heading/income/schedule-c/qbi: ¿Desea reclamar la deducción por ingreso calificado de negocios?
+  /heading/income/schedule-c/qbi-carryforward: ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
+  /heading/income/schedule-c/qbi-cooperative: ¿Es usted cliente de una cooperativa agrícola u hortícola?
+  /heading/income/schedule-c/material-participation: ¿Participó materialmente en este negocio?
   /heading/income/schedule-c/loop-intro: Agregue cada negocio o actividad esporádica
   /heading/income/schedule-c/business-basics: Infórmenos sobre este negocio
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
-  /heading/knockout/schedule-c-qbi: Esta herramienta todavía no admite la deducción por ingreso calificado de negocios
+  /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
 info:
   /info/income/schedule-c/intro:
     body: >-
       Esto incluye los ingresos de un negocio por cuenta propia, trabajos esporádicos o trabajo independiente que
       se declaran en el Anexo C.
-  /info/income/schedule-c/qbi:
+  /info/income/schedule-c/qbi-carryforward:
     body: >-
-      La deducción por ingreso calificado de negocios (sección 199A del Código de Impuestos Internos) todavía no
-      está disponible. Si desea reclamarla, no puede usar esta herramienta para esta declaración.
+      Usamos los ingresos de su negocio para calcular la deducción por ingreso calificado de negocios (Formulario
+      8995). Conteste que sí si su Formulario 8995 u 8995-A del año anterior mostró una pérdida de negocio calificada
+      que se traslada o una pérdida que se traslada de dividendos calificados de REIT y de sociedades que cotizan en
+      bolsa.
+  /info/income/schedule-c/qbi-cooperative:
+    body: >-
+      Conteste que sí si vende productos a una cooperativa agrícola o de jardinería, o compra suministros por medio de
+      ella, y recibe de ella dividendos de patrocinio u otros pagos calificados.
+  /info/income/schedule-c/material-participation:
+    body: >-
+      Usted participa materialmente si trabaja en el negocio de forma regular, continua y considerable. Por ejemplo,
+      trabajó más de 500 horas en él este año o hizo casi todo el trabajo.
   /info/income/schedule-c/loop-intro:
     body: >-
       Agregue una entrada por cada negocio o actividad esporádica. Calcularemos la ganancia neta y el impuesto sobre
@@ -33,17 +45,27 @@ info:
     alertText:
       body:
         - p: >-
-            Esta herramienta todavía no calcula la deducción por ingreso calificado de negocios. Necesitará otra
-            manera de presentar la declaración si desea reclamarla.
+            Esta herramienta calcula la deducción por ingreso calificado de negocios solo con el Formulario 8995
+            simplificado. No acepta una pérdida que se traslada de un año anterior, pagos de cooperativas, ingreso
+            tributable por encima del límite del Formulario 8995, ni algunos negocios en los que participa
+            materialmente y otros en los que no. Tendrá que usar otra manera de presentar esta declaración.
 fields:
   /hadSelfEmploymentIncome:
     boolean:
       "yes": Sí, tuve ingresos de trabajo por cuenta propia, esporádico o independiente
       "no": No, no tuve ingresos de trabajo por cuenta propia
-  /wantsQbiDeduction:
+  /qbiHasPriorYearLossCarryforward:
     boolean:
-      "yes": Sí, deseo reclamar la deducción por ingreso calificado de negocios
-      "no": No, no necesito la deducción por ingreso calificado de negocios
+      "yes": Sí, tengo una pérdida que se traslada
+      "no": "No"
+  /qbiIsCooperativePatron:
+    boolean:
+      "yes": Sí, soy cliente de una cooperativa
+      "no": "No"
+  /scheduleCBusinesses/*/materiallyParticipates:
+    boolean:
+      "yes": Sí, participé materialmente
+      "no": No, no participé materialmente
   /scheduleCBusinesses:
     controls:
       add: Agregar un negocio
@@ -82,7 +104,9 @@ checklist:
 dataviews:
   /flow/income/schedule-c:
     /hadSelfEmploymentIncome: ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en {{/taxYear}}?
-    /wantsQbiDeduction: ¿Desea reclamar la deducción por ingreso calificado de negocios?
+    /qbiHasPriorYearLossCarryforward: ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
+    /qbiIsCooperativePatron: ¿Es usted cliente de una cooperativa agrícola u hortícola?
+    /scheduleCBusinesses/*/materiallyParticipates: ¿Participó materialmente en este negocio?
     /scheduleCBusinesses/*/filer/fullName: ¿De quién es el negocio?
     /scheduleCBusinesses/*/businessName: Nombre del negocio o actividad esporádica
     /scheduleCBusinesses/*/writableGrossReceipts: Ingresos brutos o ventas

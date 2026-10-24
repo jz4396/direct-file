@@ -54,11 +54,13 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     const { factGraph } = setupFactGraph({
       ...baseSingle,
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
       '/scheduleCBusinesses': createCollectionWrapper([businessId]),
       [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Gig Work`),
       [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`10000`),
       [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
+      [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     });
 
@@ -75,11 +77,13 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     const { factGraph } = setupFactGraph({
       ...baseSingle,
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
       '/scheduleCBusinesses': createCollectionWrapper([businessId]),
       [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Tiny Gig`),
       [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`500`),
       [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`200`),
+      [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     });
     // net 300 → NESE round(277.05)=277 < 400
@@ -93,26 +97,20 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     const { factGraph } = setupFactGraph({
       ...baseSingle,
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
       '/scheduleCBusinesses': createCollectionWrapper([businessId]),
       [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Loss Biz`),
       [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`1000`),
       [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`1500`),
+      [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     });
     expect(factGraph.get(`/scheduleCNetProfitOrLoss` as ConcretePath).get.toString()).toBe(`-500.00`);
     expect(factGraph.get(`/selfEmploymentTax` as ConcretePath).get.toString()).toBe(`0.00`);
   });
 
-  it(`QBI request with SE income knockouts (explicit non-support)`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutScheduleCQbi`];
-    const { factGraph } = setupFactGraph({
-      ...baseSingle,
-      '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(true),
-    });
-    expect(factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath).get).toBe(true);
-  });
+  // #87: Form 8995 QBI deduction scenarios are in form8995.test.ts.
 
   it(`W-2-only: no Schedule C → zero SE tax`, ({ task }) => {
     task.meta.testedFactPaths = [`/scheduleCNetProfitOrLoss`, `/selfEmploymentTax`, `/deductibleSelfEmploymentTax`];
@@ -137,11 +135,13 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     const { factGraph } = setupFactGraph({
       ...completeBaseNoW2,
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
       '/scheduleCBusinesses': createCollectionWrapper([businessId]),
       [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Consulting`),
       [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`70000`),
       [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`10000`),
+      [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     });
     const get = (p: string) => factGraph.get(p as ConcretePath);
@@ -181,11 +181,13 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
       '/eitcQcOfAnother': createBooleanWrapper(false),
       '/eitcHadImproperClaims': createBooleanWrapper(false),
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
       '/scheduleCBusinesses': createCollectionWrapper([businessId]),
       [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Gig Work`),
       [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`10000`),
       [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
+      [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     });
     const eitcQualified = factGraph.get(`/eitcQualified` as ConcretePath);
@@ -215,12 +217,14 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
         ...baseSingle,
         '/filingStatus': createEnumWrapper(`marriedFilingJointly`, `/filingStatusOptions`),
         '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-        '/wantsQbiDeduction': createBooleanWrapper(false),
+        '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+        '/qbiIsCooperativePatron': createBooleanWrapper(false),
         '/scheduleCBusinesses': createCollectionWrapper([businessId]),
         [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(owner),
         [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Biz`),
         [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`5000`),
         [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
         '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
       }).factGraph;
     expect(mk(spouseId).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(true);
@@ -242,12 +246,14 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
         [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(medicareWages),
         [`/formW2s/#${w2Id}/writableMedicareWages`]: createDollarWrapper(medicareWages),
         '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-        '/wantsQbiDeduction': createBooleanWrapper(false),
+        '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+        '/qbiIsCooperativePatron': createBooleanWrapper(false),
         '/scheduleCBusinesses': createCollectionWrapper([businessId]),
         [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
         [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Consulting`),
         [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(grossReceipts),
         [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
         '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
       }).factGraph;
 
@@ -296,12 +302,14 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
         [`/formW2s/#${w2Id}/writableOasdiWages`]: createDollarWrapper(oasdiWages),
         ...(oasdiTips === null ? {} : { [`/formW2s/#${w2Id}/writableOasdiTips`]: createDollarWrapper(oasdiTips) }),
         '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-        '/wantsQbiDeduction': createBooleanWrapper(false),
+        '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+        '/qbiIsCooperativePatron': createBooleanWrapper(false),
         '/scheduleCBusinesses': createCollectionWrapper([businessId]),
         [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
         [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Consulting`),
         [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(grossReceipts),
         [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
         '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
       }).factGraph;
 

@@ -121,9 +121,68 @@ class PdfKnockoutRefusalTest {
                     SubmissionBlockingFactsResponseStatusException.class,
                     () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            // The EIC (Form 1040 line 27a) also needs Schedule 3-A (#89).
             assertEquals(
-                    List.of(SCHEDULE_EIC_KNOCKOUT), e.getBody().getProperties().get("blockingFacts"));
+                    List.of(SCHEDULE_EIC_KNOCKOUT, PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT),
+                    e.getBody().getProperties().get("blockingFacts"));
         }
+    }
+
+    /**
+     * #89: the print path refuses with exactly {@code knockout}, in English and Spanish; with that one entry left out
+     * of the refusal check the same return prints, so taking it out of FACT_PATHS would print without the form.
+     */
+    static void assertRefusedOnlyBy(Map<String, FactTypeWithItem> facts, String knockout) throws Exception {
+        assertRefusedOnlyBy(facts, List.of(knockout));
+    }
+
+    /** {@link #assertRefusedOnlyBy(Map, String)} for a return refused by exactly {@code knockouts}. */
+    static void assertRefusedOnlyBy(Map<String, FactTypeWithItem> facts, List<String> knockouts) throws Exception {
+        assertTrue(
+                Boolean.TRUE.equals(factGraphService
+                        .getGraph(facts)
+                        .get("/flowIsKnockedOut")
+                        .get()),
+                "/flowIsKnockedOut");
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !knockouts.contains(p))
+                .toList();
+        for (String language : List.of("en", "es")) {
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
+                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            assertEquals(knockouts, e.getBody().getProperties().get("blockingFacts"));
+            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false, without);
+                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+                assertTrue(doc.getNumberOfPages() > 0, language + " would print without " + knockouts);
+            }
+        }
+    }
+
+    /**
+     * Instructions for Schedule C (2025), PDF p. 2: "Use Schedule C (Form 1040) to report income or (loss) from a
+     * business you operated or a profession you practiced as a sole proprietor." No Schedule C template is configured,
+     * so a return with a business is refused. #87: the same return attaches Form 8995 (Instructions for Form 1040
+     * (2025) draft, PDF p. 35, "Attach whichever form you use (Form 8995 or 8995-A) to your return."), which has no
+     * TY2026 template either, so the Form 8995 knockout refuses it too.
+     */
+    @Test
+    void scheduleCBusinessIsRefused() throws Exception {
+        assertRefusedOnlyBy(
+                PrintRefusingKnockoutsTest.scheduleCOnly(),
+                List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT, PrintRefusingKnockoutsTest.SCHEDULE_C_KNOCKOUT));
+    }
+
+    /**
+     * 2026 draft Form 1040, lines 32a-32c: "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A".
+     * An ACTC (line 28, 26 U.S.C. 24(d)) with no EIC is refused, since Schedule 3-A has no template and line 32b no
+     * fact.
+     */
+    @Test
+    void additionalChildTaxCreditWithoutEicIsRefused() throws Exception {
+        assertRefusedOnlyBy(
+                PrintRefusingKnockoutsTest.schedule3AOnly(), PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT);
     }
 
     @Test

@@ -59,7 +59,9 @@ public class AopConfiguration {
         Method method = signature.getMethod();
         Auditable auditableAnnotation = method.getAnnotation(Auditable.class);
 
-        auditEventContextHolder.addValueToEventDetailMap(AuditLogElement.DetailElement.MESSAGE, ex.getMessage());
+        // Exception text can carry return data, so the audit detail records only the exception class.
+        auditEventContextHolder.addValueToEventDetailMap(
+                AuditLogElement.DetailElement.MESSAGE, ex.getClass().getName());
         auditService.addAuditPropertiesToMDC(Event.builder()
                 .eventId(auditableAnnotation.event())
                 .eventStatus(EventStatus.FAILURE)

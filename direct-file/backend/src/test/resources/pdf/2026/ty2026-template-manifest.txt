@@ -19,8 +19,6 @@ edaed659fd890b23be223d30ac9a373d52cf403294a6fd4c735fd23387d8b5e6  pdf/2024/IRS10
 e39ec633a0d5c638b207f8df1facb9b370ccab03704eeb18a7f8585cb5f26de2  pdf/2024/IRS1040S3/es/f1040s3s.pdf  pages=1  mapped=10  unmapped=28
 14c104ac31ef451e8270854f9987575db86378078611203212d5dfe87603ab40  pdf/2024/IRS1040S8812/es/f1040s8s_accessible.pdf  pages=2  mapped=36  unmapped=5
 3280432b364da6340edb15f9bbc588ce2f59ffc58e9a49160f2264f468d6f726  pdf/2024/IRS1040SB/en/f1040sb_accessible.pdf  pages=1  mapped=67  unmapped=5
-812d33baf1110220684ba14158ff12d7f7c85b264f0a736d4fc7f6d9fee82065  pdf/2024/IRS1040SR/en/f1040s-p.pdf  pages=3  mapped=121  unmapped=19
-65f310a044b50aba81d8415f343b7b1a8a93578723bdc9e819770b792176c40f  pdf/2024/IRS1040SR/es/f1040srs-p.pdf  pages=3  mapped=121  unmapped=19
 c4cd6bc9f764ed7292d482c7a15900ef6336ea86b3ece1dcd6cfe0de6a601133  pdf/2024/IRS2441_DUE_DILIGENCE_STATEMENT/en/irs2441_due_diligence_statement.pdf  pages=2  mapped=26  unmapped=0
 321ec0dfeeea34719e169ca6ea0a830fea75056299eb6c9de4d8cd798332c7fe  pdf/2024/IRS8862/en/f8862_accessible.pdf  pages=3  mapped=68  unmapped=41
 b0fe2d6f071f55b8a8d532331bf2d4a7448a3770820ce5dcfbc8d5dd4668a545  pdf/2024/IRS8862/es/f8862sp_accessible.pdf  pages=3  mapped=68  unmapped=41

@@ -34,6 +34,7 @@
         SE tax. Cite: 26
         U.S.C. § 1402; Schedule SE instructions.
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>400</Dollar>
       </Derived>
@@ -753,7 +754,10 @@
                   <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
                 </IsComplete>
                 <IsComplete>
-                  <Dependency module="scheduleC" path="/wantsQbiDeduction" />
+                  <Dependency module="form8995" path="/qbiHasPriorYearLossCarryforward" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency module="form8995" path="/qbiIsCooperativePatron" />
                 </IsComplete>
                 <Dependency module="scheduleC" path="/scheduleCBusinessesIsDone" />
                 <Not>

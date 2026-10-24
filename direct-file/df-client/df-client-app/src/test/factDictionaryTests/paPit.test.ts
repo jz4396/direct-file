@@ -224,21 +224,40 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
     const schC = {
       '/formW2s': createCollectionWrapper([]),
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-      '/wantsQbiDeduction': createBooleanWrapper(false),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
       '/scheduleCBusinesses': createCollectionWrapper([bizId]),
       [`/scheduleCBusinesses/#${bizId}/businessName`]: createStringWrapper(`Synthetic Business`),
       [`/scheduleCBusinesses/#${bizId}/writableGrossReceipts`]: createDollarWrapper(`10000`),
       [`/scheduleCBusinesses/#${bizId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
+      [`/scheduleCBusinesses/#${bizId}/materiallyParticipates`]: createBooleanWrapper(true),
       '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
     };
-    it(`non-PA (FL) filer: PA knockout false and it does not knock out the return`, ({ task }) => {
-      task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+    it(`non-PA (FL) filer: PA knockout false; only federal knockouts (Form 8995, #89 Schedule C) stop the return`, ({
+      task,
+    }) => {
+      task.meta.testedFactPaths = [
+        `/flowKnockoutPaUnsupportedIncome`,
+        `/flowKnockoutStateReturn`,
+        `/flowKnockoutForm8995WithoutTy2026Template`,
+        `/flowKnockoutScheduleCWithoutTy2026Template`,
+        `/flowIsKnockedOut`,
+      ];
       const g = build(singleFilerData, { ...schC, ...pa(`fl`) });
       expect(get(g, `/hasScheduleCBusinesses`).get).toBe(true);
       expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
       expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
       expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
-      expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+      // #87: Form 8995 computes the QBI deduction, so the federal QBI knockout is off too.
+      expect(get(g, `/flowKnockoutScheduleCQbi`).get).toBe(false);
+      // Instructions for Form 1040 (2025) draft, PDF p. 35: "Attach whichever form you use (Form 8995 or 8995-A) to
+      // your return." There is no TY2026 Form 8995 template or MeF mapping, so a return that must attach it is stopped.
+      expect(get(g, `/form8995Required`).get).toBe(true);
+      expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+      // #89: Schedule C has no template, so any Schedule C return is also refused for print (Instructions for
+      // Schedule C (2025), p. 2).
+      expect(get(g, `/flowKnockoutScheduleCWithoutTy2026Template`).get).toBe(true);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
     it(`PA filer, same income: PA knockout true and /flowIsKnockedOut true`, ({ task }) => {
       task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];

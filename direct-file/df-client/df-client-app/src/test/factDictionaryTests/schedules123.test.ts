@@ -31,11 +31,13 @@ const w2 = (wages: string, oasdi: string) => ({
 });
 const scheduleC = (gross: string, expenses: string) => ({
   '/hadSelfEmploymentIncome': createBooleanWrapper(true),
-  '/wantsQbiDeduction': createBooleanWrapper(false),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
   '/scheduleCBusinesses': createCollectionWrapper([bizId]),
   [`/scheduleCBusinesses/#${bizId}/businessName`]: createStringWrapper(`Synthetic Consulting`),
   [`/scheduleCBusinesses/#${bizId}/writableGrossReceipts`]: createDollarWrapper(gross),
   [`/scheduleCBusinesses/#${bizId}/writableTotalExpenses`]: createDollarWrapper(expenses),
+  [`/scheduleCBusinesses/#${bizId}/materiallyParticipates`]: createBooleanWrapper(true),
   '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
 });
 const interest = (amount: string) => ({
