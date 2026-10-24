@@ -1,7 +1,8 @@
-// Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT) and profile B
-// (Florida only). Every name, SSN, address, EIN and payer in this file is made up: SSNs use the 900-999 area (never
-// issued by SSA), with group numbers outside the ITIN ranges, so no fixture can match a real person. The expected
-// figures are hand-computed in goldenProfiles.test.ts.
+// Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
+// (Florida only) and profile C (PA to FL part-year resident with AMT and NIIT). Every name, SSN, address, EIN and payer
+// in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
+// ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
+// hand-computed in goldenProfiles.test.ts.
 import {
   createAddressWrapper,
   createBooleanWrapper,
@@ -27,12 +28,13 @@ import {
 export const GOLDEN_SSN_PATTERN = /^9\d{2}-?\d{2}-?\d{4}$/;
 
 /**
- * SSN-shaped test numbers a golden profile may use where the fact graph must read a TIN as an SSN (a profile that
- * claims the child tax credit or EITC: IRC §24(h)(7), §32(m)). A 9xx area is never an SSN to the fact graph
- * (Tin.isSSN), so such a profile can't use one. Only numbers already used as SSNs by the shared upstream fixtures in
- * src/test/testData.ts are allowed; goldenProfiles.test.ts checks that each still appears there.
+ * SSN-shaped test numbers a golden profile may use where the fact graph must read a TIN as an SSN (a 9xx area is
+ * never an SSN to the fact graph, Tin.isSSN). Each one has group number 00, which SSA never assigns:
+ * https://www.ssa.gov/employer/randomizationfaqs.html "SSN randomization will not assign group number 00 or serial
+ * number 0000. SSNs containing group number 00 or serial number 0000 will continue to be invalid." Each is also one
+ * the shared upstream fixtures in src/test/testData.ts already use; goldenProfiles.test.ts checks both.
  */
-export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`555-55-5555`, `111-11-1111`, `444-00-4444`];
+export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`444-00-4444`];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
 
@@ -74,7 +76,7 @@ const single = (p: Person, home: Home) => ({
   '/writableHasAdvancedPtc': createBooleanWrapper(false),
 });
 
-type W2 = {
+export type W2 = {
   id: string;
   employer: string;
   ein: [string, string];
@@ -195,6 +197,7 @@ export const profile7PaToFlPartYear = {
   '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
   '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
   '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+  '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
   ...w2s(
     riley.ssn,
     {
@@ -242,7 +245,8 @@ export const profileADividendsNiit = {
     box1: 210000,
     box2: 40000,
     box5: 210000,
-    box6: 3045,
+    // 1.45% x 210,000 = 3,045, plus the employer's 0.9% on wages over $200,000 (IRC §3102(f)(1)): 90.
+    box6: 3135,
   }),
   ...qualifiedDividends(`13500000-0000-4000-8000-000000000a02`, `Example Dividend Fund`, 20000, 15000),
 };
@@ -310,6 +314,71 @@ export const profileBFloridaStateWithholding = {
   }),
 };
 
+/** One Form 8949 box D (long-term, basis reported) sale. */
+export const form8949Sale = (id: string, acquired: string, sold: string, proceeds: number, basis: number) => ({
+  '/form8949Transactions': createCollectionWrapper([id]),
+  [`/form8949Transactions/#${id}/description`]: createStringWrapper(`100 sh Example Index Fund`),
+  [`/form8949Transactions/#${id}/dateAcquired`]: createDayWrapper(acquired),
+  [`/form8949Transactions/#${id}/dateSold`]: createDayWrapper(sold),
+  [`/form8949Transactions/#${id}/proceeds`]: createDollarWrapper(`${proceeds}`),
+  [`/form8949Transactions/#${id}/costBasis`]: createDollarWrapper(`${basis}`),
+  [`/form8949Transactions/#${id}/box`]: createEnumWrapper(`D`, `/form8949BoxOptions`),
+  [`/form8949Transactions/#${id}/holdingPeriod`]: createEnumWrapper(`longTerm`, `/form8949HoldingPeriodOptions`),
+  [`/form8949Transactions/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+  '/form8949TransactionsIsDone': createBooleanWrapper(true),
+});
+
+/**
+ * Profile C: single, moved from Pennsylvania to Florida on July 1, 2026 (PA part-year resident). A PA W-2 for the PA
+ * period and a FL W-2 for the FL period, plus a $350,000 long-term gain from a sale in the FL period: Form 6251 AMT
+ * inside the exemption phaseout (the 50% rate), Form 8960 NIIT on the gain, and a PA-40 that leaves the gain out
+ * (a nonresident is not taxed on gains from intangible property).
+ */
+const quinn: Person = { first: `Quinn`, last: `Example`, ssn: [`444`, `00`, `4444`], dob: `1979-09-12` };
+export const profileCPaW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000c01`,
+  employer: `Sample Manufacturing Co`,
+  ein: [`00`, `0000301`],
+  box1: 150000,
+  box2: 30000,
+  box5: 150000,
+  // 1.45% x 150,000; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
+  box6: 2175,
+  box16: 150000,
+  box17: 4700,
+  paPartYearState: `pa`,
+};
+export const profileCFlW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000c02`,
+  employer: `Example Coastal Services Inc`,
+  ein: [`00`, `0000302`],
+  box1: 100000,
+  box2: 20000,
+  box5: 100000,
+  // 1.45% x 100,000; no 0.9% (under $200,000 from this employer).
+  box6: 1450,
+  paPartYearState: `fl`,
+  residentPeriodWages: 0,
+};
+export const profileCSaleId = `13500000-0000-4000-8000-000000000c03`;
+export const profileCPaToFlAmtNiit = {
+  ...single(quinn, { street: `123 Example St`, city: `Tallahassee`, zip: `32301`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+  '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+  '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+  '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+  ...w2s(quinn.ssn, profileCPaW2, profileCFlW2),
+  ...form8949Sale(profileCSaleId, `2020-03-02`, `2026-09-15`, 450000, 100000),
+};
+
+/** Profile C negative-row inputs (each row in goldenProfiles.test.ts changes one thing). */
+export const profileCRows = {
+  w2s: (...forms: W2[]) => w2s(quinn.ssn, ...forms),
+  interest,
+  qualifiedDividends,
+  spouse: () => spouse(morgan),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -319,4 +388,5 @@ export const goldenProfiles = {
   profile5AmtAnd8959,
   profile7PaFullYear,
   profile7PaToFlPartYear,
+  profileCPaToFlAmtNiit,
 };

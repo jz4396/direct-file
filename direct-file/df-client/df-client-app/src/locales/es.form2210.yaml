@@ -1,0 +1,58 @@
+# Form 2210 Part II questions and the estimated tax penalty note (#92). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    estimated-tax-penalty: Multa por impuesto estimado
+dataviews:
+  /flow/your-taxes/amount:
+    /form2210WaiverRequested: ¿Quiere pedirle al IRS que le exima de toda o parte de una multa por impuesto estimado?
+    /form2210AnnualizedIncome: ¿Quiere calcular la multa con el método de pago a plazos de ingresos anualizados?
+    /form2210WithholdingOnActualDates: ¿Quiere tratar su retención como pagada en las fechas en que se retuvo?
+    /form2210FiledJointReturnPriorYear: "¿Presentó una declaración conjunta para {{/lastTaxYear}}?"
+headings:
+  /heading/your-taxes/amount/est-tax-penalty-waiver:
+    ¿Quiere pedirle al IRS que le exima de toda o parte de una multa por no pagar suficiente impuesto durante el año?
+  /heading/your-taxes/amount/est-tax-penalty-annualized:
+    ¿Variaron sus ingresos durante el año y quiere calcular la multa con el método de pago a plazos de ingresos
+    anualizados?
+  /heading/your-taxes/amount/est-tax-penalty-withholding-dates:
+    ¿Quiere calcular la multa tratando la retención del impuesto federal sobre los ingresos como pagada en las fechas en
+    que realmente se retuvo?
+  /heading/your-taxes/amount/est-tax-penalty-joint-prior-year:
+    "¿Presentó una declaración conjunta para {{/lastTaxYear}}?"
+  /heading/your-taxes/amount/est-tax-penalty-joint-prior-year-mfj:
+    "¿Usted y su cónyuge presentaron una declaración conjunta entre ustedes para {{/lastTaxYear}}?"
+  /heading/your-taxes/amount/est-tax-penalty-irs-will-bill: Es posible que deba una multa por impuesto estimado
+  /heading/knockout/form-2210: Esta herramienta todavía no admite el Formulario 2210
+info:
+  /info/your-taxes/amount/est-tax-penalty-waiver:
+    body:
+      - p:
+          El IRS puede eximir la multa si no pagó lo suficiente debido a un hecho fortuito, un desastre u otra
+          circunstancia fuera de lo común, o si se jubiló después de cumplir 62 años o quedó discapacitado en
+          {{/lastTaxYear}} o {{/taxYear}} y tuvo una causa razonable.
+  /info/your-taxes/amount/est-tax-penalty-annualized:
+    body:
+      - p:
+          Este método puede reducir o eliminar la multa si recibió la mayor parte de sus ingresos al final del año.
+          Conteste que no si no está seguro.
+  /info/your-taxes/amount/est-tax-penalty-withholding-dates:
+    body:
+      - p:
+          Normalmente, la retención se trata como pagada en partes iguales en cada fecha de vencimiento de pago.
+          Conteste que no si no está seguro.
+  /info/your-taxes/amount/est-tax-penalty-irs-will-bill:
+    body:
+      - p:
+          El impuesto de su declaración, menos su retención, es de $1,000 o más, así que es posible que deba una multa
+          por no pagar suficiente impuesto durante el año. No necesita calcularla. El IRS calculará cualquier multa y le
+          enviará una factura.
+      - p: Su declaración deja en blanco la línea de la multa por impuesto estimado.
+  /info/knockout/form-2210:
+    alertText:
+      body:
+        - p:
+            Según sus respuestas, debe presentar el Formulario 2210, Pago insuficiente del impuesto estimado por
+            individuos, con su declaración. Esta herramienta todavía no admite ese formulario.
+        - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
+      urls:
+        Link1: https://www.irs.gov/filing/individuals/how-to-file

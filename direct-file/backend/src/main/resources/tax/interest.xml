@@ -90,8 +90,10 @@
     <Fact path="/hasInterestOrCapitalGainForNiit">
       <Name>Has investment income subject to the NIIT check</Name>
       <Description>True when there is taxable interest or a positive net capital gain on Form 1040 line 7.
-        Both are net investment income under IRC §1411(c)(1)(A)(i) (interest) and (iii) (net gain from disposition
-        of property). #83: no longer a knockout input; the NIIT is computed on Form 8960 (form8960.xml).
+        Both are net
+        investment income under IRC §1411(c)(1)(A)(i) (interest) and (iii) (net gain from disposition
+        of property). #83:
+        no longer a knockout input; the NIIT is computed on Form 8960 (form8960.xml).
         https://www.law.cornell.edu/uscode/text/26/1411</Description>
       <Derived>
         <Any>
@@ -129,7 +131,8 @@
       <Name>Net investment income disqualifier for MFS</Name>
       <Description>Knockout screen condition (DeductionsSubcategory net-investment-*-ko) for one filing status. #83:
         true only when form8960 /flowKnockoutForm8960Unsupported is true (NIIT that Form 8960 here can't compute);
-        the 3.8% NIIT itself is computed on Form 8960 and Schedule 2 line 6.</Description>
+        the
+        3.8% NIIT itself is computed on Form 8960 and Schedule 2 line 6.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -157,7 +160,8 @@
       <Name>Net investment income disqualifier for MFJ or QSS</Name>
       <Description>Knockout screen condition (DeductionsSubcategory net-investment-*-ko) for one filing status. #83:
         true only when form8960 /flowKnockoutForm8960Unsupported is true (NIIT that Form 8960 here can't compute);
-        the 3.8% NIIT itself is computed on Form 8960 and Schedule 2 line 6.</Description>
+        the
+        3.8% NIIT itself is computed on Form 8960 and Schedule 2 line 6.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -188,7 +192,8 @@
       <Name>Net investment income disqualifier for or Single or HOH</Name>
       <Description>Knockout screen condition (DeductionsSubcategory net-investment-*-ko) for one filing status. #83:
         true only when form8960 /flowKnockoutForm8960Unsupported is true (NIIT that Form 8960 here can't compute);
-        the 3.8% NIIT itself is computed on Form 8960 and Schedule 2 line 6.</Description>
+        the
+        3.8% NIIT itself is computed on Form 8960 and Schedule 2 line 6.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -236,10 +241,14 @@
     <Fact path="/maximumTaxableInterestIncomeBeforeScheduleB">
       <Name>Maximum Taxable Interest Income Before Schedule B</Name>
       <Description>The amount of taxable interest, and separately of ordinary dividends, above which Schedule B
-        is required. Instructions for Schedule B (Form 1040) (2025) p. 1, General Instructions (same text in the
-        2026 draft, p. 1): "Use Schedule B (Form 1040) if any of the following applies. You had over $1,500 of
-        taxable interest or ordinary dividends." Schedule B (Form 1040) (2026 draft), notes under lines 4 and 6:
-        "If line 4 is over $1,500, you must complete Part III." / "If line 6 is over $1,500, you must complete
+        is
+        required. Instructions for Schedule B (Form 1040) (2025) p. 1, General Instructions (same text in the
+        2026 draft,
+        p. 1): "Use Schedule B (Form 1040) if any of the following applies. You had over $1,500 of
+        taxable interest or
+        ordinary dividends." Schedule B (Form 1040) (2026 draft), notes under lines 4 and 6:
+        "If line 4 is over $1,500,
+        you must complete Part III." / "If line 6 is over $1,500, you must complete
         Part III."</Description>
 
       <Derived>
@@ -686,15 +695,24 @@
     <Fact path="/earlyWithdrawalPenaltyTotal">
       <Name>Penalty on early withdrawal of savings (Schedule 1 line 18)</Name>
       <Description>
-        26 U.S.C. 62(a)(9) (https://www.law.cornell.edu/uscode/text/26/62#a_9) allows, above the line, "The deductions allowed by section 165 for losses incurred in any transaction
-        entered into for profit, though not connected with a trade or business, to the extent that such losses
-        include amounts forfeited to a bank, mutual savings bank, savings and loan association, building and loan
-        association, cooperative bank or homestead association as a penalty for premature withdrawal of funds from
-        a time savings account, certificate of deposit, or similar class of deposit." Schedule 1 (Form 1040) 2026 draft, line 18:
-        "Penalty on early withdrawal of savings". i1040 (2025) p. 95,
-        Line 18: "The Form 1099-INT or Form 1099-OID you received will show the amount of any penalty you were
-        charged." The deduction is the sum of 1099-INT box 2 across all interest reports. There is no dollar
-        threshold and no cap at the interest reported in box 1: 62(a)(9) limits the deduction only to the amount
+        26 U.S.C. 62(a)(9) (https://www.law.cornell.edu/uscode/text/26/62#a_9) allows, above the line, "The
+        deductions allowed by section 165 for losses incurred in any transaction
+        entered into for profit, though not
+        connected with a trade or business, to the extent that such losses
+        include amounts forfeited to a bank, mutual
+        savings bank, savings and loan association, building and loan
+        association, cooperative bank or homestead
+        association as a penalty for premature withdrawal of funds from
+        a time savings account, certificate of deposit,
+        or similar class of deposit." Schedule 1 (Form 1040) 2026 draft, line 18:
+        "Penalty on early withdrawal of
+        savings". i1040 (2025) p. 95,
+        Line 18: "The Form 1099-INT or Form 1099-OID you received will show the amount of
+        any penalty you were
+        charged." The deduction is the sum of 1099-INT box 2 across all interest reports. There is
+        no dollar
+        threshold and no cap at the interest reported in box 1: 62(a)(9) limits the deduction only to the
+        amount
         forfeited. Form 1099-OID is not an input in the app (listed under unsupported income sources), so box 3 of
         a 1099-OID never reaches this line.
       </Description>
@@ -961,21 +979,38 @@
     -->
     <Fact path="/interestReports/*/receivedAsNominee">
       <Name>1099-INT includes interest received as a nominee</Name>
-      <Description>Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf (SHA-256 b92f31ece57a82ea576ac96507fe5df637dbda7489a80eb28aaab88e7c87b287) p. 1, General Instructions: "Use Schedule B (Form 1040) if any of the following applies." The 2026 draft https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) has the same text on PDF p. 2 (printed p. 1) and p. 3. p. 1, General Instructions: "You received interest or ordinary dividends as a nominee." p. 1, Line 1, Nominees: "If you received a Form 1099-INT that includes interest you received as a nominee (that is, in your name, but the interest actually belongs to someone else), report the total on line 1. ... Below this subtotal, enter “Nominee Distribution” and show the total interest you received as a nominee. Subtract this amount from the subtotal and enter the result on line 2."</Description>
+      <Description>Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf (SHA-256
+        b92f31ece57a82ea576ac96507fe5df637dbda7489a80eb28aaab88e7c87b287) p. 1, General Instructions: "Use Schedule B
+        (Form 1040) if any of the following applies." The 2026 draft https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf
+        (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) has the same text on PDF p. 2
+        (printed p. 1) and p. 3. p. 1, General Instructions: "You received interest or ordinary dividends as a nominee."
+        p. 1, Line 1, Nominees: "If you received a Form 1099-INT that includes interest you received as a nominee (that
+        is, in your name, but the interest actually belongs to someone else), report the total on line 1. ... Below this
+        subtotal, enter “Nominee Distribution” and show the total interest you received as a nominee. Subtract this
+        amount from the subtotal and enter the result on line 2."</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
     <Fact path="/interestReports/*/paidAccruedInterest">
       <Name>1099-INT includes accrued interest paid to the seller of a bond</Name>
-      <Description>Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf (SHA-256 b92f31ece57a82ea576ac96507fe5df637dbda7489a80eb28aaab88e7c87b287) p. 1, General Instructions: "Use Schedule B (Form 1040) if any of the following applies." The 2026 draft https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) has the same text on PDF p. 2 (printed p. 1) and p. 3. p. 1, General Instructions: "You have accrued interest from a bond." p. 2, Line 1, Accrued interest: "When you buy bonds between interest payment dates and pay accrued interest to the seller, this interest is taxable to the seller. If you received a Form 1099 for interest as a purchaser of a bond with accrued interest, follow the rules earlier under Nominees to see how to report the accrued interest. But identify the amount to be subtracted as “Accrued Interest.”"</Description>
+      <Description>Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf (SHA-256
+        b92f31ece57a82ea576ac96507fe5df637dbda7489a80eb28aaab88e7c87b287) p. 1, General Instructions: "Use Schedule B
+        (Form 1040) if any of the following applies." The 2026 draft https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf
+        (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) has the same text on PDF p. 2
+        (printed p. 1) and p. 3. p. 1, General Instructions: "You have accrued interest from a bond." p. 2, Line 1,
+        Accrued interest: "When you buy bonds between interest payment dates and pay accrued interest to the seller,
+        this interest is taxable to the seller. If you received a Form 1099 for interest as a purchaser of a bond with
+        accrued interest, follow the rules earlier under Nominees to see how to report the accrued interest. But
+        identify the amount to be subtracted as “Accrued Interest.”"</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
     <Fact path="/interestReports/*/hasInterestOnGovernmentBonds">
       <Name>1099-INT has box 3 interest</Name>
-      <Description>Box 3 (interest on U.S. savings bonds and Treasury obligations) is more than $0. Asks /interestReports/*/savingsBondInterestPreviouslyReported.</Description>
+      <Description>Box 3 (interest on U.S. savings bonds and Treasury obligations) is more than $0. Asks
+        /interestReports/*/savingsBondInterestPreviouslyReported.</Description>
       <Derived>
         <GreaterThan>
           <Left>
@@ -1003,7 +1038,8 @@
     </Fact>
     <Fact path="/interestReports/*/askSavingsBondInterestPreviouslyReported">
       <Name>Ask the savings bond interest question</Name>
-      <Description>Flow only: asked when box 3 is more than $0 after a No to /interestReports/*/paidAccruedInterest. A Yes already stops the return.</Description>
+      <Description>Flow only: asked when box 3 is more than $0 after a No to /interestReports/*/paidAccruedInterest. A
+        Yes already stops the return.</Description>
       <Derived>
         <All>
           <Dependency path="../askPaidAccruedInterest" />
@@ -1019,14 +1055,24 @@
     </Fact>
     <Fact path="/interestReports/*/savingsBondInterestPreviouslyReported">
       <Name>1099-INT box 3 includes savings bond interest already reported or accrued before the bond was received</Name>
-      <Description>Pub. 550 (2025) https://www.irs.gov/pub/irs-pdf/p550.pdf (SHA-256 83552968a07e63d1c81e5b4f311fc0e54728b5ff9654b5a0d2ba6292c5574317) p. 25, U.S. savings bond interest previously reported: "If you received a Form 1099-INT for U.S. savings bond interest, the form may show interest you do not have to report. ... On Schedule B (Form 1040), Part I, line 1, report all the interest shown on your Form 1099-INT. Then follow these steps. 1. Several rows above Schedule B (Form 1040), Part I, line 2, enter a subtotal of all interest listed on Schedule B (Form 1040), Part I, line 1. 2. Below the subtotal, enter “U.S. Savings Bond Interest Previously Reported” and enter amounts previously reported or interest accrued before you received the bond. 3. Subtract these amounts from the subtotal and enter the result on Schedule B (Form 1040), Part I, line 2." Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf p. 1, Line 1: "Include interest from series EE, H, HH, and I U.S. savings bonds."</Description>
+      <Description>Pub. 550 (2025) https://www.irs.gov/pub/irs-pdf/p550.pdf (SHA-256
+        83552968a07e63d1c81e5b4f311fc0e54728b5ff9654b5a0d2ba6292c5574317) p. 25, U.S. savings bond interest previously
+        reported: "If you received a Form 1099-INT for U.S. savings bond interest, the form may show interest you do not
+        have to report. ... On Schedule B (Form 1040), Part I, line 1, report all the interest shown on your Form
+        1099-INT. Then follow these steps. 1. Several rows above Schedule B (Form 1040), Part I, line 2, enter a
+        subtotal of all interest listed on Schedule B (Form 1040), Part I, line 1. 2. Below the subtotal, enter “U.S.
+        Savings Bond Interest Previously Reported” and enter amounts previously reported or interest accrued before you
+        received the bond. 3. Subtract these amounts from the subtotal and enter the result on Schedule B (Form 1040),
+        Part I, line 2." Instructions for Schedule B (Form 1040) (2025) https://www.irs.gov/pub/irs-pdf/i1040sb.pdf p.
+        1, Line 1: "Include interest from series EE, H, HH, and I U.S. savings bonds."</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
     <Fact path="/interestReports/*/hasScheduleBSubtraction">
       <Name>1099-INT needs a Schedule B Part I subtraction</Name>
-      <Description>Yes to /interestReports/*/receivedAsNominee, /interestReports/*/paidAccruedInterest or /interestReports/*/savingsBondInterestPreviouslyReported. An unanswered question is not a yes.</Description>
+      <Description>Yes to /interestReports/*/receivedAsNominee, /interestReports/*/paidAccruedInterest or
+        /interestReports/*/savingsBondInterestPreviouslyReported. An unanswered question is not a yes.</Description>
       <Derived>
         <Any>
           <All>
@@ -1052,7 +1098,11 @@
     </Fact>
     <Fact path="/flowKnockoutInterestScheduleBSubtraction">
       <Name>Knockout: 1099-INT interest that Schedule B Part I subtracts</Name>
-      <Description>#144: any 1099-INT with /interestReports/*/hasScheduleBSubtraction (nominee interest, accrued interest paid to a seller, or U.S. savings bond interest previously reported or accrued before the bond was received). Each is reported in full on Schedule B line 1 and subtracted below a subtotal before line 2; this tool puts the full box 1 and box 3 amounts on Form 1040 line 2b and doesn't produce the subtraction, so the return stops. Cites on the three questions.</Description>
+      <Description>#144: any 1099-INT with /interestReports/*/hasScheduleBSubtraction (nominee interest, accrued
+        interest paid to a seller, or U.S. savings bond interest previously reported or accrued before the bond was
+        received). Each is reported in full on Schedule B line 1 and subtracted below a subtotal before line 2; this
+        tool puts the full box 1 and box 3 amounts on Form 1040 line 2b and doesn't produce the subtraction, so the
+        return stops. Cites on the three questions.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1175,11 +1225,16 @@
     <Fact path="/requiresScheduleBForInterest">
       <Name>Schedule B required because of taxable interest</Name>
       <Description>Whether total taxable interest is over $1,500. Instructions for Schedule B (Form 1040)
-        (2025) p. 1: "You had over $1,500 of taxable interest or ordinary dividends." "Over" is a strict
-        comparison, so exactly $1,500 does not require Schedule B. Compared in whole dollars, the same way as
-        /requiresScheduleBForOrdinaryDividends (income /ordinaryDividends): Form 1040 instr. (2025)
-        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23, Rounding Off to Whole Dollars: "If you have to add
-        two or more amounts to figure the amount to enter on a line, include cents when adding the amounts and
+        (2025) p. 1:
+        "You had over $1,500 of taxable interest or ordinary dividends." "Over" is a strict
+        comparison, so exactly $1,500
+        does not require Schedule B. Compared in whole dollars, the same way as
+        /requiresScheduleBForOrdinaryDividends
+        (income /ordinaryDividends): Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23, Rounding
+        Off to Whole Dollars: "If you have to add
+        two or more amounts to figure the amount to enter on a line, include
+        cents when adding the amounts and
         round off only the total."</Description>
 
       <Derived>
@@ -1201,12 +1256,18 @@
     <Fact path="/requiresScheduleBForOrdinaryDividends">
       <Name>Schedule B required because of ordinary dividends</Name>
       <Description>Whether ordinary dividends (Form 1040 line 3b; Form 1099-DIV box 1a) are over $1,500.
-        Instructions for Schedule B (Form 1040) (2025) p. 1: "You had over $1,500 of taxable interest or
-        ordinary dividends." Instructions for Schedule B (2025) p. 2, Line 5: "Report on line 5 all of your
-        ordinary dividends. This amount should be shown in box 1a of your Forms 1099-DIV or substitute
-        statements." Reads income /ordinaryDividends, the whole-dollar total of Form 1099-DIV box 1a (Form 1040
-        instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23: "include cents when adding the amounts
-        and round off only the total"), the same rounding as /requiresScheduleBForInterest.</Description>
+        Instructions for
+        Schedule B (Form 1040) (2025) p. 1: "You had over $1,500 of taxable interest or
+        ordinary dividends." Instructions
+        for Schedule B (2025) p. 2, Line 5: "Report on line 5 all of your
+        ordinary dividends. This amount should be shown
+        in box 1a of your Forms 1099-DIV or substitute
+        statements." Reads income /ordinaryDividends, the whole-dollar
+        total of Form 1099-DIV box 1a (Form 1040
+        instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23:
+        "include cents when adding the amounts
+        and round off only the total"), the same rounding as
+        /requiresScheduleBForInterest.</Description>
 
       <Derived>
         <GreaterThan>
@@ -1222,13 +1283,20 @@
 
     <Fact path="/requiresScheduleB">
       <Description>Whether Schedule B (Form 1040) is required. Instructions for Schedule B (Form 1040) (2025)
-        p. 1, General Instructions: "You had over $1,500 of taxable interest or ordinary dividends." and "You
-        had a financial interest in, or signature authority over, a financial account in a foreign country or you
-        received a distribution from, or were a grantor of, or transferor to, a foreign trust." Schedule B (2026
-        draft) Part III: "You must complete this part if you (a) had over $1,500 of taxable interest or ordinary
-        dividends; (b) had a foreign account; or (c) received a distribution from, or were a grantor of, or a
-        transferor to, a foreign trust." The other listed triggers (seller-financed mortgage interest, accrued
-        interest, OID or bond premium adjustments, Form 8815 exclusion, nominee amounts) are not reported in
+        p. 1,
+        General Instructions: "You had over $1,500 of taxable interest or ordinary dividends." and "You
+        had a financial
+        interest in, or signature authority over, a financial account in a foreign country or you
+        received a distribution
+        from, or were a grantor of, or transferor to, a foreign trust." Schedule B (2026
+        draft) Part III: "You must
+        complete this part if you (a) had over $1,500 of taxable interest or ordinary
+        dividends; (b) had a foreign
+        account; or (c) received a distribution from, or were a grantor of, or a
+        transferor to, a foreign trust." The
+        other listed triggers (seller-financed mortgage interest, accrued
+        interest, OID or bond premium adjustments, Form
+        8815 exclusion, nominee amounts) are not reported in
         this return.</Description>
       <Export mef="true" />
       <Derived>
