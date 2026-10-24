@@ -111,10 +111,13 @@ const dollars = (fg: ReturnType<typeof setupFactGraph>[`factGraph`], path: strin
   return r.get.toString();
 };
 
-/** The Schedule C stops that could apply here: none does (QBI not requested; no EITC or CDCC; MAGI under 1411(b)). */
+/**
+ * The Schedule C stops that could apply here, other than QBI: none does (no EITC or CDCC; MAGI under 1411(b)).
+ * #185: /flowKnockoutScheduleCQbi is true on every return with a Schedule C business until Form 8995 is computed,
+ * so it is checked separately.
+ */
 const scheduleCKnockouts = [
   `/flowKnockoutScheduleCEarnedIncomeCredits`,
-  `/flowKnockoutScheduleCQbi`,
   `/flowKnockoutScheduleCSpouseBusiness`,
   `/flowKnockoutForm8960Unsupported`,
 ];
@@ -154,6 +157,7 @@ describe(`Schedule 8812 Part II-B lines 21-27 (2026 draft)`, () => {
       expect(factGraph.get(ko as ConcretePath).complete, `${ko} complete`).toBe(true);
       expect(factGraph.get(ko as ConcretePath).get, ko).toBe(false);
     }
+    expect(factGraph.get(`/flowKnockoutScheduleCQbi` as ConcretePath).get).toBe(true);
     expect(dollars(factGraph, `/schedule1Line15`)).toBe(`283.00`);
     expect(dollars(factGraph, `/pdf8812Line17`)).toBe(`5100.00`);
     expect(dollars(factGraph, `/pdf8812Line18a`)).toBe(`3717.00`);
