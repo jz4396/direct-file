@@ -51,16 +51,37 @@
       <Description>Whether any Schedule C businesses are listed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
-        <GreaterThan>
-          <Left>
-            <CollectionSize>
-              <Dependency path="/scheduleCBusinesses" />
-            </CollectionSize>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCBusinesses" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleCBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -227,16 +248,35 @@
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <GreaterThan>
-          <Left>
-            <CollectionSize>
-              <Dependency path="/scheduleCSecondaryFilerBusinesses" />
-            </CollectionSize>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadSelfEmploymentIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

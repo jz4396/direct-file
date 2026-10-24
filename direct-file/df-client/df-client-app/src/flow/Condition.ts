@@ -110,11 +110,9 @@ const requiringValue = new Set<string>(submissionBlockingFactsRequiringValue);
 /**
  * Submission-blocking facts that stop this return, using the same rule the backend enforces on sign and submit
  * (FactGraphService.submissionBlockingFactPaths). Every fact marked <BlockSubmissionOnTrue /> blocks when its value is
- * true, complete or placeholder. A top-level one (submissionBlockingFactsRequiringValue) also blocks with no value or a
- * non-boolean value, and any blocking fact that throws while being evaluated blocks.
- *
- * Known fail-open (https://github.com/jz4396/direct-file/issues/186): a placeholder false passes, so /flowIsKnockedOut
- * passes while some of its knockouts are still incomplete.
+ * true, complete or placeholder. A top-level one (submissionBlockingFactsRequiringValue) passes only on a complete
+ * false: no value, a placeholder or other incomplete value, or a non-boolean value blocks. Any blocking fact that throws
+ * while being evaluated blocks.
  */
 export function submissionBlockingFactPaths(factGraph: sfg.FactGraph): string[] {
   return submissionBlockingFacts.filter((path) => {
@@ -122,7 +120,7 @@ export function submissionBlockingFactPaths(factGraph: sfg.FactGraph): string[] 
       const result = factGraph.get(Path.concretePath(path, null));
       const value = result.hasValue ? result.get : undefined;
       if (value === true) return true;
-      return requiringValue.has(path) && value !== false;
+      return requiringValue.has(path) && !(result.complete && value === false);
     } catch {
       return true;
     }

@@ -266,15 +266,40 @@
 
     <Fact path="/socialSecurityReports/*/secondaryFilerUsedWithoutMFJ">
       <Name>Secondary filer has Social Security reports when primary filer is not filing jointly</Name>
-      <Description>Whether secondary filer has Social Security reports when primary filer is not filing jointly</Description>
+      <Description>Whether secondary filer has Social Security reports when primary filer is not filing jointly.
+        The
+        whose-benefits screen is asked only on a joint return, so a report whose filer was never
+        written stays with the
+        primary filer (the placeholder) and cannot belong to the secondary filer.</Description>
 
       <Derived>
-        <All>
-          <Not>
-            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
-          </Not>
-          <Dependency path="../belongsToSecondaryFiler" />
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="../filer" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <All>
+                <Not>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                </Not>
+                <Dependency path="../belongsToSecondaryFiler" />
+              </All>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -284,16 +309,37 @@
       <BlockSubmissionOnTrue />
 
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <Dependency path="/socialSecurityReports/*/secondaryFilerUsedWithoutMFJ" />
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/socialSecurityReports" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/socialSecurityReports/*/secondaryFilerUsedWithoutMFJ" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

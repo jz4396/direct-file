@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * The server's sign/submit gate (#181): the list comes from every {@code <BlockSubmissionOnTrue />} fact in the
  * dictionary XML, the client's generated list is the same, and {@link FactGraphService#submissionBlockingFactPaths}
- * refuses true values on every blocking fact and a missing value or error on the top-level ones.
+ * refuses true values on every blocking fact and anything but a complete false on the top-level ones.
  *
  * <p>The golden return is a synthetic end-to-end return built from the TY2026 golden profile 5 (single, W-2 plus
  * qualified dividends, 900-area test TIN, made-up name and addresses) with every interview section marked done.
@@ -53,8 +53,8 @@ public class SubmissionBlockingFactsTest {
     static final String STATE_RETURN_KNOCKOUT = "/flowKnockoutStateReturn";
     static final String FL_WITHHOLDING_KNOCKOUT = "/flowKnockoutFloridaStateWithholding";
     static final String W2_VALIDATION_ERRORS = "/hasW2ValidationErrors";
-    /** Incomplete on the golden return (and on every test return): see https://github.com/jz4396/direct-file/issues/186. */
-    static final String NEVER_COMPLETE_KNOCKOUT = "/flowKnockoutMFSLine6Check";
+    /** Was never complete when not applicable (https://github.com/jz4396/direct-file/issues/186). */
+    static final String MFS_LINE6_KNOCKOUT = "/flowKnockoutMFSLine6Check";
 
     static FactGraphService fgs;
 
@@ -189,9 +189,11 @@ public class SubmissionBlockingFactsTest {
         Graph graph = fgs.getGraph(golden());
         assertEquals(List.of(), fgs.submissionBlockingFactPaths(graph));
         assertFalse(fgs.hasSubmissionBlockingFacts(graph));
-        // Passes on the known fail-open of https://github.com/jz4396/direct-file/issues/186.
-        assertFalse(graph.get(KNOCKED_OUT).complete());
-        assertFalse(graph.get(NEVER_COMPLETE_KNOCKOUT).hasValue());
+        // Strict: every knockout is a complete false (https://github.com/jz4396/direct-file/issues/186).
+        assertTrue(graph.get(KNOCKED_OUT).complete());
+        assertEquals(Boolean.FALSE, graph.get(KNOCKED_OUT).get());
+        assertTrue(graph.get(MFS_LINE6_KNOCKOUT).complete());
+        assertEquals(Boolean.FALSE, graph.get(MFS_LINE6_KNOCKOUT).get());
     }
 
     @Test
@@ -264,9 +266,10 @@ public class SubmissionBlockingFactsTest {
     }
 
     @Test
-    void placeholderFalseOnFlowIsKnockedOutPasses() throws Exception {
-        // Known fail-open, https://github.com/jz4396/direct-file/issues/186.
-        assertEquals(List.of(), withOverride(KNOCKED_OUT, p -> placeholder(false)));
+    void placeholderFalseOnFlowIsKnockedOutRefuses() throws Exception {
+        // Strict mode, https://github.com/jz4396/direct-file/issues/186: only a complete false passes.
+        assertEquals(List.of(KNOCKED_OUT), withOverride(KNOCKED_OUT, p -> placeholder(false)));
+        assertEquals(List.of(INVALID_TIN), withOverride(INVALID_TIN, p -> placeholder(false)));
         assertEquals(List.of(), withOverride(KNOCKED_OUT, p -> complete(false)));
     }
 
@@ -276,7 +279,7 @@ public class SubmissionBlockingFactsTest {
             throw new UnsupportedOperationException("forced");
         };
         assertEquals(List.of(INVALID_TIN), withOverride(INVALID_TIN, boom));
-        assertEquals(List.of(NEVER_COMPLETE_KNOCKOUT), withOverride(NEVER_COMPLETE_KNOCKOUT, boom));
+        assertEquals(List.of(MFS_LINE6_KNOCKOUT), withOverride(MFS_LINE6_KNOCKOUT, boom));
     }
 
     @Test

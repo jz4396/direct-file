@@ -768,6 +768,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
     },
+    "/hadSelfEmploymentIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/hadStudentLoanInterestPayments": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
@@ -788,11 +792,19 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/hasHouseholdEmployeeScheduleH": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/hasSeenReviewScreen": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
     },
     "/hasSome1099rFormsBeforeSectionEnabled": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/hasUnreportedTips": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
@@ -896,6 +908,10 @@
         ]
       }
     },
+    "/overtimeNotOnW2CodeTT": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/paidEstimatedTaxesOrFromLastYear": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
@@ -947,6 +963,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
     },
+    "/scheduleAWantsToItemize": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/selfSelectPin": {
       "$type": "gov.irs.factgraph.persisters.PinWrapper",
       "item": {
@@ -980,6 +1000,10 @@
     "/socialSecurityReportsIsDone": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
+    },
+    "/soldCapitalAssets": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
     },
     "/someFilerHadNonW2HsaActivity": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",

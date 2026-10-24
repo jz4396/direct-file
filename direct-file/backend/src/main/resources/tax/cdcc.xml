@@ -2615,17 +2615,36 @@
       <Export downstreamFacts="true" />
 
       <Derived>
-        <All>
-          <Dependency path="/cdccHasCreditForPriorYearExpenses" />
-          <Any>
-            <Not>
-              <Dependency path="/cdccClaimedCreditForPriorYearExpenses" />
-            </Not>
-            <Not>
-              <Dependency path="/cdccClaimedMaxCreditForPriorTaxYear" />
-            </Not>
-          </Any>
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/cdccMaybeHasQualifyingExpenses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <All>
+                <Dependency path="/cdccHasCreditForPriorYearExpenses" />
+                <Any>
+                  <Not>
+                    <Dependency path="/cdccClaimedCreditForPriorYearExpenses" />
+                  </Not>
+                  <Not>
+                    <Dependency path="/cdccClaimedMaxCreditForPriorTaxYear" />
+                  </Not>
+                </Any>
+              </All>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -4104,6 +4123,9 @@
         <All>
           <!-- There are two filers between which the taxable benefits may potentially be split -->
           <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          <!-- #186: the filer has qualifying expenses for the credit, so there is a credit to maximize. The
+           benefits-distribution screen is asked only after a yes here (flowShowCdccQualifyingPersonsLoop). -->
+          <Dependency path="/writableCdccHasQualifyingExpenses" />
           <Any>
             <Dependency path="/hasReportedCarryOverAmountFromPriorTaxYear" />
             <All>
