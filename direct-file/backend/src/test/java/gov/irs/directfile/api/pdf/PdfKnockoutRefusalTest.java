@@ -34,8 +34,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * earned income credit with a qualifying child needs Schedule EIC with each child's name, age and TIN (26 U.S.C.
  * 32(c)(3)(D)(i)), and the 2026 Form 1040 says to attach Schedule 3-A for an amount on line 27a, which has no template
  * yet (#89). The 2026 Schedule EIC itself prints ({@link ScheduleEicTy2026PdfSmokeTest}), but {@link
- * PdfService#getTaxReturn} refuses that return rather than print an incomplete package. Returns without that knockout
- * still build.
+ * PdfService#getTaxReturn} refuses that return rather than print an incomplete package: every EIC return is refused by
+ * the Schedule 3-A knockout as well, so lifting the Schedule EIC knockout alone would not make it printable. Returns
+ * without those knockouts still build.
  */
 class PdfKnockoutRefusalTest {
     static final ObjectMapper MAPPER = new ObjectMapper();

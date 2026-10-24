@@ -182,8 +182,8 @@ class Ty2026PdfPackageTest {
             Map.entry(
                     "IRS1040EIC",
                     "2026 draft template committed (ScheduleEicTy2026PdfSmokeTest), but an EIC return with a qualifying"
-                            + " child is refused by /flowKnockoutScheduleEicWithoutTy2026Template until Schedule 3-A"
-                            + " prints (#89)"),
+                            + " child is refused by /flowKnockoutScheduleEicWithoutTy2026Template and, for any EIC,"
+                            + " by /flowKnockoutSchedule3AWithoutTy2026Template (#89)"),
             Map.entry("IRS8962", "2024 Form 8962 template only; no 2026 form committed"),
             Map.entry("FORM9000", "2021 Form 9000 template only (alternative media preference)"),
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
