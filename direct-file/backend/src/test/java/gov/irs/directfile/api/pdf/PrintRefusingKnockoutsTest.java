@@ -303,8 +303,10 @@ class PrintRefusingKnockoutsTest {
             }
         }
         assertEquals(50, withScheduleEic, "scenarios with Schedule EIC");
-        assertEquals(59, withSchedule3A, "scenarios with Schedule 3-A");
-        assertEquals(103, printed, "scenarios that print");
+        // #186: the screener answers complete the EIC or ACTC in mfj-11k, ticket-12386, ticket-6192-ctc and
+        // ticket-6718, so those four now need Schedule 3-A (they read incomplete, and the knockout false, before).
+        assertEquals(63, withSchedule3A, "scenarios with Schedule 3-A");
+        assertEquals(99, printed, "scenarios that print");
     }
 
     /**
