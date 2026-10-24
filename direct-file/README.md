@@ -48,8 +48,12 @@ From the docker desktop:
 To build the factgraph, api, frontend, and setup a database simply run:
 
 ```bash
+(cd df-client/df-client-app && npm ci && npm run generate-fact-dictionary)
 docker compose build
 ```
+
+The api image build runs the backend tests, and one of them compares the server's submission-blocking facts with the
+client's generated fact dictionary, so generate it first (see [backend/README.md](backend/README.md#running-tests)).
 
 Then, to start it all:
 

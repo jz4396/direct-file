@@ -2,6 +2,20 @@
 # Note: This uses some relatively new features, so make sure docker is
 #       up-to-date on your system or this build may fail
 
+# 0. the client's generated fact-dictionary files (gitignored, so not in a fresh checkout)
+# SubmissionBlockingFactsTest compares them with the server's submission-blocking facts.
+# Generate them with `npm ci && npm run generate-fact-dictionary` in df-client/df-client-app,
+# then pass the directory with
+# `--build-context client-generated=../df-client/df-client-app/src/fact-dictionary/generated`
+# (docker_build.sh and docker-compose.yaml do this). Without that context this stage, which
+# holds only a marker file, is used, and a build that runs the tests stops before Maven runs.
+# The stage is not left empty: BuildKit can reuse a cached COPY from an empty scratch stage
+# for a COPY from a real context, which would skip the check below.
+FROM scratch AS client-generated
+COPY <<EOF /client-generated-context-missing
+No client-generated build context was passed to this build.
+EOF
+
 # 1. build factgraph
 # For this step to work, you must define `factgraph-repo` in either your
 # docker-compose.yaml's `additional_contexts` or from the command line with
@@ -43,15 +57,21 @@ COPY pom.xml ./
 RUN ./mvnw dependency:resolve
 # copy source tree after dependency resolution so source changes don't force re-download of all dependencies
 COPY src/ /build/src/
+# The tests read the client's generated list at ../df-client/... relative to /build/.
+COPY --from=client-generated . /df-client/df-client-app/src/fact-dictionary/generated/
 # SKIP_CHECKS=true (set only by docker-compose.local.yaml) builds the jar
-# without running tests or the spotless check; every other build runs both.
-# The build context has no df-client sources, so tests that read the client's
-# generated files (JUnit tag client-generated) run in the checkout, not here.
+# without running tests or the spotless check; every other build runs both,
+# including the client-generated parity test, and fails if the list is missing.
 ARG SKIP_CHECKS=false
 RUN if [ "$SKIP_CHECKS" = "true" ]; then \
       ./mvnw package -DskipTests -Dspotless.check.skip=true; \
+    elif [ ! -f /df-client/df-client-app/src/fact-dictionary/generated/submissionBlockingFacts.ts ]; then \
+      echo "client-generated build context is missing submissionBlockingFacts.ts:" \
+        "run 'npm ci && npm run generate-fact-dictionary' in df-client/df-client-app and pass" \
+        "--build-context client-generated=../df-client/df-client-app/src/fact-dictionary/generated" >&2; \
+      exit 1; \
     else \
-      ./mvnw package -DexcludedGroups=client-generated; \
+      ./mvnw package; \
     fi
 
 # 6. bundle backend api jar into runnable image
