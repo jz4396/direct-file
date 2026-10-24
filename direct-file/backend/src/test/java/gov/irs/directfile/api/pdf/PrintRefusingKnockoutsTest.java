@@ -43,14 +43,20 @@ class PrintRefusingKnockoutsTest {
     static final String PA_NRH_KNOCKOUT = "/flowKnockoutPaNonresidentPaSourcePay";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
     static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
+    static final String QBI_ABOVE_THRESHOLD_KNOCKOUT = "/flowKnockoutQbiAboveThreshold";
+    static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
+    static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
+    static final String QBI_MIXED_PARTICIPATION_KNOCKOUT = "/flowKnockoutQbiMixedParticipation";
+    static final String SCHEDULE_C_QBI_KNOCKOUT = "/flowKnockoutScheduleCQbi";
+    static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     static final String SCHEDULE_C_KNOCKOUT = "/flowKnockoutScheduleCWithoutTy2026Template";
     static final String SCHEDULE_3A_KNOCKOUT = "/flowKnockoutSchedule3AWithoutTy2026Template";
     /**
-     * #89: knockouts that wait only on a form with no template yet (Schedule C, Schedule 3-A). The field-map tests for
+     * #89 and #87: knockouts that wait only on a form with no template yet (Form 8995, Schedule C, Schedule 3-A). The field-map tests for
      * Schedule SE, Schedule 8812 and Form 2441 fill their forms with these left out of the refusal check (see
      * {@link #FIELD_MAP_CHECKS}); the public print path still refuses those returns.
      */
-    static final List<String> TEMPLATE_PENDING = List.of(SCHEDULE_C_KNOCKOUT, SCHEDULE_3A_KNOCKOUT);
+    static final List<String> TEMPLATE_PENDING = List.of(FORM_8995_KNOCKOUT, SCHEDULE_C_KNOCKOUT, SCHEDULE_3A_KNOCKOUT);
     /** {@link PrintRefusingKnockouts#FACT_PATHS} without {@link #TEMPLATE_PENDING}. */
     static final List<String> FIELD_MAP_CHECKS = PrintRefusingKnockouts.FACT_PATHS.stream()
             .filter(p -> !TEMPLATE_PENDING.contains(p))
@@ -82,7 +88,7 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210ScheduleEQbiScheduleCAndSchedule3AKnockouts() {
+    void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210ScheduleEQbiQbiScheduleCAndSchedule3AKnockouts() {
         assertEquals(
                 List.of(
                         CODE_Q_KNOCKOUT, // Form 8949 code Q
@@ -90,6 +96,12 @@ class PrintRefusingKnockoutsTest {
                         PA_NRH_KNOCKOUT, // PA Schedule NRH
                         FORM_2210_KNOCKOUT, // Form 2210 Part II box B, C, D, A or E
                         SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
+                        QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
+                        QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
+                        QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
+                        QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
+                        SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
+                        FORM_8995_KNOCKOUT, // Form 8995 is attached and has no TY2026 template or MeF mapping
                         SCHEDULE_C_KNOCKOUT, // #89 Schedule C has no template
                         SCHEDULE_3A_KNOCKOUT), // #89 Schedule 3-A has no template or line 32b fact
                 PrintRefusingKnockouts.FACT_PATHS);
@@ -247,6 +259,99 @@ class PrintRefusingKnockoutsTest {
         assertTrue(PrintRefusingKnockouts.refusingPaths(graph).contains(SCHEDULE_E_QBI_KNOCKOUT), "trade or business");
     }
 
+    /** Single filer, one W-2 and one Schedule C business with the given gross receipts and expenses. */
+    static Map<String, FactTypeWithItem> scheduleCReturn(String wages, String receipts, String expenses)
+            throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        // The same base return the Schedule SE smoke test prints, plus one Schedule C business.
+        Map<String, FactTypeWithItem> facts = mapper.convertValue(
+                mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream())
+                        .get("facts"),
+                new TypeReference<Map<String, FactTypeWithItem>>() {});
+        Map<String, String> m = ScheduleSETy2026PdfSmokeTest.selfEmployed(wages, wages, receipts);
+        m.put(
+                "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/writableTotalExpenses",
+                ScheduleATy2026PdfSmokeTest.dollar(expenses));
+        for (var e : m.entrySet()) {
+            facts.put(e.getKey(), mapper.readValue(e.getValue(), FactTypeWithItem.class));
+        }
+        return facts;
+    }
+
+    /**
+     * Form 8995 (2026) draft header: "Use this form if your taxable income, before your qualified business income
+     * deduction, is at or below" the threshold. Instructions for Form 1040 (2025) draft (the 2026 instructions are not
+     * yet posted), PDF p. 35, QBI line (13b on the 2026 Form 1040): "Attach whichever form you use (Form 8995 or
+     * 8995-A) to your return." 2026 Instructions for Form 8995 draft, PDF p. 6, line 18: "This is the amount to be
+     * carried forward to the next year." Form 8995 has no TY2026 template or MeF mapping, so a Schedule C return at or
+     * below the threshold that Form 8995 here computes is refused, and so is a loss year that carries a line 18
+     * amount forward. A carryforward or cooperative yes, or an unanswered question, also refuses through its own stop.
+     */
+    @Test
+    void form8995StopsRefuseThePrint() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, FactTypeWithItem> facts = scheduleCReturn("20000.00", "30000.00", "0.00");
+        Graph computed = fgs.getGraph(facts);
+        assertEquals(Boolean.FALSE, computed.get(QBI_ABOVE_THRESHOLD_KNOCKOUT).get(), "at or below the threshold");
+        assertTrue(computed.get(QBI_ABOVE_THRESHOLD_KNOCKOUT).complete());
+        assertEquals(Boolean.TRUE, computed.get("/form8995Required").get());
+        assertEquals(
+                List.of(FORM_8995_KNOCKOUT, SCHEDULE_C_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(computed),
+                "no Form 8995 (or Schedule C) template");
+        assertEquals(Boolean.TRUE, computed.get("/flowIsKnockedOut").get(), "submission is blocked too");
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        Map<String, FactTypeWithItem> carryforward = new HashMap<>(facts);
+        carryforward.put("/qbiHasPriorYearLossCarryforward", yes);
+        assertEquals(
+                List.of(QBI_CARRYFORWARD_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT, FORM_8995_KNOCKOUT, SCHEDULE_C_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(carryforward)));
+        Map<String, FactTypeWithItem> cooperative = new HashMap<>(facts);
+        cooperative.put("/qbiIsCooperativePatron", yes);
+        assertEquals(
+                List.of(QBI_COOPERATIVE_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT, FORM_8995_KNOCKOUT, SCHEDULE_C_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(cooperative)));
+        Map<String, FactTypeWithItem> unanswered = new HashMap<>(facts);
+        unanswered.remove("/qbiHasPriorYearLossCarryforward");
+        List<String> unansweredPaths = PrintRefusingKnockouts.refusingPaths(fgs.getGraph(unanswered));
+        assertTrue(unansweredPaths.contains(QBI_CARRYFORWARD_KNOCKOUT), "unanswered fails closed");
+        assertTrue(unansweredPaths.contains(SCHEDULE_C_QBI_KNOCKOUT), "Schedule C knockout fails closed too");
+        assertTrue(unansweredPaths.contains(FORM_8995_KNOCKOUT), "Form 8995 is still required");
+        Graph noScheduleC = fgs.getGraph(CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO));
+        assertEquals(Boolean.FALSE, noScheduleC.get(SCHEDULE_C_QBI_KNOCKOUT).get());
+        assertTrue(noScheduleC.get(SCHEDULE_C_QBI_KNOCKOUT).complete(), "complete false without Schedule C");
+    }
+
+    /** A Schedule C loss still files Form 8995: line 18 carries the loss forward (26 U.S.C. 199A(c)(2)). */
+    @Test
+    void form8995LossYearWithLine18CarryforwardRefusesThePrint() throws Exception {
+        Graph loss = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(scheduleCReturn("20000.00", "1000.00", "6000.00"));
+        Result<Object> line18 = loss.get("/form8995Line18");
+        assertTrue(line18.complete(), "line 18 complete");
+        assertTrue(
+                ((Number) line18.get()).doubleValue() < 0
+                        || line18.get().toString().startsWith("-"),
+                "a carryforward");
+        assertEquals(Boolean.TRUE, loss.get("/form8995Required").get());
+        assertEquals(Boolean.TRUE, loss.get(FORM_8995_KNOCKOUT).get());
+        assertTrue(loss.get(FORM_8995_KNOCKOUT).complete());
+        assertEquals(List.of(FORM_8995_KNOCKOUT, SCHEDULE_C_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(loss));
+    }
+
+    /** No QBI: the Form 8995 knockout is complete and false, so it doesn't stop the print. */
+    @Test
+    void form8995KnockoutIsCompleteFalseWithoutQbi() throws Exception {
+        Graph noQbi = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO));
+        assertEquals(Boolean.FALSE, noQbi.get("/form8995Required").get());
+        assertEquals(Boolean.FALSE, noQbi.get(FORM_8995_KNOCKOUT).get());
+        assertTrue(noQbi.get(FORM_8995_KNOCKOUT).complete(), "complete false without QBI");
+        assertFalse(PrintRefusingKnockouts.refusingPaths(noQbi).contains(FORM_8995_KNOCKOUT));
+    }
+
     @Test
     void returnsNothingWhenEveryKnockoutIsCompleteAndFalse() {
         Map<String, Result<Object>> results = Map.of("/a", complete(false), "/b", complete(false));
@@ -261,7 +366,8 @@ class PrintRefusingKnockoutsTest {
 
     /**
      * Every backend scenario refuses exactly the knockouts its own facts call for, worked out here from the facts the
-     * knockouts read: Schedule EIC (/pdfIncludeScheduleEic), Schedule C (/hasScheduleCBusinesses) and Schedule 3-A
+     * knockouts read: Schedule EIC (/pdfIncludeScheduleEic), Form 8995 (/form8995Required), Schedule C
+     * (/hasScheduleCBusinesses) and Schedule 3-A
      * (Form 1040 line 27a, 28 or 29 above $0, 2026 draft Form 1040 "If you entered an amount on line 27a, 28, 29, or
      * 30, attach Sch. 3-A"). None has a Form 8949 code Q row or a PA/FL part-year return, and each knockout is
      * complete in each, so fail-closed refuses no clean return. The code Q refusal through the real print path is
@@ -286,6 +392,10 @@ class PrintRefusingKnockoutsTest {
             if (schedule.complete() && Boolean.TRUE.equals(schedule.get())) {
                 expected.add(SCHEDULE_EIC_KNOCKOUT);
                 withScheduleEic++;
+            }
+            Result<Object> form8995 = graph.get("/form8995Required");
+            if (form8995.complete() && Boolean.TRUE.equals(form8995.get())) {
+                expected.add(FORM_8995_KNOCKOUT);
             }
             Result<Object> business = graph.get("/hasScheduleCBusinesses");
             if (business.complete() && Boolean.TRUE.equals(business.get())) {
@@ -352,26 +462,41 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * #89: each template-pending entry is the only thing refusing its return, so taking it out of the list would let
-     * the package print without the form. Instructions for Schedule C (2025), PDF p. 2; 2026 draft Form 1040 lines
-     * 32a-32c and Schedule 3-A.
+     * #89: the template-pending entries are what refuse their returns, so taking them out of the list would let the
+     * package print without the form. Instructions for Schedule C (2025), PDF p. 2; 2026 draft Form 1040 lines 32a-32c
+     * and Schedule 3-A. #87: a Schedule C return also attaches Form 8995 (Instructions for Form 1040 (2025) draft, PDF
+     * p. 35, "Attach whichever form you use (Form 8995 or 8995-A) to your return."), so it is refused by both the Form
+     * 8995 and the Schedule C entry, and either one alone still refuses it. Schedule C is the only QBI source here, so
+     * no return needs Form 8995 without Schedule C.
      */
     @Test
     void eachTemplatePendingEntryIsWhatRefusesItsReturn() throws Exception {
         FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
-        Map<String, Map<String, FactTypeWithItem>> cases =
-                Map.of(SCHEDULE_C_KNOCKOUT, scheduleCOnly(), SCHEDULE_3A_KNOCKOUT, schedule3AOnly());
+        Map<List<String>, Map<String, FactTypeWithItem>> cases = Map.of(
+                List.of(FORM_8995_KNOCKOUT, SCHEDULE_C_KNOCKOUT),
+                scheduleCOnly(),
+                List.of(SCHEDULE_3A_KNOCKOUT),
+                schedule3AOnly());
         for (var c : cases.entrySet()) {
             Graph graph = fgs.getGraph(c.getValue());
-            assertEquals(List.of(c.getKey()), PrintRefusingKnockouts.refusingPaths(graph), c.getKey() + " refuses");
+            assertEquals(c.getKey(), PrintRefusingKnockouts.refusingPaths(graph), c.getKey() + " refuse");
             assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get(), c.getKey() + " in /flowIsKnockedOut");
             List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
-                    .filter(p -> !p.equals(c.getKey()))
+                    .filter(p -> !c.getKey().contains(p))
                     .toList();
             assertEquals(
                     List.of(),
                     PrintRefusingKnockouts.refusingPaths(without, path -> graph.get(path)),
                     "without " + c.getKey() + " nothing would refuse the print");
+            for (String one : c.getKey()) {
+                List<String> withOnly = PrintRefusingKnockouts.FACT_PATHS.stream()
+                        .filter(p -> p.equals(one) || !c.getKey().contains(p))
+                        .toList();
+                assertEquals(
+                        List.of(one),
+                        PrintRefusingKnockouts.refusingPaths(withOnly, path -> graph.get(path)),
+                        one + " alone still refuses");
+            }
         }
         Graph business = fgs.getGraph(scheduleCOnly());
         assertEquals(Boolean.TRUE, business.get("/hasScheduleCBusinesses").get());
