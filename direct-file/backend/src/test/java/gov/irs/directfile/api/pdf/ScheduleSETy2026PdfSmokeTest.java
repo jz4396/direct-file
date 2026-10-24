@@ -19,7 +19,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.cents;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
-import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generateRefusedForForm8995;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -125,7 +125,7 @@ class ScheduleSETy2026PdfSmokeTest {
 
     @Test
     void scheduleSEPrintsPartIAndTiesToSchedules1And2() throws Exception {
-        byte[] bytes = generate(selfEmployed("170000.00", "170000.00", "30000.00"));
+        byte[] bytes = generateRefusedForForm8995(selfEmployed("170000.00", "170000.00", "30000.00"));
         String out = System.getProperty("pdf.smoke.out");
         if (out != null) {
             Files.write(Path.of(out, "schedule-se-ty2026-smoke.pdf"), bytes);
@@ -161,7 +161,7 @@ class ScheduleSETy2026PdfSmokeTest {
 
     @Test
     void scheduleSESkipsLines8dTo10AtTheWageBase() throws Exception {
-        byte[] bytes = generate(selfEmployed("190000.00", "184500.00", "20000.00"));
+        byte[] bytes = generateRefusedForForm8995(selfEmployed("190000.00", "184500.00", "20000.00"));
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
             assertFalse(se.isEmpty(), "Schedule SE printed");
@@ -180,7 +180,7 @@ class ScheduleSETy2026PdfSmokeTest {
 
     @Test
     void noScheduleSEUnder400NetEarnings() throws Exception {
-        byte[] bytes = generate(selfEmployed("50000.00", "50000.00", "400.00"));
+        byte[] bytes = generateRefusedForForm8995(selfEmployed("50000.00", "50000.00", "400.00"));
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             String text = new PDFTextStripper().getText(doc);
             assertFalse(text.contains(SE_FOOTER), "no Schedule SE when line 4c is under $400");

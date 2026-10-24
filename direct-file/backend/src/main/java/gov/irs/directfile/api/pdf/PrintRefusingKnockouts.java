@@ -50,7 +50,13 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutQbiMixedParticipation",
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
-            "/flowKnockoutScheduleCQbi");
+            "/flowKnockoutScheduleCQbi",
+            // Form 8995 goes with every return that has Schedule C QBI or loss: Instructions for Form 1040 (2025)
+            // draft,
+            // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your
+            // return."; 2026 Instructions for Form 8995 draft, PDF p. 6, line 18, "This is the amount to be carried
+            // forward to the next year." There is no TY2026 Form 8995 template or MeF mapping, so it would be left off.
+            "/flowKnockoutForm8995WithoutTy2026Template");
 
     private PrintRefusingKnockouts() {}
 

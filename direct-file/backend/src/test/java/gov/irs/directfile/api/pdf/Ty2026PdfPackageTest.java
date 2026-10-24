@@ -418,10 +418,14 @@ class Ty2026PdfPackageTest {
     @Test
     void scenariosTogetherPrintEveryConfiguredTy2026FormOrListItAsExcluded() throws Exception {
         Set<String> printed = new TreeSet<>();
-        for (Map<String, String> s :
-                List.of(investor(), itemizer(), paTaxForgiveness(), selfEmployedFamily("4000.00"))) {
+        for (Map<String, String> s : List.of(investor(), itemizer(), paTaxForgiveness())) {
             printed.addAll(render(s, null).forms.keySet());
         }
+        // Schedule SE only appears with Schedule C income, which the print path refuses until Form 8995 has a TY2026
+        // template; its field map is still checked through the template fill.
+        printed.addAll(renderRefusedForForm8995(selfEmployedFamily("4000.00"), null)
+                .forms
+                .keySet());
         for (String s : List.of(FAMILY, SAVER, HSA)) {
             printed.addAll(renderFacts(scenarioFile(s), null).forms.keySet());
         }
@@ -775,7 +779,8 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyPartIIBPrintsLines22And23() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("4000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf").filerSsn(CTC_FILER_SSN_DASHED);
+        Pkg pkg = renderRefusedForForm8995(scenario, "e2e-ty2026-self-employed-family.pdf")
+                .filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
                 "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
@@ -817,7 +822,8 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyLine20OverLine25() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("10000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf").filerSsn(CTC_FILER_SSN_DASHED);
+        Pkg pkg = renderRefusedForForm8995(scenario, "e2e-ty2026-self-employed-family-line20.pdf")
+                .filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
                 "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
@@ -998,6 +1004,19 @@ class Ty2026PdfPackageTest {
     }
 
     static Pkg render(Map<String, String> scenario, String outName) throws Exception {
+        return render(scenario, outName, false);
+    }
+
+    /**
+     * A Schedule C return: the print path refuses it with the Form 8995 knockout only (no TY2026 Form 8995 template or
+     * MeF mapping). Asserts that refusal, then checks the filled templates; see
+     * {@link Form8995RefusedReturnTemplateFill}.
+     */
+    static Pkg renderRefusedForForm8995(Map<String, String> scenario, String outName) throws Exception {
+        return render(scenario, outName, true);
+    }
+
+    static Pkg render(Map<String, String> scenario, String outName, boolean refusedForForm8995) throws Exception {
         JsonNode root =
                 MAPPER.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
         Map<String, FactTypeWithItem> facts =
@@ -1005,10 +1024,15 @@ class Ty2026PdfPackageTest {
         for (var e : scenario.entrySet()) {
             facts.put(e.getKey(), MAPPER.readValue(e.getValue(), FactTypeWithItem.class));
         }
-        return renderFacts(facts, outName);
+        return renderFacts(facts, outName, refusedForForm8995);
     }
 
     static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName) throws Exception {
+        return renderFacts(facts, outName, false);
+    }
+
+    static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName, boolean refusedForForm8995)
+            throws Exception {
 
         // No submission-blocking check here: printing is not filing. Sign and submit enforce
         // FactGraphService#submissionBlockingFactPaths.
@@ -1016,8 +1040,12 @@ class Ty2026PdfPackageTest {
         taxReturn.setTaxYear(TAX_YEAR);
         taxReturn.setFactsWithoutDirtyingEntity(facts);
         byte[] bytes;
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
-            bytes = in.readAllBytes();
+        if (refusedForForm8995) {
+            bytes = Form8995RefusedReturnTemplateFill.fill(pdfService, factGraphService, taxReturn);
+        } else {
+            try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
+                bytes = in.readAllBytes();
+            }
         }
         String out = System.getProperty("pdf.smoke.out");
         if (out != null && outName != null) {

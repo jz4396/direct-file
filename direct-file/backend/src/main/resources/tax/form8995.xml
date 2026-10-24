@@ -598,6 +598,31 @@
 
     <!-- ========== Knockouts (BlockSubmissionOnTrue, wired into flow /flowIsKnockedOut) ========== -->
 
+    <Fact path="/flowKnockoutForm8995WithoutTy2026Template">
+      <Name>Knockout: Form 8995 must be attached and there is no TY2026 Form 8995 template or MeF mapping</Name>
+      <Description>
+        Form 1040 (2026) draft, PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or
+        Form
+        8995-A". The 2026 Form 1040 instructions are not yet posted; the latest draft, Instructions for Form 1040
+        (2025), Feb 25, 2026 (irs.gov/pub/irs-dft, file i1040gi draft; SHA-256 24ad652c8f89a778), PDF p. 35, line 13a
+        (the QBI line, line 13b on the 2026 form): "Use Form 8995 if: You have qualified business income, ... Attach
+        whichever form you use (Form 8995 or 8995-A) to your return." 2026 Instructions for Form 8995 draft, PDF p. 2,
+        Who Can Take the Deduction: "Individuals and eligible estates and trusts that have QBI use Form 8995 to figure
+        the QBI deduction if: You have QBI, qualified REIT dividends, or qualified PTP income or loss"; PDF p. 6, line
+        18: "This is the amount to be carried forward to the next year." So Form 8995 goes with the return in a loss
+        year too (26 U.S.C. 199A(c)(2)). The Form 8995 lines are computed here, but there is no TY2026 Form 8995 PDF
+        template or MeF mapping, so printing line 13b alone, or submitting it, would leave the form off. True whenever
+        /form8995Required is true; complete false when it is not required (no Schedule C income, or the
+        self-employment
+        question answered no or not yet answered).
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/form8995Required" />
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutQbiAboveThreshold">
       <Name>Knockout: taxable income before the QBI deduction is above the Form 8995 threshold (Form 8995-A)</Name>
       <Description>

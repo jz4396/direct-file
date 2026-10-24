@@ -151,6 +151,22 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     expectNoQbiKnockout(g);
   });
 
+  it(`Form 8995 has no TY2026 template: knocked out at or below the threshold and in a loss year`, ({ task }) => {
+    // Instructions for Form 1040 (2025) draft (no 2026 draft yet), PDF p. 35, QBI line (13b on the 2026 form):
+    // "Attach whichever form you use (Form 8995 or 8995-A) to your return." 2026 Instructions for Form 8995 draft,
+    // PDF p. 6, line 18: "This is the amount to be carried forward to the next year."
+    task.meta.testedFactPaths = [`/flowKnockoutForm8995WithoutTy2026Template`, `/flowIsKnockedOut`];
+    const computed = fg({ ...noW2, ...scheduleC(business(biz1, 60000, 10000), [biz1]) });
+    expect(val(computed, `/flowKnockoutQbiAboveThreshold`)).toBe(`false`);
+    expect(val(computed, `/form8995Line17`)).toBe(`6073.00`); // still computed
+    expect(val(computed, `/flowKnockoutForm8995WithoutTy2026Template`)).toBe(`true`);
+    expect(val(computed, `/flowIsKnockedOut`)).toBe(`true`);
+    const loss = fg({ ...noW2, ...scheduleC(business(biz1, 1000, 6000), [biz1]) });
+    expect(val(loss, `/form8995Line18`)).toBe(`-5000.00`);
+    expect(val(loss, `/flowKnockoutForm8995WithoutTy2026Template`)).toBe(`true`);
+    expect(val(loss, `/flowIsKnockedOut`)).toBe(`true`);
+  });
+
   it(`E: taxable income before QBI $201,751 (Single) → knocked out (Form 8995-A); $201,750 is not`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutQbiAboveThreshold`, `/flowIsKnockedOut`];
     // Smallest whole-dollar Schedule C profit whose line 11 (taxable income before QBI) exceeds $201,750.
@@ -219,7 +235,11 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
   });
 
   it(`W-2-only return: every Form 8995 knockout is complete false and line 13b is $0`, ({ task }) => {
-    task.meta.testedFactPaths = [...knockouts, `/qualifiedBusinessIncomeDeduction`];
+    task.meta.testedFactPaths = [
+      ...knockouts,
+      `/flowKnockoutForm8995WithoutTy2026Template`,
+      `/qualifiedBusinessIncomeDeduction`,
+    ];
     for (const data of [
       { ...filerWithW2NoDeductionsNoCreditsBaseData },
       { ...filerWithW2NoDeductionsNoCreditsBaseData, '/hadSelfEmploymentIncome': createBooleanWrapper(false) },
@@ -228,6 +248,7 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
       expectNoQbiKnockout(g);
       expect(val(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`0.00`);
       expect(val(g, `/form8995Required`)).toBe(`false`);
+      expect(val(g, `/flowKnockoutForm8995WithoutTy2026Template`)).toBe(`false`);
     }
   });
 });

@@ -43,6 +43,7 @@ class PrintRefusingKnockoutsTest {
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
     static final String QBI_MIXED_PARTICIPATION_KNOCKOUT = "/flowKnockoutQbiMixedParticipation";
     static final String SCHEDULE_C_QBI_KNOCKOUT = "/flowKnockoutScheduleCQbi";
+    static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     /** Lines 4 and 7 are $1,000 or more and every Part II answer is no, so the IRS figures any penalty. */
     static final String FORM_2210_SCENARIO = "form2210-mfj-irs-will-bill.json";
 
@@ -82,7 +83,8 @@ class PrintRefusingKnockoutsTest {
                         QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
                         QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
                         QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
-                        SCHEDULE_C_QBI_KNOCKOUT), // any of the four Form 8995 stops with Schedule C income
+                        SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
+                        FORM_8995_KNOCKOUT), // Form 8995 is attached and has no TY2026 template or MeF mapping
                 PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -237,46 +239,94 @@ class PrintRefusingKnockoutsTest {
         assertTrue(PrintRefusingKnockouts.refusingPaths(graph).contains(SCHEDULE_E_QBI_KNOCKOUT), "trade or business");
     }
 
-    /**
-     * Form 8995 (2026) draft header: "Use this form if your taxable income, before your qualified business income
-     * deduction, is at or below" the threshold. A Schedule C return that Form 8995 here computes prints; a carryforward
-     * or cooperative yes, or an unanswered question, refuses the print.
-     */
-    @Test
-    void form8995StopsRefuseThePrint() throws Exception {
-        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+    /** Single filer, one W-2 and one Schedule C business with the given gross receipts and expenses. */
+    static Map<String, FactTypeWithItem> scheduleCReturn(String wages, String receipts, String expenses)
+            throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         // The same base return the Schedule SE smoke test prints, plus one Schedule C business.
         Map<String, FactTypeWithItem> facts = mapper.convertValue(
                 mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream())
                         .get("facts"),
                 new TypeReference<Map<String, FactTypeWithItem>>() {});
-        for (var e : ScheduleSETy2026PdfSmokeTest.selfEmployed("20000.00", "20000.00", "30000.00")
-                .entrySet()) {
+        Map<String, String> m = ScheduleSETy2026PdfSmokeTest.selfEmployed(wages, wages, receipts);
+        m.put(
+                "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/writableTotalExpenses",
+                ScheduleATy2026PdfSmokeTest.dollar(expenses));
+        for (var e : m.entrySet()) {
             facts.put(e.getKey(), mapper.readValue(e.getValue(), FactTypeWithItem.class));
         }
+        return facts;
+    }
+
+    /**
+     * Form 8995 (2026) draft header: "Use this form if your taxable income, before your qualified business income
+     * deduction, is at or below" the threshold. Instructions for Form 1040 (2025) draft (the 2026 instructions are not
+     * yet posted), PDF p. 35, QBI line (13b on the 2026 Form 1040): "Attach whichever form you use (Form 8995 or
+     * 8995-A) to your return." 2026 Instructions for Form 8995 draft, PDF p. 6, line 18: "This is the amount to be
+     * carried forward to the next year." Form 8995 has no TY2026 template or MeF mapping, so a Schedule C return at or
+     * below the threshold that Form 8995 here computes is refused, and so is a loss year that carries a line 18
+     * amount forward. A carryforward or cooperative yes, or an unanswered question, also refuses through its own stop.
+     */
+    @Test
+    void form8995StopsRefuseThePrint() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, FactTypeWithItem> facts = scheduleCReturn("20000.00", "30000.00", "0.00");
         Graph computed = fgs.getGraph(facts);
-        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(computed), "Form 8995 computes line 13b");
+        assertEquals(Boolean.FALSE, computed.get(QBI_ABOVE_THRESHOLD_KNOCKOUT).get(), "at or below the threshold");
+        assertTrue(computed.get(QBI_ABOVE_THRESHOLD_KNOCKOUT).complete());
+        assertEquals(Boolean.TRUE, computed.get("/form8995Required").get());
+        assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(computed), "no Form 8995 form");
+        assertEquals(Boolean.TRUE, computed.get("/flowIsKnockedOut").get(), "submission is blocked too");
         FactTypeWithItem yes = mapper.readValue(
                 "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
         Map<String, FactTypeWithItem> carryforward = new HashMap<>(facts);
         carryforward.put("/qbiHasPriorYearLossCarryforward", yes);
         assertEquals(
-                List.of(QBI_CARRYFORWARD_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT),
+                List.of(QBI_CARRYFORWARD_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT, FORM_8995_KNOCKOUT),
                 PrintRefusingKnockouts.refusingPaths(fgs.getGraph(carryforward)));
         Map<String, FactTypeWithItem> cooperative = new HashMap<>(facts);
         cooperative.put("/qbiIsCooperativePatron", yes);
         assertEquals(
-                List.of(QBI_COOPERATIVE_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT),
+                List.of(QBI_COOPERATIVE_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT, FORM_8995_KNOCKOUT),
                 PrintRefusingKnockouts.refusingPaths(fgs.getGraph(cooperative)));
         Map<String, FactTypeWithItem> unanswered = new HashMap<>(facts);
         unanswered.remove("/qbiHasPriorYearLossCarryforward");
         List<String> unansweredPaths = PrintRefusingKnockouts.refusingPaths(fgs.getGraph(unanswered));
         assertTrue(unansweredPaths.contains(QBI_CARRYFORWARD_KNOCKOUT), "unanswered fails closed");
         assertTrue(unansweredPaths.contains(SCHEDULE_C_QBI_KNOCKOUT), "Schedule C knockout fails closed too");
+        assertTrue(unansweredPaths.contains(FORM_8995_KNOCKOUT), "Form 8995 is still required");
         Graph noScheduleC = fgs.getGraph(CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO));
         assertEquals(Boolean.FALSE, noScheduleC.get(SCHEDULE_C_QBI_KNOCKOUT).get());
         assertTrue(noScheduleC.get(SCHEDULE_C_QBI_KNOCKOUT).complete(), "complete false without Schedule C");
+    }
+
+    /** A Schedule C loss still files Form 8995: line 18 carries the loss forward (26 U.S.C. 199A(c)(2)). */
+    @Test
+    void form8995LossYearWithLine18CarryforwardRefusesThePrint() throws Exception {
+        Graph loss = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(scheduleCReturn("20000.00", "1000.00", "6000.00"));
+        Result<Object> line18 = loss.get("/form8995Line18");
+        assertTrue(line18.complete(), "line 18 complete");
+        assertTrue(
+                ((Number) line18.get()).doubleValue() < 0
+                        || line18.get().toString().startsWith("-"),
+                "a carryforward");
+        assertEquals(Boolean.TRUE, loss.get("/form8995Required").get());
+        assertEquals(Boolean.TRUE, loss.get(FORM_8995_KNOCKOUT).get());
+        assertTrue(loss.get(FORM_8995_KNOCKOUT).complete());
+        assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(loss));
+    }
+
+    /** No QBI: the Form 8995 knockout is complete and false, so it doesn't stop the print. */
+    @Test
+    void form8995KnockoutIsCompleteFalseWithoutQbi() throws Exception {
+        Graph noQbi = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO));
+        assertEquals(Boolean.FALSE, noQbi.get("/form8995Required").get());
+        assertEquals(Boolean.FALSE, noQbi.get(FORM_8995_KNOCKOUT).get());
+        assertTrue(noQbi.get(FORM_8995_KNOCKOUT).complete(), "complete false without QBI");
+        assertFalse(PrintRefusingKnockouts.refusingPaths(noQbi).contains(FORM_8995_KNOCKOUT));
     }
 
     @Test
