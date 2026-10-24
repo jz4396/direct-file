@@ -5,7 +5,8 @@
   Sources (PDF SHA-256 first 16 hex in parentheses):
   - Form 8995 (2026) draft, Created 5/1/26, (irs.gov/pub/irs-dft, file f8995 draft; full URL in /form8995Line17) (d698390e2990de21), PDF p. 2
     (p. 1 is the draft cover sheet). Lines 1-17 are quoted on each fact below.
-  - Instructions for Form 8995 (2025), https://www.irs.gov/pub/irs-pdf/i8995.pdf (875843baead68f6f).
+  - 2026 Instructions for Form 8995 draft, Created 6/22/26, Mod 9/10/26, (irs.gov/pub/irs-dft, file i8995 draft;
+    full URL in /form8995Line11) (7fd77be32b9dfd5e). PDF p. 2 reads (2026); pp. 3-12 still carry the (2025) footer.
   - 26 U.S.C. 199A, https://www.law.cornell.edu/uscode/text/26/199A
   - Rev. Proc. 2025-32, https://www.irs.gov/pub/irs-drop/rp-25-32.pdf (e9ada115fb43a4af): §2.12 (PDF p. 7) and
     §3.26 (PDF pp. 21-22).
@@ -115,7 +116,13 @@
         § 199A(e)(2) ... are: Married Individuals Filing Joint Returns $403,500 ... Married Individuals Filing
         Separate
         Returns $201,775 ... All Other Returns $201,750". Form 8995 (2026) draft header: "at or below $201,750
-        ($201,775 if married filing separately; $403,500 if married filing jointly)". Above it, Form 8995-A applies.
+        ($201,775 if married filing separately; $403,500 if married
+        filing jointly)". 2026 Instructions for Form 8995
+        draft, PDF p. 3: "Your 2026 taxable income before your QBI
+        deduction is less than or equal to $403,500 if married
+        filing jointly, $201,775 if married filing separately,
+        and $201,750 for all other returns". Above it, Form 8995-A
+        applies.
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -157,7 +164,13 @@
         "Section 70105 of the OBBBA
         amended § 199A(i) to add a minimum deduction of $400 ... The $400 and $1,000 amounts
         in § 199A(i) will be adjusted
-        for inflation for taxable years beginning after 2026."
+        for inflation for taxable years beginning after 2026." 2026 Instructions for Form
+        8995 draft, PDF p. 2: "There
+        is a minimum qualified business income deduction of $400 for taxpayers whose
+        aggregate qualified business
+        income for such taxable year is at least $1,000 with respect to all qualified trades
+        or businesses in which the
+        taxpayer materially participates".
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -188,8 +201,8 @@
         Line 2: "Total qualified business income or (loss). Combine lines 1i through 1v, column (c)." Each
         Schedule C
         business's QBI is its net profit or loss reduced by the deductible part of self-employment tax:
-        Instructions for
-        Form 8995 (2025), PDF p. 2: "To figure the total amount of QBI, you must consider all items that
+        2026
+        Instructions for Form 8995 draft, PDF p. 4: "To figure the total amount of QBI, you must consider all items that
         are attributable
         to the trade or business. This includes, but isn't limited to, ... deductible part of
         self-employment tax,
@@ -327,15 +340,20 @@
     <Fact path="/form8995Line11">
       <Name>Form 8995 line 11</Name>
       <Description>
-        Line 11: "Taxable income before qualified business income deduction". Instructions for Form 8995
-        (2025), PDF p. 4,
-        Line 11: "Form 1040 or 1040-SR filers: Form 1040 or 1040-SR, line 11a, minus lines 12e and
-        13b." On the 2026 draft
-        Form 1040 that is AGI minus every line 14 deduction except 13b: lines 12e (standard or
-        itemized), 12f (charitable,
-        non-itemizer) and 13a (Schedule 1-A line 44). 26 U.S.C. 199A(e)(1): taxable income is
+        Line 11: "Taxable income before qualified business income deduction". 2026 Instructions for Form 8995
+        draft
+        (https://www.irs.gov/pub/irs-dft/i8995--dft.pdf), PDF p. 6, Line 11: "Form 1040 or 1040-SR filers who file
+        Schedule A: Form 1040 or 1040-SR, line 11a, minus the amounts on Schedule A (Form 1040) lines 4,7,10,15,16, and
+        17z, and Form 1040 or 1040-SR, line 13a." and "Form 1040 or 1040-SR filers who do not file Schedule A: Form 1040
+        or 1040-SR, line 11a, minus lines 12e, 12f, and 13a." On the 2026 draft Form 1040, 13a is Schedule 1-A line 44.
+        For an itemizer the Schedule A lines here are 4, 7 (5e), 10 and 15, whose sum is scheduleA /scheduleALine18
+        (the
+        line 18 Yes branch, IRC 68, is the /flowKnockoutScheduleAOverallLimit stop), so the 12e amount equals that
+        sum
+        and 12f is $0. 26 U.S.C. 199A(e)(1): taxable income is
         "computed ... without regard
-        to any deduction allowable under this section". Not below zero, like Form 1040 line
+        to any deduction allowable
+        under this section". Not below zero, like Form 1040 line
         15.
       </Description>
       <Export downstreamFacts="true" />
@@ -359,17 +377,21 @@
     <Fact path="/form8995Line12">
       <Name>Form 8995 line 12</Name>
       <Description>
-        Line 12: "Enter your net capital gain, if any, increased by any qualified dividends." Instructions
-        for Form 8995
-        (2025), PDF p. 4, Line 12: "Form 1040, 1040-SR, or 1040-NR, line 3a, plus your net capital gain. If
+        Line 12: "Enter your net capital gain, if any, increased by any qualified dividends." 2026
+        Instructions for Form 8995 draft, PDF p. 6, Line 12: "Form 1040, 1040-SR, or 1040-NR, line 3a, plus your net
+        capital gain. If
         you're not
-        required to file Schedule D (Form 1040), your net capital gain is the amount reported on Form 1040,
+        required to file Schedule D (Form 1040), your net capital gain is the amount reported
+        on Form 1040,
         1040-SR, or
-        1040-NR, line 7a. If you file Schedule D (Form 1040), your net capital gain is the smaller of
+        1040-NR, line 7a. If you file Schedule D (Form 1040), your net capital gain is the
+        smaller of
         Schedule D (Form 1040),
-        line 15 or 16, unless line 15 or 16 is zero or less, in which case nothing is added to
+        line 15 or 16, unless line 15 or 16 is zero or less, in which case nothing is
+        added to
         the qualified dividends."
-        That is the Qualified Dividends and Capital Gain Tax Worksheet line 4 (scheduleD3
+        That is the Qualified Dividends and Capital Gain Tax Worksheet line 4
+        (scheduleD3
         /qdcgLine4: line 3a plus the same
         Schedule D / line 7a amount). 26 U.S.C. 199A(a)(2)(B) and 1(h).
       </Description>
