@@ -35,6 +35,40 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutForm8962WithoutTy2026Template">
+      <Name>Knockout: the return needs a TY2026 Form 8962, which this tool can't produce yet</Name>
+      <Description>#88: true when Form 8962 is needed. Form 8962 (2026) draft, Created 4/21/26
+        (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, SHA-256
+        5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35), PDF p. 1: "Attach to Form 1040, 1040-SR, or
+        1040-NR." The only Form 8962 template here is the 2024 form, whose Part III still has the repayment limitation
+        lines that the 2026 draft marks "Reserved for future use" (lines 28-29; Rev. Proc. 2025-32 sec. 2.04,
+        https://www.irs.gov/pub/irs-drop/rp-25-32.pdf, PDF p. 5). Same pattern as eitc
+        /flowKnockoutScheduleEicWithoutTy2026Template. Complete and false when Form 8962 is not needed.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/needsToFileForm8962" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/needsToFileForm8962" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/flowKnockoutPtcAllocationOfPolicyAmounts">
       <Name>Knockout: Form 8962 Part IV allocation of policy amounts</Name>
       <Description>#88: Form 8962 (2026) draft, Created 4/21/26 (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf), PDF

@@ -81,6 +81,7 @@ const knockouts = [
   `/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl`,
   `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
 ];
+const TEMPLATE_KNOCKOUT = `/flowKnockoutForm8962WithoutTy2026Template`;
 const expectNoPtcKnockout = (g: ReturnType<typeof fg>) => {
   for (const k of knockouts) expect(val(g, k), k).toBe(`false`);
 };
@@ -232,8 +233,19 @@ describe(`Form 8962 (2026) knockouts`, () => {
     expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
   });
 
+  it(`any return that files Form 8962 stops until a TY2026 Form 8962 template lands`, ({ task }) => {
+    // Form 8962 (2026) draft, PDF p. 1: "Attach to Form 1040, 1040-SR, or 1040-NR." Only the 2024 template exists,
+    // and its lines 28-29 are "Reserved for future use" on the 2026 draft (Rev. Proc. 2025-32 sec. 2.04, PDF p. 5).
+    task.meta.testedFactPaths = [TEMPLATE_KNOCKOUT];
+    const g = fg(ptcReturn(31300, 5000, 6000, 4500));
+    expect(val(g, `/needsToFileForm8962`)).toBe(`true`);
+    expect(val(g, TEMPLATE_KNOCKOUT)).toBe(`true`);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
+    expect(val(fg(filerWithW2NoDeductionsNoCreditsBaseData), TEMPLATE_KNOCKOUT)).toBe(`false`);
+  });
+
   it(`no Marketplace plan, and a W-2-only return: every PTC knockout is complete false`, ({ task }) => {
-    task.meta.testedFactPaths = knockouts;
+    task.meta.testedFactPaths = [...knockouts, TEMPLATE_KNOCKOUT];
     const noPlan = Object.fromEntries(
       Object.entries(
         ptcReturn(31300, 5000, 6000, 0, { '/writableHasPtcQualifyingPlan': createBooleanWrapper(false) })
@@ -241,6 +253,7 @@ describe(`Form 8962 (2026) knockouts`, () => {
     );
     const g = fg({ ...noPlan, '/1095As': createCollectionWrapper([]) });
     expectNoPtcKnockout(g);
+    expect(val(g, TEMPLATE_KNOCKOUT)).toBe(`false`);
     expectNoPtcKnockout(fg(filerWithW2NoDeductionsNoCreditsBaseData));
   });
 });
