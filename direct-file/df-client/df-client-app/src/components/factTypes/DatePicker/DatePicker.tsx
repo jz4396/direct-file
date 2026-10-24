@@ -271,7 +271,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerFactProps>(
         labelledBy='legend'
         hintId={hintId}
       >
-        {hintId && <Hint hintId={hintId} i18nKey={hintI18nKey} collectionId={collectionId} />}
+        <>{hintId && <Hint hintId={hintId} i18nKey={hintI18nKey} collectionId={collectionId} />}</>
         <DateInputGroup id={`id-${concretePath}`}>
           <DateInput
             id='month'
