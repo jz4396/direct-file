@@ -18,6 +18,8 @@ headings:
   /heading/knockout/schedule-e-personal-use: Esta herramienta todavía no acepta alquileres que también usó personalmente
   /heading/knockout/schedule-e-depreciation: Esta herramienta todavía no acepta depreciación ni gastos de vehículo
   /heading/knockout/schedule-e-loss: Esta herramienta todavía no acepta pérdidas de alquiler o regalías
+  /heading/income/schedule-e/trade-or-business: ¿Alguno de sus alquileres es una ocupación o negocio para la deducción por ingreso calificado de negocios?
+  /heading/knockout/schedule-e-trade-or-business: Esta herramienta todavía no acepta la deducción por ingreso calificado de negocios para alquileres
   /heading/knockout/schedule-e-eitc: Esta herramienta todavía no puede verificar el Crédito por Ingreso del Trabajo con ingresos de alquiler o regalías
 info:
   /info/income/schedule-e/intro:
@@ -47,6 +49,18 @@ info:
       body:
         - p: >-
             Cuando presta servicios como limpieza regular, cambio de ropa de cama o servicio de limpieza, el alquiler va en el Anexo C y puede estar sujeto al impuesto sobre el trabajo por cuenta propia. Esta herramienta todavía no lo acepta. Tendrá que usar otra manera de presentar esta declaración.
+  /info/income/schedule-e/trade-or-business:
+    body: >-
+      Conteste que sí si trata un alquiler como una ocupación o negocio, por ejemplo porque usted u otras personas
+      prestaron 250 horas o más de servicios de alquiler durante el año, o porque alquila la propiedad a un negocio que
+      usted o su familia controlan en común.
+  /info/knockout/schedule-e-trade-or-business:
+    alertText:
+      body:
+        - p: >-
+            Un alquiler que es una ocupación o negocio puede tener derecho a la deducción por ingreso calificado de
+            negocios (Formulario 8995). Esta herramienta todavía no calcula esa deducción. Tendrá que usar otra manera de
+            presentar esta declaración.
   /info/knockout/schedule-e-part-ii:
     alertText:
       body:
@@ -105,6 +119,10 @@ fields:
     boolean:
       "yes": Sí, al menos una propiedad tuvo pérdida
       "no": No, todas las propiedades tuvieron ganancia o quedaron a la par
+  /scheduleERentalIsTradeOrBusiness:
+    boolean:
+      "yes": Sí, al menos un alquiler es una ocupación o negocio
+      "no": "No"
   /scheduleEWritableRents:
     name: Total de alquileres recibidos
   /scheduleEWritableRoyalties:
@@ -128,3 +146,4 @@ dataviews:
     /scheduleEWritableExpenses: Total de gastos (sin incluir la depreciación)
     /scheduleEAnyPropertyLoss: ¿Alguna propiedad tuvo pérdida?
     /scheduleEProvidesSubstantialServices: ¿Prestó servicios considerables, como limpieza, ropa de cama o servicio de limpieza?
+    /scheduleERentalIsTradeOrBusiness: ¿Algún alquiler es una ocupación o negocio para la deducción por ingreso calificado de negocios?

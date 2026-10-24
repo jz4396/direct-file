@@ -81,6 +81,17 @@ export const ScheduleEIncomeSubcategory = (
         <SaveAndOrContinueButton />
       </Screen>
       {knockout(`schedule-e-depreciation-knockout`, `/flowKnockoutScheduleEDepreciation`, `schedule-e-depreciation`)}
+      <Screen route='schedule-e-trade-or-business' condition='/hasScheduleEIncome'>
+        <Heading i18nKey='/heading/income/schedule-e/trade-or-business' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/trade-or-business' />
+        <Boolean path='/scheduleERentalIsTradeOrBusiness' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      {knockout(
+        `schedule-e-trade-or-business-knockout`,
+        `/flowKnockoutScheduleETradeOrBusinessQbi`,
+        `schedule-e-trade-or-business`
+      )}
     </SubSubcategory>
     <SubSubcategory route='schedule-e-amounts'>
       <Screen route='schedule-e-amounts' condition='/hasScheduleEIncome'>

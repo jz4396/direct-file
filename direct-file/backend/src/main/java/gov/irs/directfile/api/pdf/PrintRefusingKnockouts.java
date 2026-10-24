@@ -34,7 +34,11 @@ public final class PrintRefusingKnockouts {
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
-            "/flowKnockoutForm2210");
+            "/flowKnockoutForm2210",
+            // Schedule E rental treated as a trade or business: Form 1040 (2026) draft, PDF p. 3, line 13b, "Qualified
+            // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
+            // not computed yet, so the package would print it as $0.
+            "/flowKnockoutScheduleETradeOrBusinessQbi");
 
     private PrintRefusingKnockouts() {}
 
