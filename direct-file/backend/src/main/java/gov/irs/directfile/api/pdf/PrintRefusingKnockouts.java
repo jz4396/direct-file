@@ -34,7 +34,22 @@ public final class PrintRefusingKnockouts {
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
-            "/flowKnockoutForm2210");
+            "/flowKnockoutForm2210",
+            // Form 8962 has no TY2026 template; Form 8962 (2026) draft, PDF p. 1: "Attach to Form 1040, 1040-SR, or
+            // 1040-NR." The 2024 template's lines 28-29 are "Reserved for future use" on the 2026 draft.
+            "/flowKnockoutForm8962WithoutTy2026Template",
+            // Form 8962 cases not computed here, so Form 1040 line 31 (net premium tax credit) or Schedule 2 line 1a
+            // (excess advance premium tax credit repayment) would be wrong. Form 8962 (2026) draft, PDF p. 1, line 9:
+            // "Yes. Skip to Part IV, Allocation of Policy Amounts, or Part V, Alternative Calculation for Year of
+            // Marriage" (Treas. Reg. 1.36B-4(a)(1)(ii), 1.36B-4(b)).
+            "/flowKnockoutPtcAllocationOfPolicyAmounts",
+            "/flowKnockoutPtcAlternativeCalculationForYearOfMarriage",
+            // 26 U.S.C. 36B(c)(1)(A): household income that "equals or exceeds 100 percent" of the poverty line.
+            "/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl",
+            // 26 U.S.C. 36B(c)(3)(A)(iii): a plan enrolled in through an income-based special enrollment period.
+            "/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod",
+            // 26 U.S.C. 162(l) self-employed health insurance deduction and the credit depend on each other.
+            "/flowKnockoutPtcSelfEmployedHealthInsurance");
 
     private PrintRefusingKnockouts() {}
 

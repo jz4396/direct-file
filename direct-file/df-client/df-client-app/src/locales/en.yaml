@@ -122,6 +122,7 @@ subsubcategories:
     1095-As: Your Forms 1095-A
     1095-a: Your Forms 1095-A
     alt-calc-marriage: Alternative calculation for year of marriage
+    ptc-2026-eligibility: Premium Tax Credit eligibility for 2026
     policy-details: Policy details
     premiums-and-aptc: Premium and advance payment amounts
     ctc-odc: Child Tax Credit or Credit for Other Dependents
@@ -2470,6 +2471,9 @@ headings:
     repay some or all of the difference.<br /><br />If you got married in {{/taxYear}}, you may be able to use the
     alternative calculation for year of marriage to lower your repayment amount. Direct File doesn’t support this tax
     situation yet.<br /><br />Do you want to use the alternative calculation?
+  /heading/credits-and-deductions/credits/ptc-income-based-sep: >-
+    Did you enroll in any of your Marketplace plans during a special enrollment period based on your expected
+    household income?
   /heading/credits-and-deductions/credits/ptc-not-qualified-has-aptc:
     You don’t qualify for the Premium Tax Credit (PTC) this year, so you’ll need to repay the advance payments of PTC.
   /heading/credits-and-deductions/credits/cdcc/cdcc-qualified-people:
@@ -10682,6 +10686,29 @@ info:
       - p:
           You said you want to use the <LinkAltCalc>alternative calculation for year of marriage</LinkAltCalc> to
           calculate your Premium Tax Credit, which Direct File doesn’t support yet.
+  /info/credits-and-deductions/credits/ptc-income-based-sep:
+    body:
+      - p:
+          Some Marketplaces let people with lower expected household income enroll outside of open enrollment. This is
+          different from a special enrollment period after a life event, such as moving, getting married, or losing
+          other health coverage.
+  /info/credits-and-deductions/credits/ptc-income-based-sep-ko:
+    body:
+      - p:
+          You said you enrolled in a Marketplace plan during a special enrollment period based on your expected
+          household income. The Premium Tax Credit isn’t allowed for that plan, and Direct File doesn’t support this
+          situation yet.
+  /info/credits-and-deductions/credits/ptc-below-100-fpl-ko:
+    body:
+      - p:
+          Your household income is less than 100% of the federal poverty line for your tax family size. Direct File
+          doesn’t support figuring the Premium Tax Credit in this situation yet.
+  /info/credits-and-deductions/credits/ptc-self-employed-ko:
+    body:
+      - p:
+          You have self-employment income and Marketplace coverage. You may be able to deduct some of your premiums as
+          self-employed health insurance, which changes your Premium Tax Credit. Direct File doesn’t support this
+          situation yet.
   /info/credits-and-deductions/credits/why-i-dont-qualify:
     body:
       - p: <strong>Why don’t I qualify?</strong>
@@ -19842,6 +19869,10 @@ fields:
     boolean:
       "yes": Yes, I want to use the alternative calculation <strong>without Direct File</strong>
       "no": No, I want to keep using Direct File to file my taxes
+  /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod:
+    boolean:
+      "yes": Yes
+      "no": "No"
   /cdccCareProviders:
     controls:
       add: Add care provider
@@ -23936,6 +23967,7 @@ dataviews:
     /1095As/*/writablePtcMonthlyAptcPremiumDec: December advance payment of PTC
     /1095As/*/writableAptcAnnualAmount: Annual advance payment of PTC
     /writableWantsToUseAltCalculations: Do you want to use the alternative calculation?
+    /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod: Enrolled during an income-based special enrollment period?
     /receivedImproperClaims: >-
       Since 2015, has the IRS denied or reduced the amount of any of these credits that you took for any reason other
       than a math error: Child Tax Credit, Additional Child Tax Credit, Credit for Other Dependents?

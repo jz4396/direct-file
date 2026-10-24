@@ -99,6 +99,18 @@
       "url": "https://www.irs.gov/pub/irs-pdf/i8960.pdf",
       "kind": "pdf",
       "sha256": "b10fbb23ff4a053db197285497a00914c558e3ae0cdf5c956b7c0c7867376428"
+    },
+    "rp-2025-25": {
+      "title": "Rev. Proc. 2025-25, Applicable Percentage Table and Required Contribution Percentage for 2026",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-25.pdf",
+      "kind": "pdf",
+      "sha256": "ba950034c6d6d7f6ca70b9dc94754d923acc34f3d5646593fd12340fb6b67697"
+    },
+    "f8962-dft": {
+      "title": "Form 8962 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f8962--dft.pdf",
+      "kind": "pdf",
+      "sha256": "5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35"
     }
   },
   "parameters": [
@@ -2052,6 +2064,52 @@
           "quote": "No addition to tax shall be imposed under subsection (a) for any taxable year if the tax shown on the return for such taxable year (or, if no return is filed, the tax), reduced by the credit allowable under section 31, is less than $1,000."
         }
       ]
+    },
+    {
+      "fact": "/applicableFigureUnrounded",
+      "file": "ptc.xml",
+      "values": [
+        "Int:133",
+        "Rational:210/10000",
+        "Int:150",
+        "Rational:314/10000",
+        "Int:133",
+        "Rational:105/170000",
+        "Int:200",
+        "Rational:419/10000",
+        "Int:150",
+        "Rational:241/500000",
+        "Int:250",
+        "Rational:660/10000",
+        "Int:200",
+        "Rational:184/500000",
+        "Int:300",
+        "Rational:844/10000",
+        "Int:250",
+        "Rational:152/500000",
+        "Rational:996/10000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-25",
+          "section": "§3.01",
+          "page": 3,
+          "quote": "Applicable Percentage Table for 2026. For taxable years beginning in calendar year 2026, the Applicable Percentage Table for purposes of § 36B(b)(3)(A)(i) and § 1.36B-3(g) is: Less than 133% | 2.10% | 2.10% ; At least 133% but less than 150% | 3.14% | 4.19% ; At least 150% but less than 200% | 4.19% | 6.60% ; At least 200% but less than 250% | 6.60% | 8.44% ; At least 250% but less than 300% | 8.44% | 9.96% ; At least 300% but not more than 400% | 9.96% | 9.96%",
+          "form": "table"
+        },
+        {
+          "source": "irc",
+          "section": "§ 36B(c)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/36B",
+          "quote": "a taxpayer whose household income for the taxable year equals or exceeds 100 percent but does not exceed 400 percent of an amount equal to the poverty line for a family of the size involved."
+        },
+        {
+          "source": "f8962-dft",
+          "page": 1,
+          "quote": "Applicable figure. Using your line 5 percentage, locate your “applicable figure” on the table in the instructions"
+        }
+      ],
+      "note": "Tier floors are Ints (percent of the poverty line). Table percentages are Rationals over 10000 (2.10% = 210/10000); each tier's slope is (final - initial) / tier width per percentage point (e.g. (4.19% - 3.14%) / 17 = 105/170000), the linear sliding scale of Treas. Reg. 1.36B-3(g)(1). /applicableFigure rounds the result to 4 decimals."
     }
   ],
   "pendingReview": [
@@ -2111,120 +2169,6 @@
           "quote": "Married filing separately any age $5"
         }
       ]
-    },
-    {
-      "fact": "/ptcRepaymentLimitationLessThan200PercentFplSingle",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:375"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§2.04",
-          "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
-        }
-      ],
-      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/ptcRepaymentLimitationLessThan200PercentFplOther",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:750"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§2.04",
-          "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
-        }
-      ],
-      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/ptcRepaymentLimitationLessThan300PercentFplSingle",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:950"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§2.04",
-          "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
-        }
-      ],
-      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/ptcRepaymentLimitationLessThan300PercentFplOther",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:1900"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§2.04",
-          "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
-        }
-      ],
-      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/ptcRepaymentLimitationLessThan400PercentFplSingle",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:1575"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§2.04",
-          "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
-        }
-      ],
-      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
-      "tracking": "#91"
-    },
-    {
-      "fact": "/ptcRepaymentLimitationLessThan400PercentFplOther",
-      "file": "ptc.xml",
-      "taggedYear": 2024,
-      "status": "stale",
-      "values": [
-        "Dollar:3150"
-      ],
-      "cite": [
-        {
-          "source": "rp-2025-32",
-          "section": "§2.04",
-          "page": 5,
-          "quote": "Section 71305 of the OBBBA removes § 36B(f)(2)(B), which limited the tax increase from excess advance payments for certain households, effective for taxable years beginning after December 31, 2025. Accordingly, the inflation adjustment to § 36B(f)(2)(B) is removed from this revenue procedure."
-        }
-      ],
-      "note": "Repealed for TY2026: no 2026 cap amount exists, so this is not retagged. Every return that files Form 8962 stops at /flowKnockoutPtcTy2026RulesNotImplemented until the repayment cap path is removed.",
-      "tracking": "#91"
     },
     {
       "fact": "/studentLoanAmountPhaseOutAmount",

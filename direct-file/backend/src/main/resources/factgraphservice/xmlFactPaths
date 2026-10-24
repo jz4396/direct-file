@@ -589,7 +589,6 @@ Lines that do not have / in column 1 are comments.
 /ptcCanReportAnnualTotals
 /ptcMagi
 /ptcMontlyContributionAmount
-/ptcRepaymentLimitation
 /qssHasQualifyingUnclaimedDependent
 /qualifiedDividends
 /qualifiedForSaverCredit

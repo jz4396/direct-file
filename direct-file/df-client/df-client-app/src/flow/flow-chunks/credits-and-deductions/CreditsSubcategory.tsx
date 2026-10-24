@@ -2005,6 +2005,51 @@ export const CreditsSubcategory = (
                 <KnockoutButton i18nKey='button.knockout' />
               </Screen>
             </SubSubcategory>
+            <SubSubcategory route='ptc-2026-eligibility'>
+              <Screen route='ptc-income-based-sep' condition='/needsToFileForm8962'>
+                <ContextHeading
+                  displayOnlyOn='edit'
+                  i18nKey='/heading/credits-and-deductions/credits/ptc'
+                  batches={[`ptc-2`]}
+                />
+                <Heading i18nKey='/heading/credits-and-deductions/credits/ptc-income-based-sep' batches={[`ptc-2`]} />
+                <InfoDisplay i18nKey='/info/credits-and-deductions/credits/ptc-income-based-sep' batches={[`ptc-2`]} />
+                <Boolean path='/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod' batches={[`ptc-2`]} />
+                <SaveAndOrContinueButton />
+              </Screen>
+              <Screen
+                route='ptc-income-based-sep-ko'
+                condition='/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod'
+                isKnockout
+              >
+                <IconDisplay name='ErrorOutline' size={9} isCentered />
+                <Heading i18nKey='/heading/knockout/ptc-generic-ko' batches={[`ptc-2`]} />
+                <InfoDisplay
+                  i18nKey='/info/credits-and-deductions/credits/ptc-income-based-sep-ko'
+                  batches={[`ptc-2`]}
+                />
+                <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+                <KnockoutButton i18nKey='button.knockout' />
+              </Screen>
+              <Screen
+                route='ptc-below-100-fpl-ko'
+                condition='/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl'
+                isKnockout
+              >
+                <IconDisplay name='ErrorOutline' size={9} isCentered />
+                <Heading i18nKey='/heading/knockout/ptc-generic-ko' batches={[`ptc-2`]} />
+                <InfoDisplay i18nKey='/info/credits-and-deductions/credits/ptc-below-100-fpl-ko' batches={[`ptc-2`]} />
+                <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+                <KnockoutButton i18nKey='button.knockout' />
+              </Screen>
+              <Screen route='ptc-self-employed-ko' condition='/flowKnockoutPtcSelfEmployedHealthInsurance' isKnockout>
+                <IconDisplay name='ErrorOutline' size={9} isCentered />
+                <Heading i18nKey='/heading/knockout/ptc-generic-ko' batches={[`ptc-2`]} />
+                <InfoDisplay i18nKey='/info/credits-and-deductions/credits/ptc-self-employed-ko' batches={[`ptc-2`]} />
+                <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+                <KnockoutButton i18nKey='button.knockout' />
+              </Screen>
+            </SubSubcategory>
           </Gate>
         </Gate>
         <SubSubcategory route='ptc-outcomes-not-qualified' editable={false} headingLevel='h3'>
