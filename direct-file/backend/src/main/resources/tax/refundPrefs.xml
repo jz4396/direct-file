@@ -323,6 +323,7 @@
     <Fact path="/presidentalCampaignDesignationAmount">
       <Name>Presidental Campaign Designation Amount</Name>
       <Description>How much money the Presidental Campaign Designation is</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Dollar>3</Dollar>

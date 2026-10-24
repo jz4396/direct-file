@@ -520,6 +520,7 @@
       <Description>Max nontaxable social security or other nontaxable pensions, annuities, or disability
         income to be
         qualified for EDC as single, HoH, QSS filing statuses</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>5000</Dollar>
       </Derived>
@@ -529,6 +530,7 @@
       <Description>Max nontaxable social security or other nontaxable pensions, annuities, or disability
         income to be
         qualified for EDC as MFS filing status</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>3750</Dollar>
       </Derived>
@@ -538,6 +540,7 @@
       <Description>Max nontaxable social security or other nontaxable pensions, annuities, or disability
         income to be
         qualified for EDC as MFJ filing status when both filers qualify</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>7500</Dollar>
       </Derived>
@@ -547,6 +550,7 @@
       <Description>Max nontaxable social security or other nontaxable pensions, annuities, or disability
         income to be
         qualified for EDC as MFJ filing status when only one filer qualifies</Description>
+      <TaxYear>2026</TaxYear>
       <!-- This is currently redudant as it has the same value as /maxSingleHohQssNontaxableLimit. It might make sense
       to combine them but not doing that in case they differ in the future -->
       <Derived>
@@ -1239,6 +1243,7 @@
 
     <Fact path="/edcExemptionAmount">
       <Description>1040 Schedule R Line 15: The EDC exemption amount used to calculate the AGI modified for the EDC</Description>
+      <TaxYear>2026</TaxYear>
       <Export mef="true" />
       <Derived>
         <Switch>
