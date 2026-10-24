@@ -20,7 +20,8 @@ info:
   /info/income/schedule-c/qbi:
     body: >-
       La deducción por ingreso calificado de negocios (sección 199A del Código de Impuestos Internos) todavía no
-      está disponible. Si desea reclamarla, no puede usar esta herramienta para esta declaración.
+      está disponible. Se aplica a los ingresos de negocio aunque usted no decida reclamarla, así que esta
+      herramienta todavía no puede presentar una declaración con ingresos de trabajo por cuenta propia.
   /info/income/schedule-c/loop-intro:
     body: >-
       Agregue una entrada por cada negocio o actividad esporádica. Calcularemos la ganancia neta y el impuesto sobre
@@ -33,8 +34,9 @@ info:
     alertText:
       body:
         - p: >-
-            Esta herramienta todavía no calcula la deducción por ingreso calificado de negocios. Necesitará otra
-            manera de presentar la declaración si desea reclamarla.
+            Esta herramienta todavía no calcula la deducción por ingreso calificado de negocios. Se aplica a todos
+            los ingresos de negocio por cuenta propia, trabajos esporádicos o trabajo independiente, así que
+            necesitará otra manera de presentar esta declaración.
 fields:
   /hadSelfEmploymentIncome:
     boolean:
