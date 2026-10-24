@@ -153,6 +153,17 @@ export const AmountSubcategory = (
       <DFAlert i18nKey='/info/knockout/form-8615' headingLevel='h3' type='warning' />
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
+    {/* #89: Form 1040 lines 27a-29 need Schedule 3-A (line 32b), which has no template or line 32b fact yet. */}
+    <Screen
+      route='schedule-3a-without-ty2026-template-knockout'
+      condition='/flowKnockoutSchedule3AWithoutTy2026Template'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-3a-without-ty2026-template' />
+      <DFAlert i18nKey='/info/knockout/schedule-3a-without-ty2026-template' headingLevel='h3' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
     {/* #92 Form 2210: lines 1-7 are computed; when a penalty is possible, ask the Part II questions. Any box knocks
         out; with none, the IRS figures any penalty and sends a bill, and Form 1040 line 38 stays blank. */}
     <SubSubcategory route='estimated-tax-penalty'>
