@@ -205,8 +205,13 @@ Run the test suite that is executed in CI with:
 
 `SubmissionBlockingFactsTest.clientGeneratedListsEqualTheServerLists` compares the server's submission-blocking facts
 with the client's generated list (`df-client/df-client-app/src/fact-dictionary/generated/submissionBlockingFacts.ts`).
-That file is gitignored, so generate it first, as above; the test fails, rather than skips, when it is missing. A build
-without the client sources (the Docker image) excludes the test with `-DexcludedGroups=client-generated`.
+That file is gitignored, so generate it first, as above; the test fails, rather than skips, when it is missing.
+
+The Docker image build (`Dockerfile-local`) has no client sources, so the generated directory is passed in as the
+`client-generated` build context. `docker_build.sh` generates the list and passes it; `docker-compose.yaml` passes
+`df-client/df-client-app/src/fact-dictionary/generated`, so generate the list before `docker compose build`. A build that
+runs tests stops with an error when the list is missing, and the parity test fails when the list is stale.
+`SKIP_CHECKS=true` builds (`docker-compose.local.yaml`) run no tests and need no generated list.
 
 ## Database migrations
 
