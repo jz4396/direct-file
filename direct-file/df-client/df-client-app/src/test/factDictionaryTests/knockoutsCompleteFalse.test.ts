@@ -112,7 +112,9 @@ describe(`knockouts are complete false when they don't apply (#186)`, () => {
       if (!ko.complete || ko.value !== false) failures.push(`${name}: /flowIsKnockedOut = ${ko.complete} ${ko.value}`);
     }
     expect(failures).toEqual([]);
-    expect(clean).toBeGreaterThan(100);
+    // Most returns are clean; the Schedule C and Schedule 3-A template knockouts (#89) take out the business and
+    // EIC/ACTC returns, which leaves 99 clean returns on this tree.
+    expect(clean).toBeGreaterThan(90);
   }, 600000);
 });
 
