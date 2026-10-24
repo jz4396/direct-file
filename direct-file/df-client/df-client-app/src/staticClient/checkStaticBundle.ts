@@ -16,6 +16,10 @@ import { STATIC_BACKEND_URL } from './staticMode.js';
  * - Every HTML page carries the static CSP <meta> (`connect-src 'none'`) and has no inline or third-party script.
  * - The JavaScript was built in static mode: it contains the network guard and the `.invalid` backend URL, and no
  *   other backend URL (a localhost API, or any absolute `.../df/file/api/` URL) or analytics loader.
+ * - No asset calls fetch/sendBeacon/EventSource/WebSocket/XMLHttpRequest.open/importScripts with a URL on another
+ *   origin, has a WebSocket URL, or names an absolute data endpoint (`/api/`, `/graphql`, `/collect`, telemetry).
+ * - No staged file holds a Cloudflare API key or token, a credential variable name, a literal bearer token, or
+ *   (when given) the exact value of a deploy credential.
  * - The site doesn't present itself as the official service: the unofficial-preview banner (English and Spanish) is
  *   in the bundle; there is no government site banner or IRS logo; no page title or description names the agency;
  *   no site icon, favicon.ico, manifest or browserconfig, and no file with the bytes of main's seal or logo images;
@@ -77,7 +81,59 @@ const ROBOTS_DISALLOW_ALL = (text: string) => /^User-agent: \*$/m.test(text) && 
 const FORBIDDEN_IN_ASSETS: [RegExp, string][] = [
   [/localhost:\d+/, `a localhost URL`],
   [/googletagmanager\.com/, `the analytics loader`],
+  [/\bwss?:\/\/[A-Za-z0-9]/, `a WebSocket URL`],
 ];
+
+const STATIC_BACKEND_ORIGIN = new URL(STATIC_BACKEND_URL).origin;
+
+/**
+ * A browser network API called with an absolute or protocol-relative URL literal. The only allowed target is the
+ * `.invalid` backend origin, which the network guard answers in the page.
+ */
+const NETWORK_CALL_TO_URL =
+  /\b(fetch|sendBeacon|EventSource|WebSocket|importScripts|\.open)\(\s*(?:["'`](?:GET|POST|PUT|PATCH|DELETE)["'`]\s*,\s*)?["'`]((?:https?:|wss?:)?\/\/[^"'`\s]*)/g;
+
+/**
+ * Absolute URLs whose path looks like a data endpoint (an API, collector or telemetry sink) rather than a page a
+ * person follows. The interview links to many government pages, so other absolute URLs are allowed: the CSP
+ * (`connect-src 'none'`) and the network guard stop the page from sending requests to them.
+ */
+const DATA_ENDPOINT_URL =
+  /https?:\/\/[A-Za-z0-9.-]+(?::\d+)?[^\s'"`)<>]*?(?:\/api\/|\/graphql\b|\/collect\b|\/telemetry\b|\/ingest\b|\/beacon\b|\/rum\b|\/v\d+\/(?:track|events?|logs?|metrics)\b)/g;
+
+/**
+ * Credential patterns that must never appear in the staged site: Cloudflare's prefixed API keys and tokens
+ * (`cfk_`, `cfut_`, `cfat_`, and wrangler's `cfoat_` OAuth tokens), and the deploy credentials' variable names
+ * (the build never needs them, so their presence means something read the deploy environment).
+ */
+export const SECRET_PATTERNS: [RegExp, string][] = [
+  [/\bcf(?:k|ut|at|oat)_[A-Za-z0-9]{40}/, `a Cloudflare API key or token`],
+  [/CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID|API_KEY)/, `a Cloudflare credential variable name`],
+  [/Authorization["']?\s*[:,]\s*["']?Bearer\s+[A-Za-z0-9._~+/-]{20,}/, `a literal bearer token`],
+];
+
+/** Problems for one file's text: credentials, plus `extraSecrets` (exact values, never echoed in the message). */
+export function secretProblems(where: string, text: string, extraSecrets: string[] = []): string[] {
+  const problems = SECRET_PATTERNS.filter(([re]) => re.test(text)).map(([, what]) => `${where}: contains ${what}`);
+  if (extraSecrets.some((s) => s.length >= 8 && text.includes(s))) {
+    problems.push(`${where}: contains a value of a deploy credential`);
+  }
+  return problems;
+}
+
+/** Problems for one JavaScript/HTML/CSS asset: network calls or data endpoints off the page's origin. */
+export function dataEndpointProblems(where: string, text: string): string[] {
+  const problems: string[] = [];
+  for (const m of text.matchAll(NETWORK_CALL_TO_URL)) {
+    const url = m[2];
+    const origin = url.startsWith(`//`) ? `` : new URL(url, `https://x.invalid`).origin;
+    if (origin !== STATIC_BACKEND_ORIGIN) problems.push(`${where}: ${m[1]}() to ${url}`);
+  }
+  for (const m of text.matchAll(DATA_ENDPOINT_URL)) {
+    if (!m[0].startsWith(STATIC_BACKEND_ORIGIN + `/`)) problems.push(`${where}: data endpoint URL ${m[0]}`);
+  }
+  return problems;
+}
 
 function walk(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -86,7 +142,11 @@ function walk(dir: string): string[] {
   });
 }
 
-export function checkStaticBundle(siteDir: string): string[] {
+/**
+ * `extraSecrets`: exact values that must not appear in any staged file (for example the deploy credentials, when
+ * the caller has them). Problems name the file, never the value.
+ */
+export function checkStaticBundle(siteDir: string, extraSecrets: string[] = []): string[] {
   const problems: string[] = [];
   const rel = (f: string) => path.relative(siteDir, f);
   if (!fs.existsSync(siteDir)) return [`${siteDir} does not exist`];
@@ -109,7 +169,9 @@ export function checkStaticBundle(siteDir: string): string[] {
   }
   for (const f of files) {
     if (isIconAsset(rel(f))) problems.push(`${rel(f)}: site icon or manifest is staged`);
-    const hash = crypto.createHash(`sha256`).update(fs.readFileSync(f)).digest(`hex`);
+    const bytes = fs.readFileSync(f);
+    problems.push(...secretProblems(rel(f), bytes.toString(`latin1`), extraSecrets));
+    const hash = crypto.createHash(`sha256`).update(bytes).digest(`hex`);
     const official = OFFICIAL_HASHES.get(hash);
     if (official) problems.push(`${rel(f)}: same bytes as ${official} (IRS seal or logo)`);
   }
@@ -160,6 +222,7 @@ export function checkStaticBundle(siteDir: string): string[] {
     if (text.includes(BLOCKED_MESSAGE)) sawGuard = true;
     if (text.includes(STATIC_BACKEND_URL)) sawStaticBackend = true;
     for (const [re, what] of FORBIDDEN_IN_ASSETS) if (re.test(text)) problems.push(`${rel(f)}: contains ${what}`);
+    problems.push(...dataEndpointProblems(rel(f), text));
     for (const m of text.matchAll(/https?:\/\/[^\s'"`)]*\/df\/file\/api\//g)) {
       if (m[0] !== STATIC_BACKEND_URL) problems.push(`${rel(f)}: backend URL ${m[0]}`);
     }
