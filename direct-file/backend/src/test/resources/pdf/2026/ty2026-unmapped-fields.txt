@@ -37,9 +37,6 @@ pdf/2024/IRS1040/es/f1040sp.pdf	topmostSubform[0].Page2[0].f2_41[0]	Tx	Nombre de
 pdf/2024/IRS1040/es/f1040sp.pdf	topmostSubform[0].Page2[0].f2_42[0]	Tx	Núm. de tel.
 pdf/2024/IRS1040/es/f1040sp.pdf	topmostSubform[0].Page2[0].f2_43[0]	Tx	Dirección de la empresa.
 pdf/2024/IRS1040/es/f1040sp.pdf	topmostSubform[0].Page2[0].f2_44[0]	Tx	E I N de la empresa.
-pdf/2024/IRS1040EIC/en/f1040sei-p.pdf	topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].c1_5[0]	Btn	
-pdf/2024/IRS1040EIC/en/f1040sei-p.pdf	topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].c1_6[0]	Btn	
-pdf/2024/IRS1040EIC/en/f1040sei-p.pdf	topmostSubform[0].Page1[0].c1_7[0]	Btn	
 pdf/2024/IRS1040EIC/es/f1040sep-p.pdf	topmostSubform[0].Page1[0].Line4b[0].Child1YesNo[0].c1_5[1]	Btn	
 pdf/2024/IRS1040EIC/es/f1040sep-p.pdf	topmostSubform[0].Page1[0].Line4b[0].Child2YesNo[0].c1_6[1]	Btn	
 pdf/2024/IRS1040EIC/es/f1040sep-p.pdf	topmostSubform[0].Page1[0].Line4b[0].Child3YesNo[0].c1_7[1]	Btn	
@@ -436,6 +433,9 @@ pdf/2026/IRS1040/en/f1040--dft.pdf	topmostSubform[0].Page2[0].f2_53[0]	Tx	Firm's
 pdf/2026/IRS1040/en/f1040--dft.pdf	topmostSubform[0].Page2[0].f2_54[0]	Tx	Phone no.
 pdf/2026/IRS1040/en/f1040--dft.pdf	topmostSubform[0].Page2[0].f2_55[0]	Tx	Firm's address.
 pdf/2026/IRS1040/en/f1040--dft.pdf	topmostSubform[0].Page2[0].f2_56[0]	Tx	Firm's E I N.
+pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf	topmostSubform[0].Page1[0].Line4b_Child1_ReadOrder[0].c1_4[0]	Btn	4b. No. The child is not a qualifying child.
+pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf	topmostSubform[0].Page1[0].Line4b_Child2_ReadOrder[0].c1_5[0]	Btn	4b. No. The child is not a qualifying child.
+pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf	topmostSubform[0].Page1[0].c1_6[0]	Btn	4b. No. The child is not a qualifying child.
 pdf/2026/IRS1040S1/en/f1040s1--dft.pdf	topmostSubform[0].Page1[0].f1_03[0]	Tx	For 2026, enter the amount reported to you on Form(s) 1099-K that was in...
 pdf/2026/IRS1040S1/en/f1040s1--dft.pdf	topmostSubform[0].Page1[0].f1_04[0]	Tx	Part I. Additional Income. 1. Taxable refunds, credits, or offsets of st...
 pdf/2026/IRS1040S1/en/f1040s1--dft.pdf	topmostSubform[0].Page1[0].f1_05[0]	Tx	2a. Alimony received.

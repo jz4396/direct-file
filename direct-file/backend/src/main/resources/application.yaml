@@ -211,9 +211,9 @@ direct-file:
       - name: IRS1040EIC
         year: 2026
         language-code: en
-        location: pdf/2024/IRS1040EIC/en/f1040sei-p.pdf
+        location: pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS1040EIC/en/configuration.yml
+        configuration-location: pdf/2026/IRS1040EIC/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS1040EIC
