@@ -716,47 +716,47 @@ info:
   /info/income/income-sources-not-supported:
     body:
       - p: Direct File aún no acepta los siguientes
-      - h3: Extranjero
+      - h2: Extranjero
       - ul:
           - li: Fuentes en el extranjero o territorios estadounidenses
           - li: >-
               Cuentas financieras, activos financieros o fideicomisos en el extranjero o en territorios estadounidenses
           - li: >-
               Regalos mayores de $100,000 de parte de patrimonios en el extranjero o no residentes
-      - h3: Inversiones
+      - h2: Inversiones
       - ul:
           - li: Ganancias o pérdidas de capital (Formularios 1099-B y 1099-S)
           - li: Descuento de emisión original (Formulario 1099-OID)
           - li: Patrimonios y fideicomisos
-      - h3: Jubilación
+      - h2: Jubilación
       - ul:
           - li: >-
               Aportaciones o distribuciones de Cuentas individuales de jubilación (IRA)
           - li: >-
               Beneficios de jubilación de empleados ferroviarios (Formulario RRB-1099)
-      - h3: Negocios
+      - h2: Negocios
       - ul:
           - li: Ingresos de un empresario por cuenta propia
           - li: >-
               Ingresos de una sociedad colectiva o sociedad anónima de tipo S (Anexo K-1)
-      - h3: Trabajo como contratista independiente o por encargo
+      - h2: Trabajo como contratista independiente o por encargo
       - ul:
           - li: Economía compartida (Formulario 1099-K)
           - li: Contratista independiente (Formulario 1099-NEC)
           - li: Trabajo por cuenta propia
-      - h3: Propiedades
+      - h2: Propiedades
       - ul:
           - li: Alquileres
           - li: Regalías (Formulario 1099-MISC)
           - li: >-
               Intereses de hipotecas financiadas por el vendedor (Formulario 1099-INT y 1098)
-      - h3: Pagos gubernamentales
+      - h2: Pagos gubernamentales
       - ul:
           - li: >-
               Reembolsos, créditos o compensaciones de impuestos estatales o locales (Formulario 1099-G, casilla 2)
           - li: Subvenciones tributables (Formulario 1099-G, casilla 6)
           - li: Otros pagos gubernamentales (Formulario 1099-MISC, casilla 3)
-      - h3: Otros
+      - h2: Otros
       - ul:
           - li: Ganancias de juegos de azar (Formulario W-2G)
           - li: Cancelación de deuda (Formulario 1099-C)

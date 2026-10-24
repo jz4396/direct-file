@@ -16,6 +16,7 @@ vi.mock(`react-i18next`, () => ({
       t: mocks.t,
       i18n: {
         exists: (key: string) => !!mocks.t(key),
+        t: mocks.t,
       },
     };
   },

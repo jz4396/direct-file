@@ -44,6 +44,7 @@ import gov.irs.directfile.models.TaxReturnStatus;
 public class StateApiController implements StateApi {
 
     public static final String BASE_URL = "/state-api";
+    static final String EXPORTED_FACTS_FAILED_REASON = "The exported facts could not be produced.";
     private final UserService userService;
     private final TaxReturnService taxReturnService;
     private final StateApiService stateApiService;
@@ -126,7 +127,7 @@ public class StateApiController implements StateApi {
 
             return new ResponseEntity<>(responseBuilder.build(), HttpStatus.OK);
         } catch (WebClientResponseException e) {
-            log.error("Error getting authorization code {}", e.getMessage());
+            log.error("Error getting authorization code: {} {}", e.getClass().getName(), e.getStatusCode());
             throw e;
         }
     }
@@ -170,11 +171,15 @@ public class StateApiController implements StateApi {
             var factsExportedToState = stateApiService.getExportToStateFacts(graph);
             return new ResponseEntity<>(new GetStateExportedFactsResponse(factsExportedToState), HttpStatus.OK);
         } catch (JsonProcessingException | FactGraphSaveException e) {
-            log.error("getStateExportedFacts failed to evaluate fact graph: {}", e.getMessage(), e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            log.error(
+                    "getStateExportedFacts failed to evaluate fact graph: {}",
+                    e.getClass().getName());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EXPORTED_FACTS_FAILED_REASON, e);
         } catch (Exception e) {
-            log.error("getStateExportedFacts failed unexpectedly: {}", e.getMessage(), e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            log.error(
+                    "getStateExportedFacts failed unexpectedly: {}",
+                    e.getClass().getName());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, EXPORTED_FACTS_FAILED_REASON, e);
         }
     }
 
