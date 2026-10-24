@@ -1,5 +1,8 @@
 package gov.irs.directfile.api.errors;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatusCode;
 
@@ -13,7 +16,7 @@ public class SubmissionBlockingFactsResponseStatusException extends ApiResponseS
             "status":"BAD_REQUEST",
             "message":"400 BAD_REQUEST \\"Submission blocking facts are true for tax return.\\"",
             "apiErrorKey":"generic.submissionError",
-            "body":{}
+            "body":{"blockingFacts":["/flowIsKnockedOut"]}
         }
             """;
 
@@ -42,5 +45,15 @@ public class SubmissionBlockingFactsResponseStatusException extends ApiResponseS
 
     public SubmissionBlockingFactsResponseStatusException() {
         this("");
+    }
+
+    /** Lists the blocking fact paths (never their values) in the message and as {@code blockingFacts} in the body. */
+    public SubmissionBlockingFactsResponseStatusException(List<String> blockingFactPaths) {
+        super(
+                SubmissionBlockingFacts.code,
+                SubmissionBlockingFacts.description + " " + String.join(", ", blockingFactPaths),
+                ApiErrorKeys.SUBMISSION_BLOCKING_FACTS,
+                Map.of("blockingFacts", List.copyOf(blockingFactPaths)),
+                null);
     }
 }

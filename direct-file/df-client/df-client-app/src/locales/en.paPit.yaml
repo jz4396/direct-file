@@ -23,6 +23,7 @@ dataviews:
     /paSchoolDistrictCode: Pennsylvania school district code
     /paHasSpNontaxableIncome: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
     /paPartYearResidentInterest: Interest received while a Pennsylvania resident
+    /paPartYearHasNonresidentPaSourcePay: Pay for work in Pennsylvania while you lived in Florida, not in box 16
     /paHasUnreimbursedEmployeeExpenses:
       Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
     /paHasUnsupportedItems: Do any Pennsylvania items this tool doesn’t support apply to you?
@@ -50,6 +51,11 @@ headings:
   /heading/your-taxes/amount/pa-part-year-interest:
     How much of your interest did you receive while you lived in Pennsylvania?
   /heading/knockout/pa-part-year: This tool doesn’t yet support your Pennsylvania part-year resident return
+  /heading/your-taxes/amount/pa-part-year-nonresident-pa-pay:
+    While you lived in Florida, did you earn pay for work you did in Pennsylvania that isn’t in box 16 of a Pennsylvania
+    W-2?
+  /heading/knockout/pa-part-year-nonresident-pa-pay:
+    This tool doesn’t yet support Pennsylvania pay you earned while you lived in Florida
   /heading/your-taxes/amount/pa-school-district:
     "What is the code for the Pennsylvania school district you lived in on December 31, {{/taxYear}}?"
   /heading/knockout/pa-schedule-a: This tool doesn’t yet support PA Schedule A for your interest income
@@ -155,6 +161,23 @@ info:
         - p:
             "This includes: a joint return, a move date that isn’t after January 1 and in {{/taxYear}}, a W-2 from a
             state other than Pennsylvania or Florida, or a Florida W-2 with state income tax withheld in box 17."
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/your-taxes/amount/pa-part-year-nonresident-pa-pay:
+    body:
+      - p:
+          Pennsylvania taxes pay for work you do in Pennsylvania, even while you live in another state. Answer yes if,
+          after you moved to Florida (or before you moved to Pennsylvania), you did work in Pennsylvania and that pay
+          isn’t included in box 16 of a Pennsylvania W-2. For example, a Florida employer paid you for days you worked
+          in Pennsylvania.
+  /info/knockout/pa-part-year-nonresident-pa-pay:
+    alertText:
+      body:
+        - p:
+            Pennsylvania requires PA Schedule NRH to figure pay for work you did in Pennsylvania while you lived in
+            another state, and this tool doesn’t support that schedule yet.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:

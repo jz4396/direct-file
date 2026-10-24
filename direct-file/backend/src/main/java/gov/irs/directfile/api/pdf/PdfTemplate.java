@@ -57,6 +57,9 @@ abstract class PdfTemplate {
             // ASN 16
             new PdfForm("SCHEDULE_R"),
 
+            // ASN 17 (#89: 2026 draft Schedule SE)
+            new PdfForm("IRS1040SSE"),
+
             // ASN 21
             new Irs2441PdfForm("IRS2441"),
             new PdfTable("CDCC_QUALIFYING_PERSON_STATEMENT"),

@@ -38,15 +38,46 @@ export type HeaderComponentName = (typeof HEADER_COMPONENT_NAMES)[number];
 export const AGGREGATED_ALERT_COMPONENT_NAMES = [`MefAlert`, `TaxReturnAlert`] satisfies ScreenContentComponentName[];
 export type AggregatedAlertComponentName = (typeof AGGREGATED_ALERT_COMPONENT_NAMES)[number];
 
+type FormFieldElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+const isFieldInError = (field: FormFieldElement) =>
+  field.getAttribute(`aria-invalid`) === `true` || (field.willValidate && !field.validity.valid);
+
+export type FocusOnErrorOptions = {
+  /**
+   * Scroll the window to the top after moving focus instead of scrolling the focused element into
+   * view. Used on screens with a single field, where scrolling the field into view would cut off its
+   * label and the question above it.
+   */
+  scrollToTop?: boolean;
+};
+
 /**
- * Find and focus the error summary box or any invalid inputs.
+ * Find and focus the error summary box or, when a screen has no summary, the first field in error.
  *
  * Used with Continue buttons to highlight why the tax filer cannot move forward.
+ *
+ * Focus moves after the render that shows the error feedback, so the focused field already has
+ * `aria-invalid` and its error message in `aria-describedby` when assistive technology announces
+ * it (WCAG 2.1 SC 3.3.1). A field counts as in error when it fails its own fact validation
+ * (`aria-invalid`), not only when it fails the browser's constraint validation; otherwise a
+ * single amount with a format error (for example too many cents digits) never receives focus.
+ *
+ * Scrolling happens in the same deferred step, after focus, so the requested scroll position is the
+ * final one.
  */
-export const focusOnErrorOrSummary = () => {
-  const el = document.querySelector(`input:invalid,textarea:invalid,select:invalid,[id='${ERROR_SUMMARY_ID}']`);
-  const id = el?.id || ``;
-  scrollToRef(document.getElementById(id));
+export const focusOnErrorOrSummary = ({ scrollToTop = false }: FocusOnErrorOptions = {}) => {
+  window.setTimeout(() => {
+    const summary = document.getElementById(ERROR_SUMMARY_ID);
+    const fields = summary ? [] : Array.from(document.querySelectorAll<FormFieldElement>(`input,select,textarea`));
+    const target = summary ?? fields.find(isFieldInError);
+    if (scrollToTop) {
+      target?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0 });
+    } else if (target) {
+      scrollToRef(target);
+    }
+  }, 0);
 };
 
 export function conditionsAsKeySuffix({ props: { condition, conditions } }: ScreenContentConfig) {

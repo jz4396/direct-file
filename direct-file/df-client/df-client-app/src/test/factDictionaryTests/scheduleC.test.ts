@@ -316,33 +316,39 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     it(`Review case: $150,000 box 3 + $20,000 box 7 + $40,000 profit → SS portion $1,798 (was $4,278)`, ({ task }) => {
       task.meta.testedFactPaths = [
         `/primaryFilerOasdiTipsTotal`,
-        `/seRemainingSocialSecurityWageBase`,
-        `/seSocialSecurityTaxableEarnings`,
-        `/seSocialSecurityTax`,
+        `/primaryFilerSeRemainingSocialSecurityWageBase`,
+        `/primaryFilerSeSocialSecurityTaxableEarnings`,
+        `/primaryFilerSeSocialSecurityTax`,
       ];
       const fg = mk(`150000`, `20000`, `40000`);
       expect(fg.get(`/seNetEarningsFromSelfEmployment` as ConcretePath).get.toString()).toBe(`36940.00`);
       expect(fg.get(`/primaryFilerOasdiTipsTotal` as ConcretePath).get.toString()).toBe(`20000.00`);
       // 184,500 − 150,000 − 20,000 = 14,500
-      expect(fg.get(`/seRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`14500.00`);
-      expect(fg.get(`/seSocialSecurityTaxableEarnings` as ConcretePath).get.toString()).toBe(`14500.00`);
+      expect(fg.get(`/primaryFilerSeRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`14500.00`);
+      expect(fg.get(`/primaryFilerSeSocialSecurityTaxableEarnings` as ConcretePath).get.toString()).toBe(`14500.00`);
       // 14,500 × 12.4% = 1,798
-      expect(fg.get(`/seSocialSecurityTax` as ConcretePath).get.toString()).toBe(`1798.00`);
+      expect(fg.get(`/primaryFilerSeSocialSecurityTax` as ConcretePath).get.toString()).toBe(`1798.00`);
     });
 
     it(`no tips: $150,000 box 3 + $40,000 profit → unchanged behavior, SS portion $4,278`, ({ task }) => {
-      task.meta.testedFactPaths = [`/seRemainingSocialSecurityWageBase`, `/seSocialSecurityTax`];
+      task.meta.testedFactPaths = [
+        `/primaryFilerSeRemainingSocialSecurityWageBase`,
+        `/primaryFilerSeSocialSecurityTax`,
+      ];
       const fg = mk(`150000`, null, `40000`);
-      expect(fg.get(`/seRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`34500.00`);
+      expect(fg.get(`/primaryFilerSeRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`34500.00`);
       // min(36,940, 34,500) × 12.4% = 4,278
-      expect(fg.get(`/seSocialSecurityTax` as ConcretePath).get.toString()).toBe(`4278.00`);
+      expect(fg.get(`/primaryFilerSeSocialSecurityTax` as ConcretePath).get.toString()).toBe(`4278.00`);
     });
 
     it(`tips push wages past the base → remaining base floors at $0`, ({ task }) => {
-      task.meta.testedFactPaths = [`/seRemainingSocialSecurityWageBase`, `/seSocialSecurityTax`];
+      task.meta.testedFactPaths = [
+        `/primaryFilerSeRemainingSocialSecurityWageBase`,
+        `/primaryFilerSeSocialSecurityTax`,
+      ];
       const fg = mk(`175000`, `20000`, `40000`);
-      expect(fg.get(`/seRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`0.00`);
-      expect(fg.get(`/seSocialSecurityTax` as ConcretePath).get.toString()).toBe(`0.00`);
+      expect(fg.get(`/primaryFilerSeRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`0.00`);
+      expect(fg.get(`/primaryFilerSeSocialSecurityTax` as ConcretePath).get.toString()).toBe(`0.00`);
     });
   });
 });

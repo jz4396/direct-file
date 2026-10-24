@@ -7,6 +7,7 @@ public record TaxFact(
         @JsonIgnore String name,
         @JsonIgnore String description,
         boolean exportZero,
+        @JsonIgnore boolean blockSubmissionOnTrue,
         TaxWritable writable,
         TaxCompNode derived,
         TaxCompNode placeholder,

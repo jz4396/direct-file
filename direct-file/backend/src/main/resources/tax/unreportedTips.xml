@@ -5,18 +5,28 @@
       <Name>Has cash or charge tips not reported to an employer</Name>
       <Description>
         Screener for #26 (TY2026, filed in 2027). Form 4137 (2025), page 1, "Who must file": "You must
-        file Form 4137 if you received cash and charge tips of $20 or more in a calendar month and didn't
-        report all of those tips to your employer." Pub. 531 (12-2024), page 5: "If you received $20 or
-        more in cash and charge tips in a month from any one job and didn't report all of those tips to
-        your employer, you must report the social security, Medicare, and Additional Medicare taxes on the
+        file
+        Form 4137 if you received cash and charge tips of $20 or more in a calendar month and didn't
+        report all of those
+        tips to your employer." Pub. 531 (12-2024), page 5: "If you received $20 or
+        more in cash and charge tips in a
+        month from any one job and didn't report all of those tips to
+        your employer, you must report the social security,
+        Medicare, and Additional Medicare taxes on the
         unreported tips as additional tax on your return."
-        26 U.S.C. 3121(q): "tips received by an employee in the course of his employment shall be
-        considered remuneration for such employment"; 3121(a)(12)(B) excludes "cash tips received by an
-        employee in any calendar month ... unless the amount of such cash tips is $20 or more".
-        26 U.S.C. 3102(c)(1): employer withholding applies "only to such tips as are included in a written
-        statement furnished to the employer pursuant to section 6053(a)"; 3102(c)(4): any excess "shall be
+        26 U.S.C.
+        3121(q): "tips received by an employee in the course of his employment shall be
+        considered remuneration for such
+        employment"; 3121(a)(12)(B) excludes "cash tips received by an
+        employee in any calendar month ... unless the
+        amount of such cash tips is $20 or more".
+        26 U.S.C. 3102(c)(1): employer withholding applies "only to such tips
+        as are included in a written
+        statement furnished to the employer pursuant to section 6053(a)"; 3102(c)(4): any
+        excess "shall be
         paid by the employee." (statute text as rendered by LII)
-        Placeholder false so returns that never see the screen are unaffected.
+        Placeholder false so returns that never
+        see the screen are unaffected.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -31,9 +41,12 @@
       <Name>Knockout: unreported tips (Form 4137 / Schedule 2 line 5)</Name>
       <Description>
         Form 4137 (social security and Medicare tax on unreported tips, Schedule 2 line 5) is not
-        supported. Without this knockout, unreported tips would be silently left out of income and of
-        the employee share of social security and Medicare tax. Cites: see /hasUnreportedTips.
-        W-2 box 8 allocated tips are handled separately by formW2s /flowKnockoutAllocatedTips.
+        supported.
+        Without this knockout, unreported tips would be silently left out of income and of
+        the employee share of social
+        security and Medicare tax. Cites: see /hasUnreportedTips.
+        W-2 box 8 allocated tips are handled separately by
+        formW2s /flowKnockoutAllocatedTips.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />

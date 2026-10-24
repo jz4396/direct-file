@@ -18,7 +18,8 @@
     -->
     <Fact path="/nonItemizerHadCashGifts">
       <Name>Gave cash to qualifying charities</Name>
-      <Description>#45 gate. Cash or check gifts to a §170(b)(1)(A) charity, not to a 509(a)(3) supporting organization and not to a donor-advised fund (§170(p)(1)-(2)).</Description>
+      <Description>#45 gate. Cash or check gifts to a §170(b)(1)(A) charity, not to a 509(a)(3) supporting organization
+        and not to a donor-advised fund (§170(p)(1)-(2)).</Description>
       <Export downstreamFacts="true" />
       <Writable>
         <Boolean />
@@ -27,7 +28,8 @@
 
     <Fact path="/nonItemizerWritableCashGifts">
       <Name>Cash gifts to qualifying charities</Name>
-      <Description>#45: total cash or check gifts made in the tax year to qualifying charities, excluding gifts to supporting organizations and donor-advised funds (§170(p)). Noncash gifts and carryovers ((d)(1)) don't count.</Description>
+      <Description>#45: total cash or check gifts made in the tax year to qualifying charities, excluding gifts to
+        supporting organizations and donor-advised funds (§170(p)). Noncash gifts and carryovers ((d)(1)) don't count.</Description>
       <Writable>
         <Dollar />
       </Writable>
@@ -73,7 +75,8 @@
 
     <Fact path="/nonItemizerCharitableCap">
       <Name>§170(p) cap</Name>
-      <Description>#45: "$1,000 ($2,000 in the case of a joint return)", IRC §170(p). MFS, single, HOH and QSS get $1,000.</Description>
+      <Description>#45: "$1,000 ($2,000 in the case of a joint return)", IRC §170(p). MFS, single, HOH and QSS get
+        $1,000.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -104,8 +107,10 @@
         §170(b)(1)(H), no NOL carryback in scope). §170(p) computes the deduction "without regard to" (b)(1)(I), so the
         0.5% floor of §170(b)(1)(I) does not apply here; the floor applies only to itemized gifts (Schedule A line 13,
         scheduleA.xml). It is also computed without regard to (b)(1)(G)(ii) carryovers and
-        (d)(1), so nothing carries over from or to this deduction. Not gated by itemizing, so /itemizesDeductions can
-        compare Schedule A with standard + this amount without a cycle.
+        (d)(1), so nothing carries
+        over from or to this deduction. Not gated by itemizing, so /itemizesDeductions can
+        compare Schedule A with
+        standard + this amount without a cycle.
       </Description>
       <Derived>
         <Round>
@@ -123,7 +128,9 @@
 
     <Fact path="/nonItemizerCharitableDeduction">
       <Name>Charitable contribution deduction for non-itemizers (Form 1040 line 12f)</Name>
-      <Description>#45: $0 when itemizing (§170(p) applies only "if the individual does not elect to itemize"), so it never stacks with Schedule A line 11/13. Added to /totalDeductions (line 14) next to line 12e; it is separate from Schedule 1-A (line 13a), so future Schedule 1-A deductions add alongside it.</Description>
+      <Description>#45: $0 when itemizing (§170(p) applies only "if the individual does not elect to itemize"), so it
+        never stacks with Schedule A line 11/13. Added to /totalDeductions (line 14) next to line 12e; it is separate
+        from Schedule 1-A (line 13a), so future Schedule 1-A deductions add alongside it.</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>

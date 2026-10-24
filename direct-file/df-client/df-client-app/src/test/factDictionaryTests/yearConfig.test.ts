@@ -164,10 +164,10 @@ describe(`validation catches`, () => {
 
   it(`a pendingReview entry marked current without a cite`, () => {
     const c = clone(config);
-    const entry = c.pendingReview.find((p) => p.fact === `/maxOdcAmount`);
-    if (!entry) throw new Error(`missing /maxOdcAmount`);
+    const entry = c.pendingReview.find((p) => p.fact === `/MFSFilingThresholdAmount`);
+    if (!entry) throw new Error(`missing /MFSFilingThresholdAmount`);
     delete entry.cite;
-    expect(validateConfig(c, facts)).toEqual([`/maxOdcAmount: no cite`]);
+    expect(validateConfig(c, facts)).toEqual([`/MFSFilingThresholdAmount: no cite`]);
   });
 });
 
