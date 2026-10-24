@@ -56,7 +56,11 @@ class PrintRefusingKnockoutsTest {
     /** A return without a Form 1095-A. */
     static final String PTC_NONE_SCENARIO = "form2210-mfj-irs-will-bill.json";
     /** A return with one Form 1095-A that Form 8962 here computes. */
+    static final String SEP_KNOCKOUT = "/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod";
+
+    static final String SEP_ANSWER = "/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod";
     static final String PTC_SCENARIO = "ptc-annual-amounts-rounding.json";
+
     static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
     static final String QBI_ABOVE_THRESHOLD_KNOCKOUT = "/flowKnockoutQbiAboveThreshold";
     static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
@@ -105,20 +109,20 @@ class PrintRefusingKnockoutsTest {
     @Test
     void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210Form8962ScheduleEQbiScheduleCAndSchedule3AKnockouts() {
         List<String> expected = new ArrayList<>(List.of(
-                        CODE_Q_KNOCKOUT, // Form 8949 code Q
-                        SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
-                        PA_NRH_KNOCKOUT, // PA Schedule NRH
-                        FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
+                CODE_Q_KNOCKOUT, // Form 8949 code Q
+                SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
+                PA_NRH_KNOCKOUT, // PA Schedule NRH
+                FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed
         expected.addAll(List.of(
-                        SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
-                        QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
-                        QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
-                        QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
-                        QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
-                        SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
-                        FORM_8995_KNOCKOUT, // Form 8995 is attached and has no TY2026 template or MeF mapping
-                        SCHEDULE_C_KNOCKOUT, // #89 Schedule C has no template
+                SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
+                QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
+                QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
+                QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
+                QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
+                SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
+                FORM_8995_KNOCKOUT, // Form 8995 is attached and has no TY2026 template or MeF mapping
+                SCHEDULE_C_KNOCKOUT, // #89 Schedule C has no template
                 SCHEDULE_3A_KNOCKOUT)); // #89 Schedule 3-A has no template or line 32b fact
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         assertEquals(19, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
@@ -261,15 +265,29 @@ class PrintRefusingKnockoutsTest {
         Map<String, FactTypeWithItem> facts = scenarioFacts(mapper, PTC_SCENARIO);
         Graph computed = fgs.getGraph(facts);
         assertEquals(Boolean.TRUE, computed.get("/needsToFileForm8962").get(), "the scenario files Form 8962");
-        assertEquals(List.of(FORM_8962_TEMPLATE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(computed));
+        // The scenario leaves the income-based special enrollment period question unanswered, so the stop fails
+        // closed: true and complete, blocking submission and the print (26 U.S.C. 36B(c)(3)(A)(iii)).
+        assertFalse(computed.get(SEP_ANSWER).complete(), "the scenario leaves the question unanswered");
+        assertTrue(computed.get(SEP_KNOCKOUT).complete());
+        assertEquals(Boolean.TRUE, computed.get(SEP_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, computed.get("/flowIsKnockedOut").get(), "submission is blocked too");
+        assertEquals(
+                List.of(FORM_8962_TEMPLATE_KNOCKOUT, SEP_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(computed));
         FactTypeWithItem yes = mapper.readValue(
                 "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
-        Map<String, FactTypeWithItem> answered = new HashMap<>(facts);
-        answered.put("/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod", yes);
-        Graph graph = fgs.getGraph(answered);
+        FactTypeWithItem no = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}", FactTypeWithItem.class);
+        Map<String, FactTypeWithItem> answeredYes = new HashMap<>(facts);
+        answeredYes.put(SEP_ANSWER, yes);
         assertEquals(
-                List.of(FORM_8962_TEMPLATE_KNOCKOUT, "/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod"),
-                PrintRefusingKnockouts.refusingPaths(graph));
+                List.of(FORM_8962_TEMPLATE_KNOCKOUT, SEP_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(answeredYes)));
+        // Only a "no" clears it; the template stop remains.
+        Map<String, FactTypeWithItem> answeredNo = new HashMap<>(facts);
+        answeredNo.put(SEP_ANSWER, no);
+        Graph cleared = fgs.getGraph(answeredNo);
+        assertEquals(Boolean.FALSE, cleared.get(SEP_KNOCKOUT).get());
+        assertEquals(List.of(FORM_8962_TEMPLATE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(cleared));
 
         Map<String, FactTypeWithItem> w2Only = scenarioFacts(mapper, PTC_NONE_SCENARIO);
         Graph none = fgs.getGraph(w2Only);
@@ -427,7 +445,8 @@ class PrintRefusingKnockoutsTest {
      * complete in each, so fail-closed refuses no clean return. The code Q refusal through the real print path is
      * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath. {@link #PTC_BELOW_100_SCENARIO} also has
      * household income under 100% of the poverty line, which 26 U.S.C. 36B(c)(1)(A) requires and Form 8962 here does
-     * not cover.
+     * not cover. A Form 8962 scenario that leaves the income-based special enrollment period question unanswered also
+     * refuses through that stop, which fails closed (26 U.S.C. 36B(c)(3)(A)(iii)).
      */
     @Test
     void everyScenarioRefusesExactlyTheKnockoutsItsFactsCallFor() throws Exception {
@@ -456,6 +475,10 @@ class PrintRefusingKnockoutsTest {
                 if (PTC_BELOW_100_SCENARIO.equals(file.getFilename())) {
                     expected.add("/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl");
                 }
+                Result<Object> sep = graph.get(SEP_ANSWER);
+                if (!sep.complete() || Boolean.TRUE.equals(sep.get())) {
+                    expected.add(SEP_KNOCKOUT);
+                }
                 form8962Refused++;
             }
             Result<Object> form8995 = graph.get("/form8995Required");
@@ -480,7 +503,9 @@ class PrintRefusingKnockoutsTest {
         assertEquals(50, withScheduleEic, "scenarios with Schedule EIC");
         assertEquals(59, withSchedule3A, "scenarios with Schedule 3-A");
         assertEquals(FORM_8962_SCENARIO_COUNT, form8962Refused, "scenarios with Form 8962");
-        assertEquals(103, printed, "scenarios that print");
+        // 103 print without the Form 8962 stops; six of the seven Form 8962 scenarios print otherwise (no Schedule EIC,
+        // Form 8995, Schedule C or Schedule 3-A), so 97.
+        assertEquals(97, printed, "scenarios that print");
     }
 
     /**

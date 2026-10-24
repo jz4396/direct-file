@@ -230,18 +230,52 @@
       <Name>Knockout: plan enrolled in during an income-based special enrollment period</Name>
       <Description>#88: 26 U.S.C. 36B(c)(3)(A)(iii), see /enrolledDuringIncomeBasedSpecialEnrollmentPeriod. Such a plan
         is not a qualified health plan, so its months are not coverage months; separating those months from the rest of
-        the Form 1095-A is not supported. True on "yes"; complete false when Form 8962 is not needed or on "no".</Description>
+        the Form 1095-A is not supported. Fails closed: true on "yes" and true while the question is unanswered on a
+        return that needs Form 8962; complete false only on "no" or when Form 8962 is not needed (same
+        /needsToFileForm8962
+        guard as /flowKnockoutForm8962WithoutTy2026Template).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
-        <Any>
-          <All>
-            <IsComplete>
-              <Dependency path="/enrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
-            </IsComplete>
-            <Dependency path="/enrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
-          </All>
-        </Any>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/needsToFileForm8962" />
+                </IsComplete>
+                <Dependency path="/needsToFileForm8962" />
+                <IsComplete>
+                  <Dependency path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/needsToFileForm8962" />
+                </IsComplete>
+                <Dependency path="/needsToFileForm8962" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

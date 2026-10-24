@@ -183,7 +183,7 @@ describe(`Form 8962 (2026) knockouts`, () => {
     expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
   });
 
-  it(`income-based special enrollment period: yes knocks out, unanswered leaves the section incomplete`, ({ task }) => {
+  it(`income-based special enrollment period: yes knocks out, unanswered fails closed, no prints`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
       `/enrolledDuringIncomeBasedSpecialEnrollmentPeriodIsComplete`,
@@ -200,9 +200,30 @@ describe(`Form 8962 (2026) knockouts`, () => {
       Object.entries(answered).filter(([k]) => k !== `/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod`)
     );
     const u = fg(unanswered);
-    expect(val(u, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`)).toBe(`false`);
+    // 26 U.S.C. 36B(c)(3)(A)(iii): until the question is answered, the plan may not be a qualified health plan.
+    expect(val(u, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`)).toBe(`true`);
+    expect(val(u, `/flowIsKnockedOut`)).toBe(`true`);
     expect(val(u, `/enrolledDuringIncomeBasedSpecialEnrollmentPeriodIsComplete`)).toBe(`false`);
     expect(raw(u, `/ptcSectionIsComplete`).get).toBe(false);
+    const no = fg(answered);
+    expect(val(no, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`)).toBe(`false`);
+  });
+
+  it(`income-based special enrollment period knockout is complete false without Form 8962`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`];
+    // No Marketplace plan and the question never asked: the knockout does not apply.
+    const noPlan = Object.fromEntries(
+      Object.entries(
+        ptcReturn(31300, 5000, 6000, 0, { '/writableHasPtcQualifyingPlan': createBooleanWrapper(false) })
+      ).filter(([k]) => !k.startsWith(`/1095As/`) && k !== `/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod`)
+    );
+    const g = fg({ ...noPlan, '/1095As': createCollectionWrapper([]) });
+    expect(val(g, `/needsToFileForm8962`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`)).toBe(`false`);
+    // A W-2-only return never reaches the Form 8962 questions.
+    expect(
+      val(fg(filerWithW2NoDeductionsNoCreditsBaseData), `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`)
+    ).toBe(`false`);
   });
 
   it(`Schedule C net profit with Form 8962 knocks out (self-employed health insurance deduction)`, ({ task }) => {
