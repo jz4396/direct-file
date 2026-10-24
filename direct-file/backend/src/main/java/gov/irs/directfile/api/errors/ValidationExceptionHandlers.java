@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +35,7 @@ public class ValidationExceptionHandlers {
     public record ErrorResponse(String message, Map<String, String> errors) {}
 
     public static final String UNHANDLED_ERROR_MESSAGE = "An unexpected error occurred.";
+    public static final String INVALID_DATA_MESSAGE = "The request data is invalid.";
 
     private final AuditService auditService;
 
@@ -80,20 +80,13 @@ public class ValidationExceptionHandlers {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {InvalidDataException.class})
     public ErrorResponse handleBadRequestException(Exception ex, HandlerMethod handlerMethod) {
-        String errorResponseMessage;
-        switch (ex.getClass().getSimpleName()) {
-            default:
-                errorResponseMessage = generateErrorResponseMessage(ex);
-                break;
-        }
-
+        // Exception text can carry internal detail or return data, so the body is fixed and only the class is logged.
+        log.error("Bad request {}", ex.getClass().getName());
         return logExceptionAndGenerateErrorResponse(
-                handlerMethod.getMethodAnnotation(Auditable.class),
+                handlerMethod == null ? null : handlerMethod.getMethodAnnotation(Auditable.class),
                 ex,
-                errorResponseMessage,
-                Map.of(
-                        ex.getClass().getName(),
-                        !StringUtils.isBlank(ex.getMessage()) ? ex.getMessage() : errorResponseMessage));
+                INVALID_DATA_MESSAGE,
+                Map.of());
     }
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -121,12 +114,6 @@ public class ValidationExceptionHandlers {
             Map<String, String> errorResponseErrors) {
         logError(auditableAnnotation, ex);
         return new ErrorResponse(errorResponseMessage, errorResponseErrors);
-    }
-
-    private String generateErrorResponseMessage(Exception ex) {
-        return !StringUtils.isBlank(ex.getMessage())
-                ? ex.getMessage()
-                : String.format("Encountered %s", ex.getClass().getSimpleName());
     }
 
     private void logError(Auditable auditableAnnotation, Throwable ex) {
