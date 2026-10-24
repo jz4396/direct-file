@@ -805,6 +805,7 @@
         Maximum dollar amount of repayment of prior year unemployment compensation that direct file can
         handle.
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>3000</Dollar>
       </Derived>

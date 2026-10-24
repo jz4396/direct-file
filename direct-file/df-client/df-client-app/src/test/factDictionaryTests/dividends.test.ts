@@ -226,6 +226,8 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
   it(`box 5 section 199A dividends > 0`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutSection199ADividends`, `/totalSection199ADividends`];
     blocks(build(divs({ box1a: 500, box5: 50 })), `/flowKnockoutSection199ADividends`);
+    // #185: Rev. synthetic case, box 5 $100 also stops the return (QBI line 13b not computed).
+    blocks(build(divs({ box1a: 100, box5: 100 })), `/flowKnockoutSection199ADividends`);
   });
   it(`box 7 within the 26 U.S.C. 904(j) election goes to Schedule 3 line 1 (i1040 (2025) p. 115)`, ({ task }) => {
     task.meta.testedFactPaths = [

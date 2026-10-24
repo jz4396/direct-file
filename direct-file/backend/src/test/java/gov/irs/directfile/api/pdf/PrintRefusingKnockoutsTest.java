@@ -42,6 +42,7 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_EIC_KNOCKOUT = "/flowKnockoutScheduleEicWithoutTy2026Template";
     static final String PA_NRH_KNOCKOUT = "/flowKnockoutPaNonresidentPaSourcePay";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
+    static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
     static final String SCHEDULE_C_KNOCKOUT = "/flowKnockoutScheduleCWithoutTy2026Template";
     static final String SCHEDULE_3A_KNOCKOUT = "/flowKnockoutSchedule3AWithoutTy2026Template";
     /**
@@ -81,13 +82,14 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210ScheduleCAndSchedule3AKnockouts() {
+    void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210ScheduleEQbiScheduleCAndSchedule3AKnockouts() {
         assertEquals(
                 List.of(
                         CODE_Q_KNOCKOUT, // Form 8949 code Q
                         SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
                         PA_NRH_KNOCKOUT, // PA Schedule NRH
                         FORM_2210_KNOCKOUT, // Form 2210 Part II box B, C, D, A or E
+                        SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
                         SCHEDULE_C_KNOCKOUT, // #89 Schedule C has no template
                         SCHEDULE_3A_KNOCKOUT), // #89 Schedule 3-A has no template or line 32b fact
                 PrintRefusingKnockouts.FACT_PATHS);
@@ -209,6 +211,40 @@ class PrintRefusingKnockoutsTest {
             withYes.put(box, yes);
             assertEquals(List.of(FORM_2210_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(withYes)), box);
         }
+    }
+
+    /**
+     * Form 1040 (2026) draft, PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A".
+     * A Schedule E rental treated as a trade or business (26 CFR 1.199A-1(b)(14)) has qualified business income, and
+     * line 13b is not computed yet, so a yes refuses the print; a no, or no Part I income, prints.
+     */
+    @Test
+    void scheduleERentalTradeOrBusinessYesRefusesThePrint() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        Map<String, FactTypeWithItem> facts = CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO);
+        assertFalse(
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(facts)).contains(SCHEDULE_E_QBI_KNOCKOUT),
+                "no Part I income");
+        ObjectMapper mapper = new ObjectMapper();
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        FactTypeWithItem no = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}", FactTypeWithItem.class);
+        Map<String, FactTypeWithItem> withPartI = new HashMap<>(facts);
+        withPartI.put("/hadScheduleEIncome", yes);
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(withPartI)).contains(SCHEDULE_E_QBI_KNOCKOUT),
+                "unanswered fails closed");
+        Map<String, FactTypeWithItem> answeredNo = new HashMap<>(withPartI);
+        answeredNo.put("/scheduleERentalIsTradeOrBusiness", no);
+        assertFalse(
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(answeredNo)).contains(SCHEDULE_E_QBI_KNOCKOUT),
+                "not a trade or business");
+        Map<String, FactTypeWithItem> answeredYes = new HashMap<>(withPartI);
+        answeredYes.put("/scheduleERentalIsTradeOrBusiness", yes);
+        Graph graph = fgs.getGraph(answeredYes);
+        assertEquals(Boolean.TRUE, graph.get(SCHEDULE_E_QBI_KNOCKOUT).get());
+        assertTrue(PrintRefusingKnockouts.refusingPaths(graph).contains(SCHEDULE_E_QBI_KNOCKOUT), "trade or business");
     }
 
     @Test

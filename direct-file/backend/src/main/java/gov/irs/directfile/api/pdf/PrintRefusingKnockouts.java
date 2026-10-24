@@ -35,6 +35,10 @@ public final class PrintRefusingKnockouts {
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
             "/flowKnockoutForm2210",
+            // Schedule E rental treated as a trade or business: Form 1040 (2026) draft, PDF p. 3, line 13b, "Qualified
+            // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
+            // not computed yet, so the package would print it as $0.
+            "/flowKnockoutScheduleETradeOrBusinessQbi",
             // Schedule C business: Instructions for Schedule C (2025) p. 2, "Use Schedule C (Form 1040) to report
             // income or (loss) from a business you operated or a profession you practiced as a sole proprietor", and
             // the 2026 draft Schedule 1 line 3 reads "Attach Schedule C". There is no Schedule C template, so the

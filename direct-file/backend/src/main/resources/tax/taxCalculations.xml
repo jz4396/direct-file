@@ -144,7 +144,25 @@
     </Fact>
     <Fact path="/qualifiedBusinessIncomeDeduction">
       <Name>Qualified business income deduction</Name>
-      <Description>Qualified business income deductions for line 13 of Form 1040</Description>
+      <Description>#185: Form 1040 (2026) draft (Created 8/19/26), https://www.irs.gov/pub/irs-dft/f1040--dft.pdf
+        PDF p.
+        3, line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A" (line 13a is
+        Schedule 1-A line
+        44). 26 U.S.C. 199A(a) (https://www.law.cornell.edu/uscode/text/26/199A): "there shall be
+        allowed as a deduction
+        for any taxable year an amount equal to the lesser of" the combined qualified business
+        income amount or 20
+        percent of taxable income less net capital gain. The deduction is not elective. It is not
+        computed yet, so this
+        stays $0 only because every source of 199A income is knocked out with
+        BlockSubmissionOnTrue: Schedule C
+        (scheduleC /flowKnockoutScheduleCQbi), 1099-DIV box 5 and qualified REIT
+        dividends (dividends
+        /flowKnockoutSection199ADividends), a Schedule E rental treated as a trade or business
+        (scheduleE
+        /flowKnockoutScheduleETradeOrBusinessQbi), and K-1 / PTP income (scheduleE
+        /flowKnockoutScheduleEPartII). Form
+        8995 (#87) replaces this $0 with the computation.</Description>
       <Derived>
         <Dollar>0</Dollar>
       </Derived>
@@ -153,7 +171,9 @@
       <Name>Total deductions</Name>
       <Description>Total deductions as reported on line 14 of Form 1040. #50: 2026 draft 1040 line 14 adds line 13a
         (Schedule 1-A line 44). #45: also line 12f (§170(p) non-itemizer charitable deduction); line 14 "Add lines 12e,
-        12f, 13a, and 13b".</Description>
+        12f, 13a, and 13b". #185: line 13b (/qualifiedBusinessIncomeDeduction) is now part of the sum, per the
+        same 2026
+        draft Form 1040 line 14 text.</Description>
       <Export mef="true" />
       <Derived>
         <Round>
@@ -161,6 +181,7 @@
             <Dependency path="/standardOrItemizedDeductions" />
             <Dependency module="charitableNonItemizer" path="/nonItemizerCharitableDeduction" />
             <Dependency module="schedule1A" path="/schedule1ALine44" />
+            <Dependency path="/qualifiedBusinessIncomeDeduction" />
           </Add>
         </Round>
       </Derived>

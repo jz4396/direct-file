@@ -953,6 +953,7 @@
 
     <Fact path="/saversMaxCreditAmountNotMFJ">
       <Description>Max credit possible if not filing MFJ (50% of the max contribution)</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>1000</Dollar>
       </Derived>
@@ -960,6 +961,7 @@
 
     <Fact path="/saversMaxCreditLimit">
       <Description>Max credit limit for line 6 on Form 8880</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Dollar>2000</Dollar>
       </Derived>

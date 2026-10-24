@@ -1,8 +1,27 @@
 # Static client-only build on Cloudflare Pages
 
 This directory deploys a **static, client-only** build of `df-client-app` to Cloudflare Pages on the free plan:
-static assets only, uploaded directly. There are no Pages Functions or Workers. The build has no Direct File
-backend, and **no return data ever leaves the browser**.
+static assets only. There are no Pages Functions or Workers. The build has no Direct File backend, and **no return
+data ever leaves the browser**.
+
+| File                 | Purpose                                                                                                  |
+| -------------------- | -------------------------------------------------------------------------------------------------------- |
+| `build.sh`           | Generate, build (`build:static`), `check:production-build`, stage and check into `out/`. No credentials. |
+| `deploy.sh`          | Direct upload from a workstation: `build.sh`, `checkNoSecrets.mjs`, then the pinned wrangler.            |
+| `checkNoSecrets.mjs` | Fails if a staged file holds a deploy credential's value or a Cloudflare token. Prints file names only.  |
+| `_headers`           | CSP (`connect-src 'none'`, `form-action 'none'`, `frame-ancestors 'none'`) and other headers.            |
+| `_redirects`         | `/` → `/df/file/`.                                                                                       |
+| `robots.txt`         | `Disallow: /`.                                                                                           |
+
+There are two ways to publish `out/`; pick one per Pages project (a direct-upload project can't later be connected
+to Git, and the reverse):
+
+- **Git integration** (recommended): Cloudflare builds the repository with `build.sh --install`. No API token
+  exists anywhere: not in the repo, not in a shell, not in Cloudflare's build settings.
+- **Direct upload** with `deploy.sh`: you build locally and upload with an API token kept in your shell only.
+
+Creating the Cloudflare account and the Pages project, and connecting the repository, are manual steps for the
+repository owner in the Cloudflare dashboard. Nothing in this repository creates them.
 
 ## What the static build changes
 
@@ -78,6 +97,13 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
     inline or third-party scripts;
   - the network guard and the `.invalid` API URL, and no other absolute API URL, `localhost:<port>` URL or
     analytics loader;
+  - no `fetch`, `sendBeacon`, `EventSource`, `WebSocket`, `XMLHttpRequest.open` or `importScripts` call with a URL
+    literal on another origin (absolute or protocol-relative), no `ws://`/`wss://` URL, and no absolute data
+    endpoint URL (`/api/`, `/graphql`, `/collect`, `/telemetry`, `/ingest`, `/beacon`, `/rum`, `/v1/events` and
+    similar) except the `.invalid` API origin. Links to other sites (irs.gov, state sites) are allowed: they are
+    pages a person opens, and the CSP and the guard stop the page itself from sending requests to them;
+  - in every staged file (any type): no Cloudflare API key or token (`cfk_`, `cfut_`, `cfat_`, `cfoat_` prefixes),
+    no `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`/`CLOUDFLARE_API_KEY` name, and no literal bearer token;
   - the notice text in English and Spanish;
   - `robots.txt` with `Disallow: /`, and a robots `noindex` `<meta>` on every page.
 
@@ -91,13 +117,53 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
   - the agency name in any `<title>` or description;
   - IRS logo files, or references to them.
 
-## Deploy (manual)
+- `src/staticClient/pagesScripts.test.ts`: `build.sh` exits 2 when `CLOUDFLARE_API_TOKEN`,
+  `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_KEY` or a `VITE_*` variable is set, printing the name and not the value;
+  `checkNoSecrets.mjs` fails on a staged file holding a credential's value or a prefixed token, naming the file and
+  not the value; neither script turns on xtrace or echoes a credential.
+- `src/staticClient/noCommittedSecrets.test.ts`: no tracked file in the repository holds a prefixed Cloudflare token
+  or assigns a Cloudflare credential variable a literal value.
+
+## Deploy with Git integration (recommended)
+
+Cloudflare clones the repository and runs `build.sh --install` on each push to the production branch. The build
+installs the client's locked dependencies with `npm ci --ignore-scripts`, so no dependency install script runs,
+and runs the same checks as `deploy.sh`. If a check fails, the build fails and nothing is published.
+
+Repository owner, one time, in the Cloudflare dashboard (**Workers & Pages → Create → Pages → Connect to Git**):
+
+1. Authorize the Cloudflare GitHub app for this repository only.
+2. Build settings:
+
+   | Setting                | Value                                                            |
+   | ---------------------- | ---------------------------------------------------------------- |
+   | Production branch      | `main`                                                           |
+   | Framework preset       | None                                                             |
+   | Root directory         | _(empty: the repository root)_                                   |
+   | Build command          | `bash direct-file/df-client/cloudflare-pages/build.sh --install` |
+   | Build output directory | `direct-file/df-client/cloudflare-pages/out`                     |
+
+3. Environment variables (Production and Preview): `SKIP_DEPENDENCY_INSTALL=1` (Pages' own install would run
+   install scripts; `build.sh --install` installs without them) and `NODE_VERSION=20.19.2` (the version
+   `build.sh` was checked with; the build doesn't need wrangler, so Node.js 22 isn't required). Add nothing else: no API
+   token, and no `VITE_*` or `REACT_APP_*` variable (`build.sh` refuses to run with either).
+4. **Settings → Builds & deployments**: set preview deployments to **None** (or to `main` only), so branches other
+   than `main` aren't built or published.
+5. Optional: build watch paths `direct-file/df-client/*` and `direct-file/backend/src/main/resources/tax/*` (the
+   fact dictionary XML the build reads).
+
+The site is served at `https://<project>.pages.dev/`, and `/` redirects to `/df/file/`.
+
+## Deploy with direct upload (manual)
 
 There is intentionally no CI workflow. Deploys run from a workstation with `deploy.sh`. It needs Node.js 22 or
 later, because wrangler 4.149.0 requires it. The client build itself also runs on Node.js 20.
 
+Steps 1 and 3 are for the repository owner and are done by hand; nothing in the repo performs them.
+
 1. In the Cloudflare dashboard, create an API token with only **Account → Cloudflare Pages → Edit**, scoped to
-   your account. Note your account ID.
+   your account. Note your account ID. Never put the token in Cloudflare build settings, a file in this repo, a
+   command line or an issue.
 2. Export the credentials in your shell. Never commit them or paste them into files in this repo. Also make sure
    no `VITE_*` or `REACT_APP_*` variables are set: they would override `.env.static`, so `deploy.sh` refuses to run.
    ```sh
@@ -126,9 +192,10 @@ later, because wrangler 4.149.0 requires it. The client build itself also runs o
 - Anything else: the build, the check, the install or the upload failed.
 
 `deploy.sh` never prints the token or the account ID. It keeps xtrace off and passes neither value on a command
-line. It runs the fact-dictionary generation, the build, the check and `npm ci` under
-`env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID`, masks both values in wrangler's output, and sets
-`WRANGLER_SEND_METRICS=false`.
+line. It runs `build.sh` (generation, build, checks, staging) and `npm ci` under
+`env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID -u CLOUDFLARE_API_KEY`, then runs `checkNoSecrets.mjs` on
+`out/` with the credentials in its environment (it looks for their exact values and prints only file names),
+masks both values in wrangler's output, and sets `WRANGLER_SEND_METRICS=false`.
 
 ### Free-plan limits
 
@@ -163,7 +230,7 @@ When you bump wrangler, regenerate the lockfile with
 
 ```sh
 cd direct-file/df-client/df-client-app
-npm run generate-fact-dictionary && npm run build:static && npm run stage:static
+../cloudflare-pages/build.sh        # or: npm run generate-fact-dictionary && npm run build:static && npm run stage:static
 cd ../cloudflare-pages && npm ci --ignore-scripts
 ./node_modules/.bin/wrangler pages dev out   # serves _headers and _redirects locally
 ```
