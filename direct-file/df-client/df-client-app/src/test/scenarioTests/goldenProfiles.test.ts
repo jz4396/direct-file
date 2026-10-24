@@ -907,8 +907,8 @@ describe(`golden end-to-end scenario (synthetic data): profile D, head of househ
   //   line 34 and line 35a overpayment 8,721.
   // EIC 0 (AGI over $51,593 [EITC]). Form 8959 is not required: box 5 125,000 is under the $200,000 threshold [3101].
   //   Form 8960 is not required: MAGI 126,000 is under the $200,000 head-of-household threshold [1411].
-  // The filer is 65 or older, so the PDF package would print the Form 1040-SR template, which is still the 2024 one
-  //   (Ty2026PdfPackageTest EXCLUDED); these rows check the computed values only.
+  // The filer is 65 or older; the package prints the 2026 Form 1040, which anyone may file (Instructions for Form 1040
+  //   (2025) [GI] p. 12, "Everyone can file Form 1040."). These rows check the computed values only.
   const g = graph(profileDHohItemizerChild);
   it(`Form 1040 income and Schedule 1-A senior deduction`, () => {
     expect(get(g, `/filingStatus`).get.toString()).toBe(`headOfHousehold`);
