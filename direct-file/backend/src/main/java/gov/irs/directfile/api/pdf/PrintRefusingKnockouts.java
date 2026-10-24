@@ -47,7 +47,10 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutQbiAboveThreshold",
             "/flowKnockoutQbiPriorYearCarryforward",
             "/flowKnockoutQbiCooperativePatron",
-            "/flowKnockoutQbiMixedParticipation");
+            "/flowKnockoutQbiMixedParticipation",
+            // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
+            // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
+            "/flowKnockoutScheduleCQbi");
 
     private PrintRefusingKnockouts() {}
 

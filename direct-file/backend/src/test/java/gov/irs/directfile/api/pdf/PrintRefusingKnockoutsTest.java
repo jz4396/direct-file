@@ -42,6 +42,7 @@ class PrintRefusingKnockoutsTest {
     static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
     static final String QBI_MIXED_PARTICIPATION_KNOCKOUT = "/flowKnockoutQbiMixedParticipation";
+    static final String SCHEDULE_C_QBI_KNOCKOUT = "/flowKnockoutScheduleCQbi";
     /** Lines 4 and 7 are $1,000 or more and every Part II answer is no, so the IRS figures any penalty. */
     static final String FORM_2210_SCENARIO = "form2210-mfj-irs-will-bill.json";
 
@@ -80,7 +81,8 @@ class PrintRefusingKnockoutsTest {
                         QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
                         QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
                         QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
-                        QBI_MIXED_PARTICIPATION_KNOCKOUT), // active and non-active businesses
+                        QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
+                        SCHEDULE_C_QBI_KNOCKOUT), // any of the four Form 8995 stops with Schedule C income
                 PrintRefusingKnockouts.FACT_PATHS);
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -260,16 +262,21 @@ class PrintRefusingKnockoutsTest {
         Map<String, FactTypeWithItem> carryforward = new HashMap<>(facts);
         carryforward.put("/qbiHasPriorYearLossCarryforward", yes);
         assertEquals(
-                List.of(QBI_CARRYFORWARD_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(carryforward)));
+                List.of(QBI_CARRYFORWARD_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(carryforward)));
         Map<String, FactTypeWithItem> cooperative = new HashMap<>(facts);
         cooperative.put("/qbiIsCooperativePatron", yes);
         assertEquals(
-                List.of(QBI_COOPERATIVE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(cooperative)));
+                List.of(QBI_COOPERATIVE_KNOCKOUT, SCHEDULE_C_QBI_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(cooperative)));
         Map<String, FactTypeWithItem> unanswered = new HashMap<>(facts);
         unanswered.remove("/qbiHasPriorYearLossCarryforward");
-        assertTrue(
-                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(unanswered)).contains(QBI_CARRYFORWARD_KNOCKOUT),
-                "unanswered fails closed");
+        List<String> unansweredPaths = PrintRefusingKnockouts.refusingPaths(fgs.getGraph(unanswered));
+        assertTrue(unansweredPaths.contains(QBI_CARRYFORWARD_KNOCKOUT), "unanswered fails closed");
+        assertTrue(unansweredPaths.contains(SCHEDULE_C_QBI_KNOCKOUT), "Schedule C knockout fails closed too");
+        Graph noScheduleC = fgs.getGraph(CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO));
+        assertEquals(Boolean.FALSE, noScheduleC.get(SCHEDULE_C_QBI_KNOCKOUT).get());
+        assertTrue(noScheduleC.get(SCHEDULE_C_QBI_KNOCKOUT).complete(), "complete false without Schedule C");
     }
 
     @Test
