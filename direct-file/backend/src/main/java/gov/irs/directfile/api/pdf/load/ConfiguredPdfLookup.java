@@ -2,7 +2,11 @@ package gov.irs.directfile.api.pdf.load;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -19,14 +23,29 @@ import gov.irs.directfile.api.pdf.PdfCreationException;
 public class ConfiguredPdfLookup {
     private static final String locationPrefix = "pdflookup";
 
+    /**
+     * Tax year whose prescribed forms are the templates under {@code pdf/2026/}. 26 U.S.C. 6011(a) requires a return
+     * "according to the forms and regulations prescribed by the Secretary."
+     */
+    static final String PRESCRIBED_FORM_YEAR = "2026";
+
+    /** Directory of templates prescribed for {@link #PRESCRIBED_FORM_YEAR}. */
+    static final String PRESCRIBED_TEMPLATE_PREFIX = "pdf/2026/";
+
+    private static final String ENGLISH = "en";
+
     private final ConfiguredPdfMap map = new ConfiguredPdfMap();
 
-    private String normalize(String value) {
-        return value.toLowerCase().trim();
+    /** Year, then form, then language, to the configured template location. */
+    private final Map<String, Map<String, Map<String, String>>> templateLocations;
+
+    private static String normalize(String value) {
+        return value.toLowerCase(Locale.ROOT).trim();
     }
 
     public ConfiguredPdfLookup(IOLocationService ioLocationService, List<ConfiguredPdfProperties> properties)
             throws IOLocationException, IOException, DefaultCaseException {
+        templateLocations = indexTemplateLocations(properties);
         for (int i = 0; i < properties.size(); i++) {
             var prop = properties.get(i);
             var name = normalize(prop.getName());
@@ -87,5 +106,79 @@ public class ConfiguredPdfLookup {
             throw new PdfCreationException(e);
         }
         return stream;
+    }
+
+    /**
+     * Template locations for {@code year} and {@code language} that are not the form prescribed for that year.
+     *
+     * <p>26 U.S.C. 6011(a): a return is made according to the forms prescribed by the Secretary. For
+     * {@link #PRESCRIBED_FORM_YEAR}, that form is the template under {@code pdf/2026/}. When the requested language
+     * resolves to some other location and the same form has a 2026 English template, the other location is a
+     * prior-year (or otherwise unprescribed) form and is refused. An {@code es} entry wins over the English fallback,
+     * matching {@link ConfiguredPdfMap}. A language with no entry resolves to English. Any other year is unchanged.
+     * The result is every such location, not a fixed list of forms.
+     */
+    public List<String> templateLocationsOutsidePrescribedYear(String year, String language) {
+        return templateLocationsOutsidePrescribedYear(year, language, templateLocations);
+    }
+
+    /** {@link #templateLocationsOutsidePrescribedYear(String, String)} for a configured-pdf list. */
+    public static List<String> templateLocationsOutsidePrescribedYear(
+            String year, String language, List<ConfiguredPdfProperties> configured) {
+        return templateLocationsOutsidePrescribedYear(year, language, indexTemplateLocations(configured));
+    }
+
+    private static List<String> templateLocationsOutsidePrescribedYear(
+            String year, String language, Map<String, Map<String, Map<String, String>>> locations) {
+        if (year == null || language == null || !PRESCRIBED_FORM_YEAR.equals(year.trim())) {
+            return List.of();
+        }
+        Map<String, Map<String, String>> forms = locations.get(PRESCRIBED_FORM_YEAR);
+        if (forms == null) {
+            return List.of();
+        }
+        String requested = normalize(language);
+        List<String> refused = new ArrayList<>();
+        for (Map<String, String> byLanguage : forms.values()) {
+            String english = byLanguage.get(ENGLISH);
+            if (!isPrescribedYearTemplate(english)) {
+                continue;
+            }
+            // Same resolution as ConfiguredPdfMap: the requested language wins; English is the fallback.
+            String resolved = byLanguage.get(requested);
+            if (resolved == null && !ENGLISH.equals(requested)) {
+                resolved = english;
+            }
+            if (resolved != null && !isPrescribedYearTemplate(resolved)) {
+                refused.add(resolved);
+            }
+        }
+        return List.copyOf(refused);
+    }
+
+    /** True when {@code location} is a template under {@code pdf/2026/}, classpath or directory layout. */
+    static boolean isPrescribedYearTemplate(String location) {
+        if (location == null) {
+            return false;
+        }
+        String path = location.replace('\\', '/');
+        return path.startsWith(PRESCRIBED_TEMPLATE_PREFIX) || path.contains("/" + PRESCRIBED_TEMPLATE_PREFIX);
+    }
+
+    private static Map<String, Map<String, Map<String, String>>> indexTemplateLocations(
+            List<ConfiguredPdfProperties> configured) {
+        Map<String, Map<String, Map<String, String>>> indexed = new LinkedHashMap<>();
+        if (configured == null) {
+            return indexed;
+        }
+        for (ConfiguredPdfProperties prop : configured) {
+            if (prop == null || prop.getYear() == null || prop.getName() == null || prop.getLanguageCode() == null) {
+                continue;
+            }
+            indexed.computeIfAbsent(prop.getYear().trim(), ignored -> new LinkedHashMap<>())
+                    .computeIfAbsent(normalize(prop.getName()), ignored -> new LinkedHashMap<>())
+                    .put(normalize(prop.getLanguageCode()), prop.getLocation());
+        }
+        return indexed;
     }
 }

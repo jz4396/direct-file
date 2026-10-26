@@ -2,7 +2,6 @@ package gov.irs.directfile.api.pdf;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -42,10 +41,12 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import gov.irs.directfile.api.config.ConfiguredPdfProperties;
 import gov.irs.directfile.api.config.PdfServiceProperties;
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.io.IOLocationService;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.directfile.api.taxreturn.models.TaxReturn;
@@ -474,10 +475,12 @@ class Ty2026PdfPackageTest {
         TaxReturn es = new TaxReturn();
         es.setTaxYear(TAX_YEAR);
         es.setFactsWithoutDirtyingEntity(withSmokeFixture(scenario));
-        try (InputStream in = pdfService.getTaxReturn("es", es, false);
-                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
-            assertTrue(doc.getNumberOfPages() > 0, "the Spanish package prints too");
-        }
+        // 26 U.S.C. 6011(a). The golden end-to-end scenario (synthetic data) is not printed in Spanish while the
+        // resolved TY2026 es template is outside pdf/2026/: no PDF bytes, same 400 as a print-refusing knockout.
+        SubmissionBlockingFactsResponseStatusException refused =
+                Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, es);
+        assertEquals(HttpStatus.BAD_REQUEST, refused.getStatusCode());
+        assertFalse(refused.getMessage().contains(LAST_NAME), refused.getMessage());
     }
 
     static Map<String, FactTypeWithItem> withSmokeFixture(Map<String, String> scenario) throws Exception {

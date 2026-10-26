@@ -18,6 +18,7 @@ import org.springframework.data.domain.Window;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.io.documentstore.S3StorageService;
 import gov.irs.directfile.api.io.storagelocations.StorageLocationBuilder;
 import gov.irs.directfile.api.pdf.PdfCreationException;
@@ -180,24 +181,35 @@ public class PDFBackfillToS3Handler implements S3NotificationEventHandler {
     private Callable<Void> uploadPdfTask(
             TaxReturn taxReturn, List<UUID> failedTaxReturns, List<UUID> successTaxReturns) {
         return () -> {
-            try (InputStream englishTaxReturnPdf =
-                            pdfService.getTaxReturn(PdfLanguages.EN.getPdfLanguage(), taxReturn, false);
-                    InputStream spanishTaxReturnPdf =
-                            pdfService.getTaxReturn(PdfLanguages.ES.getPdfLanguage(), taxReturn, false)) {
-
-                String englishPdfLocation = StorageLocationBuilder.getTaxReturnDocumentLocation(
-                        taxReturn.getTaxYear(), taxReturn.getId(), BASE_NAME, PdfLanguages.EN.getCode());
-                String spanishPdfLocation = StorageLocationBuilder.getTaxReturnDocumentLocation(
-                        taxReturn.getTaxYear(), taxReturn.getId(), BASE_NAME, PdfLanguages.ES.getCode());
-                s3StorageService.write(englishPdfLocation, englishTaxReturnPdf, null);
-                log.info("English pdf for tax return: {} written to {}", taxReturn.getId(), englishPdfLocation);
-                s3StorageService.write(spanishPdfLocation, spanishTaxReturnPdf, null);
-                log.info("Spanish pdf for tax return: {} written to {}", taxReturn.getId(), spanishPdfLocation);
-
-                log.info(
-                        "Published PDFs for tax return {} created at : {}",
-                        taxReturn.getId(),
-                        taxReturn.getCreatedAt());
+            // Language codes, not the PDF locale tags: PdfLanguages.fromString treats only "es" as Spanish.
+            String englishPdfLocation = StorageLocationBuilder.getTaxReturnDocumentLocation(
+                    taxReturn.getTaxYear(), taxReturn.getId(), BASE_NAME, PdfLanguages.EN.getCode());
+            String spanishPdfLocation = StorageLocationBuilder.getTaxReturnDocumentLocation(
+                    taxReturn.getTaxYear(), taxReturn.getId(), BASE_NAME, PdfLanguages.ES.getCode());
+            try {
+                try (InputStream englishTaxReturnPdf =
+                        pdfService.getTaxReturn(PdfLanguages.EN.getCode(), taxReturn, false)) {
+                    s3StorageService.write(englishPdfLocation, englishTaxReturnPdf, null);
+                    log.info("English pdf for tax return: {} written to {}", taxReturn.getId(), englishPdfLocation);
+                }
+                try (InputStream spanishTaxReturnPdf =
+                        pdfService.getTaxReturn(PdfLanguages.ES.getCode(), taxReturn, false)) {
+                    s3StorageService.write(spanishPdfLocation, spanishTaxReturnPdf, null);
+                    log.info("Spanish pdf for tax return: {} written to {}", taxReturn.getId(), spanishPdfLocation);
+                    log.info(
+                            "Published PDFs for tax return {} created at : {}",
+                            taxReturn.getId(),
+                            taxReturn.getCreatedAt());
+                } catch (SubmissionBlockingFactsResponseStatusException refused) {
+                    // 26 U.S.C. 6011(a): the Spanish document is refused when its template is not the form
+                    // prescribed for the year. The English document is already stored. PdfService logged the
+                    // template path. This exception is not logged: its message is not a template path, and it
+                    // carries no stack trace worth recording.
+                    log.info(
+                            "Spanish pdf not stored for tax return: {} status {}",
+                            taxReturn.getId(),
+                            refused.getStatusCode().value());
+                }
             } catch (PdfCreationException e) {
                 log.error(
                         "Unable to generate PDF for tax return: {} created_at: {}",
