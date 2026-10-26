@@ -164,6 +164,19 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIILoss" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIINotMaterialParticipation" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeA" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIQbiCode" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIOtherK1Amount" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIColumnE" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIColumnF" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIForeignOrPtp" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIITrading" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIILine27" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIII" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIV" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIKiddieTax" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleESubstantialServices" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEEitc" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleETradeOrBusinessQbi" />

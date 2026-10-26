@@ -3,6 +3,7 @@
 subsubcategories:
   /flow/income/schedule-e:
     schedule-e-eligibility: Ingresos de alquiler y regalías
+    schedule-e-k1: Sociedad colectiva o sociedad anónima de tipo S
     schedule-e-amounts: Cantidades de alquiler y regalías
 headings:
   /heading/income/schedule-e: Ingresos de alquiler y regalías
@@ -20,7 +21,25 @@ headings:
     limpieza?
   /heading/knockout/schedule-e-substantial-services:
     Esta herramienta todavía no acepta alquileres en los que usted presta servicios considerables
-  /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta ingresos del Anexo K-1
+  /heading/income/schedule-e/part-ii-line-27:
+    ¿Está declarando una pérdida no permitida de un año anterior o gastos de sociedad no reembolsados?
+  /heading/income/schedule-e/part-iii: ¿Recibió un Anexo K-1 de un caudal hereditario o fideicomiso?
+  /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC?
+  /heading/income/schedule-e/k1-intro: Agregue cada sociedad colectiva y sociedad anónima de tipo S
+  /heading/income/schedule-e/k1-name: ¿Cuál es el nombre de la sociedad colectiva o sociedad anónima de tipo S?
+  /heading/income/schedule-e/k1-scope:
+    ¿Es una sociedad extranjera, una sociedad que cotiza en bolsa o un negocio de compraventa?
+  /heading/income/schedule-e/k1-box1: Anote el ingreso ordinario del negocio y si participó de forma importante
+  /heading/income/schedule-e/k1-box14:
+    Anote las ganancias del trabajo por cuenta propia del Anexo K-1 (Formulario 1065), casilla 14, código A
+  /heading/income/schedule-e/k1-other: ¿Este Anexo K-1 declara algo además de la casilla 1?
+  /heading/income/schedule-e/k1-columns: ¿Tiene que marcar la columna (e) o la columna (f) en la línea 28 del Anexo E?
+  /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta esta situación del Anexo K-1
+  /heading/knockout/schedule-e-part-ii-line-27:
+    Esta herramienta todavía no acepta una pérdida no permitida de un año anterior ni gastos de sociedad no reembolsados
+  /heading/knockout/schedule-e-part-iii:
+    Esta herramienta todavía no acepta ingresos de un caudal hereditario o fideicomiso
+  /heading/knockout/schedule-e-part-iv: Esta herramienta todavía no acepta una participación residual en un REMIC
   /heading/knockout/schedule-e-personal-use: Esta herramienta todavía no acepta alquileres que también usó personalmente
   /heading/knockout/schedule-e-depreciation: Esta herramienta todavía no acepta depreciación ni gastos de vehículo
   /heading/knockout/schedule-e-loss: Esta herramienta todavía no acepta pérdidas de alquiler o regalías
@@ -38,8 +57,51 @@ info:
   /info/income/schedule-e/part-ii:
     body: >-
       Conteste que sí si fue socio, accionista de una sociedad anónima de tipo S o beneficiario de un caudal hereditario
-      o fideicomiso, aunque no haya tenido ingresos de alquiler o regalías y aunque no haya recibido el dinero. Un Anexo
-      K-1 de una sociedad colectiva también puede incluir ganancias del trabajo por cuenta propia.
+      o fideicomiso, aunque no haya tenido ingresos de alquiler o regalías y aunque no haya recibido el dinero. Se puede
+      declarar una sociedad colectiva o de tipo S que solo tenga ingreso ordinario del negocio si usted participó de
+      forma importante. Otras situaciones del Anexo K-1 detienen esta declaración.
+  /info/income/schedule-e/part-ii-line-27:
+    body: >-
+      Conteste que sí si declara una pérdida que no se permitió en un año anterior por los límites de riesgo o de base,
+      una pérdida pasiva no permitida de un año anterior o gastos de sociedad no reembolsados.
+  /info/income/schedule-e/part-iii:
+    body: >-
+      Conteste que sí si es beneficiario de un caudal hereditario o fideicomiso, aunque no haya recibido el ingreso.
+      Debe tener un Anexo K-1 (Formulario 1041).
+  /info/income/schedule-e/part-iv:
+    body:
+      Conteste que sí si tiene una participación residual en un conducto de inversión hipotecaria inmobiliaria (REMIC).
+  /info/income/schedule-e/k1-intro:
+    body: >-
+      Agregue una entrada por cada sociedad colectiva o sociedad anónima de tipo S. Use el nombre y el ingreso ordinario
+      del negocio del Anexo K-1.
+  /info/income/schedule-e/k1-name:
+    body: >-
+      Elija sociedad colectiva si el Anexo K-1 es el Formulario 1065. Elija sociedad anónima de tipo S si es el
+      Formulario 1120-S. En el Anexo E es la columna (b): P o S.
+  /info/income/schedule-e/k1-scope:
+    body: >-
+      Conteste que sí a sociedad extranjera si marcaría la columna (c) de la línea 28 del Anexo E. Conteste que sí si es
+      una sociedad que cotiza en bolsa o si el negocio compra y vende instrumentos financieros o productos básicos.
+  /info/income/schedule-e/k1-box1:
+    body: >-
+      Anote la casilla 1, ingreso o pérdida ordinaria del negocio. Conteste que sí a la participación importante si
+      intervino en las operaciones de forma regular, continua y considerable. Ese ingreso va en la columna (k), ingreso
+      no pasivo.
+  /info/income/schedule-e/k1-box14:
+    body: >-
+      Anote la cantidad de la casilla 14, código A. Anote 0 si esa casilla está en blanco. El ingreso ordinario de una
+      sociedad anónima de tipo S no es ganancia del trabajo por cuenta propia; anote 0 para una sociedad de tipo S.
+  /info/income/schedule-e/k1-other:
+    body: >-
+      Conteste que sí a la primera pregunta si el K-1 incluye una declaración para la casilla 20, código Z (Formulario
+      1065) o la casilla 17, código V (Formulario 1120-S). Conteste que sí a la segunda pregunta si alguna casilla
+      distinta de la casilla 1 tiene una cantidad.
+  /info/income/schedule-e/k1-columns:
+    body: >-
+      Conteste que sí a la primera pregunta si recibió una distribución, dispuso de acciones o recibió un pago de un
+      préstamo de una sociedad anónima de tipo S. Conteste que sí a la segunda pregunta si alguna cantidad no está en
+      riesgo.
   /info/income/schedule-e/personal-use:
     body: >-
       Conteste que sí si, cualquier día, usted, un copropietario o un familiar usó una casa, apartamento, condominio o
@@ -84,10 +146,31 @@ info:
     alertText:
       body:
         - p: >-
-            Los ingresos de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario o fideicomiso se
-            declaran en el Anexo E aunque no los haya recibido. Las ganancias del trabajo por cuenta propia de una
-            sociedad colectiva (Anexo K-1 (Formulario 1065), casilla 14, código A) también van en el Anexo SE. Esta
-            herramienta todavía no lo acepta. Tendrá que usar otra manera de presentar esta declaración.
+            Esta herramienta puede declarar una sociedad colectiva nacional o una sociedad anónima de tipo S que solo
+            tenga ingreso ordinario del negocio si usted participó de forma importante. Una pérdida, una actividad
+            pasiva, una sociedad extranjera, una sociedad que cotiza en bolsa, una distribución u otro cálculo de base,
+            ganancias del trabajo por cuenta propia u otra cantidad del Anexo K-1 necesitan formularios que esta
+            herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-e-part-ii-line-27:
+    alertText:
+      body:
+        - p: >-
+            Una pérdida no permitida de un año anterior o gastos de sociedad no reembolsados pueden estar limitados por
+            las reglas de actividades pasivas, de riesgo y de base. Esta herramienta todavía no acepta eso. Tendrá que
+            usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-e-part-iii:
+    alertText:
+      body:
+        - p: >-
+            Los ingresos de un caudal hereditario o fideicomiso se declaran en el Anexo E a partir del Anexo K-1
+            (Formulario 1041), aunque usted no los haya recibido. Esta herramienta todavía no acepta eso. Tendrá que
+            usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-e-part-iv:
+    alertText:
+      body:
+        - p: >-
+            Una participación residual en un REMIC se declara en el Anexo E. Esta herramienta todavía no acepta eso.
+            Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-personal-use:
     alertText:
       body:
@@ -149,6 +232,82 @@ fields:
     name: Total de regalías recibidas
   /scheduleEWritableExpenses:
     name: Total de gastos (sin incluir la depreciación)
+  /scheduleEPartIILine27:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /scheduleEHasPartIIIIncome:
+    boolean:
+      "yes": Sí, recibí un Anexo K-1 de un caudal hereditario o fideicomiso
+      "no": "No"
+  /scheduleEHasPartIVIncome:
+    boolean:
+      "yes": Sí, tengo una participación residual en un REMIC
+      "no": "No"
+  /scheduleEK1EntityTypeOptions:
+    P: Sociedad colectiva
+    S: Sociedad anónima de tipo S
+  /scheduleEK1s/*/entityType:
+    name: Sociedad colectiva o sociedad anónima de tipo S
+    /scheduleEK1EntityTypeOptions:
+      P: Sociedad colectiva
+      S: Sociedad anónima de tipo S
+  /scheduleEK1s/*/entityName:
+    name: Nombre
+  /scheduleEK1s/*/isForeignPartnership:
+    boolean:
+      "yes": Sí, es una sociedad extranjera
+      "no": "No"
+  /scheduleEK1s/*/isPubliclyTradedPartnership:
+    boolean:
+      "yes": Sí, es una sociedad que cotiza en bolsa
+      "no": "No"
+  /scheduleEK1s/*/isTradingBusiness:
+    boolean:
+      "yes": Sí, compra y vende instrumentos financieros o productos básicos
+      "no": "No"
+  /scheduleEK1s/*/box1:
+    name: Casilla 1, ingreso o (pérdida) ordinaria del negocio
+  /scheduleEK1s/*/materiallyParticipates:
+    boolean:
+      "yes": Sí, participé de forma importante
+      "no": No, no participé de forma importante
+  /scheduleEK1s/*/box14CodeA:
+    name: Casilla 14, código A
+  /scheduleEK1s/*/hasQbiStatement:
+    boolean:
+      "yes": Sí, hay una declaración para la casilla 20 código Z o la casilla 17 código V
+      "no": "No"
+  /scheduleEK1s/*/hasOtherK1Amount:
+    boolean:
+      "yes": Sí, otra casilla tiene una cantidad
+      "no": No, todas las demás casillas están en blanco o en cero
+  /scheduleEK1s/*/basisComputationRequired:
+    boolean:
+      "yes": Sí, la columna (e) está marcada
+      "no": "No"
+  /scheduleEK1s/*/anyAmountNotAtRisk:
+    boolean:
+      "yes": Sí, alguna cantidad no está en riesgo
+      "no": "No"
+  /scheduleEK1s:
+    controls:
+      add: Agregar una sociedad colectiva o sociedad anónima de tipo S
+      complete_zero: No tengo una para agregar
+      complete: Terminé de agregar sociedades
+      back: Volver a la lista
+    collectionListing:
+      itemHeading1: "{{/scheduleEK1s/*/entityName}}"
+      itemHeading2: Sociedad incompleta
+    deleteControl:
+      text: <LinkModal1>Quitar</LinkModal1>
+      LinkModal1:
+        header: ¿Seguro que quiere quitar esta sociedad colectiva o sociedad anónima de tipo S?
+        body:
+          - p: Esto no se puede deshacer.
+        controls:
+          confirm: Quitar
+          cancel: Cancelar
 checklist:
   /flow/income/schedule-e:
     heading: Ingresos de alquiler, regalías y del Anexo K-1
@@ -170,3 +329,19 @@ dataviews:
       ¿Prestó servicios considerables, como limpieza, ropa de cama o servicio de limpieza?
     /scheduleERentalIsTradeOrBusiness:
       ¿Algún alquiler es una ocupación o negocio para la deducción por ingreso calificado de negocios?
+    /scheduleEPartIILine27:
+      ¿Está declarando una pérdida no permitida de un año anterior o gastos de sociedad no reembolsados?
+    /scheduleEHasPartIIIIncome: ¿Recibió un Anexo K-1 de un caudal hereditario o fideicomiso?
+    /scheduleEHasPartIVIncome: ¿Tiene una participación residual en un REMIC?
+    /scheduleEK1s/*/entityName: Nombre de la sociedad colectiva o sociedad anónima de tipo S
+    /scheduleEK1s/*/entityType: Sociedad colectiva o sociedad anónima de tipo S
+    /scheduleEK1s/*/isForeignPartnership: ¿Es una sociedad extranjera?
+    /scheduleEK1s/*/isPubliclyTradedPartnership: ¿Es una sociedad que cotiza en bolsa?
+    /scheduleEK1s/*/isTradingBusiness: ¿Compra y vende instrumentos financieros o productos básicos?
+    /scheduleEK1s/*/box1: Casilla 1, ingreso o (pérdida) ordinaria del negocio
+    /scheduleEK1s/*/materiallyParticipates: ¿Participó de forma importante?
+    /scheduleEK1s/*/box14CodeA: Casilla 14, código A
+    /scheduleEK1s/*/hasQbiStatement: ¿Hay una declaración para la casilla 20 código Z o la casilla 17 código V?
+    /scheduleEK1s/*/hasOtherK1Amount: ¿Alguna casilla distinta de la casilla 1 tiene una cantidad?
+    /scheduleEK1s/*/basisComputationRequired: ¿Está marcada la columna (e)?
+    /scheduleEK1s/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?

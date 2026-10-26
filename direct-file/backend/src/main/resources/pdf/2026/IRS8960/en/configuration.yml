@@ -15,8 +15,10 @@
 #
 # Not mapped, left blank (never a silent 0):
 #   Part I election checkboxes (section 6013(g), 6013(h), Regulations section 1.1411-10(g)): not offered.
-#   4b, 5b, 5c, 6, 7, 9a-9c  stops when they could apply (/flowKnockoutForm8960Unsupported, scheduleE
-#       /flowKnockoutScheduleEPartII); 9d (the sum of 9a-9c) is therefore $0.
+#   4b, 5b, 5c, 6, 7, 9a-9c  stops when they could apply (/flowKnockoutForm8960Unsupported). Line 5c
+#       (disposition of a partnership interest or S corporation stock) also stops via scheduleE
+#       /flowKnockoutScheduleEPartIIColumnE. Part II nonpassive box 1 is not line 4a (26 U.S.C. 1411(c)(2)).
+#       9d (the sum of 9a-9c) is therefore $0.
 #   18a-21  estates and trusts; this return is an individual Form 1040.
 # Lines that only repeat an in-scope amount print it: 4c = 4a, 5d = 5a (see /form8960Line4c, /form8960Line5a).
 # $0 amounts print blank (FactGraphService zero suppression) except where the form says "enter -0-": lines 12 and

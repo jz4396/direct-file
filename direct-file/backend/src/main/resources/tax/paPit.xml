@@ -585,6 +585,8 @@
             </GreaterThan>
             <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
             <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+            <!-- Partnership and S corporation income (Schedule E Part II) is not classified on PA-40 in this slice. -->
+            <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
             <GreaterThan>
               <Left>
                 <CollectionSize>

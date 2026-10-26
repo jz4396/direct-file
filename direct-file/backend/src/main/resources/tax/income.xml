@@ -930,11 +930,12 @@
       <Name>Schedule 1 line 5: Rental real estate, royalties, partnerships, S corporations, trusts, etc.</Name>
       <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page
         1 (PDF p. 2), Part I, line 5: "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach
-        Schedule E". Same amount as scheduleE /scheduleENetIncome (Schedule E Part I only; Part II stops the return,
-        scheduleE /flowKnockoutScheduleEPartII). Printed without ExportZero so a Schedule 1 with no Schedule E leaves
-        line 5 blank.</Description>
+        Schedule E". Same amount as scheduleE /scheduleELine41 (Schedule E line 41 = line 26 + line 32; lines 37
+        and 39 are zero because Part III and Part IV stop the return). Schedule E (2026) draft, PDF p. 4, line 41:
+        "Enter the result here and on Schedule 1 (Form 1040), line 5." Printed without ExportZero so a Schedule 1
+        with no Schedule E leaves line 5 blank.</Description>
       <Derived>
-        <Dependency module="scheduleE" path="/scheduleENetIncome" />
+        <Dependency module="scheduleE" path="/scheduleELine41" />
       </Derived>
     </Fact>
 
@@ -964,6 +965,7 @@
                 <Dependency module="unemployment" path="/receivedUnemploymentCompensation" />
                 <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
                 <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+                <Dependency module="scheduleE" path="/scheduleEReportsPartII" />
               </Any>
             </When>
             <Then>
@@ -1000,8 +1002,8 @@
             <Dependency path="/schedule1TotalOtherIncome" />
             <!-- Schedule 1 line 3 business income (Schedule C) — § 61 / § 162; see scheduleC.xml -->
             <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
-            <!-- Schedule 1 line 5 rental real estate / royalties (Schedule E line 26/41); § 61(a)(5)-(6); see scheduleE.xml -->
-            <Dependency module="scheduleE" path="/scheduleENetIncome" />
+            <!-- Schedule 1 line 5 is Schedule E line 41 (line 26 + line 32). 26 U.S.C. 61(a)(5)-(6), 702(a), 1366(a). -->
+            <Dependency module="scheduleE" path="/scheduleELine41" />
           </Add>
         </Round>
       </Derived>
@@ -1042,6 +1044,7 @@
           <Dependency module="socialSecurity" path="/hasSocialSecurityBenefits" />
           <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
           <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEReportsPartII" />
         </Any>
       </Derived>
     </Fact>

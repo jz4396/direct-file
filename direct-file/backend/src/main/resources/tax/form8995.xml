@@ -16,8 +16,9 @@
   Supported slice: qualified business income from the primary filer's Schedule C businesses (a secondary-filer business
   is already a stop, scheduleC /flowKnockoutScheduleCSpouseBusiness), taxable income before the deduction at or below
   the threshold, no prior-year loss carryforward, not a cooperative patron. Every other source of 199A income stays a
-  stop with BlockSubmissionOnTrue: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends), PTP and K-1 income
-  (scheduleE /flowKnockoutScheduleEPartII), Schedule E trade-or-business rentals
+  stop with BlockSubmissionOnTrue: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends), a PTP
+  (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp) and a K-1 section 199A statement
+  (scheduleE /flowKnockoutScheduleEPartIIQbiCode), Schedule E trade-or-business rentals
   (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). So lines 6-9 are $0 here.
 
   Each line is rounded to whole dollars as it is computed (26 U.S.C. 6102(a); #202).
@@ -283,7 +284,8 @@
       <Name>Form 8995 line 6</Name>
       <Description>Line 6: "Qualified REIT dividends and publicly traded partnership (PTP) income or (loss)". $0:
         1099-DIV box 5 (dividends /flowKnockoutSection199ADividends) and PTP income (scheduleE
-        /flowKnockoutScheduleEPartII) are stops.</Description>
+        /flowKnockoutScheduleEPartIIForeignOrPtp) are stops. A supported Part II K-1 has no box 20 code Z or
+        box 17 code V, so it adds nothing here.</Description>
       <Derived>
         <Dollar>0</Dollar>
       </Derived>
