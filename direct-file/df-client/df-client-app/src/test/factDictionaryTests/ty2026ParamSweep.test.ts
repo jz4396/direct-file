@@ -51,6 +51,29 @@ describe(`#91 TY2026 derived parameters`, () => {
   });
 });
 
+describe(`#91 TY2026 child and dependent care help-text ceilings`, () => {
+  // IRC §21(a)(2), https://www.law.cornell.edu/uscode/text/26/21: "50 percent", "not below 20 percent".
+  // IRC §21(c): "$3,000" / "$6,000". 2026 Form 2441 instructions (draft) PDF p. 2: "increased from 35% to 50%".
+  it(`the biggest credit shown is 50% of the expense limits, $1,500 and $3,000`, () => {
+    expect(get(`/cdccMaxClaimableExpenseWithOneQP`)).toBe(`3000.00`);
+    expect(get(`/cdccMaxClaimableExpenseWithTwoQP`)).toBe(`6000.00`);
+    expect(get(`/cdccMaxAllowedCreditWithOneQP`)).toBe(`1500.00`);
+    expect(get(`/cdccMaxAllowedCreditWithTwoQP`)).toBe(`3000.00`);
+    expect(get(`/cdccMinAllowedPercentage`)).toBe(`20`);
+    expect(get(`/cdccMaxAllowedPercentage`)).toBe(`50`);
+  });
+});
+
+describe(`#91 Schedule R AGI ceilings from §22`, () => {
+  // §22(d) one-half reduction over $7,500 / $10,000 / $5,000, against the §22(c)(2)(A) initial amounts.
+  it(`the credit reaches zero at the statutory AGI ceilings`, () => {
+    expect(get(`/edcMaxSingleHohQssAgiLimit`)).toBe(`17500.00`);
+    expect(get(`/edcMaxMfsAgiLimit`)).toBe(`12500.00`);
+    expect(get(`/edcMaxMfjBothAgiLimit`)).toBe(`25000.00`);
+    expect(get(`/edcMaxMfjOnlyOneAgiLimit`)).toBe(`20000.00`);
+  });
+});
+
 describe(`#91 TY2026 writable limits`, () => {
   it.each([
     [`educatorAdjustment.xml`, `/primaryEducatorExpensesWritable`, `350`],

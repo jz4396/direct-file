@@ -208,6 +208,7 @@ info:
           dirección postal.
       - p: <Link1>Busque el código de su distrito escolar en las instrucciones del PA-40 (páginas 46 y 47).</Link1>
     urls:
+      # 2026 PA-40 instructions are not published. This is the 2025 booklet, the latest posted school-district list.
       Link1: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
   /info/knockout/pa-schedule-a:
     alertText:

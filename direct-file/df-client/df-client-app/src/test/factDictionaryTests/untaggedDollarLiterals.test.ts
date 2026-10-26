@@ -64,32 +64,30 @@ const EXCEPTIONS: Record<string, Exception> = {
   },
   '/taxableSocialSecurityBenefits': { kind: `remaining`, reason: `§ 86(a)(2) 85 percent stored as a Dollar` },
   '/socialSecurityBenefitsWkshtLine16': { kind: `remaining`, reason: `§ 86(a) 85 and 50 percent stored as Dollars` },
-  '/nonItemizerCharitableCap': {
+  '/w2MinAmount': {
     kind: `remaining`,
-    reason: `§ 170(p) as amended by P.L. 119-21 § 70424; needs a source that prints $1,000 and $2,000`,
+    reason: `unused $600 W-2 floor; not the Rev. Proc. 2025-32 §2.15 §6041(a) $2,000 threshold, and not on a knockout`,
   },
-  '/cdccMaxAllowedCreditWithOneQP': {
+  '/paScheduleAThreshold': {
     kind: `remaining`,
-    reason: `$1,050 is 35% of $3,000; review against the § 21(a)(2) rate as amended by P.L. 119-21`,
+    reason: `tool limit of $2,500 on top of PA Schedule A triggers; 2026 PA-40 instructions are not published`,
   },
-  '/cdccMaxAllowedCreditWithTwoQP': {
+  '/paScheduleBThreshold': {
     kind: `remaining`,
-    reason: `$2,100 is 35% of $6,000; review against the § 21(a)(2) rate as amended by P.L. 119-21`,
+    reason: `tool limit of $2,500 on top of PA Schedule B triggers; 2026 PA-40 instructions are not published`,
   },
-  '/w2MinAmount': { kind: `remaining`, reason: `review against the § 6041(a) threshold as amended by P.L. 119-21` },
-  '/edcMaxSingleHohQssAgiLimit': { kind: `remaining`, reason: `needs the 2026 Schedule R instructions as a source` },
-  '/edcMaxMfsAgiLimit': { kind: `remaining`, reason: `needs the 2026 Schedule R instructions as a source` },
-  '/edcMaxMfjBothAgiLimit': { kind: `remaining`, reason: `needs the 2026 Schedule R instructions as a source` },
-  '/edcMaxMfjOnlyOneAgiLimit': { kind: `remaining`, reason: `needs the 2026 Schedule R instructions as a source` },
-  '/statusBasedDisabilityIncome': {
+  '/paSpTableBase': {
     kind: `remaining`,
-    reason: `Schedule R line 11 $5,000; needs the 2026 Schedule R instructions as a source`,
+    reason: `standing PA Tax Forgiveness table ($6,500 / $13,000 / $9,500); 2026 PA-40 instructions are not published`,
   },
-  '/paScheduleAThreshold': { kind: `remaining`, reason: `Pennsylvania law, not in the federal parameter file` },
-  '/paScheduleBThreshold': { kind: `remaining`, reason: `Pennsylvania law, not in the federal parameter file` },
-  '/paSpTableBase': { kind: `remaining`, reason: `Pennsylvania law, not in the federal parameter file` },
-  '/paSpLine15': { kind: `remaining`, reason: `Pennsylvania law, not in the federal parameter file` },
-  '/paSpCouldQualify': { kind: `remaining`, reason: `Pennsylvania law, not in the federal parameter file` },
+  '/paSpLine15': {
+    kind: `remaining`,
+    reason: `standing PA Tax Forgiveness $250 columns; 2026 PA-40 instructions are not published`,
+  },
+  '/paSpCouldQualify': {
+    kind: `remaining`,
+    reason: `standing PA Tax Forgiveness 10% column ($2,250); 2026 PA-40 instructions are not published`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,

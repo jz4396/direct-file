@@ -123,6 +123,12 @@
       "url": "https://www.irs.gov/pub/irs-dft/f8962--dft.pdf",
       "kind": "pdf",
       "sha256": "5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35"
+    },
+    "i2441-dft": {
+      "title": "Instructions for Form 2441 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/i2441--dft.pdf",
+      "kind": "pdf",
+      "sha256": "7fdecfe193df435542bb452ba108bee011bef7032fda8abe972d6fbd5de233e7"
     }
   },
   "parameters": [
@@ -2514,6 +2520,215 @@
           "section": "Part III",
           "page": 2,
           "quote": "You must complete this part if you (a) had over $1,500 of taxable interest or ordinary dividends"
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMaxAllowedCreditWithOneQP",
+      "file": "cdcc.xml",
+      "values": [
+        "Rational:50/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "the term “applicable percentage” means 50 percent"
+        },
+        {
+          "source": "i2441-dft",
+          "section": "What's New",
+          "page": 2,
+          "quote": "Beginning in 2026, the maximum percentage used to figure the credit for child and dependent care expenses is increased from 35% to 50%"
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMaxAllowedCreditWithTwoQP",
+      "file": "cdcc.xml",
+      "values": [
+        "Rational:50/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "the term “applicable percentage” means 50 percent"
+        },
+        {
+          "source": "i2441-dft",
+          "section": "What's New",
+          "page": 2,
+          "quote": "For 2026, the percentage used to figure the credit ranges from 50% to 20%, compared to 35% to 20% for 2025."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMinAllowedPercentage",
+      "file": "cdcc.xml",
+      "values": [
+        "Int:20"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(a)(2)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "further reduced (but not below 20 percent)"
+        },
+        {
+          "source": "i2441-dft",
+          "section": "What's New",
+          "page": 2,
+          "quote": "As adjusted gross income increases, the percentage used to figure the credit is reduced, but not below 20%."
+        }
+      ]
+    },
+    {
+      "fact": "/cdccMaxAllowedPercentage",
+      "file": "cdcc.xml",
+      "values": [
+        "Int:50"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 21(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/21",
+          "quote": "the term “applicable percentage” means 50 percent"
+        },
+        {
+          "source": "i2441-dft",
+          "section": "What's New",
+          "page": 2,
+          "quote": "Beginning in 2026, the maximum percentage used to figure the credit for child and dependent care expenses is increased from 35% to 50%"
+        }
+      ]
+    },
+    {
+      "fact": "/nonItemizerCharitableCap",
+      "file": "charitableNonItemizer.xml",
+      "values": [
+        "Dollar:2000",
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 170(p)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/170",
+          "quote": "not in excess of $1,000 ($2,000 in the case of a joint return)"
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxSingleHohQssAgiLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:7500",
+        "Dollar:5000",
+        "Dollar:5000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(d)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$7,500 in the case of a single individual"
+        },
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual"
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxMfsAgiLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:5000",
+        "Dollar:3750",
+        "Dollar:3750"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(d)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$5,000 in the case of a married individual filing a separate return"
+        },
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)(iii)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$3,750 in the case of a married individual filing a separate return"
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxMfjBothAgiLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:10000",
+        "Dollar:7500",
+        "Dollar:7500"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(d)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$10,000 in the case of a joint return"
+        },
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)(ii)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$7,500 in the case of a joint return where both spouses are qualified individuals"
+        }
+      ]
+    },
+    {
+      "fact": "/edcMaxMfjOnlyOneAgiLimit",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:10000",
+        "Dollar:5000",
+        "Dollar:5000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(d)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$10,000 in the case of a joint return"
+        },
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(A)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "$5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual"
+        }
+      ]
+    },
+    {
+      "fact": "/statusBasedDisabilityIncome",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Dollar:5000",
+        "Dollar:5000",
+        "Dollar:0"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(c)(2)(B)(ii)(II)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "the initial amount shall not exceed the sum of $5,000 plus the disability income for the taxable year of the spouse who has not attained age 65"
         }
       ]
     }

@@ -14320,16 +14320,14 @@ info:
     helpText:
       modals:
         text: >-
-          <p>Podrás agregar Formularios 1099-R en marzo del 2025. Puedes regresar y completar tu declaración en ese
-          momento.</p> <p>Si quieres presentar tu declaración antes de marzo del 2025, tendrás que hacerlo con otra
-          herramienta.</p> <p>Direct File sólo aceptará algunas situaciones simples de Formularios 1099-R.
+          <p>Direct File no acepta el Formulario 1099-R en esta declaración. Tendrás que presentar tus impuestos con otra
+          herramienta.</p> <p>Direct File sólo acepta algunas situaciones simples de Formularios 1099-R.
           <sharedModal1099rSupportedSituations>Qué Formularios 1099-R Direct File
           aceptará.</sharedModal1099rSupportedSituations></p>
   /info/income/retirement/launch-1099R-alert:
     alertText:
       body: >-
-        <strong>Comenzando en marzo del 2025,</strong> Direct File aceptará algunas situaciones simples de Formularios
-        1099-R.
+        Direct File acepta algunas situaciones simples de Formularios 1099-R.
   /info/knockout/hsa-no-payments-distribution-ko:
     body:
       - p: "Tus respuestas muestran que:"
@@ -15772,7 +15770,7 @@ modals:
           Este crédito es un porcentaje de tus gastos calificados por el cuidado de hijos y dependientes, y el
           porcentaje se basa en tu ingreso bruto ajustado (AGI en inglés).
       - p: >-
-          El crédito va desde {{/cdccMinAllowedPercentageTY2024}}% a {{/cdccMaxAllowedPercentageTY2024}}% de tus gastos
+          El crédito va desde {{/cdccMinAllowedPercentage}}% a {{/cdccMaxAllowedPercentage}}% de tus gastos
           hasta {{/cdccMaxClaimableExpenseWithOneQP}} por una persona calificada y {{/cdccMaxClaimableExpenseWithTwoQP}}
           por dos personas calificadas. Esto significa que el crédito máximo que se puede recibir es
           {{/cdccMaxAllowedCreditWithOneQP}} por una persona calificada y {{/cdccMaxAllowedCreditWithTwoQP}} por dos o
@@ -22150,8 +22148,7 @@ headings:
     En esta sección, preguntaremos sobre cualquier Formulario 1099-R que {{/secondaryFiler/firstName}} y tú hayan
     recibido para el {{/taxYear}}.
   /heading/income/retirement/retirement-had-1099r-before-section-enabled: >-
-    Direct File aún no acepta los Formularios 1099-R, pero estamos trabajando en eso. Podrás agregar este formulario en
-    marzo del {{/nextTaxYear}}.
+    Direct File no acepta el Formulario 1099-R en esta declaración.
   /heading/income/retirement/retirement-had-1099r: ¿Tienes algún Formulario 1099-R para el {{/taxYear}}?
   /heading/income/retirement/retirement-had-1099r-mfj: >-
     ¿{{/secondaryFiler/firstName}} o tú tienen algún Formulario 1099-R para el {{/taxYear}}?

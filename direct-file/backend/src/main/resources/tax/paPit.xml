@@ -5,6 +5,10 @@
       #78 Pennsylvania PA-40 core and #79 Schedule SP Tax Forgiveness, full-year residents (TY2026 return; 2025 booklet until the 2026 one is published).
       Instructions: PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
       Form: PA-40 (2025). Statute: 72 P.S. §7302 (3.07%), §7303 (classes of income).
+      #91: 2026_pa-40.pdf, 2026_pa-40in.pdf, and 2026_pa-40sp.pdf are not published (HTTP 404). Schedule SP eligibility
+      columns stay at the standing PA Department of Revenue Tax Forgiveness table (unmarried $6,500, married $13,000,
+      plus $9,500 per dependent child, then $250 columns down to 10%), which matches PA-40 IN (2025) p. 39. Florida has
+      no individual income tax (Fla. Const. art. VII, sec. 5(a)); there is no Florida dollar parameter to roll forward.
       Full-year residency: /filerResidenceAndIncomeState = pa ("I lived in more than 1 state" is a separate option that knocks out).
       Wired through stateReturn.xml (state framework).
     -->
