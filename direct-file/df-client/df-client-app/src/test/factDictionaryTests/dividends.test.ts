@@ -349,17 +349,44 @@ describe(`PA-40 line 3 dividends (PA-40 IN (2025) p. 15 and PA Schedule B p. 32)
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutPaDividends`);
   });
-  it(`PA/FL part-year resident with dividends (PA Schedule B line 4, p. 43) stops the PA return`, () => {
-    const g = build({
-      ...divs({ box1a: 700 }),
-      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
-      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
-      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
-      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
-      [`/formW2s/#${w2Id}/paPartYearResidentPeriodWages`]: createDollarWrapper(`40000`),
-    });
-    expect(get(g, `/flowKnockoutPaDividends`).get).toBe(true);
-    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  it(`PA/FL part-year: dividends received while not a PA resident (PA Schedule B line 4) stop the return`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/paPartYearHasDividends`,
+      `/paPartYearResidentDividends`,
+      `/paPartYearNonresidentDividends`,
+      `/paLine3`,
+      `/flowKnockoutPaDividends`,
+    ];
+    const partYear = (resident?: string) =>
+      build({
+        ...divs({ box1a: 700 }),
+        '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+        '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+        '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+        [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+        [`/formW2s/#${w2Id}/paPartYearResidentPeriodWages`]: createDollarWrapper(`40000`),
+        '/paHasExemptObligationDividends': createBooleanWrapper(false),
+        ...(resident === undefined ? {} : { '/paPartYearResidentDividends': createDollarWrapper(resident) }),
+      });
+    const stopped = partYear(`200`);
+    expect(get(stopped, `/paPartYearHasDividends`).get).toBe(true);
+    expect(val(stopped, `/paPartYearNonresidentDividends`)).toBe(`500.00`);
+    expect(val(stopped, `/paLine3`)).toBe(`200.00`);
+    expect(get(stopped, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(stopped, `/flowIsKnockedOut`).get).toBe(true);
+    // Every ordinary dividend received while a PA resident: line 4 is $0, line 3 is the federal amount.
+    const allResident = partYear(`700`);
+    expect(val(allResident, `/paPartYearNonresidentDividends`)).toBe(`0.00`);
+    expect(val(allResident, `/paLine3`)).toBe(`700.00`);
+    expect(get(allResident, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(allResident, `/flowIsKnockedOut`).get).toBe(false);
+    // Unanswered: line 3 is incomplete, not $0, and the knockout is not yet true.
+    const unanswered = partYear();
+    expect(get(unanswered, `/paLine3`).complete).toBe(false);
+    expect(get(unanswered, `/flowKnockoutPaDividends`).complete).toBe(true);
+    expect(get(unanswered, `/flowKnockoutPaDividends`).get).toBe(false);
   });
   it(`not a PA return: never asked, never blocked`, () => {
     const g = build({ ...divs({ box1a: 700 }), '/paHasExemptObligationDividends': createBooleanWrapper(true) });
@@ -652,17 +679,28 @@ describe(`#154 PA Schedule B dividend knockout`, () => {
     expect(scheduleB(g)).toBe(true);
     expect(get(g, `/flowKnockoutDividendNominee`).get).toBe(true);
   });
-  it(`Line 4: a PA/FL part-year resident with any dividends stops it, at amounts under $2,500`, () => {
-    const g = build({
-      ...divs({ box1a: 50 }),
-      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
-      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
-      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
-      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
-      [`/formW2s/#${w2Id}/paPartYearResidentPeriodWages`]: createDollarWrapper(`40000`),
-    });
+  it(`Line 4: dividends received while not a PA resident stop it, even under $2,500`, () => {
+    const partYear = (box1a: number, resident: string) =>
+      build({
+        ...divs({ box1a }),
+        '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+        '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+        '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+        [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+        [`/formW2s/#${w2Id}/paPartYearResidentPeriodWages`]: createDollarWrapper(`40000`),
+        '/paHasExemptObligationDividends': createBooleanWrapper(false),
+        '/paPartYearResidentDividends': createDollarWrapper(resident),
+      });
+    const g = partYear(50, `0`);
     expect(scheduleB(g)).toBe(true);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    // All $2,000 received while a PA resident: under the $2,500 limit and line 4 is $0, so no Schedule B.
+    const supported = partYear(2000, `2000`);
+    expect(val(supported, `/paLine3`)).toBe(`2000.00`);
+    expect(scheduleB(supported)).toBe(false);
+    expect(get(supported, `/flowIsKnockedOut`).get).toBe(false);
+    // $2,000 of $2,500 received while a PA resident: line 3 is under $2,500, but line 4 is $500.
+    expect(scheduleB(partYear(2500, `2000`))).toBe(true);
   });
   it(`no 1099-DIV: no Schedule B line has an amount`, () => {
     const g = build(state(`pa`));

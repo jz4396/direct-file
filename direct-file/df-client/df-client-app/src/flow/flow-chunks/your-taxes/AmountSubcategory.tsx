@@ -72,6 +72,13 @@ export const AmountSubcategory = (
         <Dollar path='/paPartYearResidentInterest' />
         <SaveAndOrContinueButton />
       </Screen>
+      {/* #135: 1099-DIVs have no dates. Dividends received while not a PA resident are PA Schedule B line 4. */}
+      <Screen route='pa-part-year-dividends' condition='/paPartYearHasDividends'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-part-year-dividends' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-part-year-dividends' />
+        <Dollar path='/paPartYearResidentDividends' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='pa-part-year-knockout' condition='/flowKnockoutPaPartYear' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-part-year' />
