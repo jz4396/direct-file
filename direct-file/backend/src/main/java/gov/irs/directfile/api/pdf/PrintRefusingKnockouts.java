@@ -79,16 +79,7 @@ public final class PrintRefusingKnockouts {
             // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your
             // return."; 2026 Instructions for Form 8995 draft, PDF p. 6, line 18, "This is the amount to be carried
             // forward to the next year." There is no TY2026 Form 8995 template or MeF mapping, so it would be left off.
-            "/flowKnockoutForm8995WithoutTy2026Template",
-            // Schedule C business: Instructions for Schedule C (2025) p. 2, "Use Schedule C (Form 1040) to report
-            // income or (loss) from a business you operated or a profession you practiced as a sole proprietor", and
-            // the 2026 draft Schedule 1 line 3 reads "Attach Schedule C". There is no Schedule C template, so the
-            // package would omit it.
-            "/flowKnockoutScheduleCWithoutTy2026Template",
-            // EIC (26 U.S.C. 32), ACTC (24(d)) or refundable AOTC (25A(i)) on Form 1040 lines 27a-29: the 2026 draft
-            // Form 1040 says "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A", and line 32b is
-            // the "Amount from Schedule 3-A". There is no Schedule 3-A template and no line 32b fact.
-            "/flowKnockoutSchedule3AWithoutTy2026Template");
+            "/flowKnockoutForm8995WithoutTy2026Template");
 
     private PrintRefusingKnockouts() {}
 

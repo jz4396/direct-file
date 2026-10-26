@@ -304,14 +304,10 @@
     <Fact path="/flowKnockoutScheduleEicWithoutTy2026Template">
       <Name>Knockout: the return needs a TY2026 Schedule EIC, which this tool can't produce yet</Name>
       <Description>#208: true when /scheduleEicWithoutTy2026TemplateApplies is complete and true. Complete and false
-        when it doesn't apply, so submission checks never see it incomplete. Kept until both of these are resolved: (1)
-        the 2026 Form 1040 draft https://www.irs.gov/pub/irs-dft/f1040--dft.pdf, form page 2 (PDF p. 3), line 32 margin,
-        "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A", and there is no Schedule 3-A template
-        (#89; /flowKnockoutSchedule3AWithoutTy2026Template also refuses these returns); (2) the tie-breaker rules for a
-        child who is the qualifying child of more than one person (26 U.S.C.
-        152(c)(4)) are only partly modeled. The 2026
-        Schedule EIC template itself is committed
-        (pdf/2026/IRS1040EIC).</Description>
+        when it doesn't apply, so submission checks never see it incomplete. Kept until the tie-breaker rules for a
+        child who is the qualifying child of more than one person (26 U.S.C. 152(c)(4)) are fully modeled. Schedule 3-A
+        is attached when Form 1040 line 27a, 28, 29 or 30 has an amount (26 U.S.C. 32, 24(d), 25A(i), 23; schedule3A
+        /pdfIncludeSchedule3A). The 2026 Schedule EIC template itself is committed (pdf/2026/IRS1040EIC).</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>

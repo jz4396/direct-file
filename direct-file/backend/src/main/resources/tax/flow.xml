@@ -158,8 +158,6 @@
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
-          <Dependency module="scheduleC" path="/flowKnockoutScheduleCWithoutTy2026Template" />
-          <Dependency module="taxCalculations" path="/flowKnockoutSchedule3AWithoutTy2026Template" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
@@ -752,6 +750,7 @@
             <Dependency module="familyAndHousehold" path="/familyAndHouseholdIsDone" />
             <Dependency path="/flowHasSeenAmount" />
             <Dependency module="form2210" path="/form2210PartIIIsComplete" />
+            <Dependency module="schedule3A" path="/schedule3AQuestionsComplete" />
             <Dependency path="/deductionsSectionComplete" />
             <Dependency module="unemployment" path="/form1099GsIsDone" />
             <Dependency module="formW2s" path="/formW2sIsDone" />

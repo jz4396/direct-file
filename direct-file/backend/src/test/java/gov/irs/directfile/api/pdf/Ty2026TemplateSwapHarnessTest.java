@@ -132,6 +132,7 @@ class Ty2026TemplateSwapHarnessTest {
         List<String> unmappedRows = new ArrayList<>();
         int pages;
         try (PDDocument doc = Loader.loadPDF(bytes)) {
+            PdfForm.registerOrphanFieldRoots(doc);
             pages = doc.getNumberOfPages();
             PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
             Map<COSDictionary, Integer> widgetPage = widgetPages(doc);

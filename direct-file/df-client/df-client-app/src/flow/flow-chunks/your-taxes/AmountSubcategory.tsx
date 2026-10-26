@@ -19,7 +19,10 @@ import {
 } from '../../ContentDeclarations.js';
 
 export const AmountSubcategory = (
-  <Subcategory route='amount' completeIf={[`/flowHasSeenAmount`, `/form2210PartIIIsComplete`]}>
+  <Subcategory
+    route='amount'
+    completeIf={[`/flowHasSeenAmount`, `/form2210PartIIIsComplete`, `/schedule3AQuestionsComplete`]}
+  >
     {/* #78 PA-40 core: full-year PA residents. */}
     <SubSubcategory route='pa-40'>
       {/* #123 PA-40 School Code (PA-40 IN p. 5): the district where the filer lived on Dec. 31. */}
@@ -160,17 +163,21 @@ export const AmountSubcategory = (
       <DFAlert i18nKey='/info/knockout/form-8615' headingLevel='h3' type='warning' />
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
-    {/* #89: Form 1040 lines 27a-29 need Schedule 3-A (line 32b), which has no template or line 32b fact yet. */}
-    <Screen
-      route='schedule-3a-without-ty2026-template-knockout'
-      condition='/flowKnockoutSchedule3AWithoutTy2026Template'
-      isKnockout={true}
-    >
-      <IconDisplay name='ErrorOutline' size={9} isCentered />
-      <Heading i18nKey='/heading/knockout/schedule-3a-without-ty2026-template' />
-      <DFAlert i18nKey='/info/knockout/schedule-3a-without-ty2026-template' headingLevel='h3' type='warning' />
-      <KnockoutButton i18nKey='button.knockout' />
-    </Screen>
+    {/* 2026 draft Schedule 3-A line 7, then line 8 (8 U.S.C. 1641(b)), when line 6 is more than zero. */}
+    <SubSubcategory route='schedule-3a'>
+      <Screen route='schedule-3a-line-7' condition='/schedule3ALine6IsPositive'>
+        <Heading i18nKey='/heading/your-taxes/amount/schedule-3a-line-7' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/schedule-3a-line-7' />
+        <Boolean path='/schedule3AWantsFederalPublicBenefit' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='schedule-3a-line-8' condition='/schedule3ALine8Applies'>
+        <Heading i18nKey='/heading/your-taxes/amount/schedule-3a-line-8' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/schedule-3a-line-8' />
+        <Boolean path='/schedule3AIsCitizenNationalOrQualifiedAlien' />
+        <SaveAndOrContinueButton />
+      </Screen>
+    </SubSubcategory>
     {/* #92 Form 2210: lines 1-7 are computed; when a penalty is possible, ask the Part II questions. Any box knocks
         out; with none, the IRS figures any penalty and sends a bill, and Form 1040 line 38 stays blank. */}
     <SubSubcategory route='estimated-tax-penalty'>

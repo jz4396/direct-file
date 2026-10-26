@@ -265,6 +265,22 @@ direct-file:
         configuration-location: "src/main/resources/pdf/2026/IRS1040SSE/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
+      - name: IRS1040SC
+        year: 2026
+        language-code: en
+        location: "src/main/resources/pdf/2026/IRS1040SC/en/f1040sc--dft.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/IRS1040SC/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
+      - name: IRS1040S3A
+        year: 2026
+        language-code: en
+        location: "src/main/resources/pdf/2026/IRS1040S3A/en/f1040s3a--dft.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/IRS1040S3A/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
       - name: IRS8959
         year: 2026
         language-code: en

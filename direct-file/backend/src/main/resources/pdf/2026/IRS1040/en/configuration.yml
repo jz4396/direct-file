@@ -133,9 +133,10 @@ form:
       f2_28[0]: /americanOpportunityCredit # 29
       Line31-32_ReadOrder[0]:
         f2_30[0]: /otherPaymentsAndRefundableCreditsTotal # 31
-        f2_31[0]: /totalOtherPaymentsRefundableCredits # 32a
-      f2_33[0]: /totalOtherPaymentsRefundableCredits # 32c (32b, Schedule 3-A, see PR open question)
-      f2_34[0]: /totalPayments # 33
+        f2_31[0]: /totalOtherPaymentsRefundableCredits # 32a "Add lines 27a, 28, 29, 30, and 31"
+      f2_32[0]: /schedule3AAmountForForm1040Line32b # 32b "Amount from Schedule 3-A"
+      f2_33[0]: /form1040Line32c # 32c "Subtract line 32b from line 32a"
+      f2_34[0]: /totalPayments # 33 "Add lines 25d, 26, and 32c"
       f2_35[0]: /overpayment # 34
       c2_14[0]: /form8888Attached
       f2_36[0]: /overpayment # 35a

@@ -32,11 +32,9 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * The printed package is the return, so a knockout that stops filing also stops the PDF. A return that claims the
  * earned income credit with a qualifying child needs Schedule EIC with each child's name, age and TIN (26 U.S.C.
- * 32(c)(3)(D)(i)), and the 2026 Form 1040 says to attach Schedule 3-A for an amount on line 27a, which has no template
- * yet (#89). The 2026 Schedule EIC itself prints ({@link ScheduleEicTy2026PdfSmokeTest}), but {@link
- * PdfService#getTaxReturn} refuses that return rather than print an incomplete package: every EIC return is refused by
- * the Schedule 3-A knockout as well, so lifting the Schedule EIC knockout alone would not make it printable. Returns
- * without those knockouts still build.
+ * 32(c)(3)(D)(i)). The 2026 Schedule EIC itself prints ({@link ScheduleEicTy2026PdfSmokeTest}), but {@link
+ * PdfService#getTaxReturn} refuses that return rather than print an incomplete package. Schedule 3-A is pinned (#239)
+ * and prints with an ACTC (Form 1040 line 28, 26 U.S.C. 24(d)). Returns without the Schedule EIC knockout still build.
  */
 class PdfKnockoutRefusalTest {
     static final ObjectMapper MAPPER = new ObjectMapper();
@@ -124,10 +122,8 @@ class PdfKnockoutRefusalTest {
                     SubmissionBlockingFactsResponseStatusException.class,
                     () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-            // The EIC (Form 1040 line 27a) also needs Schedule 3-A (#89).
-            assertEquals(
-                    List.of(SCHEDULE_EIC_KNOCKOUT, PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT),
-                    e.getBody().getProperties().get("blockingFacts"));
+            // Schedule 3-A prints with the EIC (#239). The qualifying-child return still stops on Schedule EIC.
+            assertEquals(List.of(SCHEDULE_EIC_KNOCKOUT), e.getBody().getProperties().get("blockingFacts"));
         }
     }
 
@@ -165,27 +161,35 @@ class PdfKnockoutRefusalTest {
 
     /**
      * Instructions for Schedule C (2025), PDF p. 2: "Use Schedule C (Form 1040) to report income or (loss) from a
-     * business you operated or a profession you practiced as a sole proprietor." No Schedule C template is configured,
-     * so a return with a business is refused. #87: the same return attaches Form 8995 (Instructions for Form 1040
-     * (2025) draft, PDF p. 35, "Attach whichever form you use (Form 8995 or 8995-A) to your return."), which has no
-     * TY2026 template either, so the Form 8995 knockout refuses it too.
+     * business you operated or a profession you practiced as a sole proprietor." Schedule C prints (#239). #87: the
+     * same return attaches Form 8995 (Instructions for Form 1040 (2025) draft, PDF p. 35, "Attach whichever form you
+     * use (Form 8995 or 8995-A) to your return."), which has no TY2026 template, so the Form 8995 knockout refuses it.
      */
     @Test
     void scheduleCBusinessIsRefused() throws Exception {
         assertRefusedOnlyBy(
                 PrintRefusingKnockoutsTest.scheduleCOnly(),
-                List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT, PrintRefusingKnockoutsTest.SCHEDULE_C_KNOCKOUT));
+                List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT));
     }
 
     /**
      * 2026 draft Form 1040, lines 32a-32c: "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A".
-     * An ACTC (line 28, 26 U.S.C. 24(d)) with no EIC is refused, since Schedule 3-A has no template and line 32b no
-     * fact.
+     * An ACTC (line 28, 26 U.S.C. 24(d)) with no EIC prints Schedule 3-A (#239).
      */
     @Test
-    void additionalChildTaxCreditWithoutEicIsRefused() throws Exception {
-        assertRefusedOnlyBy(
-                PrintRefusingKnockoutsTest.schedule3AOnly(), PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT);
+    void additionalChildTaxCreditWithoutEicPrints() throws Exception {
+        Map<String, FactTypeWithItem> facts = PrintRefusingKnockoutsTest.schedule3AOnly();
+        var graph = factGraphService.getGraph(facts);
+        assertEquals(Boolean.TRUE, graph.get("/pdfIncludeSchedule3A").get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph));
+        assertBuilds(facts);
+        for (String language : List.of("en", "es")) {
+            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false);
+                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+                String text = new org.apache.pdfbox.text.PDFTextStripper().getText(doc);
+                assertTrue(text.contains("Schedule 3-A (Form 1040) 2026"), language + " prints Schedule 3-A");
+            }
+        }
     }
 
     @Test

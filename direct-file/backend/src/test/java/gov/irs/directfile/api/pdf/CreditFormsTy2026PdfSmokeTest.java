@@ -179,7 +179,7 @@ class CreditFormsTy2026PdfSmokeTest {
         taxReturn.setTaxYear(2026);
         taxReturn.setFactsWithoutDirtyingEntity(typed);
         byte[] bytes;
-        // #89: an ACTC return needs Schedule 3-A and is refused by the public path; its other forms are still filled.
+        // An ACTC return prints Schedule 3-A (#239). printForFieldMaps still fills a return refused only by Form 8995.
         bytes = PrintRefusingKnockoutsTest.printForFieldMaps(pdfService, taxReturn, fgs.getGraph(typed));
         String out = System.getProperty("pdf.smoke.out");
         if (out != null) {

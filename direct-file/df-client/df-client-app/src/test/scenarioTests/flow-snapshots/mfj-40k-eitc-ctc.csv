@@ -106,6 +106,7 @@ Subcategory: /flow/income/unemployment
 Subcategory: /flow/income/schedule-c
 Subcategory: /flow/income/schedule-e
 /flow/income/schedule-e/schedule-e-intro
+/flow/income/schedule-e/schedule-e-part-ii
 Subcategory: /flow/income/interest
 /flow/income/interest/int-income-loop-intro?%2FinterestReports=7c5b38a8-344f-40e9-93e0-704e72757fc2
 /flow/income/interest/add-int-income?%2FinterestReports=7c5b38a8-344f-40e9-93e0-704e72757fc2
@@ -165,20 +166,10 @@ Category: /flow/your-taxes
 Subcategory: /flow/your-taxes/estimated-taxes-paid
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-intro
 /flow/your-taxes/estimated-taxes-paid/est-tax-payments-y-n
-/flow/your-taxes/amount/schedule-3a-without-ty2026-template-knockout
-/flow/your-taxes/amount/tax-amount-intro
-/flow/your-taxes/amount/tax-amount-number
-/flow/your-taxes/amount/tax-amount-explanation
 Subcategory: /flow/your-taxes/amount
-/flow/your-taxes/amount/schedule-3a-without-ty2026-template-knockout
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation
-Subcategory: /flow/your-taxes/payment-method
-/flow/your-taxes/payment-method/refund-intro
-/flow/your-taxes/payment-method/refund-method-choice
-/flow/your-taxes/payment-method/refund-direct-deposit
-/flow/your-taxes/payment-method/refund-outro
 Subcategory: /flow/your-taxes/other-preferences
 /flow/your-taxes/other-preferences/other-preferences-intro
 /flow/your-taxes/other-preferences/third-party-designee-choice
