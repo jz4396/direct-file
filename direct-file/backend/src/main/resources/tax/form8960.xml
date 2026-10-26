@@ -16,8 +16,9 @@
       classification, 1411(c)(6) SE income), and itemized deductions allocable on lines 9a-9c and 10
       -> /flowKnockoutForm8960Unsupported (only when MAGI is over the threshold; at or under it line 15 is $0
       and the tax is $0 whatever NII is)
-    line 4a/5c K-1 income from partnerships, S corporations, estates and trusts -> scheduleE
-      /flowKnockoutScheduleEPartII (pre-existing)
+    line 4a/5c K-1 income: material-participation box 1 that is not a trading business is not
+      26 U.S.C. 1411(c)(2) net investment income and is not added here. Passive income, a trading
+      business, a PTP, and any other K-1 box stop the return (scheduleE /flowKnockoutScheduleEPartII).
     line 3 nonqualified annuities (1099-R code D) -> form1099Rs /knockoutForForm1099RDistributionCode (pre-existing)
     line 13 Form 2555 / CFC / PFIC MAGI adjustments: not collected anywhere in the app (no inputs exist)
 -->
@@ -89,9 +90,11 @@
         1
         (Form 1040), line 3. Schedule 1 (Form 1040), line 5. Schedule 1 (Form 1040), line 6." Schedule 1 line 3
         is
-        scheduleC /scheduleCNetProfitOrLoss and line 5 is scheduleE /scheduleENetIncome (income /otherIncome);
-        line 6
-        (farm) is not supported. Whenever either is present and MAGI is over the threshold, the line 4b
+        scheduleC /scheduleCNetProfitOrLoss and the Schedule E piece is scheduleE /scheduleENetIncome (Part I
+        rents and royalties only). Schedule E line 32 (nonpassive partnership and S corporation box 1) is not
+        net investment income under 26 U.S.C. 1411(c)(2) when the filer materially participates and the
+        activity is not a trading business, so it is not added. line 6
+        (farm) is not supported. Whenever Schedule C or Part I is present and MAGI is over the threshold, the line 4b
         trade-or-business adjustment can't be computed and /flowKnockoutForm8960Unsupported stops the return.
       </Description>
       <Export mef="true" />
@@ -135,8 +138,9 @@
         can only arise with a
         Schedule C or Schedule E, which /flowKnockoutForm8960Unsupported stops; line 5c
         (partnership interests and S
-        corporation stock) needs K-1 data, stopped by scheduleE
-        /flowKnockoutScheduleEPartII. So line 5d = line 5a.
+        corporation stock) is not collected. A K-1 with any amount other than box 1, or a disposition, stops
+        the return (scheduleE /flowKnockoutScheduleEPartIIColumnE and /flowKnockoutScheduleEPartIIOtherK1Amount).
+        So line 5d = line 5a.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -437,8 +441,9 @@
         trade or business
         not described in paragraph (2)"; the rental trade-or-business / real estate professional /
         grouping
-        rules and the 469 passive-loss interaction aren't modeled. (Parts II-IV K-1 income from partnerships, S
-        corporations, estates and trusts is already stopped by scheduleE /flowKnockoutScheduleEPartII.)
+        rules and the 469 passive-loss interaction aren't modeled. (Part II nonpassive box 1 is not NII under
+        26 U.S.C. 1411(c)(2) and is not on line 4a. Passive K-1 income, a trading business, a PTP, any other
+        box, and Parts III-IV stop the return: scheduleE /flowKnockoutScheduleEPartII.)
         (3) itemized
         deductions (scheduleA /itemizesDeductions): Part II lines 9a-9c and 10 allocations (1411(c)(1)(B)
         "properly

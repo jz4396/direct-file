@@ -162,8 +162,9 @@
         BlockSubmissionOnTrue: 1099-DIV box
         5 (dividends /flowKnockoutSection199ADividends), a Schedule E
         trade-or-business rental (scheduleE
-        /flowKnockoutScheduleETradeOrBusinessQbi), K-1 / PTP income (scheduleE
-        /flowKnockoutScheduleEPartII), and the
+        /flowKnockoutScheduleETradeOrBusinessQbi), a K-1 section 199A statement (scheduleE
+        /flowKnockoutScheduleEPartIIQbiCode), PTP income (scheduleE
+        /flowKnockoutScheduleEPartIIForeignOrPtp), and the
         Form 8995-A and carryforward cases (form8995 /flowKnockoutQbi*).</Description>
       <Derived>
         <Switch>

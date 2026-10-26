@@ -1,13 +1,16 @@
 /* eslint-disable max-len */
-import { Screen, Subcategory, SubSubcategory } from '../../flowDeclarations.js';
+import { CollectionLoop, Screen, Subcategory, SubSubcategory } from '../../flowDeclarations.js';
 import {
   Boolean,
+  CollectionItemManager,
   ContextHeading,
   Dollar,
   DFAlert,
+  Enum,
   Heading,
   InfoDisplay,
   KnockoutButton,
+  LimitingString,
   SaveAndOrContinueButton,
   IconDisplay,
 } from '../../ContentDeclarations.js';
@@ -15,9 +18,10 @@ import type { ConditionString } from '../../Condition.js';
 
 /**
  * Schedule E Part I MVP: rental real estate and royalties (#38, spec PR #8; TY2026, filed in 2027).
- * Supported: net income with no depreciation, no personal use, no K-1 income. Everything else knocks out.
+ * Part I supported: net income with no depreciation and no personal use.
+ * Part II supported: domestic partnership or S corporation, nonnegative box 1 only, material participation.
  * The Schedule K-1 question is asked of every filer, not only after a yes to rental or royalty income
- * (#232, #238). Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
+ * (#232, #238, #85). Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
   <Screen route={route} condition={condition} isKnockout={true}>
@@ -64,6 +68,88 @@ export const ScheduleEIncomeSubcategory = (
         <Boolean path='/scheduleEHasPartIIIncome' />
         <SaveAndOrContinueButton />
       </Screen>
+      <Screen route='schedule-e-part-ii-line-27' condition='/scheduleEHasPartIIIncome'>
+        <Heading i18nKey='/heading/income/schedule-e/part-ii-line-27' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/part-ii-line-27' />
+        <Boolean path='/scheduleEPartIILine27' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      {knockout(
+        `schedule-e-part-ii-line-27-knockout`,
+        `/flowKnockoutScheduleEPartIILine27`,
+        `schedule-e-part-ii-line-27`
+      )}
+      <Screen route='schedule-e-part-iii' condition='/scheduleEHasPartIIIncome'>
+        <Heading i18nKey='/heading/income/schedule-e/part-iii' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/part-iii' />
+        <Boolean path='/scheduleEHasPartIIIIncome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      {knockout(`schedule-e-part-iii-knockout`, `/flowKnockoutScheduleEPartIII`, `schedule-e-part-iii`)}
+      <Screen route='schedule-e-part-iv' condition='/scheduleEHasPartIIIncome'>
+        <Heading i18nKey='/heading/income/schedule-e/part-iv' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/part-iv' />
+        <Boolean path='/scheduleEHasPartIVIncome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      {knockout(`schedule-e-part-iv-knockout`, `/flowKnockoutScheduleEPartIV`, `schedule-e-part-iv`)}
+      <Screen route='schedule-e-k1-intro' condition='/scheduleEHasPartIIIncome'>
+        <Heading i18nKey='/heading/income/schedule-e/k1-intro' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/k1-intro' />
+        <CollectionItemManager path='/scheduleEK1s' loopName='/scheduleEK1s' donePath='/scheduleEK1sIsDone' />
+      </Screen>
+      <CollectionLoop
+        loopName='/scheduleEK1s'
+        collection='/scheduleEK1s'
+        iconName='AttachMoney'
+        collectionItemCompletedCondition='/scheduleEK1s/*/isComplete'
+        donePath='/scheduleEK1sIsDone'
+      >
+        <SubSubcategory route='schedule-e-k1'>
+          <Screen route='schedule-e-k1-name'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-name' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-name' />
+            <LimitingString path='/scheduleEK1s/*/entityName' />
+            <Enum path='/scheduleEK1s/*/entityType' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-scope'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-scope' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-scope' />
+            <Boolean path='/scheduleEK1s/*/isForeignPartnership' />
+            <Boolean path='/scheduleEK1s/*/isPubliclyTradedPartnership' />
+            <Boolean path='/scheduleEK1s/*/isTradingBusiness' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-box1'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-box1' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-box1' />
+            <Dollar path='/scheduleEK1s/*/box1' />
+            <Boolean path='/scheduleEK1s/*/materiallyParticipates' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-box14'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-box14' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-box14' />
+            <Dollar path='/scheduleEK1s/*/box14CodeA' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-other'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-other' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-other' />
+            <Boolean path='/scheduleEK1s/*/hasQbiStatement' />
+            <Boolean path='/scheduleEK1s/*/hasOtherK1Amount' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-columns'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-columns' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-columns' />
+            <Boolean path='/scheduleEK1s/*/basisComputationRequired' />
+            <Boolean path='/scheduleEK1s/*/anyAmountNotAtRisk' />
+            <SaveAndOrContinueButton />
+          </Screen>
+        </SubSubcategory>
+      </CollectionLoop>
       {knockout(`schedule-e-part-ii-knockout`, `/flowKnockoutScheduleEPartII`, `schedule-e-part-ii`)}
       <Screen route='schedule-e-substantial-services' condition='/hasScheduleEIncome'>
         <Heading i18nKey='/heading/income/schedule-e/substantial-services' />

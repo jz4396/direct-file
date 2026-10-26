@@ -3,6 +3,7 @@
 subsubcategories:
   /flow/income/schedule-e:
     schedule-e-eligibility: Rental and royalty income
+    schedule-e-k1: Partnership or S corporation
     schedule-e-amounts: Rental and royalty amounts
 headings:
   /heading/income/schedule-e: Rental and royalty income
@@ -17,7 +18,23 @@ headings:
     Did you provide substantial services to your tenants, such as regular cleaning, changing linens, or maid service?
   /heading/knockout/schedule-e-substantial-services:
     This tool doesn’t yet support rentals where you provide substantial services
-  /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support Schedule K-1 income
+  /heading/income/schedule-e/part-ii-line-27:
+    Are you reporting a prior-year unallowed loss or unreimbursed partnership expenses?
+  /heading/income/schedule-e/part-iii: Did you receive a Schedule K-1 from an estate or trust?
+  /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC?
+  /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
+  /heading/income/schedule-e/k1-name: What is the name of the partnership or S corporation?
+  /heading/income/schedule-e/k1-scope:
+    Is this a foreign partnership, a publicly traded partnership, or a trading business?
+  /heading/income/schedule-e/k1-box1: Enter ordinary business income and whether you materially participated
+  /heading/income/schedule-e/k1-box14: Enter self-employment earnings from Schedule K-1 (Form 1065), box 14, code A
+  /heading/income/schedule-e/k1-other: Does this Schedule K-1 report anything besides box 1?
+  /heading/income/schedule-e/k1-columns: Do you have to check column (e) or column (f) on Schedule E line 28?
+  /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support this Schedule K-1 situation
+  /heading/knockout/schedule-e-part-ii-line-27:
+    This tool doesn’t yet support a prior-year unallowed loss or unreimbursed partnership expenses
+  /heading/knockout/schedule-e-part-iii: This tool doesn’t yet support income from an estate or trust
+  /heading/knockout/schedule-e-part-iv: This tool doesn’t yet support a residual interest in a REMIC
   /heading/knockout/schedule-e-personal-use: This tool doesn’t yet support rentals you also used personally
   /heading/knockout/schedule-e-depreciation: This tool doesn’t yet support depreciation or vehicle expenses
   /heading/knockout/schedule-e-loss: This tool doesn’t yet support rental or royalty losses
@@ -35,8 +52,47 @@ info:
   /info/income/schedule-e/part-ii:
     body: >-
       Answer yes if you were a partner, an S corporation shareholder, or a beneficiary of an estate or trust, even if
-      you had no rental or royalty income and even if you did not actually receive the money. A partnership Schedule K-1
-      can also include self-employment earnings.
+      you had no rental or royalty income and even if you did not actually receive the money. A partnership or S
+      corporation with only ordinary business income, where you materially participated, can be reported. Other Schedule
+      K-1 situations stop this return.
+  /info/income/schedule-e/part-ii-line-27:
+    body: >-
+      Answer yes if you are reporting a loss that was not allowed in a prior year because of the at-risk or basis
+      limits, a prior-year unallowed passive loss, or unreimbursed partnership expenses.
+  /info/income/schedule-e/part-iii:
+    body: >-
+      Answer yes if you are a beneficiary of an estate or trust, even if you did not receive the income. You should have
+      a Schedule K-1 (Form 1041).
+  /info/income/schedule-e/part-iv:
+    body: Answer yes if you hold a residual interest in a real estate mortgage investment conduit (REMIC).
+  /info/income/schedule-e/k1-intro:
+    body: >-
+      Add one entry for each partnership or S corporation. Use the name and the ordinary business income from Schedule
+      K-1.
+  /info/income/schedule-e/k1-name:
+    body: >-
+      Choose Partnership if Schedule K-1 is Form 1065. Choose S corporation if it is Form 1120-S. On Schedule E this is
+      column (b): P or S.
+  /info/income/schedule-e/k1-scope:
+    body: >-
+      Answer yes to foreign partnership if column (c) on Schedule E line 28 would be checked. Answer yes to a publicly
+      traded partnership, or to a business that trades in financial instruments or commodities.
+  /info/income/schedule-e/k1-box1:
+    body: >-
+      Enter box 1, ordinary business income or loss. Answer yes to material participation if you were involved in the
+      operations on a regular, continuous, and substantial basis. That income goes in column (k), nonpassive income.
+  /info/income/schedule-e/k1-box14:
+    body: >-
+      Enter the amount from box 14, code A. Enter 0 if that box is blank. An S corporation’s ordinary income is not
+      self-employment earnings; enter 0 for an S corporation.
+  /info/income/schedule-e/k1-other:
+    body: >-
+      Answer yes to the first question if the K-1 includes a statement for box 20, code Z (Form 1065) or box 17, code V
+      (Form 1120-S). Answer yes to the second question if any box other than box 1 has an amount.
+  /info/income/schedule-e/k1-columns:
+    body: >-
+      Answer yes to the first question if you received a distribution, disposed of stock, or received a loan repayment
+      from an S corporation. Answer yes to the second question if any amount is not at risk.
   /info/income/schedule-e/personal-use:
     body: >-
       Answer yes if, on any day, you, a co-owner, or a family member used a rental home, apartment, condo, or boat for
@@ -66,9 +122,28 @@ info:
     alertText:
       body:
         - p: >-
-            Income from a partnership, S corporation, estate, or trust is reported on Schedule E even if you did not
-            receive it. A partnership’s self-employment earnings (Schedule K-1 (Form 1065), box 14, code A) also go on
-            Schedule SE. This tool doesn’t support that yet. You’ll need another way to file this return.
+            This tool can report a domestic partnership or S corporation with only ordinary business income when you
+            materially participated. A loss, a passive activity, a foreign partnership, a publicly traded partnership, a
+            distribution or other basis computation, self-employment earnings, or any other K-1 amount needs forms this
+            tool doesn’t support yet. You’ll need another way to file this return.
+  /info/knockout/schedule-e-part-ii-line-27:
+    alertText:
+      body:
+        - p: >-
+            A prior-year unallowed loss or unreimbursed partnership expenses can be limited by the passive activity,
+            at-risk, and basis rules. This tool doesn’t support that yet. You’ll need another way to file this return.
+  /info/knockout/schedule-e-part-iii:
+    alertText:
+      body:
+        - p: >-
+            Income from an estate or trust is reported on Schedule E from Schedule K-1 (Form 1041), even if you did not
+            receive it. This tool doesn’t support that yet. You’ll need another way to file this return.
+  /info/knockout/schedule-e-part-iv:
+    alertText:
+      body:
+        - p: >-
+            A residual interest in a REMIC is reported on Schedule E. This tool doesn’t support that yet. You’ll need
+            another way to file this return.
   /info/knockout/schedule-e-personal-use:
     alertText:
       body:
@@ -140,6 +215,82 @@ fields:
     name: Total royalties received
   /scheduleEWritableExpenses:
     name: Total expenses (not including depreciation)
+  /scheduleEPartIILine27:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /scheduleEHasPartIIIIncome:
+    boolean:
+      "yes": Yes, I received a Schedule K-1 from an estate or trust
+      "no": "No"
+  /scheduleEHasPartIVIncome:
+    boolean:
+      "yes": Yes, I have a residual interest in a REMIC
+      "no": "No"
+  /scheduleEK1EntityTypeOptions:
+    P: Partnership
+    S: S corporation
+  /scheduleEK1s/*/entityType:
+    name: Partnership or S corporation
+    /scheduleEK1EntityTypeOptions:
+      P: Partnership
+      S: S corporation
+  /scheduleEK1s/*/entityName:
+    name: Name
+  /scheduleEK1s/*/isForeignPartnership:
+    boolean:
+      "yes": Yes, it is a foreign partnership
+      "no": "No"
+  /scheduleEK1s/*/isPubliclyTradedPartnership:
+    boolean:
+      "yes": Yes, it is a publicly traded partnership
+      "no": "No"
+  /scheduleEK1s/*/isTradingBusiness:
+    boolean:
+      "yes": Yes, it trades in financial instruments or commodities
+      "no": "No"
+  /scheduleEK1s/*/box1:
+    name: Box 1 ordinary business income or (loss)
+  /scheduleEK1s/*/materiallyParticipates:
+    boolean:
+      "yes": Yes, I materially participated
+      "no": No, I didn’t materially participate
+  /scheduleEK1s/*/box14CodeA:
+    name: Box 14, code A
+  /scheduleEK1s/*/hasQbiStatement:
+    boolean:
+      "yes": Yes, there is a statement for box 20 code Z or box 17 code V
+      "no": "No"
+  /scheduleEK1s/*/hasOtherK1Amount:
+    boolean:
+      "yes": Yes, another box has an amount
+      "no": No, every other box is blank or zero
+  /scheduleEK1s/*/basisComputationRequired:
+    boolean:
+      "yes": Yes, column (e) is checked
+      "no": "No"
+  /scheduleEK1s/*/anyAmountNotAtRisk:
+    boolean:
+      "yes": Yes, some amount is not at risk
+      "no": "No"
+  /scheduleEK1s:
+    controls:
+      add: Add a partnership or S corporation
+      complete_zero: I don’t have one to add
+      complete: I’m done adding partnerships and S corporations
+      back: Go to the list
+    collectionListing:
+      itemHeading1: "{{/scheduleEK1s/*/entityName}}"
+      itemHeading2: Incomplete partnership or S corporation
+    deleteControl:
+      text: <LinkModal1>Remove</LinkModal1>
+      LinkModal1:
+        header: Are you sure you want to remove this partnership or S corporation?
+        body:
+          - p: This can’t be undone.
+        controls:
+          confirm: Remove
+          cancel: Cancel
 checklist:
   /flow/income/schedule-e:
     heading: Rental, royalty, and Schedule K-1 income
@@ -160,3 +311,18 @@ dataviews:
     /scheduleEProvidesSubstantialServices:
       Did you provide substantial services, such as cleaning, linens, or maid service?
     /scheduleERentalIsTradeOrBusiness: Is any rental a trade or business for the qualified business income deduction?
+    /scheduleEPartIILine27: Are you reporting a prior-year unallowed loss or unreimbursed partnership expenses?
+    /scheduleEHasPartIIIIncome: Did you receive a Schedule K-1 from an estate or trust?
+    /scheduleEHasPartIVIncome: Do you have a residual interest in a REMIC?
+    /scheduleEK1s/*/entityName: Name of the partnership or S corporation
+    /scheduleEK1s/*/entityType: Partnership or S corporation
+    /scheduleEK1s/*/isForeignPartnership: Is it a foreign partnership?
+    /scheduleEK1s/*/isPubliclyTradedPartnership: Is it a publicly traded partnership?
+    /scheduleEK1s/*/isTradingBusiness: Does it trade in financial instruments or commodities?
+    /scheduleEK1s/*/box1: Box 1 ordinary business income or (loss)
+    /scheduleEK1s/*/materiallyParticipates: Did you materially participate?
+    /scheduleEK1s/*/box14CodeA: Box 14, code A
+    /scheduleEK1s/*/hasQbiStatement: Is there a statement for box 20 code Z or box 17 code V?
+    /scheduleEK1s/*/hasOtherK1Amount: Does any box other than box 1 have an amount?
+    /scheduleEK1s/*/basisComputationRequired: Is column (e) checked?
+    /scheduleEK1s/*/anyAmountNotAtRisk: Is any amount not at risk?

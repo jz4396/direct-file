@@ -396,13 +396,11 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * #232 and #238. 2026 draft Instructions for Schedule E, PDF p. 11: report the partnership or S corporation share
-     * "even if not received." PDF p. 14: estate or trust income "even if not received." 2026 draft Schedule SE, PDF p.
-     * 2, line 2 includes Schedule K-1 (Form 1065) box 14 code A (other than farming); line 1a is the farm amount. A
-     * K-1 with no Part I income leaves Schedule E (/scheduleENetIncome, Schedule 1 line 5) and Schedule SE line 2
-     * (/primaryFilerSeNetProfit, Schedule C only) without that income, and the knockout refuses the print. An answered
-     * no does not. An unanswered question is complete false on the knockout (so a return that has not reached it still
-     * prints) and leaves the Schedule E section incomplete.
+     * #85. 2026 draft Instructions for Schedule E, PDF p. 11: report the partnership or S corporation share "even if
+     * not received." A yes with no entity is not filed as zero: line 32 and Schedule 1 line 5 stay incomplete and the
+     * knockout stays incomplete, so the print is refused. Part III (estate or trust) is out of scope and refuses with
+     * the knockout true. Schedule SE line 2 stays Schedule C only. An answered no does not refuse. An unanswered
+     * question refuses and leaves the Schedule E section incomplete.
      */
     @Test
     void k1WithoutPartIIncomeOmitsScheduleEAndScheduleSeLine2AndRefusesThePrint() throws Exception {
@@ -423,14 +421,23 @@ class PrintRefusingKnockoutsTest {
         k1Only.put("/scheduleEHasPartIIIncome", yes);
         Graph k1 = fgs.getGraph(k1Only);
         assertEquals(0, new BigDecimal(k1.get("/scheduleENetIncome").get().toString()).signum(), "Part I only");
-        assertEquals(0, new BigDecimal(k1.get("/schedule1Line5").get().toString()).signum(), "Schedule 1 line 5");
+        assertFalse(k1.get("/scheduleEPartIILine32").complete(), "line 32 is not a silent zero");
+        assertFalse(k1.get("/schedule1Line5").complete(), "Schedule 1 line 5 is not a silent zero");
         assertEquals(
                 0,
                 new BigDecimal(k1.get("/primaryFilerSeNetProfit").get().toString()).signum(),
                 "Schedule SE line 2 has no box 14 code A");
-        assertEquals(Boolean.TRUE, k1.get(SCHEDULE_E_PART_II_KNOCKOUT).get());
-        assertEquals(Boolean.TRUE, k1.get("/flowIsKnockedOut").get());
+        assertFalse(k1.get(SCHEDULE_E_PART_II_KNOCKOUT).complete(), "yes without details stays incomplete");
+        assertFalse(k1.get("/flowIsKnockedOut").complete());
         assertEquals(List.of(SCHEDULE_E_PART_II_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(k1));
+
+        Map<String, FactTypeWithItem> partIII = new HashMap<>(k1Only);
+        partIII.put("/scheduleEHasPartIIIIncome", yes);
+        Graph estate = fgs.getGraph(partIII);
+        assertEquals(Boolean.TRUE, estate.get("/flowKnockoutScheduleEPartIII").get());
+        assertEquals(Boolean.TRUE, estate.get(SCHEDULE_E_PART_II_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, estate.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(SCHEDULE_E_PART_II_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(estate));
 
         Map<String, FactTypeWithItem> scheduleC = scheduleCOnly();
         Graph scheduleCGraph = fgs.getGraph(scheduleC);
@@ -447,6 +454,7 @@ class PrintRefusingKnockoutsTest {
                         both.get("/primaryFilerSeNetProfit").get().toString())),
                 "line 2 unchanged");
         assertEquals(0, new BigDecimal(both.get("/scheduleENetIncome").get().toString()).signum());
+        assertFalse(both.get(SCHEDULE_E_PART_II_KNOCKOUT).complete(), "yes without a K-1 stays incomplete");
         assertTrue(PrintRefusingKnockouts.refusingPaths(both).contains(SCHEDULE_E_PART_II_KNOCKOUT));
         assertEquals(
                 both.get("/selfEmploymentTax").get().toString(),
