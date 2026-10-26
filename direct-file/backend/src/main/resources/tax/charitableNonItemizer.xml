@@ -75,8 +75,10 @@
 
     <Fact path="/nonItemizerCharitableCap">
       <Name>§170(p) cap</Name>
-      <Description>#45: "$1,000 ($2,000 in the case of a joint return)", IRC §170(p). MFS, single, HOH and QSS get
-        $1,000.</Description>
+      <Description>#45: "$1,000 ($2,000 in the case of a joint return)", IRC §170(p)
+        (https://www.law.cornell.edu/uscode/text/26/170), as amended by P.L. 119-21 §70424, effective for taxable years
+        beginning after December 31, 2025. MFS, single, head of household, and qualifying surviving spouse get $1,000.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>

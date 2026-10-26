@@ -289,7 +289,10 @@
 
     <Fact path="/w2MinAmount">
       <Name>W2 Minimum Amount</Name>
-      <Description>The minimum amount of pay before an employer needs to issue a W2</Description>
+      <Description>Unused. Kept at $600. This is not the TY2026 information-return threshold. Rev. Proc. 2025-32 §2.15,
+        PDF p. 8 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "For payments made after December 31, 2025, the base
+        threshold under section 6041(a) is $2,000." Form W-2 reporting is §6051, and this fact is not an input to any
+        computation or knockout, so it is not retagged to that $2,000.</Description>
       <Derived>
         <Dollar>600</Dollar>
       </Derived>

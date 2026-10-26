@@ -86,31 +86,65 @@
     </Fact>
 
     <Fact path="/edcMaxSingleHohQssAgiLimit">
-      <Description>Max AGI Limit to be qualified for EDC (elderly or disabled credit) as single, HoH, QSS filing
-        statuses</Description>
+      <Description>AGI at which the section 22 amount reaches zero for single, head of household, and qualifying
+        surviving spouse. IRC §22(d) (https://www.law.cornell.edu/uscode/text/26/22) reduces the section 22 amount by
+        one-half of AGI over "$7,500 in the case of a single individual". IRC §22(c)(2)(A)(i) initial amount is
+        "$5,000 in the case of a single individual". The amount is zero when that one-half equals the initial amount,
+        so the ceiling is $7,500 plus $5,000 plus $5,000. Head of household and qualifying surviving spouse use the
+        single figures.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>17500</Dollar>
+        <Add>
+          <Dollar>7500</Dollar>
+          <Dollar>5000</Dollar>
+          <Dollar>5000</Dollar>
+        </Add>
       </Derived>
     </Fact>
 
     <Fact path="/edcMaxMfsAgiLimit">
-      <Description>Max AGI Limit to be qualified for EDC as MFS filing status</Description>
+      <Description>AGI at which the section 22 amount reaches zero for married filing separately. IRC §22(d)
+        (https://www.law.cornell.edu/uscode/text/26/22): one-half of AGI over "$5,000 in the case of a married
+        individual filing a separate return". IRC §22(c)(2)(A)(iii) initial amount "$3,750 in the case of a married
+        individual filing a separate return". Ceiling is $5,000 plus $3,750 plus $3,750.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>12500</Dollar>
+        <Add>
+          <Dollar>5000</Dollar>
+          <Dollar>3750</Dollar>
+          <Dollar>3750</Dollar>
+        </Add>
       </Derived>
     </Fact>
 
     <Fact path="/edcMaxMfjBothAgiLimit">
-      <Description>Max AGI Limit to be qualified for EDC as MFJ filing status when both filers qualify</Description>
+      <Description>AGI at which the section 22 amount reaches zero for a joint return where both spouses are qualified
+        individuals. IRC §22(d) (https://www.law.cornell.edu/uscode/text/26/22): one-half of AGI over "$10,000 in the
+        case of a joint return". IRC §22(c)(2)(A)(ii) initial amount "$7,500 in the case of a joint return where both
+        spouses are qualified individuals". Ceiling is $10,000 plus $7,500 plus $7,500.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>25000</Dollar>
+        <Add>
+          <Dollar>10000</Dollar>
+          <Dollar>7500</Dollar>
+          <Dollar>7500</Dollar>
+        </Add>
       </Derived>
     </Fact>
 
     <Fact path="/edcMaxMfjOnlyOneAgiLimit">
-      <Description>Max AGI Limit to be qualified for EDC as MFJ filing status when only one filer qualifies</Description>
+      <Description>AGI at which the section 22 amount reaches zero for a joint return where only one spouse is a
+        qualified individual. IRC §22(d) (https://www.law.cornell.edu/uscode/text/26/22): one-half of AGI over
+        "$10,000 in the case of a joint return". IRC §22(c)(2)(A)(i) initial amount "$5,000 in the case of a single
+        individual, or a joint return where only one spouse is a qualified individual". Ceiling is $10,000 plus $5,000
+        plus $5,000.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>20000</Dollar>
+        <Add>
+          <Dollar>10000</Dollar>
+          <Dollar>5000</Dollar>
+          <Dollar>5000</Dollar>
+        </Add>
       </Derived>
     </Fact>
 
@@ -975,7 +1009,11 @@
     </Fact>
 
     <Fact path="/statusBasedDisabilityIncome">
-      <Description>The modified taxable disability income for Schedule R, Line 11</Description>
+      <Description>Schedule R line 11. When one spouse is 65 or older and the other is under 65 and disabled
+        (/edcLine6), line 11 includes $5,000 plus that spouse's taxable disability income. IRC §22(c)(2)(B)(ii)(II)
+        (https://www.law.cornell.edu/uscode/text/26/22): "the initial amount shall not exceed the sum of $5,000 plus
+        the disability income for the taxable year of the spouse who has not attained age 65".</Description>
+      <TaxYear>2026</TaxYear>
       <Export mef="true" />
       <Derived>
         <Switch>

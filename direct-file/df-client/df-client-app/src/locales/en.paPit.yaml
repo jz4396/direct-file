@@ -199,6 +199,7 @@ info:
           moved after that date. Use the district for your home address, which may not match your mailing address.
       - p: <Link1>Find your school district code in the PA-40 instructions (pages 46 and 47).</Link1>
     urls:
+      # 2026 PA-40 instructions are not published. This is the 2025 booklet, the latest posted school-district list.
       Link1: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
   /info/knockout/pa-schedule-a:
     alertText:

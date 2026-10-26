@@ -713,8 +713,7 @@ headings:
   /heading/income/retirement/retirement-had-1099r-mfj:
     Did you or {{/secondaryFiler/firstName}} have any Forms 1099-R for {{/taxYear}}?
   /heading/income/retirement/retirement-had-1099r-before-section-enabled:
-    Direct File doesn’t yet support Form 1099-R, but we’re working on it. You can start adding this form in March
-    {{/nextTaxYear}}.
+    Direct File doesn’t support Form 1099-R on this return.
   /heading/income/retirement/payer-info: Enter the <strong>Payer’s</strong> information.
   /heading/income/retirement/retirement-loop-intro:
     In this section, we’ll ask about any Forms 1099-R you received for {{/taxYear}}.
@@ -5933,7 +5932,7 @@ info:
             Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/income/retirement/launch-1099R-alert:
     alertText:
-      body: <strong>Starting March 2025,</strong> Direct File will support some simple Form 1099-R situations.
+      body: Direct File supports some simple Form 1099-R situations.
   /info/income/retirement/supported-1099R-alert:
     alertText:
       body: Direct File currently only supports some simple Form 1099-R situations.
@@ -5947,9 +5946,8 @@ info:
     helpText:
       modals:
         text: >-
-          <p>You’ll be able to add Forms 1099-R in March 2025. You can come back and complete your federal tax return
-          then.</p> <p>If you’d like to file your tax return before March 2025, you’ll need to file using another
-          tool.</p> <p>Direct File will only support some simple Form 1099-R situations.
+          <p>Direct File doesn’t support Form 1099-R on this return. You’ll need to file using another tool.</p>
+          <p>Direct File supports only some simple Form 1099-R situations.
           <sharedModal1099rSupportedSituations>What Form 1099-R situations aren’t yet supported in Direct
           File?</sharedModal1099rSupportedSituations></p>
   /info/income/retirement/nonstandard-corrected:
@@ -16856,7 +16854,7 @@ modals:
           This credit is a percentage of your qualified child and dependent care expenses, and the percentage is based
           on your Adjusted Gross Income (AGI).
       - p: >-
-          The credit ranges from {{/cdccMinAllowedPercentageTY2024}}% to {{/cdccMaxAllowedPercentageTY2024}}% of your
+          The credit ranges from {{/cdccMinAllowedPercentage}}% to {{/cdccMaxAllowedPercentage}}% of your
           expenses up to {{/cdccMaxClaimableExpenseWithOneQP}} for one qualifying person and
           {{/cdccMaxClaimableExpenseWithTwoQP}} for two qualifying people. This means the biggest credit you can get is
           {{/cdccMaxAllowedCreditWithOneQP}} for one qualifying person and {{/cdccMaxAllowedCreditWithTwoQP}} for two or
