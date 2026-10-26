@@ -100,14 +100,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   .scenarioFacts), with the filer renamed as above:
  * Scenario 4, family (hoh-cdcc.json): head of household; W-2 $50,000; two children under 13 (group-00 test SSNs,
  *   filer too, so the 24(h)(7) SSN requirement is met); one care provider paid $2,000.
- *   Prints Form 1040, Schedule 3, Form 2441, Schedule 8812 and the W-2.
+ *   Prints Form 1040, Schedule 3, Schedule 3-A (#239), Form 2441, Schedule 8812 and the W-2.
  * Scenario 5, saver (single-simple-savers-credit.json): single; W-2 $24,469 with $4,000 elective deferrals.
  *   Prints Form 1040, Schedule 3, Form 8880 and the W-2.
  * Scenario 6, HSA (hsa-single-filer-contributions-only.json): single; two W-2s ($39,674 total, $260 employer HSA
  *   contributions); self-only HDHP; $770 own HSA contributions. Prints Form 1040, Schedule 1, Form 8889 and two W-2s.
  * Scenario 7, self-employed family (#179 review): head of household; three children under 17 (group-00 test SSNs,
  *   filer too); $13,000 ordinary dividends; Schedule C profit $4,000 (or $10,000); no W-2.
- *   Prints Form 1040, Schedules 1, 2, B, SE (#89) and 8812 (Part II-B, lines 22-27).
+ *   Prints Form 1040, Schedules 1, 2, 3-A, B, C, SE and 8812 (Part II-B, lines 22-27). Form 8995 still refuses
+ *   the public path (#87).
  * </pre>
  */
 class Ty2026PdfPackageTest {
@@ -132,11 +133,11 @@ class Ty2026PdfPackageTest {
     static final List<String> CTC_CHILD_SERIALS = List.of("1111", "2222", "3333");
 
     static final String FAMILY = "hoh-cdcc.json";
-    /** The self-employed family needs Form 8995 (#87), Schedule C and Schedule 3-A (#89), none of which has a template yet. */
-    static final List<String> SCHEDULE_C_AND_3A = List.of(
-            PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT,
-            PrintRefusingKnockoutsTest.SCHEDULE_C_KNOCKOUT,
-            PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT);
+    /**
+     * The self-employed family attaches Form 8995 (#87), which still has no TY2026 template. Schedule C and
+     * Schedule 3-A print (#239).
+     */
+    static final List<String> FORM_8995_ONLY = List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT);
 
     static final String SAVER = "single-simple-savers-credit.json";
     static final String HSA = "hsa-single-filer-contributions-only.json";
@@ -148,8 +149,10 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS1040S1A", 3),
             Map.entry("IRS1040S2", 2),
             Map.entry("IRS1040S3", 1),
+            Map.entry("IRS1040S3A", 1),
             Map.entry("IRS1040SA", 2),
             Map.entry("IRS1040SB", 1),
+            Map.entry("IRS1040SC", 2),
             Map.entry("IRS1040SD", 2),
             Map.entry("IRS1040SSE", 2),
             Map.entry("IRS8949", 2),
@@ -184,8 +187,8 @@ class Ty2026PdfPackageTest {
             Map.entry(
                     "IRS1040EIC",
                     "2026 draft template committed (ScheduleEicTy2026PdfSmokeTest), but an EIC return with a qualifying"
-                            + " child is refused by /flowKnockoutScheduleEicWithoutTy2026Template and, for any EIC,"
-                            + " by /flowKnockoutSchedule3AWithoutTy2026Template (#89)"),
+                            + " child is refused by /flowKnockoutScheduleEicWithoutTy2026Template (26 U.S.C."
+                            + " 152(c)(4) tie-breaker). Schedule 3-A prints on the ACTC package (#239)."),
             Map.entry("IRS8962", "2024 Form 8962 template only; no 2026 form committed"),
             Map.entry("FORM9000", "2021 Form 9000 template only (alternative media preference)"),
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
@@ -779,9 +782,9 @@ class Ty2026PdfPackageTest {
                         .submissionBlockingFactPaths(factGraphService.getGraph(facts))
                         .contains(CreditFormsTy2026PdfSmokeTest.INVALID_TIN),
                 "sign/submit gate doesn't name " + CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
-        Pkg pkg = renderFacts(facts, "e2e-ty2026-family.pdf", List.of(PrintRefusingKnockoutsTest.SCHEDULE_3A_KNOCKOUT))
-                .filerSsn(CTC_FILER_SSN_DASHED);
-        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1));
+        Pkg pkg = renderFacts(facts, "e2e-ty2026-family.pdf", List.of()).filerSsn(CTC_FILER_SSN_DASHED);
+        pkg.assertForms(
+                Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS1040S3A", 1, "IRS2441", 1, "IRS1040S8812", 1, "IRSW2", 1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s3 = pkg.fields("IRS1040S3", 0);
         Map<String, String> f2441 = pkg.fields("IRS2441", 0);
@@ -832,10 +835,25 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyPartIIBPrintsLines22And23() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("4000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf", SCHEDULE_C_AND_3A)
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf", FORM_8995_ONLY)
                 .filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
-                "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
+                "IRS1040",
+                1,
+                "IRS1040S1",
+                1,
+                "IRS1040S2",
+                1,
+                "IRS1040S3A",
+                1,
+                "IRS1040SB",
+                1,
+                "IRS1040SC",
+                1,
+                "IRS1040SSE",
+                1,
+                "IRS1040S8812",
+                1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s1 = pkg.fields("IRS1040S1", 0);
         Map<String, String> s2 = pkg.fields("IRS1040S2", 0);
@@ -875,10 +893,25 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyLine20OverLine25() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("10000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf", SCHEDULE_C_AND_3A)
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf", FORM_8995_ONLY)
                 .filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
-                "IRS1040", 1, "IRS1040S1", 1, "IRS1040S2", 1, "IRS1040SB", 1, "IRS1040SSE", 1, "IRS1040S8812", 1));
+                "IRS1040",
+                1,
+                "IRS1040S1",
+                1,
+                "IRS1040S2",
+                1,
+                "IRS1040S3A",
+                1,
+                "IRS1040SB",
+                1,
+                "IRS1040SC",
+                1,
+                "IRS1040SSE",
+                1,
+                "IRS1040S8812",
+                1));
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
         Map<String, String> s8812 = pkg.fields("IRS1040S8812", 0);
         // SE: 9,235; 1,145 + 268 = 1,413; Schedule 1 line 15 = round(706.50) = 707. 18a = 9,293.
@@ -1078,8 +1111,8 @@ class Ty2026PdfPackageTest {
 
     /**
      * Renders the package. {@code refusedBy} is what the public print path refuses with: empty for a package that
-     * prints, or #89 knockouts for a form with no template yet ({@link PrintRefusingKnockoutsTest#TEMPLATE_PENDING}),
-     * or null for any of those. The package is then filled with only those left out of the refusal check, so the field
+     * prints, or {@link PrintRefusingKnockoutsTest#TEMPLATE_PENDING} (Form 8995, which still has no template), or null
+     * to skip that assertion. The package is then filled with only those left out of the refusal check, so the field
      * maps of the forms that do have templates stay tested; every other knockout still refuses.
      */
     static Pkg renderFacts(Map<String, FactTypeWithItem> facts, String outName, List<String> refusedBy)

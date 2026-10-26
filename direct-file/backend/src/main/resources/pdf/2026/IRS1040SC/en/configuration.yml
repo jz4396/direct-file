@@ -1,0 +1,43 @@
+# #239: 2026 Schedule C (Form 1040), Profit or Loss From Business. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf (early-release draft, "Created 5/15/26", 3 PDF pages),
+# committed byte-identical to irs.gov; SHA-256
+# 287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224 (pinned in pdf/2026/draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). Fields are keyed by their AcroForm tooltip, and each field's position was
+# checked against the printed line number beside it. Form page 1 = PDF p. 2, form page 2 = PDF p. 3. When the final
+# 2026 Schedule C is released (#124), re-download it, re-hash it and re-verify every field below before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+# No 2026 Spanish Schedule C exists, so Spanish returns print this English form.
+#
+# One Schedule C per business, per filer (includeForEach /scheduleCBusinesses). Instructions for Schedule C (2025),
+# PDF p. 2: "Use Schedule C (Form 1040) to report income or (loss) from a business you operated or a profession you
+# practiced as a sole proprietor." 2026 draft Schedule C, line 31: "If a profit, enter on both Schedule 1 (Form 1040),
+# line 3, and on Schedule SE, line 2." Net earnings from self-employment: 26 U.S.C. 1402(a).
+#
+# Header items the fact dictionary models: C business name, G material participation (26 U.S.C. 469(h), used for
+# Form 8995). Not mapped, left blank (never a silent 0); the tool collects no input for them:
+#   A principal business, B code, D EIN, E business address, F accounting method, H started or acquired this year,
+#   I/J Forms 1099.
+#   Lines 2, 4, 6, 8-27b (the line 28 bucket is /totalExpenses, 26 U.S.C. 162), 30 (Form 8829), 32 at risk,
+#   Part III cost of goods sold, Part IV vehicle, Part V other expenses.
+#   Line 1 statutory-employee checkbox: statutory employees stop the return elsewhere.
+# Lines 2, 4 and 6 are blank, so lines 3, 5 and 7 equal line 1 (gross receipts, 26 U.S.C. 61). Line 30 is blank, so
+# lines 29 and 31 equal line 7 minus line 28 (/netProfitOrLoss). $0 amounts print blank.
+includeForEach: /scheduleCBusinesses
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /scheduleCBusinesses/*/filer/fullName # "Name of proprietor"
+      f1_2[0]: /scheduleCBusinesses/*/filer/tin # "Social security number (SSN)"
+      f1_5[0]: /scheduleCBusinesses/*/businessName # C "Business name. If no separate business name, leave blank."
+      c1_2[0]: /scheduleCBusinesses/*/materiallyParticipates # G "Did you materially participate ... ? Yes"
+      c1_2[1]: /scheduleCBusinesses/*/doesNotMateriallyParticipate # G "No"
+      f1_13[0]: /scheduleCBusinesses/*/grossReceipts # 1 "Gross receipts or sales"
+      f1_15[0]: /scheduleCBusinesses/*/grossReceipts # 3 "Subtract line 2 from line 1" (line 2 blank)
+      f1_17[0]: /scheduleCBusinesses/*/grossReceipts # 5 "Gross profit. Subtract line 4 from line 3" (line 4 blank)
+      f1_19[0]: /scheduleCBusinesses/*/grossReceipts # 7 "Gross income. Add lines 5 and 6" (line 6 blank)
+      f1_46[0]: /scheduleCBusinesses/*/totalExpenses # 28 "Total expenses before expenses for business use of home"
+      f1_47[0]: /scheduleCBusinesses/*/netProfitOrLoss # 29 "Tentative profit or (loss). Subtract line 28 from line 7"
+      f1_51[0]: /scheduleCBusinesses/*/netProfitOrLoss # 31 "Net profit or (loss). Subtract line 30 from line 29"

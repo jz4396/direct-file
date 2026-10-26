@@ -40,9 +40,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * the field map in pdf/2026/IRS1040EIC/en/configuration.yml. Draft-based field map: re-verify when the final form is
  * released.
  *
- * <p>The return package still refuses an EIC return with a qualifying child ({@link PdfKnockoutRefusalTest}): the 2026
- * Form 1040 says "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A", and Schedule 3-A has no
- * template yet. So this test fills Schedule EIC on its own, with the same configuration lookup, fact extraction and
+ * <p>The return package still refuses an EIC return with a qualifying child ({@link PdfKnockoutRefusalTest}) because
+ * Schedule EIC's 26 U.S.C. 152(c)(4) tie-breaker is not computed. Schedule 3-A prints with the EIC or ACTC (#239). This
+ * test fills Schedule EIC on its own, with the same configuration lookup, fact extraction and
  * {@link IrsScheduleEicPdfForm} that {@link PdfService#getTaxReturn} uses.
  *
  * <p>Golden end-to-end scenario (synthetic data): the head-of-household family scenario with group-00 test SSNs

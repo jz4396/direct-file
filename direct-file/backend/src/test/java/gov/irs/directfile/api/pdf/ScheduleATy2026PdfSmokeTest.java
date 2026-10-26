@@ -85,7 +85,7 @@ class ScheduleATy2026PdfSmokeTest {
                 return in.readAllBytes();
             }
         }
-        // #89: a Schedule C return (Schedule SE tests) is refused by the public path; its other forms are still filled.
+        // A Schedule C return (Schedule SE tests) is still refused by Form 8995; its other forms are still filled.
         return PrintRefusingKnockoutsTest.printForFieldMaps(pdfService, taxReturn, factGraphService.getGraph(facts));
     }
 

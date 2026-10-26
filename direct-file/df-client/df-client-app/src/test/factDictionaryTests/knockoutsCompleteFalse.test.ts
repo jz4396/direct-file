@@ -104,16 +104,25 @@ describe(`knockouts are complete false when they don't apply (#186)`, () => {
         if (!complete || value !== neg)
           failures.push(`${name}: ${neg ? `Not ` : ``}${p} = ${complete ? `` : `incomplete `}${value}`);
       }
+      const questions = read(factGraph, `/schedule3AQuestionsComplete`);
       for (const p of submissionBlockingFactsRequiringValue) {
         const { complete, value } = read(factGraph, p);
+        // 2026 draft Form 1040 line 33 adds line 32c (line 32a minus line 32b). When Schedule 3-A is attached and
+        // line 6 is more than zero, line 32b stays incomplete until line 7 is answered, and until line 8 is
+        // answered when line 7 is yes (8 U.S.C. 1641(b)). /owesBalance is then incomplete, so
+        // /achPaymentDateInThePast (the ACH debit date is in the past) is incomplete too. /flowIncomplete already
+        // stops the return.
+        if (!complete && p === `/achPaymentDateInThePast` && questions.complete && questions.value === false) {
+          continue;
+        }
         if (!complete) failures.push(`${name}: top-level blocking ${p} = incomplete ${value}`);
       }
       const ko = read(factGraph, `/flowIsKnockedOut`);
       if (!ko.complete || ko.value !== false) failures.push(`${name}: /flowIsKnockedOut = ${ko.complete} ${ko.value}`);
     }
     expect(failures).toEqual([]);
-    // Most returns are clean; the Schedule C and Schedule 3-A template knockouts (#89) take out the business and
-    // EIC/ACTC returns, which leaves 99 clean returns on this tree.
+    // Most returns are clean. Schedule C still stops on Form 8995 (#87). Schedule 3-A prints (#239), so an EIC or
+    // ACTC return is clean unless another knockout fires.
     expect(clean).toBeGreaterThan(90);
   }, 600000);
 });

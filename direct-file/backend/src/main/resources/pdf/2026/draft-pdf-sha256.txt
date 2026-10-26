@@ -21,3 +21,5 @@ d49acff9afc2faa178b7bf1f70d826d03c2c6def43700880f8ae5bb8bb5a0ffa  IRS1040SA/en/f
 c94550b7d4b735b11e9901c5dbff5dab0aa6dcbbefab04864c61cd5275cafec8  IRS8889/en/f8889--dft.pdf  https://www.irs.gov/pub/irs-dft/f8889--dft.pdf
 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c  IRS1040SSE/en/f1040sse--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf
 fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3  IRS1040EIC/en/f1040sei--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf
+287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224  IRS1040SC/en/f1040sc--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf
+787e1ae1eaa3e23a184074d0f437f6b2a8fe3f01290f366201f14eeecc82b8db  IRS1040S3A/en/f1040s3a--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040s3a--dft.pdf

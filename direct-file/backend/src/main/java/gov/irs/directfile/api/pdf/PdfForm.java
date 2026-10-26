@@ -3,6 +3,7 @@ package gov.irs.directfile.api.pdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,9 +14,15 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -35,6 +42,76 @@ class PdfForm extends PdfTemplate {
     public PdfForm(final String templateName) {
         // Subclass constructors may modify the following defaults.
         super(templateName, false, false);
+    }
+
+    /**
+     * 2026 draft Schedule 3-A (https://www.irs.gov/pub/irs-dft/f1040s3a--dft.pdf, SHA-256
+     * 787e1ae1eaa3e23a184074d0f437f6b2a8fe3f01290f366201f14eeecc82b8db) ships an AcroForm whose /Fields array is empty
+     * and whose /Kids arrays are empty. Widgets still point at form1[0] through /Parent. PDFBox 3.0.3 builds a field
+     * only when /Kids holds a dictionary with /T, or when the dictionary has /FT, and looks names up from /Fields.
+     * This copies each /Parent link into that parent's /Kids, then registers the roots, after load and before the
+     * first getField. The committed template bytes are not rewritten.
+     */
+    static void registerOrphanFieldRoots(PDDocument document) throws IOException {
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+        if (acroForm == null) {
+            return;
+        }
+        COSArray fields = acroForm.getCOSObject().getCOSArray(COSName.FIELDS);
+        if (fields != null && fields.size() > 0) {
+            return;
+        }
+        COSArray roots = fields == null ? new COSArray() : fields;
+        Set<COSDictionary> seen = new LinkedHashSet<>();
+        for (PDPage page : document.getPages()) {
+            for (PDAnnotation annot : page.getAnnotations()) {
+                if (!(annot instanceof PDAnnotationWidget)) {
+                    continue;
+                }
+                COSDictionary node = annot.getCOSObject();
+                for (int guard = 0; guard < 32; guard++) {
+                    COSBase parent = node.getDictionaryObject(COSName.PARENT);
+                    if (!(parent instanceof COSDictionary parentDict)) {
+                        break;
+                    }
+                    appendKid(parentDict, node);
+                    node = parentDict;
+                }
+                if (node.containsKey(COSName.T) || node.containsKey(COSName.KIDS)) {
+                    seen.add(node);
+                }
+            }
+        }
+        if (seen.isEmpty()) {
+            return;
+        }
+        for (COSDictionary root : seen) {
+            roots.add(root);
+        }
+        if (fields == null) {
+            acroForm.getCOSObject().setItem(COSName.FIELDS, roots);
+        }
+    }
+
+    /** Adds {@code child} to {@code parent}'s /Kids when that array does not already hold it. */
+    private static void appendKid(COSDictionary parent, COSDictionary child) {
+        COSArray kids = parent.getCOSArray(COSName.KIDS);
+        if (kids == null) {
+            kids = new COSArray();
+            parent.setItem(COSName.KIDS, kids);
+        }
+        for (int i = 0; i < kids.size(); i++) {
+            if (child.equals(kids.getObject(i))) {
+                return;
+            }
+        }
+        kids.add(child);
+    }
+
+    private static PDDocument loadTemplate(byte[] pdfTemplateBytes) throws IOException {
+        PDDocument document = Loader.loadPDF(pdfTemplateBytes);
+        registerOrphanFieldRoots(document);
+        return document;
     }
 
     @Override
@@ -69,7 +146,7 @@ class PdfForm extends PdfTemplate {
             if (includeWhenPath != null
                     && facts.getBoolean(includeWhenPath)
                     && computePseudoFacts(facts, null, pdfConfig)) {
-                newPdfDocument = Loader.loadPDF(pdfTemplateBytes);
+                newPdfDocument = loadTemplate(pdfTemplateBytes);
                 populateFormFields(
                         newPdfDocument.getDocumentCatalog().getAcroForm(),
                         formMap,
@@ -90,7 +167,7 @@ class PdfForm extends PdfTemplate {
                     for (UUID id : itemIds) {
                         // For some forms, we compute pseudofacts; skip form in case of trouble.
                         if (computePseudoFacts(facts, id, pdfConfig)) {
-                            newPdfDocument = Loader.loadPDF(pdfTemplateBytes);
+                            newPdfDocument = loadTemplate(pdfTemplateBytes);
                             populateFormFields(
                                     newPdfDocument.getDocumentCatalog().getAcroForm(),
                                     formMap,

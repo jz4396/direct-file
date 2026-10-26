@@ -171,7 +171,9 @@
     </Fact>
     <Fact path="/americanOpportunityCredit">
       <Name>American Opportunity Credit</Name>
-      <Description>American opportunity credit from Form 8863, line 8 (line 29 1040)</Description>
+      <Description>Refundable American opportunity credit, Form 8863 line 8, Form 1040 line 29 (26 U.S.C. 25A(i)).
+        Not computed; line 29 stays $0. Schedule 3-A line 2 still counts a complete amount above $0.</Description>
+      <Export downstreamFacts="true" />
       <Derived>
         <Dollar>0</Dollar>
       </Derived>
@@ -210,8 +212,9 @@
     </Fact>
     <Fact path="/totalOtherPaymentsRefundableCredits">
       <Name>Total other payments and refundable credits</Name>
-      <Description>Total other payments and refundable credits as reported on line 32 of Form 1040.</Description>
-      <Export mef="true" />
+      <Description>2026 draft Form 1040, form page 2 (PDF p. 3), line 32a: add lines 27a, 28, 29, 30 and 31
+        (26 U.S.C. 32, 24(d), 25A(i) and 23, plus Schedule 3 line 15). Line 30 is not computed.</Description>
+      <Export mef="true" downstreamFacts="true" />
       <Derived>
         <Round>
           <Add>
@@ -237,119 +240,17 @@
         </GreaterThan>
       </Derived>
     </Fact>
-    <Fact path="/flowKnockoutSchedule3AWithoutTy2026Template">
-      <Name>Knockout: the return needs Schedule 3-A, which this tool can't produce yet</Name>
-      <Description>#89: true when Form 1040 line 27a (earned income credit, 26 U.S.C. 32), line 28 (additional child tax
-        credit, 26 U.S.C. 24(d)) or line 29 (refundable American opportunity credit, 26 U.S.C. 25A(i)) is more than $0.
-        2026 draft Form 1040 (f1040--dft.pdf, SHA-256 e044e765ace334c76bda7910bd3193fc813c7789d06340124359b885c98d58d0),
-        lines 32a-32c: "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A", and line 32b is the
-        "Amount from Schedule 3-A". 2026 draft Schedule 3-A (f1040s3a--dft.pdf, SHA-256
-        787e1ae1eaa3e23a184074d0f437f6b2a8fe3f01290f366201f14eeecc82b8db): "Complete Schedule 3-A (Form 1040) only if
-        you are claiming the earned income credit (EIC), additional child tax credit (ACTC), refundable American
-        opportunity credit, or refundable adoption credit." Its Part II line 8 asks whether the filer or spouse is a
-        U.S. citizen, U.S. national or qualified alien, which this tool doesn't ask, so line 32b has no fact behind it
-        and the package would omit Schedule 3-A. Line 30 (refundable adoption credit, Form 8839) isn't computed. Each
-        credit counts only when it is complete, so the knockout is complete and false on a return without these credits.
-        Remove this fact, its /flowIsKnockedOut entry and its PrintRefusingKnockouts entry when Schedule 3-A has a
-        template, a field map and a line 32b fact.</Description>
-      <BlockSubmissionOnTrue />
-      <Export downstreamFacts="true" />
-      <Derived>
-        <Any>
-          <Switch>
-            <Case>
-              <When>
-                <IsComplete>
-                  <Dependency module="eitc" path="/earnedIncomeCredit" />
-                </IsComplete>
-              </When>
-              <Then>
-                <GreaterThan>
-                  <Left>
-                    <Dependency module="eitc" path="/earnedIncomeCredit" />
-                  </Left>
-                  <Right>
-                    <Dollar>0</Dollar>
-                  </Right>
-                </GreaterThan>
-              </Then>
-            </Case>
-            <Case>
-              <When>
-                <True />
-              </When>
-              <Then>
-                <False />
-              </Then>
-            </Case>
-          </Switch>
-          <Switch>
-            <Case>
-              <When>
-                <IsComplete>
-                  <Dependency module="ctcOdc" path="/additionalCtc" />
-                </IsComplete>
-              </When>
-              <Then>
-                <GreaterThan>
-                  <Left>
-                    <Dependency module="ctcOdc" path="/additionalCtc" />
-                  </Left>
-                  <Right>
-                    <Dollar>0</Dollar>
-                  </Right>
-                </GreaterThan>
-              </Then>
-            </Case>
-            <Case>
-              <When>
-                <True />
-              </When>
-              <Then>
-                <False />
-              </Then>
-            </Case>
-          </Switch>
-          <Switch>
-            <Case>
-              <When>
-                <IsComplete>
-                  <Dependency path="/americanOpportunityCredit" />
-                </IsComplete>
-              </When>
-              <Then>
-                <GreaterThan>
-                  <Left>
-                    <Dependency path="/americanOpportunityCredit" />
-                  </Left>
-                  <Right>
-                    <Dollar>0</Dollar>
-                  </Right>
-                </GreaterThan>
-              </Then>
-            </Case>
-            <Case>
-              <When>
-                <True />
-              </When>
-              <Then>
-                <False />
-              </Then>
-            </Case>
-          </Switch>
-        </Any>
-      </Derived>
-    </Fact>
     <Fact path="/totalPayments">
       <Name>Total payments</Name>
-      <Description>Total payments as reported on line 33 of Form 1040.</Description>
+      <Description>2026 draft Form 1040, form page 2 (PDF p. 3), line 33: add lines 25d, 26 and 32c. Line 32c is line
+        32a minus line 32b (the amount from Schedule 3-A). 26 U.S.C. 32, 24(d), 25A(i) and 23.</Description>
       <Export mef="true" />
       <Derived>
         <Round>
           <Add>
             <Dependency path="/totalWithholding" />
             <Dependency module="estimatedPayments" path="/estimatedAndFromLastYear" />
-            <Dependency path="/totalOtherPaymentsRefundableCredits" />
+            <Dependency module="schedule3A" path="/form1040Line32c" />
           </Add>
         </Round>
       </Derived>

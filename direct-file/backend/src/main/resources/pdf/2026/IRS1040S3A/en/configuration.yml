@@ -1,0 +1,48 @@
+# #239: 2026 Schedule 3-A (Form 1040), Federal Public Benefit. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f1040s3a--dft.pdf (early-release draft, "Created 6/24/26", 2 PDF pages),
+# committed byte-identical to irs.gov; SHA-256
+# 787e1ae1eaa3e23a184074d0f437f6b2a8fe3f01290f366201f14eeecc82b8db (pinned in pdf/2026/draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). The draft's AcroForm /Fields array and its /Kids arrays are empty; the
+# widgets hang off form1[0] through /Parent. PdfForm rebuilds /Kids from /Parent and registers the roots in memory
+# after load. It does not rewrite the file. Form page 1 = PDF p. 2. When the final 2026 Schedule 3-A is released (#124), re-download it,
+# re-hash it and re-verify every field below before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+# No 2026 Spanish Schedule 3-A exists, so Spanish returns print this English form.
+# No Schedule 3-A instructions are posted yet. Line cites are the draft form.
+#
+# Included when Form 1040 line 27a, 28 or 29 is more than $0 (26 U.S.C. 32, 24(d), 25A(i)). Line 30 (26 U.S.C. 23,
+# Form 8839) is not computed. 2026 draft Form 1040, line 32 margin: "If you entered an amount on line 27a, 28, 29, or
+# 30, attach Sch. 3-A."
+#
+# Part I: 1a = Form 1040 line 32a; 1b = Form 1040 line 31; 2 = 1a - 1b; 3 = Form 1040 line 24a; 4 = Schedule 2 line 20;
+# 5 = 3 - 4; 6 = 2 - 5 when 2 is more than 5, otherwise -0-.
+# Line 7: election to receive the federal public benefit. Line 8: "Are you or your spouse a U.S. citizen, U.S.
+# national, or qualified alien?" Qualified alien: 8 U.S.C. 1641(b). Yes on line 8 enters -0- on line 8 and on Form 1040
+# line 32b. No on line 7, or no on line 8, enters line 6 on Form 1040 line 32b. Checkboxes are derived so a line that
+# the form says not to fill stays blank.
+# $0 amounts print blank (FactGraphService zero suppression).
+includeWhen: /pdfIncludeSchedule3A
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  form1[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on Form 1040..."
+      f1_02[0]: /primaryFiler/tin # "Your social security number"
+      Line1a_ReadOrder[0]:
+        f1_03[0]: /totalOtherPaymentsRefundableCredits # 1a Form 1040 line 32a
+      f1_04[0]: /otherPaymentsAndRefundableCreditsTotal # 1b Form 1040 line 31
+      f1_05[0]: /schedule3ALine2 # 2 "Subtract line 1b from line 1a"
+      Line3_ReadOrder[0]:
+        f1_06[0]: /totalTax # 3 Form 1040 line 24a
+      f1_07[0]: /schedule2Line20 # 4 Schedule 2 line 20
+      f1_08[0]: /schedule3ALine5 # 5 "Subtract line 4 from line 3"
+      c1_1[0]: /schedule3ALine6Yes # 6 "Is line 2 more than line 5? Yes"
+      c1_1[1]: /schedule3ALine6No # 6 "No"
+      f1_09[0]: /schedule3ALine6 # 6 amount
+      c1_2[0]: /schedule3ALine7Yes # 7 "Do you want to receive your federal public benefit? Yes"
+      c1_2[1]: /schedule3ALine7No # 7 "No"
+      c1_3[0]: /schedule3ALine8Yes # 8 "Are you or your spouse a U.S. citizen, U.S. national, or qualified alien? Yes"
+      c1_3[1]: /schedule3ALine8No # 8 "No"
+      f1_10[0]: /schedule3ALine8 # 8 amount
