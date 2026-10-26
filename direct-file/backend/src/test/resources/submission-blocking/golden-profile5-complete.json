@@ -226,6 +226,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/scheduleEHasPartIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/formW2s/#13500000-0000-4000-8000-000000000501/writableDependentCareBenefits": {
       "$type": "gov.irs.factgraph.persisters.DollarWrapper",
       "item": "0.00"

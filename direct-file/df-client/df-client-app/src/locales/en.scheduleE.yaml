@@ -7,29 +7,40 @@ subsubcategories:
 headings:
   /heading/income/schedule-e: Rental and royalty income
   /heading/income/schedule-e/intro: Did you have rental real estate or royalty income in {{/taxYear}}?
-  /heading/income/schedule-e/part-ii: Did you get income from a partnership, S corporation, estate, or trust (Schedule K-1)?
+  /heading/income/schedule-e/part-ii:
+    Did you get income from a partnership, S corporation, estate, or trust (Schedule K-1)?
   /heading/income/schedule-e/personal-use: Did you or your family use any rental property for personal purposes?
   /heading/income/schedule-e/depreciation: Are you claiming depreciation, depletion, or car or truck expenses?
   /heading/income/schedule-e/amounts: Enter your rental and royalty totals
   /heading/income/schedule-e/any-loss: Did any single property have more expenses than income?
-  /heading/income/schedule-e/substantial-services: Did you provide substantial services to your tenants, such as regular cleaning, changing linens, or maid service?
-  /heading/knockout/schedule-e-substantial-services: This tool doesn’t yet support rentals where you provide substantial services
+  /heading/income/schedule-e/substantial-services:
+    Did you provide substantial services to your tenants, such as regular cleaning, changing linens, or maid service?
+  /heading/knockout/schedule-e-substantial-services:
+    This tool doesn’t yet support rentals where you provide substantial services
   /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support Schedule K-1 income
   /heading/knockout/schedule-e-personal-use: This tool doesn’t yet support rentals you also used personally
   /heading/knockout/schedule-e-depreciation: This tool doesn’t yet support depreciation or vehicle expenses
   /heading/knockout/schedule-e-loss: This tool doesn’t yet support rental or royalty losses
-  /heading/income/schedule-e/trade-or-business: Is any of your rentals a trade or business for the qualified business income deduction?
-  /heading/knockout/schedule-e-trade-or-business: This tool doesn’t yet support the qualified business income deduction for rentals
-  /heading/knockout/schedule-e-eitc: This tool can’t yet check the Earned Income Tax Credit with rental or royalty income
+  /heading/income/schedule-e/trade-or-business:
+    Is any of your rentals a trade or business for the qualified business income deduction?
+  /heading/knockout/schedule-e-trade-or-business:
+    This tool doesn’t yet support the qualified business income deduction for rentals
+  /heading/knockout/schedule-e-eitc:
+    This tool can’t yet check the Earned Income Tax Credit with rental or royalty income
 info:
   /info/income/schedule-e/intro:
     body: >-
-      This includes rent from a house, apartment, room, or other real estate you rented out, and royalties from
-      oil, gas, or mineral properties, copyrights, or patents. It’s reported on Schedule E.
+      This includes rent from a house, apartment, room, or other real estate you rented out, and royalties from oil,
+      gas, or mineral properties, copyrights, or patents. It’s reported on Schedule E.
+  /info/income/schedule-e/part-ii:
+    body: >-
+      Answer yes if you were a partner, an S corporation shareholder, or a beneficiary of an estate or trust, even if
+      you had no rental or royalty income and even if you did not actually receive the money. A partnership Schedule K-1
+      can also include self-employment earnings.
   /info/income/schedule-e/personal-use:
     body: >-
-      Answer yes if, on any day, you, a co-owner, or a family member used a rental home, apartment, condo, or boat
-      for personal purposes.
+      Answer yes if, on any day, you, a co-owner, or a family member used a rental home, apartment, condo, or boat for
+      personal purposes.
   /info/income/schedule-e/depreciation:
     body: >-
       This includes depreciation of a building or equipment, depletion of a mineral property, and any car or truck
@@ -42,18 +53,22 @@ info:
     body: Answer yes if expenses were more than income for any one property, even if your total is a profit.
   /info/income/schedule-e/substantial-services:
     body: >-
-      Don’t count heat and light, cleaning of shared areas, trash collection, or similar services. Short-term rentals with cleaning and linen changes between guests usually count.
+      Don’t count heat and light, cleaning of shared areas, trash collection, or similar services. Short-term rentals
+      with cleaning and linen changes between guests usually count.
   /info/knockout/schedule-e-substantial-services:
     alertText:
       body:
         - p: >-
-            When you provide services like regular cleaning, changing linens, or maid service, the rental goes on Schedule C and may be subject to self-employment tax. This tool doesn’t support that yet. You’ll need another way to file this return.
+            When you provide services like regular cleaning, changing linens, or maid service, the rental goes on
+            Schedule C and may be subject to self-employment tax. This tool doesn’t support that yet. You’ll need
+            another way to file this return.
   /info/knockout/schedule-e-part-ii:
     alertText:
       body:
         - p: >-
-            Income from a partnership, S corporation, estate, trust, or REMIC goes on Schedule E Parts II–IV, which
-            this tool doesn’t support yet. You’ll need another way to file this return.
+            Income from a partnership, S corporation, estate, or trust is reported on Schedule E even if you did not
+            receive it. A partnership’s self-employment earnings (Schedule K-1 (Form 1065), box 14, code A) also go on
+            Schedule SE. This tool doesn’t support that yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-personal-use:
     alertText:
       body:
@@ -64,8 +79,8 @@ info:
     alertText:
       body:
         - p: >-
-            Depreciation, depletion, and car or truck expenses are figured on Form 4562, which this tool doesn’t
-            support yet. You’ll need another way to file this return.
+            Depreciation, depletion, and car or truck expenses are figured on Form 4562, which this tool doesn’t support
+            yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-loss:
     alertText:
       body:
@@ -81,9 +96,9 @@ info:
             tool doesn’t include it in that test yet. You’ll need another way to file this return.
   /info/income/schedule-e/trade-or-business:
     body: >-
-      Answer yes if you treat a rental as a trade or business, for example because you or others performed 250 or
-      more hours of rental services during the year, or because you rent property to a business you or your family
-      commonly control.
+      Answer yes if you treat a rental as a trade or business, for example because you or others performed 250 or more
+      hours of rental services during the year, or because you rent property to a business you or your family commonly
+      control.
   /info/knockout/schedule-e-trade-or-business:
     alertText:
       body:
@@ -127,9 +142,10 @@ fields:
     name: Total expenses (not including depreciation)
 checklist:
   /flow/income/schedule-e:
-    heading: Rental and royalty income (Schedule E)
+    heading: Rental, royalty, and Schedule K-1 income
     dataItems:
       scheduleEHasIncome: "Net income or (loss): {{/scheduleENetIncome}}"
+      scheduleEK1: Schedule K-1 income
       scheduleENone: "None reported"
 dataviews:
   /flow/income/schedule-e:
@@ -141,5 +157,6 @@ dataviews:
     /scheduleEWritableRoyalties: Total royalties received
     /scheduleEWritableExpenses: Total expenses (not including depreciation)
     /scheduleEAnyPropertyLoss: Did any single property have a loss?
-    /scheduleEProvidesSubstantialServices: Did you provide substantial services, such as cleaning, linens, or maid service?
+    /scheduleEProvidesSubstantialServices:
+      Did you provide substantial services, such as cleaning, linens, or maid service?
     /scheduleERentalIsTradeOrBusiness: Is any rental a trade or business for the qualified business income deduction?

@@ -47,13 +47,26 @@
     <Fact path="/primaryFilerSeNetProfit">
       <Name>Primary filer: Schedule SE line 3</Name>
       <Description>
-        Primary filer's Schedule C net profit or (loss) from all of their businesses (2026 draft Schedule SE
+        Primary filer's Schedule C net profit or (loss) from all of their businesses, floored at $0 (no farm
+        or optional methods). 2026 draft Schedule SE
         (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
-        1a, 1b, and 2"),
-        floored at $0 for SE tax (no farm or optional methods). Each spouse files their own Schedule SE:
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 2: "Net profit or
+        (loss) from
+        Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)";
+        line 3: "Combine lines
+        1a, 1b, and 2". Line 1a is farm profit, including farm partnerships' box 14
+        code A. This fact is Schedule C only.
+        Box 14 code A is not added: a filer who has a Schedule K-1 is
+        stopped by scheduleE /flowKnockoutScheduleEPartII
+        (26 U.S.C. 1402(a); 2026 draft Instructions for
+        Schedule SE, PDF p. 5, Partnership Income or Loss) instead of
+        filing line 2 without that amount.
+        With lines 1a and 1b blank, line 3 equals line 2, so the same amount is
+        printed on both. Each spouse
+        files their own Schedule SE:
         2026 draft
-        Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
         8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
         self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all
         businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."

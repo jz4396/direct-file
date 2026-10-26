@@ -221,6 +221,32 @@ class PdfKnockoutRefusalTest {
         }
     }
 
+    /**
+     * #232 and #238. A filer with Schedule K-1 income and no Schedule E Part I income is refused in English and
+     * Spanish. 2026 draft Schedule E line 41 combines Parts II and III into Schedule 1 line 5, and 2026 draft
+     * Schedule SE line 2 includes Schedule K-1 (Form 1065) box 14 code A (other than farming). With that knockout
+     * left out of the check, the same return prints, so the path is what stops the package.
+     */
+    @Test
+    void scheduleK1WithoutPartIIncomeIsRefused() throws Exception {
+        Map<String, FactTypeWithItem> facts = new HashMap<>(SubmissionBlockingFactsTest.golden());
+        facts.put(
+                "/scheduleEHasPartIIIncome",
+                MAPPER.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
+                        FactTypeWithItem.class));
+        var graph = factGraphService.getGraph(facts);
+        assertEquals(
+                0,
+                new java.math.BigDecimal(graph.get("/scheduleENetIncome").get().toString()).signum());
+        assertEquals(
+                0,
+                new java.math.BigDecimal(
+                                graph.get("/primaryFilerSeNetProfit").get().toString())
+                        .signum());
+        assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT);
+    }
+
     @Test
     void goldenReturnStillBuilds() throws Exception {
         Map<String, FactTypeWithItem> facts = SubmissionBlockingFactsTest.golden();

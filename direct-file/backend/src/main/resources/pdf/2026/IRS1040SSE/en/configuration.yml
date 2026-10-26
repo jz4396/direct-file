@@ -23,7 +23,10 @@
 #
 # Not mapped, left blank (never a silent 0); the tool collects no input for any of them:
 #   A    Form 4361 minister / religious order exemption checkbox: no clergy or Form 4361 input.
-#   1a, 1b  Schedule F farm profit and Conservation Reserve Program payments: no Schedule F or K-1 (Form 1065) input.
+#   1a, 1b  Schedule F farm profit, Conservation Reserve Program payments, and farm-partnership Schedule K-1
+#           (Form 1065) box 14 code A. No Schedule F input. Box 14 code A (farm on line 1a, other than farming
+#           on line 2) is not entered as zero on a filed return: scheduleE /flowKnockoutScheduleEPartII stops
+#           a filer who has a Schedule K-1 (26 U.S.C. 1402(a); 2026 draft Schedule SE lines 1a and 2).
 #   4b and Part II (lines 14-17), farm and nonfarm optional methods: not offered.
 #   5a, 5b  church employee income: no input.
 #   8b   Form 4137 unreported tips: stops the return (unreportedTips /flowKnockoutUnreportedTips).
@@ -40,7 +43,10 @@ form:
     Page1[0]:
       f1_1[0]: /primaryFiler/fullName # "Name of person with self-employment income"
       f1_2[0]: /primaryFiler/tin # "Social security number of person with self-employment income"
-      f1_5[0]: /primaryFilerSeNetProfit # 2 "Net profit or (loss) from Schedule C, line 31"
+      # Line 2 also reads "and Schedule K-1 (Form 1065), box 14, code A (other than farming)". That amount is
+      # not in /primaryFilerSeNetProfit. A yes on /scheduleEHasPartIIIncome stops the return
+      # (/flowKnockoutScheduleEPartII), so a package that prints has Schedule C only on line 2.
+      f1_5[0]: /primaryFilerSeNetProfit # 2 "Net profit or (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)"
       f1_6[0]: /primaryFilerSeNetProfit # 3 "Combine lines 1a, 1b, and 2"
       f1_7[0]: /primaryFilerSeNetEarnings # 4a "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)"
       f1_9[0]: /primaryFilerSeNetEarnings # 4c "Combine lines 4a and 4b"

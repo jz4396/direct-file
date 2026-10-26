@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   createBooleanWrapper,
+  createCollectionWrapper,
   createDayWrapper,
   createDollarWrapper,
   createEnumWrapper,
+  createStringWrapper,
 } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -12,7 +14,8 @@ import { baseFilerData, filerWithRefundDueData, primaryFilerId, uuid } from '../
 /**
  * Schedule E Part I MVP (#38). Cites live in backend/src/main/resources/tax/scheduleE.xml:
  * Schedule E (2026 draft) lines 3, 4, 20, 21, 26 -> Schedule 1 line 5; 26 U.S.C. 61(a)(5)-(6), 212;
- * knockouts: 469 / 465 / 461(l) (loss), Form 4562 (depreciation), 280A (personal use), Parts II-IV, 32(i)(2)(C).
+ * knockouts: 469 / 465 / 461(l) (loss), Form 4562 (depreciation), 280A (personal use), Parts II-III (#232),
+ * Schedule SE lines 1a/2 K-1 (Form 1065) box 14 code A (#238), 32(i)(2)(C).
  */
 const supported = {
   '/hadScheduleEIncome': createBooleanWrapper(true),
@@ -32,15 +35,34 @@ const get = (g: ReturnType<typeof fg>, p: string) => g.get(p as ConcretePath);
 
 describe(`Schedule E Part I MVP (#38)`, () => {
   it(`unanswered: W-2-only return is unchanged and not knocked out`, ({ task }) => {
-    task.meta.testedFactPaths = [`/scheduleENetIncome`, `/flowIsKnockedOut`, `/totalIncome`];
+    task.meta.testedFactPaths = [
+      `/scheduleENetIncome`,
+      `/flowKnockoutScheduleEPartII`,
+      `/scheduleESectionIsComplete`,
+      `/flowIsKnockedOut`,
+      `/totalIncome`,
+    ];
     const base = fg();
-    const no = fg({ '/hadScheduleEIncome': createBooleanWrapper(false) });
+    const noRental = fg({ '/hadScheduleEIncome': createBooleanWrapper(false) });
+    const answeredNo = fg({
+      '/hadScheduleEIncome': createBooleanWrapper(false),
+      '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+    });
     expect(get(base, `/scheduleENetIncome`).get.toString()).toBe(`0.00`);
     expect(get(base, `/flowIsKnockedOut`).get).toBe(false);
-    expect(get(no, `/flowIsKnockedOut`).get).toBe(false);
-    expect(get(no, `/totalIncome`).get.toString()).toBe(get(base, `/totalIncome`).get.toString());
-    expect(get(base, `/scheduleESectionIsComplete`).get).toBe(false);
-    expect(get(no, `/scheduleESectionIsComplete`).get).toBe(true);
+    expect(get(noRental, `/flowIsKnockedOut`).get).toBe(false);
+    expect(get(noRental, `/totalIncome`).get.toString()).toBe(get(base, `/totalIncome`).get.toString());
+    // The K-1 question is required even with no Part I income. While it is blank the knockout stays complete
+    // false, so /flowIsKnockedOut stays complete false, and the section is not done.
+    for (const g of [base, noRental]) {
+      expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(true);
+      expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+      expect(get(g, `/scheduleESectionIsComplete`).get).toBe(false);
+    }
+    expect(get(answeredNo, `/scheduleESectionIsComplete`).get).toBe(true);
+    expect(get(answeredNo, `/flowKnockoutScheduleEPartII`).complete).toBe(true);
+    expect(get(answeredNo, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(answeredNo, `/flowIsKnockedOut`).get).toBe(false);
   });
 
   it(`supported case: $12,000 rents + $500 royalties - $4,000 expenses = $8,500 to Schedule 1 line 5`, ({ task }) => {
@@ -120,6 +142,64 @@ describe(`Schedule E Part I MVP (#38)`, () => {
     const answeredNo = fg(supported);
     expect(get(answeredNo, `/flowKnockoutScheduleETradeOrBusinessQbi`).complete).toBe(true);
     expect(get(answeredNo, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(false);
+  });
+
+  it(`K-1 only: Schedule E and Schedule 1 line 5 stay $0 and the return is knocked out (#232)`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleENetIncome`,
+      `/schedule1Line5`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // No rental or royalty income. 2026 draft Instructions for Schedule E, PDF p. 11 and p. 14, require the
+    // partnership, S corporation, estate, or trust share "even if not received" (26 U.S.C. 702(a), 1366(a),
+    // 652(a), 662(a)). Part I line 26 / Schedule 1 line 5 do not include it.
+    const g = fg({
+      '/hadScheduleEIncome': createBooleanWrapper(false),
+      '/scheduleEHasPartIIIncome': createBooleanWrapper(true),
+    });
+    expect(get(g, `/hasScheduleEIncome`).get).toBe(false);
+    expect(get(g, `/scheduleENetIncome`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+  });
+
+  it(`Schedule SE line 2 stays Schedule C only when K-1 box 14 code A applies (#238)`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/primaryFilerSeNetProfit`,
+      `/selfEmploymentTax`,
+      `/scheduleENetIncome`,
+      `/flowKnockoutScheduleEPartII`,
+    ];
+    // 2026 draft Schedule SE, PDF p. 2, line 2: "Net profit or (loss) from Schedule C, line 31; and Schedule
+    // K-1 (Form 1065), box 14, code A (other than farming)". Line 1a is the farm amount. 26 U.S.C. 1402(a).
+    // $10,000 gross - $2,000 expenses = $8,000 on line 2. Box 14 code A is not added, so line 2 and the SE
+    // tax match the Schedule C-only return. The knockout stops the return that would file that omission.
+    const businessId = `a59c03d1-af4a-447f-96aa-d19397048a01`;
+    const scheduleC = {
+      '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
+      '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+      [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Gig Work`),
+      [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`10000`),
+      [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`2000`),
+      [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
+      '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      '/hadScheduleEIncome': createBooleanWrapper(false),
+    };
+    const withoutK1 = fg({ ...scheduleC, '/scheduleEHasPartIIIncome': createBooleanWrapper(false) });
+    const withK1 = fg({ ...scheduleC, '/scheduleEHasPartIIIncome': createBooleanWrapper(true) });
+    expect(get(withoutK1, `/primaryFilerSeNetProfit`).get.toString()).toBe(`8000.00`);
+    expect(get(withoutK1, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(withK1, `/primaryFilerSeNetProfit`).get.toString()).toBe(`8000.00`);
+    expect(get(withK1, `/selfEmploymentTax`).get.toString()).toBe(get(withoutK1, `/selfEmploymentTax`).get.toString());
+    expect(get(withK1, `/scheduleENetIncome`).get.toString()).toBe(`0.00`);
+    expect(get(withK1, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(withK1, `/flowIsKnockedOut`).get).toBe(true);
   });
 
   it(`EITC-qualifying return with rental profit is knocked out (32(i)(2)(C))`, ({ task }) => {

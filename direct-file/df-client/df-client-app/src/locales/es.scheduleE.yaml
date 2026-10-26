@@ -7,48 +7,67 @@ subsubcategories:
 headings:
   /heading/income/schedule-e: Ingresos de alquiler y regalías
   /heading/income/schedule-e/intro: ¿Tuvo ingresos de alquiler de bienes raíces o de regalías en {{/taxYear}}?
-  /heading/income/schedule-e/part-ii: ¿Recibió ingresos de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario o fideicomiso (Anexo K-1)?
-  /heading/income/schedule-e/personal-use: ¿Usted o su familia usaron alguna propiedad de alquiler para fines personales?
+  /heading/income/schedule-e/part-ii:
+    ¿Recibió ingresos de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario o fideicomiso (Anexo
+    K-1)?
+  /heading/income/schedule-e/personal-use:
+    ¿Usted o su familia usaron alguna propiedad de alquiler para fines personales?
   /heading/income/schedule-e/depreciation: ¿Va a reclamar depreciación, agotamiento o gastos de auto o camión?
   /heading/income/schedule-e/amounts: Anote los totales de alquiler y regalías
   /heading/income/schedule-e/any-loss: ¿Alguna propiedad tuvo más gastos que ingresos?
-  /heading/income/schedule-e/substantial-services: ¿Prestó servicios considerables a sus inquilinos, como limpieza regular, cambio de ropa de cama o servicio de limpieza?
-  /heading/knockout/schedule-e-substantial-services: Esta herramienta todavía no acepta alquileres en los que usted presta servicios considerables
+  /heading/income/schedule-e/substantial-services:
+    ¿Prestó servicios considerables a sus inquilinos, como limpieza regular, cambio de ropa de cama o servicio de
+    limpieza?
+  /heading/knockout/schedule-e-substantial-services:
+    Esta herramienta todavía no acepta alquileres en los que usted presta servicios considerables
   /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta ingresos del Anexo K-1
   /heading/knockout/schedule-e-personal-use: Esta herramienta todavía no acepta alquileres que también usó personalmente
   /heading/knockout/schedule-e-depreciation: Esta herramienta todavía no acepta depreciación ni gastos de vehículo
   /heading/knockout/schedule-e-loss: Esta herramienta todavía no acepta pérdidas de alquiler o regalías
-  /heading/income/schedule-e/trade-or-business: ¿Alguno de sus alquileres es una ocupación o negocio para la deducción por ingreso calificado de negocios?
-  /heading/knockout/schedule-e-trade-or-business: Esta herramienta todavía no acepta la deducción por ingreso calificado de negocios para alquileres
-  /heading/knockout/schedule-e-eitc: Esta herramienta todavía no puede verificar el Crédito por Ingreso del Trabajo con ingresos de alquiler o regalías
+  /heading/income/schedule-e/trade-or-business:
+    ¿Alguno de sus alquileres es una ocupación o negocio para la deducción por ingreso calificado de negocios?
+  /heading/knockout/schedule-e-trade-or-business:
+    Esta herramienta todavía no acepta la deducción por ingreso calificado de negocios para alquileres
+  /heading/knockout/schedule-e-eitc:
+    Esta herramienta todavía no puede verificar el Crédito por Ingreso del Trabajo con ingresos de alquiler o regalías
 info:
   /info/income/schedule-e/intro:
     body: >-
       Esto incluye el alquiler de una casa, apartamento, habitación u otro bien raíz que alquiló, y las regalías de
       propiedades de petróleo, gas o minerales, derechos de autor o patentes. Se declara en el Anexo E.
+  /info/income/schedule-e/part-ii:
+    body: >-
+      Conteste que sí si fue socio, accionista de una sociedad anónima de tipo S o beneficiario de un caudal hereditario
+      o fideicomiso, aunque no haya tenido ingresos de alquiler o regalías y aunque no haya recibido el dinero. Un Anexo
+      K-1 de una sociedad colectiva también puede incluir ganancias del trabajo por cuenta propia.
   /info/income/schedule-e/personal-use:
     body: >-
       Conteste que sí si, cualquier día, usted, un copropietario o un familiar usó una casa, apartamento, condominio o
       barco de alquiler para fines personales.
   /info/income/schedule-e/depreciation:
     body: >-
-      Esto incluye la depreciación de un edificio o equipo, el agotamiento de una propiedad mineral y cualquier gasto
-      de auto o camión (costos reales o la tarifa estándar por milla). Estos requieren el Formulario 4562.
+      Esto incluye la depreciación de un edificio o equipo, el agotamiento de una propiedad mineral y cualquier gasto de
+      auto o camión (costos reales o la tarifa estándar por milla). Estos requieren el Formulario 4562.
   /info/income/schedule-e/amounts:
     body: >-
       Sume todas sus propiedades. Anote el total de alquileres recibidos, el total de regalías recibidas y el total de
-      gastos como publicidad, seguro, intereses hipotecarios, reparaciones, suministros, impuestos y servicios
-      públicos. No incluya la depreciación.
+      gastos como publicidad, seguro, intereses hipotecarios, reparaciones, suministros, impuestos y servicios públicos.
+      No incluya la depreciación.
   /info/income/schedule-e/any-loss:
-    body: Conteste que sí si los gastos fueron mayores que los ingresos en alguna propiedad, aunque su total sea una ganancia.
+    body:
+      Conteste que sí si los gastos fueron mayores que los ingresos en alguna propiedad, aunque su total sea una
+      ganancia.
   /info/income/schedule-e/substantial-services:
     body: >-
-      No cuente la calefacción y la luz, la limpieza de áreas comunes, la recolección de basura ni servicios similares. Los alquileres de corto plazo con limpieza y cambio de ropa de cama entre huéspedes generalmente cuentan.
+      No cuente la calefacción y la luz, la limpieza de áreas comunes, la recolección de basura ni servicios similares.
+      Los alquileres de corto plazo con limpieza y cambio de ropa de cama entre huéspedes generalmente cuentan.
   /info/knockout/schedule-e-substantial-services:
     alertText:
       body:
         - p: >-
-            Cuando presta servicios como limpieza regular, cambio de ropa de cama o servicio de limpieza, el alquiler va en el Anexo C y puede estar sujeto al impuesto sobre el trabajo por cuenta propia. Esta herramienta todavía no lo acepta. Tendrá que usar otra manera de presentar esta declaración.
+            Cuando presta servicios como limpieza regular, cambio de ropa de cama o servicio de limpieza, el alquiler va
+            en el Anexo C y puede estar sujeto al impuesto sobre el trabajo por cuenta propia. Esta herramienta todavía
+            no lo acepta. Tendrá que usar otra manera de presentar esta declaración.
   /info/income/schedule-e/trade-or-business:
     body: >-
       Conteste que sí si trata un alquiler como una ocupación o negocio, por ejemplo porque usted u otras personas
@@ -59,15 +78,16 @@ info:
       body:
         - p: >-
             Un alquiler que es una ocupación o negocio puede tener derecho a la deducción por ingreso calificado de
-            negocios (Formulario 8995). Esta herramienta todavía no calcula esa deducción. Tendrá que usar otra manera de
-            presentar esta declaración.
+            negocios (Formulario 8995). Esta herramienta todavía no calcula esa deducción. Tendrá que usar otra manera
+            de presentar esta declaración.
   /info/knockout/schedule-e-part-ii:
     alertText:
       body:
         - p: >-
-            Los ingresos de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario, fideicomiso o REMIC
-            van en las Partes II a IV del Anexo E, que esta herramienta todavía no acepta. Tendrá que usar otra manera
-            de presentar esta declaración.
+            Los ingresos de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario o fideicomiso se
+            declaran en el Anexo E aunque no los haya recibido. Las ganancias del trabajo por cuenta propia de una
+            sociedad colectiva (Anexo K-1 (Formulario 1065), casilla 14, código A) también van en el Anexo SE. Esta
+            herramienta todavía no lo acepta. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-personal-use:
     alertText:
       body:
@@ -84,8 +104,8 @@ info:
     alertText:
       body:
         - p: >-
-            Las pérdidas de alquiler y regalías pueden estar limitadas por las reglas de actividades pasivas, de riesgo y
-            de pérdidas comerciales excesivas (Formularios 8582, 6198 y 461), que esta herramienta todavía no acepta.
+            Las pérdidas de alquiler y regalías pueden estar limitadas por las reglas de actividades pasivas, de riesgo
+            y de pérdidas comerciales excesivas (Formularios 8582, 6198 y 461), que esta herramienta todavía no acepta.
             Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-eitc:
     alertText:
@@ -131,9 +151,10 @@ fields:
     name: Total de gastos (sin incluir la depreciación)
 checklist:
   /flow/income/schedule-e:
-    heading: Ingresos de alquiler y regalías (Anexo E)
+    heading: Ingresos de alquiler, regalías y del Anexo K-1
     dataItems:
       scheduleEHasIncome: "Ingreso neto o (pérdida): {{/scheduleENetIncome}}"
+      scheduleEK1: Ingresos del Anexo K-1
       scheduleENone: "No se declaró ninguno"
 dataviews:
   /flow/income/schedule-e:
@@ -145,5 +166,7 @@ dataviews:
     /scheduleEWritableRoyalties: Total de regalías recibidas
     /scheduleEWritableExpenses: Total de gastos (sin incluir la depreciación)
     /scheduleEAnyPropertyLoss: ¿Alguna propiedad tuvo pérdida?
-    /scheduleEProvidesSubstantialServices: ¿Prestó servicios considerables, como limpieza, ropa de cama o servicio de limpieza?
-    /scheduleERentalIsTradeOrBusiness: ¿Algún alquiler es una ocupación o negocio para la deducción por ingreso calificado de negocios?
+    /scheduleEProvidesSubstantialServices:
+      ¿Prestó servicios considerables, como limpieza, ropa de cama o servicio de limpieza?
+    /scheduleERentalIsTradeOrBusiness:
+      ¿Algún alquiler es una ocupación o negocio para la deducción por ingreso calificado de negocios?
