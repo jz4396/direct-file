@@ -69,6 +69,7 @@ class PrintRefusingKnockoutsTest {
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
     static final String QBI_MIXED_PARTICIPATION_KNOCKOUT = "/flowKnockoutQbiMixedParticipation";
     static final String SCHEDULE_C_QBI_KNOCKOUT = "/flowKnockoutScheduleCQbi";
+    static final String SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleCOutOfScope";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     /**
      * #87: the knockout that waits only on Form 8995, which still has no TY2026 template. Schedule C and Schedule 3-A
@@ -123,10 +124,11 @@ class PrintRefusingKnockoutsTest {
                 QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
                 QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
                 SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
+                SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
                 FORM_8995_KNOCKOUT)); // Form 8995 is attached and has no TY2026 template or MeF mapping
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         // #246 adds /flowKnockoutScheduleEPartII. #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(18, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(19, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

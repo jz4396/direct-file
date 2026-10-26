@@ -74,6 +74,15 @@ public final class PrintRefusingKnockouts {
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
             "/flowKnockoutScheduleCQbi",
+            // Schedule C line this tool does not compute. 2026 draft Instructions for Schedule C: Part III
+            // inventory (PDF p. 16), lines 9 and 16b vehicle expenses (PDF pp. 2 and 7, Form 4562), line 13
+            // depreciation (PDF p. 8, Form 4562), line 12 depletion, line 20a equipment rent, line 30 home
+            // office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that are not 50 percent
+            // (PDF p. 11, 26 U.S.C. 274(n)), line 26 employment credits, lines 16a and 16c interest
+            // allocation (PDF p. 9), Form 4562-B amortization (PDF p. 17), a loss without material
+            // participation (Form 8582, 26 U.S.C. 469) or that is not fully at risk (line 32b, Form 6198,
+            // 26 U.S.C. 465). Complete false when the filer has no Schedule C or only the single expense total.
+            "/flowKnockoutScheduleCOutOfScope",
             // Form 8995 goes with every return that has Schedule C QBI or loss: Instructions for Form 1040 (2025)
             // draft,
             // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your

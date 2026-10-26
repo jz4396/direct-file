@@ -776,6 +776,9 @@
                 <Not>
                   <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
                 </Not>
+                <Not>
+                  <Dependency module="scheduleC" path="/flowKnockoutScheduleCOutOfScope" />
+                </Not>
               </All>
             </Then>
           </Case>

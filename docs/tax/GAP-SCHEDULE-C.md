@@ -1,6 +1,6 @@
 # Gap: Schedule C + self-employment tax
 
-**Status:** Gap PR (spec + acceptance criteria). Implementation in a follow-up PR.
+**Status:** Supported Part I and Part II lines, three Part V lines, and the out-of-scope stops are in this tree, on top of the single expense total, Schedule SE, Schedule 1 line 3, and the section 164(f) deduction. What is still open is listed in IMPLEMENTATION-SCHEDULE-C.md.
 **Tax year target:** TY2026, filed in 2027
 
 ## Audit sources (required on every claim)
