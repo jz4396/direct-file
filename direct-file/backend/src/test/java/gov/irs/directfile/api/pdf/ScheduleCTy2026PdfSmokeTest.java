@@ -58,4 +58,72 @@ class ScheduleCTy2026PdfSmokeTest {
             assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
         }
     }
+
+    /**
+     * Line-item path. Lines 2 and 6 are entered, line 4 is zero because there is no inventory, line 24b is half of
+     * the meals (26 U.S.C. 274(n)), and one Part V line is line 27b and line 48. A stored single expense total is
+     * ignored. 2026 draft Instructions for Schedule C, PDF pp. 7, 11, and 17.
+     */
+    @Test
+    void itemizedLinesPrintAndAStoredExpenseTotalIsIgnored() throws Exception {
+        var facts = selfEmployed("170000.00", "170000.00", "10000.00");
+        String id = ScheduleSETy2026PdfSmokeTest.BIZ;
+        String b = "/scheduleCBusinesses/#" + id + "/";
+        facts.put(b + "writableReturnsAndAllowances", ScheduleATy2026PdfSmokeTest.dollar("500.00"));
+        facts.put(b + "writableOtherIncome", ScheduleATy2026PdfSmokeTest.dollar("200.00"));
+        facts.put(b + "writableTotalExpenses", ScheduleATy2026PdfSmokeTest.dollar("9999.00"));
+        facts.put(b + "otherIncomeNeedsAnotherForm", ScheduleATy2026PdfSmokeTest.bool(false));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasCarTruckOrVehicleLoan",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasVehicleMachineryEquipmentRent",
+            "hasHomeOffice",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            facts.put(b + stop, ScheduleATy2026PdfSmokeTest.bool(false));
+        }
+        facts.put(b + "hasDeductibleExpenses", ScheduleATy2026PdfSmokeTest.bool(true));
+        facts.put(
+                b + "expenseLinesChosen",
+                "{\"$type\":\"gov.irs.factgraph.persisters.MultEnumWrapper\",\"item\":{\"enumOptionsPath\":\"/scheduleCExpenseLineOptions\",\"values\":[\"advertising\",\"meals\",\"otherExpenses\"]}}");
+        facts.put(b + "writableAdvertising", ScheduleATy2026PdfSmokeTest.dollar("100.00"));
+        facts.put(b + "writableMeals", ScheduleATy2026PdfSmokeTest.dollar("200.00"));
+        facts.put(b + "mealsAreStandardHalfLimit", ScheduleATy2026PdfSmokeTest.bool(true));
+        facts.put(b + "partVIncludesNewAmortization", ScheduleATy2026PdfSmokeTest.bool(false));
+        facts.put(b + "hasAnotherPartVExpense", ScheduleATy2026PdfSmokeTest.bool(false));
+        facts.put(b + "partV1Description", ScheduleATy2026PdfSmokeTest.string("Bank fees"));
+        facts.put(b + "partV1Amount", ScheduleATy2026PdfSmokeTest.dollar("40.00"));
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            amount(sc, "Page1[0].f1_13[0]", 10000, "1");
+            amount(sc, "Page1[0].f1_14[0]", 500, "2");
+            amount(sc, "Page1[0].f1_15[0]", 9500, "3");
+            blank(sc, "Page1[0].f1_16[0]", "4 zero");
+            amount(sc, "Page1[0].f1_17[0]", 9500, "5");
+            amount(sc, "Page1[0].f1_18[0]", 200, "6");
+            amount(sc, "Page1[0].f1_19[0]", 9700, "7");
+            amount(sc, "Page1[0].Lines8-16c_ReadOrder[0].f1_20[0]", 100, "8");
+            blank(sc, "Page1[0].Lines8-16c_ReadOrder[0].f1_21[0]", "9 vehicle stays blank");
+            amount(sc, "Page1[0].f1_41[0]", 100, "24b half of 200");
+            amount(sc, "Page1[0].f1_45[0]", 40, "27b");
+            amount(sc, "Page1[0].f1_46[0]", 240, "28");
+            amount(sc, "Page1[0].f1_47[0]", 9460, "29");
+            amount(sc, "Page1[0].f1_51[0]", 9460, "31");
+            blank(sc, "Page1[0].c1_7[0]", "32a unchecked on a profit");
+            blank(sc, "Page1[0].c1_7[1]", "32b unchecked on a profit");
+            assertEquals("Bank fees", value(sc, "Page2[0].f2_15[0]").trim(), "Part V description");
+            amount(sc, "Page2[0].f2_16[0]", 40, "Part V amount");
+            blank(sc, "Page2[0].f2_17[0]", "second Part V description blank");
+            amount(sc, "Page2[0].f2_33[0]", 40, "48");
+
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "Page1[0].f1_07[0]", 9460, "Schedule 1 line 3");
+            Map<String, String> se = fieldsOnPages(doc, ScheduleSETy2026PdfSmokeTest.SE_FOOTER);
+            amount(se, "Page1[0].f1_5[0]", 9460, "Schedule SE line 2");
+        }
+    }
 }

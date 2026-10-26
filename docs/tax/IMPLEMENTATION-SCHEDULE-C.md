@@ -21,15 +21,25 @@
 9. Section is required: `/scheduleCSectionIsComplete` is part of `flow.xml` `/flowIncomplete`
 10. Unset `/scheduleCBusinesses` collection: "no" (or section not reached) → $0, complete; "yes" with no businesses → incomplete, so `/totalTaxIsIncomplete` blocks submission
 
+## Line-item expenses
+
+A return that only stored one expense total still uses that total, and lines 2, 4, and 6 are zero. Once any Part I amount, stop answer, or expense answer is entered, the single total is ignored and Schedule C is figured from the lines.
+
+Supported on that path: lines 1 through 8, 10, 11, 14, 15, 16a, 16c, 17 through 19, 20b, and 21 through 26. Line 24b is half of the meals entered, rounded half up (26 U.S.C. 274(n)). Part V accepts three other expenses; their total is lines 48 and 27b. Line 28 is the sum. Line 31 is line 7 minus line 28 (line 30 is blank because a home office stops the return). Two or more businesses still add into Schedule 1 line 3 and, for one filer, into Schedule SE line 2 before the 92.35 percent factor. A loss with material participation and every investment at risk (line 32a) flows. Anything else below stops the return, and an unanswered required amount stays incomplete rather than zero.
+
+Stopped, and not printed as zero: inventory and cost of goods sold (Part III), car and truck expenses and vehicle-loan interest (lines 9 and 16b, Form 4562), depreciation and section 179 (line 13, Form 4562), depletion (line 12), rent of vehicles, machinery, and equipment (line 20a), business use of the home (line 30, Form 8829 or the simplified method), the energy efficient commercial buildings deduction (line 27a, Form 7205), meals that are not limited to 50 percent, wages reduced by Form 5884, 8932, or 8994, mortgage or other interest that must be allocated, amortization that begins this year (Form 4562-B), a fourth Part V line, line 6 income that is a fuel credit or Form 4797 recapture, a loss without material participation (Form 8582, 26 U.S.C. 469), and a loss that is not fully at risk (line 32b, Form 6198, 26 U.S.C. 465).
+
 ## Out of scope (explicit)
 
-- Schedule C Part II category-level expense lines
-- Farm optional methods / Schedule F / church employee income
+- Schedule C header items A, B, D, E, F, H, I, and J, and the line 1 statutory-employee checkbox
+- Part V lines 4 through 9 (a fourth other expense stops the return)
+- Form 461 excess business loss
+- Notary-public exclusion from self-employment tax, church-employee income, the optional methods, farm income, and statutory employees
 - Additional 0.9% Medicare tax (Form 8959): not computed; knocked out when wages + SE earnings exceed the threshold (see above)
 - QBI § 199A computation (knocked out)
 - EITC / CDCC earned income from a Schedule C loss, and CDCC on a joint return with a Schedule C (knocked out, see above). A profit is included: Schedule SE line 3 minus Schedule 1 line 15 (Form 1040 instructions (2025) EIC Worksheet B, PDF p. 47; 2026 draft Form 2441 instructions, PDF p. 5)
 - MFJ spouse-owned business (per-spouse Schedule SE facts exist; the knockout stays until EITC/CDCC earned income is per spouse and a Schedule SE PDF prints for each spouse)
-- Schedule C / SE PDF print (Phase A print will expand PDFBox TY2024 → TY2026 templates in a follow-up); no MeF
+- Public print of a Schedule C return is still refused because Form 8995 has no 2026 template. The Schedule C draft itself is mapped. No MeF for these lines yet. The Spanish Schedule C draft is not in the package.
 
 ## Primary sources
 
@@ -73,7 +83,7 @@
 - B: NESE 277 < $400 → no SE tax (§ 1402(b)).
 - D: OASDI = round(55,410 × 0.124) = 6,871; HI = round(55,410 × 0.029) = 1,607; SE = 8,478 → Sch 2 line 21 / 1040 line 23; half = 4,239 → Sch 1 line 15; AGI = 60,000 − 4,239 = 55,761; total tax = income tax after credits + 8,478.
 
-Tests: `direct-file/df-client/df-client-app/src/test/factDictionaryTests/scheduleC.test.ts`.
+Tests: `direct-file/df-client/df-client-app/src/test/factDictionaryTests/scheduleC.test.ts` and `scheduleCExpenses.test.ts`.
 
 ## Locale strings
 

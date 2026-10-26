@@ -13,15 +13,16 @@
 # practiced as a sole proprietor." 2026 draft Schedule C, line 31: "If a profit, enter on both Schedule 1 (Form 1040),
 # line 3, and on Schedule SE, line 2." Net earnings from self-employment: 26 U.S.C. 1402(a).
 #
-# Header items the fact dictionary models: C business name, G material participation (26 U.S.C. 469(h), used for
-# Form 8995). Not mapped, left blank (never a silent 0); the tool collects no input for them:
+# Supported lines (26 U.S.C. 61, 162, and 274(n) for meals): 1-8, 10, 11, 14-16a, 16c, 17-19, 20b, 21-26, 27b, 28,
+# 29, 31, 32, and the first three Part V lines plus line 48. A single stored expense total still prints on line 28,
+# with lines 2, 4, and 6 at zero so lines 3, 5, and 7 equal line 1.
+# Not mapped, left blank (the return stops instead of printing a zero):
 #   A principal business, B code, D EIN, E business address, F accounting method, H started or acquired this year,
-#   I/J Forms 1099.
-#   Lines 2, 4, 6, 8-27b (the line 28 bucket is /totalExpenses, 26 U.S.C. 162), 30 (Form 8829), 32 at risk,
-#   Part III cost of goods sold, Part IV vehicle, Part V other expenses.
-#   Line 1 statutory-employee checkbox: statutory employees stop the return elsewhere.
-# Lines 2, 4 and 6 are blank, so lines 3, 5 and 7 equal line 1 (gross receipts, 26 U.S.C. 61). Line 30 is blank, so
-# lines 29 and 31 equal line 7 minus line 28 (/netProfitOrLoss). $0 amounts print blank.
+#   I/J Forms 1099, the line 1 statutory-employee checkbox.
+#   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
+#   line 20a equipment rent, line 27a (Form 7205), line 30 (Form 8829 or the simplified method),
+#   Part III, Part IV, and Part V lines 4-9.
+# $0 amounts print blank. Line 30 is blank on a supported return, so lines 29 and 31 equal line 7 minus line 28.
 includeForEach: /scheduleCBusinesses
 customMaps:
   template:
@@ -34,10 +35,43 @@ form:
       f1_5[0]: /scheduleCBusinesses/*/businessName # C "Business name. If no separate business name, leave blank."
       c1_2[0]: /scheduleCBusinesses/*/materiallyParticipates # G "Did you materially participate ... ? Yes"
       c1_2[1]: /scheduleCBusinesses/*/doesNotMateriallyParticipate # G "No"
-      f1_13[0]: /scheduleCBusinesses/*/grossReceipts # 1 "Gross receipts or sales"
-      f1_15[0]: /scheduleCBusinesses/*/grossReceipts # 3 "Subtract line 2 from line 1" (line 2 blank)
-      f1_17[0]: /scheduleCBusinesses/*/grossReceipts # 5 "Gross profit. Subtract line 4 from line 3" (line 4 blank)
-      f1_19[0]: /scheduleCBusinesses/*/grossReceipts # 7 "Gross income. Add lines 5 and 6" (line 6 blank)
+      f1_13[0]: /scheduleCBusinesses/*/line1GrossReceipts # 1 "Gross receipts or sales" (26 U.S.C. 61)
+      f1_14[0]: /scheduleCBusinesses/*/line2ReturnsAndAllowances # 2 "Returns and allowances"
+      f1_15[0]: /scheduleCBusinesses/*/line3 # 3 "Subtract line 2 from line 1"
+      f1_16[0]: /scheduleCBusinesses/*/line4CostOfGoodsSold # 4 "Cost of goods sold" (zero when there is no inventory)
+      f1_17[0]: /scheduleCBusinesses/*/line5GrossProfit # 5 "Gross profit. Subtract line 4 from line 3"
+      f1_18[0]: /scheduleCBusinesses/*/line6OtherIncome # 6 "Other income"
+      f1_19[0]: /scheduleCBusinesses/*/line7GrossIncome # 7 "Gross income. Add lines 5 and 6"
+      Lines8-16c_ReadOrder[0]:
+        f1_20[0]: /scheduleCBusinesses/*/line8Advertising # 8 Advertising (26 U.S.C. 162)
+        f1_22[0]: /scheduleCBusinesses/*/line10CommissionsAndFees # 10
+        f1_23[0]: /scheduleCBusinesses/*/line11ContractLabor # 11
+        f1_26[0]: /scheduleCBusinesses/*/line14EmployeeBenefitPrograms # 14
+        f1_27[0]: /scheduleCBusinesses/*/line15Insurance # 15
+        f1_28[0]: /scheduleCBusinesses/*/line16aMortgageInterest # 16a
+        f1_31[0]: /scheduleCBusinesses/*/line16cOtherInterest # 16c
+        f1_32[0]: /scheduleCBusinesses/*/line17LegalAndProfessional # 17
+      f1_33[0]: /scheduleCBusinesses/*/line18OfficeExpense # 18
+      f1_34[0]: /scheduleCBusinesses/*/line19PensionAndProfitSharing # 19
+      f1_36[0]: /scheduleCBusinesses/*/line20bRentOtherProperty # 20b
+      f1_37[0]: /scheduleCBusinesses/*/line21RepairsAndMaintenance # 21
+      f1_38[0]: /scheduleCBusinesses/*/line22Supplies # 22
+      f1_39[0]: /scheduleCBusinesses/*/line23TaxesAndLicenses # 23
+      f1_40[0]: /scheduleCBusinesses/*/line24aTravel # 24a
+      f1_41[0]: /scheduleCBusinesses/*/line24bDeductibleMeals # 24b half of meals (26 U.S.C. 274(n))
+      f1_42[0]: /scheduleCBusinesses/*/line25Utilities # 25
+      f1_43[0]: /scheduleCBusinesses/*/line26Wages # 26
+      f1_45[0]: /scheduleCBusinesses/*/line27bOtherExpenses # 27b from Part V line 48
       f1_46[0]: /scheduleCBusinesses/*/totalExpenses # 28 "Total expenses before expenses for business use of home"
       f1_47[0]: /scheduleCBusinesses/*/netProfitOrLoss # 29 "Tentative profit or (loss). Subtract line 28 from line 7"
+      c1_7[0]: /scheduleCBusinesses/*/line32aAllInvestmentAtRisk # 32a all investment at risk (26 U.S.C. 465)
+      c1_7[1]: /scheduleCBusinesses/*/line32bSomeInvestmentNotAtRisk # 32b
       f1_51[0]: /scheduleCBusinesses/*/netProfitOrLoss # 31 "Net profit or (loss). Subtract line 30 from line 29"
+    Page2[0]:
+      f2_15[0]: /scheduleCBusinesses/*/partV1Description # Part V line 1 description
+      f2_16[0]: /scheduleCBusinesses/*/partV1Amount # Part V line 1 amount
+      f2_17[0]: /scheduleCBusinesses/*/partV2Description
+      f2_18[0]: /scheduleCBusinesses/*/partV2Amount
+      f2_19[0]: /scheduleCBusinesses/*/partV3Description
+      f2_20[0]: /scheduleCBusinesses/*/partV3Amount
+      f2_33[0]: /scheduleCBusinesses/*/line27bOtherExpenses # 48 "Total other expenses. Enter here and on line 27b"
