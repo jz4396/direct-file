@@ -34,7 +34,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * earned income credit with a qualifying child needs Schedule EIC with each child's name, age and TIN (26 U.S.C.
  * 32(c)(3)(D)(i)). The 2026 Schedule EIC itself prints ({@link ScheduleEicTy2026PdfSmokeTest}), but {@link
  * PdfService#getTaxReturn} refuses that return rather than print an incomplete package. Schedule 3-A is pinned (#239)
- * and prints with an ACTC (Form 1040 line 28, 26 U.S.C. 24(d)). Returns without the Schedule EIC knockout still build.
+ * and prints with an ACTC (Form 1040 line 28, 26 U.S.C. 24(d)). Returns without the Schedule EIC knockout still build
+ * in English. A TY2026 Spanish print is refused when the resolved template is outside {@code pdf/2026/} and that form
+ * has a 2026 English template (26 U.S.C. 6011(a)); language is not a fact.
  */
 class PdfKnockoutRefusalTest {
     static final ObjectMapper MAPPER = new ObjectMapper();
@@ -99,12 +101,11 @@ class PdfKnockoutRefusalTest {
     }
 
     static void assertBuilds(Map<String, FactTypeWithItem> facts) throws Exception {
-        for (String language : List.of("en", "es")) {
-            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false);
-                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
-                assertTrue(doc.getNumberOfPages() > 0, language + " package has pages");
-            }
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            assertTrue(doc.getNumberOfPages() > 0, "en package has pages");
         }
+        Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 
     @Test
@@ -117,19 +118,20 @@ class PdfKnockoutRefusalTest {
         assertKnockout(facts, true);
         assertTrue(Boolean.TRUE.equals(graph.get("/flowIsKnockedOut").get()), "/flowIsKnockedOut");
 
-        for (String language : List.of("en", "es")) {
-            SubmissionBlockingFactsResponseStatusException e = assertThrows(
-                    SubmissionBlockingFactsResponseStatusException.class,
-                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-            // Schedule 3-A prints with the EIC (#239). The qualifying-child return still stops on Schedule EIC.
-            assertEquals(List.of(SCHEDULE_EIC_KNOCKOUT), e.getBody().getProperties().get("blockingFacts"));
-        }
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn(facts), false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        // Schedule 3-A prints with the EIC (#239). The qualifying-child return still stops on Schedule EIC.
+        assertEquals(List.of(SCHEDULE_EIC_KNOCKOUT), e.getBody().getProperties().get("blockingFacts"));
+        // Spanish is refused on the template, before the knockout list is evaluated (26 U.S.C. 6011(a)).
+        Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 
     /**
-     * #89: the print path refuses with exactly {@code knockout}, in English and Spanish; with that one entry left out
-     * of the refusal check the same return prints, so taking it out of FACT_PATHS would print without the form.
+     * #89: the English print refuses with exactly {@code knockout}; with that one entry left out of the refusal check
+     * the same English return prints, so taking it out of FACT_PATHS would print without the form. Spanish is refused
+     * because the TY2026 template for that language is outside {@code pdf/2026/} (26 U.S.C. 6011(a)).
      */
     static void assertRefusedOnlyBy(Map<String, FactTypeWithItem> facts, String knockout) throws Exception {
         assertRefusedOnlyBy(facts, List.of(knockout));
@@ -146,17 +148,16 @@ class PdfKnockoutRefusalTest {
         List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
                 .filter(p -> !knockouts.contains(p))
                 .toList();
-        for (String language : List.of("en", "es")) {
-            SubmissionBlockingFactsResponseStatusException e = assertThrows(
-                    SubmissionBlockingFactsResponseStatusException.class,
-                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-            assertEquals(knockouts, e.getBody().getProperties().get("blockingFacts"));
-            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false, without);
-                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
-                assertTrue(doc.getNumberOfPages() > 0, language + " would print without " + knockouts);
-            }
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn(facts), false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertEquals(knockouts, e.getBody().getProperties().get("blockingFacts"));
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false, without);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            assertTrue(doc.getNumberOfPages() > 0, "en would print without " + knockouts);
         }
+        Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 
     /**
@@ -168,13 +169,13 @@ class PdfKnockoutRefusalTest {
     @Test
     void scheduleCBusinessIsRefused() throws Exception {
         assertRefusedOnlyBy(
-                PrintRefusingKnockoutsTest.scheduleCOnly(),
-                List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT));
+                PrintRefusingKnockoutsTest.scheduleCOnly(), List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT));
     }
 
     /**
      * 2026 draft Form 1040, lines 32a-32c: "If you entered an amount on line 27a, 28, 29, or 30, attach Sch. 3-A".
-     * An ACTC (line 28, 26 U.S.C. 24(d)) with no EIC prints Schedule 3-A (#239).
+     * An ACTC (line 28, 26 U.S.C. 24(d)) with no EIC prints Schedule 3-A in English (#239). Spanish is refused because
+     * the TY2026 template is outside pdf/2026/ (26 U.S.C. 6011(a)).
      */
     @Test
     void additionalChildTaxCreditWithoutEicPrints() throws Exception {
@@ -183,12 +184,10 @@ class PdfKnockoutRefusalTest {
         assertEquals(Boolean.TRUE, graph.get("/pdfIncludeSchedule3A").get());
         assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph));
         assertBuilds(facts);
-        for (String language : List.of("en", "es")) {
-            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false);
-                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
-                String text = new org.apache.pdfbox.text.PDFTextStripper().getText(doc);
-                assertTrue(text.contains("Schedule 3-A (Form 1040) 2026"), language + " prints Schedule 3-A");
-            }
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            String text = new org.apache.pdfbox.text.PDFTextStripper().getText(doc);
+            assertTrue(text.contains("Schedule 3-A (Form 1040) 2026"), "en prints Schedule 3-A");
         }
     }
 
@@ -202,7 +201,8 @@ class PdfKnockoutRefusalTest {
 
     /**
      * Form 2210 (2026) draft, p. 1: "If box B, C, or D applies, you must figure your penalty and file Form 2210." A
-     * Part II box answered yes refuses the package through the real print path; with every answer no it builds.
+     * Part II box answered yes refuses the English package through the real print path; with every answer no the
+     * English package builds. Spanish is refused either way (26 U.S.C. 6011(a)).
      */
     @Test
     void form2210PartIIYesIsRefusedByThePrintPath() throws Exception {
@@ -214,21 +214,20 @@ class PdfKnockoutRefusalTest {
                 MAPPER.readValue(
                         "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
                         FactTypeWithItem.class));
-        for (String language : List.of("en", "es")) {
-            SubmissionBlockingFactsResponseStatusException e = assertThrows(
-                    SubmissionBlockingFactsResponseStatusException.class,
-                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-            assertEquals(
-                    List.of(PrintRefusingKnockoutsTest.FORM_2210_KNOCKOUT),
-                    e.getBody().getProperties().get("blockingFacts"));
-        }
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn(facts), false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertEquals(
+                List.of(PrintRefusingKnockoutsTest.FORM_2210_KNOCKOUT),
+                e.getBody().getProperties().get("blockingFacts"));
     }
 
     /**
      * #85. Schedule E Part III (estate or trust, Schedule K-1 (Form 1041)) is out of scope. 2026 draft Instructions
      * for Schedule E, PDF p. 14: report that income "even if not received." With /flowKnockoutScheduleEPartII left
-     * out of the check, the same return prints, so the path is what stops the package.
+     * out of the check, the English return prints, so the path is what stops the English package. Spanish is refused
+     * because the TY2026 template is outside pdf/2026/ (26 U.S.C. 6011(a)).
      */
     @Test
     void scheduleK1WithoutPartIIncomeIsRefused() throws Exception {
@@ -250,9 +249,9 @@ class PdfKnockoutRefusalTest {
     }
 
     /**
-     * #238: leaving /scheduleEHasPartIIIncome unanswered is not a complete false, so the print refuses in English and
-     * Spanish with only /flowKnockoutScheduleEPartII in the log. An answered no still builds (the golden end-to-end
-     * scenario below).
+     * #238: leaving /scheduleEHasPartIIIncome unanswered is not a complete false, so the English print refuses with
+     * only /flowKnockoutScheduleEPartII. An answered no still builds in English (the golden end-to-end scenario
+     * below). Spanish is refused because the TY2026 template is outside pdf/2026/ (26 U.S.C. 6011(a)).
      */
     @Test
     void unansweredScheduleK1QuestionIsRefused() throws Exception {
@@ -273,17 +272,16 @@ class PdfKnockoutRefusalTest {
         List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
                 .filter(p -> !only.contains(p))
                 .toList();
-        for (String language : List.of("en", "es")) {
-            SubmissionBlockingFactsResponseStatusException e = assertThrows(
-                    SubmissionBlockingFactsResponseStatusException.class,
-                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-            assertEquals(only, e.getBody().getProperties().get("blockingFacts"));
-            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false, without);
-                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
-                assertTrue(doc.getNumberOfPages() > 0, language + " would print without " + only);
-            }
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn(facts), false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertEquals(only, e.getBody().getProperties().get("blockingFacts"));
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false, without);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            assertTrue(doc.getNumberOfPages() > 0, "en would print without " + only);
         }
+        Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 
     @Test

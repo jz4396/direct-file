@@ -197,8 +197,10 @@ class ScheduleDForm8949PdfSmokeTest {
     /**
      * Form 8949 code Q (Form 8949 instr. (2025) p. 8: "You sold or exchanged QSB stock and can exclude part of the
      * gain"). Section 1202 gain is 28-percent rate gain (IRC 1(h)(4)(A)(ii), 1(h)(7)) on Schedule D line 18, which
-     * needs the Schedule D Tax Worksheet this tool does not compute. The print path refuses the package in both
-     * languages and names only the knockout path; the same row with code B still prints (see the loss test).
+     * needs the Schedule D Tax Worksheet this tool does not compute. The English print path refuses the package and
+     * names only the knockout path. Spanish is refused because the TY2026 template is outside pdf/2026/ (26 U.S.C.
+     * 6011(a)). Neither response includes the adjustment amount. The same row with code B still prints in English
+     * (see the loss test).
      */
     @Test
     void codeQReturnIsRefusedByThePrintPath() throws Exception {
@@ -213,17 +215,18 @@ class ScheduleDForm8949PdfSmokeTest {
                         .put("$type", "gov.irs.factgraph.persisters.StringWrapper")
                         .put("item", code);
             });
-            for (String language : List.of("en", "es")) {
-                SubmissionBlockingFactsResponseStatusException e = assertThrows(
-                        SubmissionBlockingFactsResponseStatusException.class,
-                        () -> pdfService.getTaxReturn(language, taxReturn, false),
-                        code + " " + language);
-                assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-                assertEquals(
-                        List.of("/flowKnockoutForm8949CodeQ"),
-                        e.getBody().getProperties().get("blockingFacts"));
-                assertFalse(e.getMessage().contains("-2500"), e.getMessage());
-            }
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
+                    () -> pdfService.getTaxReturn("en", taxReturn, false),
+                    code);
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            assertEquals(
+                    List.of("/flowKnockoutForm8949CodeQ"),
+                    e.getBody().getProperties().get("blockingFacts"));
+            assertFalse(e.getMessage().contains("-2500"), e.getMessage());
+            SubmissionBlockingFactsResponseStatusException es =
+                    Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn);
+            assertFalse(es.getMessage().contains("-2500"), es.getMessage());
         }
     }
 

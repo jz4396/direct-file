@@ -78,6 +78,17 @@ public class PdfService {
         int year = taxReturn.getTaxYear();
         final String baseName = "taxreturn";
         PdfLanguages language = PdfLanguages.fromString(languageString);
+        // 26 U.S.C. 6011(a): the return has to be on the form prescribed for the year. Language is not a fact.
+        // A TY2026 template resolved outside pdf/2026/, when that form has a 2026 English template, is refused
+        // before storage or fact evaluation, and no PDF bytes are produced.
+        List<String> outsidePrescribedYear =
+                lookup.templateLocationsOutsidePrescribedYear(String.valueOf(year), language.getCode());
+        if (!outsidePrescribedYear.isEmpty()) {
+            for (String templateLocation : outsidePrescribedYear) {
+                log.warn("{}", templateLocation);
+            }
+            throw new SubmissionBlockingFactsResponseStatusException(outsidePrescribedYear);
+        }
 
         boolean useDocumentStorageForPilotYear =
                 taxReturn.getTaxYear() == DIRECT_FILE_PILOT_YEAR && properties.isUseDocumentStorageForPilotYear();
