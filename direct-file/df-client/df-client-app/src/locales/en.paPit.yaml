@@ -23,6 +23,7 @@ dataviews:
     /paSchoolDistrictCode: Pennsylvania school district code
     /paHasSpNontaxableIncome: Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
     /paPartYearResidentInterest: Interest received while a Pennsylvania resident
+    /paPartYearResidentDividends: Ordinary dividends received while a Pennsylvania resident
     /paPartYearHasNonresidentPaSourcePay: Pay for work in Pennsylvania while you lived in Florida, not in box 16
     /paHasUnreimbursedEmployeeExpenses:
       Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
@@ -50,6 +51,8 @@ headings:
     How much of the pay on this W-2 did you earn while you lived in Pennsylvania?
   /heading/your-taxes/amount/pa-part-year-interest:
     How much of your interest did you receive while you lived in Pennsylvania?
+  /heading/your-taxes/amount/pa-part-year-dividends:
+    How much of your ordinary dividends did you receive while you lived in Pennsylvania?
   /heading/knockout/pa-part-year: This tool doesn’t yet support your Pennsylvania part-year resident return
   /heading/your-taxes/amount/pa-part-year-nonresident-pa-pay:
     While you lived in Florida, did you earn pay for work you did in Pennsylvania that isn’t in box 16 of a Pennsylvania
@@ -155,6 +158,13 @@ info:
       - p:
           Pennsylvania taxes interest you received while you lived there. It doesn’t tax interest you received while you
           lived in Florida. Don’t include interest from U.S. savings bonds or Treasury obligations.
+  /info/your-taxes/amount/pa-part-year-dividends:
+    body:
+      - p:
+          Pennsylvania taxes ordinary dividends you received while you lived there. It doesn’t tax ordinary dividends
+          you received while you lived in Florida. Enter the Form 1099-DIV, box 1a amount from the time you lived in
+          Pennsylvania. If you received all of them while you lived in Pennsylvania, enter the full amount.
+      - p: Dividends you received while you lived in Florida go on PA Schedule B, which this tool doesn’t fill out yet.
   /info/knockout/pa-part-year:
     alertText:
       body:
@@ -207,8 +217,8 @@ info:
         - p:
             Your Pennsylvania return needs PA Schedule B, and this tool can’t fill it out yet. This includes more than
             $2,500 of dividends, capital gain distributions (Form 1099-DIV box 2a), fund dividends from U.S. or
-            Pennsylvania obligations, dividends you received as a nominee, or dividends when you lived in Pennsylvania
-            for only part of the year.
+            Pennsylvania obligations,             dividends you received as a nominee, or ordinary dividends you
+            received while you lived outside Pennsylvania.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:

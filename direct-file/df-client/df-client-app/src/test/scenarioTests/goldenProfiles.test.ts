@@ -1,6 +1,7 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
-// (Florida only), profile C (PA to FL part-year resident with AMT and NIIT) and profile D (head of household, 65 or
-// older, itemizing, with a qualifying child). The fixtures are in goldenProfiles.ts.
+// (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
+// older, itemizing, with a qualifying child) and profile E (PA to FL part-year resident with AMT and dividends).
+// The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
 // Sources (page = PDF page):
@@ -128,6 +129,7 @@ import {
   createAddressWrapper,
   createBooleanWrapper,
   createDayWrapper,
+  createDollarWrapper,
   createEnumWrapper,
   createStringWrapper,
 } from '../persistenceWrappers.js';
@@ -150,6 +152,9 @@ import {
   profileCSaleId,
   profileDChildId,
   profileDHohItemizerChild,
+  profileEDividendId,
+  profileEPaToFlAmtDividends,
+  profileESaleId,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -983,6 +988,180 @@ describe(`golden end-to-end scenario (synthetic data): profile D, head of househ
   });
 });
 
+describe(`golden end-to-end scenario (synthetic data): profile E, PA to FL part-year with AMT and dividends`, () => {
+  // Single; moved from Pennsylvania to Florida on July 1, 2026; SSN 900-45-1006 (900 area, group 45, outside the ITIN
+  //   ranges). Same wages and FL-period sale as profile C, plus Form 1099-DIV box 1a = box 1b $2,000, all received
+  //   while a PA resident (/paPartYearResidentDividends $2,000, so PA Schedule B line 4 is $0).
+  // W-2 #1 (PA): box 1, box 5 and box 16 $150,000, box 2 $30,000, box 6 $2,175 [3102], box 17 $4,700.
+  // W-2 #2 (FL): box 1 and box 5 $100,000, box 2 $20,000, box 6 $1,450 [3102], $0 earned while a PA resident.
+  // Form 8949 box D: acquired 2020-03-02, sold 2026-09-15 (FL period), proceeds $450,000, basis $100,000, gain
+  //   $350,000 [SD].
+  // Form 1040: line 1a 250,000; line 3a 2,000; line 3b 2,000 (Schedule B Part II: ordinary dividends over $1,500);
+  //   Schedule D lines 15 and 16 350,000, lines 18 and 19 0; line 7a 350,000; line 9 and line 11 (AGI) 602,000;
+  //   line 12 standard deduction 16,100 [RP p. 18]; line 15 taxable income 585,900.
+  // Line 16, QDCG worksheet [GI p. 38]: 1) 585,900  2) 2,000  3) 350,000  4) 352,000  5) 233,900  6) 49,450 [RP p. 13]
+  //   7) 49,450  8) 49,450  9) 0  10) 352,000  11) 0  12) 352,000  13) 545,500 [RP p. 13]  14) 545,500  15) 233,900
+  //   16) 311,600  17) 311,600  18) 15% = 46,740  19) 311,600  20) 40,400  21) 20% = 8,080
+  //   22) tax on 233,900 [RP p. 11]: 41,024 + 32% x 32,125 = 51,304  23) 106,124
+  //   24) tax on 585,900 [RP p. 11]: 58,448 + 35% x 329,675 = 173,834.25, entered 173,834 [GI p. 23]
+  //   25) smaller = 106,124.
+  // Form 6251 [6251] [55d]: line 2a 16,100; line 4 AMTI 602,000; line 5: 90,100 [RP p. 16] less 50% x (602,000 -
+  //   500,000 [RP p. 17]) = 51,000, so 39,100; line 6 562,900. Part III: 12) 562,900  13) 352,000 (QDCG line 4)
+  //   17) 210,900  18) 26% x 210,900 = 54,834 (210,900 <= 244,500 [RP p. 16])  19) 49,450  20) 233,900  21) 0
+  //   22) 352,000  24) 352,000  25) 545,500  27) 233,900  28) 233,900  29) 311,600  30) 311,600
+  //   31) 15% = 46,740  33) 40,400  34) 20% = 8,080  38) 54,834 + 46,740 + 8,080 = 109,654
+  //   39) 28% x 562,900 - 4,890 = 152,722 [55]  40) 109,654; line 10 regular tax 106,124;
+  //   line 11 AMT 109,654 - 106,124 = 3,530.
+  // Form 8959 [3101]: line 1 250,000; line 6 50,000; line 7 450. Part V: line 19 3,625; line 21 3,625;
+  //   line 24 0 [3102].
+  // Form 8960 [8960] [1411]: line 2 dividends 2,000; line 5a gain 350,000; line 8 and line 12 352,000; line 13 MAGI
+  //   602,000; line 14 200,000; line 15 402,000; line 16 352,000; line 17 3.8% = 13,376.
+  // Form 1040: line 17 3,530; Schedule 2 line 21 13,376 + 450 = 13,826; line 24 total tax 106,124 + 3,530 + 13,826 =
+  //   123,480; line 33 payments 50,000; amount owed 73,480.
+  // PA-40 [PA] [TRC]: oval (P). Line 1a 150,000 [PA p. 10]. Line 3 2,000: all ordinary dividends were received while a
+  //   PA resident, so Schedule B line 4 is $0 and Schedule B is not required (2025 PA-40 Schedule B, WHO MUST COMPLETE,
+  //   only when lines 2-11 have an amount). The $2,000 is under the $2,500 tool limit. Line 5 0: the sale is in the FL
+  //   period [PA p. 43]. Lines 9 and 11 152,000. Line 12 3.07% x 152,000 = 4,666.40. Line 13 and line 24 4,700.
+  //   Line 29 overpayment 33.60. School code 99999 (did not live in PA on Dec. 31). FL: no return [FL].
+  const g = graph(profileEPaToFlAmtDividends);
+  it(`Form 1040 income, Schedule B, Schedule D and line 16 tax (QDCG worksheet)`, () => {
+    expectDollars(g, {
+      '/wages': `250000.00`,
+      '/ordinaryDividends': `2000.00`,
+      '/qualifiedDividends': `2000.00`,
+      '/scheduleDLine15': `350000.00`,
+      '/scheduleDLine16': `350000.00`,
+      '/totalIncome': `602000.00`,
+      '/agi': `602000.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/taxableIncome': `585900.00`,
+      '/qdcgLine1': `585900.00`,
+      '/qdcgLine2': `2000.00`,
+      '/qdcgLine3': `350000.00`,
+      '/qdcgLine4': `352000.00`,
+      '/qdcgLine5': `233900.00`,
+      '/qdcgLine18': `46740.00`,
+      '/qdcgLine20': `40400.00`,
+      '/qdcgLine21': `8080.00`,
+      '/qdcgLine22': `51304.00`,
+      '/qdcgLine23': `106124.00`,
+      '/qdcgLine24': `173834.00`,
+      '/qdcgLine25': `106124.00`,
+      '/tentativeTaxFromTaxableIncome': `106124.00`,
+    });
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/dividendReports/#${profileEDividendId}/payer` as string).get).toBe(`Example Dividend Fund`);
+  });
+  it(`Form 6251 AMT inside the exemption phaseout, with the dividends in Part III`, () => {
+    expectDollars(g, {
+      '/form6251Line2a': `16100.00`,
+      '/form6251Line4': `602000.00`,
+      '/form6251Line5': `39100.00`,
+      '/form6251Line6': `562900.00`,
+      '/form6251Line12': `562900.00`,
+      '/form6251Line13': `352000.00`,
+      '/form6251Line17': `210900.00`,
+      '/form6251Line18': `54834.00`,
+      '/form6251Line31': `46740.00`,
+      '/form6251Line33': `40400.00`,
+      '/form6251Line34': `8080.00`,
+      '/form6251Line38': `109654.00`,
+      '/form6251Line39': `152722.00`,
+      '/form6251Line40': `109654.00`,
+      '/form6251Line10': `106124.00`,
+      '/amt': `3530.00`,
+    });
+    expect(get(g, `/form6251Required`).get).toBe(true);
+    expect(get(g, `/form8949Transactions/#${profileESaleId}/paSoldWhilePaResident` as string).get).toBe(false);
+  });
+  it(`Form 8959 and Form 8960`, () => {
+    expectDollars(g, {
+      '/form8959Line1': `250000.00`,
+      '/form8959Line6': `50000.00`,
+      '/form8959Line7': `450.00`,
+      '/form8959Line24': `0.00`,
+      '/form8960Line2': `2000.00`,
+      '/form8960Line5a': `350000.00`,
+      '/form8960Line8': `352000.00`,
+      '/form8960Line12': `352000.00`,
+      '/form8960Line13': `602000.00`,
+      '/form8960Line14': `200000.00`,
+      '/form8960Line15': `402000.00`,
+      '/form8960Line16': `352000.00`,
+      '/form8960Line17': `13376.00`,
+    });
+    expect(get(g, `/requiresForm8960`).get).toBe(true);
+  });
+  it(`Form 1040 total tax, payments and amount owed`, () => {
+    expectDollars(g, {
+      '/totalAdditionalTaxesOwed': `3530.00`,
+      '/line21OfSchedule2': `13826.00`,
+      '/totalTax': `123480.00`,
+      '/totalPayments': `50000.00`,
+      '/balanceDue': `73480.00`,
+    });
+  });
+  it(`PA-40 taxes the PA-period dividends and leaves out the FL-period gain`, () => {
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(true);
+    expect(get(g, `/paResidencyStatusPartYear`).get).toBe(true);
+    expect(get(g, `/paPartYearHasDividends`).get).toBe(true);
+    expect(get(g, `/paSchoolCode`).get.toString()).toBe(`99999`);
+    expectDollars(g, {
+      '/paLine1a': `150000.00`,
+      '/paLine3': `2000.00`,
+      '/paPartYearNonresidentDividends': `0.00`,
+      '/paLine5': `0.00`,
+      '/paLine9': `152000.00`,
+      '/paLine11': `152000.00`,
+      '/paLine12': `4666.40`,
+      '/paLine13': `4700.00`,
+      '/paLine24': `4700.00`,
+      '/paLine29': `33.60`,
+      '/stateRefund': `33.60`,
+    });
+    for (const form of [`PA40`]) {
+      const when = pdfIncludeWhen(form);
+      expect(get(g, when as string).get, `${form} includeWhen`).toBe(true);
+    }
+  });
+  it(`nothing stops the return`, () => {
+    for (const p of [
+      `/flowKnockoutPaScheduleB`,
+      `/flowKnockoutPaDividends`,
+      `/flowKnockoutPaScheduleD`,
+      `/flowKnockoutPaPartYear`,
+      `/flowKnockoutStateReturn`,
+    ]) {
+      expect(get(g, p).complete, p).toBe(true);
+      expect(get(g, p).get, p).toBe(false);
+    }
+    expectNotStopped(g);
+  });
+  it(`flow: the part-year dividend question is on the path, and a nonresident portion stops the return`, ({ task }) => {
+    const givenFacts = makeGivenFacts(createFlowConfig(flowNodes));
+    const at = `/flow/your-taxes/amount/pa-unsupported-items`;
+    expect(givenFacts(g).atPath(at, null, task)).toRouteNextTo(`/flow/your-taxes/amount/pa-part-year-dividends`);
+    const partial = graph({
+      ...profileEPaToFlAmtDividends,
+      '/paPartYearResidentDividends': createDollarWrapper(`1000`),
+    });
+    expect(get(partial, `/paLine3`).get.toString()).toBe(`1000.00`);
+    expect(get(partial, `/paPartYearNonresidentDividends`).get.toString()).toBe(`1000.00`);
+    expect(get(partial, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    expect(get(partial, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(partial, `/flowIsKnockedOut`).get).toBe(true);
+    // Unanswered allocation: PA-40 line 3 stays incomplete (not $0) and the Schedule B knockout is not yet true.
+    const withoutAllocation = { ...profileEPaToFlAmtDividends };
+    delete withoutAllocation[`/paPartYearResidentDividends`];
+    const bare = graph(withoutAllocation);
+    expect(get(bare, `/paLine3`).complete).toBe(false);
+    expect(get(bare, `/paLine9`).complete).toBe(false);
+    expect(get(bare, `/flowKnockoutPaScheduleB`).complete).toBe(true);
+    expect(get(bare, `/flowKnockoutPaScheduleB`).get).toBe(false);
+    expect(get(bare, `/flowKnockoutPaDividends`).get).toBe(false);
+  });
+});
+
 describe(`golden end-to-end scenario (synthetic data): profile C negative rows (each stops the return)`, () => {
   const stops = (facts: Record<string, unknown>, knockout: string, viaStateReturn = true) => {
     const n = graph(facts);
@@ -1029,15 +1208,19 @@ describe(`golden end-to-end scenario (synthetic data): profile C negative rows (
       `/flowKnockoutPaScheduleA`
     );
   });
-  it(`any 1099-DIV on a part-year return needs PA Schedule B`, () => {
+  it(`1099-DIV dividends received while not a PA resident need PA Schedule B line 4`, () => {
+    // $40 of $100 received while a PA resident: the $60 nonresident portion is PA Schedule B line 4 [PA p. 32, p. 43].
     const n = stops(
       {
         ...profileCPaToFlAmtNiit,
         ...profileCRows.qualifiedDividends(`13500000-0000-4000-8000-000000000c12`, `Example Fund`, 100, 100),
+        '/paHasExemptObligationDividends': createBooleanWrapper(false),
+        '/paPartYearResidentDividends': createDollarWrapper(`40`),
       },
       `/flowKnockoutPaScheduleB`
     );
     expect(get(n, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(n, `/paPartYearNonresidentDividends`).get.toString()).toBe(`60.00`);
   });
   it(`a joint part-year return [PA p. 7]`, () => {
     stops(

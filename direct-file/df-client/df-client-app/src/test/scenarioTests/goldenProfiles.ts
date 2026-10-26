@@ -1,6 +1,7 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
-// (Florida only), profile C (PA to FL part-year resident with AMT and NIIT) and profile D (head of household, 65 or
-// older, itemizing, with a qualifying child). Every name, SSN, address, EIN and payer
+// (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
+// older, itemizing, with a qualifying child) and profile E (PA to FL part-year resident with AMT and dividends).
+// Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
 // hand-computed in goldenProfiles.test.ts.
@@ -450,6 +451,53 @@ export const profileDHohItemizerChild = {
   '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
 };
 
+/**
+ * Profile E: single, moved from Pennsylvania to Florida on July 1, 2026. Same wages and FL-period long-term gain as
+ * profile C, plus $2,000 of qualified dividends received entirely while a PA resident (under the $2,500 PA Schedule B
+ * tool limit, and PA Schedule B line 4 is $0 because none were received while a nonresident). Form 6251 AMT inside the
+ * exemption phaseout, Form 8960 on the dividends and the gain, and a PA-40 that taxes the dividends and the PA wages.
+ */
+const parker: Person = { first: `Parker`, last: `Example`, ssn: [`900`, `45`, `1006`], dob: `1982-06-18` };
+export const profileEPaW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000e01`,
+  employer: `Sample Manufacturing Co`,
+  ein: [`00`, `0000801`],
+  box1: 150000,
+  box2: 30000,
+  box5: 150000,
+  // 1.45% x 150,000; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
+  box6: 2175,
+  box16: 150000,
+  box17: 4700,
+  paPartYearState: `pa`,
+};
+export const profileEFlW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000e02`,
+  employer: `Example Coastal Services Inc`,
+  ein: [`00`, `0000802`],
+  box1: 100000,
+  box2: 20000,
+  box5: 100000,
+  // 1.45% x 100,000; no 0.9% (under $200,000 from this employer).
+  box6: 1450,
+  paPartYearState: `fl`,
+  residentPeriodWages: 0,
+};
+export const profileESaleId = `13500000-0000-4000-8000-000000000e03`;
+export const profileEDividendId = `13500000-0000-4000-8000-000000000e04`;
+export const profileEPaToFlAmtDividends = {
+  ...single(parker, { street: `123 Example St`, city: `Tallahassee`, zip: `32301`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+  '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+  '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+  '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+  '/paHasExemptObligationDividends': createBooleanWrapper(false),
+  '/paPartYearResidentDividends': createDollarWrapper(`2000`),
+  ...w2s(parker.ssn, profileEPaW2, profileEFlW2),
+  ...form8949Sale(profileESaleId, `2020-03-02`, `2026-09-15`, 450000, 100000),
+  ...qualifiedDividends(profileEDividendId, `Example Dividend Fund`, 2000, 2000),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -461,4 +509,5 @@ export const goldenProfiles = {
   profile7PaToFlPartYear,
   profileCPaToFlAmtNiit,
   profileDHohItemizerChild,
+  profileEPaToFlAmtDividends,
 };
