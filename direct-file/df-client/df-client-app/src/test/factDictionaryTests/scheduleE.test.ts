@@ -34,7 +34,7 @@ const fg = (extra: Record<string, unknown> = {}) =>
 const get = (g: ReturnType<typeof fg>, p: string) => g.get(p as ConcretePath);
 
 describe(`Schedule E Part I MVP (#38)`, () => {
-  it(`unanswered: W-2-only return is unchanged and not knocked out`, ({ task }) => {
+  it(`unanswered K-1 question is incomplete and answered no is not knocked out (#238)`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/scheduleENetIncome`,
       `/flowKnockoutScheduleEPartII`,
@@ -42,27 +42,29 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       `/flowIsKnockedOut`,
       `/totalIncome`,
     ];
-    const base = fg();
-    const noRental = fg({ '/hadScheduleEIncome': createBooleanWrapper(false) });
+    const withoutK1: Record<string, unknown> = { ...filerWithRefundDueData };
+    delete withoutK1['/scheduleEHasPartIIIncome'];
+    const base = setupFactGraph(withoutK1).factGraph;
+    const noRental = setupFactGraph({
+      ...withoutK1,
+      '/hadScheduleEIncome': createBooleanWrapper(false),
+    }).factGraph;
     const answeredNo = fg({
       '/hadScheduleEIncome': createBooleanWrapper(false),
       '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
     });
     expect(get(base, `/scheduleENetIncome`).get.toString()).toBe(`0.00`);
-    expect(get(base, `/flowIsKnockedOut`).get).toBe(false);
-    expect(get(noRental, `/flowIsKnockedOut`).get).toBe(false);
     expect(get(noRental, `/totalIncome`).get.toString()).toBe(get(base, `/totalIncome`).get.toString());
-    // The K-1 question is required even with no Part I income. While it is blank the knockout stays complete
-    // false, so /flowIsKnockedOut stays complete false, and the section is not done.
+    // Asked of every filer. While blank the knockout is incomplete, so /flowIsKnockedOut is incomplete and the
+    // section is not done. An answered no is complete false.
     for (const g of [base, noRental]) {
-      expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(true);
-      expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+      expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
+      expect(get(g, `/flowIsKnockedOut`).complete).toBe(false);
       expect(get(g, `/scheduleESectionIsComplete`).get).toBe(false);
     }
     expect(get(answeredNo, `/scheduleESectionIsComplete`).get).toBe(true);
     expect(get(answeredNo, `/flowKnockoutScheduleEPartII`).complete).toBe(true);
     expect(get(answeredNo, `/flowKnockoutScheduleEPartII`).get).toBe(false);
-    expect(get(answeredNo, `/flowIsKnockedOut`).get).toBe(false);
   });
 
   it(`supported case: $12,000 rents + $500 royalties - $4,000 expenses = $8,500 to Schedule 1 line 5`, ({ task }) => {

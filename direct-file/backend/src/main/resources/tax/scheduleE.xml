@@ -525,38 +525,27 @@
         of
         self-employment tax (26 U.S.C. 164(f)).
 
-        Complete false on an answered no, and also while the question is
-        unanswered. An incomplete operand
-        of /flowIsKnockedOut would leave that fact incomplete and block every return
-        that has not reached
-        the question. /scheduleESectionIsComplete is false until the question is answered, so
-        /flowIncomplete refuses sign and submit for an otherwise finished interview that leaves it blank.
-        A yes is also
-        in PrintRefusingKnockouts.
+        The knockout is the answer itself, the same shape as
+        /flowKnockoutScheduleETradeOrBusinessQbi (an unanswered screener stays incomplete). That Part I
+        screener is
+        All(/hasScheduleEIncome, the answer), so it is complete false when there is no rental
+        or royalty income. This
+        question is asked of every filer, so there is no such gate: incomplete
+        while /scheduleEHasPartIIIncome is
+        unanswered, complete false only on an answered no, and true on
+        yes. Print refuses unless the fact is complete and
+        false, so an unanswered question refuses the
+        package the same way a yes does. /flowIsKnockedOut is incomplete
+        while this operand is incomplete,
+        and the top-level submission gate refuses a blocking fact that is not complete
+        false, so sign and
+        submit are refused too. /scheduleESectionIsComplete is also false until the question is
+        answered.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <Switch>
-          <Case>
-            <When>
-              <IsComplete>
-                <Dependency path="/scheduleEHasPartIIIncome" />
-              </IsComplete>
-            </When>
-            <Then>
-              <Dependency path="/scheduleEHasPartIIIncome" />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <True />
-            </When>
-            <Then>
-              <False />
-            </Then>
-          </Case>
-        </Switch>
+        <Dependency path="/scheduleEHasPartIIIncome" />
       </Derived>
     </Fact>
 

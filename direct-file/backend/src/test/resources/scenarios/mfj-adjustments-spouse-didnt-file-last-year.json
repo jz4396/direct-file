@@ -1037,6 +1037,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
     },
+    "/scheduleEHasPartIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/secondaryEducatorExpensesWritable": {
       "$type": "gov.irs.factgraph.persisters.DollarWrapper",
       "item": "300.00"

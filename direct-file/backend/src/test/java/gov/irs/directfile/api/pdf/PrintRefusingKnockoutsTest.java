@@ -456,11 +456,16 @@ class PrintRefusingKnockoutsTest {
         Map<String, FactTypeWithItem> unanswered = new HashMap<>(answeredNo);
         unanswered.remove("/scheduleEHasPartIIIncome");
         Graph open = fgs.getGraph(unanswered);
-        assertTrue(open.get(SCHEDULE_E_PART_II_KNOCKOUT).complete(), "unanswered knockout is complete");
-        assertEquals(Boolean.FALSE, open.get(SCHEDULE_E_PART_II_KNOCKOUT).get());
+        assertFalse(open.get(SCHEDULE_E_PART_II_KNOCKOUT).complete(), "unanswered stays incomplete");
+        assertEquals(0, new BigDecimal(open.get("/scheduleENetIncome").get().toString()).signum(), "Part I still $0");
+        assertEquals(
+                0,
+                new BigDecimal(open.get("/primaryFilerSeNetProfit").get().toString()).signum(),
+                "line 2 still has no box 14 code A");
+        assertEquals(List.of(SCHEDULE_E_PART_II_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(open));
+        assertFalse(open.get("/flowIsKnockedOut").complete(), "an incomplete operand leaves /flowIsKnockedOut open");
         assertEquals(Boolean.FALSE, open.get("/scheduleESectionIsComplete").get());
         assertEquals(Boolean.TRUE, open.get("/flowIncomplete").get());
-        assertFalse(PrintRefusingKnockouts.refusingPaths(open).contains(SCHEDULE_E_PART_II_KNOCKOUT));
     }
 
     /** Single filer, one W-2 and one Schedule C business with the given gross receipts and expenses. */

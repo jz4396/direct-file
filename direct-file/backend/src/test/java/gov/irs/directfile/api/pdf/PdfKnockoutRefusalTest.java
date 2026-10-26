@@ -247,6 +247,43 @@ class PdfKnockoutRefusalTest {
         assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT);
     }
 
+    /**
+     * #238: leaving /scheduleEHasPartIIIncome unanswered is not a complete false, so the print refuses in English and
+     * Spanish with only /flowKnockoutScheduleEPartII in the log. An answered no still builds (the golden end-to-end
+     * scenario below).
+     */
+    @Test
+    void unansweredScheduleK1QuestionIsRefused() throws Exception {
+        Map<String, FactTypeWithItem> facts = new HashMap<>(SubmissionBlockingFactsTest.golden());
+        facts.remove("/scheduleEHasPartIIIncome");
+        var graph = factGraphService.getGraph(facts);
+        assertFalse(graph.get(PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT)
+                .complete());
+        assertEquals(
+                0,
+                new java.math.BigDecimal(graph.get("/scheduleENetIncome").get().toString()).signum());
+        assertEquals(
+                0,
+                new java.math.BigDecimal(
+                                graph.get("/primaryFilerSeNetProfit").get().toString())
+                        .signum());
+        List<String> only = List.of(PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT);
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !only.contains(p))
+                .toList();
+        for (String language : List.of("en", "es")) {
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
+                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            assertEquals(only, e.getBody().getProperties().get("blockingFacts"));
+            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false, without);
+                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+                assertTrue(doc.getNumberOfPages() > 0, language + " would print without " + only);
+            }
+        }
+    }
+
     @Test
     void goldenReturnStillBuilds() throws Exception {
         Map<String, FactTypeWithItem> facts = SubmissionBlockingFactsTest.golden();

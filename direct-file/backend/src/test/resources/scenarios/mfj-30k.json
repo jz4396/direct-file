@@ -949,6 +949,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/scheduleEHasPartIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/secondaryFilerSsnEmploymentValidity": {
       "$type": "gov.irs.factgraph.persisters.EnumWrapper",
       "item": {

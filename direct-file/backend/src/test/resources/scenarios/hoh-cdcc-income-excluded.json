@@ -727,6 +727,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
     },
+    "/scheduleEHasPartIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/selfSelectPin": {
       "$type": "gov.irs.factgraph.persisters.PinWrapper",
       "item": {

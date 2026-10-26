@@ -699,6 +699,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": true
     },
+    "/scheduleEHasPartIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/secondaryFilerDateOfDeath": {
       "$type": "gov.irs.factgraph.persisters.DayWrapper",
       "item": {

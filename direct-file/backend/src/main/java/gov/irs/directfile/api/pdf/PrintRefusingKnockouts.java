@@ -59,8 +59,9 @@ public final class PrintRefusingKnockouts {
             // received) or loss." PDF p. 14: estate or trust income "even if not received" (26 U.S.C. 702(a), 1366(a),
             // 652(a), 662(a)). 2026 draft Schedule SE, PDF p. 2, line 2: "Net profit or (loss) from Schedule C, line
             // 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)" (line 1a is the farm amount;
-            // 26 U.S.C. 1402(a)). Those amounts are not computed, so a yes would otherwise file Schedule 1 line 5 and
-            // Schedule SE line 2 without them. Asked of every filer, not only after rental or royalty income.
+            // 26 U.S.C. 1402(a)). Those amounts are not computed, so a yes, or leaving the question unanswered, would
+            // otherwise file Schedule 1 line 5 and Schedule SE line 2 without them. Asked of every filer, not only
+            // after rental or royalty income. Incomplete until answered, so this entry refuses the print in both cases.
             "/flowKnockoutScheduleEPartII",
             // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
             // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)
