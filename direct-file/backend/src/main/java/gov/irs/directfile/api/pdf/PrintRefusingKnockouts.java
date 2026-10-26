@@ -54,6 +54,15 @@ public final class PrintRefusingKnockouts {
             // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
             // not computed yet, so the package would print it as $0.
             "/flowKnockoutScheduleETradeOrBusinessQbi",
+            // Schedule E Parts II and III, and Schedule SE lines 1a and 2. 2026 draft Instructions for Schedule E,
+            // PDF p. 11: "use Part II to report your share of the partnership or S corporation income (even if not
+            // received) or loss." PDF p. 14: estate or trust income "even if not received" (26 U.S.C. 702(a), 1366(a),
+            // 652(a), 662(a)). 2026 draft Schedule SE, PDF p. 2, line 2: "Net profit or (loss) from Schedule C, line
+            // 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)" (line 1a is the farm amount;
+            // 26 U.S.C. 1402(a)). Those amounts are not computed, so a yes, or leaving the question unanswered, would
+            // otherwise file Schedule 1 line 5 and Schedule SE line 2 without them. Asked of every filer, not only
+            // after rental or royalty income. Incomplete until answered, so this entry refuses the print in both cases.
+            "/flowKnockoutScheduleEPartII",
             // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
             // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)
             // threshold; above it Form 8995-A applies. A prior-year QBI loss carryforward (Form 8995 line 3), a

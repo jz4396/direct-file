@@ -221,6 +221,69 @@ class PdfKnockoutRefusalTest {
         }
     }
 
+    /**
+     * #232 and #238. A filer with Schedule K-1 income and no Schedule E Part I income is refused in English and
+     * Spanish. 2026 draft Schedule E line 41 combines Parts II and III into Schedule 1 line 5, and 2026 draft
+     * Schedule SE line 2 includes Schedule K-1 (Form 1065) box 14 code A (other than farming). With that knockout
+     * left out of the check, the same return prints, so the path is what stops the package.
+     */
+    @Test
+    void scheduleK1WithoutPartIIncomeIsRefused() throws Exception {
+        Map<String, FactTypeWithItem> facts = new HashMap<>(SubmissionBlockingFactsTest.golden());
+        facts.put(
+                "/scheduleEHasPartIIIncome",
+                MAPPER.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
+                        FactTypeWithItem.class));
+        var graph = factGraphService.getGraph(facts);
+        assertEquals(
+                0,
+                new java.math.BigDecimal(graph.get("/scheduleENetIncome").get().toString()).signum());
+        assertEquals(
+                0,
+                new java.math.BigDecimal(
+                                graph.get("/primaryFilerSeNetProfit").get().toString())
+                        .signum());
+        assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT);
+    }
+
+    /**
+     * #238: leaving /scheduleEHasPartIIIncome unanswered is not a complete false, so the print refuses in English and
+     * Spanish with only /flowKnockoutScheduleEPartII in the log. An answered no still builds (the golden end-to-end
+     * scenario below).
+     */
+    @Test
+    void unansweredScheduleK1QuestionIsRefused() throws Exception {
+        Map<String, FactTypeWithItem> facts = new HashMap<>(SubmissionBlockingFactsTest.golden());
+        facts.remove("/scheduleEHasPartIIIncome");
+        var graph = factGraphService.getGraph(facts);
+        assertFalse(graph.get(PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT)
+                .complete());
+        assertEquals(
+                0,
+                new java.math.BigDecimal(graph.get("/scheduleENetIncome").get().toString()).signum());
+        assertEquals(
+                0,
+                new java.math.BigDecimal(
+                                graph.get("/primaryFilerSeNetProfit").get().toString())
+                        .signum());
+        List<String> only = List.of(PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT);
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !only.contains(p))
+                .toList();
+        for (String language : List.of("en", "es")) {
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
+                    () -> pdfService.getTaxReturn(language, taxReturn(facts), false));
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+            assertEquals(only, e.getBody().getProperties().get("blockingFacts"));
+            try (InputStream in = pdfService.getTaxReturn(language, taxReturn(facts), false, without);
+                    PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+                assertTrue(doc.getNumberOfPages() > 0, language + " would print without " + only);
+            }
+        }
+    }
+
     @Test
     void goldenReturnStillBuilds() throws Exception {
         Map<String, FactTypeWithItem> facts = SubmissionBlockingFactsTest.golden();

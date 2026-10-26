@@ -16,7 +16,8 @@ import type { ConditionString } from '../../Condition.js';
 /**
  * Schedule E Part I MVP: rental real estate and royalties (#38, spec PR #8; TY2026, filed in 2027).
  * Supported: net income with no depreciation, no personal use, no K-1 income. Everything else knocks out.
- * Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
+ * The Schedule K-1 question is asked of every filer, not only after a yes to rental or royalty income
+ * (#232, #238). Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
   <Screen route={route} condition={condition} isKnockout={true}>
@@ -37,8 +38,15 @@ export const ScheduleEIncomeSubcategory = (
         conditions: [`/hasScheduleEIncome`],
       },
       {
+        itemKey: `scheduleEK1`,
+        conditions: [`/scheduleEHasPartIIIncome`],
+      },
+      {
         itemKey: `scheduleENone`,
-        conditions: [{ operator: `isFalse`, condition: `/hasScheduleEIncome` }],
+        conditions: [
+          { operator: `isFalse`, condition: `/hasScheduleEIncome` },
+          { operator: `isFalse`, condition: `/scheduleEHasPartIIIncome` },
+        ],
       },
     ]}
   >
@@ -50,8 +58,9 @@ export const ScheduleEIncomeSubcategory = (
         <Boolean path='/hadScheduleEIncome' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-e-part-ii' condition='/hasScheduleEIncome'>
+      <Screen route='schedule-e-part-ii'>
         <Heading i18nKey='/heading/income/schedule-e/part-ii' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/part-ii' />
         <Boolean path='/scheduleEHasPartIIIncome' />
         <SaveAndOrContinueButton />
       </Screen>

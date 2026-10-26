@@ -63,6 +63,7 @@ class PrintRefusingKnockoutsTest {
     static final String PTC_SCENARIO = "ptc-annual-amounts-rounding.json";
 
     static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
+    static final String SCHEDULE_E_PART_II_KNOCKOUT = "/flowKnockoutScheduleEPartII";
     static final String QBI_ABOVE_THRESHOLD_KNOCKOUT = "/flowKnockoutQbiAboveThreshold";
     static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
@@ -117,6 +118,7 @@ class PrintRefusingKnockoutsTest {
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed
         expected.addAll(List.of(
                 SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
+                SCHEDULE_E_PART_II_KNOCKOUT, // Schedule E Parts II-III and Schedule SE K-1 box 14 code A
                 QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
                 QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
                 QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
@@ -126,7 +128,7 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_C_KNOCKOUT, // #89 Schedule C has no template
                 SCHEDULE_3A_KNOCKOUT)); // #89 Schedule 3-A has no template or line 32b fact
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
-        assertEquals(19, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(20, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -391,6 +393,79 @@ class PrintRefusingKnockoutsTest {
         Graph graph = fgs.getGraph(answeredYes);
         assertEquals(Boolean.TRUE, graph.get(SCHEDULE_E_QBI_KNOCKOUT).get());
         assertTrue(PrintRefusingKnockouts.refusingPaths(graph).contains(SCHEDULE_E_QBI_KNOCKOUT), "trade or business");
+    }
+
+    /**
+     * #232 and #238. 2026 draft Instructions for Schedule E, PDF p. 11: report the partnership or S corporation share
+     * "even if not received." PDF p. 14: estate or trust income "even if not received." 2026 draft Schedule SE, PDF p.
+     * 2, line 2 includes Schedule K-1 (Form 1065) box 14 code A (other than farming); line 1a is the farm amount. A
+     * K-1 with no Part I income leaves Schedule E (/scheduleENetIncome, Schedule 1 line 5) and Schedule SE line 2
+     * (/primaryFilerSeNetProfit, Schedule C only) without that income, and the knockout refuses the print. An answered
+     * no does not. An unanswered question is complete false on the knockout (so a return that has not reached it still
+     * prints) and leaves the Schedule E section incomplete.
+     */
+    @Test
+    void k1WithoutPartIIncomeOmitsScheduleEAndScheduleSeLine2AndRefusesThePrint() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        FactTypeWithItem no = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}", FactTypeWithItem.class);
+
+        Map<String, FactTypeWithItem> answeredNo = new HashMap<>(SubmissionBlockingFactsTest.golden());
+        Graph noK1 = fgs.getGraph(answeredNo);
+        assertTrue(noK1.get(SCHEDULE_E_PART_II_KNOCKOUT).complete(), "answered no is complete");
+        assertEquals(Boolean.FALSE, noK1.get(SCHEDULE_E_PART_II_KNOCKOUT).get());
+        assertFalse(PrintRefusingKnockouts.refusingPaths(noK1).contains(SCHEDULE_E_PART_II_KNOCKOUT));
+
+        Map<String, FactTypeWithItem> k1Only = new HashMap<>(answeredNo);
+        k1Only.put("/scheduleEHasPartIIIncome", yes);
+        Graph k1 = fgs.getGraph(k1Only);
+        assertEquals(0, new BigDecimal(k1.get("/scheduleENetIncome").get().toString()).signum(), "Part I only");
+        assertEquals(0, new BigDecimal(k1.get("/schedule1Line5").get().toString()).signum(), "Schedule 1 line 5");
+        assertEquals(
+                0,
+                new BigDecimal(k1.get("/primaryFilerSeNetProfit").get().toString()).signum(),
+                "Schedule SE line 2 has no box 14 code A");
+        assertEquals(Boolean.TRUE, k1.get(SCHEDULE_E_PART_II_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, k1.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(SCHEDULE_E_PART_II_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(k1));
+
+        Map<String, FactTypeWithItem> scheduleC = scheduleCOnly();
+        Graph scheduleCGraph = fgs.getGraph(scheduleC);
+        BigDecimal line2 = new BigDecimal(
+                scheduleCGraph.get("/primaryFilerSeNetProfit").get().toString());
+        assertTrue(line2.signum() > 0, "Schedule C profit is on line 2");
+        Map<String, FactTypeWithItem> scheduleCAndK1 = new HashMap<>(scheduleC);
+        scheduleCAndK1.put("/hadScheduleEIncome", no);
+        scheduleCAndK1.put("/scheduleEHasPartIIIncome", yes);
+        Graph both = fgs.getGraph(scheduleCAndK1);
+        assertEquals(
+                0,
+                line2.compareTo(new BigDecimal(
+                        both.get("/primaryFilerSeNetProfit").get().toString())),
+                "line 2 unchanged");
+        assertEquals(0, new BigDecimal(both.get("/scheduleENetIncome").get().toString()).signum());
+        assertTrue(PrintRefusingKnockouts.refusingPaths(both).contains(SCHEDULE_E_PART_II_KNOCKOUT));
+        assertEquals(
+                both.get("/selfEmploymentTax").get().toString(),
+                scheduleCGraph.get("/selfEmploymentTax").get().toString(),
+                "SE tax is still the Schedule C amount");
+
+        Map<String, FactTypeWithItem> unanswered = new HashMap<>(answeredNo);
+        unanswered.remove("/scheduleEHasPartIIIncome");
+        Graph open = fgs.getGraph(unanswered);
+        assertFalse(open.get(SCHEDULE_E_PART_II_KNOCKOUT).complete(), "unanswered stays incomplete");
+        assertEquals(0, new BigDecimal(open.get("/scheduleENetIncome").get().toString()).signum(), "Part I still $0");
+        assertEquals(
+                0,
+                new BigDecimal(open.get("/primaryFilerSeNetProfit").get().toString()).signum(),
+                "line 2 still has no box 14 code A");
+        assertEquals(List.of(SCHEDULE_E_PART_II_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(open));
+        assertFalse(open.get("/flowIsKnockedOut").complete(), "an incomplete operand leaves /flowIsKnockedOut open");
+        assertEquals(Boolean.FALSE, open.get("/scheduleESectionIsComplete").get());
+        assertEquals(Boolean.TRUE, open.get("/flowIncomplete").get());
     }
 
     /** Single filer, one W-2 and one Schedule C business with the given gross receipts and expenses. */

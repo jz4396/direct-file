@@ -86,6 +86,10 @@
         ]
       }
     },
+    "/scheduleEHasPartIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/socialSecurityReports": {
       "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
       "item": {

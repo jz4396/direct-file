@@ -4,7 +4,9 @@
 
   Supported case ONLY: every Part I property has net income (no loss), no depreciation / amortization /
   depletion / vehicle expenses (no Form 4562), no personal use of a dwelling unit (no IRC 280A limits),
-  and no Part II-V (K-1) income. Everything else is knocked out with BlockSubmissionOnTrue.
+  and no partnership, S corporation, estate, or trust K-1 income. The K-1 question is asked of every
+  filer (#232, #238), not only after a yes to Part I. Everything else is knocked out with
+  BlockSubmissionOnTrue.
 
   Sources (2026 drafts, PDF page numbers = printed page + 1 because of the draft coversheet):
   - Instructions for Schedule E (2026) draft, https://www.irs.gov/pub/irs-dft/i1040se%2D%2Ddft.pdf
@@ -273,8 +275,26 @@
     <Fact path="/scheduleEHasPartIIIncome">
       <Name>Has partnership, S corporation, estate, trust, or REMIC income (Schedule E Parts II-IV)</Name>
       <Description>
-        Parts II-IV (K-1 income) are out of scope for this MVP (spec PR #8, item 4: "block with clear
-        message").
+        #232 and #238. Asked of every filer, not only after a yes to rental or royalty income
+        (/hasScheduleEIncome). 2026 draft Instructions for Schedule E
+        (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf,
+        SHA-256 71d19faaf741cf3c), PDF p. 11, Part II:
+        "If you are a member of a partnership or joint venture or a
+        shareholder in an S corporation, use
+        Part II to report your share of the partnership or S corporation income
+        (even if not received) or
+        loss." PDF p. 14, Part III: "If you are a beneficiary of an estate or trust, use Part
+        III to report
+        your part of the income (even if not received) or loss." 26 U.S.C. 702(a)
+        (https://www.law.cornell.edu/uscode/text/26/702), 1366(a)
+        (https://www.law.cornell.edu/uscode/text/26/1366),
+        652(a)
+        (https://www.law.cornell.edu/uscode/text/26/652), 662(a)
+        (https://www.law.cornell.edu/uscode/text/26/662).
+        A yes also covers Schedule K-1 (Form 1065) box 14
+        code A, which the 2026 draft Schedule SE puts on line 1a (farm)
+        or line 2 (other than farming).
+        Parts II-IV are not computed; see /flowKnockoutScheduleEPartII.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -432,17 +452,100 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleEPartII">
-      <Name>Knockout: Schedule E Parts II-IV (K-1) income</Name>
+      <Name>Knockout: Schedule E Parts II-III and Schedule SE K-1 (Form 1065) box 14 code A</Name>
       <Description>
-        Partnership / S corporation / estate / trust / REMIC income is not supported in this MVP.
+        #232 and #238. True when the filer answers yes to /scheduleEHasPartIIIncome. Partnership, S
+        corporation, estate, and trust income is not computed, and neither is Schedule K-1 (Form 1065) box
+        14 code A. The
+        question is not gated on /hasScheduleEIncome, so a filer whose only Schedule E
+        income is a K-1 is stopped instead
+        of filing that income as $0.
+
+        Income tax. 2026 draft Instructions for Schedule E
+        (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf, SHA-256 71d19faaf741cf3c), PDF p. 3: "Use
+        Schedule E (Form
+        1040) to report income or loss from rental real estate, royalties, partnerships,
+        S corporations, estates, trusts,
+        and residual interests in REMICs." PDF p. 11, Part II: "use Part
+        II to report your share of the partnership or S
+        corporation income (even if not received) or
+        loss." PDF p. 14, Part III: "use Part III to report your part of the
+        income (even if not received)
+        or loss." 26 U.S.C. 702(a), 1366(a), 652(a), 662(a) (links on
+        /scheduleEHasPartIIIncome). 2026
+        draft Schedule E (https://www.irs.gov/pub/irs-dft/f1040se--dft.pdf, SHA-256
+        0bee231f1ecb2470), PDF
+        p. 4, line 41: "Total income or (loss). Combine lines 26, 32, 37, 39, and 40."
+        /scheduleENetIncome
+        and Schedule 1 line 5 (/schedule1Line5) are Part I (line 26) only, so a K-1-only return would
+        otherwise leave line 41 and Schedule 1 line 5 at $0.
+
+        Self-employment. 2026 draft Schedule SE
+        (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf,
+        SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 1a: "Net
+        farm profit or (loss)
+        from Schedule F, line 34; and farm partnerships, Schedule K-1 (Form 1065),
+        box 14, code A"; line 2: "Net profit
+        or (loss) from Schedule C, line 31; and Schedule K-1 (Form
+        1065), box 14, code A (other than farming)". 2026
+        draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 5, Partnership Income or
+        Loss: "If you
+        were a general or limited partner in a partnership, include on line 1a or line 2,
+        whichever applies, the amount
+        of net earnings from self-employment from box 14, code A, of
+        Schedule K-1 (Form 1065)." Same paragraph: "Limited
+        partners should include only guaranteed
+        payments for services actually rendered to or on behalf of the
+        partnership." 26 U.S.C. 1402(a)
+        (https://www.law.cornell.edu/uscode/text/26/1402) includes "his distributive
+        share (whether or not
+        distributed) of income or loss described in section 702(a)(8) from any trade or business
+        carried
+        on by a partnership of which he is a member". 1402(a)(13) excludes a limited partner except for
+        guaranteed payments under section 707(c). 1402(b)(2): no self-employment income "if such net
+        earnings for the
+        taxable year are less than $400". Partner's Instructions for Schedule K-1 (Form
+        1065) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1065sk1.pdf, SHA-256 659063e0aaa36e44), PDF p. 22,
+        Code A: "Net earnings (loss)
+        from self-employment. If you're a general partner, reduce this amount
+        before entering it on Schedule SE (Form
+        1040) by any section 179 expense deduction claimed,
+        unreimbursed partnership expenses claimed, and depletion
+        claimed on oil and gas properties." 2026
+        draft Instructions for Schedule E, PDF p. 12: "Enter the amount from box
+        14, code A, of Schedule
+        K-1 (Form 1065), on Schedule SE after you reduce this amount by any allowable expenses
+        attributable
+        to that income." /primaryFilerSeNetProfit is Schedule C only, so line 2 would omit box 14 code A.
+        That understates Schedule 2 line 4 (26 U.S.C. 1401) and the Schedule 1 line 15 deduction for half
+        of
+        self-employment tax (26 U.S.C. 164(f)).
+
+        The knockout is the answer itself, the same shape as
+        /flowKnockoutScheduleETradeOrBusinessQbi (an unanswered screener stays incomplete). That Part I
+        screener is
+        All(/hasScheduleEIncome, the answer), so it is complete false when there is no rental
+        or royalty income. This
+        question is asked of every filer, so there is no such gate: incomplete
+        while /scheduleEHasPartIIIncome is
+        unanswered, complete false only on an answered no, and true on
+        yes. Print refuses unless the fact is complete and
+        false, so an unanswered question refuses the
+        package the same way a yes does. /flowIsKnockedOut is incomplete
+        while this operand is incomplete,
+        and the top-level submission gate refuses a blocking fact that is not complete
+        false, so sign and
+        submit are refused too. /scheduleESectionIsComplete is also false until the question is
+        answered.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <All>
-          <Dependency path="/hasScheduleEIncome" />
-          <Dependency path="/scheduleEHasPartIIIncome" />
-        </All>
+        <Dependency path="/scheduleEHasPartIIIncome" />
       </Derived>
     </Fact>
 
@@ -504,7 +607,15 @@
 
     <Fact path="/scheduleESectionIsComplete">
       <Name>Schedule E section complete</Name>
-      <Description>Gate answered; if yes, every amount and screener question answered.</Description>
+      <Description>
+        The rental gate and the K-1 question (/scheduleEHasPartIIIncome) are both answered. The K-1
+        question
+        is required even when /hasScheduleEIncome is false (#232, #238). If the filer has Part I
+        income, every amount and
+        screener is answered too. IsComplete of an unanswered question is false,
+        so an otherwise finished interview stays
+        incomplete until the K-1 question is answered.
+      </Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -549,9 +660,14 @@
               <True />
             </When>
             <Then>
-              <IsComplete>
-                <Dependency path="/hadScheduleEIncome" />
-              </IsComplete>
+              <All>
+                <IsComplete>
+                  <Dependency path="/hadScheduleEIncome" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </All>
             </Then>
           </Case>
         </Switch>
