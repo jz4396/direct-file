@@ -25,6 +25,7 @@ dataviews:
     /paHasSpNontaxableIncome:
       ¿Tiene ingresos no tributables que cuentan para la Condonación de Impuestos de Pensilvania?
     /paPartYearResidentInterest: Intereses recibidos mientras era residente de Pensilvania
+    /paPartYearResidentDividends: Dividendos ordinarios recibidos mientras era residente de Pensilvania
     /paPartYearHasNonresidentPaSourcePay:
       Pago por trabajo en Pensilvania mientras vivía en Florida, no incluido en el encasillado 16
     /paHasUnreimbursedEmployeeExpenses:
@@ -58,6 +59,8 @@ headings:
   /heading/income/jobs/w2-pa-part-year-resident-wages:
     ¿Qué parte del pago de este Formulario W-2 ganó mientras vivía en Pensilvania?
   /heading/your-taxes/amount/pa-part-year-interest: ¿Qué parte de sus intereses recibió mientras vivía en Pensilvania?
+  /heading/your-taxes/amount/pa-part-year-dividends:
+    ¿Qué parte de sus dividendos ordinarios recibió mientras vivía en Pensilvania?
   /heading/knockout/pa-part-year:
     Esta herramienta aún no admite su declaración de Pensilvania como residente parte del año
   /heading/your-taxes/amount/pa-part-year-nonresident-pa-pay:
@@ -172,6 +175,16 @@ info:
       - p:
           Pensilvania grava los intereses que recibió mientras vivía allí. No grava los intereses que recibió mientras
           vivía en Florida. No incluya intereses de bonos de ahorro de EE. UU. ni de obligaciones del Tesoro.
+  /info/your-taxes/amount/pa-part-year-dividends:
+    body:
+      - p:
+          Pensilvania grava los dividendos ordinarios que recibió mientras vivía allí. No grava los dividendos
+          ordinarios que recibió mientras vivía en Florida. Ingrese el monto de la casilla 1a del Formulario 1099-DIV
+          del tiempo que vivió en Pensilvania. Si los recibió todos mientras vivía en Pensilvania, ingrese el monto
+          total.
+      - p:
+          Los dividendos que recibió mientras vivía en Florida van en el Anexo B de PA, que esta herramienta aún no
+          completa.
   /info/knockout/pa-part-year:
     alertText:
       body:
@@ -227,7 +240,7 @@ info:
             Su declaración de Pensilvania necesita el Anexo B de PA, y esta herramienta aún no puede completarlo. Esto
             incluye más de $2,500 de dividendos, distribuciones de ganancias de capital (casilla 2a del Formulario
             1099-DIV), dividendos de fondos provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que
-            recibió como nominatario o dividendos cuando vivió en Pensilvania solo parte del año.
+            recibió como nominatario, o dividendos ordinarios que recibió mientras vivía fuera de Pensilvania.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
