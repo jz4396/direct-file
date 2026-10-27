@@ -17,8 +17,10 @@
       -> /flowKnockoutForm8960Unsupported (only when MAGI is over the threshold; at or under it line 15 is $0
       and the tax is $0 whatever NII is)
     line 4a/5c K-1 income: material-participation box 1 that is not a trading business is not
-      26 U.S.C. 1411(c)(2) net investment income and is not added here. Passive income, a trading
-      business, a PTP, and any other K-1 box stop the return (scheduleE /flowKnockoutScheduleEPartII).
+      26 U.S.C. 1411(c)(2) net investment income and is not added here. The same is true of
+      Schedule E line 37 nonpassive box 6 and box 8. Passive income, a trading business, a PTP,
+      any other K-1 box, box 5, box 7, and Part IV stop the return
+      (scheduleE /flowKnockoutScheduleEPartII).
     line 3 nonqualified annuities (1099-R code D) -> form1099Rs /knockoutForForm1099RDistributionCode (pre-existing)
     line 13 Form 2555 / CFC / PFIC MAGI adjustments: not collected anywhere in the app (no inputs exist)
 -->
@@ -93,7 +95,9 @@
         scheduleC /scheduleCNetProfitOrLoss and the Schedule E piece is scheduleE /scheduleENetIncome (Part I
         rents and royalties only). Schedule E line 32 (nonpassive partnership and S corporation box 1) is not
         net investment income under 26 U.S.C. 1411(c)(2) when the filer materially participates and the
-        activity is not a trading business, so it is not added. line 6
+        activity is not a trading business, so it is not added. Schedule E line 37 (nonpassive estate or
+        trust box 6 and box 8) is the same and is not added. Box 5, box 7, passive amounts, and Part IV
+        stop the return. line 6
         (farm) is not supported. Whenever Schedule C or Part I is present and MAGI is over the threshold, the line 4b
         trade-or-business adjustment can't be computed and /flowKnockoutForm8960Unsupported stops the return.
       </Description>
@@ -442,8 +446,9 @@
         not described in paragraph (2)"; the rental trade-or-business / real estate professional /
         grouping
         rules and the 469 passive-loss interaction aren't modeled. (Part II nonpassive box 1 is not NII under
-        26 U.S.C. 1411(c)(2) and is not on line 4a. Passive K-1 income, a trading business, a PTP, any other
-        box, and Parts III-IV stop the return: scheduleE /flowKnockoutScheduleEPartII.)
+        26 U.S.C. 1411(c)(2) and is not on line 4a. Schedule E line 37 nonpassive box 6 and box 8 are not
+        1411(c)(2) net investment income and are not on line 4a. Passive K-1 income, a trading business, a PTP,
+        any other box, box 5, box 7, and Part IV stop the return: scheduleE /flowKnockoutScheduleEPartII.)
         (3) itemized
         deductions (scheduleA /itemizesDeductions): Part II lines 9a-9c and 10 allocations (1411(c)(1)(B)
         "properly

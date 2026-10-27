@@ -4,6 +4,7 @@ subsubcategories:
   /flow/income/schedule-e:
     schedule-e-eligibility: Ingresos de alquiler y regalías
     schedule-e-k1: Sociedad colectiva o sociedad anónima de tipo S
+    schedule-e-estate: Caudal hereditario o fideicomiso
     schedule-e-amounts: Cantidades de alquiler y regalías
 headings:
   /heading/income/schedule-e: Ingresos de alquiler y regalías
@@ -24,6 +25,13 @@ headings:
   /heading/income/schedule-e/part-ii-line-27:
     ¿Está declarando una pérdida no permitida de un año anterior o gastos de sociedad no reembolsados?
   /heading/income/schedule-e/part-iii: ¿Recibió un Anexo K-1 de un caudal hereditario o fideicomiso?
+  /heading/income/schedule-e/estate-intro: Agregue cada caudal hereditario o fideicomiso
+  /heading/income/schedule-e/estate-name: ¿Cuál es el nombre del caudal hereditario o fideicomiso?
+  /heading/income/schedule-e/estate-scope:
+    ¿Es un beneficiario extranjero, un fideicomiso extranjero o un tratamiento distinto?
+  /heading/income/schedule-e/estate-boxes: Anote el ingreso del Anexo K-1 (Formulario 1041)
+  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 5, 6, 7 y 8?
+  /heading/income/schedule-e/estate-limits: ¿Se aplica algún límite de pérdida a este caudal hereditario o fideicomiso?
   /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC?
   /heading/income/schedule-e/k1-intro: Agregue cada sociedad colectiva y sociedad anónima de tipo S
   /heading/income/schedule-e/k1-name: ¿Cuál es el nombre de la sociedad colectiva o sociedad anónima de tipo S?
@@ -38,7 +46,7 @@ headings:
   /heading/knockout/schedule-e-part-ii-line-27:
     Esta herramienta todavía no acepta una pérdida no permitida de un año anterior ni gastos de sociedad no reembolsados
   /heading/knockout/schedule-e-part-iii:
-    Esta herramienta todavía no acepta ingresos de un caudal hereditario o fideicomiso
+    Esta herramienta todavía no acepta esta situación de caudal hereditario o fideicomiso
   /heading/knockout/schedule-e-part-iv: Esta herramienta todavía no acepta una participación residual en un REMIC
   /heading/knockout/schedule-e-personal-use: Esta herramienta todavía no acepta alquileres que también usó personalmente
   /heading/knockout/schedule-e-depreciation: Esta herramienta todavía no acepta depreciación ni gastos de vehículo
@@ -67,7 +75,32 @@ info:
   /info/income/schedule-e/part-iii:
     body: >-
       Conteste que sí si es beneficiario de un caudal hereditario o fideicomiso, aunque no haya recibido el ingreso.
-      Debe tener un Anexo K-1 (Formulario 1041).
+      Debe tener un Anexo K-1 (Formulario 1041). Se puede declarar el ingreso ordinario del negocio y otro ingreso de
+      alquiler si usted participó de forma importante. Otras cantidades detienen esta declaración.
+  /info/income/schedule-e/estate-intro:
+    body: >-
+      Agregue una entrada por cada caudal hereditario o fideicomiso. Use el nombre y las cantidades del Anexo K-1
+      (Formulario 1041). Si solo tiene un caudal o fideicomiso, puede terminar la lista de sociedades sin agregar una.
+  /info/income/schedule-e/estate-name:
+    body: Esta es la línea 33, columna (a), del Anexo E.
+  /info/income/schedule-e/estate-scope:
+    body: >-
+      Conteste que sí a beneficiario extranjero si el punto H del Anexo K-1 (Formulario 1041) dice beneficiario
+      extranjero. Conteste que sí si el fideicomiso es extranjero, o si trata una partida de forma distinta al caudal o
+      fideicomiso.
+  /info/income/schedule-e/estate-boxes:
+    body: >-
+      Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Conteste que sí a la participación
+      importante si intervino de forma regular, continua y considerable. Las casillas 6 y 8 no pasivas van en la columna
+      (f).
+  /info/income/schedule-e/estate-other:
+    body: >-
+      Conteste que sí si alguna casilla distinta de las casillas 5, 6, 7 y 8 tiene una cantidad, incluso intereses,
+      dividendos, ganancia de capital, deducciones, créditos o la casilla 14.
+  /info/income/schedule-e/estate-limits:
+    body: >-
+      Conteste que sí a la primera pregunta si se aplica un límite de base. Conteste que sí a la segunda si alguna
+      cantidad no está en riesgo. Conteste que sí a la tercera si tiene una deducción o pérdida pasiva.
   /info/income/schedule-e/part-iv:
     body:
       Conteste que sí si tiene una participación residual en un conducto de inversión hipotecaria inmobiliaria (REMIC).
@@ -162,9 +195,12 @@ info:
     alertText:
       body:
         - p: >-
-            Los ingresos de un caudal hereditario o fideicomiso se declaran en el Anexo E a partir del Anexo K-1
-            (Formulario 1041), aunque usted no los haya recibido. Esta herramienta todavía no acepta eso. Tendrá que
-            usar otra manera de presentar esta declaración.
+            Esta herramienta puede declarar el ingreso ordinario del negocio y otro ingreso de alquiler de un caudal
+            hereditario o fideicomiso nacional si usted participó de forma importante y esas cantidades no son una
+            pérdida. Una pérdida, una actividad pasiva, ingreso de cartera o de alquiler de bienes raíces, otra cantidad
+            del Anexo K-1, un fideicomiso extranjero o un límite de base, de riesgo o de pérdida pasiva necesitan
+            formularios que esta herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta
+            declaración.
   /info/knockout/schedule-e-part-iv:
     alertText:
       body:
@@ -244,6 +280,67 @@ fields:
     boolean:
       "yes": Sí, tengo una participación residual en un REMIC
       "no": "No"
+  /scheduleEEstates/*/entityName:
+    name: Nombre
+  /scheduleEEstates/*/isForeignBeneficiary:
+    boolean:
+      "yes": Sí, soy un beneficiario extranjero
+      "no": "No"
+  /scheduleEEstates/*/isForeignTrust:
+    boolean:
+      "yes": Sí, es un fideicomiso extranjero
+      "no": "No"
+  /scheduleEEstates/*/inconsistentTreatment:
+    boolean:
+      "yes": Sí, estoy tratando una partida de forma distinta
+      "no": "No"
+  /scheduleEEstates/*/box5:
+    name: Casilla 5, otro ingreso de cartera y no comercial
+  /scheduleEEstates/*/box6:
+    name: Casilla 6, ingreso ordinario del negocio
+  /scheduleEEstates/*/box7:
+    name: Casilla 7, ingreso neto de alquiler de bienes raíces
+  /scheduleEEstates/*/box8:
+    name: Casilla 8, otro ingreso de alquiler
+  /scheduleEEstates/*/materiallyParticipates:
+    boolean:
+      "yes": Sí, participé de forma importante
+      "no": No, no participé de forma importante
+  /scheduleEEstates/*/hasOtherK1Amount:
+    boolean:
+      "yes": Sí, otra casilla tiene una cantidad
+      "no": No, todas las demás casillas están en blanco o en cero
+  /scheduleEEstates/*/basisLimitApplies:
+    boolean:
+      "yes": Sí, se aplica un límite de base
+      "no": "No"
+  /scheduleEEstates/*/anyAmountNotAtRisk:
+    boolean:
+      "yes": Sí, alguna cantidad no está en riesgo
+      "no": "No"
+  /scheduleEEstates/*/passiveDeductionOrLoss:
+    boolean:
+      "yes": Sí, hay una deducción o pérdida pasiva
+      "no": "No"
+  /scheduleEEstates:
+    controls:
+      add: Agregar un caudal hereditario o fideicomiso
+      complete_zero: No tengo uno para agregar
+      complete: Terminé de agregar caudales y fideicomisos
+      back: Volver a la lista
+    collectionListing:
+      itemHeading1: "{{/scheduleEEstates/*/entityName}}"
+      itemHeading2: Caudal o fideicomiso incompleto
+      label2: Caudal hereditario o fideicomiso
+    deleteControl:
+      text: <LinkModal1>Quitar</LinkModal1>
+      LinkModal1:
+        header: ¿Seguro que quiere quitar este caudal hereditario o fideicomiso?
+        body:
+          - p: Esto no se puede deshacer.
+        controls:
+          confirm: Quitar
+          cancel: Cancelar
   /scheduleEK1EntityTypeOptions:
     P: Sociedad colectiva
     S: Sociedad anónima de tipo S
@@ -299,6 +396,7 @@ fields:
     collectionListing:
       itemHeading1: "{{/scheduleEK1s/*/entityName}}"
       itemHeading2: Sociedad incompleta
+      label2: Sociedad colectiva o sociedad anónima de tipo S
     deleteControl:
       text: <LinkModal1>Quitar</LinkModal1>
       LinkModal1:
@@ -345,3 +443,16 @@ dataviews:
     /scheduleEK1s/*/hasOtherK1Amount: ¿Alguna casilla distinta de la casilla 1 tiene una cantidad?
     /scheduleEK1s/*/basisComputationRequired: ¿Está marcada la columna (e)?
     /scheduleEK1s/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
+    /scheduleEEstates/*/entityName: Nombre del caudal hereditario o fideicomiso
+    /scheduleEEstates/*/isForeignBeneficiary: ¿Es un beneficiario extranjero?
+    /scheduleEEstates/*/isForeignTrust: ¿Es un fideicomiso extranjero?
+    /scheduleEEstates/*/inconsistentTreatment: ¿Trata una partida de forma distinta al caudal o fideicomiso?
+    /scheduleEEstates/*/box5: Casilla 5, otro ingreso de cartera y no comercial
+    /scheduleEEstates/*/box6: Casilla 6, ingreso ordinario del negocio
+    /scheduleEEstates/*/box7: Casilla 7, ingreso neto de alquiler de bienes raíces
+    /scheduleEEstates/*/box8: Casilla 8, otro ingreso de alquiler
+    /scheduleEEstates/*/materiallyParticipates: ¿Participó de forma importante?
+    /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 5, 6, 7 y 8 tiene una cantidad?
+    /scheduleEEstates/*/basisLimitApplies: ¿Se aplica un límite de base?
+    /scheduleEEstates/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
+    /scheduleEEstates/*/passiveDeductionOrLoss: ¿Hay una deducción o pérdida pasiva?

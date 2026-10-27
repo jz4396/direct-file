@@ -20,6 +20,8 @@ import type { ConditionString } from '../../Condition.js';
  * Schedule E Part I MVP: rental real estate and royalties (#38, spec PR #8; TY2026, filed in 2027).
  * Part I supported: net income with no depreciation and no personal use.
  * Part II supported: domestic partnership or S corporation, nonnegative box 1 only, material participation.
+ * Part III supported: domestic estate or trust, nonnegative box 6 and box 8, material participation.
+ * Part IV (REMIC) is an explicit stop.
  * The Schedule K-1 question is asked of every filer, not only after a yes to rental or royalty income
  * (#232, #238, #85). Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
  */
@@ -85,6 +87,63 @@ export const ScheduleEIncomeSubcategory = (
         <Boolean path='/scheduleEHasPartIIIIncome' />
         <SaveAndOrContinueButton />
       </Screen>
+      <Screen route='schedule-e-estate-intro' condition='/scheduleEHasPartIIIIncome'>
+        <Heading i18nKey='/heading/income/schedule-e/estate-intro' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/estate-intro' />
+        <CollectionItemManager
+          path='/scheduleEEstates'
+          loopName='/scheduleEEstates'
+          donePath='/scheduleEEstatesIsDone'
+        />
+      </Screen>
+      <CollectionLoop
+        loopName='/scheduleEEstates'
+        collection='/scheduleEEstates'
+        iconName='AttachMoney'
+        collectionItemCompletedCondition='/scheduleEEstates/*/isComplete'
+        donePath='/scheduleEEstatesIsDone'
+      >
+        <SubSubcategory route='schedule-e-estate'>
+          <Screen route='schedule-e-estate-name'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-name' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-name' />
+            <LimitingString path='/scheduleEEstates/*/entityName' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-estate-scope'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-scope' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-scope' />
+            <Boolean path='/scheduleEEstates/*/isForeignBeneficiary' />
+            <Boolean path='/scheduleEEstates/*/isForeignTrust' />
+            <Boolean path='/scheduleEEstates/*/inconsistentTreatment' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-estate-boxes'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-boxes' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-boxes' />
+            <Dollar path='/scheduleEEstates/*/box5' />
+            <Dollar path='/scheduleEEstates/*/box6' />
+            <Dollar path='/scheduleEEstates/*/box7' />
+            <Dollar path='/scheduleEEstates/*/box8' />
+            <Boolean path='/scheduleEEstates/*/materiallyParticipates' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-estate-other'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-other' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-other' />
+            <Boolean path='/scheduleEEstates/*/hasOtherK1Amount' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-estate-limits'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-limits' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-limits' />
+            <Boolean path='/scheduleEEstates/*/basisLimitApplies' />
+            <Boolean path='/scheduleEEstates/*/anyAmountNotAtRisk' />
+            <Boolean path='/scheduleEEstates/*/passiveDeductionOrLoss' />
+            <SaveAndOrContinueButton />
+          </Screen>
+        </SubSubcategory>
+      </CollectionLoop>
       {knockout(`schedule-e-part-iii-knockout`, `/flowKnockoutScheduleEPartIII`, `schedule-e-part-iii`)}
       <Screen route='schedule-e-part-iv' condition='/scheduleEHasPartIIIncome'>
         <Heading i18nKey='/heading/income/schedule-e/part-iv' />

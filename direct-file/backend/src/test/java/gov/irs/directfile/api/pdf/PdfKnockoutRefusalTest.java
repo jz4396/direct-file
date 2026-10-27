@@ -224,22 +224,31 @@ class PdfKnockoutRefusalTest {
     }
 
     /**
-     * #85. Schedule E Part III (estate or trust, Schedule K-1 (Form 1041)) is out of scope. 2026 draft Instructions
-     * for Schedule E, PDF p. 14: report that income "even if not received." With /flowKnockoutScheduleEPartII left
-     * out of the check, the English return prints, so the path is what stops the English package. Spanish is refused
-     * because the TY2026 template is outside pdf/2026/ (26 U.S.C. 6011(a)).
+     * #85. Schedule E Part IV (REMIC residual interest) is not computed. 2026 draft Instructions for Schedule E, PDF
+     * p. 14: "If you are the holder of a residual interest in a REMIC, use Part IV to report your total share of the
+     * REMIC's taxable income or loss." 26 U.S.C. 860C. A yes makes /flowKnockoutScheduleEPartIV true, which makes
+     * /flowKnockoutScheduleEPartII true. Line 39 stays incomplete so the REMIC amount is not entered as zero. With
+     * that path left out of the check, the English return prints, so the path is what stops the English package.
+     * Spanish is refused because the TY2026 template is outside pdf/2026/ (26 U.S.C. 6011(a)).
      */
     @Test
     void scheduleK1WithoutPartIIncomeIsRefused() throws Exception {
         Map<String, FactTypeWithItem> facts = new HashMap<>(SubmissionBlockingFactsTest.golden());
         FactTypeWithItem yes = MAPPER.readValue(
                 "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        FactTypeWithItem no = MAPPER.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}", FactTypeWithItem.class);
         facts.put("/scheduleEHasPartIIIncome", yes);
-        facts.put("/scheduleEHasPartIIIIncome", yes);
+        facts.put("/scheduleEHasPartIIIIncome", no);
+        facts.put("/scheduleEHasPartIVIncome", yes);
         var graph = factGraphService.getGraph(facts);
         assertEquals(
                 0,
                 new java.math.BigDecimal(graph.get("/scheduleENetIncome").get().toString()).signum());
+        assertEquals(
+                0,
+                new java.math.BigDecimal(graph.get("/scheduleEPartIIILine37").get().toString()).signum());
+        assertFalse(graph.get("/scheduleEPartIVLine39").complete(), "line 39 is not a silent zero");
         assertEquals(
                 0,
                 new java.math.BigDecimal(
