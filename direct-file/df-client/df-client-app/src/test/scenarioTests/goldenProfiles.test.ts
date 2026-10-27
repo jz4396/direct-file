@@ -1324,7 +1324,9 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
   //   12.4% OASDI part is $0 (26 U.S.C. 1402(b)(1); the 2026 base is $184,500, 90 FR 49050). HI = round(48,814 x
   //   0.029) = 1,416 (26 U.S.C. 1401(b)(1),
   //   https://www.law.cornell.edu/uscode/text/26/1401). Deductible half = round(1,416 x 0.5) = 708 (26 U.S.C. 164(f),
-  //   Schedule 1 line 15).
+  //   Schedule 1 line 15). The questions for lines 1a, 1b, 4b, Part II, 5a, 5b, checkbox A, and 8c are answered no,
+  //   so /flowKnockoutScheduleSEOutOfScope is complete false (26 U.S.C. 1402(a), 1402(c)(1), 1402(e), 1402(g),
+  //   1402(j), 1402(l)).
   // Form 1040: line 1a 190,000; Schedule 1 line 3 52,858; line 8 52,858; line 9 242,858; line 10 708; line 11 AGI
   //   242,150.
   // Schedule A: real estate tax $40,400. Line 5e is the smaller of line 5d or $40,400 (AGI is under the $505,000
@@ -1400,6 +1402,8 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
     );
     expect(get(g, `/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
     expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
     expectDollars(g, {
       '/scheduleCNetProfitOrLoss': `52858.00`,
       '/schedule1Line3': `52858.00`,

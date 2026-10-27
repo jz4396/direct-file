@@ -549,6 +549,14 @@ export const profileFPaAmtScheduleC = {
   '/receivedImproperClaims': createBooleanWrapper(false),
   ...w2s(skyler.ssn, profileFW2),
   '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  // Answered no. Unanswered, /flowKnockoutScheduleSEOutOfScope stays incomplete and refuses the print.
+  // 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8), 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l).
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
   '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
   '/qbiIsCooperativePatron': createBooleanWrapper(false),
   '/scheduleCBusinesses': createCollectionWrapper([profileFBusinessId]),
