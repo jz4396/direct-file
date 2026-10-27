@@ -88,7 +88,9 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutInterestScheduleBSubtraction",
             // Schedule B line 7a question 2 and line 7b (FinCEN Form 114) and line 8 (Form 3520) are not printed.
             // Instructions for Schedule B (2025) p. 3. A yes to line 7a question 1 or line 8 refuses the print so
-            // those lines are not left blank. Complete false when every Part III answer is no.
+            // those lines are not left blank. Unanswered is not "No": the print is refused unless
+            // /scheduleBPartIIIAnswered is complete, even when interest and ordinary dividends are not over $1,500.
+            // Complete false when every Part III answer is no. Exactly $1,500 with those answers still prints.
             "/flowKnockoutScheduleBPartIII",
             // Schedule E Part I loss. Lines 22 and 25 (Form 8582) are not printed. 26 U.S.C. 469, 465, 461(l).
             "/flowKnockoutScheduleELoss",

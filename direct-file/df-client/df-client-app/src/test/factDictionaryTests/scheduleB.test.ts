@@ -200,12 +200,33 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
     expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
   });
 
-  it(`ordinary dividends of exactly $1,500 with Part III unanswered does not stop the return`, ({ task }) => {
-    task.meta.testedFactPaths = [`/requiresScheduleBForOrdinaryDividends`, `/flowKnockoutScheduleBPartIII`];
+  it(`ordinary dividends of exactly $1,500 with Part III unanswered stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/requiresScheduleBForOrdinaryDividends`,
+      `/scheduleBPartIIIAnswered`,
+      `/flowKnockoutScheduleBPartIII`,
+    ];
     const fg = graph({ ...oneReport(10), ...oneDividend(1500) }, {}, false);
     expect(dollars(fg, `/ordinaryDividends`)).toBe(`1500.00`);
     expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
+    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(true);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
+  });
+
+  it(`ordinary dividends of exactly $1,500 with Part III "No" still prints`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/requiresScheduleBForOrdinaryDividends`,
+      `/scheduleBPartIIIAnswered`,
+      `/flowKnockoutScheduleBPartIII`,
+    ];
+    const fg = graph({ ...oneReport(10), ...oneDividend(1500) });
+    expect(dollars(fg, `/ordinaryDividends`)).toBe(`1500.00`);
+    expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
+    expect(val(fg, `/requiresScheduleB`)).toBe(false);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
     expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(false);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
   });
 
   it(`line 7a "Yes" stops the return even when dividends are under $1,500`, ({ task }) => {

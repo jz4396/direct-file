@@ -1354,12 +1354,12 @@
         of, or transferor to, a foreign trust that existed during 2025, you may have to
         file Form 3520" (26 U.S.C. 6048).
         FinCEN Form 114, Form 8938 and Form 3520 are not computed, so any "Yes"
-        stops the return. When line 2 or line 6
-        is over $1,500 and a Part III question has no answer, the printed
-        Schedule B would leave line 7a or line 8 blank;
-        that is not treated as "No". Complete false when every asked
-        question is "No", and when the dollar test does not
-        require Schedule B and no question is "Yes".</Description>
+        stops the return. The print is refused unless /scheduleBPartIIIAnswered is
+        complete: an unanswered line 7a or line 8 is not "No", including when taxable
+        interest and ordinary dividends are not over $1,500. Exactly $1,500 does not
+        require Schedule B (Instructions for Schedule B (2025) p. 1: "You had over
+        $1,500 of taxable interest or ordinary dividends."), and that return prints
+        when every asked Part III question is "No".</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1406,27 +1406,14 @@
           <Case>
             <When>
               <All>
-                <Any>
-                  <All>
-                    <IsComplete>
-                      <Dependency path="/requiresScheduleBForInterest" />
-                    </IsComplete>
-                    <Dependency path="/requiresScheduleBForInterest" />
-                  </All>
-                  <All>
-                    <IsComplete>
-                      <Dependency path="/requiresScheduleBForOrdinaryDividends" />
-                    </IsComplete>
-                    <Dependency path="/requiresScheduleBForOrdinaryDividends" />
-                  </All>
-                </Any>
-                <Not>
+                <IsComplete>
                   <Dependency path="/scheduleBPartIIIAnswered" />
-                </Not>
+                </IsComplete>
+                <Dependency path="/scheduleBPartIIIAnswered" />
               </All>
             </When>
             <Then>
-              <True />
+              <False />
             </Then>
           </Case>
           <Case>
@@ -1434,7 +1421,7 @@
               <True />
             </When>
             <Then>
-              <False />
+              <True />
             </Then>
           </Case>
         </Switch>

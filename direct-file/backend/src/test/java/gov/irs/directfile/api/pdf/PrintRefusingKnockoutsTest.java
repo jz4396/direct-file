@@ -1058,8 +1058,8 @@ class PrintRefusingKnockoutsTest {
     /**
      * #86. Form 1040 line 3b is ordinary dividends (box 1a), line 3a is qualified dividends (box 1b), and box 2a goes
      * through the QDCG worksheet. Box 4 is line 25b. Schedule B Part II is required when line 3b is over $1,500.
-     * Out-of-scope boxes stop the print. A Part III "Yes", or a blank Part III when Schedule B is required, stops the
-     * print. "No" prints.
+     * Out-of-scope boxes stop the print. A Part III "Yes", or a blank Part III, stops the print. "No" prints, including
+     * when ordinary dividends are exactly $1,500 and Schedule B is not required.
      */
     @Test
     void dividendCommonPathPrintsAndOutOfScopeRefuses() throws Exception {
@@ -1173,7 +1173,31 @@ class PrintRefusingKnockoutsTest {
         assertEquals(
                 Boolean.FALSE,
                 atLimit.get("/requiresScheduleBForOrdinaryDividends").get());
-        assertCompleteFalse(atLimit, SCHEDULE_B_PART_III_KNOCKOUT);
-        assertFalse(PrintRefusingKnockouts.refusingPaths(atLimit).contains(SCHEDULE_B_PART_III_KNOCKOUT));
+        assertEquals(Boolean.FALSE, atLimit.get("/scheduleBPartIIIAnswered").get());
+        assertEquals(List.of(SCHEDULE_B_PART_III_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(atLimit));
+
+        Map<String, FactTypeWithItem> atLimitNoFacts = commonDividendReturn(mapper);
+        putJson(atLimitNoFacts, mapper, div + "/ordinaryDividends", ScheduleATy2026PdfSmokeTest.dollar("1500.00"));
+        putJson(
+                atLimitNoFacts,
+                mapper,
+                div + "/writableQualifiedDividends",
+                ScheduleATy2026PdfSmokeTest.dollar("1500.00"));
+        putJson(
+                atLimitNoFacts,
+                mapper,
+                div + "/writableCapitalGainDistributions",
+                ScheduleATy2026PdfSmokeTest.dollar("0.00"));
+        Graph answeredNo = fgs.getGraph(atLimitNoFacts);
+        assertEquals("1500.00", answeredNo.get("/ordinaryDividends").get().toString());
+        assertEquals(
+                Boolean.FALSE,
+                answeredNo.get("/requiresScheduleBForOrdinaryDividends").get());
+        assertEquals(Boolean.TRUE, answeredNo.get("/scheduleBPartIIIAnswered").get());
+        assertCompleteFalse(answeredNo, SCHEDULE_B_PART_III_KNOCKOUT);
+        assertEquals(
+                List.of(),
+                PrintRefusingKnockouts.refusingPaths(answeredNo),
+                "exactly $1,500 with Part III No prints");
     }
 }
