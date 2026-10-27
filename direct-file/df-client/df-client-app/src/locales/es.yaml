@@ -16388,8 +16388,6 @@ modals:
           <LinkAdvancedPtc>Conoce más sobre los pagos adelantados del PTC (en inglés)</LinkAdvancedPtc>
   sharedModalExcessAptc:
     header: ¿Cómo se calcula el Crédito tributario de prima (PTC) avanzado en exceso?
-    urls:
-      LinkExcessAptc: https://www.irs.gov/instructions/i8962#en_US_2024_publink1000305199
     body:
       - p: >-
           Cuando te inscribes en un plan de salud del Mercado calificado, estimas los que esperas recibir en ingresos y
@@ -16404,17 +16402,12 @@ modals:
           PTC actual.
       - ul:
           - li: >-
-              Si los pagos adelantados del PTC son más que tu PTC, tendrás PTC avanzado en exceso y tendrás que devolver
-              parte o toda la diferencia.
+              Si los pagos adelantados del PTC son más que tu PTC, la diferencia es PTC avanzado en exceso. En tu
+              declaración de {{/taxYear}} devuelves toda la diferencia. Los ingresos de tu hogar no reducen esa
+              devolución.
           - li: >-
-              Si no calificas para el PTC pero tuviste pagos adelantados del PTC, tendrás que devolver parte o todos tus
-              pagos adelantados.
-      - p: >-
-          La cantidad que devuelves podría ser limitada (reducida) si los ingresos de tu hogar están bajo el 400% del
-          nivel federal de pobreza para el tamaño de tu familia.
-      - p: >-
-          <LinkExcessAptc>Conoce más sobre los pagos adelantados del PTC en exceso y los cálculos de las limitaciones de
-          las devoluciones (en inglés)</LinkExcessAptc>
+              Si no calificas para el PTC pero tuviste pagos adelantados del PTC, devuelves todos esos pagos
+              adelantados.
   sharedModalAptcRepaymentLimitation:
     header: ¿Cómo se calcula la limitación de la devolución?
     urls:

@@ -17024,8 +17024,6 @@ modals:
           <LinkAdvancedPtc>Learn more about advance payments of PTC</LinkAdvancedPtc>.
   sharedModalExcessAptc:
     header: How is excess advance Premium Tax Credit (PTC) calculated?
-    urls:
-      LinkExcessAptc: https://www.irs.gov/instructions/i8962#en_US_2024_publink1000305199
     body:
       - p:
           When you enroll in a qualified Marketplace health plan, you estimate your expected income and family size for
@@ -17038,15 +17036,10 @@ modals:
       - p: If you had advance payments of PTC, we use Form 8962 to compare those advance payments with your actual PTC.
       - ul:
           - li:
-              If the advance payments of PTC are more than your PTC, you have excess advance PTC and must repay some or
-              all of the difference.
+              If the advance payments of PTC are more than your PTC, the difference is excess advance PTC. On your
+              {{/taxYear}} return you repay the full difference. Household income does not lower that repayment.
           - li:
-              If you didn’t qualify for PTC but had advance payments of PTC, you have to repay some or all of your
-              advance payments.
-      - p:
-          Your repayment amount may be limited (lowered) if your household income is below 400% of the federal poverty
-          line for your family size.
-      - p: <LinkExcessAptc>Learn more about excess advance PTC and repayment limitation calculations</LinkExcessAptc>
+              If you didn’t qualify for PTC but had advance payments of PTC, you repay all of those advance payments.
   sharedModalAptcRepaymentLimitation:
     header: How is a repayment limitation calculated?
     urls:
