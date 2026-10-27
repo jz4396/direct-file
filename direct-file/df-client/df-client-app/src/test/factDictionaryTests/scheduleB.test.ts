@@ -221,9 +221,7 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
   });
 
-  it(`ordinary dividends over $1,500 with Part III unanswered refuses the print and does not knock out`, ({
-    task,
-  }) => {
+  it(`ordinary dividends over $1,500 with Part III unanswered refuses the print and does not knock out`, ({ task }) => {
     task.meta.testedFactPaths = [`/scheduleBPartIIIAnswered`, FLOW_KNOCKOUT, PRINT_REFUSE];
     const fg = graph({ ...oneReport(10), ...oneDividend(1500.5) }, {}, false);
     expect(dollars(fg, `/ordinaryDividends`)).toBe(`1501.00`);
