@@ -2042,6 +2042,7 @@
 
     <Fact path="/isBelow100PercentFederalPovertyLevel">
       <Description>Is below 100% federal poverty level</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <LessThan>
           <Left>

@@ -270,6 +270,7 @@
       <Name>Form 8995 line 5</Name>
       <Description>Line 5: "Qualified business income component. Multiply line 4 by 20% (0.20)". 26 U.S.C.
         199A(b)(2)(A): "20 percent of the taxpayer's qualified business income".</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -318,6 +319,7 @@
     <Fact path="/form8995Line9">
       <Name>Form 8995 line 9</Name>
       <Description>Line 9: "REIT and PTP component. Multiply line 8 by 20% (0.20)". 26 U.S.C. 199A(b)(1)(B).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -425,6 +427,7 @@
       <Description>Line 14: "Income limitation. Multiply line 13 by 20% (0.20)". 26 U.S.C. 199A(a)(2): "an amount equal
         to 20 percent of the excess (if any) of— (A) the taxable income of the taxpayer for the taxable year, over (B)
         the net capital gain (as defined in section 1(h))".</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>

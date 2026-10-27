@@ -146,7 +146,7 @@ export function loadTaxYearConfig(taxYear: number, folder = TAX_YEARS_FOLDER): T
 // Fact dictionary XML
 // ---------------------------------------------------------------------------------------------
 
-const FACT_PATTERN = /<Fact path="([^"]+)">([\s\S]*?)<\/Fact>/g;
+const FACT_PATTERN = /<Fact path=["']([^"']+)["']>([\s\S]*?)<\/Fact>/g;
 const TAX_YEAR_PATTERN = /<TaxYear>(\d+)<\/TaxYear>/;
 const LITERAL_PATTERN = /<(Dollar|Int|Day|Rational|Decimal|String)>([^<]*)<\/\1>/g;
 

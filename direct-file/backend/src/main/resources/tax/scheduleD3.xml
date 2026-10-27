@@ -257,6 +257,7 @@
       <Name>QDCG line 18</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 18: "Multiply line 17 by 15% (0.15)".
         IRC §1(h)(1)(C).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Multiply>
           <Rational>15/100</Rational>
@@ -295,6 +296,7 @@
       <Name>QDCG line 21</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 21: "Multiply line 20 by 20% (0.20)".
         IRC §1(h)(1)(D).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Multiply>
           <Rational>20/100</Rational>

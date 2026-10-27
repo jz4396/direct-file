@@ -129,6 +129,24 @@
       "url": "https://www.irs.gov/pub/irs-dft/i2441--dft.pdf",
       "kind": "pdf",
       "sha256": "7fdecfe193df435542bb452ba108bee011bef7032fda8abe972d6fbd5de233e7"
+    },
+    "i1040sr-dft": {
+      "title": "Instructions for Schedule R (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/i1040sr--dft.pdf",
+      "kind": "pdf",
+      "sha256": "6f30613aacd956f145fea666527ad68bea5d5f8a87072270f9a17e14f41ae661"
+    },
+    "f1040sr-dft": {
+      "title": "Schedule R (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f1040sr--dft.pdf",
+      "kind": "pdf",
+      "sha256": "0fcbd9fe296b470b2a0ceadc497380159f7d872f7aa11d86ae856bbd2234f5b6"
+    },
+    "f1040s8-dft": {
+      "title": "Schedule 8812 (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf",
+      "kind": "pdf",
+      "sha256": "0638b2863bdaeadfd3fccee12a9145bf92a442d8de156584c5602cc7e3881422"
     }
   },
   "parameters": [
@@ -2643,6 +2661,13 @@
           "section": "§ 22(c)(2)(A)(i)",
           "url": "https://www.law.cornell.edu/uscode/text/26/22",
           "quote": "$5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual"
+        },
+        {
+          "source": "i1040sr-dft",
+          "section": "Table 1",
+          "page": 7,
+          "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
+          "form": "table"
         }
       ]
     },
@@ -2666,6 +2691,13 @@
           "section": "§ 22(c)(2)(A)(iii)",
           "url": "https://www.law.cornell.edu/uscode/text/26/22",
           "quote": "$3,750 in the case of a married individual filing a separate return"
+        },
+        {
+          "source": "i1040sr-dft",
+          "section": "Table 1",
+          "page": 7,
+          "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
+          "form": "table"
         }
       ]
     },
@@ -2689,6 +2721,13 @@
           "section": "§ 22(c)(2)(A)(ii)",
           "url": "https://www.law.cornell.edu/uscode/text/26/22",
           "quote": "$7,500 in the case of a joint return where both spouses are qualified individuals"
+        },
+        {
+          "source": "i1040sr-dft",
+          "section": "Table 1",
+          "page": 7,
+          "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
+          "form": "table"
         }
       ]
     },
@@ -2712,6 +2751,13 @@
           "section": "§ 22(c)(2)(A)(i)",
           "url": "https://www.law.cornell.edu/uscode/text/26/22",
           "quote": "$5,000 in the case of a single individual, or a joint return where only one spouse is a qualified individual"
+        },
+        {
+          "source": "i1040sr-dft",
+          "section": "Table 1",
+          "page": 7,
+          "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
+          "form": "table"
         }
       ]
     },
@@ -2729,6 +2775,325 @@
           "section": "§ 22(c)(2)(B)(ii)(II)",
           "url": "https://www.law.cornell.edu/uscode/text/26/22",
           "quote": "the initial amount shall not exceed the sum of $5,000 plus the disability income for the taxable year of the spouse who has not attained age 65"
+        },
+        {
+          "source": "f1040sr-dft",
+          "section": "Line 11",
+          "page": 3,
+          "quote": "Box 6, add $5,000 to the taxable disability income of the spouse who was under age 65. Enter the total."
+        }
+      ]
+    },
+    {
+      "fact": "/nonItemizerCharitableIfStandard",
+      "file": "charitableNonItemizer.xml",
+      "values": [
+        "Rational:60/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 170(b)(1)(G)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/170",
+          "quote": "60 percent of the taxpayer’s contribution base for the taxable year"
+        }
+      ]
+    },
+    {
+      "fact": "/dependentCreditPhaseout",
+      "file": "ctcOdc.xml",
+      "values": [
+        "Rational:5/100"
+      ],
+      "cite": [
+        {
+          "source": "f1040s8-dft",
+          "section": "Line 11",
+          "page": 1,
+          "quote": "Multiply line 10 by 5% (0.05)"
+        },
+        {
+          "source": "irc",
+          "section": "§ 24(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/24",
+          "quote": "The amount of the credit allowable under subsection (a) shall be reduced (but not below zero) by $50 for each $1,000 (or fraction thereof) by which the taxpayer’s modified adjusted gross income exceeds the threshold amount."
+        }
+      ]
+    },
+    {
+      "fact": "/regularMaximumActc",
+      "file": "ctcOdc3.xml",
+      "values": [
+        "Rational:15/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 24(d)(1)(B)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/24",
+          "quote": "15 percent of so much of the taxpayer’s earned income"
+        }
+      ]
+    },
+    {
+      "fact": "/netEdcAmount",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Rational:15/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "an amount equal to 15 percent of such individual’s section 22 amount for such taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/form6251ExemptionReduction",
+      "file": "form6251.xml",
+      "values": [
+        "Rational:50/100",
+        "Dollar:0"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 55(d)(4)(A)(ii)(IV)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/55",
+          "quote": "by substituting “50 percent” for “25 percent”"
+        }
+      ]
+    },
+    {
+      "fact": "/form6251Line7",
+      "file": "form6251.xml",
+      "values": [
+        "Rational:26/100",
+        "Rational:28/100"
+      ],
+      "cite": [
+        {
+          "source": "f6251-dft",
+          "section": "Line 7",
+          "page": 2,
+          "quote": "multiply line 6 by 26% (0.26). Otherwise, multiply line 6 by 28% (0.28)"
+        },
+        {
+          "source": "irc",
+          "section": "§ 55(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/55",
+          "quote": "26 percent of so much of the taxable excess as does not exceed $175,000, plus"
+        },
+        {
+          "source": "irc",
+          "section": "§ 55(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/55",
+          "quote": "28 percent of so much of the taxable excess as exceeds $175,000."
+        }
+      ]
+    },
+    {
+      "fact": "/form6251Line18",
+      "file": "form6251.xml",
+      "values": [
+        "Rational:26/100",
+        "Rational:28/100"
+      ],
+      "cite": [
+        {
+          "source": "f6251-dft",
+          "section": "Line 18",
+          "page": 3,
+          "quote": "If line 17 is $244,500 or less ($122,250 or less if married filing separately), multiply line 17 by 26% (0.26). Otherwise, multiply line 17 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately) from the result"
+        },
+        {
+          "source": "irc",
+          "section": "§ 55(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/55",
+          "quote": "26 percent of so much of the taxable excess as does not exceed $175,000, plus"
+        },
+        {
+          "source": "irc",
+          "section": "§ 55(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/55",
+          "quote": "28 percent of so much of the taxable excess as exceeds $175,000."
+        }
+      ]
+    },
+    {
+      "fact": "/form6251Line39",
+      "file": "form6251.xml",
+      "values": [
+        "Rational:26/100",
+        "Rational:28/100"
+      ],
+      "cite": [
+        {
+          "source": "f6251-dft",
+          "section": "Line 39",
+          "page": 3,
+          "quote": "If line 12 is $244,500 or less ($122,250 or less if married filing separately), multiply line 12 by 26% (0.26). Otherwise, multiply line 12 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately) from the result"
+        },
+        {
+          "source": "irc",
+          "section": "§ 55(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/55",
+          "quote": "26 percent of so much of the taxable excess as does not exceed $175,000, plus"
+        },
+        {
+          "source": "irc",
+          "section": "§ 55(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/55",
+          "quote": "28 percent of so much of the taxable excess as exceeds $175,000."
+        }
+      ]
+    },
+    {
+      "fact": "/form6251Line31",
+      "file": "form6251.xml",
+      "values": [
+        "Rational:15/100"
+      ],
+      "cite": [
+        {
+          "source": "f6251-dft",
+          "section": "Line 31",
+          "page": 3,
+          "quote": "Multiply line 30 by 15% (0.15)"
+        },
+        {
+          "source": "irc",
+          "section": "§ 1(h)(1)(C)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1",
+          "quote": "15 percent of the lesser of"
+        }
+      ]
+    },
+    {
+      "fact": "/form6251Line34",
+      "file": "form6251.xml",
+      "values": [
+        "Rational:20/100"
+      ],
+      "cite": [
+        {
+          "source": "f6251-dft",
+          "section": "Line 34",
+          "page": 3,
+          "quote": "Multiply line 33 by 20% (0.20)"
+        },
+        {
+          "source": "irc",
+          "section": "§ 1(h)(1)(D)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1",
+          "quote": "20 percent of the adjusted net capital gain (or, if less, taxable income) in excess of the sum of the amounts on which tax is determined under subparagraphs (B) and (C)"
+        }
+      ]
+    },
+    {
+      "fact": "/form8995Line5",
+      "file": "form8995.xml",
+      "values": [
+        "Rational:20/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 199A(b)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/199A",
+          "quote": "20 percent of the taxpayer’s qualified business income with respect to the qualified trade or business"
+        }
+      ]
+    },
+    {
+      "fact": "/form8995Line9",
+      "file": "form8995.xml",
+      "values": [
+        "Rational:20/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 199A(b)(1)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/199A",
+          "quote": "20 percent of the aggregate amount of the qualified REIT dividends and qualified publicly traded partnership income of the taxpayer for the taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/form8995Line14",
+      "file": "form8995.xml",
+      "values": [
+        "Rational:20/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 199A(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/199A",
+          "quote": "an amount equal to 20 percent of the excess (if any) of"
+        }
+      ]
+    },
+    {
+      "fact": "/flowKnockoutScheduleACharitableLimit",
+      "file": "scheduleA.xml",
+      "values": [
+        "Rational:60/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 170(b)(1)(G)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/170",
+          "quote": "60 percent of the taxpayer’s contribution base for the taxable year"
+        }
+      ]
+    },
+    {
+      "fact": "/qdcgLine18",
+      "file": "scheduleD3.xml",
+      "values": [
+        "Rational:15/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1(h)(1)(C)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1",
+          "quote": "15 percent of the lesser of"
+        }
+      ]
+    },
+    {
+      "fact": "/qdcgLine21",
+      "file": "scheduleD3.xml",
+      "values": [
+        "Rational:20/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1(h)(1)(D)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1",
+          "quote": "20 percent of the adjusted net capital gain (or, if less, taxable income) in excess of the sum of the amounts on which tax is determined under subparagraphs (B) and (C)"
+        }
+      ]
+    },
+    {
+      "fact": "/isBelow100PercentFederalPovertyLevel",
+      "file": "ptc.xml",
+      "values": [
+        "Int:100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 36B(c)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/36B",
+          "quote": "a taxpayer whose household income for the taxable year equals or exceeds 100 percent but does not exceed 400 percent of an amount equal to the poverty line for a family of the size involved."
         }
       ]
     }
