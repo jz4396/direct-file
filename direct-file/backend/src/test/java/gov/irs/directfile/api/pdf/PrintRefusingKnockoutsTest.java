@@ -72,7 +72,11 @@ class PrintRefusingKnockoutsTest {
     static final String PTC_SCENARIO = "ptc-annual-amounts-rounding.json";
 
     static final String INTEREST_SUBTRACTION_KNOCKOUT = "/flowKnockoutInterestScheduleBSubtraction";
-    static final String SCHEDULE_B_PART_III_KNOCKOUT = "/flowKnockoutScheduleBPartIII";
+    /** Fail-closed print gate. Not an operand of {@code /flowIsKnockedOut}. */
+    static final String SCHEDULE_B_PART_III_PRINT_REFUSE = "/flowPrintRefuseScheduleBPartIII";
+
+    /** Interview knockout: "Yes" on line 7a or line 8. Complete false while Part III is unanswered. */
+    static final String SCHEDULE_B_PART_III_FLOW_KNOCKOUT = "/flowKnockoutScheduleBPartIII";
     static final String SCHEDULE_E_LOSS_KNOCKOUT = "/flowKnockoutScheduleELoss";
     static final String SCHEDULE_E_DEPRECIATION_KNOCKOUT = "/flowKnockoutScheduleEDepreciation";
     static final String SCHEDULE_E_PERSONAL_USE_KNOCKOUT = "/flowKnockoutScheduleEPersonalUse";
@@ -170,7 +174,7 @@ class PrintRefusingKnockoutsTest {
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed
         expected.addAll(List.of(
                 INTEREST_SUBTRACTION_KNOCKOUT, // Schedule B line 1 subtraction not computed
-                SCHEDULE_B_PART_III_KNOCKOUT, // Schedule B line 7a Yes or line 8 Yes
+                SCHEDULE_B_PART_III_PRINT_REFUSE, // Schedule B Part III blank or Yes; not /flowIsKnockedOut
                 SCHEDULE_E_LOSS_KNOCKOUT, // Schedule E Part I loss
                 SCHEDULE_E_DEPRECIATION_KNOCKOUT, // Form 4562
                 SCHEDULE_E_PERSONAL_USE_KNOCKOUT, // 26 U.S.C. 280A
@@ -200,7 +204,9 @@ class PrintRefusingKnockoutsTest {
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
-        // #239 drops the Schedule C and Schedule 3-A template knockouts. #258 already lists Schedule B Part III.
+        // #239 drops the Schedule C and Schedule 3-A template knockouts. Schedule B Part III is
+        // /flowPrintRefuseScheduleBPartIII (one path). An unanswered Part III refuses the print and does not
+        // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         assertEquals(47, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
@@ -1039,7 +1045,7 @@ class PrintRefusingKnockoutsTest {
             DIVIDEND_FOREIGN_TAX_KNOCKOUT,
             DIVIDEND_NOMINEE_KNOCKOUT,
             DIVIDEND_INCONSISTENT_KNOCKOUT,
-            SCHEDULE_B_PART_III_KNOCKOUT);
+            SCHEDULE_B_PART_III_PRINT_REFUSE);
 
     static void putJson(Map<String, FactTypeWithItem> facts, ObjectMapper mapper, String path, String json)
             throws Exception {
@@ -1085,6 +1091,7 @@ class PrintRefusingKnockoutsTest {
         for (String path : DIVIDEND_PRINT_KNOCKOUTS) {
             assertCompleteFalse(common, path);
         }
+        assertCompleteFalse(common, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
         assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(common), "supported 1099-DIV prints");
         assertEquals(Boolean.FALSE, common.get("/flowIsKnockedOut").get());
 
@@ -1149,9 +1156,11 @@ class PrintRefusingKnockoutsTest {
 
         Map<String, FactTypeWithItem> foreignAccount = commonDividendReturn(mapper);
         putJson(foreignAccount, mapper, "/hasForeignAccounts", ScheduleATy2026PdfSmokeTest.bool(true));
-        assertEquals(
-                List.of(SCHEDULE_B_PART_III_KNOCKOUT),
-                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(foreignAccount)));
+        Graph yes = fgs.getGraph(foreignAccount);
+        assertEquals(Boolean.TRUE, yes.get(SCHEDULE_B_PART_III_PRINT_REFUSE).get());
+        assertEquals(Boolean.TRUE, yes.get(SCHEDULE_B_PART_III_FLOW_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, yes.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(SCHEDULE_B_PART_III_PRINT_REFUSE), PrintRefusingKnockouts.refusingPaths(yes));
 
         Map<String, FactTypeWithItem> unanswered = commonDividendReturn(mapper);
         unanswered.remove("/hasForeignAccounts");
@@ -1159,7 +1168,10 @@ class PrintRefusingKnockoutsTest {
         unanswered.remove("/hasForeignTrustsTransactions");
         Graph open = fgs.getGraph(unanswered);
         assertEquals(Boolean.FALSE, open.get("/scheduleBPartIIIAnswered").get());
-        assertEquals(List.of(SCHEDULE_B_PART_III_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(open));
+        assertEquals(Boolean.TRUE, open.get(SCHEDULE_B_PART_III_PRINT_REFUSE).get());
+        assertCompleteFalse(open, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
+        assertNotFlowKnockedOut(open);
+        assertEquals(List.of(SCHEDULE_B_PART_III_PRINT_REFUSE), PrintRefusingKnockouts.refusingPaths(open));
 
         Map<String, FactTypeWithItem> under = commonDividendReturn(mapper);
         putJson(under, mapper, div + "/ordinaryDividends", ScheduleATy2026PdfSmokeTest.dollar("1500.00"));
@@ -1174,7 +1186,10 @@ class PrintRefusingKnockoutsTest {
                 Boolean.FALSE,
                 atLimit.get("/requiresScheduleBForOrdinaryDividends").get());
         assertEquals(Boolean.FALSE, atLimit.get("/scheduleBPartIIIAnswered").get());
-        assertEquals(List.of(SCHEDULE_B_PART_III_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(atLimit));
+        assertEquals(Boolean.TRUE, atLimit.get(SCHEDULE_B_PART_III_PRINT_REFUSE).get());
+        assertCompleteFalse(atLimit, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
+        assertNotFlowKnockedOut(atLimit);
+        assertEquals(List.of(SCHEDULE_B_PART_III_PRINT_REFUSE), PrintRefusingKnockouts.refusingPaths(atLimit));
 
         Map<String, FactTypeWithItem> atLimitNoFacts = commonDividendReturn(mapper);
         putJson(atLimitNoFacts, mapper, div + "/ordinaryDividends", ScheduleATy2026PdfSmokeTest.dollar("1500.00"));
@@ -1194,8 +1209,16 @@ class PrintRefusingKnockoutsTest {
                 Boolean.FALSE,
                 answeredNo.get("/requiresScheduleBForOrdinaryDividends").get());
         assertEquals(Boolean.TRUE, answeredNo.get("/scheduleBPartIIIAnswered").get());
-        assertCompleteFalse(answeredNo, SCHEDULE_B_PART_III_KNOCKOUT);
+        assertCompleteFalse(answeredNo, SCHEDULE_B_PART_III_PRINT_REFUSE);
+        assertCompleteFalse(answeredNo, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
+        assertEquals(Boolean.FALSE, answeredNo.get("/flowIsKnockedOut").get());
         assertEquals(
                 List.of(), PrintRefusingKnockouts.refusingPaths(answeredNo), "exactly $1,500 with Part III No prints");
+    }
+
+    /** Unanswered Part III leaves /flowIsKnockedOut incomplete or false. It must not be a complete true. */
+    private static void assertNotFlowKnockedOut(Graph graph) {
+        Result<Object> knockedOut = graph.get("/flowIsKnockedOut");
+        assertFalse(knockedOut.complete() && Boolean.TRUE.equals(knockedOut.get()), "/flowIsKnockedOut");
     }
 }

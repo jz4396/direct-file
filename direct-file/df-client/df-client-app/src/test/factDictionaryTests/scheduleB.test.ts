@@ -6,6 +6,7 @@
 // A "Yes" on line 7a or line 8 knocks the return out: FinCEN Form 114 (i1040sb (2025) p. 3, required when "the
 // aggregate value of foreign financial accounts exceeds $10,000"), Form 8938 (p. 2) and Form 3520 (p. 3) are not
 // supported.
+import fs from 'fs';
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import {
@@ -16,7 +17,10 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
+import {
+  submissionBlockingFacts,
+  submissionBlockingFactsRequiringValue,
+} from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 import {
   baseFilerData,
   filerWithW2NoDeductionsNoCreditsBaseData,
@@ -35,7 +39,11 @@ const minimal = Object.fromEntries(
 
 type PartIII = { accounts?: boolean; grantor?: boolean; transactions?: boolean };
 
-const graph = (interest: Record<string, unknown>, partIII: PartIII = {}, answerPartIII = true) => {
+const graph = (
+  interest: Record<string, unknown>,
+  partIII: PartIII = {},
+  answerPartIII: boolean | `line7aOnly` = true
+) => {
   const facts: Record<string, unknown> = {
     ...minimal,
     ...baseFilerData,
@@ -48,8 +56,11 @@ const graph = (interest: Record<string, unknown>, partIII: PartIII = {}, answerP
     '/isForeignTrustsGrantor': createBooleanWrapper(partIII.grantor ?? false),
     '/hasForeignTrustsTransactions': createBooleanWrapper(partIII.transactions ?? false),
   };
-  if (!answerPartIII) {
+  if (answerPartIII === false) {
     delete facts['/hasForeignAccounts'];
+    delete facts['/isForeignTrustsGrantor'];
+    delete facts['/hasForeignTrustsTransactions'];
+  } else if (answerPartIII === `line7aOnly`) {
     delete facts['/isForeignTrustsGrantor'];
     delete facts['/hasForeignTrustsTransactions'];
   }
@@ -58,6 +69,13 @@ const graph = (interest: Record<string, unknown>, partIII: PartIII = {}, answerP
 type Fg = ReturnType<typeof graph>;
 const val = (fg: Fg, p: string) => fg.get(p as ConcretePath).get;
 const dollars = (fg: Fg, p: string) => val(fg, p).toString();
+const PRINT_REFUSE = `/flowPrintRefuseScheduleBPartIII`;
+const FLOW_KNOCKOUT = `/flowKnockoutScheduleBPartIII`;
+/** Checklist Start stays up unless /flowIsKnockedOut is complete and true. */
+const interviewKnockedOut = (fg: Fg) => {
+  const knockedOut = fg.get(`/flowIsKnockedOut` as ConcretePath);
+  return knockedOut.complete && knockedOut.get === true;
+};
 
 const oneReport = (amount: number) => makeInterestReportData(amount, intA, primaryFilerId);
 const twoReports = (a: number, b: number) => ({
@@ -176,64 +194,98 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
     expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
   });
 
+  it(`the print gate is not an operand of /flowIsKnockedOut`, () => {
+    const xml = fs.readFileSync(`./src/fact-dictionary/generate-src/xml-src/flow.xml`, `utf-8`);
+    const knockedOut = xml.match(/<Fact path="\/flowIsKnockedOut">[\s\S]*?<\/Fact>/)?.[0] ?? ``;
+    const operands = [...knockedOut.matchAll(/<Dependency[^>]*path="([^"]+)"/g)].map((m) => m[1]);
+    expect(operands).toContain(FLOW_KNOCKOUT);
+    expect(operands).not.toContain(PRINT_REFUSE);
+    expect(submissionBlockingFacts).toContain(FLOW_KNOCKOUT);
+    expect(submissionBlockingFacts).toContain(PRINT_REFUSE);
+    expect(submissionBlockingFactsRequiringValue).not.toContain(PRINT_REFUSE);
+    expect(submissionBlockingFactsRequiringValue).not.toContain(FLOW_KNOCKOUT);
+  });
+
   it(`ordinary dividends over $1,500 with Part III "No" does not stop the return`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/requiresScheduleBForOrdinaryDividends`,
       `/scheduleBPartIIIAnswered`,
-      `/flowKnockoutScheduleBPartIII`,
+      FLOW_KNOCKOUT,
+      PRINT_REFUSE,
     ];
     const fg = graph({ ...oneReport(10), ...oneDividend(2000) });
     expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(true);
     expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
-    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(false);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
-    expect(submissionBlockingFacts).toContain(`/flowKnockoutScheduleBPartIII`);
   });
 
-  it(`ordinary dividends over $1,500 with Part III unanswered stops the return`, ({ task }) => {
-    task.meta.testedFactPaths = [`/scheduleBPartIIIAnswered`, `/flowKnockoutScheduleBPartIII`];
+  it(`ordinary dividends over $1,500 with Part III unanswered refuses the print and does not knock out`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [`/scheduleBPartIIIAnswered`, FLOW_KNOCKOUT, PRINT_REFUSE];
     const fg = graph({ ...oneReport(10), ...oneDividend(1500.5) }, {}, false);
     expect(dollars(fg, `/ordinaryDividends`)).toBe(`1501.00`);
     expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(true);
     expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
-    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(true);
-    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(fg.get(FLOW_KNOCKOUT as ConcretePath).complete).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
   });
 
-  it(`ordinary dividends of exactly $1,500 with Part III unanswered stops the return`, ({ task }) => {
+  it(`ordinary dividends of exactly $1,500 with Part III unanswered refuses the print and does not knock out`, ({
+    task,
+  }) => {
     task.meta.testedFactPaths = [
       `/requiresScheduleBForOrdinaryDividends`,
       `/scheduleBPartIIIAnswered`,
-      `/flowKnockoutScheduleBPartIII`,
+      FLOW_KNOCKOUT,
+      PRINT_REFUSE,
     ];
     const fg = graph({ ...oneReport(10), ...oneDividend(1500) }, {}, false);
     expect(dollars(fg, `/ordinaryDividends`)).toBe(`1500.00`);
     expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
     expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
-    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(true);
-    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
+  });
+
+  it(`line 7a "No" and line 8 still unanswered refuses the print and does not knock out`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleBPartIIIAnswered`, FLOW_KNOCKOUT, PRINT_REFUSE];
+    const fg = graph({ ...oneReport(10), ...oneDividend(100) }, { accounts: false }, `line7aOnly`);
+    expect(val(fg, `/hasForeignAccounts`)).toBe(false);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
   });
 
   it(`ordinary dividends of exactly $1,500 with Part III "No" still prints`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/requiresScheduleBForOrdinaryDividends`,
       `/scheduleBPartIIIAnswered`,
-      `/flowKnockoutScheduleBPartIII`,
+      FLOW_KNOCKOUT,
+      PRINT_REFUSE,
     ];
     const fg = graph({ ...oneReport(10), ...oneDividend(1500) });
     expect(dollars(fg, `/ordinaryDividends`)).toBe(`1500.00`);
     expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
     expect(val(fg, `/requiresScheduleB`)).toBe(false);
     expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
-    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(false);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
   });
 
   it(`line 7a "Yes" stops the return even when dividends are under $1,500`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutScheduleBPartIII`];
+    task.meta.testedFactPaths = [FLOW_KNOCKOUT, PRINT_REFUSE];
     const fg = graph({ ...oneReport(10), ...oneDividend(100) }, { accounts: true });
     expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
-    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(true);
     expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
   });
 });
