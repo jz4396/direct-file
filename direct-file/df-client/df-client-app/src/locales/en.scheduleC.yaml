@@ -17,7 +17,9 @@ headings:
   /heading/income/schedule-c/farm: Did you have farm income or Conservation Reserve Program payments?
   /heading/income/schedule-c/church-employee: Did you have church employee income?
   /heading/income/schedule-c/optional-method: Do you want to use an optional method to figure self-employment tax?
-  /heading/income/schedule-c/minister: Are you a minister, a member of a religious order, or a Christian Science practitioner, or do you have a Form 4361 or Form 4029 exemption?
+  /heading/income/schedule-c/minister:
+    Are you a minister, a member of a religious order, or a Christian Science practitioner, or do you have a Form 4361
+    or Form 4029 exemption?
   /heading/income/schedule-c/notary: Do you have notary fees that are excluded from self-employment tax?
   /heading/income/schedule-c/form-8919: Did you have wages reported on Form 8919?
   /heading/knockout/schedule-se-out-of-scope: This tool can’t figure this self-employment tax
@@ -35,7 +37,8 @@ headings:
   /heading/income/schedule-c/expense-amounts: "Enter the expense amounts"
   /heading/income/schedule-c/meals-limit: "Are these meals limited to 50 percent?"
   /heading/income/schedule-c/wage-credits: "Are these wages reduced by an employment credit?"
-  /heading/income/schedule-c/interest-allocation: "Does this interest have to be split between business and personal use?"
+  /heading/income/schedule-c/interest-allocation:
+    "Does this interest have to be split between business and personal use?"
   /heading/income/schedule-c/amortization: "Does an other expense include amortization that began this year?"
   /heading/income/schedule-c/part-v-1: "Enter the first other expense"
   /heading/income/schedule-c/part-v-another: "Do you have another other expense?"
@@ -68,28 +71,28 @@ info:
     body: Add one entry for each business or gig activity. We’ll calculate net profit and self-employment tax.
   /info/income/schedule-c/amounts:
     body: >-
-      Gross receipts are your total business income before expenses. Expenses are ordinary and necessary costs
-      of running the business (Internal Revenue Code section 162).
+      Gross receipts are your total business income before expenses. Expenses are ordinary and necessary costs of
+      running the business (Internal Revenue Code section 162).
   /info/income/schedule-c/farm:
     body: >-
       Schedule SE lines 1a and 1b are farm profit and Conservation Reserve Program payments. Answer yes if either
       applies. This tool cannot figure those lines.
   /info/income/schedule-c/church-employee:
     body: >-
-      Church employee income goes on Schedule SE lines 5a and 5b. It is figured separately from other
-      self-employment income. Answer yes if you have it.
+      Church employee income goes on Schedule SE lines 5a and 5b. It is figured separately from other self-employment
+      income. Answer yes if you have it.
   /info/income/schedule-c/optional-method:
     body: >-
-      The optional methods are Schedule SE line 4b and Part II. Answer yes if you want to use a farm or nonfarm
-      optional method. This tool figures only the regular method.
+      The optional methods are Schedule SE line 4b and Part II. Answer yes if you want to use a farm or nonfarm optional
+      method. This tool figures only the regular method.
   /info/income/schedule-c/minister:
     body: >-
-      Answer yes if you are a minister, a member of a religious order, or a Christian Science practitioner, or if
-      you have an approved Form 4361 or Form 4029 exemption. Housing and the exemption are not figured here.
+      Answer yes if you are a minister, a member of a religious order, or a Christian Science practitioner, or if you
+      have an approved Form 4361 or Form 4029 exemption. Housing and the exemption are not figured here.
   /info/income/schedule-c/notary:
     body: >-
-      Notary fees for a public office are excluded from self-employment tax. Answer yes if you need that exclusion.
-      This tool cannot subtract those fees.
+      Notary fees for a public office are excluded from self-employment tax. Answer yes if you need that exclusion. This
+      tool cannot subtract those fees.
   /info/income/schedule-c/form-8919:
     body: >-
       Form 8919 wages go on Schedule SE line 8c. Answer yes if you have them. Unreported tips on Form 4137 are a
@@ -110,13 +113,17 @@ info:
             some businesses you materially participate in and some you don’t. You’ll need another way to file this
             return.
   /info/income/schedule-c/part-i:
-    body: "Gross receipts are line 1. Returns and allowances are line 2, entered as a positive amount. Other income is line 6 (for example, scrap sales). Leave a line at zero if it does not apply."
+    body:
+      "Gross receipts are line 1. Returns and allowances are line 2, entered as a positive amount. Other income is line
+      6 (for example, scrap sales). Leave a line at zero if it does not apply."
   /info/income/schedule-c/other-income-form:
     body: "Answer yes if this amount is a fuel tax credit or a Form 4797 recapture. This tool cannot figure those."
   /info/income/schedule-c/inventory:
     body: "Answer yes if you need Part III, cost of goods sold. This tool cannot figure inventory."
   /info/income/schedule-c/vehicle:
-    body: "Answer yes for car and truck expenses (line 9) or vehicle loan interest (line 16b). Those need Form 4562 or Part IV."
+    body:
+      "Answer yes for car and truck expenses (line 9) or vehicle loan interest (line 16b). Those need Form 4562 or Part
+      IV."
   /info/income/schedule-c/depreciation:
     body: "Answer yes if line 13 applies. Depreciation and the section 179 deduction need Form 4562."
   /info/income/schedule-c/depletion:
@@ -124,33 +131,51 @@ info:
   /info/income/schedule-c/equipment-rent:
     body: "Answer yes for rent of vehicles, machinery, and equipment (line 20a)."
   /info/income/schedule-c/home-office:
-    body: "Answer yes if you claim expenses for business use of your home on line 30, including the simplified method. That needs Form 8829 or the simplified worksheet."
+    body:
+      "Answer yes if you claim expenses for business use of your home on line 30, including the simplified method. That
+      needs Form 8829 or the simplified worksheet."
   /info/income/schedule-c/energy:
     body: "Answer yes if you claim the line 27a deduction. It needs Form 7205."
   /info/income/schedule-c/has-expenses:
-    body: "These are ordinary and necessary costs of carrying on the business (Internal Revenue Code section 162). Do not include the items asked about above."
+    body:
+      "These are ordinary and necessary costs of carrying on the business (Internal Revenue Code section 162). Do not
+      include the items asked about above."
   /info/income/schedule-c/which-expenses:
-    body: "Select every line that applies. Meals are cut to 50 percent on the next screen unless a different limit applies."
+    body:
+      "Select every line that applies. Meals are cut to 50 percent on the next screen unless a different limit applies."
   /info/income/schedule-c/expense-amounts:
     body: "Enter the amount for each line you selected. For meals, enter the full amount before the 50 percent limit."
   /info/income/schedule-c/meals-limit:
-    body: "In most cases you can deduct 50 percent of business meals. Answer no if the 80 percent transportation-worker exception or a 100 percent meal applies."
+    body:
+      "In most cases you can deduct 50 percent of business meals. Answer no if the 80 percent transportation-worker
+      exception or a 100 percent meal applies."
   /info/income/schedule-c/wage-credits:
     body: "Line 26 is wages minus employment credits. Answer yes if you reduce wages by Form 5884, 8932, or 8994."
   /info/income/schedule-c/interest-allocation:
-    body: "Answer yes if mortgage interest (line 16a) or other interest (line 16c) is partly personal or otherwise has to be allocated. Vehicle loan interest is line 16b and was asked earlier."
+    body:
+      "Answer yes if mortgage interest (line 16a) or other interest (line 16c) is partly personal or otherwise has to be
+      allocated. Vehicle loan interest is line 16b and was asked earlier."
   /info/income/schedule-c/amortization:
     body: "Answer yes if any other expense is amortization that begins in 2026. That is reported on Form 4562-B."
   /info/income/schedule-c/part-v:
     body: "List each other expense and its amount. The total is line 48 and line 27b."
   /info/income/schedule-c/part-v-more:
-    body: "This tool can list three other expenses. Answer yes if you have a fourth. The form allows more, and you will need another way to file."
+    body:
+      "This tool can list three other expenses. Answer yes if you have a fourth. The form allows more, and you will need
+      another way to file."
   /info/income/schedule-c/at-risk:
-    body: "Answer this only because this business has a loss. If all of your investment was at risk and you materially participated, the loss can be reported. If some was not at risk, Form 6198 is required."
+    body:
+      "Answer this only because this business has a loss. If all of your investment was at risk and you materially
+      participated, the loss can be reported. If some was not at risk, Form 6198 is required."
   /info/knockout/schedule-c-out-of-scope:
     alertText:
       body:
-        - p: "This business needs a form or a loss limit this tool does not figure. That includes inventory, vehicle expenses, depreciation, depletion, equipment rent, a home office, Form 7205, meals that are not limited to 50 percent, employment credits, interest that must be allocated, new amortization, more than three other expenses, line 6 income from another form, a loss you did not materially participate in, or a loss that is not fully at risk. You will need another way to file this return."
+        - p:
+            "This business needs a form or a loss limit this tool does not figure. That includes inventory, vehicle
+            expenses, depreciation, depletion, equipment rent, a home office, Form 7205, meals that are not limited to
+            50 percent, employment credits, interest that must be allocated, new amortization, more than three other
+            expenses, line 6 income from another form, a loss you did not materially participate in, or a loss that is
+            not fully at risk. You will need another way to file this return."
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -194,7 +219,7 @@ fields:
       "no": No, I didn’t materially participate
   /scheduleCBusinesses:
     controls:
-      add: Add a business
+      add: Add another Schedule C business
       complete_zero: I don’t have a business to add
       complete: I’m done adding businesses
       back: Go to business list
@@ -205,7 +230,7 @@ fields:
       label2: Net profit or (loss)
       value2: <strong>{{/scheduleCBusinesses/*/netProfitOrLoss}}</strong>
     deleteControl:
-      text: <LinkModal1>Remove business</LinkModal1>
+      text: <LinkModal1>Remove this Schedule C business</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this business?
         body:
@@ -218,9 +243,9 @@ fields:
   /scheduleCBusinesses/*/businessName:
     name: Business or gig activity name
   /scheduleCBusinesses/*/writableGrossReceipts:
-    name: Gross receipts or sales
+    name: "Line 1, Gross receipts or sales"
   /scheduleCBusinesses/*/writableTotalExpenses:
-    name: Total business expenses
+    name: "Line 28, Total business expenses"
   /scheduleCExpenseLineOptions:
     advertising: "Advertising"
     commissionsAndFees: "Commissions and fees"
@@ -242,57 +267,57 @@ fields:
     wages: "Wages"
     otherExpenses: "Other expenses"
   /scheduleCBusinesses/*/writableReturnsAndAllowances:
-    name: "Returns and allowances"
+    name: "Line 2, Returns and allowances"
   /scheduleCBusinesses/*/writableOtherIncome:
-    name: "Other income"
+    name: "Line 6, Other income"
   /scheduleCBusinesses/*/writableAdvertising:
-    name: "Advertising"
+    name: "Line 8, Advertising"
   /scheduleCBusinesses/*/writableCommissionsAndFees:
-    name: "Commissions and fees"
+    name: "Line 10, Commissions and fees"
   /scheduleCBusinesses/*/writableContractLabor:
-    name: "Contract labor"
+    name: "Line 11, Contract labor"
   /scheduleCBusinesses/*/writableEmployeeBenefitPrograms:
-    name: "Employee benefit programs"
+    name: "Line 14, Employee benefit programs"
   /scheduleCBusinesses/*/writableInsurance:
-    name: "Insurance (other than health)"
+    name: "Line 15, Insurance (other than health)"
   /scheduleCBusinesses/*/writableMortgageInterest:
-    name: "Mortgage interest"
+    name: "Line 16a, Mortgage interest"
   /scheduleCBusinesses/*/writableOtherInterest:
-    name: "Other interest"
+    name: "Line 16b, Other interest"
   /scheduleCBusinesses/*/writableLegalAndProfessional:
-    name: "Legal and professional services"
+    name: "Line 17, Legal and professional services"
   /scheduleCBusinesses/*/writableOfficeExpense:
-    name: "Office expense"
+    name: "Line 18, Office expense"
   /scheduleCBusinesses/*/writablePensionAndProfitSharing:
-    name: "Pension and profit-sharing plans"
+    name: "Line 19, Pension and profit-sharing plans"
   /scheduleCBusinesses/*/writableRentOtherBusinessProperty:
-    name: "Rent of other business property"
+    name: "Line 20b, Rent of other business property"
   /scheduleCBusinesses/*/writableRepairsAndMaintenance:
-    name: "Repairs and maintenance"
+    name: "Line 21, Repairs and maintenance"
   /scheduleCBusinesses/*/writableSupplies:
-    name: "Supplies"
+    name: "Line 22, Supplies"
   /scheduleCBusinesses/*/writableTaxesAndLicenses:
-    name: "Taxes and licenses"
+    name: "Line 23, Taxes and licenses"
   /scheduleCBusinesses/*/writableTravel:
-    name: "Travel"
+    name: "Line 24a, Travel"
   /scheduleCBusinesses/*/writableMeals:
-    name: "Meals before the 50 percent limit"
+    name: "Line 24b, Meals before the 50 percent limit"
   /scheduleCBusinesses/*/writableUtilities:
-    name: "Utilities"
+    name: "Line 25, Utilities"
   /scheduleCBusinesses/*/writableWages:
-    name: "Wages"
+    name: "Line 26, Wages"
   /scheduleCBusinesses/*/partV1Description:
     name: "First other expense"
   /scheduleCBusinesses/*/partV1Amount:
-    name: "Amount of the first other expense"
+    name: "Part V, amount of the first other expense"
   /scheduleCBusinesses/*/partV2Description:
     name: "Second other expense"
   /scheduleCBusinesses/*/partV2Amount:
-    name: "Amount of the second other expense"
+    name: "Part V, amount of the second other expense"
   /scheduleCBusinesses/*/partV3Description:
     name: "Third other expense"
   /scheduleCBusinesses/*/partV3Amount:
-    name: "Amount of the third other expense"
+    name: "Part V, amount of the third other expense"
   /scheduleCBusinesses/*/expenseLinesChosen:
     name: "Expenses that apply"
   /scheduleCBusinesses/*/otherIncomeNeedsAnotherForm:
@@ -384,11 +409,13 @@ dataviews:
     /scheduleCBusinesses/*/otherIncomeNeedsAnotherForm: "Does this other income belong on another form?"
     /scheduleCBusinesses/*/hasInventoryOrCogs: "Did this business have inventory or cost of goods sold?"
     /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan: "Did this business have car, truck, or vehicle-loan expenses?"
-    /scheduleCBusinesses/*/hasDepreciationOrSection179: "Did this business have depreciation or a section 179 deduction?"
+    /scheduleCBusinesses/*/hasDepreciationOrSection179:
+      "Did this business have depreciation or a section 179 deduction?"
     /scheduleCBusinesses/*/hasDepletion: "Did this business have a depletion deduction?"
     /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent: "Did this business rent vehicles, machinery, or equipment?"
     /scheduleCBusinesses/*/hasHomeOffice: "Did you use your home for this business?"
-    /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction: "Did you claim the energy efficient commercial buildings deduction?"
+    /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
+      "Did you claim the energy efficient commercial buildings deduction?"
     /scheduleCBusinesses/*/hasDeductibleExpenses: "Did this business have deductible expenses?"
     /scheduleCBusinesses/*/expenseLinesChosen: "Which expenses did this business have?"
     /scheduleCBusinesses/*/writableAdvertising: "Advertising"
@@ -411,8 +438,10 @@ dataviews:
     /scheduleCBusinesses/*/writableUtilities: "Utilities"
     /scheduleCBusinesses/*/writableWages: "Wages"
     /scheduleCBusinesses/*/wagesReducedByEmploymentCredits: "Are these wages reduced by an employment credit?"
-    /scheduleCBusinesses/*/interestNeedsAllocation: "Does this interest have to be split between business and personal use?"
-    /scheduleCBusinesses/*/partVIncludesNewAmortization: "Does an other expense include amortization that began this year?"
+    /scheduleCBusinesses/*/interestNeedsAllocation:
+      "Does this interest have to be split between business and personal use?"
+    /scheduleCBusinesses/*/partVIncludesNewAmortization:
+      "Does an other expense include amortization that began this year?"
     /scheduleCBusinesses/*/partV1Description: "First other expense"
     /scheduleCBusinesses/*/partV1Amount: "Amount of the first other expense"
     /scheduleCBusinesses/*/hasAnotherPartVExpense: "Do you have another other expense?"

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getModalOrTranslationComponent } from '../utils/modalHelpers.js';
 import useTranslatePIIRedacted from '../hooks/useTranslatePIIRedacted.js';
 
-const Heading = ({ i18nKey, collectionId }: InfoDisplayProps) => {
+const Heading = ({ i18nKey, collectionId, headingId }: InfoDisplayProps & { headingId?: string }) => {
   const { t } = useTranslation();
 
   // Select the key to use for the title
@@ -22,7 +22,7 @@ const Heading = ({ i18nKey, collectionId }: InfoDisplayProps) => {
   };
 
   return (
-    <PageTitle redactedTitle={useTranslatePIIRedacted(redactedI18nKey, true)}>
+    <PageTitle redactedTitle={useTranslatePIIRedacted(redactedI18nKey, true)} headingId={headingId}>
       <Component components={components} i18nKey={calculatedI18nKey} collectionId={collectionId} />
     </PageTitle>
   );

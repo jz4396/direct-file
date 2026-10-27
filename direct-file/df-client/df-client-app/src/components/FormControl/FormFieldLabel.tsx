@@ -6,6 +6,8 @@ import { I18nKey } from '../Translation/Translation.js';
 
 export interface FormFieldLabelProps {
   labelKey: I18nKey;
+  /** Locale key for a form name shown before the box label, e.g. "Form W-2". */
+  prefixKey?: string;
   labelContext?: object;
   labelId?: string;
   collectionId: string | null;
@@ -18,6 +20,7 @@ export interface FormFieldLabelProps {
 
 export function FormFieldLabel({
   labelKey,
+  prefixKey,
   labelContext,
   labelId,
   collectionId,
@@ -27,7 +30,17 @@ export function FormFieldLabel({
   readonly,
   required,
 }: FormFieldLabelProps) {
-  const labelBody = <Translation i18nKey={labelKey} collectionId={collectionId} context={labelContext} />;
+  const labelBody = (
+    <>
+      {prefixKey ? (
+        <>
+          <Translation i18nKey={prefixKey} collectionId={null} />
+          {`, `}
+        </>
+      ) : null}
+      <Translation i18nKey={labelKey} collectionId={collectionId} context={labelContext} />
+    </>
+  );
   const legendStyle = classNames({ 'usa-label--error': showError, 'float-left margin-right-05': useLegendAsLabel });
   const isRequired = required === false ? false : true;
 

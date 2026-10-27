@@ -6,8 +6,11 @@ subsubcategories:
     schedule-c-business: Información del negocio
 headings:
   /heading/income/schedule-c: Ingresos de trabajo por cuenta propia
-  /heading/income/schedule-c/intro: ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en {{/taxYear}}?
-  /heading/income/schedule-c/qbi-carryforward: ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
+  /heading/income/schedule-c/intro:
+    ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en
+    {{/taxYear}}?
+  /heading/income/schedule-c/qbi-carryforward:
+    ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
   /heading/income/schedule-c/qbi-cooperative: ¿Es usted cliente de una cooperativa agrícola u hortícola?
   /heading/income/schedule-c/material-participation: ¿Participó materialmente en este negocio?
   /heading/income/schedule-c/loop-intro: Agregue cada negocio o actividad esporádica
@@ -16,15 +19,21 @@ headings:
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
   /heading/income/schedule-c/farm: ¿Tuvo ingresos de agricultura o pagos del Programa de Reservas para la Conservación?
   /heading/income/schedule-c/church-employee: ¿Tuvo ingresos como empleado de una iglesia?
-  /heading/income/schedule-c/optional-method: ¿Quiere usar un método opcional para calcular el impuesto sobre el trabajo por cuenta propia?
-  /heading/income/schedule-c/minister: ¿Es usted ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o tiene una exención del Formulario 4361 o 4029?
-  /heading/income/schedule-c/notary: ¿Tiene honorarios de notario que están excluidos del impuesto sobre el trabajo por cuenta propia?
+  /heading/income/schedule-c/optional-method:
+    ¿Quiere usar un método opcional para calcular el impuesto sobre el trabajo por cuenta propia?
+  /heading/income/schedule-c/minister:
+    ¿Es usted ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o tiene una exención del
+    Formulario 4361 o 4029?
+  /heading/income/schedule-c/notary:
+    ¿Tiene honorarios de notario que están excluidos del impuesto sobre el trabajo por cuenta propia?
   /heading/income/schedule-c/form-8919: ¿Tuvo salarios declarados en el Formulario 8919?
-  /heading/knockout/schedule-se-out-of-scope: Esta herramienta no puede calcular este impuesto sobre el trabajo por cuenta propia
+  /heading/knockout/schedule-se-out-of-scope:
+    Esta herramienta no puede calcular este impuesto sobre el trabajo por cuenta propia
   /heading/income/schedule-c/part-i: "Ingrese los ingresos de este negocio"
   /heading/income/schedule-c/other-income-form: "¿Estos otros ingresos corresponden a otro formulario?"
   /heading/income/schedule-c/inventory: "¿Este negocio tuvo inventario o costo de mercancías vendidas?"
-  /heading/income/schedule-c/vehicle: "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
+  /heading/income/schedule-c/vehicle:
+    "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
   /heading/income/schedule-c/depreciation: "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
   /heading/income/schedule-c/depletion: "¿Este negocio tuvo una deducción por agotamiento?"
   /heading/income/schedule-c/equipment-rent: "¿Este negocio alquiló vehículos, maquinaria o equipo?"
@@ -35,7 +44,8 @@ headings:
   /heading/income/schedule-c/expense-amounts: "Ingrese los montos de los gastos"
   /heading/income/schedule-c/meals-limit: "¿Estas comidas están limitadas al 50 por ciento?"
   /heading/income/schedule-c/wage-credits: "¿Estos salarios se reducen por un crédito por empleo?"
-  /heading/income/schedule-c/interest-allocation: "¿Estos intereses tienen que dividirse entre el uso del negocio y el uso personal?"
+  /heading/income/schedule-c/interest-allocation:
+    "¿Estos intereses tienen que dividirse entre el uso del negocio y el uso personal?"
   /heading/income/schedule-c/amortization: "¿Un otro gasto incluye amortización que comenzó este año?"
   /heading/income/schedule-c/part-v-1: "Ingrese el primer otro gasto"
   /heading/income/schedule-c/part-v-another: "¿Tiene otro gasto adicional?"
@@ -48,16 +58,15 @@ headings:
 info:
   /info/income/schedule-c/intro:
     body: >-
-      Esto incluye los ingresos de un negocio por cuenta propia, trabajos esporádicos o trabajo independiente que
-      se declaran en el Anexo C. También incluye ingresos de agricultura, ingresos como empleado de una iglesia,
-      honorarios de notario e ingresos del ministerio. Conteste que sí si alguno corresponde. Conteste que no solo
-      si ninguno corresponde.
+      Esto incluye los ingresos de un negocio por cuenta propia, trabajos esporádicos o trabajo independiente que se
+      declaran en el Anexo C. También incluye ingresos de agricultura, ingresos como empleado de una iglesia, honorarios
+      de notario e ingresos del ministerio. Conteste que sí si alguno corresponde. Conteste que no solo si ninguno
+      corresponde.
   /info/income/schedule-c/qbi-carryforward:
     body: >-
-      Usamos los ingresos de su negocio para calcular la deducción por ingreso calificado de negocios (Formulario
-      8995). Conteste que sí si su Formulario 8995 u 8995-A del año anterior mostró una pérdida de negocio calificada
-      que se traslada o una pérdida que se traslada de dividendos calificados de REIT y de sociedades que cotizan en
-      bolsa.
+      Usamos los ingresos de su negocio para calcular la deducción por ingreso calificado de negocios (Formulario 8995).
+      Conteste que sí si su Formulario 8995 u 8995-A del año anterior mostró una pérdida de negocio calificada que se
+      traslada o una pérdida que se traslada de dividendos calificados de REIT y de sociedades que cotizan en bolsa.
   /info/income/schedule-c/qbi-cooperative:
     body: >-
       Conteste que sí si vende productos a una cooperativa agrícola o de jardinería, o compra suministros por medio de
@@ -68,8 +77,8 @@ info:
       trabajó más de 500 horas en él este año o hizo casi todo el trabajo.
   /info/income/schedule-c/loop-intro:
     body: >-
-      Agregue una entrada por cada negocio o actividad esporádica. Calcularemos la ganancia neta y el impuesto sobre
-      el trabajo por cuenta propia.
+      Agregue una entrada por cada negocio o actividad esporádica. Calcularemos la ganancia neta y el impuesto sobre el
+      trabajo por cuenta propia.
   /info/income/schedule-c/amounts:
     body: >-
       Los ingresos brutos son el total de los ingresos del negocio antes de los gastos. Los gastos son los costos
@@ -80,16 +89,16 @@ info:
       Conservación. Conteste que sí si alguna corresponde. Esta herramienta no puede calcular esas líneas.
   /info/income/schedule-c/church-employee:
     body: >-
-      Los ingresos como empleado de una iglesia van en las líneas 5a y 5b del Anexo SE. Se calculan por separado de
-      los otros ingresos del trabajo por cuenta propia. Conteste que sí si los tiene.
+      Los ingresos como empleado de una iglesia van en las líneas 5a y 5b del Anexo SE. Se calculan por separado de los
+      otros ingresos del trabajo por cuenta propia. Conteste que sí si los tiene.
   /info/income/schedule-c/optional-method:
     body: >-
       Los métodos opcionales son la línea 4b y la Parte II del Anexo SE. Conteste que sí si quiere usar un método
       opcional de agricultura o que no es de agricultura. Esta herramienta calcula solo el método regular.
   /info/income/schedule-c/minister:
     body: >-
-      Conteste que sí si es ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o si
-      tiene una exención aprobada del Formulario 4361 o 4029. La vivienda y la exención no se calculan aquí.
+      Conteste que sí si es ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o si tiene
+      una exención aprobada del Formulario 4361 o 4029. La vivienda y la exención no se calculan aquí.
   /info/income/schedule-c/notary:
     body: >-
       Los honorarios de notario por un cargo público están excluidos del impuesto sobre el trabajo por cuenta propia.
@@ -112,50 +121,86 @@ info:
         - p: >-
             Esta herramienta calcula la deducción por ingreso calificado de negocios solo con el Formulario 8995
             simplificado. No acepta una pérdida que se traslada de un año anterior, pagos de cooperativas, ingreso
-            tributable por encima del límite del Formulario 8995, ni algunos negocios en los que participa
-            materialmente y otros en los que no. Tendrá que usar otra manera de presentar esta declaración.
+            tributable por encima del límite del Formulario 8995, ni algunos negocios en los que participa materialmente
+            y otros en los que no. Tendrá que usar otra manera de presentar esta declaración.
   /info/income/schedule-c/part-i:
-    body: "Los ingresos brutos son la línea 1. Las devoluciones y rebajas son la línea 2 y se ingresan como un monto positivo. Los otros ingresos son la línea 6 (por ejemplo, ventas de desecho). Deje una línea en cero si no corresponde."
+    body:
+      "Los ingresos brutos son la línea 1. Las devoluciones y rebajas son la línea 2 y se ingresan como un monto
+      positivo. Los otros ingresos son la línea 6 (por ejemplo, ventas de desecho). Deje una línea en cero si no
+      corresponde."
   /info/income/schedule-c/other-income-form:
-    body: "Conteste que sí si este monto es un crédito por impuesto sobre combustibles o una recuperación del Formulario 4797. Esta herramienta no puede calcularlos."
+    body:
+      "Conteste que sí si este monto es un crédito por impuesto sobre combustibles o una recuperación del Formulario
+      4797. Esta herramienta no puede calcularlos."
   /info/income/schedule-c/inventory:
-    body: "Conteste que sí si necesita la Parte III, costo de mercancías vendidas. Esta herramienta no puede calcular el inventario."
+    body:
+      "Conteste que sí si necesita la Parte III, costo de mercancías vendidas. Esta herramienta no puede calcular el
+      inventario."
   /info/income/schedule-c/vehicle:
-    body: "Conteste que sí si tuvo gastos de automóvil y camión (línea 9) o intereses de un préstamo de vehículo (línea 16b). Esos necesitan el Formulario 4562 o la Parte IV."
+    body:
+      "Conteste que sí si tuvo gastos de automóvil y camión (línea 9) o intereses de un préstamo de vehículo (línea
+      16b). Esos necesitan el Formulario 4562 o la Parte IV."
   /info/income/schedule-c/depreciation:
-    body: "Conteste que sí si corresponde la línea 13. La depreciación y la deducción de la sección 179 necesitan el Formulario 4562."
+    body:
+      "Conteste que sí si corresponde la línea 13. La depreciación y la deducción de la sección 179 necesitan el
+      Formulario 4562."
   /info/income/schedule-c/depletion:
     body: "Conteste que sí si reclama agotamiento en la línea 12."
   /info/income/schedule-c/equipment-rent:
     body: "Conteste que sí si alquiló vehículos, maquinaria y equipo (línea 20a)."
   /info/income/schedule-c/home-office:
-    body: "Conteste que sí si reclama gastos por el uso comercial de su hogar en la línea 30, incluido el método simplificado. Eso necesita el Formulario 8829 o la hoja de trabajo simplificada."
+    body:
+      "Conteste que sí si reclama gastos por el uso comercial de su hogar en la línea 30, incluido el método
+      simplificado. Eso necesita el Formulario 8829 o la hoja de trabajo simplificada."
   /info/income/schedule-c/energy:
     body: "Conteste que sí si reclama la deducción de la línea 27a. Necesita el Formulario 7205."
   /info/income/schedule-c/has-expenses:
-    body: "Estos son los costos ordinarios y necesarios para llevar a cabo el negocio (sección 162 del Código de Impuestos Internos). No incluya los conceptos preguntados arriba."
+    body:
+      "Estos son los costos ordinarios y necesarios para llevar a cabo el negocio (sección 162 del Código de Impuestos
+      Internos). No incluya los conceptos preguntados arriba."
   /info/income/schedule-c/which-expenses:
-    body: "Seleccione cada línea que corresponda. Las comidas se reducen al 50 por ciento en la pantalla siguiente, salvo que corresponda otro límite."
+    body:
+      "Seleccione cada línea que corresponda. Las comidas se reducen al 50 por ciento en la pantalla siguiente, salvo
+      que corresponda otro límite."
   /info/income/schedule-c/expense-amounts:
-    body: "Ingrese el monto de cada línea que seleccionó. Para las comidas, ingrese el monto total antes del límite del 50 por ciento."
+    body:
+      "Ingrese el monto de cada línea que seleccionó. Para las comidas, ingrese el monto total antes del límite del 50
+      por ciento."
   /info/income/schedule-c/meals-limit:
-    body: "En la mayoría de los casos puede deducir el 50 por ciento de las comidas del negocio. Conteste que no si corresponde la excepción del 80 por ciento para trabajadores del transporte o una comida del 100 por ciento."
+    body:
+      "En la mayoría de los casos puede deducir el 50 por ciento de las comidas del negocio. Conteste que no si
+      corresponde la excepción del 80 por ciento para trabajadores del transporte o una comida del 100 por ciento."
   /info/income/schedule-c/wage-credits:
-    body: "La línea 26 son los salarios menos los créditos por empleo. Conteste que sí si reduce los salarios por el Formulario 5884, 8932 u 8994."
+    body:
+      "La línea 26 son los salarios menos los créditos por empleo. Conteste que sí si reduce los salarios por el
+      Formulario 5884, 8932 u 8994."
   /info/income/schedule-c/interest-allocation:
-    body: "Conteste que sí si los intereses hipotecarios (línea 16a) u otros intereses (línea 16c) son en parte personales o deben asignarse de otra manera. Los intereses de un préstamo de vehículo son la línea 16b y se preguntaron antes."
+    body:
+      "Conteste que sí si los intereses hipotecarios (línea 16a) u otros intereses (línea 16c) son en parte personales o
+      deben asignarse de otra manera. Los intereses de un préstamo de vehículo son la línea 16b y se preguntaron antes."
   /info/income/schedule-c/amortization:
-    body: "Conteste que sí si algún otro gasto es amortización que comienza en 2026. Eso se declara en el Formulario 4562-B."
+    body:
+      "Conteste que sí si algún otro gasto es amortización que comienza en 2026. Eso se declara en el Formulario 4562-B."
   /info/income/schedule-c/part-v:
     body: "Anote cada otro gasto y su monto. El total es la línea 48 y la línea 27b."
   /info/income/schedule-c/part-v-more:
-    body: "Esta herramienta puede anotar tres otros gastos. Conteste que sí si tiene un cuarto. El formulario permite más y tendrá que usar otra manera de presentar la declaración."
+    body:
+      "Esta herramienta puede anotar tres otros gastos. Conteste que sí si tiene un cuarto. El formulario permite más y
+      tendrá que usar otra manera de presentar la declaración."
   /info/income/schedule-c/at-risk:
-    body: "Conteste esto solo porque este negocio tiene una pérdida. Si toda su inversión estuvo en riesgo y participó materialmente, la pérdida puede declararse. Si parte no estuvo en riesgo, se requiere el Formulario 6198."
+    body:
+      "Conteste esto solo porque este negocio tiene una pérdida. Si toda su inversión estuvo en riesgo y participó
+      materialmente, la pérdida puede declararse. Si parte no estuvo en riesgo, se requiere el Formulario 6198."
   /info/knockout/schedule-c-out-of-scope:
     alertText:
       body:
-        - p: "Este negocio necesita un formulario o un límite de pérdida que esta herramienta no calcula. Eso incluye inventario, gastos de vehículo, depreciación, agotamiento, alquiler de equipo, una oficina en el hogar, el Formulario 7205, comidas que no están limitadas al 50 por ciento, créditos por empleo, intereses que deben asignarse, amortización nueva, más de tres otros gastos, ingresos de la línea 6 de otro formulario, una pérdida en la que no participó materialmente o una pérdida que no está totalmente en riesgo. Tendrá que usar otra manera de presentar esta declaración."
+        - p:
+            "Este negocio necesita un formulario o un límite de pérdida que esta herramienta no calcula. Eso incluye
+            inventario, gastos de vehículo, depreciación, agotamiento, alquiler de equipo, una oficina en el hogar, el
+            Formulario 7205, comidas que no están limitadas al 50 por ciento, créditos por empleo, intereses que deben
+            asignarse, amortización nueva, más de tres otros gastos, ingresos de la línea 6 de otro formulario, una
+            pérdida en la que no participó materialmente o una pérdida que no está totalmente en riesgo. Tendrá que usar
+            otra manera de presentar esta declaración."
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -199,7 +244,7 @@ fields:
       "no": No, no participé materialmente
   /scheduleCBusinesses:
     controls:
-      add: Agregar un negocio
+      add: Agregar otro negocio del Anexo C
       complete_zero: No tengo un negocio para agregar
       complete: Terminé de agregar negocios
       back: Ir a la lista de negocios
@@ -210,7 +255,7 @@ fields:
       label2: Ganancia o (pérdida) neta
       value2: <strong>{{/scheduleCBusinesses/*/netProfitOrLoss}}</strong>
     deleteControl:
-      text: <LinkModal1>Eliminar negocio</LinkModal1>
+      text: <LinkModal1>Eliminar este negocio del Anexo C</LinkModal1>
       LinkModal1:
         header: ¿Está seguro de que desea eliminar este negocio?
         body:
@@ -223,9 +268,9 @@ fields:
   /scheduleCBusinesses/*/businessName:
     name: Nombre del negocio o actividad esporádica
   /scheduleCBusinesses/*/writableGrossReceipts:
-    name: Ingresos brutos o ventas
+    name: "Línea 1, Ingresos brutos o ventas"
   /scheduleCBusinesses/*/writableTotalExpenses:
-    name: Total de gastos del negocio
+    name: "Línea 28, Total de gastos del negocio"
   /scheduleCExpenseLineOptions:
     advertising: "Publicidad"
     commissionsAndFees: "Comisiones y honorarios"
@@ -247,57 +292,57 @@ fields:
     wages: "Salarios"
     otherExpenses: "Otros gastos"
   /scheduleCBusinesses/*/writableReturnsAndAllowances:
-    name: "Devoluciones y rebajas"
+    name: "Línea 2, Devoluciones y rebajas"
   /scheduleCBusinesses/*/writableOtherIncome:
-    name: "Otros ingresos"
+    name: "Línea 6, Otros ingresos"
   /scheduleCBusinesses/*/writableAdvertising:
-    name: "Publicidad"
+    name: "Línea 8, Publicidad"
   /scheduleCBusinesses/*/writableCommissionsAndFees:
-    name: "Comisiones y honorarios"
+    name: "Línea 10, Comisiones y honorarios"
   /scheduleCBusinesses/*/writableContractLabor:
-    name: "Mano de obra por contrato"
+    name: "Línea 11, Mano de obra por contrato"
   /scheduleCBusinesses/*/writableEmployeeBenefitPrograms:
-    name: "Programas de beneficios para empleados"
+    name: "Línea 14, Programas de beneficios para empleados"
   /scheduleCBusinesses/*/writableInsurance:
-    name: "Seguro (que no sea de salud)"
+    name: "Línea 15, Seguro (que no sea de salud)"
   /scheduleCBusinesses/*/writableMortgageInterest:
-    name: "Intereses hipotecarios"
+    name: "Línea 16a, Intereses hipotecarios"
   /scheduleCBusinesses/*/writableOtherInterest:
-    name: "Otros intereses"
+    name: "Línea 16b, Otros intereses"
   /scheduleCBusinesses/*/writableLegalAndProfessional:
-    name: "Servicios legales y profesionales"
+    name: "Línea 17, Servicios legales y profesionales"
   /scheduleCBusinesses/*/writableOfficeExpense:
-    name: "Gastos de oficina"
+    name: "Línea 18, Gastos de oficina"
   /scheduleCBusinesses/*/writablePensionAndProfitSharing:
-    name: "Planes de pensión y de participación en las ganancias"
+    name: "Línea 19, Planes de pensión y de participación en las ganancias"
   /scheduleCBusinesses/*/writableRentOtherBusinessProperty:
-    name: "Alquiler de otros bienes del negocio"
+    name: "Línea 20b, Alquiler de otros bienes del negocio"
   /scheduleCBusinesses/*/writableRepairsAndMaintenance:
-    name: "Reparaciones y mantenimiento"
+    name: "Línea 21, Reparaciones y mantenimiento"
   /scheduleCBusinesses/*/writableSupplies:
-    name: "Suministros"
+    name: "Línea 22, Suministros"
   /scheduleCBusinesses/*/writableTaxesAndLicenses:
-    name: "Impuestos y licencias"
+    name: "Línea 23, Impuestos y licencias"
   /scheduleCBusinesses/*/writableTravel:
-    name: "Viajes"
+    name: "Línea 24a, Viajes"
   /scheduleCBusinesses/*/writableMeals:
-    name: "Comidas antes del límite del 50 por ciento"
+    name: "Línea 24b, Comidas antes del límite del 50 por ciento"
   /scheduleCBusinesses/*/writableUtilities:
-    name: "Servicios públicos"
+    name: "Línea 25, Servicios públicos"
   /scheduleCBusinesses/*/writableWages:
-    name: "Salarios"
+    name: "Línea 26, Salarios"
   /scheduleCBusinesses/*/partV1Description:
     name: "Primer otro gasto"
   /scheduleCBusinesses/*/partV1Amount:
-    name: "Monto del primer otro gasto"
+    name: "Parte V, monto del primer otro gasto"
   /scheduleCBusinesses/*/partV2Description:
     name: "Segundo otro gasto"
   /scheduleCBusinesses/*/partV2Amount:
-    name: "Monto del segundo otro gasto"
+    name: "Parte V, monto del segundo otro gasto"
   /scheduleCBusinesses/*/partV3Description:
     name: "Tercer otro gasto"
   /scheduleCBusinesses/*/partV3Amount:
-    name: "Monto del tercer otro gasto"
+    name: "Parte V, monto del tercer otro gasto"
   /scheduleCBusinesses/*/expenseLinesChosen:
     name: "Gastos que corresponden"
   /scheduleCBusinesses/*/otherIncomeNeedsAnotherForm:
@@ -376,7 +421,9 @@ checklist:
       scheduleCNone: "No se declaró ninguno"
 dataviews:
   /flow/income/schedule-c:
-    /hadSelfEmploymentIncome: ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en {{/taxYear}}?
+    /hadSelfEmploymentIncome:
+      ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en
+      {{/taxYear}}?
     /qbiHasPriorYearLossCarryforward: ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
     /qbiIsCooperativePatron: ¿Es usted cliente de una cooperativa agrícola u hortícola?
     /scheduleCBusinesses/*/materiallyParticipates: ¿Participó materialmente en este negocio?
@@ -388,12 +435,15 @@ dataviews:
     /scheduleCBusinesses/*/writableOtherIncome: "Otros ingresos"
     /scheduleCBusinesses/*/otherIncomeNeedsAnotherForm: "¿Estos otros ingresos corresponden a otro formulario?"
     /scheduleCBusinesses/*/hasInventoryOrCogs: "¿Este negocio tuvo inventario o costo de mercancías vendidas?"
-    /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan: "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
-    /scheduleCBusinesses/*/hasDepreciationOrSection179: "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
+    /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan:
+      "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
+    /scheduleCBusinesses/*/hasDepreciationOrSection179:
+      "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
     /scheduleCBusinesses/*/hasDepletion: "¿Este negocio tuvo una deducción por agotamiento?"
     /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent: "¿Este negocio alquiló vehículos, maquinaria o equipo?"
     /scheduleCBusinesses/*/hasHomeOffice: "¿Usó su hogar para este negocio?"
-    /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction: "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
+    /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
+      "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
     /scheduleCBusinesses/*/hasDeductibleExpenses: "¿Este negocio tuvo gastos deducibles?"
     /scheduleCBusinesses/*/expenseLinesChosen: "¿Qué gastos tuvo este negocio?"
     /scheduleCBusinesses/*/writableAdvertising: "Publicidad"
@@ -416,7 +466,8 @@ dataviews:
     /scheduleCBusinesses/*/writableUtilities: "Servicios públicos"
     /scheduleCBusinesses/*/writableWages: "Salarios"
     /scheduleCBusinesses/*/wagesReducedByEmploymentCredits: "¿Estos salarios se reducen por un crédito por empleo?"
-    /scheduleCBusinesses/*/interestNeedsAllocation: "¿Estos intereses tienen que dividirse entre el uso del negocio y el uso personal?"
+    /scheduleCBusinesses/*/interestNeedsAllocation:
+      "¿Estos intereses tienen que dividirse entre el uso del negocio y el uso personal?"
     /scheduleCBusinesses/*/partVIncludesNewAmortization: "¿Un otro gasto incluye amortización que comenzó este año?"
     /scheduleCBusinesses/*/partV1Description: "Primer otro gasto"
     /scheduleCBusinesses/*/partV1Amount: "Monto del primer otro gasto"

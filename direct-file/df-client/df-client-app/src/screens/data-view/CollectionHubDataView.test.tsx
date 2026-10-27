@@ -171,7 +171,7 @@ describe(`Normal collection hub, full variant`, () => {
       const buttons = screen.getAllByRole(`button`);
       expect(buttons).toHaveLength(2);
 
-      expect(buttons[0]).toHaveTextContent(`Add interest income`);
+      expect(buttons[0]).toHaveTextContent(`Add another Form 1099-INT`);
       expect(buttons[1]).toHaveTextContent(`I’m done adding interest income`);
     });
 
@@ -210,7 +210,7 @@ describe(`Normal collection hub, full variant`, () => {
       // Expect 1 button - add
       const buttons = screen.getAllByRole(`button`);
       expect(buttons).toHaveLength(1);
-      expect(buttons[0]).toHaveTextContent(`Add interest income`);
+      expect(buttons[0]).toHaveTextContent(`Add another Form 1099-INT`);
     });
   });
 
@@ -265,7 +265,7 @@ describe(`Normal collection hub, full variant`, () => {
       const buttons = screen.getAllByRole(`button`);
       expect(buttons).toHaveLength(3);
 
-      expect(buttons[0]).toHaveTextContent(`Add interest income`);
+      expect(buttons[0]).toHaveTextContent(`Add another Form 1099-INT`);
       expect(buttons[1]).toHaveTextContent(`Go to checklist`);
       expect(buttons[2]).toHaveTextContent(`Go to review and confirm`);
     });
@@ -309,7 +309,7 @@ describe(`Normal collection hub, full variant`, () => {
       // Expect 1 button - add
       const buttons = screen.getAllByRole(`button`);
       expect(buttons).toHaveLength(1);
-      expect(buttons[0]).toHaveTextContent(`Add interest income`);
+      expect(buttons[0]).toHaveTextContent(`Add another Form 1099-INT`);
     });
   });
 });

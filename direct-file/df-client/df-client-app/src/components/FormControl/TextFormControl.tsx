@@ -12,6 +12,7 @@ import { Path } from '../../fact-dictionary/Path.js';
 import { DFTextInputMask } from './DFTextInputMask.js';
 import { FormFieldWrapperWithConfigurableLabel } from './FormFieldWrapperWithConfigurableLabel.js';
 import { FormFieldLabel } from './FormFieldLabel.js';
+import { formBoxLegendKey } from '../formBoxGroup.js';
 
 // react-uswds 8 no longer exposes deep `lib/components/...` paths, so derive the props from the public export.
 type TextInputProps = ComponentProps<typeof TextInput>;
@@ -76,8 +77,12 @@ export function SimpleTextFormControl({
   // Point aria-describedby at the hint only when FormFieldWrapper renders one (it skips read-only fields
   // and keys with no hint text), so the description never refers to a missing or empty element.
   const hintKeyExists = !readOnly && resolveHintKeys(hintKey || buildHintKey(path), i18n) !== null;
+  // Every amount input names the dollars-and-cents format and points at that hint (WCAG 2.1 SC 3.3.2).
+  const showFormatHint = inputPrefix === `$` && !readOnly;
+  const formatHintId = `${controlId}__format-hint`;
   const labelId = useId();
   const labelOverrideKey = labelConfig?.type === `config` ? labelConfig.i18nKey : undefined;
+  const amountPrefixKey = showFormatHint ? formBoxLegendKey(path) ?? undefined : undefined;
 
   let label;
   if (labelConfig?.type === `override`) {
@@ -87,6 +92,7 @@ export function SimpleTextFormControl({
     label = (
       <FormFieldLabel
         labelKey={labelKey}
+        prefixKey={amountPrefixKey}
         labelId={labelId}
         collectionId={collectionId}
         controlId={controlId}
@@ -100,6 +106,9 @@ export function SimpleTextFormControl({
   const ids = [];
   if (hintKeyExists) {
     ids.push(buildHintId(controlId));
+  }
+  if (showFormatHint) {
+    ids.push(formatHintId);
   }
   if (showError) {
     ids.push(buildControlErrorId(controlId));
@@ -131,17 +140,24 @@ export function SimpleTextFormControl({
         readonly={readOnly}
         label={label}
       >
-        {mask ? (
-          <DFTextInputMask mask={mask} {...coreProps} />
-        ) : (
-          <>
-            <InputGroup>
-              {inputPrefix && <InputPrefix>{inputPrefix}</InputPrefix>}
-              <TextInput {...coreProps} />
-              {inputSuffix && <InputSuffix>{inputSuffix}</InputSuffix>}
-            </InputGroup>
-          </>
-        )}
+        <>
+          {showFormatHint ? (
+            <div id={formatHintId} className='usa-hint df-format-hint'>
+              {i18n.t(`fields.generics.dollar.formatHint`)}
+            </div>
+          ) : null}
+          {mask ? (
+            <DFTextInputMask mask={mask} {...coreProps} />
+          ) : (
+            <>
+              <InputGroup>
+                {inputPrefix && <InputPrefix>{inputPrefix}</InputPrefix>}
+                <TextInput {...coreProps} />
+                {inputSuffix && <InputSuffix>{inputSuffix}</InputSuffix>}
+              </InputGroup>
+            </>
+          )}
+        </>
       </FormFieldWrapperWithConfigurableLabel>
     </FormGroup>
   );

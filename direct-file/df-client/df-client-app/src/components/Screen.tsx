@@ -34,6 +34,8 @@ import { ScreenHeader } from './ScreenHeader.js';
 import { RenderedScreenContent } from './RenderedScreenContent.js';
 import { calculateScreenStatus } from '../flow/batches.js';
 import styles from './Screen.module.scss';
+import DFAlert from './Alert/DFAlert.js';
+import { knockoutScreenNeedsNextStep, legendKeyForScreenContent } from './formBoxGroup.js';
 export interface ScreenProps {
   screenRoute: string;
   screenContent: ScreenContentConfig[];
@@ -130,7 +132,7 @@ const Screen: FC<ScreenProps> = ({
   const { factGraph } = useFactGraph();
   const { shouldFilterContentBasedOnTaxState } = useFilterContentContext();
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { isReturnEditable } = useIsReturnEditable();
 
   const screenInfo = useScreenInfo(screenRoute, screenContent, collectionId, componentsToHide);
@@ -255,6 +257,38 @@ const Screen: FC<ScreenProps> = ({
       contextHeadings.some((ch) => calculateScreenStatus(ch.props.batches).isOpen)
   );
 
+  const formBoxLegend = legendKeyForScreenContent(filteredContent);
+  const showKnockoutNextStep = knockoutScreenNeedsNextStep(filteredContent);
+  const renderedFields = filteredContent.map((config) => {
+    const key = buildRenderedScreenContentKey(config);
+    const content = (
+      <RenderedScreenContent
+        key={key}
+        config={config}
+        gotoNextScreen={gotoNextScreen}
+        showFeedback={showFeedback}
+        forceUpdate={forceUpdate}
+        setShowFeedback={setShowFeedback}
+        setPathFactValidity={setPathFactValidity}
+        collectionId={collectionId}
+        factValidity={factValidity}
+        factRefs={factRefs}
+        screenInfo={screenInfo}
+        collectionContext={collectionContext}
+      />
+    );
+    const batches = config.props.batches || [];
+    const isOpen = calculateScreenStatus(batches).isOpen;
+    if (isOpen) {
+      return (
+        <div key={key} className={styles.draftContent}>
+          {content}
+        </div>
+      );
+    }
+    return content;
+  });
+
   return (
     <>
       {alertAggregatorType === `sections` ? (
@@ -282,35 +316,22 @@ const Screen: FC<ScreenProps> = ({
 
       <div className='usa-prose'>
         <form id='the_form' className='input-group vertical'>
-          {filteredContent.map((config) => {
-            const key = buildRenderedScreenContentKey(config);
-            const content = (
-              <RenderedScreenContent
-                key={key}
-                config={config}
-                gotoNextScreen={gotoNextScreen}
-                showFeedback={showFeedback}
-                forceUpdate={forceUpdate}
-                setShowFeedback={setShowFeedback}
-                setPathFactValidity={setPathFactValidity}
-                collectionId={collectionId}
-                factValidity={factValidity}
-                factRefs={factRefs}
-                screenInfo={screenInfo}
-                collectionContext={collectionContext}
-              />
-            );
-            const batches = config.props.batches || [];
-            const isOpen = calculateScreenStatus(batches).isOpen;
-            if (isOpen) {
-              return (
-                <div key={key} className={styles.draftContent}>
-                  {content}
-                </div>
-              );
-            }
-            return content;
-          })}
+          {formBoxLegend ? (
+            <fieldset className={styles.formBoxGroup}>
+              <legend className={styles.formBoxLegend}>{t(formBoxLegend)}</legend>
+              {renderedFields}
+            </fieldset>
+          ) : (
+            renderedFields
+          )}
+          {showKnockoutNextStep && (
+            <DFAlert
+              i18nKey='/info/knockout/generic-other-ways-to-file'
+              collectionId={collectionId}
+              headingLevel='h2'
+              type='warning'
+            />
+          )}
         </form>
       </div>
     </>

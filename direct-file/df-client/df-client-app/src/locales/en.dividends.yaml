@@ -150,7 +150,7 @@ info:
 fields:
   /dividendReports:
     controls:
-      add: Add a 1099-DIV
+      add: Add another Form 1099-DIV
       complete_zero: I don’t have any Forms 1099-DIV to add
       complete: I’m done adding Forms 1099-DIV
       back: Go to dividends list
@@ -161,7 +161,7 @@ fields:
       label2: Ordinary dividends
       value2: <strong>{{/dividendReports/*/ordinaryDividends}}</strong>
     deleteControl:
-      text: <LinkModal1>Remove 1099-DIV</LinkModal1>
+      text: <LinkModal1>Remove this Form 1099-DIV</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this 1099-DIV from your tax return?
         body:

@@ -14,7 +14,16 @@ import {
 } from '../../ContentDeclarations.js';
 
 export const IncomeSourcesSubcategory = (
-  <Subcategory route='income-sources' completeIf='/incomeSourcesIsComplete'>
+  <Subcategory
+    route='income-sources'
+    completeIf='/incomeSourcesIsComplete'
+    dataItems={[
+      {
+        itemKey: `capitalGainsNone`,
+        conditions: [{ operator: `isFalse`, condition: `/soldCapitalAssets` }],
+      },
+    ]}
+  >
     <Screen route='income-sources-intro'>
       <ContextHeading i18nKey='/heading/income' />
       <Heading
