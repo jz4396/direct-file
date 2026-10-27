@@ -133,9 +133,17 @@ direct-file:
       - name: IRS1040SB
         year: 2026
         language-code: en
-        location: "src/main/resources/pdf/2024/IRS1040SB/en/f1040sb_accessible.pdf"
+        location: "src/main/resources/pdf/2026/IRS1040SB/en/f1040sb--dft.pdf"
         location-type: directory
-        configuration-location: "src/main/resources/pdf/2024/IRS1040SB/en/configuration.yml"
+        configuration-location: "src/main/resources/pdf/2026/IRS1040SB/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
+      - name: IRS1040SE
+        year: 2026
+        language-code: en
+        location: "src/main/resources/pdf/2026/IRS1040SE/en/f1040se--dft.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/IRS1040SE/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
       - name: IRS1040SD

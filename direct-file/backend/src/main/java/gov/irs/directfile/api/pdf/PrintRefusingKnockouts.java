@@ -82,6 +82,23 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod",
             // 26 U.S.C. 162(l) self-employed health insurance deduction and the credit depend on each other.
             "/flowKnockoutPtcSelfEmployedHealthInsurance",
+            // Schedule B line 1 prints the full taxable interest. Nominee interest, accrued interest, and U.S.
+            // savings bond interest previously reported are subtracted below a subtotal (Instructions for Schedule B
+            // (2025) p. 2, Line 1). That subtraction is not computed, so a yes refuses the print.
+            "/flowKnockoutInterestScheduleBSubtraction",
+            // Schedule B line 7a question 2 and line 7b (FinCEN Form 114) and line 8 (Form 3520) are not printed.
+            // Instructions for Schedule B (2025) p. 3. A yes to line 7a question 1 or line 8 refuses the print so
+            // those lines are not left blank. Complete false when every Part III answer is no.
+            "/flowKnockoutScheduleBPartIII",
+            // Schedule E Part I loss. Lines 22 and 25 (Form 8582) are not printed. 26 U.S.C. 469, 465, 461(l).
+            "/flowKnockoutScheduleELoss",
+            // Schedule E depreciation or vehicle expenses. Form 4562 is not printed, so line 18 is not entered as $0.
+            "/flowKnockoutScheduleEDepreciation",
+            // Personal use of a dwelling unit. 26 U.S.C. 280A expense allocation is not computed.
+            "/flowKnockoutScheduleEPersonalUse",
+            // Substantial services to renters belong on Schedule C and can be subject to self-employment tax
+            // (26 U.S.C. 1402(a)(1)). Printing the profit on Schedule E would leave that tax off.
+            "/flowKnockoutScheduleESubstantialServices",
             // Schedule E rental treated as a trade or business: Form 1040 (2026) draft, PDF p. 3, line 13b, "Qualified
             // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
             // not computed yet, so the package would print it as $0.
@@ -99,6 +116,16 @@ public final class PrintRefusingKnockouts {
             // yes (Schedule Q (Form 1066)) refuses through this same path even when the K-1 answer is no.
             // This list does not gain another Schedule E path. Asked of every filer, not only after Part I.
             "/flowKnockoutScheduleEPartII",
+            // More than four partnerships or S corporations. 2026 draft Instructions for Schedule E, PDF p. 9: attach
+            // a continuation sheet. Lines 29a, 30, and 32 include every entity, and line 28 has only four rows, so
+            // the fifth name would be omitted. Complete false when Part II is not reported, the entity list is not
+            // finished (/flowKnockoutScheduleEPartII already refuses that), or the finished list has four or fewer.
+            "/flowKnockoutScheduleEPartIIMoreThanFour",
+            // More than two estates or trusts. 2026 draft Instructions for Schedule E, PDF p. 10: attach a
+            // continuation sheet. Lines 34a, 35, and 37 include every estate, and line 33 has only two rows, so
+            // the third name would be omitted. Complete false when Part III is not reported, the estate list is
+            // not finished (/flowKnockoutScheduleEPartII already refuses that), or the finished list has two or fewer.
+            "/flowKnockoutScheduleEPartIIIMoreThanTwo",
             // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
             // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)
             // threshold; above it Form 8995-A applies. A prior-year QBI loss carryforward (Form 8995 line 3), a

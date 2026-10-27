@@ -3208,5 +3208,207 @@
         </Switch>
       </Derived>
     </Fact>
+
+    <Fact path="/pdfIncludeScheduleE">
+      <Name>Print Schedule E</Name>
+      <Description>
+        Schedule E (2026) draft is included when Part I income is yes (/hasScheduleEIncome) or the filer answered
+        yes to Schedule K-1 income (/scheduleEReportsPartII). That yes covers a trust-only return: Part III is
+        asked only after the K-1 answer is yes. An unanswered question is not a yes, so the form is not added
+        before the interview reaches it. The print still refuses while the K-1 question or the REMIC question
+        is unanswered (/flowKnockoutScheduleEPartII).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Dependency path="/hasScheduleEIncome" />
+          <Dependency path="/scheduleEReportsPartII" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEPartIILine27No">
+      <Name>Schedule E line 27 No</Name>
+      <Description>
+        Schedule E (2026) draft, PDF p. 3, line 27 No. True only when /scheduleEPartIILine27 is answered no, so
+        the No checkbox is checked. A yes stops the return (/flowKnockoutScheduleEPartIILine27). Unanswered is
+        complete false, so the checkbox stays unchecked and the print refusal comes from
+        /flowKnockoutScheduleEPartII while the K-1 question is open.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleEPartIILine27" />
+                </IsComplete>
+                <Not>
+                  <Dependency path="/scheduleEPartIILine27" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIMoreThanFour">
+      <Name>Knockout: more than four Schedule E Part II entities</Name>
+      <Description>
+        Line 28 has four rows (A-D). 2026 draft Instructions for Schedule E
+        (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf), PDF p. 9, say to attach a continuation sheet when
+        Part II needs more space. This package has no continuation sheet. Lines 29a, 30, and 32 sum every
+        entity, so a fifth name would be omitted while the total still included it.
+        True when /scheduleEReportsPartII is true and /scheduleEK1s is a complete list of more than four
+        items. Complete false when Part II is not reported, the list is not finished yet, or the finished list
+        has four or fewer. An unfinished yes is already refused by /flowKnockoutScheduleEPartII, so this fact
+        stays complete false until the size is known.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEReportsPartII" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1s" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleEK1s" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIIMoreThanTwo">
+      <Name>Knockout: more than two Schedule E Part III estates or trusts</Name>
+      <Description>
+        Line 33 has two rows (A and B). 2026 draft Instructions for Schedule E
+        (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf), PDF p. 10, say to attach a continuation sheet when
+        Part III needs more space. This package has no continuation sheet. Lines 34a, 35, and 37 sum every
+        estate or trust, so a third name would be omitted while the total still included it.
+        True when /scheduleEHasPartIIIIncome is true and /scheduleEEstates is a complete list of more than two
+        items. Complete false when Part III is not reported, the list is not finished yet, or the finished list
+        has two or fewer. An unfinished yes is already refused by /flowKnockoutScheduleEPartII, so this fact
+        stays complete false until the size is known.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleEEstates" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
   </Facts>
 </FactDictionaryModule>

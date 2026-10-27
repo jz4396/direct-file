@@ -21,6 +21,7 @@
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
           <Dependency module="interest" path="/flowKnockoutHasBonds" />
           <Dependency module="interest" path="/flowKnockoutInterestScheduleBSubtraction" />
+          <Dependency module="interest" path="/flowKnockoutScheduleBPartIII" />
           <Dependency module="dividends" path="/flowKnockoutDividendUnsupportedBoxes" />
           <Dependency module="dividends" path="/flowKnockoutNondividendDistributionsOverBasis" />
           <Dependency module="dividends" path="/flowKnockoutQualifiedDividendsHoldingPeriod" />
@@ -165,6 +166,8 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIMoreThanFour" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIMoreThanTwo" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIILoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIINotMaterialParticipation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeA" />
