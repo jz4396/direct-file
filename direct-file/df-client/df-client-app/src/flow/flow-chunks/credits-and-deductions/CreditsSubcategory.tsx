@@ -1473,7 +1473,7 @@ export const CreditsSubcategory = (
                 <SubSubcategory route='premiums-and-aptc'>
                   <Gate condition={{ operator: `isFalseOrIncomplete`, condition: `/notPtcApplicableTaxPayer` }}>
                     <Gate condition='/1095As/*/hasAtLeastOneCoverageMonth'>
-                      <Screen route='annual-monthly' condition='/1095As/*/hasPolicyForAllMonths'>
+                      <Screen route='annual-monthly' condition='/1095As/*/policyAndCoverageAreFullYear'>
                         <ContextHeading
                           displayOnlyOn='edit'
                           i18nKey='/heading/credits-and-deductions/credits/ptc'

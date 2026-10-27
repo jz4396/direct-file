@@ -2796,7 +2796,7 @@
           <All>
             <Any>
               <All>
-                <Dependency path="../hasPolicyForAllMonths" />
+                <Dependency path="../policyAndCoverageAreFullYear" />
                 <IsComplete>
                   <Dependency path="../writablePremiumsOrSlcspChange" />
                 </IsComplete>
@@ -4289,7 +4289,7 @@
     </Fact>
 
     <Fact path="/1095As/*/hasPolicyForAllMonths">
-      <Description>Whether the policy lasts all 12 months</Description>
+      <Description>Whether the policy start and end dates cover January through December</Description>
       <Derived>
         <All>
           <Dependency path="../policyStartsInJan" />
@@ -4301,6 +4301,38 @@
               <Int>12</Int>
             </Right>
           </Equal>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/1095As/*/hasAll12CoverageMonths">
+      <Description>Whether all 12 months are checked coverage months. Instructions for Form 8962 (2025),
+        https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 14, Line 10 (SHA-256 prefix f4ac86ada178e8aa): "If you were
+        enrolled in a qualified health plan for fewer than 12 months during 2025, check "No" and continue to lines 12
+        through 23." 2026 instructions are not posted. The 2026 draft Form 8962
+        (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, SHA-256
+        5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35) still has line 11 and lines 12 through 23.
+        This count is the checked coverage months, not the policy start and end dates.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../numberOfCoverageMonths" />
+          </Left>
+          <Right>
+            <Int>12</Int>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/1095As/*/policyAndCoverageAreFullYear">
+      <Description>Policy dates cover January through December and all 12 months are coverage months, so Form 8962
+        line 11 (annual totals) can apply. Instructions for Form 8962 (2025), PDF p. 14, Line 10: enrollment for fewer
+        than 12 months uses lines 12 through 23. See /1095As/*/hasAll12CoverageMonths.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasPolicyForAllMonths" />
+          <Dependency path="../hasAll12CoverageMonths" />
         </All>
       </Derived>
     </Fact>
@@ -4434,15 +4466,15 @@
     </Fact>
 
     <Fact path="/1095As/*/premiumsOrSlcspChange">
-      <Description>Whether the enrollment premiums or SLCSP change with the TY</Description>
+      <Description>Whether the enrollment premiums or SLCSP changed during the year. Complete only when the policy and
+        coverage are a full year, because line 11 annual amounts apply only then (Instructions for Form 8962 (2025),
+        PDF p. 14, Line 10; see /1095As/*/policyAndCoverageAreFullYear). Otherwise monthly lines 12 through 23 are
+        used and an annual premium is not spread across months that are not coverage months.</Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <All>
-                <Dependency path="../hasAtLeastOneCoverageMonth" />
-                <Dependency path="../hasPolicyForAllMonths" />
-              </All>
+              <Dependency path="../policyAndCoverageAreFullYear" />
             </When>
             <Then>
               <Dependency path="../writablePremiumsOrSlcspChange" />
@@ -5127,13 +5159,15 @@
     </Fact>
 
     <Fact path="/1095As/*/hasChangeOrPolicyIsNotForAllMonths">
-      <Description>Whether there is a change in premiums or circumstances or the policy is not for all 12 months</Description>
+      <Description>Whether premiums or circumstances changed, or the policy and coverage are not a full year, so
+        monthly SLCSP applies (Instructions for Form 8962 (2025), PDF p. 14, Line 10; see
+        /1095As/*/policyAndCoverageAreFullYear)</Description>
       <Derived>
         <Any>
           <Dependency path="../premiumsOrSlcspChange" />
           <Dependency path="../hasChangeInCircumstance" />
           <Not>
-            <Dependency path="../hasPolicyForAllMonths" />
+            <Dependency path="../policyAndCoverageAreFullYear" />
           </Not>
         </Any>
       </Derived>
@@ -5150,11 +5184,13 @@
     </Fact>
 
     <Fact path="/1095As/*/noChangesAnd12MonthPolicy">
-      <Description>Whether there is no change in premiums and no change in circumstances and the policy for all 12
-        months</Description>
+      <Description>No premium change, no circumstance change, and both the policy dates and all 12 coverage months are
+        a full year, so Form 8962 line 11 applies. Instructions for Form 8962 (2025), PDF p. 14, Line 10 (see
+        /1095As/*/policyAndCoverageAreFullYear). Fewer than 12 coverage months uses lines 12 through 23 even when the
+        policy start and end dates span the year.</Description>
       <Derived>
         <All>
-          <Dependency path="../hasPolicyForAllMonths" />
+          <Dependency path="../policyAndCoverageAreFullYear" />
           <Not>
             <Dependency path="../premiumsOrSlcspChange" />
           </Not>

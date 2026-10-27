@@ -172,6 +172,148 @@ describe(`Form 8962 (2026) golden scenarios`, () => {
     expect(val(g, `/householdIncomeAsPercent`)).toBe(`${pct}`);
     expect(val(g, `/formattedApplicableFigure`)).toBe(figure);
   });
+
+  it(`Alaska family of 1: 2025 HHS poverty line $19,550, line 5 200, line 8a 2,581`, ({ task }) => {
+    task.meta.testedFactPaths = [`/federalPovertyLevelThreshold`, `/ptcAnnualContributionAmount`];
+    // 90 FR 5917 p. 5917: Alaska $19,550. 39,100 / 19,550 = 200%. Rev. Proc. 2025-25 sec. 3.01: 6.60%.
+    // round(39,100 x 0.0660 = 2,580.60) = 2,581.
+    const g = fg(
+      ptcReturn(39100, 5000, 6000, 0, {
+        '/filerResidenceAndIncomeState': createEnumWrapper(`ak`, `/scopedStateOptions`),
+      })
+    );
+    expect(val(g, `/federalPovertyLineLocationIsAlaska`)).toBe(`true`);
+    expect(val(g, `/federalPovertyLevelThreshold`)).toBe(`19550.00`);
+    expect(val(g, `/householdIncomeAsPercent`)).toBe(`200`);
+    expect(val(g, `/formattedApplicableFigure`)).toBe(`0.0660`);
+    expect(val(g, `/ptcAnnualContributionAmount`)).toBe(`2581.00`);
+    expect(val(g, `/ptcCanReportAnnualTotals`)).toBe(`true`);
+    expectNoPtcKnockout(g);
+  });
+});
+
+const MONTH = {
+  jan: `Jan`,
+  feb: `Feb`,
+  mar: `Mar`,
+  apr: `Apr`,
+  may: `May`,
+  jun: `Jun`,
+  jul: `Jul`,
+  aug: `Aug`,
+  sep: `Sep`,
+  oct: `Oct`,
+  nov: `Nov`,
+  dec: `Dec`,
+} as const;
+const monthlyDollars = (
+  stem: `writablePtcMonthlyPremium` | `writablePtcMonthlySlcspPremium` | `writablePtcMonthlyAptcPremium`,
+  amounts: Partial<Record<keyof typeof MONTH, number>>
+) =>
+  Object.fromEntries(
+    (Object.entries(amounts) as [keyof typeof MONTH, number][]).map(([month, amount]) => [
+      `${p}/${stem}${MONTH[month]}`,
+      createDollarWrapper(`${amount}`),
+    ])
+  );
+const halfYearMonths = [`jul`, `aug`, `sep`, `oct`, `nov`, `dec`] as const;
+const halfYearAmount = (amount: number) =>
+  Object.fromEntries(halfYearMonths.map((month) => [month, amount])) as Partial<Record<keyof typeof MONTH, number>>;
+
+describe(`Form 8962 (2026) monthly and partial-year single policy`, () => {
+  it(`July-December enrollment uses lines 12-23: line 24 1,968, line 25 2,400, line 27 432`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/ptcCanReportAnnualTotals`,
+      `/needsToFileForm8962Monthly`,
+      `/totalPtcAmountAllowed`,
+      `/monthlyPtcAllowedForJul`,
+    ];
+    // Instructions for Form 8962 (2025), PDF p. 14, Line 10: fewer than 12 months uses lines 12 through 23.
+    // Household income $31,300 is 200% of $15,650. Line 8b is round(2,066 / 12) = 172.
+    // Each coverage month: lesser of $500 and ($500 - $172) = $328. Six months = $1,968.
+    // APTC $400 x 6 = $2,400. Excess $432. The pre-2026 Single under-200% cap was $375.
+    const g = fg(
+      ptcReturn(31300, 6000, 6000, 4800, {
+        [`${p}/writablePolicyStartDate`]: createDayWrapper(`2026-07-01`),
+        [`${p}/writablePolicyEndDate`]: createDayWrapper(`2026-12-31`),
+        [`${p}/coverageMonths`]: createMultEnumWrapper([...halfYearMonths], `/1095As/*/monthOptions`),
+        ...monthlyDollars(`writablePtcMonthlyPremium`, halfYearAmount(500)),
+        ...monthlyDollars(`writablePtcMonthlySlcspPremium`, halfYearAmount(500)),
+        ...monthlyDollars(`writablePtcMonthlyAptcPremium`, halfYearAmount(400)),
+      })
+    );
+    expect(val(g, `${p}/hasPolicyForAllMonths`)).toBe(`false`);
+    expect(val(g, `${p}/hasAll12CoverageMonths`)).toBe(`false`);
+    expect(val(g, `${p}/policyAndCoverageAreFullYear`)).toBe(`false`);
+    expect(val(g, `/ptcCanReportAnnualTotals`)).toBe(`false`);
+    expect(val(g, `/needsToFileForm8962Monthly`)).toBe(`true`);
+    expect(val(g, `/householdIncomeAsPercent`)).toBe(`200`);
+    expect(val(g, `/formattedApplicableFigure`)).toBe(`0.0660`);
+    expect(val(g, `/ptcMontlyContributionAmount`)).toBe(`172.00`);
+    expect(raw(g, `/monthlyPtcAllowedForJan`).complete).toBe(false);
+    expect(val(g, `/monthlyPtcAllowedForJul`)).toBe(`328.00`);
+    expect(val(g, `/monthlyPtcAllowedForDec`)).toBe(`328.00`);
+    expect(val(g, `/totalPtcAmountAllowed`)).toBe(`1968.00`);
+    expect(val(g, `/totalAptcAmountTaken`)).toBe(`2400.00`);
+    expect(val(g, `/netPtcAmountWhenNegative`)).toBe(`432.00`);
+    expect(val(g, `/lesserOfNetPtcAmountAndRepaymentLimitation`)).toBe(`432.00`);
+    expect(val(g, `/schedule2Line1z`)).toBe(`432.00`);
+    expect(val(g, `/isRepaymentLimitationIsActive`)).toBe(`false`);
+    expectNoPtcKnockout(g);
+  });
+
+  it(`January-December dates with only six coverage months stay on lines 12-23`, ({ task }) => {
+    task.meta.testedFactPaths = [`/1095As/*/policyAndCoverageAreFullYear`, `/totalPtcAmountAllowed`];
+    // Policy dates span the year, premiums marked unchanged, and annual column A/B/C filled ($6,000 / $6,000 /
+    // $4,800). Line 11 would be PTC $3,934 and excess $866. Coverage months are July-December only, so line 11
+    // does not apply (Instructions for Form 8962 (2025), PDF p. 14, Line 10).
+    // January-June: premium $100, SLCSP $0 (not a coverage month), allowed $0, APTC $50.
+    // July-December: allowed $328, APTC $400. Line 24 = $1,968. Line 25 = $2,700. Line 27 = $732.
+    const earlyPremium = { jan: 100, feb: 100, mar: 100, apr: 100, may: 100, jun: 100 };
+    const earlyAptc = { jan: 50, feb: 50, mar: 50, apr: 50, may: 50, jun: 50 };
+    const g = fg(
+      ptcReturn(31300, 6000, 6000, 4800, {
+        [`${p}/coverageMonths`]: createMultEnumWrapper([...halfYearMonths], `/1095As/*/monthOptions`),
+        ...monthlyDollars(`writablePtcMonthlyPremium`, { ...earlyPremium, ...halfYearAmount(500) }),
+        ...monthlyDollars(`writablePtcMonthlySlcspPremium`, halfYearAmount(500)),
+        ...monthlyDollars(`writablePtcMonthlyAptcPremium`, { ...earlyAptc, ...halfYearAmount(400) }),
+      })
+    );
+    expect(val(g, `${p}/hasPolicyForAllMonths`)).toBe(`true`);
+    expect(val(g, `${p}/hasAll12CoverageMonths`)).toBe(`false`);
+    expect(val(g, `${p}/policyAndCoverageAreFullYear`)).toBe(`false`);
+    expect(val(g, `${p}/noChangesAnd12MonthPolicy`)).toBe(`false`);
+    expect(raw(g, `${p}/ptcAnnualPremium`).complete).toBe(false);
+    expect(val(g, `/ptcCanReportAnnualTotals`)).toBe(`false`);
+    expect(val(g, `/needsToFileForm8962Monthly`)).toBe(`true`);
+    expect(val(g, `/monthlyPtcAllowedForJan`)).toBe(`0.00`);
+    expect(val(g, `/monthlyPtcSlcspPremiumForJan`)).toBe(`0.00`);
+    expect(val(g, `/monthlyAptcPremiumForJan`)).toBe(`50.00`);
+    expect(val(g, `/monthlyPtcAllowedForJul`)).toBe(`328.00`);
+    expect(val(g, `/totalPtcAmountAllowed`)).toBe(`1968.00`);
+    expect(val(g, `/totalAptcAmountTaken`)).toBe(`2700.00`);
+    expect(val(g, `/netPtcAmountWhenNegative`)).toBe(`732.00`);
+    expect(val(g, `/lesserOfNetPtcAmountAndRepaymentLimitation`)).toBe(`732.00`);
+    expect(val(g, `/schedule2Line1z`)).toBe(`732.00`);
+    expectNoPtcKnockout(g);
+  });
+
+  it(`zero coverage months with advance payments still repays the annual advance on line 27`, ({ task }) => {
+    task.meta.testedFactPaths = [`/ptcCanReportAnnualTotals`, `/totalPtcAmountAllowed`];
+    const g = fg(
+      ptcReturn(31300, 5000, 6000, 4500, {
+        [`${p}/hasCoverageMonths`]: createBooleanWrapper(false),
+        [`${p}/coverageMonths`]: createMultEnumWrapper([], `/1095As/*/monthOptions`),
+      })
+    );
+    expect(val(g, `${p}/hasZeroCoverageMonths`)).toBe(`true`);
+    expect(val(g, `${p}/policyAndCoverageAreFullYear`)).toBe(`false`);
+    expect(val(g, `/ptcCanReportAnnualTotals`)).toBe(`true`);
+    expect(val(g, `/totalPtcAmountAllowed`)).toBe(`0.00`);
+    expect(val(g, `/totalAptcAmountTaken`)).toBe(`4500.00`);
+    expect(val(g, `/netPtcAmountWhenNegative`)).toBe(`4500.00`);
+    expect(val(g, `/lesserOfNetPtcAmountAndRepaymentLimitation`)).toBe(`4500.00`);
+  });
 });
 
 describe(`Form 8962 (2026) knockouts`, () => {
