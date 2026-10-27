@@ -931,4 +931,44 @@ class PrintRefusingKnockoutsTest {
         mfs.put("/MFSSpouse65OrOlder", no);
         return mfs;
     }
+
+    /**
+     * A Schedule C return that is not a PA-40 is still refused only by Form 8995. The same business on a full-year
+     * PA-40 is also refused by {@link #PA_UNSUPPORTED_INCOME_KNOCKOUT}: PA-40 line 4 stays $0 (72 P.S. §7303(a)(2);
+     * PA-40 IN (2025) p. 17, LINE 4). The UE and unsupported-items screeners are answered no; unanswered, those stops
+     * stay incomplete and refuse the print. This slice does not add PA Schedule C.
+     */
+    @Test
+    void paScheduleCRefusesOnUnsupportedIncomeAndForm8995() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        Graph notPa = fgs.getGraph(scheduleCOnly());
+        assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(notPa));
+        assertCompleteFalse(notPa, PA_UNSUPPORTED_INCOME_KNOCKOUT);
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, FactTypeWithItem> facts = scheduleCOnly();
+        facts.put(
+                "/filerResidenceAndIncomeState",
+                mapper.readValue(
+                        PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("pa", "/scopedStateOptions"),
+                        FactTypeWithItem.class));
+        facts.put(
+                "/paHasUnreimbursedEmployeeExpenses",
+                mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
+        facts.put(
+                "/paHasUnsupportedItems",
+                mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
+        Graph pa = fgs.getGraph(facts);
+        assertEquals(Boolean.TRUE, pa.get("/stateReturnPaFiled").get());
+        assertEquals(Boolean.TRUE, pa.get("/hasScheduleCBusinesses").get());
+        assertEquals(Boolean.TRUE, pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).get());
+        assertTrue(pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).complete());
+        assertCompleteFalse(pa, PA_UE_KNOCKOUT);
+        assertCompleteFalse(pa, PA_UNSUPPORTED_ITEMS_KNOCKOUT);
+        assertEquals(Boolean.TRUE, pa.get(FORM_8995_KNOCKOUT).get());
+        assertEquals(
+                List.of(PA_UNSUPPORTED_INCOME_KNOCKOUT, FORM_8995_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(pa));
+        assertEquals("0.00", pa.get("/paLine4").get().toString());
+    }
 }

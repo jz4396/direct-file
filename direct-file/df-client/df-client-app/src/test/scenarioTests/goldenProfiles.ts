@@ -1,6 +1,7 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
-// older, itemizing, with a qualifying child) and profile E (PA to FL part-year resident with AMT and dividends).
+// older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends) and
+// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -37,7 +38,7 @@ export const GOLDEN_SSN_PATTERN = /^9\d{2}-?\d{2}-?\d{4}$/;
  * number 0000. SSNs containing group number 00 or serial number 0000 will continue to be invalid."
  * goldenProfiles.test.ts checks the group number.
  */
-export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`444-00-4444`, `444-00-0333`];
+export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`444-00-4444`, `444-00-0333`, `444-00-1007`, `444-00-1008`];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
 
@@ -498,6 +499,76 @@ export const profileEPaToFlAmtDividends = {
   ...qualifiedDividends(profileEDividendId, `Example Dividend Fund`, 2000, 2000),
 };
 
+/**
+ * Profile F: full-year Pennsylvania resident, head of household, one child. W-2 wages plus one Schedule C
+ * (single expense total) sized so taxable income before the section 199A deduction is exactly the head-of-household
+ * Form 8995 threshold, and the $40,400 SALT cap produces Form 6251 AMT. PA-40 line 4 stays $0: any Schedule C on a
+ * PA-40 stops the return. Form 8995 is computed and the print stops because there is no TY2026 template.
+ */
+const skyler: Person = { first: `Skyler`, last: `Example`, ssn: [`444`, `00`, `1007`], dob: `1985-04-12` };
+export const profileFBusinessId = `13500000-0000-4000-8000-000000000f01`;
+export const profileFChildId = `13500000-0000-4000-8000-000000000f03`;
+export const profileFW2: W2 = {
+  id: `13500000-0000-4000-8000-000000000f02`,
+  employer: `Sample Manufacturing Co`,
+  ein: [`00`, `0000901`],
+  box1: 190000,
+  box2: 40000,
+  box3: 184500,
+  // 6.2% x 184,500 (the OASDI wage base). IRC §3101(a).
+  box4: 11439,
+  box5: 190000,
+  // 1.45% x 190,000; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
+  box6: 2755,
+  box16: 190000,
+  box17: 6000,
+};
+export const profileFPaAmtScheduleC = {
+  ...single(skyler, { street: `123 Example St`, city: `Harrisburg`, zip: `17101`, state: `PA` }),
+  [`/filers/#${primaryFilerId}/occupation`]: createStringWrapper(`Consultant`),
+  '/maritalStatus': createEnumWrapper(`single`, `/maritalStatusOptions`),
+  '/filingStatus': createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+  '/paSchoolDistrictCode': createStringWrapper(`22275`),
+  '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+  '/familyAndHousehold': createCollectionWrapper([profileFChildId]),
+  ...makeChildData(profileFChildId, `2014-06-01`),
+  [`/familyAndHousehold/#${profileFChildId}/firstName`]: createStringWrapper(`Rowan`),
+  [`/familyAndHousehold/#${profileFChildId}/writableMiddleInitial`]: createStringWrapper(``),
+  [`/familyAndHousehold/#${profileFChildId}/lastName`]: createStringWrapper(`Example`),
+  [`/familyAndHousehold/#${profileFChildId}/monthsLivedWithTPInUS`]: createEnumWrapper(
+    `twelve`,
+    `/monthsLivedWithTPInUSOptions`
+  ),
+  [`/familyAndHousehold/#${profileFChildId}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial: `1008` }),
+  [`/familyAndHousehold/#${profileFChildId}/hasIpPin`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${profileFChildId}/unableToCareForSelf`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${profileFChildId}/tpPaidMostOfHomeUpkeep`]: createBooleanWrapper(true),
+  '/hohQualifyingPerson': createCollectionItemWrapper(profileFChildId),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(false),
+  '/receivedImproperClaims': createBooleanWrapper(false),
+  ...w2s(skyler.ssn, profileFW2),
+  '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
+  '/scheduleCBusinesses': createCollectionWrapper([profileFBusinessId]),
+  '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileFBusinessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/scheduleCBusinesses/#${profileFBusinessId}/businessName`]: createStringWrapper(`Example Consulting`),
+  [`/scheduleCBusinesses/#${profileFBusinessId}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileFBusinessId}/writableGrossReceipts`]: createDollarWrapper(`64858`),
+  [`/scheduleCBusinesses/#${profileFBusinessId}/writableTotalExpenses`]: createDollarWrapper(`12000`),
+  '/scheduleAWantsToItemize': createBooleanWrapper(true),
+  '/scheduleAWritableMedical': createDollarWrapper(`0`),
+  '/scheduleAWritableStateLocalIncomeOrSalesTax': createDollarWrapper(`0`),
+  '/scheduleAWritableRealEstateTaxes': createDollarWrapper(`40400`),
+  '/scheduleAWritablePersonalPropertyTaxes': createDollarWrapper(`0`),
+  '/scheduleAWritableMortgageInterest': createDollarWrapper(`0`),
+  '/scheduleAWritableCashGifts': createDollarWrapper(`0`),
+  '/scheduleAWritableElectsToItemize': createBooleanWrapper(false),
+  '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -510,4 +581,5 @@ export const goldenProfiles = {
   profileCPaToFlAmtNiit,
   profileDHohItemizerChild,
   profileEPaToFlAmtDividends,
+  profileFPaAmtScheduleC,
 };
