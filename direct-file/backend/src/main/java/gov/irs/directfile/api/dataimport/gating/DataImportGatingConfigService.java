@@ -54,11 +54,10 @@ public class DataImportGatingConfigService {
             return getDataImportGatingConfigWithCache(gatingS3Config.getDataImportGatingObject());
         } catch (Exception e) {
             log.error(
-                    "Error occurred to retrieve data-import-gating config file {} in bucket {}. Exception: {}. Error: {}",
+                    "Error occurred to retrieve data-import-gating config file {} in bucket {}. Exception: {}",
                     gatingS3Config.getDataImportGatingObject(),
                     gatingS3Config.getDataImportGatingBucket(),
-                    e.getClass().getName(),
-                    e.getMessage());
+                    e.getClass().getName());
             return null;
         }
     }
@@ -71,10 +70,9 @@ public class DataImportGatingConfigService {
             return getDataImportGatingObjectAsStringWithCache(objectKey);
         } catch (Exception e) {
             log.error(
-                    "Error during data-import-gating object {} retrieval. Exception: {}. Error: {}",
+                    "Error during data-import-gating object {} retrieval. Exception: {}",
                     objectKey,
-                    e.getClass().getName(),
-                    e.getMessage());
+                    e.getClass().getName());
             throw new DataImportException("Error retrieving data-import-gating object " + objectKey, e);
         }
     }

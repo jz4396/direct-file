@@ -32,10 +32,12 @@ public class CacheService {
         try {
             String serializedValue = objectMapper.writeValueAsString(value);
             if (timeout != null) {
-                log.info("Setting cache key {} with timeout {}", remoteCacheKeyString, timeout);
+                log.info("Setting cache {}", cacheName);
+                log.debug("Setting cache key {} with timeout {}", remoteCacheKeyString, timeout);
                 redisTemplate.opsForValue().set(remoteCacheKeyString, serializedValue, timeout);
             } else {
-                log.info("Setting cache key {}", remoteCacheKeyString);
+                log.info("Setting cache {}", cacheName);
+                log.debug("Setting cache key {}", remoteCacheKeyString);
                 redisTemplate.opsForValue().set(remoteCacheKeyString, serializedValue);
             }
         } catch (Exception e) {
@@ -46,7 +48,8 @@ public class CacheService {
     public <V> V get(String cacheName, String key, Class<V> clazz) {
         String remoteCacheKeyString = makeCacheKeyString(cacheName, key);
         try {
-            log.info("Getting cache key {}", remoteCacheKeyString);
+            log.info("Getting cache {}", cacheName);
+            log.debug("Getting cache key {}", remoteCacheKeyString);
             String serializedValue = redisTemplate.opsForValue().get(remoteCacheKeyString);
             return (serializedValue != null) ? objectMapper.readValue(serializedValue, clazz) : null;
         } catch (Exception e) {
@@ -58,7 +61,8 @@ public class CacheService {
     public void clearKey(String cacheName, String key) {
         String remoteCacheKeyString = makeCacheKeyString(cacheName, key);
         try {
-            log.info("Clearing cache key {}", remoteCacheKeyString);
+            log.info("Clearing cache {}", cacheName);
+            log.debug("Clearing cache key {}", remoteCacheKeyString);
             redisTemplate.delete(remoteCacheKeyString);
         } catch (Exception e) {
             log.error("Unable to clear key from Redis. {}", e.getClass().getName());
@@ -68,7 +72,8 @@ public class CacheService {
     public void clearCache(String cacheName) {
         String keyPatternToDelete = makeCacheKeyString(cacheName, KEY_GLOB);
         try {
-            log.info("Clearing cache pattern {}", keyPatternToDelete);
+            log.info("Clearing cache {}", cacheName);
+            log.debug("Clearing cache pattern {}", keyPatternToDelete);
             Set<String> keys = redisTemplate.keys(keyPatternToDelete);
             if (keys != null) {
                 redisTemplate.delete(keys);

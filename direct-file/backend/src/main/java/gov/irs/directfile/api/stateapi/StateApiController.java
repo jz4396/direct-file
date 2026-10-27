@@ -45,6 +45,9 @@ public class StateApiController implements StateApi {
 
     public static final String BASE_URL = "/state-api";
     static final String EXPORTED_FACTS_FAILED_REASON = "The exported facts could not be produced.";
+    static final String NO_SUCH_TAX_RETURN_ERROR = "The user has no such tax return.";
+    static final String NO_FILING_STATE_ERROR = "A filing state cannot be determined from the tax return.";
+    static final String NO_SUBMISSIONS_ERROR = "No Submissions found for the tax return.";
     private final UserService userService;
     private final TaxReturnService taxReturnService;
     private final StateApiService stateApiService;
@@ -77,7 +80,7 @@ public class StateApiController implements StateApi {
                     createAuthorizationCodeRequest.taxReturnUuid(),
                     userInfo.id());
 
-            throw new NonexistentDataException("The user has no such tax return.");
+            throw new NonexistentDataException(NO_SUCH_TAX_RETURN_ERROR);
         }
 
         var taxReturn = queriedTaxReturn.get();
@@ -88,7 +91,7 @@ public class StateApiController implements StateApi {
                     "createAuthorizationCode failed: Unable to determine filing state from tax return {}",
                     taxReturn.getId());
 
-            throw new InvalidDataException("A filing state cannot be determined from the tax return.");
+            throw new InvalidDataException(NO_FILING_STATE_ERROR);
         }
 
         try {
@@ -100,7 +103,7 @@ public class StateApiController implements StateApi {
 
             if (mostRecentSubmission.isEmpty()) {
                 log.error("createAuthorizationCode failed: No submissions found for tax return {}", taxReturn.getId());
-                throw new InvalidDataException("No Submissions found for the tax return.");
+                throw new InvalidDataException(NO_SUBMISSIONS_ERROR);
             }
 
             var responseBuilder = CreateAuthorizationCodeResponse.builder();
