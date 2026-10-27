@@ -17,7 +17,8 @@
    - `/flowKnockoutScheduleCQbi` — § 199A QBI deduction requested
    - `/flowKnockoutScheduleCSpouseBusiness` — any business owned by the secondary filer. Schedule SE is figured per spouse, but EITC/CDCC earned income with self-employment are not per spouse yet, and no Schedule SE PDF is printed yet
    - `/flowKnockoutScheduleCEarnedIncomeCredits` — a Schedule C loss when the EITC could apply (AGI below the completed phaseout) or the CDCC or CTC applies, since `/scheduleCNetProfitForEarnedIncome` floors a loss at zero; or a joint return with a Schedule C claiming the CDCC (Form 2441 lines 4 and 5 need per-spouse Schedule SE)
-   - `/flowKnockoutScheduleCAdditionalMedicare`: W-2 Medicare wages (`formW2s /formW2totalMedicareWages`) + net SE earnings (92.35% figure) > `formW2s /medicareWagesAdditionalTaxThreshhold` ($200k / $250k MFJ / $125k MFS), when SE tax applies. Under 26 U.S.C. § 1401(b)(2)(A) the 0.9% Additional Medicare Tax hits SE income above the threshold, and § 1401(b)(2)(B) reduces the threshold by FICA wages (https://www.law.cornell.edu/uscode/text/26/1401#b_2). The wage-only `/knockoutMedicareWages` misses e.g. single $150k wages + $100k profit (150,000 + 92,350 > 200,000, about $381 owed). Form 8959 is not computed, so this case is knocked out.
+   - `/flowKnockoutScheduleSEOutOfScope` — Schedule SE lines this tool does not compute, asked only after self-employment income is yes: farm profit and Conservation Reserve Program payments (lines 1a and 1b; 26 U.S.C. 1402(a), 1402(a)(1)), church employee income (lines 5a and 5b; 1402(a)(14), 1402(j)), an optional method (line 4b and Part II; 1402(a), 1402(l)), ministry or a Form 4361 or Form 4029 exemption (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees (1402(c)(1)), and Form 8919 wages (line 8c). An unanswered question stays incomplete. Every answer no leaves those lines blank and keeps the regular Schedule SE computation.
+   - Additional Medicare tax on self-employment income is computed on Form 8959 (26 U.S.C. 1401(b)(2)). `/flowKnockoutScheduleCAdditionalMedicare` is not used.
 9. Section is required: `/scheduleCSectionIsComplete` is part of `flow.xml` `/flowIncomplete`
 10. Unset `/scheduleCBusinesses` collection: "no" (or section not reached) → $0, complete; "yes" with no businesses → incomplete, so `/totalTaxIsIncomplete` blocks submission
 
@@ -34,8 +35,8 @@ Stopped, and not printed as zero: inventory and cost of goods sold (Part III), c
 - Schedule C header items A, B, D, E, F, H, I, and J, and the line 1 statutory-employee checkbox
 - Part V lines 4 through 9 (a fourth other expense stops the return)
 - Form 461 excess business loss
-- Notary-public exclusion from self-employment tax, church-employee income, the optional methods, farm income, and statutory employees
-- Additional 0.9% Medicare tax (Form 8959): not computed; knocked out when wages + SE earnings exceed the threshold (see above)
+- Statutory employees (already stopped on the Form W-2). Notary fees, church employee income, the optional methods, and farm income stop on `/flowKnockoutScheduleSEOutOfScope` instead of being left blank
+- Additional 0.9% Medicare tax is computed on Form 8959 (26 U.S.C. 1401(b)(2))
 - QBI § 199A computation (knocked out)
 - EITC / CDCC earned income from a Schedule C loss, and CDCC on a joint return with a Schedule C (knocked out, see above). A profit is included: Schedule SE line 3 minus Schedule 1 line 15 (Form 1040 instructions (2025) EIC Worksheet B, PDF p. 47; 2026 draft Form 2441 instructions, PDF p. 5)
 - MFJ spouse-owned business (per-spouse Schedule SE facts exist; the knockout stays until EITC/CDCC earned income is per spouse and a Schedule SE PDF prints for each spouse)

@@ -76,12 +76,21 @@ class ScheduleSETy2026PdfSmokeTest {
 
     /**
      * The Form 8995 questions for one Schedule C business: the filer materially participates, has no prior-year
-     * qualified business loss carryforward and is not a cooperative patron (26 U.S.C. 199A(c)(2), 199A(g)).
+     * qualified business loss carryforward and is not a cooperative patron (26 U.S.C. 199A(c)(2), 199A(g)). Also the
+     * Schedule SE questions answered no (26 U.S.C. 1402(a), 1402(c)(1), 1402(e), 1402(g), 1402(j), 1402(l)), so lines
+     * 1a, 1b, 4b, 5a, 5b, checkbox A, and 8c stay blank.
      */
     static Map<String, String> qbiAnswers(Map<String, String> m, String biz) {
         m.put("/scheduleCBusinesses/#" + biz + "/materiallyParticipates", bool(true));
         m.put("/qbiHasPriorYearLossCarryforward", bool(false));
         m.put("/qbiIsCooperativePatron", bool(false));
+        // Answered no: Schedule SE lines 1a, 1b, 4b, 5a, 5b, checkbox A, and 8c stay blank.
+        m.put("/hadFarmSelfEmploymentIncome", bool(false));
+        m.put("/hadChurchEmployeeIncome", bool(false));
+        m.put("/usesSeOptionalMethod", bool(false));
+        m.put("/hasMinisterOrSeExemption", bool(false));
+        m.put("/hasNotarySeExclusion", bool(false));
+        m.put("/hadForm8919Wages", bool(false));
         return m;
     }
 

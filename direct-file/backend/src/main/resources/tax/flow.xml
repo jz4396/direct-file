@@ -160,6 +160,7 @@
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCOutOfScope" />
+          <Dependency module="scheduleSE" path="/flowKnockoutScheduleSEOutOfScope" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />

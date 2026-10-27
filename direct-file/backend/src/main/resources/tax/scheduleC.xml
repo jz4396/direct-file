@@ -316,12 +316,12 @@
         income separately"), and Schedule SE is
         not yet figured per spouse.
         Stopped elsewhere: a spouse-owned business
-        (/flowKnockoutScheduleCSpouseBusiness) and
+        (/flowKnockoutScheduleCSpouseBusiness),
         statutory employees
-        (formW2s /flowKnockoutStatutoryEmployee). Church
-        employee income, Forms 4361/4029 and the
-        optional methods have
-        no input in this tool. Complete and false when
+        (formW2s /flowKnockoutStatutoryEmployee), and
+        farm income, church employee income, the optional methods, ministry or Forms 4361
+        and 4029, notary fees, and Form 8919 wages (scheduleSE
+        /flowKnockoutScheduleSEOutOfScope). Complete and false when
         there is no Schedule C or the Schedule C
         result is a profit on a
         return that isn't a joint return claiming the

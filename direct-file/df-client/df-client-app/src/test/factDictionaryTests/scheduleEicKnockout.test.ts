@@ -54,6 +54,12 @@ const withChild = {
 
 const scheduleC = (gross: number) => ({
   '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
   '/wantsQbiDeduction': createBooleanWrapper(false),
   '/scheduleCBusinesses': createCollectionWrapper([businessId]),
   [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(primaryFilerId),

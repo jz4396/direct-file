@@ -55,7 +55,9 @@
         Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)";
         line 3: "Combine lines
         1a, 1b, and 2". Line 1a is farm profit, including farm partnerships' box 14
-        code A.         This fact is Schedule C only.
+        code A.         This fact is Schedule C only. Farm profit, the optional methods, church employee
+        income, ministry or a Form 4361 or 4029 exemption, notary fees, and Form 8919 wages
+        stop the return (/flowKnockoutScheduleSEOutOfScope) instead of being entered as zero.
         Box 14 code A is not added. A supported Schedule E Part II return has that box at zero. A nonzero
         amount stops the return (scheduleE /flowKnockoutScheduleEPartIIBox14CodeA; 26 U.S.C. 1402(a); 2026
         draft Instructions for Schedule SE, PDF p. 5, Partnership Income or Loss) instead of filing line 2
@@ -144,9 +146,10 @@
       <Description>
         Sum of the primary filer's W-2 box 7 amounts, the rest of Schedule SE line 8a. 26 U.S.C. 1402(b)(1).
         Line 8b (Form 4137)
-        and line 8c (Form 8919) have no input: Form 4137 tips stop the return (unreportedTips
-        /flowKnockoutUnreportedTips)
-        and income /wagesFrom8919 is $0.
+        and line 8c (Form 8919). Form 4137 tips stop the return (unreportedTips
+        /flowKnockoutUnreportedTips). A yes on /hadForm8919Wages stops the return
+        (/flowKnockoutScheduleSEOutOfScope). An answered no leaves line 8c blank, and income
+        /wagesFrom8919 is $0.
       </Description>
       <Derived>
         <Round>
@@ -214,7 +217,8 @@
         8d:
         "Add lines 8a, 8b, and 8c." Line 8b (Form 4137 unreported tips) stops the return
         (unreportedTips
-        /flowKnockoutUnreportedTips) and line 8c (Form 8919 wages) has no input (income
+        /flowKnockoutUnreportedTips). A yes on /hadForm8919Wages stops the return
+        (/flowKnockoutScheduleSEOutOfScope), and an answered no leaves line 8c blank (income
         /wagesFrom8919 is $0), so line 8d
         = line 8a. Line 8a says "If $184,500 or more, skip lines 8b through 10,
         and go to line 11", so line 8d is $0
@@ -307,8 +311,8 @@
       <Name>Primary filer: Schedule SE line 6</Name>
       <Description>
         2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
-        income has no input), and $0 when line 4c is under $400
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b;         church employee
+        income stops the return when /hadChurchEmployeeIncome is yes), and $0 when line 4c is under $400
         ("stop; you don’t owe self-employment tax"). Feeds line
         11 and Form 8959 line 13.
       </Description>
@@ -482,9 +486,10 @@
       <Description>
         Sum of the secondary filer's W-2 box 7 amounts, the rest of Schedule SE line 8a. 26 U.S.C.
         1402(b)(1). Line 8b (Form 4137)
-        and line 8c (Form 8919) have no input: Form 4137 tips stop the return
-        (unreportedTips /flowKnockoutUnreportedTips)
-        and income /wagesFrom8919 is $0.
+        and line 8c (Form 8919). Form 4137 tips stop the return
+        (unreportedTips /flowKnockoutUnreportedTips). A yes on /hadForm8919Wages stops the return
+        (/flowKnockoutScheduleSEOutOfScope). An answered no leaves line 8c blank, and income
+        /wagesFrom8919 is $0.
       </Description>
       <Derived>
         <Round>
@@ -579,8 +584,8 @@
       <Name>Secondary filer: Schedule SE line 6</Name>
       <Description>
         2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
-        income has no input), and $0 when line 4c is under $400
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b;         church employee
+        income stops the return when /hadChurchEmployeeIncome is yes), and $0 when line 4c is under $400
         ("stop; you don’t owe self-employment tax"). Feeds line
         11 and Form 8959 line 13.
       </Description>
@@ -739,6 +744,226 @@
       </Derived>
     </Fact>
 
+    <!--
+      Schedule SE lines this tool does not compute. Asked only after /hadSelfEmploymentIncome is yes, so a
+      return with no self-employment income stays complete false without these answers.
+    -->
+
+    <Fact path="/hadFarmSelfEmploymentIncome">
+      <Name>Farm self-employment income</Name>
+      <Description>
+        Yes when Schedule F farm profit or Conservation Reserve Program payments belong on Schedule SE
+        lines 1a or 1b. 26 U.S.C. 1402(a) and 1402(a)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#a_1): net earnings include farm income, and
+        certain CRP payments to a person receiving Social Security or disability benefits are excluded.
+        This tool does not compute either line.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hadChurchEmployeeIncome">
+      <Name>Church employee income</Name>
+      <Description>
+        Yes when the filer has church employee income for Schedule SE lines 5a and 5b. 26 U.S.C. 1402(a)(14)
+        and 1402(j) (https://www.law.cornell.edu/uscode/text/26/1402#j): that income is not reduced by
+        deductions, is not combined with other net earnings, and uses a $100 floor instead of $400.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/usesSeOptionalMethod">
+      <Name>Uses a Schedule SE optional method</Name>
+      <Description>
+        Yes when the filer uses a farm or nonfarm optional method (Schedule SE line 4b and Part II).
+        26 U.S.C. 1402(a) (https://www.law.cornell.edu/uscode/text/26/1402#a), the optional-method
+        sentences at the end of subsection (a), and 1402(l), which defines the lower and upper limits.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hasMinisterOrSeExemption">
+      <Name>Minister, religious order, or SE tax exemption</Name>
+      <Description>
+        Yes when the filer is a minister, a member of a religious order, or a Christian Science
+        practitioner, or has an approved Form 4361 or Form 4029 exemption. 26 U.S.C. 1402(c)(4) treats
+        that service as a trade or business. 1402(a)(8) computes net earnings without the section 107
+        housing exclusion. 1402(e) is the Form 4361 exemption and 1402(g) is the Form 4029 exemption
+        (https://www.law.cornell.edu/uscode/text/26/1402#e). Checkbox A and the housing amount are not
+        computed here.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hasNotarySeExclusion">
+      <Name>Notary fees excluded from self-employment tax</Name>
+      <Description>
+        Yes when the filer has notary fees excluded from net earnings. 26 U.S.C. 1402(c)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#c_1): the performance of the functions of a
+        public office is not a trade or business. The Schedule SE instructions subtract those fees from
+        line 3 or require "Exempt—Notary." This tool does not make that subtraction.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hadForm8919Wages">
+      <Name>Form 8919 wages</Name>
+      <Description>
+        Yes when the filer has wages from Form 8919 that belong on Schedule SE line 8c. Those wages
+        are social-security wages for the wage-base limit. income /wagesFrom8919 is $0, so a yes stops
+        the return instead of leaving line 8c blank. Asked only when /hadSelfEmploymentIncome is yes.
+        Form 4137 tips already stop the return (unreportedTips /flowKnockoutUnreportedTips) and are
+        Schedule SE line 8b.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleSEOutOfScope">
+      <Name>Knockout: Schedule SE line this tool does not compute</Name>
+      <Description>
+        Stops filing and printing when a filer who had self-employment income answers yes to farm
+        profit or Conservation Reserve Program payments (Schedule SE lines 1a and 1b; 26 U.S.C. 1402(a)
+        and 1402(a)(1)), church employee income (lines 5a and 5b; 1402(a)(14) and 1402(j)), an optional
+        method (line 4b and Part II; 1402(a) and 1402(l)), ministry or a Form 4361 or Form 4029
+        exemption (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees excluded as a public office
+        (1402(c)(1)), or Form 8919 wages (line 8c). Complete and false when self-employment income was
+        not asked or was answered no, and when every question is answered no. An unanswered question
+        while self-employment income is yes stays incomplete, so those lines are not filed as zero.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadFarmSelfEmploymentIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hadFarmSelfEmploymentIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadChurchEmployeeIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hadChurchEmployeeIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/usesSeOptionalMethod" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/usesSeOptionalMethod" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hasMinisterOrSeExemption" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hasMinisterOrSeExemption" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hasNotarySeExclusion" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hasNotarySeExclusion" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadForm8919Wages" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hadForm8919Wages" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Any>
+                <Dependency path="/hadFarmSelfEmploymentIncome" />
+                <Dependency path="/hadChurchEmployeeIncome" />
+                <Dependency path="/usesSeOptionalMethod" />
+                <Dependency path="/hasMinisterOrSeExemption" />
+                <Dependency path="/hasNotarySeExclusion" />
+                <Dependency path="/hadForm8919Wages" />
+              </Any>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCSectionIsComplete">
       <Name>Schedule C section complete</Name>
       <Description>Interview complete for Schedule C MVP (or filer had no SE income).</Description>
@@ -778,6 +1003,9 @@
                 </Not>
                 <Not>
                   <Dependency module="scheduleC" path="/flowKnockoutScheduleCOutOfScope" />
+                </Not>
+                <Not>
+                  <Dependency path="/flowKnockoutScheduleSEOutOfScope" />
                 </Not>
               </All>
             </Then>
