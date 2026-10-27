@@ -1309,24 +1309,122 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleBPartIIIAnswered">
+      <Name>Schedule B Part III questions are answered</Name>
+      <Description>True when Schedule B (Form 1040) line 7a and, when line 7a is "No", line 8 have an answer. A "Yes"
+        on
+        line 7a ends the questions (the rest of line 8 is not asked). An unanswered question is not treated as
+        "No".</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency module="income" path="/hasForeignAccounts" />
+          </IsComplete>
+          <Any>
+            <Dependency module="income" path="/hasForeignAccounts" />
+            <All>
+              <IsComplete>
+                <Dependency module="income" path="/isForeignTrustsGrantor" />
+              </IsComplete>
+              <Any>
+                <Dependency module="income" path="/isForeignTrustsGrantor" />
+                <IsComplete>
+                  <Dependency module="income" path="/hasForeignTrustsTransactions" />
+                </IsComplete>
+              </Any>
+            </All>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleBPartIII">
-      <Name>Knockout: Schedule B Part III yes (FinCEN Form 114 or Form 3520)</Name>
-      <Description>Schedule B (2026) draft line 7a question 1 or line 8 is Yes. Instructions for Schedule B
-        (Form 1040) (2025) p. 3, Line 7a—Question 2: a U.S. person may have to file FinCEN Form 114 and list the
-        foreign country on line 7b. Line 8: "If you were the grantor of, or transferor to, a foreign trust that
-        existed during 2025, you may have to file Form 3520." Those forms are not produced. Question 2 and line 7b
-        are left blank, so a Yes refuses the print instead of filing them empty. Same answers as
-        /hasForeignAccountsOrTrusts. Complete false when /hasForeignAccounts, /isForeignTrustsGrantor, and
-        /hasForeignTrustsTransactions are all complete and false. Incomplete when any of them is unanswered, which
-        also leaves /flowIsKnockedOut incomplete.</Description>
+      <Name>Knockout: Schedule B Part III foreign account or trust</Name>
+      <Description>Schedule B (2026 draft) Part III: "You must complete this part if you (a) had over $1,500 of taxable
+        interest or ordinary dividends; (b) had a foreign account; or (c) received a distribution from, or were a
+        grantor of, or a transferor to, a foreign trust." Instructions for Schedule B (Form 1040) (2025) p. 2, Line
+        7a—Question 1: "Check the 'Yes' box even if you aren't required to file FinCEN Form 114." p. 3, Line
+        7a—Question
+        2: a U.S. person "must file the form if the aggregate value of foreign financial accounts exceeds
+        $10,000 at any
+        time during 2025" (FinCEN Form 114, 31 U.S.C. 5314). p. 2: "Regardless of whether you are
+        required to file FinCEN
+        Form 114 (FBAR), you may be required to file Form 8938" (26 U.S.C. 6038D). p. 3, Line
+        8: "If you were the grantor
+        of, or transferor to, a foreign trust that existed during 2025, you may have to
+        file Form 3520" (26 U.S.C. 6048).
+        FinCEN Form 114, Form 8938 and Form 3520 are not computed, so any "Yes"
+        stops the return. The print is refused unless /scheduleBPartIIIAnswered is
+        complete: an unanswered line 7a or line 8 is not "No", including when taxable
+        interest and ordinary dividends are not over $1,500. Exactly $1,500 does not
+        require Schedule B (Instructions for Schedule B (2025) p. 1: "You had over
+        $1,500 of taxable interest or ordinary dividends."), and that return prints
+        when every asked Part III question is "No".</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <Any>
-          <Dependency module="income" path="/hasForeignAccounts" />
-          <Dependency module="income" path="/isForeignTrustsGrantor" />
-          <Dependency module="income" path="/hasForeignTrustsTransactions" />
-        </Any>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="income" path="/hasForeignAccounts" />
+                </IsComplete>
+                <Dependency module="income" path="/hasForeignAccounts" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="income" path="/isForeignTrustsGrantor" />
+                </IsComplete>
+                <Dependency module="income" path="/isForeignTrustsGrantor" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="income" path="/hasForeignTrustsTransactions" />
+                </IsComplete>
+                <Dependency module="income" path="/hasForeignTrustsTransactions" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleBPartIIIAnswered" />
+                </IsComplete>
+                <Dependency path="/scheduleBPartIIIAnswered" />
+              </All>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

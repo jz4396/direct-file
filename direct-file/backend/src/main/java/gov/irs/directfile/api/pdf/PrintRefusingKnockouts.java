@@ -88,7 +88,9 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutInterestScheduleBSubtraction",
             // Schedule B line 7a question 2 and line 7b (FinCEN Form 114) and line 8 (Form 3520) are not printed.
             // Instructions for Schedule B (2025) p. 3. A yes to line 7a question 1 or line 8 refuses the print so
-            // those lines are not left blank. Complete false when every Part III answer is no.
+            // those lines are not left blank. Unanswered is not "No": the print is refused unless
+            // /scheduleBPartIIIAnswered is complete, even when interest and ordinary dividends are not over $1,500.
+            // Complete false when every Part III answer is no. Exactly $1,500 with those answers still prints.
             "/flowKnockoutScheduleBPartIII",
             // Schedule E Part I loss. Lines 22 and 25 (Form 8582) are not printed. 26 U.S.C. 469, 465, 461(l).
             "/flowKnockoutScheduleELoss",
@@ -182,7 +184,35 @@ public final class PrintRefusingKnockouts {
             // amount (determined without regard to this paragraph)." That add-back is not implemented. $640,200 is the
             // Rev. Proc. 2025-32 §4.10 complete phaseout amount for a married individual filing a separate return
             // (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 17). Printing line 4 without it understates AMTI.
-            "/flowKnockoutAmtMfsAddBack");
+            "/flowKnockoutAmtMfsAddBack",
+            // Form 1099-DIV boxes this return does not compute (2b-2f, 6, 8-16). Form 1040 instr. (2025)
+            // https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1, requires that none of the
+            // forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or box
+            // 2d (collectibles (28%) gain)". 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6), 1(h)(7). Printing only box 2a
+            // would drop those amounts.
+            "/flowKnockoutDividendUnsupportedBoxes",
+            // Box 3 above basis is capital gain. 26 U.S.C. 301(c)(3)(A). Form 1040 instr. (2025) p. 26, Nondividend
+            // Distributions: "After you get back all of your cost (or other basis), you must report these
+            // distributions as capital gains on Form 8949." Basis is not collected, so the gain is not zeroed.
+            "/flowKnockoutNondividendDistributionsOverBasis",
+            // Box 1b that fails the holding period is not a qualified dividend. Form 1040 instr. (2025) p. 26, Line
+            // 3a, Exception. 26 U.S.C. 1(h)(11)(B)(iii). Line 3a is not reduced by a split this return does not
+            // collect.
+            "/flowKnockoutQualifiedDividendsHoldingPeriod",
+            // Box 5 section 199A dividends. 26 U.S.C. 199A(b)(1)(B). Form 1040 line 13b is not that deduction, so
+            // box 5 is not left off the return as $0. Full QBI from dividends is later.
+            "/flowKnockoutSection199ADividends",
+            // Box 7 foreign tax that does not meet the 26 U.S.C. 904(j) election. Form 1040 instr. (2025) p. 115,
+            // Schedule 3 Line 1: "No. See Form 1116 to find out if you can take the credit". Form 1116 is not
+            // computed. The election itself (at or under $300, or $600 on a joint return) still prints.
+            "/flowKnockoutDividendForeignTaxPaid",
+            // Nominee dividends. Form 1040 instr. (2025) p. 26, Line 3b: Schedule B is required if "you received, as
+            // a nominee, ordinary dividends that actually belong to someone else." The Part II subtraction is not
+            // computed, so the nominee amount is not left in line 3b.
+            "/flowKnockoutDividendNominee",
+            // Box 1b or box 5 larger than box 1a. Each is "the portion of the amount in box 1a" (Form 1099-DIV
+            // instructions for recipient). Lines 3a and 3b are not computed from that form.
+            "/flowKnockoutDividendAmountsInconsistent");
 
     private PrintRefusingKnockouts() {}
 
