@@ -96,14 +96,21 @@
         (Form 1040), line 3. Schedule 1 (Form 1040), line 5. Schedule 1 (Form 1040), line 6." Schedule 1 line 3
         is
         scheduleC /scheduleCNetProfitOrLoss and the Schedule E piece is scheduleE /scheduleENetIncome (Part I
-        rents and royalties only). Schedule E line 32 (nonpassive partnership and S corporation box 1) is not
-        net investment income under 26 U.S.C. 1411(c)(2) when the filer materially participates and the
-        activity is not a trading business, so it is not added. Schedule E line 37 nonpassive box 6 is the
-        same and is not added. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4), is not
-        469(c)(7) income, stops the return, and is not on line 4a. Box 5, box 7, box 8, passive amounts, and
+        rents and
+        royalties only). Schedule E line 32 (nonpassive partnership and S corporation box 1) is not
+        net investment income
+        under 26 U.S.C. 1411(c)(2) when the filer materially participates and the
+        activity is not a trading business, so
+        it is not added. Schedule E line 37 nonpassive box 6 is the
+        same and is not added. Box 8 is a rental activity
+        under 26 U.S.C. 469(c)(2) and 469(c)(4), is not
+        469(c)(7) income, stops the return, and is not on line 4a. Box 5,
+        box 7, box 8, passive amounts, and
         Part IV stop the return. line 6
-        (farm) is not supported. Whenever Schedule C or Part I is present and MAGI is over the threshold, the line 4b
-        trade-or-business adjustment can't be computed and /flowKnockoutForm8960Unsupported stops the return.
+        (farm) is not supported. Whenever Schedule C or
+        Part I is present and MAGI is over the threshold, the line 4b
+        trade-or-business adjustment can't be computed and
+        /flowKnockoutForm8960Unsupported stops the return.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -147,8 +154,10 @@
         Schedule C or Schedule E, which /flowKnockoutForm8960Unsupported stops; line 5c
         (partnership interests and S
         corporation stock) is not collected. A K-1 with any amount other than box 1, or a disposition, stops
-        the return (scheduleE /flowKnockoutScheduleEPartIIColumnE and /flowKnockoutScheduleEPartIIOtherK1Amount).
-        So line 5d = line 5a.
+        the return
+        (scheduleE /flowKnockoutScheduleEPartIIColumnE and /flowKnockoutScheduleEPartIIOtherK1Amount).
+        So line 5d = line
+        5a.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -450,18 +459,26 @@
         not described in paragraph (2)"; the rental trade-or-business / real estate professional /
         grouping
         rules and the 469 passive-loss interaction aren't modeled. (Part II nonpassive box 1 is not NII under
-        26 U.S.C. 1411(c)(2) and is not on line 4a. Schedule E line 37 nonpassive box 6 is not 1411(c)(2) net
-        investment income and is not on line 4a. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and
-        469(c)(4) make it passive without regard to material participation. It is not 469(c)(7) rental real
-        estate professional income, it is not on line 4a, and it stops the return. Passive K-1 income, a
-        trading business, a PTP, any other box, box 5, box 7, box 8, and Part IV stop the return: scheduleE
+        26
+        U.S.C. 1411(c)(2) and is not on line 4a. Schedule E line 37 nonpassive box 6 is not 1411(c)(2) net
+        investment
+        income and is not on line 4a. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and
+        469(c)(4) make it passive
+        without regard to material participation. It is not 469(c)(7) rental real
+        estate professional income, it is not
+        on line 4a, and it stops the return. Passive K-1 income, a
+        trading business, a PTP, any other box, box 5, box 7,
+        box 8, and Part IV stop the return: scheduleE
         /flowKnockoutScheduleEPartII.)
         (3) itemized
-        deductions (scheduleA /itemizesDeductions): Part II lines 9a-9c and 10 allocations (1411(c)(1)(B)
+        deductions (scheduleA
+        /itemizesDeductions): Part II lines 9a-9c and 10 allocations (1411(c)(1)(B)
         "properly
-        allocable"; Treas. Reg. 1.1411-4(f)) and the i8960 Section 68 worksheet aren't modeled.
+        allocable"; Treas. Reg.
+        1.1411-4(f)) and the i8960 Section 68 worksheet aren't modeled.
         At or under the
-        threshold, line 15 is $0, so line 17 is $0 whatever line 12 is, and nothing is stopped.
+        threshold, line 15 is $0, so line
+        17 is $0 whatever line 12 is, and nothing is stopped.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />

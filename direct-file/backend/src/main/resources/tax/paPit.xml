@@ -432,7 +432,8 @@
         doesn't compute; knocked out rather than using $0. An unanswered /paHasUnreimbursedEmployeeExpenses on a PA-40
         stays incomplete, so PrintRefusingKnockouts refuses the PDF instead of printing line 1b blank. A non-PA return
         is complete and false. 72 P.S.
-        §7303(a)(1) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+        §7303(a)(1)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -511,17 +512,25 @@
         2), or (2) a PA/FL part-year resident whose ordinary dividends received while not a PA resident
         (/paPartYearNonresidentDividends) are greater than $0: p. 43, "As a nonresident, you do not pay PA income tax on
         ordinary interest, ordinary dividends", so that nonresident-period part is a PA Schedule B line 4 adjustment
-        (p. 32: "dividend income for a part-year resident taxpayer during the period the taxpayer was a nonresident")
-        and Schedule SP line 6 non-PA income (p. 38). 1099-DIVs carry no dates; the filer allocates
+        (p.
+        32: "dividend income for a part-year resident taxpayer during the period the taxpayer was a nonresident")
+        and
+        Schedule SP line 6 non-PA income (p. 38). 1099-DIVs carry no dates; the filer allocates
         (/paPartYearResidentDividends). When that amount equals the federal total, line 4 is $0 and this clause is
         false. Unanswered, the nonresident amount stays incomplete, so this clause and /paLine3 stay incomplete (not
         $0). An unanswered /paHasExemptObligationDividends on a return with dividends stays incomplete the same way;
-        or (3) #86b: any Form
-        1099-DIV box 2a capital gain distributions. p. 32: "Capital gains distributions are taxable as dividend income
-        on Line 3. Do not report capital gains distributions on PA Schedule D." PA Schedule B line 10: "Enter the amount
-        of capital gains distributions included as capital gains on federal Schedule D. If federal Schedule D is not
-        required, enter the amount of capital gains distributions reported directly on Schedule 1 of the federal
-        return." A line 10 amount requires submitting PA Schedule B, which is not supported. PA-only: gated on
+        or
+        (3) #86b: any Form
+        1099-DIV box 2a capital gain distributions. p. 32: "Capital gains distributions are taxable as
+        dividend income
+        on Line 3. Do not report capital gains distributions on PA Schedule D." PA Schedule B line 10:
+        "Enter the amount
+        of capital gains distributions included as capital gains on federal Schedule D. If federal
+        Schedule D is not
+        required, enter the amount of capital gains distributions reported directly on Schedule 1 of
+        the federal
+        return." A line 10 amount requires submitting PA Schedule B, which is not supported. PA-only: gated
+        on
         stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5)
         (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
@@ -574,7 +583,8 @@
       <Name>Flow knockout: unsupported PA-40 items</Name>
       <Description>#78: yes to /paHasUnsupportedItems. An unanswered question on a PA-40 stays incomplete, so
         PrintRefusingKnockouts refuses the PDF instead of printing lines 7, 8, 10, 14-16, 22, 23 and 25 blank. A
-        non-PA return is complete and false.</Description>
+        non-PA
+        return is complete and false.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -798,18 +808,28 @@
         /paHasExemptObligationDividends on a return with dividends stays incomplete the same way. Also any 1099-DIV
         received as a nominee (dividends
         /flowKnockoutDividendNominee, which also stops the federal return).
-        (3) Line 10 (PDF p. 4, LINE 10: "Enter the amount of capital gains distributions included as capital gains on
-        federal Schedule D. If federal Schedule D is not required, enter the amount of capital gains distributions
-        reported directly on the federal return."): any Form 1099-DIV box 2a amount (/totalCapitalGainDistributions
-        greater than $0). (4) PA-taxable dividends (/paLine3: federal Form 1040 line 3b for a full-year resident, or the
+        (3) Line 10
+        (PDF p. 4, LINE 10: "Enter the amount of capital gains distributions included as capital gains on
+        federal
+        Schedule D. If federal Schedule D is not required, enter the amount of capital gains distributions
+        reported
+        directly on the federal return."): any Form 1099-DIV box 2a amount (/totalCapitalGainDistributions
+        greater than
+        $0). (4) PA-taxable dividends (/paLine3: federal Form 1040 line 3b for a full-year resident, or the
         PA-residency-period part for a part-year resident) over /paScheduleBThreshold ($2,500), a limit this tool sets;
         the booklet ties the
-        requirement to the cases above, not to a dollar amount. Line 7 (PDF p. 4, LINE 7: "exempt-interest dividends
-        reported in Box 12 of federal Form 1099-DIV") and Lines 2, 8, 9 and 11 (Schedule K-1 and PA RK-1 dividends,
-        Section 965 repatriation, other additions) come from 1099-DIV boxes or income that already stop the return
-        (dividends /flowKnockoutDividendUnsupportedBoxes covers box 12) or that this tool doesn't collect.
-        /flowKnockoutPaDividends stops the same Line 3, Line 4 part-year and Line 10 cases with its own explanation;
-        this fact is the single Schedule B test. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5)
+        requirement to the cases above, not to a dollar amount. Line 7 (PDF p. 4, LINE 7:
+        "exempt-interest dividends
+        reported in Box 12 of federal Form 1099-DIV") and Lines 2, 8, 9 and 11 (Schedule K-1
+        and PA RK-1 dividends,
+        Section 965 repatriation, other additions) come from 1099-DIV boxes or income that already
+        stop the return
+        (dividends /flowKnockoutDividendUnsupportedBoxes covers box 12) or that this tool doesn't
+        collect.
+        /flowKnockoutPaDividends stops the same Line 3, Line 4 part-year and Line 10 cases with its own
+        explanation;
+        this fact is the single Schedule B test. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S.
+        §7303(a)(5)
         (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
@@ -1468,16 +1488,21 @@
         and spouse must combine their eligibility incomes" (spouse data not collected). (2) A filer claimed as a
         dependent: p. 36 eligible only if "You are not a dependent on another person's federal tax return" and p. 37 a
         dependent child qualifies only "If that child’s parents qualify for Tax Forgiveness" (parents' data not
-        collected).         (3) More than 9 dependent children: p. 39 "If claiming more than nine (9) dependent children, go to
+        collected). (3) More than 9 dependent children: p. 39 "If claiming more than nine (9) dependent children, go to
         the PA Personal Income Tax Guide". (4) Nontaxable Section III income (/paHasSpNontaxableIncome). Unanswered,
         that clause stays incomplete when /paSpCouldQualify is true, so PrintRefusingKnockouts refuses the PDF instead
         of printing those lines blank. When /paSpCouldQualify is complete and false the knockout stays complete and
         false. (5) Any Form
-        1099-G (unemployment): its Eligibility Income treatment is not modeled. (6) #107 PA/FL part-year resident with a
-        net loss from sales made while living outside PA (/paSpNonPaPeriodGainOrLoss below $0): PA-40 IN (2025) p. 38
-        line 6 asks for "the total of all income" earned, received or realized while residing outside Pennsylvania, and
-        the booklet doesn't say whether a loss reduces it. Part-year Eligibility Income is otherwise whole-year (p. 37,
-        "Such taxpayers must include in their eligibility income all income as described whether earned within or
+        1099-G (unemployment): its Eligibility Income treatment is not modeled. (6) #107 PA/FL
+        part-year resident with a
+        net loss from sales made while living outside PA (/paSpNonPaPeriodGainOrLoss below $0):
+        PA-40 IN (2025) p. 38
+        line 6 asks for "the total of all income" earned, received or realized while residing
+        outside Pennsylvania, and
+        the booklet doesn't say whether a loss reduces it. Part-year Eligibility Income is
+        otherwise whole-year (p. 37,
+        "Such taxpayers must include in their eligibility income all income as described
+        whether earned within or
         outside Pennsylvania."; /paSpLine6). PA-only: gated on stateReturn /stateReturnPaFiled.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
@@ -1838,10 +1863,14 @@
         "If your employer does not report, or incorrectly reports, your PA-taxable compensation, you must use PA
         Schedule NRH to apportion your compensation". This tool doesn't produce PA Schedule NRH. Complete and false when
         there is no PA return or it is not a PA/FL part-year return. An unanswered
-        /paPartYearHasNonresidentPaSourcePay on a PA/FL part-year return stays incomplete, so PrintRefusingKnockouts
-        refuses the PDF instead of printing line 1a without that pay. 72 P.S. §7302(b): a nonresident is taxed on "each
-        of the classes of income hereinafter enumerated in section 303 from sources within this Commonwealth". Wired
-        into stateReturn /flowKnockoutStateReturn.</Description>
+        /paPartYearHasNonresidentPaSourcePay
+        on a PA/FL part-year return stays incomplete, so PrintRefusingKnockouts
+        refuses the PDF instead of printing line
+        1a without that pay. 72 P.S. §7302(b): a nonresident is taxed on "each
+        of the classes of income hereinafter
+        enumerated in section 303 from sources within this Commonwealth". Wired
+        into stateReturn
+        /flowKnockoutStateReturn.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>

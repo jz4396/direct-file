@@ -435,13 +435,12 @@ class Ty2026PdfPackageTest {
     @Test
     void scenariosTogetherPrintEveryConfiguredTy2026FormOrListItAsExcluded() throws Exception {
         Set<String> printed = new TreeSet<>();
-        for (Map<String, String> s :
-                List.of(
-                        investor(),
-                        itemizer(),
-                        paTaxForgiveness(),
-                        selfEmployedFamily("4000.00"),
-                        ScheduleBAndETy2026PdfSmokeTest.partI())) {
+        for (Map<String, String> s : List.of(
+                investor(),
+                itemizer(),
+                paTaxForgiveness(),
+                selfEmployedFamily("4000.00"),
+                ScheduleBAndETy2026PdfSmokeTest.partI())) {
             printed.addAll(render(s, null, null).forms.keySet());
         }
         for (String s : List.of(FAMILY, SAVER, HSA)) {

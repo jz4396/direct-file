@@ -8,8 +8,9 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
 
-import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.factgraph.Graph;
+
+import gov.irs.directfile.api.loaders.service.FactGraphService;
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.fieldsOnPages;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.day;
@@ -89,7 +90,8 @@ class Schedule3ATy2026PdfSmokeTest {
         assertTrue(new BigDecimal(line6).signum() > 0, "line 6");
         assertEquals("0.00", dollars(yes, "/schedule3AAmountForForm1040Line32b"), "line 8 yes: line 32b is -0-");
         assertEquals("0.00", dollars(yes, "/schedule3ALine8"));
-        assertEquals(dollars(yes, "/totalOtherPaymentsRefundableCredits"), dollars(yes, "/form1040Line32c"), "32c = 32a");
+        assertEquals(
+                dollars(yes, "/totalOtherPaymentsRefundableCredits"), dollars(yes, "/form1040Line32c"), "32c = 32a");
 
         try (PDDocument doc = Loader.loadPDF(generate(yesFacts))) {
             Map<String, String> s3a = fieldsOnPages(doc, S3A_FOOTER);
@@ -98,8 +100,7 @@ class Schedule3ATy2026PdfSmokeTest {
             blank(s3a, "Page1[0].f1_10[0]", "line 8 amount is -0- and prints blank");
             Map<String, String> f1040 = fieldsOnPages(doc, F1040_FOOTER);
             blank(f1040, "Page2[0].f2_32[0]", "Form 1040 line 32b is -0- and prints blank");
-            assertFalse(
-                    value(f1040, "Line31-32_ReadOrder[0].f2_31[0]").isEmpty(), "line 32a printed");
+            assertFalse(value(f1040, "Line31-32_ReadOrder[0].f2_31[0]").isEmpty(), "line 32a printed");
         }
 
         Map<String, String> noFacts = childlessEic(true, false);

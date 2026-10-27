@@ -308,10 +308,14 @@
         (https://www.law.cornell.edu/uscode/text/26/652), 662(a)
         (https://www.law.cornell.edu/uscode/text/26/662).
         A yes is the gate for Part II. The supported path (ordinary nonpassive box 1 only) is computed
-        on line 32. A loss, passive activity, foreign partnership, PTP, column (e) or (f), any amount
-        other than box 1, Schedule K-1 (Form 1065) box 14 code A, a QBI statement (box 20 code Z or box
-        17 code V), or line 27 stops the return. Part III is computed only on its supported path.
-        A residual interest in a REMIC is not this question. Schedule Q (Form 1066) is
+        on line 32. A
+        loss, passive activity, foreign partnership, PTP, column (e) or (f), any amount
+        other than box 1, Schedule K-1
+        (Form 1065) box 14 code A, a QBI statement (box 20 code Z or box
+        17 code V), or line 27 stops the return. Part
+        III is computed only on its supported path.
+        A residual interest in a REMIC is not this question. Schedule Q (Form
+        1066) is
         /scheduleEHasPartIVIncome, asked even when this answer is no. See /flowKnockoutScheduleEPartII.
       </Description>
       <Export downstreamFacts="true" />
@@ -490,11 +494,15 @@
       <Description>
         One row per partnership or S corporation. 2026 draft Instructions for Schedule E
         (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf, SHA-256 71d19faaf741cf3c), PDF p. 11: "If you are a
-        member of a partnership or joint venture or a shareholder in an S corporation, use Part II to report your
-        share of the partnership or S corporation income (even if not received) or loss." 26 U.S.C. 702(a)
+        member of
+        a partnership or joint venture or a shareholder in an S corporation, use Part II to report your
+        share of the
+        partnership or S corporation income (even if not received) or loss." 26 U.S.C. 702(a)
         (https://www.law.cornell.edu/uscode/text/26/702) and 1366(a)
-        (https://www.law.cornell.edu/uscode/text/26/1366). More than four entities are summed into lines 29a, 30,
-        and 32; line 28A is the first entity only. The 2026 draft instructions, PDF p. 9, say to attach a
+        (https://www.law.cornell.edu/uscode/text/26/1366).
+        More than four entities are summed into lines 29a, 30,
+        and 32; line 28A is the first entity only. The 2026 draft
+        instructions, PDF p. 9, say to attach a
         continuation sheet when Part II needs more space.
       </Description>
       <Export downstreamFacts="true" />
@@ -515,10 +523,13 @@
     <Fact path="/scheduleEPartIILine27">
       <Name>Schedule E line 27: prior-year unallowed loss or unreimbursed partnership expenses</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, line 27: "Are you reporting any loss not allowed in a prior year due
+        Schedule E (2026) draft, PDF p. 3, line 27: "Are you reporting any loss not allowed in a prior year
+        due
         to the at-risk or basis limitations, a prior-year unallowed loss from a passive activity (if that loss
-        was not reported on Form 8582), or unreimbursed partnership expenses?" A yes needs Form 8582, Form 6198,
-        or the basis computation, none of which are computed here, so it stops the return
+        was not
+        reported on Form 8582), or unreimbursed partnership expenses?" A yes needs Form 8582, Form 6198,
+        or the basis
+        computation, none of which are computed here, so it stops the return
         (/flowKnockoutScheduleEPartIILine27).
       </Description>
       <Export downstreamFacts="true" />
@@ -530,13 +541,19 @@
     <Fact path="/scheduleEHasPartIIIIncome">
       <Name>Has estate or trust income (Schedule E Part III)</Name>
       <Description>
-        2026 draft Instructions for Schedule E, PDF p. 14: "If you are a beneficiary of an estate or trust, use
+        2026 draft Instructions for Schedule E, PDF p. 14: "If you are a beneficiary of an estate or trust,
+        use
         Part III to report your part of the income (even if not received) or loss. You should receive a Schedule
-        K-1 (Form 1041) from the fiduciary." 26 U.S.C. 652(a) (https://www.law.cornell.edu/uscode/text/26/652)
-        and 662(a) (https://www.law.cornell.edu/uscode/text/26/662). A yes opens the Schedule K-1
-        (Form 1041) interview. The supported path is computed on line 37. A loss, passive activity,
-        box 5, box 7, box 8, any other box, a foreign trust, Form 8082, a basis limit, an at-risk limit, or a
-        passive deduction stops the return. See /flowKnockoutScheduleEPartIII.
+        K-1
+        (Form 1041) from the fiduciary." 26 U.S.C. 652(a) (https://www.law.cornell.edu/uscode/text/26/652)
+        and 662(a)
+        (https://www.law.cornell.edu/uscode/text/26/662). A yes opens the Schedule K-1
+        (Form 1041) interview. The
+        supported path is computed on line 37. A loss, passive activity,
+        box 5, box 7, box 8, any other box, a foreign
+        trust, Form 8082, a basis limit, an at-risk limit, or a
+        passive deduction stops the return. See
+        /flowKnockoutScheduleEPartIII.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -548,13 +565,18 @@
       <Name>Has residual interest in a REMIC (Schedule E Part IV)</Name>
       <Description>
         2026 draft Instructions for Schedule E, PDF p. 14: "If you are the holder of a residual interest
-        in a REMIC, use Part IV to report your total share of the REMIC's taxable income or loss for each
-        quarter included in your tax year. You should receive Schedule Q (Form 1066) and instructions from
-        the REMIC for each quarter." Asked of every filer, including a filer who answered
+        in a
+        REMIC, use Part IV to report your total share of the REMIC's taxable income or loss for each
+        quarter included in
+        your tax year. You should receive Schedule Q (Form 1066) and instructions from
+        the REMIC for each quarter." Asked
+        of every filer, including a filer who answered
         /scheduleEHasPartIIIncome no. 26 U.S.C. 860C
         (https://www.law.cornell.edu/uscode/text/26/860C). Part IV is not computed. A yes stops the return,
-        and line 39 stays incomplete so the REMIC amount is not entered as zero. An unanswered question
-        leaves /flowKnockoutScheduleEPartIV incomplete, so the print is refused.
+        and line 39
+        stays incomplete so the REMIC amount is not entered as zero. An unanswered question
+        leaves
+        /flowKnockoutScheduleEPartIV incomplete, so the print is refused.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -578,7 +600,8 @@
     <Fact path="/scheduleEK1s/*/entityType">
       <Name>Entity type (line 28 column (b))</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, line 28 column (b): "Enter P for partnership; S for S corporation."
+        Schedule E (2026) draft, PDF p. 3, line 28 column (b): "Enter P for partnership; S for S
+        corporation."
       </Description>
       <Writable>
         <Enum optionsPath="/scheduleEK1EntityTypeOptions" />
@@ -588,7 +611,8 @@
     <Fact path="/scheduleEK1s/*/isForeignPartnership">
       <Name>Foreign partnership (line 28 column (c))</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, line 28 column (c): "Check if foreign partnership". A checked box is
+        Schedule E (2026) draft, PDF p. 3, line 28 column (c): "Check if foreign partnership". A checked box
+        is
         out of scope (/flowKnockoutScheduleEPartIIForeignOrPtp).
       </Description>
       <Writable>
@@ -601,9 +625,12 @@
       <Description>
         2026 draft Instructions for Schedule E, PDF p. 12: "See the Schedule K-1 instructions before entering
         on your return other partnership items from a passive activity or income or loss from any publicly
-        traded partnership." A PTP is out of scope. 26 U.S.C. 469(k)
-        (https://www.law.cornell.edu/uscode/text/26/469) limits the passive loss from a publicly traded
-        partnership, and 26 U.S.C. 199A(b)(1)(B) treats qualified PTP income separately from qualified business
+        traded
+        partnership." A PTP is out of scope. 26 U.S.C. 469(k)
+        (https://www.law.cornell.edu/uscode/text/26/469) limits the
+        passive loss from a publicly traded
+        partnership, and 26 U.S.C. 199A(b)(1)(B) treats qualified PTP income
+        separately from qualified business
         income.
       </Description>
       <Writable>
@@ -616,10 +643,14 @@
       <Description>
         26 U.S.C. 1411(c)(2) (https://www.law.cornell.edu/uscode/text/26/1411) treats as a section 1411 trade
         or business "(A) a passive activity (within the meaning of section 469) with respect to the taxpayer,
-        or (B) a trade or business of trading in financial instruments or commodities (as defined in section
-        475(e)(2))." Material-participation ordinary income that is not a trading business is not net
-        investment income, so it is not added to Form 8960 line 4a. A trading business would be, and Form 8960
-        does not take it from Part II, so a yes stops the return.
+        or (B) a
+        trade or business of trading in financial instruments or commodities (as defined in section
+        475(e)(2))."
+        Material-participation ordinary income that is not a trading business is not net
+        investment income, so it is not
+        added to Form 8960 line 4a. A trading business would be, and Form 8960
+        does not take it from Part II, so a yes
+        stops the return.
       </Description>
       <Writable>
         <Boolean />
@@ -631,13 +662,20 @@
       <Description>
         Partner's Instructions for Schedule K-1 (Form 1065) (2025)
         (https://www.irs.gov/pub/irs-pdf/i1065sk1.pdf, SHA-256 659063e0aaa36e44), box 1, ordinary business
-        income (loss). Shareholder's Instructions for Schedule K-1 (Form 1120-S) report the same ordinary
-        business income (loss) in box 1. 26 U.S.C. 702(a)(8) (https://www.law.cornell.edu/uscode/text/26/702):
-        a partner takes into account "taxable income or loss ... exclusive of items requiring separate
-        computation". 26 U.S.C. 1366(a)(1) (https://www.law.cornell.edu/uscode/text/26/1366) is the S
-        corporation counterpart. 2026 draft Instructions for Schedule E, PDF p. 13: "enter in the applicable
-        column of line 28 your current-year ordinary income or loss ... from the partnership or S corporation."
-        A negative amount is a loss and stops the return. No minimum: the loss knockout needs the signed amount.
+        income (loss).
+        Shareholder's Instructions for Schedule K-1 (Form 1120-S) report the same ordinary
+        business income (loss) in box
+        1. 26 U.S.C. 702(a)(8) (https://www.law.cornell.edu/uscode/text/26/702):
+        a partner takes into account "taxable
+        income or loss ... exclusive of items requiring separate
+        computation". 26 U.S.C. 1366(a)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1366) is the S
+        corporation counterpart. 2026 draft Instructions for
+        Schedule E, PDF p. 13: "enter in the applicable
+        column of line 28 your current-year ordinary income or loss ...
+        from the partnership or S corporation."
+        A negative amount is a loss and stops the return. No minimum: the loss
+        knockout needs the signed amount.
       </Description>
       <Writable>
         <Dollar />
@@ -647,12 +685,16 @@
     <Fact path="/scheduleEK1s/*/materiallyParticipates">
       <Name>Material participation in this partnership or S corporation</Name>
       <Description>
-        26 U.S.C. 469(h)(1) (https://www.law.cornell.edu/uscode/text/26/469): a taxpayer materially participates
+        26 U.S.C. 469(h)(1) (https://www.law.cornell.edu/uscode/text/26/469): a taxpayer materially
+        participates
         when involved in the operations of the activity "on a regular, continuous, and substantial basis."
         2026 draft Instructions for Schedule E, PDF pp. 11-12: "If you have passive activity income, complete
-        column (h) of Part II, for that activity. If you have nonpassive income or losses, complete columns
-        (i) through (k) of Part II, as appropriate." Yes puts nonnegative box 1 in column (k). No is passive
-        and stops the return (column (h) is not filed in this slice).
+        column (h)
+        of Part II, for that activity. If you have nonpassive income or losses, complete columns
+        (i) through (k) of Part
+        II, as appropriate." Yes puts nonnegative box 1 in column (k). No is passive
+        and stops the return (column (h) is
+        not filed in this slice).
       </Description>
       <Writable>
         <Boolean />
@@ -664,12 +706,18 @@
       <Description>
         2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
         a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 2: "Net profit or
-        (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)."
-        26 U.S.C. 1402(a) (https://www.law.cornell.edu/uscode/text/26/1402). 2026 draft Instructions for
-        Schedule E, PDF p. 12: "Enter the amount from box 14, code A, of Schedule K-1 (Form 1065), on Schedule
-        SE after you reduce this amount by any allowable expenses attributable to that income." PDF p. 13:
-        "Your share of the net income of an S corporation is not subject to self-employment tax." A nonzero
-        amount is not added to Schedule SE line 2; it stops the return. Enter zero when box 14 code A is blank,
+        (loss) from
+        Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)."
+        26 U.S.C. 1402(a)
+        (https://www.law.cornell.edu/uscode/text/26/1402). 2026 draft Instructions for
+        Schedule E, PDF p. 12: "Enter the
+        amount from box 14, code A, of Schedule K-1 (Form 1065), on Schedule
+        SE after you reduce this amount by any
+        allowable expenses attributable to that income." PDF p. 13:
+        "Your share of the net income of an S corporation is
+        not subject to self-employment tax." A nonzero
+        amount is not added to Schedule SE line 2; it stops the return.
+        Enter zero when box 14 code A is blank,
         including every S corporation.
       </Description>
       <Writable>
@@ -682,8 +730,10 @@
       <Description>
         26 U.S.C. 199A(c) (https://www.law.cornell.edu/uscode/text/26/199A) qualified business income from a
         partnership or S corporation is reported on a statement: Schedule K-1 (Form 1065) box 20 code Z, or
-        Schedule K-1 (Form 1120-S) box 17 code V. Form 8995 lines 6-9 are not filled from box 1. A statement
-        means there is an amount to enter, so the return stops. Blank or zero leaves nothing to enter.
+        Schedule K-1
+        (Form 1120-S) box 17 code V. Form 8995 lines 6-9 are not filled from box 1. A statement
+        means there is an amount
+        to enter, so the return stops. Blank or zero leaves nothing to enter.
       </Description>
       <Writable>
         <Boolean />
@@ -695,9 +745,12 @@
       <Description>
         Any box other than box 1 ordinary business income (loss), including guaranteed payments, interest,
         dividends, royalties, section 179, credits, and other separately stated items. 26 U.S.C. 702(a)(1)-(7)
-        and 1366(a)(1)(A) require those items to be taken into account separately. They are not entered on
-        Schedule E line 28 column (k) in this slice, so any such amount stops the return. Answer no only when
-        every other box is blank or zero.
+        and
+        1366(a)(1)(A) require those items to be taken into account separately. They are not entered on
+        Schedule E line 28
+        column (k) in this slice, so any such amount stops the return. Answer no only when
+        every other box is blank or
+        zero.
       </Description>
       <Writable>
         <Boolean />
@@ -707,12 +760,15 @@
     <Fact path="/scheduleEK1s/*/basisComputationRequired">
       <Name>Line 28 column (e): basis computation required</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3: "If you report a loss, receive a distribution, dispose of stock, or
+        Schedule E (2026) draft, PDF p. 3: "If you report a loss, receive a distribution, dispose of stock,
+        or
         receive a loan repayment from an S corporation, you must check the box in column (e) on line 28 and
-        attach the required basis computation." 26 U.S.C. 1366(d)(1)
+        attach the
+        required basis computation." 26 U.S.C. 1366(d)(1)
         (https://www.law.cornell.edu/uscode/text/26/1366) and 1367
         (https://www.law.cornell.edu/uscode/text/26/1367). A checked box stops the return. Answer no when there
-        is no S corporation distribution, stock disposition, or loan repayment.
+        is no S
+        corporation distribution, stock disposition, or loan repayment.
       </Description>
       <Writable>
         <Boolean />
@@ -722,9 +778,11 @@
     <Fact path="/scheduleEK1s/*/anyAmountNotAtRisk">
       <Name>Line 28 column (f): any amount is not at risk</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3: "If you report a loss from an at-risk activity for which any amount
+        Schedule E (2026) draft, PDF p. 3: "If you report a loss from an at-risk activity for which any
+        amount
         is not at risk, you must check the box in column (f) on line 28 and attach Form 6198." 26 U.S.C.
-        465(a)(1) (https://www.law.cornell.edu/uscode/text/26/465). A checked box stops the return.
+        465(a)(1)
+        (https://www.law.cornell.edu/uscode/text/26/465). A checked box stops the return.
       </Description>
       <Writable>
         <Boolean />
@@ -790,10 +848,14 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (k): "Nonpassive income from Schedule K-1". 2026 draft
         Instructions for Schedule E, PDF pp. 11-12: nonpassive income goes in columns (i) through (k). Column
-        (k) is box 1, rounded to whole dollars, when the filer materially participates and box 1 is zero or
-        positive. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of
-        a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case it shall be
-        increased to one dollar." Passive income and losses are not entered here; those returns stop.
+        (k) is box
+        1, rounded to whole dollars, when the filer materially participates and box 1 is zero or
+        positive. 26 U.S.C.
+        6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of
+        a dollar shall be disregarded
+        unless it amounts to one-half dollar or more, in which case it shall be
+        increased to one dollar." Passive income
+        and losses are not entered here; those returns stop.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -847,7 +909,8 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (h): "Passive income from Schedule K-1". Used only so line
         30 can add columns (h) and (k) when the activity is passive. A passive activity stops the return
-        before filing, so a submitted return has column (h) at zero.
+        before filing,
+        so a submitted return has column (h) at zero.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -901,7 +964,8 @@
       <Description>
         Domestic partnership or S corporation, column (c) unchecked, not a PTP, not a trading business, box 1
         at least zero, box 14 code A zero, no section 199A statement, no other K-1 amount, column (e) and
-        column (f) unchecked, and material participation yes.
+        column (f)
+        unchecked, and material participation yes.
       </Description>
       <Derived>
         <All>
@@ -1033,9 +1097,12 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, line 29a: "Totals" of the income columns. Column (k) is the sum of
         line 28 column (k). $0 when the K-1 question is unanswered or no, so the rest of the return still
-        computes. Also $0 when the partnership list is finished and empty and Part III is yes, so a
-        trust-only return does not leave line 32 incomplete. Incomplete when the filer answered yes, has
-        not finished an empty list or a Part III interview, or a column (k) amount is still unanswered,
+        computes. Also
+        $0 when the partnership list is finished and empty and Part III is yes, so a
+        trust-only return does not leave
+        line 32 incomplete. Incomplete when the filer answered yes, has
+        not finished an empty list or a Part III
+        interview, or a column (k) amount is still unanswered,
         so line 32 is not filed as zero.
       </Description>
       <Export downstreamFacts="true" />
@@ -1192,7 +1259,8 @@
       <Name>Schedule E line 30</Name>
       <Description>
         Schedule E (2026) draft, PDF p. 3, line 30: "Add columns (h) and (k) of line 29a." Whole dollars,
-        26 U.S.C. 6102(a).
+        26
+        U.S.C. 6102(a).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1210,7 +1278,8 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, line 31: "Add columns (g), (i), and (j) of line 29b." This slice
         does not compute a loss or a section 179 deduction, so line 31 is zero whenever line 30 is complete,
-        and incomplete when line 30 is incomplete.
+        and
+        incomplete when line 30 is incomplete.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1251,9 +1320,12 @@
       <Description>
         Schedule E (2026) draft, PDF p. 4, line 41: "Total income or (loss). Combine lines 26, 32, 37, 39,
         and 40. Enter the result here and on Schedule 1 (Form 1040), line 5." Line 26 is
-        /scheduleENetIncome. Line 32 is /scheduleEPartIILine32. Line 37 is /scheduleEPartIIILine37.
-        Line 39 is /scheduleEPartIVLine39: $0 when Part IV is no, and incomplete when Part IV is yes so a
-        REMIC is not entered as zero. Line 40 (Form 4835) is not collected. Whole dollars, 26 U.S.C. 6102(a).
+        /scheduleENetIncome. Line 32 is
+        /scheduleEPartIILine32. Line 37 is /scheduleEPartIIILine37.
+        Line 39 is /scheduleEPartIVLine39: $0 when Part IV is
+        no, and incomplete when Part IV is yes so a
+        REMIC is not entered as zero. Line 40 (Form 4835) is not collected.
+        Whole dollars, 26 U.S.C. 6102(a).
         26 U.S.C. 61(a), 702(a), 1366(a), 652(a), 662(a).
       </Description>
       <Export downstreamFacts="true" />
@@ -1274,7 +1346,8 @@
       <Description>
         True only when /scheduleEHasPartIIIncome is answered yes. Unanswered is false, so Schedule 1 is not
         required solely because the question has not been reached. The print still refuses while the question
-        is unanswered (/flowKnockoutScheduleEPartII).
+        is
+        unanswered (/flowKnockoutScheduleEPartII).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1316,11 +1389,13 @@
       <Description>
         Any box 1 loss. 26 U.S.C. 469(a)(1) (https://www.law.cornell.edu/uscode/text/26/469) disallows the
         passive activity loss. 26 U.S.C. 465(a)(1) (https://www.law.cornell.edu/uscode/text/26/465) limits a
-        loss to the amount at risk (Form 6198). 26 U.S.C. 704(d)(1)
+        loss to the
+        amount at risk (Form 6198). 26 U.S.C. 704(d)(1)
         (https://www.law.cornell.edu/uscode/text/26/704) and 1366(d)(1)
         (https://www.law.cornell.edu/uscode/text/26/1366) limit a loss to basis. 26 U.S.C. 461(l)
         (https://www.law.cornell.edu/uscode/text/26/461) is the excess business loss (Form 461). Complete
-        false when /scheduleEHasPartIIIncome is false.
+        false when
+        /scheduleEHasPartIIIncome is false.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -1346,7 +1421,8 @@
       <Description>
         26 U.S.C. 469(c)(1) (https://www.law.cornell.edu/uscode/text/26/469): a passive activity is a trade
         or business in which the taxpayer does not materially participate. Column (h) and section 1411 net
-        investment income are not computed for that activity. Complete false when
+        investment
+        income are not computed for that activity. Complete false when
         /scheduleEHasPartIIIncome is false.
       </Description>
       <BlockSubmissionOnTrue />
@@ -1569,10 +1645,13 @@
         One row per estate or trust. 2026 draft Instructions for Schedule E
         (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf, SHA-256 71d19faaf741cf3c), PDF p. 14: "If you are a
         beneficiary of an estate or trust, use Part III to report your part of the income (even if not received)
-        or loss. You should receive a Schedule K-1 (Form 1041) from the fiduciary." 26 U.S.C. 652(a)
+        or loss.
+        You should receive a Schedule K-1 (Form 1041) from the fiduciary." 26 U.S.C. 652(a)
         (https://www.law.cornell.edu/uscode/text/26/652) and 662(a)
-        (https://www.law.cornell.edu/uscode/text/26/662). More than two estates are summed into lines 34a, 35,
-        and 37. The 2026 draft instructions, PDF p. 10, say to attach a continuation sheet when Part III needs
+        (https://www.law.cornell.edu/uscode/text/26/662).
+        More than two estates are summed into lines 34a, 35,
+        and 37. The 2026 draft instructions, PDF p. 10, say to
+        attach a continuation sheet when Part III needs
         more space.
       </Description>
       <Export downstreamFacts="true" />
@@ -1604,8 +1683,10 @@
     <Fact path="/scheduleEEstates/*/isForeignBeneficiary">
       <Name>Foreign beneficiary (Schedule K-1 (Form 1041) item H)</Name>
       <Description>
-        Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/f1041sk1.pdf, SHA-256 d8d7b6eacabdf145),
-        item H: "Domestic beneficiary" or "Foreign beneficiary". 2026 draft Instructions for Schedule E, PDF
+        Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/f1041sk1.pdf, SHA-256
+        d8d7b6eacabdf145),
+        item H: "Domestic beneficiary" or "Foreign beneficiary". 2026 draft Instructions for Schedule
+        E, PDF
         p. 14: a foreign trust may require Schedule B Part III and Form 3520. A foreign beneficiary is out of
         scope.
       </Description>
@@ -1617,10 +1698,13 @@
     <Fact path="/scheduleEEstates/*/isForeignTrust">
       <Name>Foreign trust</Name>
       <Description>
-        2026 draft Instructions for Schedule E, PDF p. 14: "An individual who received a distribution from, or
+        2026 draft Instructions for Schedule E, PDF p. 14: "An individual who received a distribution from,
+        or
         who was the grantor of, or transferor to, a foreign trust must also complete Part III of Schedule B
-        (Form 1040) and may have to file Form 3520." 26 U.S.C. 679
-        (https://www.law.cornell.edu/uscode/text/26/679). A yes stops the return.
+        (Form 1040)
+        and may have to file Form 3520." 26 U.S.C. 679
+        (https://www.law.cornell.edu/uscode/text/26/679). A yes stops the
+        return.
       </Description>
       <Writable>
         <Boolean />
@@ -1632,7 +1716,8 @@
       <Description>
         2026 draft Instructions for Schedule E, PDF p. 14: "If you are treating items on your tax return
         differently from the way the estate or trust reported them on its return, you may have to file Form
-        8082." A yes stops the return.
+        8082." A yes
+        stops the return.
       </Description>
       <Writable>
         <Boolean />
@@ -1644,11 +1729,16 @@
       <Description>
         Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025)
         (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13), Box 5: "The amount reported
-        in this box is your distributive share of royalties, annuities, and other income that isn't subject to
-        the passive activity rules." Schedule K-1 (Form 1041) (2025) page 2: report box 5 on "Schedule E, line
-        33, column (f)". A nonzero amount is net investment income under 26 U.S.C. 1411(c)(1)(A)(i) or income
-        in respect of a decedent whose character is not modeled, and Form 8960 line 4a does not take it, so it
-        stops the return. No minimum: a loss must remain visible to the loss knockout.
+        in this box
+        is your distributive share of royalties, annuities, and other income that isn't subject to
+        the passive activity
+        rules." Schedule K-1 (Form 1041) (2025) page 2: report box 5 on "Schedule E, line
+        33, column (f)". A nonzero
+        amount is net investment income under 26 U.S.C. 1411(c)(1)(A)(i) or income
+        in respect of a decedent whose
+        character is not modeled, and Form 8960 line 4a does not take it, so it
+        stops the return. No minimum: a loss must
+        remain visible to the loss knockout.
       </Description>
       <Writable>
         <Dollar />
@@ -1661,7 +1751,8 @@
         Schedule K-1 (Form 1041) (2025) page 2: box 6 "Ordinary business income" is reported on "Schedule E,
         line 33, column (d) or (f)". Beneficiary's Instructions, Boxes 6 Through 8: the fiduciary reports the
         distributive share of income from each trade or business. 26 U.S.C. 662(a). Material participation
-        puts a nonnegative amount in column (f). A negative amount stops the return.
+        puts a
+        nonnegative amount in column (f). A negative amount stops the return.
       </Description>
       <Writable>
         <Dollar />
@@ -1671,10 +1762,13 @@
     <Fact path="/scheduleEEstates/*/box7">
       <Name>Schedule K-1 (Form 1041) box 7 net rental real estate income</Name>
       <Description>
-        Schedule K-1 (Form 1041) (2025) page 2: box 7 is reported on "Schedule E, line 33, column (d) or (f)".
+        Schedule K-1 (Form 1041) (2025) page 2: box 7 is reported on "Schedule E, line 33, column (d) or
+        (f)".
         26 U.S.C. 469(c)(2) (https://www.law.cornell.edu/uscode/text/26/469): a rental real estate activity is
-        a passive activity. Schedule E (2026) draft, PDF p. 4, line 43 is the real estate professional
-        reconciliation and is not computed. Any nonzero amount stops the return (Form 8582).
+        a
+        passive activity. Schedule E (2026) draft, PDF p. 4, line 43 is the real estate professional
+        reconciliation and
+        is not computed. Any nonzero amount stops the return (Form 8582).
       </Description>
       <Writable>
         <Dollar />
@@ -1686,11 +1780,16 @@
       <Description>
         Schedule K-1 (Form 1041) (2025) page 2: box 8 "Other rental income" is reported on "Schedule E, line
         33, column (d) or (f)". 26 U.S.C. 469(c)(2) (https://www.law.cornell.edu/uscode/text/26/469): the term
-        passive activity includes any rental activity, except as provided in 469(c)(7). 26 U.S.C. 469(c)(4):
-        material participation is not taken into account in determining whether an activity is a rental activity
-        under (c)(2). Box 8 is not 469(c)(7) rental real estate (that exception is box 7, and Schedule E line 43
-        is not computed). A nonnegative amount is column (d) only. Any nonzero amount stops the return. A
-        negative amount also stops the return.
+        passive
+        activity includes any rental activity, except as provided in 469(c)(7). 26 U.S.C. 469(c)(4):
+        material
+        participation is not taken into account in determining whether an activity is a rental activity
+        under (c)(2). Box
+        8 is not 469(c)(7) rental real estate (that exception is box 7, and Schedule E line 43
+        is not computed). A
+        nonnegative amount is column (d) only. Any nonzero amount stops the return. A
+        negative amount also stops the
+        return.
       </Description>
       <Writable>
         <Dollar />
@@ -1702,7 +1801,8 @@
       <Description>
         26 U.S.C. 469(h)(1): a taxpayer materially participates when involved "on a regular, continuous, and
         substantial basis." Yes puts nonnegative box 6 in column (f). Box 8 stays in column (d): 26 U.S.C.
-        469(c)(2) and 469(c)(4). No is passive (column (d)) and stops the return.
+        469(c)(2) and
+        469(c)(4). No is passive (column (d)) and stops the return.
       </Description>
       <Writable>
         <Boolean />
@@ -1714,9 +1814,12 @@
       <Description>
         Schedule K-1 (Form 1041) (2025) page 2 sends box 1 to Form 1040 line 2b, box 2a to line 3b, box 2b to
         line 3a, boxes 3 and 4a to Schedule D, box 9 to Form 8582 or Schedule E columns (c) or (e), box 10 to
-        Schedule A, box 11 to Schedule 1, Schedule A, Schedule D, or Form 6251, box 12 to Form 6251, box 13 to
-        a credit line, and box 14 to other forms, including code I (section 199A) and code H (Form 8960).
-        Those amounts are not entered from this slice. Answer no only when every such box is blank or zero.
+        Schedule A,
+        box 11 to Schedule 1, Schedule A, Schedule D, or Form 6251, box 12 to Form 6251, box 13 to
+        a credit line, and box
+        14 to other forms, including code I (section 199A) and code H (Form 8960).
+        Those amounts are not entered from
+        this slice. Answer no only when every such box is blank or zero.
       </Description>
       <Writable>
         <Boolean />
@@ -1728,10 +1831,13 @@
       <Description>
         2026 draft Instructions for Schedule E, PDF p. 4, Limitation on Losses: "Basis rules apply to losses
         from a partnership or S corporation." Form 7203 is the S corporation stock and debt basis computation
-        under 26 U.S.C. 1366(d) (https://www.law.cornell.edu/uscode/text/26/1366) and 1367
+        under 26
+        U.S.C. 1366(d) (https://www.law.cornell.edu/uscode/text/26/1366) and 1367
         (https://www.law.cornell.edu/uscode/text/26/1367). This tool does not compute a basis limit for a
-        beneficiary of an estate or trust. A yes stops the return instead of treating the limit as zero.
-        Answer no when no basis limit applies.
+        beneficiary of
+        an estate or trust. A yes stops the return instead of treating the limit as zero.
+        Answer no when no basis limit
+        applies.
       </Description>
       <Writable>
         <Boolean />
@@ -1743,7 +1849,8 @@
       <Description>
         2026 draft Instructions for Schedule E, PDF p. 4: "At-risk rules apply to losses from rental real
         estate or royalties. They also apply to losses from a partnership, S corporation, estate, or trust."
-        26 U.S.C. 465(a)(1) (https://www.law.cornell.edu/uscode/text/26/465). Form 6198 is not computed. A yes
+        26 U.S.C.
+        465(a)(1) (https://www.law.cornell.edu/uscode/text/26/465). Form 6198 is not computed. A yes
         stops the return.
       </Description>
       <Writable>
@@ -1754,11 +1861,14 @@
     <Fact path="/scheduleEEstates/*/passiveDeductionOrLoss">
       <Name>Passive deduction or loss from this estate or trust (Form 8582)</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, line 33 column (c): "Passive deduction or loss allowed (attach Form
+        Schedule E (2026) draft, PDF p. 3, line 33 column (c): "Passive deduction or loss allowed (attach
+        Form
         8582 if required)." Column (e) is "Deduction or loss from Schedule K-1". 2026 draft Instructions for
         Schedule E, PDF p. 4: "Passive activity loss rules apply to losses from rental real estate. They also
-        apply to losses from a partnership, S corporation, estate, or trust." 26 U.S.C. 469(a)(1). A yes
-        stops the return. Answer no when columns (c) and (e) would be blank or zero.
+        apply to
+        losses from a partnership, S corporation, estate, or trust." 26 U.S.C. 469(a)(1). A yes
+        stops the return. Answer
+        no when columns (c) and (e) would be blank or zero.
       </Description>
       <Writable>
         <Boolean />
@@ -1770,25 +1880,42 @@
       <Description>
         Box 5, 6, 7, or 8 less than zero. 26 U.S.C. 469(a)(1) (Form 8582), 465(a)(1) (Form 6198), and 461(l)
         (https://www.law.cornell.edu/uscode/text/26/461) (Form 461) can limit a loss. None of those forms are
-        computed here.
+        computed
+        here.
       </Description>
       <Derived>
         <Any>
           <LessThan>
-            <Left><Dependency path="../box5" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box5" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </LessThan>
           <LessThan>
-            <Left><Dependency path="../box6" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box6" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </LessThan>
           <LessThan>
-            <Left><Dependency path="../box7" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box7" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </LessThan>
           <LessThan>
-            <Left><Dependency path="../box8" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box8" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </LessThan>
         </Any>
       </Derived>
@@ -1808,8 +1935,12 @@
       <Derived>
         <Not>
           <Equal>
-            <Left><Dependency path="../box5" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box5" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </Equal>
         </Not>
       </Derived>
@@ -1820,8 +1951,12 @@
       <Derived>
         <Not>
           <Equal>
-            <Left><Dependency path="../box7" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box7" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </Equal>
         </Not>
       </Derived>
@@ -1836,8 +1971,12 @@
       <Derived>
         <Not>
           <Equal>
-            <Left><Dependency path="../box8" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box8" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </Equal>
         </Not>
       </Derived>
@@ -1858,10 +1997,14 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (f): "Other income from Schedule K-1". Nonpassive box 6,
         plus nonnegative box 5, rounded to whole dollars. Box 8 is not included. 26 U.S.C. 469(c)(2) and
-        469(c)(4) make other rental income passive without regard to material participation, so it is column
-        (d). 26 U.S.C. 6102(a): "the fractional part of a dollar shall be disregarded unless it amounts to
-        one-half dollar or more, in which case it shall be increased to one dollar." A loss leaves this amount
-        incomplete. A filed return has box 5 at zero, so column (f) is box 6.
+        469(c)(4) make
+        other rental income passive without regard to material participation, so it is column
+        (d). 26 U.S.C. 6102(a):
+        "the fractional part of a dollar shall be disregarded unless it amounts to
+        one-half dollar or more, in which case
+        it shall be increased to one dollar." A loss leaves this amount
+        incomplete. A filed return has box 5 at zero, so
+        column (f) is box 6.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1871,12 +2014,20 @@
               <All>
                 <Dependency path="../materiallyParticipates" />
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box5" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box5" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box6" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box6" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
               </All>
             </When>
@@ -1896,12 +2047,20 @@
                   <Dependency path="../materiallyParticipates" />
                 </Not>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box5" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box5" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box6" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box6" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
               </All>
             </When>
@@ -1920,8 +2079,10 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (d): "Passive income from Schedule K-1". Nonnegative box 7
         and box 8 are reported here whether or not the filer materially participates. 26 U.S.C. 469(c)(2) and
-        469(c)(4). A passive filer also reports nonnegative box 6. A filed return has column (d) at zero
-        because passive income, box 7, and box 8 stop the return.
+        469(c)(4).
+        A passive filer also reports nonnegative box 6. A filed return has column (d) at zero
+        because passive income, box
+        7, and box 8 stop the return.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1933,16 +2094,28 @@
                   <Dependency path="../materiallyParticipates" />
                 </Not>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box6" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box6" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box7" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box7" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box8" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box8" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
               </All>
             </When>
@@ -1961,16 +2134,28 @@
               <All>
                 <Dependency path="../materiallyParticipates" />
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box6" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box6" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box7" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box7" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
                 <GreaterThanOrEqual>
-                  <Left><Dependency path="../box8" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
+                  <Left>
+                    <Dependency path="../box8" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
                 </GreaterThanOrEqual>
               </All>
             </When>
@@ -1990,38 +2175,73 @@
     <Fact path="/scheduleEEstates/*/isSupported">
       <Name>This estate or trust is in the supported Part III slice</Name>
       <Description>
-        Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 7, and
+        Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 7,
+        and
         box 8 zero, box 6 at least zero, no other K-1 amount, no basis limit, no amount not at risk, and no
-        passive deduction or loss. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is
-        not on the supported path.
+        passive
+        deduction or loss. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is
+        not on the supported
+        path.
       </Description>
       <Derived>
         <All>
           <Dependency path="../materiallyParticipates" />
-          <Not><Dependency path="../isForeignBeneficiary" /></Not>
-          <Not><Dependency path="../isForeignTrust" /></Not>
-          <Not><Dependency path="../inconsistentTreatment" /></Not>
+          <Not>
+            <Dependency path="../isForeignBeneficiary" />
+          </Not>
+          <Not>
+            <Dependency path="../isForeignTrust" />
+          </Not>
+          <Not>
+            <Dependency path="../inconsistentTreatment" />
+          </Not>
           <Equal>
-            <Left><Dependency path="../box5" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box5" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </Equal>
           <Equal>
-            <Left><Dependency path="../box7" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box7" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </Equal>
           <GreaterThanOrEqual>
-            <Left><Dependency path="../box6" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box6" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </GreaterThanOrEqual>
           <Equal>
-            <Left><Dependency path="../box8" /></Left>
-            <Right><Dollar>0</Dollar></Right>
+            <Left>
+              <Dependency path="../box8" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
           </Equal>
-          <Not><Dependency path="../hasOtherK1Amount" /></Not>
-          <Not><Dependency path="../basisLimitApplies" /></Not>
-          <Not><Dependency path="../anyAmountNotAtRisk" /></Not>
-          <Not><Dependency path="../passiveDeductionOrLoss" /></Not>
-          <IsComplete><Dependency path="../entityName" /></IsComplete>
+          <Not>
+            <Dependency path="../hasOtherK1Amount" />
+          </Not>
+          <Not>
+            <Dependency path="../basisLimitApplies" />
+          </Not>
+          <Not>
+            <Dependency path="../anyAmountNotAtRisk" />
+          </Not>
+          <Not>
+            <Dependency path="../passiveDeductionOrLoss" />
+          </Not>
+          <IsComplete>
+            <Dependency path="../entityName" />
+          </IsComplete>
         </All>
       </Derived>
     </Fact>
@@ -2031,19 +2251,45 @@
       <Description>Every Part III question for this estate or trust has an answer.</Description>
       <Derived>
         <All>
-          <IsComplete><Dependency path="../entityName" /></IsComplete>
-          <IsComplete><Dependency path="../isForeignBeneficiary" /></IsComplete>
-          <IsComplete><Dependency path="../isForeignTrust" /></IsComplete>
-          <IsComplete><Dependency path="../inconsistentTreatment" /></IsComplete>
-          <IsComplete><Dependency path="../box5" /></IsComplete>
-          <IsComplete><Dependency path="../box6" /></IsComplete>
-          <IsComplete><Dependency path="../box7" /></IsComplete>
-          <IsComplete><Dependency path="../box8" /></IsComplete>
-          <IsComplete><Dependency path="../materiallyParticipates" /></IsComplete>
-          <IsComplete><Dependency path="../hasOtherK1Amount" /></IsComplete>
-          <IsComplete><Dependency path="../basisLimitApplies" /></IsComplete>
-          <IsComplete><Dependency path="../anyAmountNotAtRisk" /></IsComplete>
-          <IsComplete><Dependency path="../passiveDeductionOrLoss" /></IsComplete>
+          <IsComplete>
+            <Dependency path="../entityName" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../isForeignBeneficiary" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../isForeignTrust" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../inconsistentTreatment" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box5" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box6" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box7" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box8" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../materiallyParticipates" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasOtherK1Amount" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../basisLimitApplies" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../anyAmountNotAtRisk" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../passiveDeductionOrLoss" />
+          </IsComplete>
         </All>
       </Derived>
     </Fact>
@@ -2077,7 +2323,8 @@
       <Name>Schedule E line 34a column (f)</Name>
       <Description>Schedule E (2026) draft, PDF p. 3, line 34a: "Totals" of column (f). $0 when the K-1 question or the
         Part III question is unanswered or no. Incomplete when Part III is yes and no estate or trust is listed,
-        or a column (f) amount is unanswered, so line 37 is not filed as zero.</Description>
+        or a
+        column (f) amount is unanswered, so line 37 is not filed as zero.</Description>
       <Export downstreamFacts="true" />
       <ExportZero />
       <Derived>
@@ -2208,7 +2455,8 @@
       <Name>Schedule E line 35</Name>
       <Description>
         Schedule E (2026) draft, PDF p. 3, line 35: "Add columns (d) and (f) of line 34a." Whole dollars,
-        26 U.S.C. 6102(a).
+        26
+        U.S.C. 6102(a).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2224,9 +2472,11 @@
     <Fact path="/scheduleEPartIIILine36">
       <Name>Schedule E line 36</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, line 36: "Add columns (c) and (e) of line 34b." This slice does not
+        Schedule E (2026) draft, PDF p. 3, line 36: "Add columns (c) and (e) of line 34b." This slice does
+        not
         compute a deduction or loss, so line 36 is zero whenever line 35 is complete, and incomplete when line
-        35 is incomplete.
+        35 is
+        incomplete.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2248,9 +2498,11 @@
     <Fact path="/scheduleEPartIIILine37">
       <Name>Schedule E line 37</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, line 37: "Total estate and trust income or (loss). Combine lines 35
+        Schedule E (2026) draft, PDF p. 3, line 37: "Total estate and trust income or (loss). Combine lines
+        35
         and 36." Whole dollars, 26 U.S.C. 6102(a). 26 U.S.C. 652(a) and 662(a). $0 when Part III does not
-        apply. Incomplete when Part III is yes and the estate list is empty or a column amount is unanswered.
+        apply.
+        Incomplete when Part III is yes and the estate list is empty or a column amount is unanswered.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2318,10 +2570,14 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, line 39: "Combine columns (d) and (e) only. Enter the result here
         and include in the total on line 41 below." Part IV is not computed. $0 when the filer answered no,
-        and $0 while the question is unanswered so the rest of the return can still be computed. The unanswered
-        question leaves /flowKnockoutScheduleEPartIV incomplete, so the print is refused. Incomplete when the
-        filer answered yes, so a REMIC residual interest is not entered as zero. This does not depend on
-        /scheduleEHasPartIIIncome. 26 U.S.C. 860C. Schedule Q (Form 1066).
+        and $0 while
+        the question is unanswered so the rest of the return can still be computed. The unanswered
+        question leaves
+        /flowKnockoutScheduleEPartIV incomplete, so the print is refused. Incomplete when the
+        filer answered yes, so a
+        REMIC residual interest is not entered as zero. This does not depend on
+        /scheduleEHasPartIIIncome. 26 U.S.C.
+        860C. Schedule Q (Form 1066).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2354,7 +2610,8 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIILoss">
       <Name>Knockout: Schedule K-1 (Form 1041) loss</Name>
-      <Description>Any box 5, 6, 7, or 8 loss. 26 U.S.C. 469(a)(1) (Form 8582), 465(a)(1) (Form 6198), and 461(l) (Form 461). Complete false when Part III is no.</Description>
+      <Description>Any box 5, 6, 7, or 8 loss. 26 U.S.C. 469(a)(1) (Form 8582), 465(a)(1) (Form 6198), and 461(l) (Form
+        461). Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2400,7 +2657,10 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIBox5">
       <Name>Knockout: Schedule K-1 (Form 1041) box 5</Name>
-      <Description>Portfolio or nonbusiness income, including royalties, annuities, and income in respect of a decedent. Schedule K-1 (Form 1041) (2025) page 2 reports it in column (f), and 26 U.S.C. 1411(c)(1)(A)(i) includes royalties and annuities in net investment income. Form 8960 line 4a does not take it. Complete false when Part III is no.</Description>
+      <Description>Portfolio or nonbusiness income, including royalties, annuities, and income in respect of a decedent.
+        Schedule K-1 (Form 1041) (2025) page 2 reports it in column (f), and 26 U.S.C. 1411(c)(1)(A)(i) includes
+        royalties and annuities in net investment income. Form 8960 line 4a does not take it. Complete false when Part
+        III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2423,7 +2683,8 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIBox7">
       <Name>Knockout: Schedule K-1 (Form 1041) box 7</Name>
-      <Description>Net rental real estate income. 26 U.S.C. 469(c)(2). Form 8582 and Schedule E line 43 are not computed. Complete false when Part III is no.</Description>
+      <Description>Net rental real estate income. 26 U.S.C. 469(c)(2). Form 8582 and Schedule E line 43 are not
+        computed. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2446,7 +2707,10 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIBox8">
       <Name>Knockout: Schedule K-1 (Form 1041) box 8</Name>
-      <Description>Other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity. 26 U.S.C. 469(c)(4) applies that rule without regard to material participation. Box 8 is not 469(c)(7) rental real estate professional income. A nonzero amount is column (d) and stops the return. Form 8960 line 4a does not take it. Complete false when Part III is no.</Description>
+      <Description>Other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity.
+        26 U.S.C. 469(c)(4) applies that rule without regard to material participation. Box 8 is not 469(c)(7) rental
+        real estate professional income. A nonzero amount is column (d) and stops the return. Form 8960 line 4a does not
+        take it. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2469,7 +2733,8 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIOtherK1Amount">
       <Name>Knockout: Schedule K-1 (Form 1041) amount other than boxes 5 through 8</Name>
-      <Description>Interest, dividends, capital gain, deductions, credits, AMT items, or box 14, including section 199A code I. Cites on /scheduleEEstates/*/hasOtherK1Amount. Complete false when Part III is no.</Description>
+      <Description>Interest, dividends, capital gain, deductions, credits, AMT items, or box 14, including section 199A
+        code I. Cites on /scheduleEEstates/*/hasOtherK1Amount. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2492,7 +2757,9 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIBasis">
       <Name>Knockout: basis limit on an estate or trust (Form 7203 not computed)</Name>
-      <Description>Form 7203 and 26 U.S.C. 1366(d) limit an S corporation loss. 2026 draft Instructions for Schedule E, PDF p. 4: basis rules apply to partnership and S corporation losses. This tool does not compute a basis limit for a beneficiary. Complete false when Part III is no.</Description>
+      <Description>Form 7203 and 26 U.S.C. 1366(d) limit an S corporation loss. 2026 draft Instructions for Schedule E,
+        PDF p. 4: basis rules apply to partnership and S corporation losses. This tool does not compute a basis limit
+        for a beneficiary. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2515,7 +2782,8 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIAtRisk">
       <Name>Knockout: estate or trust amount not at risk (Form 6198)</Name>
-      <Description>26 U.S.C. 465(a)(1). 2026 draft Instructions for Schedule E, PDF p. 4: at-risk rules apply to a loss from an estate or trust. Form 6198 is not computed. Complete false when Part III is no.</Description>
+      <Description>26 U.S.C. 465(a)(1). 2026 draft Instructions for Schedule E, PDF p. 4: at-risk rules apply to a loss
+        from an estate or trust. Form 6198 is not computed. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2538,7 +2806,8 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIPassiveLoss">
       <Name>Knockout: passive deduction or loss from an estate or trust (Form 8582)</Name>
-      <Description>26 U.S.C. 469(a)(1). Schedule E line 33 columns (c) and (e). Form 8582 is not computed. Complete false when Part III is no.</Description>
+      <Description>26 U.S.C. 469(a)(1). Schedule E line 33 columns (c) and (e). Form 8582 is not computed. Complete
+        false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2561,7 +2830,8 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIForeign">
       <Name>Knockout: foreign beneficiary or foreign trust</Name>
-      <Description>2026 draft Instructions for Schedule E, PDF p. 14, Form 3520 and Schedule B Part III. 26 U.S.C. 679. Complete false when Part III is no.</Description>
+      <Description>2026 draft Instructions for Schedule E, PDF p. 14, Form 3520 and Schedule B Part III. 26 U.S.C. 679.
+        Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2584,7 +2854,8 @@
 
     <Fact path="/flowKnockoutScheduleEPartIIIInconsistent">
       <Name>Knockout: Form 8082 inconsistent treatment</Name>
-      <Description>2026 draft Instructions for Schedule E, PDF p. 14: file Form 8082 when items are treated differently from the estate or trust. Complete false when Part III is no.</Description>
+      <Description>2026 draft Instructions for Schedule E, PDF p. 14: file Form 8082 when items are treated differently
+        from the estate or trust. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2680,24 +2951,37 @@
       <Description>
         #85. Incomplete while /scheduleEHasPartIIIncome is unanswered, and while that answer is yes and
         /scheduleEHasPartIIIIncome is unanswered, so the print is refused through /flowKnockoutScheduleEPartII
-        and line 37 is not a silent zero. Complete false when either answer is no, and when every line 33
-        estate or trust is the supported path. True when /scheduleEPartIIIOutOfScope is true.
+        and line
+        37 is not a silent zero. Complete false when either answer is no, and when every line 33
+        estate or trust is the
+        supported path. True when /scheduleEPartIIIOutOfScope is true.
 
-        Supported path. Schedule K-1 (Form 1041) (2025) page 2: box 6 "Ordinary business income" is reported
-        on "Schedule E, line 33, column (d) or (f)". Material participation (26 U.S.C. 469(h)(1)) puts a
-        nonnegative amount in column (f). Box 8 "Other rental income" is a rental activity. 26 U.S.C. 469(c)(2)
-        includes any rental activity in the term passive activity, and 469(c)(4) applies that rule without
-        regard to material participation. It is not 469(c)(7) rental real estate professional income. A
+        Supported path. Schedule K-1 (Form 1041) (2025)
+        page 2: box 6 "Ordinary business income" is reported
+        on "Schedule E, line 33, column (d) or (f)". Material
+        participation (26 U.S.C. 469(h)(1)) puts a
+        nonnegative amount in column (f). Box 8 "Other rental income" is a
+        rental activity. 26 U.S.C. 469(c)(2)
+        includes any rental activity in the term passive activity, and 469(c)(4)
+        applies that rule without
+        regard to material participation. It is not 469(c)(7) rental real estate professional
+        income. A
         nonnegative box 8 is column (d), and any nonzero box 8 stops the return. 2026 draft Schedule E, PDF
-        p. 3, line 35: "Add columns (d) and (f) of line 34a." Line 37: "Total estate and trust income or
-        (loss). Combine lines 35 and 36." 26 U.S.C. 652(a) and 662(a).
+        p.
+        3, line 35: "Add columns (d) and (f) of line 34a." Line 37: "Total estate and trust income or
+        (loss). Combine
+        lines 35 and 36." 26 U.S.C. 652(a) and 662(a).
 
-        Not net investment income. 26 U.S.C. 1411(c)(2) includes a passive activity. Material-participation
-        box 6 is not added to Form 8960 line 4a. Box 8 is passive under 469(c)(2) and 469(c)(4), is not on
+        Not net investment income. 26 U.S.C. 1411(c)(2) includes a passive
+        activity. Material-participation
+        box 6 is not added to Form 8960 line 4a. Box 8 is passive under 469(c)(2) and
+        469(c)(4), is not on
         line 4a, and stops the return. Box 5 and box 7 stop the return.
 
-        Not self-employment. A beneficiary's share of estate or trust income is not entered on Schedule SE.
-        26 U.S.C. 1402(a). Not qualified business income. Box 14 code I stops the return. Box 6 is not
+        Not self-employment. A
+        beneficiary's share of estate or trust income is not entered on Schedule SE.
+        26 U.S.C. 1402(a). Not qualified
+        business income. Box 14 code I stops the return. Box 6 is not
         treated as qualified business income on Form 8995.
       </Description>
       <BlockSubmissionOnTrue />
@@ -2773,8 +3057,10 @@
       <Description>
         A residual interest in a REMIC is not computed. Schedule Q (Form 1066). Cites on
         /scheduleEHasPartIVIncome. Incomplete while that question is unanswered, so the print is refused.
-        Complete false when the answer is no. True when the answer is yes, including when
-        /scheduleEHasPartIIIncome is no. 26 U.S.C. 860C.
+        Complete false
+        when the answer is no. True when the answer is yes, including when
+        /scheduleEHasPartIIIncome is no. 26 U.S.C.
+        860C.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -2819,14 +3105,21 @@
       <Description>
         Form 8615 is not supported. 26 U.S.C. 1(g) (https://www.law.cornell.edu/uscode/text/26/1) taxes
         certain children on unearned income. Instructions for Form 8615 (2026 draft), Who Must File, apply
-        when the child does not file a joint return and is under 18, or age 18, or a full-time student under
-        24. /form8615UnearnedIncome includes Schedule E rents and royalties only (the Form 8615 instructions
-        list "rents, royalties"). Partnership or S corporation ordinary income is not added there. A primary
-        filer under 24 who does not file jointly and has line 32 greater than zero is stopped instead.
-        Line 32 or line 37 greater than zero is tested first, so both at zero is complete false without
-        reading age. Estate or trust income is unearned income under 26 U.S.C. 1(g). Form 8615 is not
+        when the child
+        does not file a joint return and is under 18, or age 18, or a full-time student under
+        24. /form8615UnearnedIncome
+        includes Schedule E rents and royalties only (the Form 8615 instructions
+        list "rents, royalties"). Partnership or
+        S corporation ordinary income is not added there. A primary
+        filer under 24 who does not file jointly and has line
+        32 greater than zero is stopped instead.
+        Line 32 or line 37 greater than zero is tested first, so both at zero is
+        complete false without
+        reading age. Estate or trust income is unearned income under 26 U.S.C. 1(g). Form 8615 is
+        not
         computed, so that income stops the return instead of being left off the kiddie-tax worksheet.
-        Complete false when there is no Part II or Part III income.
+        Complete false
+        when there is no Part II or Part III income.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -2893,7 +3186,8 @@
       <Description>
         The filer answered yes, line 27 is no, and Part IV is no. Every listed partnership or S corporation
         is supported ordinary nonpassive income. Part III is no, or every estate or trust is the supported
-        path. A trust-only return may finish the partnership list with no entities.
+        path. A
+        trust-only return may finish the partnership list with no entities.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2999,28 +3293,43 @@
       <Description>
         #85. The K-1 question is asked of every filer. Incomplete while /scheduleEHasPartIIIncome is
         unanswered, so the print is refused and /flowIsKnockedOut stays incomplete (no silent zero of K-1
-        income). A yes to /scheduleEHasPartIVIncome makes this true even when the K-1 answer is no, so a
-        Schedule Q (Form 1066) holder is not filed as zero. Complete false when the K-1 answer is no and
-        Part IV is no, and when the supported Part II path is complete and Part IV is no. Part III may
-        be no, or every estate or trust may be the supported path (line 37, box 6 only). True when any
-        out-of-scope knockout is true. A yes with an empty or unfinished list, or a Part III yes with no
+        income). A yes
+        to /scheduleEHasPartIVIncome makes this true even when the K-1 answer is no, so a
+        Schedule Q (Form 1066) holder
+        is not filed as zero. Complete false when the K-1 answer is no and
+        Part IV is no, and when the supported Part II
+        path is complete and Part IV is no. Part III may
+        be no, or every estate or trust may be the supported path (line
+        37, box 6 only). True when any
+        out-of-scope knockout is true. A yes with an empty or unfinished list, or a Part
+        III yes with no
         finished estate or trust, stays incomplete so lines 32 and 37 are not filed as zero.
 
-        Income tax. 2026 draft Schedule E, PDF p. 4, line 41: "Total income or (loss). Combine lines 26, 32,
-        37, 39, and 40. Enter the result here and on Schedule 1 (Form 1040), line 5." Line 32 is
-        /scheduleEPartIILine32. Line 37 is /scheduleEPartIIILine37. 26 U.S.C. 702(a), 1366(a), 652(a),
+        Income tax.
+        2026 draft Schedule E, PDF p. 4, line 41: "Total income or (loss). Combine lines 26, 32,
+        37, 39, and 40. Enter
+        the result here and on Schedule 1 (Form 1040), line 5." Line 32 is
+        /scheduleEPartIILine32. Line 37 is
+        /scheduleEPartIIILine37. 26 U.S.C. 702(a), 1366(a), 652(a),
         and 662(a).
 
-        Self-employment. A supported return has box 14 code A at zero, so Schedule SE line 2 stays Schedule C
-        only. A nonzero box 14 code A is /flowKnockoutScheduleEPartIIBox14CodeA. 26 U.S.C. 1402(a). 2026
-        draft Schedule SE, PDF p. 2, line 2 includes that code.
+        Self-employment. A supported return has
+        box 14 code A at zero, so Schedule SE line 2 stays Schedule C
+        only. A nonzero box 14 code A is
+        /flowKnockoutScheduleEPartIIBox14CodeA. 26 U.S.C. 1402(a). 2026
+        draft Schedule SE, PDF p. 2, line 2 includes that
+        code.
 
         Net investment income. 26 U.S.C. 1411(c)(2) includes a passive activity or trading in financial
-        instruments or commodities. Material-participation box 1 that is not a trading business is not added
-        to Form 8960 line 4a. Passive, trading, PTP, and any other box stop the return.
+        instruments
+        or commodities. Material-participation box 1 that is not a trading business is not added
+        to Form 8960 line 4a.
+        Passive, trading, PTP, and any other box stop the return.
 
-        Qualified business income. A blank box 20 code Z or box 17 code V leaves Form 8995 lines 6-9 at zero.
-        A statement stops the return. Box 1 is not treated as qualified business income.
+        Qualified business income. A blank box 20 code Z or box
+        17 code V leaves Form 8995 lines 6-9 at zero.
+        A statement stops the return. Box 1 is not treated as qualified
+        business income.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -3137,11 +3446,16 @@
       <Description>
         The rental gate, the K-1 question (/scheduleEHasPartIIIncome), and the REMIC question
         (/scheduleEHasPartIVIncome) are answered. The K-1 question is required even when /hasScheduleEIncome
-        is false (#232, #238). The REMIC question is required even when the K-1 answer is no, so a Schedule Q
-        (Form 1066) holder is not left at line 39 of $0. A yes is not done until the supported Part II path
-        is complete or an out-of-scope knockout is true (/scheduleEPartIIResolved). If the filer has Part I
-        income, every amount and screener is answered too. IsComplete of an unanswered question is false, so
-        an otherwise finished interview stays incomplete until both questions are answered.
+        is false
+        (#232, #238). The REMIC question is required even when the K-1 answer is no, so a Schedule Q
+        (Form 1066) holder
+        is not left at line 39 of $0. A yes is not done until the supported Part II path
+        is complete or an out-of-scope
+        knockout is true (/scheduleEPartIIResolved). If the filer has Part I
+        income, every amount and screener is
+        answered too. IsComplete of an unanswered question is false, so
+        an otherwise finished interview stays incomplete
+        until both questions are answered.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -3212,11 +3526,14 @@
     <Fact path="/pdfIncludeScheduleE">
       <Name>Print Schedule E</Name>
       <Description>
-        Schedule E (2026) draft is included when Part I income is yes (/hasScheduleEIncome) or the filer answered
+        Schedule E (2026) draft is included when Part I income is yes (/hasScheduleEIncome) or the filer
+        answered
         yes to Schedule K-1 income (/scheduleEReportsPartII). That yes covers a trust-only return: Part III is
         asked only after the K-1 answer is yes. An unanswered question is not a yes, so the form is not added
-        before the interview reaches it. The print still refuses while the K-1 question or the REMIC question
-        is unanswered (/flowKnockoutScheduleEPartII).
+        before the
+        interview reaches it. The print still refuses while the K-1 question or the REMIC question
+        is unanswered
+        (/flowKnockoutScheduleEPartII).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -3230,10 +3547,12 @@
     <Fact path="/scheduleEPartIILine27No">
       <Name>Schedule E line 27 No</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, line 27 No. True only when /scheduleEPartIILine27 is answered no, so
+        Schedule E (2026) draft, PDF p. 3, line 27 No. True only when /scheduleEPartIILine27 is answered no,
+        so
         the No checkbox is checked. A yes stops the return (/flowKnockoutScheduleEPartIILine27). Unanswered is
         complete false, so the checkbox stays unchecked and the print refusal comes from
-        /flowKnockoutScheduleEPartII while the K-1 question is open.
+        /flowKnockoutScheduleEPartII
+        while the K-1 question is open.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -3270,11 +3589,16 @@
       <Description>
         Line 28 has four rows (A-D). 2026 draft Instructions for Schedule E
         (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf), PDF p. 9, say to attach a continuation sheet when
-        Part II needs more space. This package has no continuation sheet. Lines 29a, 30, and 32 sum every
-        entity, so a fifth name would be omitted while the total still included it.
-        True when /scheduleEReportsPartII is true and /scheduleEK1s is a complete list of more than four
-        items. Complete false when Part II is not reported, the list is not finished yet, or the finished list
-        has four or fewer. An unfinished yes is already refused by /flowKnockoutScheduleEPartII, so this fact
+        Part II
+        needs more space. This package has no continuation sheet. Lines 29a, 30, and 32 sum every
+        entity, so a fifth name
+        would be omitted while the total still included it.
+        True when /scheduleEReportsPartII is true and /scheduleEK1s
+        is a complete list of more than four
+        items. Complete false when Part II is not reported, the list is not finished
+        yet, or the finished list
+        has four or fewer. An unfinished yes is already refused by
+        /flowKnockoutScheduleEPartII, so this fact
         stays complete false until the size is known.
       </Description>
       <BlockSubmissionOnTrue />
@@ -3337,11 +3661,16 @@
       <Description>
         Line 33 has two rows (A and B). 2026 draft Instructions for Schedule E
         (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf), PDF p. 10, say to attach a continuation sheet when
-        Part III needs more space. This package has no continuation sheet. Lines 34a, 35, and 37 sum every
-        estate or trust, so a third name would be omitted while the total still included it.
-        True when /scheduleEHasPartIIIIncome is true and /scheduleEEstates is a complete list of more than two
-        items. Complete false when Part III is not reported, the list is not finished yet, or the finished list
-        has two or fewer. An unfinished yes is already refused by /flowKnockoutScheduleEPartII, so this fact
+        Part III
+        needs more space. This package has no continuation sheet. Lines 34a, 35, and 37 sum every
+        estate or trust, so a
+        third name would be omitted while the total still included it.
+        True when /scheduleEHasPartIIIIncome is true and
+        /scheduleEEstates is a complete list of more than two
+        items. Complete false when Part III is not reported, the
+        list is not finished yet, or the finished list
+        has two or fewer. An unfinished yes is already refused by
+        /flowKnockoutScheduleEPartII, so this fact
         stays complete false until the size is known.
       </Description>
       <BlockSubmissionOnTrue />

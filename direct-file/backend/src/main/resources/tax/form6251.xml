@@ -872,8 +872,10 @@
         "Alternative minimum taxable income. Combine lines 1b through 3." Lines 2c through 3 are not computed.
         /flowKnockoutAmtPreferenceItems starts with IsComplete(/hasAmtPreferenceItems), so an unanswered question is
         complete false there and must not be treated as "no". This stop is true only when Form 6251 is required and
-        that question is not a complete answer, so those lines are not printed as zero. A complete false still files.
-        A complete true is /flowKnockoutAmtPreferenceItems. 26 U.S.C. 55(b)(2), 56, 57.</Description>
+        that
+        question is not a complete answer, so those lines are not printed as zero. A complete false still files.
+        A
+        complete true is /flowKnockoutAmtPreferenceItems. 26 U.S.C. 55(b)(2), 56, 57.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>

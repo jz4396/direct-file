@@ -59,18 +59,6 @@
         ]
       }
     },
-    "/paHasUnreimbursedEmployeeExpenses": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/paHasUnsupportedItems": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
-    "/paHasSpNontaxableIncome": {
-      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
-      "item": false
-    },
     "/filers": {
       "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
       "item": {
@@ -536,6 +524,18 @@
       }
     },
     "/overtimeNotOnW2CodeTT": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasSpNontaxableIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasUnreimbursedEmployeeExpenses": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasUnsupportedItems": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },

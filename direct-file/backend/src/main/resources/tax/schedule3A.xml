@@ -24,12 +24,18 @@
     <Fact path="/pdfIncludeSchedule3A">
       <Name>PDF should include Schedule 3-A</Name>
       <Description>2026 draft Schedule 3-A, form page 1 (PDF p. 2): "Complete Schedule 3-A (Form 1040) only if
-        you are claiming the earned income credit (EIC), additional child tax credit (ACTC), refundable American
-        opportunity credit, or refundable adoption credit." 2026 draft Form 1040, form page 2 (PDF p. 3), lines
-        27a, 28, 29 and 30: attach Schedule 3-A when any of those lines has an amount. 26 U.S.C. 32 (EIC),
-        24(d) (additional child tax credit), 25A(i) (refundable American opportunity credit) and 23 (adoption
-        credit). Line 30 is not computed. A credit counts only when it is complete and greater than $0, so a
-        return without these credits is complete and false. Draft form:
+        you are
+        claiming the earned income credit (EIC), additional child tax credit (ACTC), refundable American
+        opportunity
+        credit, or refundable adoption credit." 2026 draft Form 1040, form page 2 (PDF p. 3), lines
+        27a, 28, 29 and 30:
+        attach Schedule 3-A when any of those lines has an amount. 26 U.S.C. 32 (EIC),
+        24(d) (additional child tax
+        credit), 25A(i) (refundable American opportunity credit) and 23 (adoption
+        credit). Line 30 is not computed. A
+        credit counts only when it is complete and greater than $0, so a
+        return without these credits is complete and
+        false. Draft form:
         https://www.irs.gov/pub/irs-dft/f1040s3a--dft.pdf (Created 6/24/26), SHA-256
         787e1ae1eaa3e23a184074d0f437f6b2a8fe3f01290f366201f14eeecc82b8db.</Description>
       <Derived>
@@ -122,8 +128,10 @@
     <Fact path="/schedule3ALine2">
       <Name>Schedule 3-A line 2</Name>
       <Description>2026 draft Schedule 3-A, line 2: "Subtract line 1b from line 1a." Line 1a is Form 1040 line 32a
-        and line 1b is Form 1040 line 31, so line 2 is lines 27a, 28, 29 and 30 (26 U.S.C. 32, 24(d), 25A(i) and 23).
-        Line 30 is not computed and is not in line 32a.</Description>
+        and
+        line 1b is Form 1040 line 31, so line 2 is lines 27a, 28, 29 and 30 (26 U.S.C. 32, 24(d), 25A(i) and 23).
+        Line 30
+        is not computed and is not in line 32a.</Description>
       <Derived>
         <Round>
           <Subtract>
@@ -141,7 +149,8 @@
     <Fact path="/schedule3ALine5">
       <Name>Schedule 3-A line 5</Name>
       <Description>2026 draft Schedule 3-A, line 5: "Subtract line 4 from line 3." Line 3 is Form 1040 line 24a.
-        Line 4 is Schedule 2 (Form 1040) line 20.</Description>
+        Line 4
+        is Schedule 2 (Form 1040) line 20.</Description>
       <Derived>
         <Round>
           <Subtract>
@@ -159,8 +168,10 @@
     <Fact path="/schedule3ALine6">
       <Name>Schedule 3-A line 6</Name>
       <Description>2026 draft Schedule 3-A, line 6: "Is line 2 more than line 5? Yes. Subtract line 5 from line 2.
-        This is your federal public benefit. No. Stop. Enter -0- here" and on Form 1040 line 32b. When line 2 is
-        not more than zero, line 6 is -0- without line 5.</Description>
+        This
+        is your federal public benefit. No. Stop. Enter -0- here" and on Form 1040 line 32b. When line 2 is
+        not more than
+        zero, line 6 is -0- without line 5.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -279,8 +290,10 @@
     <Fact path="/schedule3AWantsFederalPublicBenefit">
       <Name>Schedule 3-A line 7 election</Name>
       <Description>2026 draft Schedule 3-A, line 7: "Do you want to receive your federal public benefit? Yes. Go to
-        line 8. No. Stop. Enter the amount from line 6 on Form 1040, 1040-SR, or 1040-NR, line 32b." Asked only when
-        line 6 is more than zero.</Description>
+        line
+        8. No. Stop. Enter the amount from line 6 on Form 1040, 1040-SR, or 1040-NR, line 32b." Asked only when
+        line 6 is
+        more than zero.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -290,8 +303,10 @@
       <Name>Schedule 3-A line 8 citizen, national, or qualified alien</Name>
       <Description>2026 draft Schedule 3-A, Part II, line 8: "Are you or your spouse a U.S. citizen, U.S. national, or
         qualified alien?" Qualified alien is defined in 8 U.S.C. 1641(b). Yes: enter -0- on line 8 and on Form 1040
-        line 32b. No: enter line 6 on line 8 and on Form 1040 line 32b. One question for the filer or spouse, as the
-        form asks it. No Schedule 3-A instructions are posted yet.</Description>
+        line
+        32b. No: enter line 6 on line 8 and on Form 1040 line 32b. One question for the filer or spouse, as the
+        form asks
+        it. No Schedule 3-A instructions are posted yet.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -300,7 +315,8 @@
     <Fact path="/schedule3ALine8Applies">
       <Name>Schedule 3-A line 8 is reached</Name>
       <Description>2026 draft Schedule 3-A, line 7 "Yes. Go to line 8." Line 8 is asked only after a yes on line 7,
-        and only when line 6 is more than zero.</Description>
+        and
+        only when line 6 is more than zero.</Description>
       <Derived>
         <All>
           <IsComplete>
@@ -630,7 +646,8 @@
     <Fact path="/schedule3ALine8">
       <Name>Schedule 3-A line 8 amount</Name>
       <Description>2026 draft Schedule 3-A, line 8 amount. Yes (U.S. citizen, U.S. national, or qualified alien,
-        8 U.S.C. 1641(b)): enter -0-. No: enter line 6. Blank unless line 7 is yes, so a no on line 7 does not fill
+        8 U.S.C.
+        1641(b)): enter -0-. No: enter line 6. Blank unless line 7 is yes, so a no on line 7 does not fill
         line 8.</Description>
       <Derived>
         <Switch>
@@ -677,11 +694,16 @@
     <Fact path="/schedule3AAmountForForm1040Line32b">
       <Name>Form 1040 line 32b, amount from Schedule 3-A</Name>
       <Description>2026 draft Form 1040, form page 2 (PDF p. 3), line 32b: "Amount from Schedule 3-A." When lines
-        27a, 28, 29 and 30 have no amount, Schedule 3-A is not attached and line 32b is -0- (26 U.S.C. 32, 24(d),
-        25A(i) and 23). 2026 draft Schedule 3-A: line 6 "No" enters -0- on line 32b; line 7 "No" enters line 6 on line
-        32b; line 8 "Yes" (U.S. citizen, U.S. national, or qualified alien, 8 U.S.C. 1641(b)) enters -0- on line 32b;
-        line 8 "No" enters line 6 on line 32b. Incomplete when Schedule 3-A is attached, line 6 is more than zero, and
-        the line 7 or line 8 answer the form requires is missing.</Description>
+        27a,
+        28, 29 and 30 have no amount, Schedule 3-A is not attached and line 32b is -0- (26 U.S.C. 32, 24(d),
+        25A(i) and
+        23). 2026 draft Schedule 3-A: line 6 "No" enters -0- on line 32b; line 7 "No" enters line 6 on line
+        32b; line 8
+        "Yes" (U.S. citizen, U.S. national, or qualified alien, 8 U.S.C. 1641(b)) enters -0- on line 32b;
+        line 8 "No"
+        enters line 6 on line 32b. Incomplete when Schedule 3-A is attached, line 6 is more than zero, and
+        the line 7 or
+        line 8 answer the form requires is missing.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -784,8 +806,10 @@
     <Fact path="/form1040Line32c">
       <Name>Form 1040 line 32c</Name>
       <Description>2026 draft Form 1040, form page 2 (PDF p. 3), line 32c: subtract line 32b from line 32a. Line 32a
-        is lines 27a, 28, 29, 30 and 31 (26 U.S.C. 32, 24(d), 25A(i) and 23, plus Schedule 3 line 15). Line 33 adds
-        line 32c to withholding and estimated tax.</Description>
+        is
+        lines 27a, 28, 29, 30 and 31 (26 U.S.C. 32, 24(d), 25A(i) and 23, plus Schedule 3 line 15). Line 33 adds
+        line 32c
+        to withholding and estimated tax.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Round>
@@ -804,8 +828,10 @@
     <Fact path="/schedule3AQuestionsComplete">
       <Name>Schedule 3-A lines 7 and 8 are answered or not reached</Name>
       <Description>2026 draft Schedule 3-A, lines 7 and 8 are reached only when line 6 is more than zero. Line 8
-        (8 U.S.C. 1641(b)) is reached only after a yes on line 7. Complete when those lines are not reached, or when
-        the answers the form requires are present. Part of flow /flowIncomplete.</Description>
+        (8
+        U.S.C. 1641(b)) is reached only after a yes on line 7. Complete when those lines are not reached, or when
+        the
+        answers the form requires are present. Part of flow /flowIncomplete.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Any>

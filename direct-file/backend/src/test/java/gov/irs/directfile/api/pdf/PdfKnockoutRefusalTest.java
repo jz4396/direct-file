@@ -247,7 +247,9 @@ class PdfKnockoutRefusalTest {
                 new java.math.BigDecimal(graph.get("/scheduleENetIncome").get().toString()).signum());
         assertEquals(
                 0,
-                new java.math.BigDecimal(graph.get("/scheduleEPartIIILine37").get().toString()).signum());
+                new java.math.BigDecimal(
+                                graph.get("/scheduleEPartIIILine37").get().toString())
+                        .signum());
         assertFalse(graph.get("/scheduleEPartIVLine39").complete(), "line 39 is not a silent zero");
         assertEquals(
                 0,
@@ -452,8 +454,10 @@ class PdfKnockoutRefusalTest {
                 Boolean.FALSE,
                 graph.get(PrintRefusingKnockoutsTest.AMT_PREFERENCE_KNOCKOUT).get(),
                 "unanswered is not the yes stop");
-        assertEquals(Boolean.TRUE, graph.get(PrintRefusingKnockoutsTest.AMT_PREFERENCE_UNANSWERED_KNOCKOUT)
-                .get());
+        assertEquals(
+                Boolean.TRUE,
+                graph.get(PrintRefusingKnockoutsTest.AMT_PREFERENCE_UNANSWERED_KNOCKOUT)
+                        .get());
         assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.AMT_PREFERENCE_UNANSWERED_KNOCKOUT);
         List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
                 .filter(p -> !p.equals(PrintRefusingKnockoutsTest.AMT_PREFERENCE_UNANSWERED_KNOCKOUT))
