@@ -421,6 +421,50 @@ class PdfKnockoutRefusalTest {
         }
     }
 
+    /**
+     * #89. Instructions for Form 6251 (2025), p. 1, "Who Must File", item 1: attach Form 6251 when line 7 is greater
+     * than line 10 (/form6251Required). Form 6251 (2026) draft, PDF p. 2 (form p. 1), line 2c: "Investment interest
+     * expense (difference between regular tax and AMT)."; line 4: "Combine lines 1b through 3." An unanswered
+     * /hasAmtPreferenceItems is not a complete false on the yes stop, so without
+     * /flowKnockoutAmtPreferenceItemsUnanswered the English package would print Form 6251 with lines 2c-3 blank and
+     * line 4 combining only lines 1b and 2a. The English print refuses on that stop. A complete false still prints
+     * (the supported golden end-to-end scenario). Spanish is refused because the TY2026 template is outside
+     * pdf/2026/ (26 U.S.C. 6011(a)).
+     */
+    @Test
+    void unansweredAmtPreferenceItemsWhen6251IsRequiredRefusesThePrint() throws Exception {
+        Map<String, FactTypeWithItem> facts =
+                PrintRefusingKnockoutsTest.smoke(Form6251Ty2026PdfSmokeTest.amtScenario());
+        facts.remove("/hasAmtPreferenceItems");
+        var graph = factGraphService.getGraph(facts);
+        assertEquals(Boolean.TRUE, graph.get("/form6251Required").get());
+        assertFalse(graph.get("/hasAmtPreferenceItems").complete());
+        assertEquals(
+                Boolean.FALSE,
+                graph.get(PrintRefusingKnockoutsTest.AMT_PREFERENCE_KNOCKOUT).get(),
+                "unanswered is not the yes stop");
+        assertEquals(Boolean.TRUE, graph.get(PrintRefusingKnockoutsTest.AMT_PREFERENCE_UNANSWERED_KNOCKOUT)
+                .get());
+        assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.AMT_PREFERENCE_UNANSWERED_KNOCKOUT);
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !p.equals(PrintRefusingKnockoutsTest.AMT_PREFERENCE_UNANSWERED_KNOCKOUT))
+                .toList();
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false, without);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            Map<String, String> f = Form6251Ty2026PdfSmokeTest.form6251Fields(doc);
+            assertFalse(f.isEmpty(), "without the stop, Form 6251 would print");
+            for (String suffix : List.of(
+                    "Page1[0].f1_7[0]", // 2c
+                    "Page1[0].f1_13[0]", // 2i
+                    "Page1[0].f1_25[0]", // 3
+                    "Page1[0].f1_30[0]", // 8
+                    "Page2[0].f2_3[0]")) { // 14
+                assertEquals("", Form6251Ty2026PdfSmokeTest.field(f, suffix), suffix + " blank, not $0");
+            }
+            assertTrue(Form6251Ty2026PdfSmokeTest.line(f, "f1_26[0]") > 0, "line 4 would still print");
+        }
+    }
+
     @Test
     void printRefusingKnockoutsAreSubmissionBlockingFacts() throws Exception {
         assertTrue(PrintRefusingKnockouts.FACT_PATHS.stream()

@@ -128,6 +128,12 @@ public final class PrintRefusingKnockouts {
             // income-based related adjustments"; line 4: "Alternative minimum taxable income. Combine lines 1b through
             // 3." 26 U.S.C. 55(b)(2), 56, 57. Already BlockSubmissionOnTrue via /hasAmtPreferenceItems.
             "/flowKnockoutAmtPreferenceItems",
+            // The same lines when the question is unanswered. /flowKnockoutAmtPreferenceItems is complete false
+            // then, because IsComplete(/hasAmtPreferenceItems) is its first All operand, so a required Form 6251
+            // would still print and line 4 would combine lines 1b through 3 as if lines 2c-3 were zero. True only
+            // when /form6251Required is true (Who Must File item 1: line 7 greater than line 10). A complete false
+            // still prints. Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1.
+            "/flowKnockoutAmtPreferenceItemsUnanswered",
             // Married filing separately and line 4 over $640,200. Form 6251 (2026) draft, PDF p. 2 (form p. 1),
             // line 4: "(If married filing separately and line 4 is more than $640,200, see instructions.)" 26 U.S.C.
             // 55(d)(2) last sentence: "In the case of a taxpayer described in paragraph (1)(C), alternative minimum

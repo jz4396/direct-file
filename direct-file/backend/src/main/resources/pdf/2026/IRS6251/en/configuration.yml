@@ -18,8 +18,11 @@
 # PrintRefusingKnockouts, so a return that hits one cannot print this form with those lines blank:
 #   2b  Schedule 1 line 1 / 8z tax refund: Form 1099-G box 2 refunds and 8z income are unsupported income sources
 #       (/incomeSourcesSupported = false is part of /flowIsKnockedOut); the app has no Schedule 1 line 1 or 8z input.
-#   2c-2t, 3  AMT adjustments and preferences: /flowKnockoutAmtPreferenceItems (/hasAmtPreferenceItems), in
-#       PrintRefusingKnockouts. Line 2g (private activity bond interest, 1099-INT box 9) is also /flowKnockoutHasBonds.
+#   2c-2t, 3  AMT adjustments and preferences: /flowKnockoutAmtPreferenceItems when /hasAmtPreferenceItems is
+#       yes, and /flowKnockoutAmtPreferenceItemsUnanswered when Form 6251 is required and that question is not a
+#       complete answer. Both are in PrintRefusingKnockouts. An unanswered question is not treated as no, so line 4
+#       is not printed with lines 2c-3 omitted. Line 2g (private activity bond interest, 1099-INT box 9) is also
+#       /flowKnockoutHasBonds.
 #   8   AMT foreign tax credit: 1099-INT foreign tax /flowKnockoutHasForeignTaxPaid; 1099-DIV foreign tax
 #       /flowKnockoutDividendForeignTaxPaid whenever line 7 > $0 (always true when this form prints).
 #   14  Schedule D line 19 (unrecaptured §1250 gain): /flowKnockoutUnrecaptured1250Gain.

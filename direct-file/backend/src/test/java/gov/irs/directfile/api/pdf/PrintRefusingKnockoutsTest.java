@@ -82,6 +82,11 @@ class PrintRefusingKnockoutsTest {
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     /** Form 6251 lines 2c-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). */
     static final String AMT_PREFERENCE_KNOCKOUT = "/flowKnockoutAmtPreferenceItems";
+    /**
+     * Same lines when Form 6251 is required and /hasAmtPreferenceItems is not a complete answer. The yes knockout is
+     * complete false in that case.
+     */
+    static final String AMT_PREFERENCE_UNANSWERED_KNOCKOUT = "/flowKnockoutAmtPreferenceItemsUnanswered";
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
     /**
@@ -149,11 +154,13 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
                 FORM_8995_KNOCKOUT, // Form 8995 is attached and has no TY2026 template or MeF mapping
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2t, 3 and 8
+                AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT)); // MFS AMTI over $640,200, add-back not computed
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
-        // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the two Form 6251 stops.
-        // #246 adds /flowKnockoutScheduleEPartII. #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(30, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
+        // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
+        // #239 drops the Schedule C and Schedule 3-A template knockouts.
+        assertEquals(31, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -615,7 +622,10 @@ class PrintRefusingKnockoutsTest {
      * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath. {@link #PTC_BELOW_100_SCENARIO} also has
      * household income under 100% of the poverty line, which 26 U.S.C. 36B(c)(1)(A) requires and Form 8962 here does
      * not cover. A Form 8962 scenario that leaves the income-based special enrollment period question unanswered also
-     * refuses through that stop, which fails closed (26 U.S.C. 36B(c)(3)(A)(iii)).
+     * refuses through that stop, which fails closed (26 U.S.C. 36B(c)(3)(A)(iii)). A scenario whose Form 6251 is
+     * required (Who Must File item 1) and whose /hasAmtPreferenceItems is not a complete answer refuses on
+     * /flowKnockoutAmtPreferenceItemsUnanswered. Line 4 would otherwise combine lines 1b through 3 with lines 2c-3
+     * omitted.
      */
     @Test
     void everyScenarioRefusesExactlyTheKnockoutsItsFactsCallFor() throws Exception {
@@ -653,6 +663,12 @@ class PrintRefusingKnockoutsTest {
             Result<Object> form8995 = graph.get("/form8995Required");
             if (form8995.complete() && Boolean.TRUE.equals(form8995.get())) {
                 expected.add(FORM_8995_KNOCKOUT);
+            }
+            // Form 6251 line 4 combines lines 1b through 3. An unanswered preference question is not "no".
+            Result<Object> form6251 = graph.get("/form6251Required");
+            Result<Object> preferenceAnswer = graph.get("/hasAmtPreferenceItems");
+            if (form6251.complete() && Boolean.TRUE.equals(form6251.get()) && !preferenceAnswer.complete()) {
+                expected.add(AMT_PREFERENCE_UNANSWERED_KNOCKOUT);
             }
             if (positive(graph, "/earnedIncomeCredit")
                     || positive(graph, "/additionalCtc")
@@ -749,9 +765,12 @@ class PrintRefusingKnockoutsTest {
     /**
      * #89. Form 6251 (2026) draft, PDF p. 2 (form p. 1), line 4: "Combine lines 1b through 3. (If married filing
      * separately and line 4 is more than $640,200, see instructions.)" A yes to the adjustments question would print
-     * lines 2c-2t, 3 and 8 blank (26 U.S.C. 55(b)(2), 56, 57). An MFS return over $640,200 would print line 4 without
-     * the 26 U.S.C. 55(d)(2) add-back. Both already block submission. The supported golden end-to-end scenario
-     * (synthetic data) leaves both complete and false, so that return still prints.
+     * lines 2c-2t, 3 and 8 blank (26 U.S.C. 55(b)(2), 56, 57). An unanswered question on a required Form 6251 is not
+     * that yes stop: /flowKnockoutAmtPreferenceItems is complete false, and line 4 would still combine lines 1b
+     * through 3 as if lines 2c-3 were zero. /flowKnockoutAmtPreferenceItemsUnanswered refuses that print. It stays
+     * complete false when the form is not required. An MFS return over $640,200 would print line 4 without the
+     * 26 U.S.C. 55(d)(2) add-back. The supported golden end-to-end scenario (synthetic data) leaves each stop complete
+     * and false, so that return still prints.
      */
     @Test
     void form6251StopsRefuseThePrintAndASupportedReturnDoesNot() throws Exception {
@@ -760,6 +779,7 @@ class PrintRefusingKnockoutsTest {
         Graph printed = fgs.getGraph(supported);
         assertEquals(Boolean.TRUE, printed.get("/form6251Required").get(), "Who Must File item 1");
         assertCompleteFalse(printed, AMT_PREFERENCE_KNOCKOUT);
+        assertCompleteFalse(printed, AMT_PREFERENCE_UNANSWERED_KNOCKOUT);
         assertCompleteFalse(printed, AMT_MFS_ADD_BACK_KNOCKOUT);
         assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(printed), "supported AMT return prints");
 
@@ -770,8 +790,27 @@ class PrintRefusingKnockoutsTest {
         adjustments.put("/hasAmtPreferenceItems", yes);
         Graph partial = fgs.getGraph(adjustments);
         assertEquals(Boolean.TRUE, partial.get(AMT_PREFERENCE_KNOCKOUT).get());
+        assertCompleteFalse(partial, AMT_PREFERENCE_UNANSWERED_KNOCKOUT);
         assertEquals(Boolean.TRUE, partial.get("/flowIsKnockedOut").get());
         assertEquals(List.of(AMT_PREFERENCE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(partial));
+
+        Map<String, FactTypeWithItem> unanswered = new HashMap<>(supported);
+        unanswered.remove("/hasAmtPreferenceItems");
+        Graph open = fgs.getGraph(unanswered);
+        assertEquals(Boolean.TRUE, open.get("/form6251Required").get(), "Who Must File item 1");
+        assertFalse(open.get("/hasAmtPreferenceItems").complete(), "preference question unanswered");
+        assertCompleteFalse(open, AMT_PREFERENCE_KNOCKOUT);
+        assertEquals(Boolean.TRUE, open.get(AMT_PREFERENCE_UNANSWERED_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, open.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(AMT_PREFERENCE_UNANSWERED_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(open));
+
+        Map<String, FactTypeWithItem> notRequired = smoke(Map.of());
+        notRequired.remove("/hasAmtPreferenceItems");
+        Graph low = fgs.getGraph(notRequired);
+        assertEquals(Boolean.FALSE, low.get("/form6251Required").get(), "AMT is $0, so Form 6251 is not required");
+        assertFalse(low.get("/hasAmtPreferenceItems").complete());
+        assertCompleteFalse(low, AMT_PREFERENCE_UNANSWERED_KNOCKOUT);
+        assertFalse(PrintRefusingKnockouts.refusingPaths(low).contains(AMT_PREFERENCE_UNANSWERED_KNOCKOUT));
 
         Map<String, FactTypeWithItem> mfs = mfsAboveAddBack(supported);
         Graph addBack = fgs.getGraph(mfs);
@@ -781,6 +820,7 @@ class PrintRefusingKnockoutsTest {
                 "line 4 is over $640,200");
         assertEquals(Boolean.TRUE, addBack.get(AMT_MFS_ADD_BACK_KNOCKOUT).get());
         assertEquals(Boolean.FALSE, addBack.get(AMT_PREFERENCE_KNOCKOUT).get());
+        assertCompleteFalse(addBack, AMT_PREFERENCE_UNANSWERED_KNOCKOUT);
         assertEquals(List.of(AMT_MFS_ADD_BACK_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(addBack));
 
         Map<String, FactTypeWithItem> atThreshold = new HashMap<>(mfs);
