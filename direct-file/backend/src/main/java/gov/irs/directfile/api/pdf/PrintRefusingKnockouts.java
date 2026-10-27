@@ -14,10 +14,12 @@ import gov.irs.factgraph.monads.Result;
  * unless every one of them is complete and false, and the PDF endpoint answers 400 with every refusing path as
  * {@code blockingFacts}.
  *
- * <p>Each entry must be a {@code <BlockSubmissionOnTrue />} knockout listed in {@code /flowIsKnockedOut}. An entry that
- * only waits for a missing template is removed once that form has a template and field map. An entry that stops a
- * return from printing a form whose lines this tool does not compute stays, even when the form itself is in the
- * package. One path per line.
+ * <p>Each entry must be a {@code <BlockSubmissionOnTrue />} fact covered by {@code /flowIsKnockedOut}: an operand of
+ * that fact, or a dependency of such an operand, so it is not a top-level fact. An entry that is not itself an
+ * operand does not make {@code /flowIsKnockedOut} true. {@code /flowPrintRefuseScheduleBPartIII} is that case. An
+ * entry that only waits for a missing template is removed once that form has a template and field map. An entry that
+ * stops a return from printing a form whose lines this tool does not compute stays, even when the form itself is in
+ * the package. One path per line.
  */
 @Slf4j
 public final class PrintRefusingKnockouts {
@@ -91,7 +93,9 @@ public final class PrintRefusingKnockouts {
             // those lines are not left blank. Unanswered is not "No": the print is refused unless
             // /scheduleBPartIIIAnswered is complete, even when interest and ordinary dividends are not over $1,500.
             // Complete false when every Part III answer is no. Exactly $1,500 with those answers still prints.
-            "/flowKnockoutScheduleBPartIII",
+            // Not an operand of /flowIsKnockedOut. /flowKnockoutScheduleBPartIII is this fact and
+            // /scheduleBPartIIIAnswered, so only a "Yes" knocks the interview out.
+            "/flowPrintRefuseScheduleBPartIII",
             // Schedule E Part I loss. Lines 22 and 25 (Form 8582) are not printed. 26 U.S.C. 469, 465, 461(l).
             "/flowKnockoutScheduleELoss",
             // Schedule E depreciation or vehicle expenses. Form 4562 is not printed, so line 18 is not entered as $0.

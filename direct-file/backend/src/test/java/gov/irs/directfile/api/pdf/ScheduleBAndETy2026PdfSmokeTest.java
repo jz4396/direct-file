@@ -22,7 +22,7 @@ import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.high
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.EMPTY_COLLECTION;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.INTEREST_SUBTRACTION_KNOCKOUT;
-import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_B_PART_III_KNOCKOUT;
+import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_B_PART_III_PRINT_REFUSE;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_DEPRECIATION_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_LOSS_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT;
@@ -418,7 +418,7 @@ class ScheduleBAndETy2026PdfSmokeTest {
     void scheduleBRefusesPartIIIYesAndAnInterestSubtraction() throws Exception {
         Map<String, String> foreign = partI();
         foreign.put("/hasForeignAccounts", bool(true));
-        refuses(foreign, SCHEDULE_B_PART_III_KNOCKOUT);
+        refuses(foreign, SCHEDULE_B_PART_III_PRINT_REFUSE);
 
         Map<String, String> nominee = partI();
         nominee.put("/interestReports", collection(INT));
