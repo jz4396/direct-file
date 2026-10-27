@@ -14,7 +14,10 @@
 # Included when stateReturn /stateReturnPaFiled (full-year resident, #78, or PA/FL part-year resident, #80).
 #
 # Not mapped, left blank. Each is either never entered on a supported return or is a stop that keeps the return
-# from reaching print (wired into /flowIsKnockedOut through stateReturn /flowKnockoutStateReturn):
+# from reaching print. The stops below are BlockSubmissionOnTrue facts in stateReturn /flowKnockoutStateReturn
+# (and therefore /flowIsKnockedOut) and are listed in PrintRefusingKnockouts.FACT_PATHS. PdfService builds no PDF
+# unless every listed path is complete and false, so a yes or an unanswered screener refuses the package instead of
+# printing the unmodeled line blank:
 #   1b                  unreimbursed employee business expenses: /flowKnockoutPaUnreimbursedEmployeeExpenses (#102).
 #   4, 6 (and ovals)    business and rents: /paLine4 and /paLine6 are $0 (Schedule C businesses are
 #                       /flowKnockoutPaUnsupportedIncome; Schedule E income is a stop).
@@ -99,7 +102,7 @@ form:
   "1a. Gross Compensation": /paLine1a # p. 10, LINE 1a (W-2 box 16)
   "1c. Net Compensation": /paLine1c # 1a minus 1b
   "2. Interest Income": /paLine2 # p. 14, LINE 2; prints only when PA Schedule A is not required (/flowKnockoutPaScheduleA, p. 31)
-  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3; $0 (no 1099-DIV); Schedule B stop /flowKnockoutPaScheduleB (p. 32)
+  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3; federal ordinary dividends (Form 1040 line 3b) when PA Schedule B lines 2-10 are $0; $0 prints blank. Schedule B stop /flowKnockoutPaScheduleB (p. 32)
   "5. Loss": ~pa40Line5Loss # p. 15, "If entering a loss, fill in the oval next to the line"
   "5. Net Gain or Loss from Sale, etc. of Property": ~pa40Line5 # p. 17, LINE 5 (size of a loss; see the oval)
   "9. Total PA Taxable Income": /paLine9 # p. 20, LINE 9 (losses are not added)

@@ -79,6 +79,8 @@ const build = (status: Record<string, unknown>, extra: Record<string, unknown>) 
     '/livedTogetherAllYearWithSpouse': createBooleanWrapper(true),
     '/soldCapitalAssets': createBooleanWrapper(false),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
+    '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
     ...extra,
   }).factGraph;
 const interest = (box1: number) => ({

@@ -20,8 +20,10 @@
 # Included when stateReturn /stateReturnPaFiled and the return claims the credit (PA-40 line 21 = line 16 above $0;
 # p. 22, "If you claim a credit for Tax Forgiveness on Line 21, you must complete and include PA Schedule SP").
 #
-# Only Column A is printed. Not mapped, left blank, because each case is a stop (/flowKnockoutPaSpUnsupported, wired
-# into /flowIsKnockedOut through stateReturn /flowKnockoutStateReturn):
+# Only Column A is printed. Not mapped, left blank, because each case is a stop (/flowKnockoutPaSpUnsupported).
+# That fact is in stateReturn /flowKnockoutStateReturn (and therefore /flowIsKnockedOut) and in
+# PrintRefusingKnockouts.FACT_PATHS, so a true value or an unanswered nontaxable-income question (when forgiveness is
+# still possible) refuses the PDF instead of printing the line blank:
 #   Question 2, line 1b (claimed as a dependent), oval 2 (separated), ovals 3b-3d and Certification (separate returns,
 #   dependent spouse, separated less than six months), Columns B and C and their lines 11-16: (1) and (2) in that fact.
 #   Section III lines 3-5 and 7-10 (alimony, insurance and inheritances, gifts, military pay, excluded home-sale gain,

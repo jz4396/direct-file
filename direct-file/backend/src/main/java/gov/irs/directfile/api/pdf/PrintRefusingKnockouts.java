@@ -30,7 +30,37 @@ public final class PrintRefusingKnockouts {
             // PA-source pay in the nonresident period of a PA/FL part-year return: PA-40 IN (2025) p. 43, "If your
             // employer does not report, or incorrectly reports, your PA-taxable compensation, you must use PA
             // Schedule NRH to apportion your compensation". Without PA Schedule NRH the PA-40 would understate line 1a.
+            // An unanswered question on a PA/FL part-year return stays incomplete and refuses the print.
             "/flowKnockoutPaNonresidentPaSourcePay",
+            // PA-40 line 1b needs PA Schedule UE. PA-40 IN (2025) p. 27: "PA law only permits expenses required to
+            // perform the duties of a job or profession." 72 P.S. §7303(a)(1). Yes, or an unanswered question on a
+            // PA-40, refuses the print so line 1b is not left blank.
+            "/flowKnockoutPaUnreimbursedEmployeeExpenses",
+            // PA-40 line 3 is federal ordinary dividends only when PA Schedule B lines 2-10 are $0. PA-40 IN (2025)
+            // p. 32 and p. 43. Exempt-obligation dividends, a positive nonresident-period allocation, or an unanswered
+            // allocation or exempt-obligation question refuses the print (72 P.S. §7303(a)(5)).
+            "/flowKnockoutPaDividends",
+            // PA-40 lines 7, 8, 10, 14-16, 22 (Schedule G-L), 23 and 25. PA-40 IN (2025) pp. 19-24. Yes, or an
+            // unanswered question on a PA-40, refuses the print.
+            "/flowKnockoutPaUnsupportedItems",
+            // PA-40 lines 4 and 6 and income this return does not classify (Schedule C, Schedule E, 1099-R, 1099-MISC,
+            // tax-exempt interest, a missing box 16, a joint sale, a forfeited-interest penalty). PA-40 IN (2025)
+            // pp. 13-19. 72 P.S. §7303(a).
+            "/flowKnockoutPaUnsupportedIncome",
+            // Tax Forgiveness cases Schedule SP here does not compute. 72 P.S. §7304. PA-40 IN (2025) pp. 36-39.
+            // When forgiveness is still possible, an unanswered nontaxable-income question stays incomplete.
+            "/flowKnockoutPaSpUnsupported",
+            // PA/FL part-year cases not computed: a joint return, a move date outside the tax year, or a W-2 that is
+            // not PA or FL. PA-40 IN (2025) pp. 6-7 and p. 42. 72 P.S. §7302(a), §7302(b).
+            "/flowKnockoutPaPartYear",
+            // PA Schedule A is required and not produced. PA-40 IN (2025) p. 31. 72 P.S. §7303(a)(6).
+            "/flowKnockoutPaScheduleA",
+            // PA Schedule B is required and not produced. PA-40 Schedule B (2025), WHO MUST COMPLETE. 72 P.S.
+            // §7303(a)(5). An unanswered exempt-obligation answer or part-year allocation stays incomplete.
+            "/flowKnockoutPaScheduleB",
+            // PA Schedule D is required for any sale, exchange or disposition, including a loss. PA-40 IN (2025) p. 17
+            // and PA Schedule D (2025), WHO MUST COMPLETE. 72 P.S. §7303(a)(3).
+            "/flowKnockoutPaScheduleD",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.

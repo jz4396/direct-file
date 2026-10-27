@@ -291,6 +291,70 @@ class PdfKnockoutRefusalTest {
         assertBuilds(facts);
     }
 
+    /**
+     * PA-40 line 1b needs PA Schedule UE (PA-40 IN (2025) p. 27, 72 P.S. §7303(a)(1)). A yes refuses the English
+     * package through /flowKnockoutPaUnreimbursedEmployeeExpenses only. Spanish is refused because the TY2026 template
+     * is outside pdf/2026/ (26 U.S.C. 6011(a)).
+     */
+    @Test
+    void paScheduleUeYesIsRefusedByThePrintPath() throws Exception {
+        Map<String, String> extra = new HashMap<>(PaPit40ScheduleSpTy2026PdfSmokeTest.goldenScenario());
+        extra.put("/paHasUnreimbursedEmployeeExpenses", ScheduleATy2026PdfSmokeTest.bool(true));
+        assertRefusedOnlyBy(PrintRefusingKnockoutsTest.smoke(extra), PrintRefusingKnockoutsTest.PA_UE_KNOCKOUT);
+    }
+
+    /**
+     * The fixture's Form 8949 sales are a PA Schedule D filing (PA-40 IN (2025) p. 17; PA Schedule D (2025), WHO MUST
+     * COMPLETE, including a loss). The English package refuses with only /flowKnockoutPaScheduleD.
+     */
+    @Test
+    void paScheduleDSaleIsRefusedByThePrintPath() throws Exception {
+        assertRefusedOnlyBy(
+                PrintRefusingKnockoutsTest.smoke(PaPit40ScheduleSpTy2026PdfSmokeTest.paResident()),
+                PrintRefusingKnockoutsTest.PA_SCHEDULE_D_KNOCKOUT);
+    }
+
+    /**
+     * PA-40 line 22 is the Schedule G-L credit (PA-40 IN (2025) p. 23). Yes to /paHasUnsupportedItems refuses the
+     * English package with only that stop, so line 22 is not printed blank.
+     */
+    @Test
+    void paScheduleGlYesIsRefusedByThePrintPath() throws Exception {
+        Map<String, String> extra = new HashMap<>(PaPit40ScheduleSpTy2026PdfSmokeTest.goldenScenario());
+        extra.put("/paHasUnsupportedItems", ScheduleATy2026PdfSmokeTest.bool(true));
+        assertRefusedOnlyBy(
+                PrintRefusingKnockoutsTest.smoke(extra), PrintRefusingKnockoutsTest.PA_UNSUPPORTED_ITEMS_KNOCKOUT);
+    }
+
+    /**
+     * An unanswered line 1b question is not a complete false. The English print refuses because
+     * /flowKnockoutPaUnreimbursedEmployeeExpenses is incomplete. /flowIsKnockedOut stays incomplete with it. Spanish
+     * is refused because the TY2026 template is outside pdf/2026/ (26 U.S.C. 6011(a)).
+     */
+    @Test
+    void unansweredPaScheduleUeQuestionIsRefused() throws Exception {
+        Map<String, FactTypeWithItem> facts =
+                PrintRefusingKnockoutsTest.smoke(PaPit40ScheduleSpTy2026PdfSmokeTest.goldenScenario());
+        facts.remove("/paHasUnreimbursedEmployeeExpenses");
+        var graph = factGraphService.getGraph(facts);
+        assertFalse(graph.get(PrintRefusingKnockoutsTest.PA_UE_KNOCKOUT).complete());
+        assertFalse(graph.get("/flowIsKnockedOut").complete());
+        List<String> only = List.of(PrintRefusingKnockoutsTest.PA_UE_KNOCKOUT);
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !only.contains(p))
+                .toList();
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn(facts), false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertEquals(only, e.getBody().getProperties().get("blockingFacts"));
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false, without);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            assertTrue(doc.getNumberOfPages() > 0, "en would print without " + only);
+        }
+        Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
+    }
+
     @Test
     void printRefusingKnockoutsAreSubmissionBlockingFacts() throws Exception {
         assertTrue(PrintRefusingKnockouts.FACT_PATHS.stream()
