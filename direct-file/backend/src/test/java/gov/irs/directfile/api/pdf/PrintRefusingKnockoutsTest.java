@@ -936,7 +936,9 @@ class PrintRefusingKnockoutsTest {
      * A Schedule C return that is not a PA-40 is still refused only by Form 8995. The same business on a full-year
      * PA-40 is also refused by {@link #PA_UNSUPPORTED_INCOME_KNOCKOUT}: PA-40 line 4 stays $0 (72 P.S. §7303(a)(2);
      * PA-40 IN (2025) p. 17, LINE 4). The UE and unsupported-items screeners are answered no; unanswered, those stops
-     * stay incomplete and refuse the print. This slice does not add PA Schedule C.
+     * stay incomplete and refuse the print. This W-2 has no box 16, so PA taxable income is $0 and Tax Forgiveness is
+     * still possible (72 P.S. §7304). The Schedule SP nontaxable-income screener is answered no for the same reason.
+     * This slice does not add PA Schedule C.
      */
     @Test
     void paScheduleCRefusesOnUnsupportedIncomeAndForm8995() throws Exception {
@@ -958,6 +960,9 @@ class PrintRefusingKnockoutsTest {
         facts.put(
                 "/paHasUnsupportedItems",
                 mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
+        facts.put(
+                "/paHasSpNontaxableIncome",
+                mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
         Graph pa = fgs.getGraph(facts);
         assertEquals(Boolean.TRUE, pa.get("/stateReturnPaFiled").get());
         assertEquals(Boolean.TRUE, pa.get("/hasScheduleCBusinesses").get());
@@ -965,6 +970,7 @@ class PrintRefusingKnockoutsTest {
         assertTrue(pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).complete());
         assertCompleteFalse(pa, PA_UE_KNOCKOUT);
         assertCompleteFalse(pa, PA_UNSUPPORTED_ITEMS_KNOCKOUT);
+        assertCompleteFalse(pa, PA_SP_KNOCKOUT);
         assertEquals(Boolean.TRUE, pa.get(FORM_8995_KNOCKOUT).get());
         assertEquals(
                 List.of(PA_UNSUPPORTED_INCOME_KNOCKOUT, FORM_8995_KNOCKOUT),
