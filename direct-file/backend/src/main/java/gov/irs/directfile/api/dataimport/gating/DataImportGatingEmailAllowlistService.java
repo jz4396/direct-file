@@ -71,7 +71,7 @@ public class DataImportGatingEmailAllowlistService {
             log.info("Allowlist checked, total items: {}", allowlist.size());
         } catch (Exception e) {
             // should we set up an alert on this error?
-            log.error("Error during allowlist retrieval: {}", e.getMessage());
+            log.error("Error during allowlist retrieval: {}", e.getClass().getName());
             this.allowlist = Collections.emptySet();
         }
     }

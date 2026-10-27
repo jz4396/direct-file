@@ -47,12 +47,14 @@ public class MockDataImportService implements DataImportService {
                         TIMEOUT_INCREMENTER_MAP.put(file, data.getData().getTimeSinceCreation());
                     } catch (IOException e) {
                         log.error(
-                                "failed to read: {} {} {}", resource.getFilename(), e.getMessage(), e.getStackTrace());
+                                "failed to read: {} {}",
+                                resource.getFilename(),
+                                e.getClass().getName());
                     }
                 }
             }
         } catch (IOException e) {
-            log.error("failed to load mock data {} {}", e.getMessage(), e.getStackTrace());
+            log.error("failed to load mock data {}", e.getClass().getName());
         }
     }
 

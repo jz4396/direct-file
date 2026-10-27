@@ -319,11 +319,13 @@
         (/flowKnockoutScheduleCSpouseBusiness),
         statutory employees
         (formW2s /flowKnockoutStatutoryEmployee), and
-        farm income, church employee income, the optional methods, ministry or Forms 4361
+        farm income, church employee income, the
+        optional methods, ministry or Forms 4361
         and 4029, notary fees, and Form 8919 wages (scheduleSE
         /flowKnockoutScheduleSEOutOfScope). Complete and false when
         there is no Schedule C or the Schedule C
-        result is a profit on a
+        result is a
+        profit on a
         return that isn't a joint return claiming the
         CDCC.
       </Description>
@@ -436,7 +438,8 @@
         (ordinary
         and necessary expenses paid or incurred in carrying on a trade or business) —
         https://www.law.cornell.edu/uscode/text/26/162
-        Kept for a return that already stored one total. The interview now asks the
+        Kept for a return that already stored one total. The interview now
+        asks the
         Schedule C lines. Once any line-item answer is complete, this total is ignored.
       </Description>
       <Writable>
@@ -447,9 +450,11 @@
     <Fact path="/scheduleCBusinesses/*/totalExpenses">
       <Name>Total business expenses (derived)</Name>
       <Description>
-        Schedule C line 28. On a return that only stored one expense total, that total. On the line-item path,
+        Schedule C line 28. On a return that only stored one expense total, that total. On the line-item
+        path,
         the sum of the supported lines, and only when no out-of-scope form applies. Otherwise incomplete:
-        an unanswered expense is not treated as zero. 26 U.S.C. 162(a).
+        an
+        unanswered expense is not treated as zero. 26 U.S.C. 162(a).
       </Description>
       <Derived>
         <Switch>
@@ -485,8 +490,10 @@
       <Description>
         Schedule C line 31. Single-total path: gross receipts minus that total. Line-item path: line 7 minus
         line 28, and only when line 7 and line 28 are complete and no out-of-scope form applies. A loss that
-        needs Form 6198 or Form 8582 is still computed and is stopped by /flowKnockoutScheduleCOutOfScope,
-        because the stop reads this result and this result must not read the stop. 26 U.S.C. 61, 162, 465, 469.
+        needs Form
+        6198 or Form 8582 is still computed and is stopped by /flowKnockoutScheduleCOutOfScope,
+        because the stop reads
+        this result and this result must not read the stop. 26 U.S.C. 61, 162, 465, 469.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -543,9 +550,12 @@
       <Name>Schedule C business complete</Name>
       <Description>
         Single-total path: name, gross receipts, the expense total, and material participation.
-        Line-item path: name, material participation, Part I amounts, and every stop question.
-        A form stop completes the business without expense amounts. Otherwise the expense lines, line 7,
-        and line 28 must be complete, and a loss needs the at-risk answer.
+        Line-item
+        path: name, material participation, Part I amounts, and every stop question.
+        A form stop completes the business
+        without expense amounts. Otherwise the expense lines, line 7,
+        and line 28 must be complete, and a loss needs the
+        at-risk answer.
       </Description>
       <Derived>
         <Any>
@@ -679,7 +689,9 @@
 
     <Fact path="/scheduleCExpenseLineOptions">
       <Name>Schedule C expense line choices</Name>
-      <Description>Part II lines this tool can deduct under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162), plus Part V. Lines that need another form are separate yes/no stops, not choices.</Description>
+      <Description>Part II lines this tool can deduct under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162), plus Part V. Lines that need another form are separate yes/no
+        stops, not choices.</Description>
       <Derived>
         <EnumOptions>
           <String>advertising</String>
@@ -707,7 +719,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableReturnsAndAllowances">
       <Name>Returns and allowances</Name>
-      <Description>Schedule C line 2. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 2: report sales returns and allowances as a positive number. 26 U.S.C. 61.</Description>
+      <Description>Schedule C line 2. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 2: report sales returns and allowances as a
+        positive number. 26 U.S.C. 61.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -718,7 +732,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableOtherIncome">
       <Name>Other business income</Name>
-      <Description>Schedule C line 6, ordinary other business income (scrap, recovered bad debts, interest on receivables). 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 6. Fuel tax credits and Form 4797 recapture are a separate stop. 26 U.S.C. 61.</Description>
+      <Description>Schedule C line 6, ordinary other business income (scrap, recovered bad debts, interest on
+        receivables). 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p.
+        7, Line 6. Fuel tax credits and Form 4797 recapture are a separate stop. 26 U.S.C. 61.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -744,7 +760,9 @@
 
     <Fact path="/scheduleCBusinesses/*/otherIncomeNeedsAnotherForm">
       <Name>Line 6 needs another form</Name>
-      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 6: federal and state gasoline or fuel tax credit and recapture of a section 179 deduction or listed property (Form 4797) are included on line 6. This tool does not compute those. Yes stops the return.</Description>
+      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7,
+        Line 6: federal and state gasoline or fuel tax credit and recapture of a section 179 deduction or listed
+        property (Form 4797) are included on line 6. This tool does not compute those. Yes stops the return.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -752,7 +770,9 @@
 
     <Fact path="/scheduleCBusinesses/*/hasInventoryOrCogs">
       <Name>Inventory or cost of goods sold</Name>
-      <Description>Schedule C line 4 and Part III. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Cost of Goods Sold. Yes stops the return: this tool does not compute inventory. An explicit no makes line 4 zero.</Description>
+      <Description>Schedule C line 4 and Part III. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Cost of Goods Sold. Yes stops the return: this
+        tool does not compute inventory. An explicit no makes line 4 zero.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -760,7 +780,10 @@
 
     <Fact path="/scheduleCBusinesses/*/hasCarTruckOrVehicleLoan">
       <Name>Car, truck, or vehicle-loan expense</Name>
-      <Description>Schedule C line 9 and line 16b. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 2 (line 16b is vehicle loan interest) and PDF p. 7, Line 9. Standard mileage, actual vehicle expenses, and vehicle loan interest need Form 4562 or Part IV. Yes stops the return. Lines 9 and 16b stay blank.</Description>
+      <Description>Schedule C line 9 and line 16b. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 2 (line 16b is vehicle loan interest) and PDF p. 7,
+        Line 9. Standard mileage, actual vehicle expenses, and vehicle loan interest need Form 4562 or Part IV. Yes
+        stops the return. Lines 9 and 16b stay blank.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -768,7 +791,9 @@
 
     <Fact path="/scheduleCBusinesses/*/hasDepreciationOrSection179">
       <Name>Depreciation or section 179</Name>
-      <Description>Schedule C line 13. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 8, Line 13. Depreciation and section 179 need Form 4562. Yes stops the return. 26 U.S.C. 167, 179.</Description>
+      <Description>Schedule C line 13. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 8, Line 13. Depreciation and section 179 need Form
+        4562. Yes stops the return. 26 U.S.C. 167, 179.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -776,7 +801,9 @@
 
     <Fact path="/scheduleCBusinesses/*/hasDepletion">
       <Name>Depletion</Name>
-      <Description>Schedule C line 12. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf) line 12. Depletion (26 U.S.C. 611) stops the return. Line 12 stays blank.</Description>
+      <Description>Schedule C line 12. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf) line 12. Depletion (26 U.S.C. 611) stops the return. Line 12
+        stays blank.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -784,7 +811,8 @@
 
     <Fact path="/scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent">
       <Name>Rent of vehicles, machinery, or equipment</Name>
-      <Description>Schedule C line 20a. Rent of vehicles, machinery, and equipment can require an inclusion amount and Form 4562 for listed property. Yes stops the return. Line 20a stays blank.</Description>
+      <Description>Schedule C line 20a. Rent of vehicles, machinery, and equipment can require an inclusion amount and
+        Form 4562 for listed property. Yes stops the return. Line 20a stays blank.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -792,7 +820,9 @@
 
     <Fact path="/scheduleCBusinesses/*/hasHomeOffice">
       <Name>Business use of home</Name>
-      <Description>Schedule C line 30. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 30: Form 8829 or the simplified method. Either method stops the return. Line 30 stays blank, so a supported return's line 31 equals line 29.</Description>
+      <Description>Schedule C line 30. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 30: Form 8829 or the simplified method.
+        Either method stops the return. Line 30 stays blank, so a supported return's line 31 equals line 29.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -800,7 +830,9 @@
 
     <Fact path="/scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction">
       <Name>Energy efficient commercial buildings deduction</Name>
-      <Description>Schedule C line 27a. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 27a: attach Form 7205. Yes stops the return. Line 27a stays blank. 26 U.S.C. 179D.</Description>
+      <Description>Schedule C line 27a. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 27a: attach Form 7205. Yes stops the return.
+        Line 27a stays blank. 26 U.S.C. 179D.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -808,61 +840,67 @@
 
     <Fact path="/scheduleCBusinesses/*/itemizedStarted">
       <Name>Schedule C line-item questions started</Name>
-      <Description>True when any Part I amount, stop question, or expense question for this business has been answered. A return that only stored the single expense total has not started the line-item path.</Description>
+      <Description>True when any Part I amount, stop question, or expense question for this business has been answered.
+        A return that only stored the single expense total has not started the line-item path.</Description>
       <Derived>
         <Any>
           <IsComplete>
-                <Dependency path="../writableReturnsAndAllowances" />
-              </IsComplete>
+            <Dependency path="../writableReturnsAndAllowances" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../writableOtherIncome" />
-              </IsComplete>
+            <Dependency path="../writableOtherIncome" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasDeductibleExpenses" />
-              </IsComplete>
+            <Dependency path="../hasDeductibleExpenses" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasInventoryOrCogs" />
-              </IsComplete>
+            <Dependency path="../hasInventoryOrCogs" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasCarTruckOrVehicleLoan" />
-              </IsComplete>
+            <Dependency path="../hasCarTruckOrVehicleLoan" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasDepreciationOrSection179" />
-              </IsComplete>
+            <Dependency path="../hasDepreciationOrSection179" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasDepletion" />
-              </IsComplete>
+            <Dependency path="../hasDepletion" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasVehicleMachineryEquipmentRent" />
-              </IsComplete>
+            <Dependency path="../hasVehicleMachineryEquipmentRent" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasHomeOffice" />
-              </IsComplete>
+            <Dependency path="../hasHomeOffice" />
+          </IsComplete>
           <IsComplete>
-                <Dependency path="../hasEnergyEfficientBuildingsDeduction" />
-              </IsComplete>
+            <Dependency path="../hasEnergyEfficientBuildingsDeduction" />
+          </IsComplete>
         </Any>
       </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/usesLegacyExpenseBucket">
       <Name>Use the single expense total</Name>
-      <Description>The pre-line-item expense total is used only when it is answered and no line-item question is answered. That keeps returns which stored one total on gross receipts minus that total, and keeps lines 2, 4, and 6 at zero. Once a line-item answer exists, the total is ignored so it is not deducted twice.</Description>
+      <Description>The pre-line-item expense total is used only when it is answered and no line-item question is
+        answered. That keeps returns which stored one total on gross receipts minus that total, and keeps lines 2, 4,
+        and 6 at zero. Once a line-item answer exists, the total is ignored so it is not deducted twice.</Description>
       <Derived>
         <All>
           <IsComplete>
-                <Dependency path="../writableTotalExpenses" />
-              </IsComplete>
+            <Dependency path="../writableTotalExpenses" />
+          </IsComplete>
           <Not>
-                <Dependency path="../itemizedStarted" />
-              </Not>
+            <Dependency path="../itemizedStarted" />
+          </Not>
         </All>
       </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/line1GrossReceipts">
       <Name>Schedule C line 1</Name>
-      <Description>Gross receipts or sales. 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 1. 26 U.S.C. 61. The amount the filer entered, or, on a return that still uses the single expense total, the same derived gross receipts (unanswered treated as zero only on that older path). Unanswered on the line-item path stays incomplete.</Description>
+      <Description>Gross receipts or sales. 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf),
+        line 1. 26 U.S.C. 61. The amount the filer entered, or, on a return that still uses the single expense total,
+        the same derived gross receipts (unanswered treated as zero only on that older path). Unanswered on the
+        line-item path stays incomplete.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -889,7 +927,9 @@
 
     <Fact path="/scheduleCBusinesses/*/line2ReturnsAndAllowances">
       <Name>Schedule C line 2</Name>
-      <Description>Returns and allowances. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7. Zero on the single-total path, where line 2 was blank.</Description>
+      <Description>Returns and allowances. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7. Zero on the single-total path, where line 2 was
+        blank.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -916,7 +956,8 @@
 
     <Fact path="/scheduleCBusinesses/*/line3">
       <Name>Schedule C line 3</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 3: subtract line 2 from line 1.</Description>
+      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 3: subtract line 2
+        from line 1.</Description>
       <Derived>
         <Round>
           <Subtract>
@@ -933,7 +974,9 @@
 
     <Fact path="/scheduleCBusinesses/*/line4CostOfGoodsSold">
       <Name>Schedule C line 4</Name>
-      <Description>Cost of goods sold. Zero only when the filer says there is no inventory, or on the single-total path. Yes to inventory leaves line 4 incomplete. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16.</Description>
+      <Description>Cost of goods sold. Zero only when the filer says there is no inventory, or on the single-total path.
+        Yes to inventory leaves line 4 incomplete. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -948,11 +991,11 @@
             <When>
               <All>
                 <IsComplete>
-                <Dependency path="../hasInventoryOrCogs" />
-              </IsComplete>
+                  <Dependency path="../hasInventoryOrCogs" />
+                </IsComplete>
                 <Not>
-                <Dependency path="../hasInventoryOrCogs" />
-              </Not>
+                  <Dependency path="../hasInventoryOrCogs" />
+                </Not>
               </All>
             </When>
             <Then>
@@ -965,7 +1008,8 @@
 
     <Fact path="/scheduleCBusinesses/*/line5GrossProfit">
       <Name>Schedule C line 5</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 5: gross profit, subtract line 4 from line 3.</Description>
+      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 5: gross profit,
+        subtract line 4 from line 3.</Description>
       <Derived>
         <Round>
           <Subtract>
@@ -982,7 +1026,8 @@
 
     <Fact path="/scheduleCBusinesses/*/line6OtherIncome">
       <Name>Schedule C line 6</Name>
-      <Description>Other income. Zero on the single-total path. The entered amount on the line-item path, including when a stop applies; the stop keeps the net profit off Schedule 1.</Description>
+      <Description>Other income. Zero on the single-total path. The entered amount on the line-item path, including when
+        a stop applies; the stop keeps the net profit off Schedule 1.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -1009,7 +1054,8 @@
 
     <Fact path="/scheduleCBusinesses/*/line7GrossIncome">
       <Name>Schedule C line 7</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 7: gross income, add lines 5 and 6. 26 U.S.C. 61.</Description>
+      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 7: gross income, add
+        lines 5 and 6. 26 U.S.C. 61.</Description>
       <Derived>
         <Round>
           <Add>
@@ -1022,7 +1068,9 @@
 
     <Fact path="/scheduleCBusinesses/*/hasDeductibleExpenses">
       <Name>Has deductible business expenses</Name>
-      <Description>Whether this business has ordinary and necessary expenses under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). No makes every Part II line and line 28 zero. Yes requires at least one line.</Description>
+      <Description>Whether this business has ordinary and necessary expenses under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). No makes every Part II line and line 28 zero. Yes requires at
+        least one line.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -1031,8 +1079,10 @@
     <Fact path="/scheduleCBusinesses/*/expenseLinesChosen">
       <Name>Schedule C expense lines</Name>
       <Description>
-        Part II and Part V lines the filer has for this business. Each selected line is deducted under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162)
-        except meals, which are limited by 26 U.S.C. 274(n).
+        Part II and Part V lines the filer has for this business. Each selected line is deducted under 26
+        U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162)
+        except meals, which are limited by 26 U.S.C.
+        274(n).
       </Description>
       <Writable>
         <MultiEnum optionsPath="/scheduleCExpenseLineOptions" />
@@ -1041,7 +1091,8 @@
 
     <Fact path="/scheduleCBusinesses/*/hasSelectedExpenseLines">
       <Name>At least one expense line selected</Name>
-      <Description>An empty list while the filer said there are deductible expenses leaves line 28 incomplete. True when any supported line was selected.</Description>
+      <Description>An empty list while the filer said there are deductible expenses leaves line 28 incomplete. True when
+        any supported line was selected.</Description>
       <Derived>
         <Any>
           <EnumOptionsContains>
@@ -1202,7 +1253,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseAdvertising">
       <Name>Expense line chosen: advertising</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1220,7 +1272,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableAdvertising">
       <Name>Advertising</Name>
-      <Description>Schedule C line 8, Advertising. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 8.</Description>
+      <Description>Schedule C line 8, Advertising. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 8.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1260,7 +1314,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseCommissionsAndFees">
       <Name>Expense line chosen: commissionsAndFees</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1278,7 +1333,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableCommissionsAndFees">
       <Name>Commissions and fees</Name>
-      <Description>Schedule C line 10, Commissions and fees. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 10.</Description>
+      <Description>Schedule C line 10, Commissions and fees. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 10.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1318,7 +1375,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseContractLabor">
       <Name>Expense line chosen: contractLabor</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1336,7 +1394,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableContractLabor">
       <Name>Contract labor</Name>
-      <Description>Schedule C line 11, Contract labor. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 11.</Description>
+      <Description>Schedule C line 11, Contract labor. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 11.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1376,7 +1436,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseEmployeeBenefitPrograms">
       <Name>Expense line chosen: employeeBenefitPrograms</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1394,7 +1455,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableEmployeeBenefitPrograms">
       <Name>Employee benefit programs</Name>
-      <Description>Schedule C line 14, Employee benefit programs. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 14.</Description>
+      <Description>Schedule C line 14, Employee benefit programs. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 14.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1434,7 +1497,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseInsurance">
       <Name>Expense line chosen: insurance</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1452,7 +1516,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableInsurance">
       <Name>Insurance (other than health)</Name>
-      <Description>Schedule C line 15, Insurance (other than health). Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 15.</Description>
+      <Description>Schedule C line 15, Insurance (other than health). Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 15.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1492,7 +1558,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseMortgageInterest">
       <Name>Expense line chosen: mortgageInterest</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1510,7 +1577,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableMortgageInterest">
       <Name>Mortgage interest</Name>
-      <Description>Schedule C line 16a, Mortgage interest. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 16a.</Description>
+      <Description>Schedule C line 16a, Mortgage interest. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 16a.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1550,7 +1619,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseOtherInterest">
       <Name>Expense line chosen: otherInterest</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1568,7 +1638,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableOtherInterest">
       <Name>Other interest</Name>
-      <Description>Schedule C line 16c, Other interest. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 16c.</Description>
+      <Description>Schedule C line 16c, Other interest. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 16c.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1608,7 +1680,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseLegalAndProfessional">
       <Name>Expense line chosen: legalAndProfessional</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1626,7 +1699,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableLegalAndProfessional">
       <Name>Legal and professional services</Name>
-      <Description>Schedule C line 17, Legal and professional services. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 17.</Description>
+      <Description>Schedule C line 17, Legal and professional services. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 17.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1666,7 +1741,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseOfficeExpense">
       <Name>Expense line chosen: officeExpense</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1684,7 +1760,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableOfficeExpense">
       <Name>Office expense</Name>
-      <Description>Schedule C line 18, Office expense. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 18.</Description>
+      <Description>Schedule C line 18, Office expense. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 18.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1724,7 +1802,8 @@
 
     <Fact path="/scheduleCBusinesses/*/chosePensionAndProfitSharing">
       <Name>Expense line chosen: pensionAndProfitSharing</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1742,7 +1821,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writablePensionAndProfitSharing">
       <Name>Pension and profit-sharing plans</Name>
-      <Description>Schedule C line 19, Pension and profit-sharing plans. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 19.</Description>
+      <Description>Schedule C line 19, Pension and profit-sharing plans. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 19.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1782,7 +1863,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseRentOtherBusinessProperty">
       <Name>Expense line chosen: rentOtherBusinessProperty</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1800,7 +1882,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableRentOtherBusinessProperty">
       <Name>Rent of other business property</Name>
-      <Description>Schedule C line 20b, Rent of other business property. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 20b.</Description>
+      <Description>Schedule C line 20b, Rent of other business property. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 20b.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1840,7 +1924,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseRepairsAndMaintenance">
       <Name>Expense line chosen: repairsAndMaintenance</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1858,7 +1943,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableRepairsAndMaintenance">
       <Name>Repairs and maintenance</Name>
-      <Description>Schedule C line 21, Repairs and maintenance. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 21.</Description>
+      <Description>Schedule C line 21, Repairs and maintenance. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 21.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1898,7 +1985,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseSupplies">
       <Name>Expense line chosen: supplies</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1916,7 +2004,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableSupplies">
       <Name>Supplies</Name>
-      <Description>Schedule C line 22, Supplies. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 22.</Description>
+      <Description>Schedule C line 22, Supplies. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 22.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1956,7 +2046,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseTaxesAndLicenses">
       <Name>Expense line chosen: taxesAndLicenses</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -1974,7 +2065,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableTaxesAndLicenses">
       <Name>Taxes and licenses</Name>
-      <Description>Schedule C line 23, Taxes and licenses. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 23.</Description>
+      <Description>Schedule C line 23, Taxes and licenses. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 23.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2014,7 +2107,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseTravel">
       <Name>Expense line chosen: travel</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -2032,7 +2126,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableTravel">
       <Name>Travel</Name>
-      <Description>Schedule C line 24a, Travel. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 24a.</Description>
+      <Description>Schedule C line 24a, Travel. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 24a.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2072,7 +2168,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseUtilities">
       <Name>Expense line chosen: utilities</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -2090,7 +2187,9 @@
 
     <Fact path="/scheduleCBusinesses/*/writableUtilities">
       <Name>Utilities</Name>
-      <Description>Schedule C line 25, Utilities. Deductible under 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 25.</Description>
+      <Description>Schedule C line 25, Utilities. Deductible under 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
+        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 25.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2130,7 +2229,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseMeals">
       <Name>Expense line chosen: meals</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -2148,7 +2248,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseWages">
       <Name>Expense line chosen: wages</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -2166,7 +2267,8 @@
 
     <Fact path="/scheduleCBusinesses/*/choseOtherExpenses">
       <Name>Expense line chosen: otherExpenses</Name>
-      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they answered that they have no deductible expenses, without reading the list.</Description>
+      <Description>True only when the filer has deductible expenses and selected this Schedule C line. False when they
+        answered that they have no deductible expenses, without reading the list.</Description>
       <Derived>
         <All>
           <Dependency path="../hasDeductibleExpenses" />
@@ -2184,7 +2286,10 @@
 
     <Fact path="/scheduleCBusinesses/*/writableMeals">
       <Name>Meals before the 50 percent limit</Name>
-      <Description>Meal expense before the limit. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 2 and PDF p. 11, Line 24b: in most cases only 50 percent is deductible. 26 U.S.C. 274(n) (https://www.law.cornell.edu/uscode/text/26/274). The 80 percent Department of Transportation exception and a 100 percent meal stop the return.</Description>
+      <Description>Meal expense before the limit. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 2 and PDF p. 11, Line 24b: in most cases only 50
+        percent is deductible. 26 U.S.C. 274(n) (https://www.law.cornell.edu/uscode/text/26/274). The 80 percent
+        Department of Transportation exception and a 100 percent meal stop the return.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2195,7 +2300,9 @@
 
     <Fact path="/scheduleCBusinesses/*/mealsAreStandardHalfLimit">
       <Name>Meals are limited to 50 percent</Name>
-      <Description>Yes: deduct half, rounded half up. No: the 80 percent or 100 percent exception applies and the return stops. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 24b. 26 U.S.C. 274(n).</Description>
+      <Description>Yes: deduct half, rounded half up. No: the 80 percent or 100 percent exception applies and the return
+        stops. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11,
+        Line 24b. 26 U.S.C. 274(n).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -2203,7 +2310,8 @@
 
     <Fact path="/scheduleCBusinesses/*/line24bDeductibleMeals">
       <Name>Schedule C line 24b</Name>
-      <Description>Deductible meals: half of the amount entered, rounded half up to the nearest dollar, when the 50 percent limit applies. Zero when meals were not chosen. Incomplete when a different limit applies.</Description>
+      <Description>Deductible meals: half of the amount entered, rounded half up to the nearest dollar, when the 50
+        percent limit applies. Zero when meals were not chosen. Incomplete when a different limit applies.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -2221,8 +2329,8 @@
               <All>
                 <Dependency path="../mealsAreStandardHalfLimit" />
                 <IsComplete>
-                <Dependency path="../writableMeals" />
-              </IsComplete>
+                  <Dependency path="../writableMeals" />
+                </IsComplete>
               </All>
             </When>
             <Then>
@@ -2240,7 +2348,10 @@
 
     <Fact path="/scheduleCBusinesses/*/writableWages">
       <Name>Wages</Name>
-      <Description>Schedule C line 26, wages less employment credits. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 26. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). If the wages are reduced by Form 5884, 8932, or 8994 credits, the return stops.</Description>
+      <Description>Schedule C line 26, wages less employment credits. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 26. 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162). If the wages are reduced by Form 5884, 8932, or 8994 credits,
+        the return stops.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2251,7 +2362,9 @@
 
     <Fact path="/scheduleCBusinesses/*/wagesReducedByEmploymentCredits">
       <Name>Wages reduced by employment credits</Name>
-      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 26: subtract employment credits (Forms 5884, 8932, and 8994) from wages. This tool does not compute those credits. Yes stops the return.</Description>
+      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11,
+        Line 26: subtract employment credits (Forms 5884, 8932, and 8994) from wages. This tool does not compute those
+        credits. Yes stops the return.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -2276,11 +2389,11 @@
             <When>
               <All>
                 <Not>
-                <Dependency path="../wagesReducedByEmploymentCredits" />
-              </Not>
+                  <Dependency path="../wagesReducedByEmploymentCredits" />
+                </Not>
                 <IsComplete>
-                <Dependency path="../writableWages" />
-              </IsComplete>
+                  <Dependency path="../writableWages" />
+                </IsComplete>
               </All>
             </When>
             <Then>
@@ -2293,7 +2406,10 @@
 
     <Fact path="/scheduleCBusinesses/*/interestNeedsAllocation">
       <Name>Mortgage or other interest must be allocated</Name>
-      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 9, lines 16a and 16c. Interest that is partly personal, or that must be traced under Publication 334 chapter 8, is not computed here. Yes stops the return. Line 16b vehicle-loan interest is the car-and-truck stop, not this question.</Description>
+      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 9,
+        lines 16a and 16c. Interest that is partly personal, or that must be traced under Publication 334 chapter 8, is
+        not computed here. Yes stops the return. Line 16b vehicle-loan interest is the car-and-truck stop, not this
+        question.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -2312,7 +2428,8 @@
 
     <Fact path="/scheduleCBusinesses/*/partVIncludesNewAmortization">
       <Name>Part V includes amortization that begins this year</Name>
-      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48: amortization that begins in 2026 is reported on Form 4562-B. Yes stops the return.</Description>
+      <Description>2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17,
+        Line 48: amortization that begins in 2026 is reported on Form 4562-B. Yes stops the return.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -2320,7 +2437,9 @@
 
     <Fact path="/scheduleCBusinesses/*/partV1Description">
       <Name>First other expense description</Name>
-      <Description>Schedule C Part V description. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48: list the type of each expense separately.</Description>
+      <Description>Schedule C Part V description. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48: list the type of each expense
+        separately.</Description>
       <Writable>
         <String />
         <Limit type="Match">
@@ -2331,7 +2450,8 @@
 
     <Fact path="/scheduleCBusinesses/*/partV1Amount">
       <Name>First other expense amount</Name>
-      <Description>Schedule C Part V amount. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48.</Description>
+      <Description>Schedule C Part V amount. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026
+        draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2342,7 +2462,9 @@
 
     <Fact path="/scheduleCBusinesses/*/partV2Description">
       <Name>Second other expense description</Name>
-      <Description>Schedule C Part V description. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48: list the type of each expense separately.</Description>
+      <Description>Schedule C Part V description. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48: list the type of each expense
+        separately.</Description>
       <Writable>
         <String />
         <Limit type="Match">
@@ -2353,7 +2475,8 @@
 
     <Fact path="/scheduleCBusinesses/*/partV2Amount">
       <Name>Second other expense amount</Name>
-      <Description>Schedule C Part V amount. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48.</Description>
+      <Description>Schedule C Part V amount. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026
+        draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2364,7 +2487,9 @@
 
     <Fact path="/scheduleCBusinesses/*/partV3Description">
       <Name>Third other expense description</Name>
-      <Description>Schedule C Part V description. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48: list the type of each expense separately.</Description>
+      <Description>Schedule C Part V description. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48: list the type of each expense
+        separately.</Description>
       <Writable>
         <String />
         <Limit type="Match">
@@ -2375,7 +2500,8 @@
 
     <Fact path="/scheduleCBusinesses/*/partV3Amount">
       <Name>Third other expense amount</Name>
-      <Description>Schedule C Part V amount. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48.</Description>
+      <Description>Schedule C Part V amount. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162). 2026
+        draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 48.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2402,7 +2528,8 @@
 
     <Fact path="/scheduleCBusinesses/*/hasMorePartVExpenses">
       <Name>Has a fourth other expense</Name>
-      <Description>The form has nine Part V lines. This tool supports three. A fourth stops the return. 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), Part V.</Description>
+      <Description>The form has nine Part V lines. This tool supports three. A fourth stops the return. 2026 draft
+        Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), Part V.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -2410,7 +2537,8 @@
 
     <Fact path="/scheduleCBusinesses/*/needsMoreThanThreePartVLines">
       <Name>More than three Part V lines</Name>
-      <Description>True only when the filer has a third other expense and still has another. False as soon as either 'another' answer is no.</Description>
+      <Description>True only when the filer has a third other expense and still has another. False as soon as either
+        'another' answer is no.</Description>
       <Derived>
         <All>
           <Dependency path="../hasAnotherPartVExpense" />
@@ -2451,7 +2579,8 @@
 
     <Fact path="/scheduleCBusinesses/*/partVAmount3Included">
       <Name>Part V line 3 amount included in the total</Name>
-      <Description>Zero when the filer has no second Part V line, and zero when they have a second line but no third. Answering no to the first "another" question does not require the third-line question.</Description>
+      <Description>Zero when the filer has no second Part V line, and zero when they have a second line but no third.
+        Answering no to the first "another" question does not require the third-line question.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -2490,7 +2619,9 @@
 
     <Fact path="/scheduleCBusinesses/*/line27bOtherExpenses">
       <Name>Schedule C line 27b and line 48</Name>
-      <Description>Total other expenses. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17: enter the total on lines 48 and 27b. Zero when other expenses were not chosen. Incomplete when amortization begins this year or a fourth line is needed.</Description>
+      <Description>Total other expenses. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17: enter the total on lines 48 and 27b. Zero when
+        other expenses were not chosen. Incomplete when amortization begins this year or a fourth line is needed.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -2507,20 +2638,20 @@
             <When>
               <All>
                 <Not>
-                <Dependency path="../partVIncludesNewAmortization" />
-              </Not>
+                  <Dependency path="../partVIncludesNewAmortization" />
+                </Not>
                 <Not>
-                <Dependency path="../needsMoreThanThreePartVLines" />
-              </Not>
+                  <Dependency path="../needsMoreThanThreePartVLines" />
+                </Not>
                 <IsComplete>
-                <Dependency path="../partV1Amount" />
-              </IsComplete>
+                  <Dependency path="../partV1Amount" />
+                </IsComplete>
                 <IsComplete>
-                <Dependency path="../partVAmount2Included" />
-              </IsComplete>
+                  <Dependency path="../partVAmount2Included" />
+                </IsComplete>
                 <IsComplete>
-                <Dependency path="../partVAmount3Included" />
-              </IsComplete>
+                  <Dependency path="../partVAmount3Included" />
+                </IsComplete>
               </All>
             </When>
             <Then>
@@ -2539,7 +2670,10 @@
 
     <Fact path="/scheduleCBusinesses/*/line28">
       <Name>Schedule C line 28</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 28: total expenses before expenses for business use of home. Sum of the supported lines. Zero when the filer has no deductible expenses. Incomplete when expenses were claimed but no line was selected, or a selected amount is still blank. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162).</Description>
+      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 28: total expenses
+        before expenses for business use of home. Sum of the supported lines. Zero when the filer has no deductible
+        expenses. Incomplete when expenses were claimed but no line was selected, or a selected amount is still blank.
+        26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -2559,25 +2693,25 @@
             <Then>
               <Round>
                 <Add>
-                <Dependency path="../line8Advertising" />
-                <Dependency path="../line10CommissionsAndFees" />
-                <Dependency path="../line11ContractLabor" />
-                <Dependency path="../line14EmployeeBenefitPrograms" />
-                <Dependency path="../line15Insurance" />
-                <Dependency path="../line16aMortgageInterest" />
-                <Dependency path="../line16cOtherInterest" />
-                <Dependency path="../line17LegalAndProfessional" />
-                <Dependency path="../line18OfficeExpense" />
-                <Dependency path="../line19PensionAndProfitSharing" />
-                <Dependency path="../line20bRentOtherProperty" />
-                <Dependency path="../line21RepairsAndMaintenance" />
-                <Dependency path="../line22Supplies" />
-                <Dependency path="../line23TaxesAndLicenses" />
-                <Dependency path="../line24aTravel" />
-                <Dependency path="../line24bDeductibleMeals" />
-                <Dependency path="../line25Utilities" />
-                <Dependency path="../line26Wages" />
-                <Dependency path="../line27bOtherExpenses" />
+                  <Dependency path="../line8Advertising" />
+                  <Dependency path="../line10CommissionsAndFees" />
+                  <Dependency path="../line11ContractLabor" />
+                  <Dependency path="../line14EmployeeBenefitPrograms" />
+                  <Dependency path="../line15Insurance" />
+                  <Dependency path="../line16aMortgageInterest" />
+                  <Dependency path="../line16cOtherInterest" />
+                  <Dependency path="../line17LegalAndProfessional" />
+                  <Dependency path="../line18OfficeExpense" />
+                  <Dependency path="../line19PensionAndProfitSharing" />
+                  <Dependency path="../line20bRentOtherProperty" />
+                  <Dependency path="../line21RepairsAndMaintenance" />
+                  <Dependency path="../line22Supplies" />
+                  <Dependency path="../line23TaxesAndLicenses" />
+                  <Dependency path="../line24aTravel" />
+                  <Dependency path="../line24bDeductibleMeals" />
+                  <Dependency path="../line25Utilities" />
+                  <Dependency path="../line26Wages" />
+                  <Dependency path="../line27bOtherExpenses" />
                 </Add>
               </Round>
             </Then>
@@ -2588,7 +2722,10 @@
 
     <Fact path="/scheduleCBusinesses/*/scheduleCFormStop">
       <Name>Schedule C business needs a form this tool does not compute</Name>
-      <Description>True when inventory, a vehicle, depreciation, depletion, equipment rent, a home office, the line 27a deduction, a non-50-percent meal, wage credits, interest that must be allocated, new amortization, a fourth Part V line, or line 6 income that belongs on another form applies. A yes on any stop boolean is enough; later blanks do not turn it off.</Description>
+      <Description>True when inventory, a vehicle, depreciation, depletion, equipment rent, a home office, the line 27a
+        deduction, a non-50-percent meal, wage credits, interest that must be allocated, new amortization, a fourth Part
+        V line, or line 6 income that belongs on another form applies. A yes on any stop boolean is enough; later blanks
+        do not turn it off.</Description>
       <Derived>
         <Any>
           <Dependency path="../hasInventoryOrCogs" />
@@ -2601,8 +2738,8 @@
           <All>
             <Dependency path="../choseMeals" />
             <Not>
-                <Dependency path="../mealsAreStandardHalfLimit" />
-              </Not>
+              <Dependency path="../mealsAreStandardHalfLimit" />
+            </Not>
           </All>
           <All>
             <Dependency path="../choseWages" />
@@ -2631,7 +2768,10 @@
 
     <Fact path="/scheduleCBusinesses/*/hasLoss">
       <Name>Schedule C line 31 is a loss</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 32: complete line 32 only when there is a loss. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16: you do not complete line 32 if line 7 is more than the total of lines 28 and 30. A profit is not an at-risk or passive stop.</Description>
+      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 32: complete line 32
+        only when there is a loss. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16: you do not complete line 32 if line 7 is more
+        than the total of lines 28 and 30. A profit is not an at-risk or passive stop.</Description>
       <Derived>
         <LessThan>
           <Left>
@@ -2646,7 +2786,10 @@
 
     <Fact path="/scheduleCBusinesses/*/allInvestmentAtRisk">
       <Name>All investment is at risk</Name>
-      <Description>Schedule C line 32a. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Line 32. 26 U.S.C. 465 (https://www.law.cornell.edu/uscode/text/26/465). All at risk, together with material participation, lets the loss flow. Line 32b (some investment is not at risk) needs Form 6198 and stops the return.</Description>
+      <Description>Schedule C line 32a. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Line 32. 26 U.S.C. 465
+        (https://www.law.cornell.edu/uscode/text/26/465). All at risk, together with material participation, lets the
+        loss flow. Line 32b (some investment is not at risk) needs Form 6198 and stops the return.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -2654,20 +2797,24 @@
 
     <Fact path="/scheduleCBusinesses/*/scheduleCLossLimitStop">
       <Name>Schedule C loss needs Form 6198 or Form 8582</Name>
-      <Description>A loss without material participation needs Form 8582. 26 U.S.C. 469 (https://www.law.cornell.edu/uscode/text/26/469). A loss that is not fully at risk needs Form 6198. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Lines 31 and 32. A profit does not use this stop. The loss amount itself is still computed; this fact only stops filing, so the limit does not depend on the net in a circle.</Description>
+      <Description>A loss without material participation needs Form 8582. 26 U.S.C. 469
+        (https://www.law.cornell.edu/uscode/text/26/469). A loss that is not fully at risk needs Form 6198. 2026 draft
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Lines 31 and 32. A
+        profit does not use this stop. The loss amount itself is still computed; this fact only stops filing, so the
+        limit does not depend on the net in a circle.</Description>
       <Derived>
         <Any>
           <All>
             <Dependency path="../hasLoss" />
             <Not>
-                <Dependency path="../materiallyParticipates" />
-              </Not>
+              <Dependency path="../materiallyParticipates" />
+            </Not>
           </All>
           <All>
             <Dependency path="../hasLoss" />
             <Not>
-                <Dependency path="../allInvestmentAtRisk" />
-              </Not>
+              <Dependency path="../allInvestmentAtRisk" />
+            </Not>
           </All>
         </Any>
       </Derived>
@@ -2691,15 +2838,16 @@
         <All>
           <Dependency path="../hasLoss" />
           <Not>
-                <Dependency path="../allInvestmentAtRisk" />
-              </Not>
+            <Dependency path="../allInvestmentAtRisk" />
+          </Not>
         </All>
       </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/isOutOfScope">
       <Name>This Schedule C business is out of scope</Name>
-      <Description>False when the line-item questions were not started, so a single expense total is not an out-of-scope business. True when they were started and a form stop or a loss-limit stop applies.</Description>
+      <Description>False when the line-item questions were not started, so a single expense total is not an out-of-scope
+        business. True when they were started and a form stop or a loss-limit stop applies.</Description>
       <Derived>
         <All>
           <Dependency path="../itemizedStarted" />
@@ -2727,16 +2875,24 @@
       <Description>
         Stops filing and printing when a Schedule C business, after the line-item questions are started, has
         inventory (Part III), car or truck expenses or vehicle-loan interest (lines 9 and 16b, Form 4562),
-        depreciation or section 179 (line 13, Form 4562), depletion (line 12), rent of vehicles or equipment
-        (line 20a), business use of the home (line 30, Form 8829 or the simplified method), the energy efficient
-        commercial buildings deduction (line 27a, Form 7205), meals that are not limited to 50 percent
-        (line 24b, 26 U.S.C. 274(n)), wages reduced by an employment credit (line 26), interest that must be
-        allocated (lines 16a and 16c), amortization that begins this year (Form 4562-B), a fourth Part V line,
-        line 6 income that belongs on Form 4136, 6478, or 4797, a loss without material participation
-        (Form 8582, 26 U.S.C. 469), or a loss that is not fully at risk (line 32b, Form 6198, 26 U.S.C. 465).
+        depreciation
+        or section 179 (line 13, Form 4562), depletion (line 12), rent of vehicles or equipment
+        (line 20a), business use
+        of the home (line 30, Form 8829 or the simplified method), the energy efficient
+        commercial buildings deduction
+        (line 27a, Form 7205), meals that are not limited to 50 percent
+        (line 24b, 26 U.S.C. 274(n)), wages reduced by an
+        employment credit (line 26), interest that must be
+        allocated (lines 16a and 16c), amortization that begins this
+        year (Form 4562-B), a fourth Part V line,
+        line 6 income that belongs on Form 4136, 6478, or 4797, a loss without
+        material participation
+        (Form 8582, 26 U.S.C. 469), or a loss that is not fully at risk (line 32b, Form 6198, 26
+        U.S.C. 465).
         Complete and false when self-employment income was not asked, was answered no, there are no
         businesses, or the business only has the single expense total. An unanswered line-item question on a
-        business that was started stays incomplete, so that return is not treated as in scope.
+        business
+        that was started stays incomplete, so that return is not treated as in scope.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />

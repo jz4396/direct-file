@@ -1196,8 +1196,6 @@ class PrintRefusingKnockoutsTest {
         assertEquals(Boolean.TRUE, answeredNo.get("/scheduleBPartIIIAnswered").get());
         assertCompleteFalse(answeredNo, SCHEDULE_B_PART_III_KNOCKOUT);
         assertEquals(
-                List.of(),
-                PrintRefusingKnockouts.refusingPaths(answeredNo),
-                "exactly $1,500 with Part III No prints");
+                List.of(), PrintRefusingKnockouts.refusingPaths(answeredNo), "exactly $1,500 with Part III No prints");
     }
 }

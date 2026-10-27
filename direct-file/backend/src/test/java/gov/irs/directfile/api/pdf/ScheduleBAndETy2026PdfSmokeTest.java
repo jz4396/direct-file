@@ -25,9 +25,9 @@ import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.INTEREST_SUB
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_B_PART_III_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_DEPRECIATION_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_LOSS_KNOCKOUT;
+import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT;
-import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PERSONAL_USE_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
@@ -178,8 +178,8 @@ class ScheduleBAndETy2026PdfSmokeTest {
     }
 
     static void refuses(Map<String, String> facts, String knockout) throws Exception {
-        SubmissionBlockingFactsResponseStatusException e = assertThrows(
-                SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
         assertEquals(List.of(knockout), e.getBody().getProperties().get("blockingFacts"));
     }
@@ -192,8 +192,13 @@ class ScheduleBAndETy2026PdfSmokeTest {
             Map<String, String> sb = fieldsOnPages(doc, SB_FOOTER);
             assertFalse(sb.isEmpty(), "Schedule B printed");
             assertTrue(
-                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_01[0]").toUpperCase().contains("EXAMPLETON"), "name");
-            assertEquals("Synthetic Savings Bank", ScheduleSETy2026PdfSmokeTest.value(sb, "f1_03[0]").trim());
+                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_01[0]")
+                            .toUpperCase()
+                            .contains("EXAMPLETON"),
+                    "name");
+            assertEquals(
+                    "Synthetic Savings Bank",
+                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_03[0]").trim());
             amount(sb, "f1_04[0]", 10000, "line 1");
             amount(sb, "f1_31[0]", 10000, "line 2");
             amount(sb, "f1_33[0]", 10000, "line 4 = line 2 (line 3 not claimed)");
@@ -220,7 +225,10 @@ class ScheduleBAndETy2026PdfSmokeTest {
             Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
             assertFalse(se.isEmpty(), "Schedule E printed");
             assertTrue(
-                    ScheduleSETy2026PdfSmokeTest.value(se, "f1_1[0]").toUpperCase().contains("EXAMPLETON"), "name");
+                    ScheduleSETy2026PdfSmokeTest.value(se, "f1_1[0]")
+                            .toUpperCase()
+                            .contains("EXAMPLETON"),
+                    "name");
             assertEquals(
                     "900000001",
                     ScheduleSETy2026PdfSmokeTest.value(se, "f1_2[0]").replaceAll("\\D", ""),
@@ -257,7 +265,9 @@ class ScheduleBAndETy2026PdfSmokeTest {
             blank(se, "f3_5[0]", "line 42");
             blank(se, "f3_6[0]", "line 43");
             assertTrue(
-                    ScheduleSETy2026PdfSmokeTest.value(se, "f3_1[0]").toUpperCase().contains("EXAMPLETON"),
+                    ScheduleSETy2026PdfSmokeTest.value(se, "f3_1[0]")
+                            .toUpperCase()
+                            .contains("EXAMPLETON"),
                     "page 3 name");
 
             Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
@@ -276,7 +286,9 @@ class ScheduleBAndETy2026PdfSmokeTest {
             amount(se, "f1_89[0]", 8500, "line 21");
             amount(se, "f2_5[0]", 8500, "line 26");
             assertTrue(checked(se, "c2_1[1]"), "line 27 No");
-            assertEquals("Northwind Partners", ScheduleSETy2026PdfSmokeTest.value(se, "f2_6[0]").trim());
+            assertEquals(
+                    "Northwind Partners",
+                    ScheduleSETy2026PdfSmokeTest.value(se, "f2_6[0]").trim());
             assertEquals("P", ScheduleSETy2026PdfSmokeTest.value(se, "f2_7[0]").trim(), "column (b)");
             blank(se, "f2_8[0]", "column (d) EIN");
             amount(se, "f2_22[0]", 12000, "column (k)");
@@ -301,7 +313,9 @@ class ScheduleBAndETy2026PdfSmokeTest {
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
             amount(se, "f2_5[0]", 8500, "line 26");
-            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
+            assertEquals(
+                    "Harbor Trust",
+                    ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
             blank(se, "f2_52[0]", "line 33A EIN");
             blank(se, "f2_56[0]", "line 33A column (d)");
             amount(se, "f2_58[0]", 9000, "line 33A column (f)");
@@ -329,9 +343,13 @@ class ScheduleBAndETy2026PdfSmokeTest {
         byte[] both = generate(two);
         try (PDDocument doc = Loader.loadPDF(both)) {
             Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
-            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
+            assertEquals(
+                    "Harbor Trust",
+                    ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
             amount(se, "f2_58[0]", 3000, "row A column (f)");
-            assertEquals("Cedar Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_53[0]").trim());
+            assertEquals(
+                    "Cedar Trust",
+                    ScheduleSETy2026PdfSmokeTest.value(se, "f2_53[0]").trim());
             amount(se, "f2_62[0]", 2500, "row B column (f)");
             amount(se, "f2_66[0]", 5500, "line 34a column (f)");
             amount(se, "f2_73[0]", 5500, "line 37");
@@ -486,11 +504,15 @@ class ScheduleBAndETy2026PdfSmokeTest {
                     String normalized = tooltip.replaceAll("\\s+", " ");
                     assertTrue(
                             normalized.contains(expected.get(name)),
-                            name + " tooltip names the line: expected \"" + expected.get(name) + "\" in \""
-                                    + normalized + "\"");
+                            name + " tooltip names the line: expected \"" + expected.get(name) + "\" in \"" + normalized
+                                    + "\"");
                 }
             }
-            assertEquals(expected.size(), expected.keySet().stream().filter(k -> config.contains(k + ":")).count());
+            assertEquals(
+                    expected.size(),
+                    expected.keySet().stream()
+                            .filter(k -> config.contains(k + ":"))
+                            .count());
             assertTrue(mapped >= expected.size(), template + " mapped fields");
         }
     }

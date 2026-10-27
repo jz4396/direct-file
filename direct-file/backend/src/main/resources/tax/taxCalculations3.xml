@@ -172,7 +172,8 @@
     <Fact path="/americanOpportunityCredit">
       <Name>American Opportunity Credit</Name>
       <Description>Refundable American opportunity credit, Form 8863 line 8, Form 1040 line 29 (26 U.S.C. 25A(i)).
-        Not computed; line 29 stays $0. Schedule 3-A line 2 still counts a complete amount above $0.</Description>
+        Not
+        computed; line 29 stays $0. Schedule 3-A line 2 still counts a complete amount above $0.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Dollar>0</Dollar>
@@ -213,7 +214,8 @@
     <Fact path="/totalOtherPaymentsRefundableCredits">
       <Name>Total other payments and refundable credits</Name>
       <Description>2026 draft Form 1040, form page 2 (PDF p. 3), line 32a: add lines 27a, 28, 29, 30 and 31
-        (26 U.S.C. 32, 24(d), 25A(i) and 23, plus Schedule 3 line 15). Line 30 is not computed.</Description>
+        (26 U.S.C.
+        32, 24(d), 25A(i) and 23, plus Schedule 3 line 15). Line 30 is not computed.</Description>
       <Export mef="true" downstreamFacts="true" />
       <Derived>
         <Round>

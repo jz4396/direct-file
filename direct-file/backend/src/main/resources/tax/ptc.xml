@@ -4328,8 +4328,10 @@
 
     <Fact path="/1095As/*/policyAndCoverageAreFullYear">
       <Description>Policy dates cover January through December and all 12 months are coverage months, so Form 8962
-        line 11 (annual totals) can apply. Instructions for Form 8962 (2025), PDF p. 14, Line 10: enrollment for fewer
-        than 12 months uses lines 12 through 23. See /1095As/*/hasAll12CoverageMonths.</Description>
+        line
+        11 (annual totals) can apply. Instructions for Form 8962 (2025), PDF p. 14, Line 10: enrollment for fewer
+        than 12
+        months uses lines 12 through 23. See /1095As/*/hasAll12CoverageMonths.</Description>
       <Derived>
         <All>
           <Dependency path="../hasPolicyForAllMonths" />
@@ -4469,8 +4471,10 @@
     <Fact path="/1095As/*/premiumsOrSlcspChange">
       <Description>Whether the enrollment premiums or SLCSP changed during the year. Complete only when the policy and
         coverage are a full year, because line 11 annual amounts apply only then (Instructions for Form 8962 (2025),
-        PDF p. 14, Line 10; see /1095As/*/policyAndCoverageAreFullYear). Otherwise monthly lines 12 through 23 are
-        used and an annual premium is not spread across months that are not coverage months.</Description>
+        PDF
+        p. 14, Line 10; see /1095As/*/policyAndCoverageAreFullYear). Otherwise monthly lines 12 through 23 are
+        used and
+        an annual premium is not spread across months that are not coverage months.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -5161,7 +5165,8 @@
 
     <Fact path="/1095As/*/hasChangeOrPolicyIsNotForAllMonths">
       <Description>Whether premiums or circumstances changed, or the policy and coverage are not a full year, so
-        monthly SLCSP applies (Instructions for Form 8962 (2025), PDF p. 14, Line 10; see
+        monthly
+        SLCSP applies (Instructions for Form 8962 (2025), PDF p. 14, Line 10; see
         /1095As/*/policyAndCoverageAreFullYear)</Description>
       <Derived>
         <Any>
@@ -5186,7 +5191,8 @@
 
     <Fact path="/1095As/*/noChangesAnd12MonthPolicy">
       <Description>No premium change, no circumstance change, and both the policy dates and all 12 coverage months are
-        a full year, so Form 8962 line 11 applies. Instructions for Form 8962 (2025), PDF p. 14, Line 10 (see
+        a
+        full year, so Form 8962 line 11 applies. Instructions for Form 8962 (2025), PDF p. 14, Line 10 (see
         /1095As/*/policyAndCoverageAreFullYear). Fewer than 12 coverage months uses lines 12 through 23 even when the
         policy start and end dates span the year.</Description>
       <Derived>

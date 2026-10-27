@@ -18,16 +18,44 @@ import gov.irs.directfile.error.StateApiErrorCode;
 @Slf4j
 public class StateApiControllerAdvice {
 
+    static final String INVALID_DATA_ERROR = "The tax return data is invalid.";
+
     @ExceptionHandler(NonexistentDataException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public CreateAuthorizationCodeResponse handleNonExistentData(NonexistentDataException ex) {
-        return CreateAuthorizationCodeResponse.builder().error(ex.getMessage()).build();
+        return error(fixedMessage(
+                ex.getMessage(),
+                StateApiController.NO_SUCH_TAX_RETURN_ERROR,
+                StateApiController.NO_SUCH_TAX_RETURN_ERROR));
     }
 
     @ExceptionHandler(InvalidDataException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CreateAuthorizationCodeResponse handleInvalidData(InvalidDataException ex) {
-        return CreateAuthorizationCodeResponse.builder().error(ex.getMessage()).build();
+        return error(fixedMessage(
+                ex.getMessage(),
+                INVALID_DATA_ERROR,
+                StateApiController.NO_FILING_STATE_ERROR,
+                StateApiController.NO_SUBMISSIONS_ERROR));
+    }
+
+    /**
+     * Returns {@code fallback} unless {@code actual} is exactly one of {@code allowed}. The exception text itself is
+     * never copied into the response.
+     */
+    private static String fixedMessage(String actual, String fallback, String... allowed) {
+        if (actual != null) {
+            for (String candidate : allowed) {
+                if (candidate.equals(actual)) {
+                    return candidate;
+                }
+            }
+        }
+        return fallback;
+    }
+
+    private static CreateAuthorizationCodeResponse error(String message) {
+        return CreateAuthorizationCodeResponse.builder().error(message).build();
     }
 
     @ExceptionHandler(WebClientResponseException.class)

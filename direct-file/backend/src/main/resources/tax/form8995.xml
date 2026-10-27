@@ -286,7 +286,8 @@
       <Description>Line 6: "Qualified REIT dividends and publicly traded partnership (PTP) income or (loss)". $0:
         1099-DIV box 5 (dividends /flowKnockoutSection199ADividends) and PTP income (scheduleE
         /flowKnockoutScheduleEPartIIForeignOrPtp) are stops. A supported Part II K-1 has no box 20 code Z or
-        box 17 code V, so it adds nothing here.</Description>
+        box 17 code
+        V, so it adds nothing here.</Description>
       <Derived>
         <Dollar>0</Dollar>
       </Derived>

@@ -26,9 +26,8 @@ public class RawResponseDecryptor {
             return objectMapper.readTree(decrypted);
         } catch (Exception e) {
             log.error(
-                    "Failed to decrypt / parse data column in populated_data. Exception: {}. Error: {}",
-                    e.getClass().getName(),
-                    e.getMessage());
+                    "Failed to decrypt / parse data column in populated_data. Exception: {}",
+                    e.getClass().getName());
         }
         return null;
     }
