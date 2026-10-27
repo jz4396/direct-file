@@ -1,6 +1,7 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
-// older, itemizing, with a qualifying child) and profile E (PA to FL part-year resident with AMT and dividends).
+// older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends) and
+// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -109,12 +110,13 @@
 // [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
-//      fixture SSNs other than profile C's are in the 900 area, which SSA never issues; the app reads them as neither
-//      an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profiles C and D use
-//      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Every childless profile's AGI is
-//      above $19,540, so EITC is $0 on each. Only profile D has a child (444-00-0333, also group 00); its AGI is above
-//      the one-child "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), so
-//      its EITC is $0 too. The other profiles have no child, so their CTC is $0.
+//      fixture SSNs other than profiles C, D, and F are in the 900 area, which SSA never issues; the app reads them as
+//      neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profiles C and D use
+//      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
+//      child uses 444-00-1008, also group 00. Every childless profile's AGI is above $19,540, so EITC is $0 on each.
+//      Profile D's AGI is above the one-child "Completed Phaseout Amount (All other filing statuses)" of "$51,593"
+//      ([RP] p. 15 §4.06(1)), and profile F's AGI is above that amount too, so EITC is $0 on both. The other profiles
+//      have no child, so their CTC is $0. Profile F's child tax credit is reduced by the §24(b) phaseout.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -155,6 +157,9 @@ import {
   profileEDividendId,
   profileEPaToFlAmtDividends,
   profileESaleId,
+  profileFBusinessId,
+  profileFChildId,
+  profileFPaAmtScheduleC,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -217,15 +222,15 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
     }
     expect(checked).toBeGreaterThan(0);
   });
-  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; no profile gets EITC, and only profile D gets CTC`, () => {
+  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; no profile gets EITC, and only profiles D and F get CTC`, () => {
     for (const [name, facts] of Object.entries(goldenProfiles)) {
       const g = graph(facts);
-      const groupZero = name.startsWith(`profileC`) || name.startsWith(`profileD`);
-      const hasChild = name.startsWith(`profileD`);
+      const groupZero = name.startsWith(`profileC`) || name.startsWith(`profileD`) || name.startsWith(`profileF`);
+      const hasChild = name.startsWith(`profileD`) || name.startsWith(`profileF`);
       expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(groupZero);
       expect(get(g, `/primaryFiler/tin/isITIN`).get, name).toBe(false);
       expect(get(g, `/earnedIncomeCredit`).get.toString(), name).toBe(`0.00`);
-      if (hasChild) continue; // profile D's child tax credit and EITC are checked in its own block below
+      if (hasChild) continue; // profiles D and F check the child tax credit and EITC in their own blocks below
       expect(get(g, `/eitcQualified`).get, name).toBe(false);
       expect(get(g, `/totalCtc`).get.toString(), name).toBe(`0.00`);
       expect(get(g, `/nonRefundableCredits`).get.toString(), name).toBe(`0.00`);
@@ -1292,5 +1297,291 @@ describe(`golden end-to-end scenario (synthetic data): profile C negative rows (
     const yes = graph({ ...profileCPaToFlAmtNiit, '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(true) });
     expect(givenFacts(yes).atPath(at, null, task)).toRouteNextTo(`${at}-knockout`);
     expect(givenFacts(graph(profileCPaToFlAmtNiit)).atPath(at, null, task)).not.toRouteNextTo(`${at}-knockout`);
+  });
+});
+
+// Stops this profile asserts. Each one is <BlockSubmissionOnTrue />. The return does not add PA Schedule C, a PA-40
+// line 4 amount, or a Form 8995 template.
+const PROFILE_F_STOPPED = [
+  `/flowKnockoutPaUnsupportedIncome`,
+  `/flowKnockoutStateReturn`,
+  `/flowKnockoutForm8995WithoutTy2026Template`,
+  `/flowKnockoutForm8960Unsupported`,
+  `/flowIsKnockedOut`,
+];
+
+describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, AMT, and Schedule C`, () => {
+  // Head of household, full-year Pennsylvania resident [PA] [TRC]; filer born 1985-04-12 (under 65), SSN 444-00-1007;
+  //   child born 2014-06-01 (12 at year end), SSN 444-00-1008, lived in the home 12 months; both group 00 [SSA].
+  //   School code 22275 (Harrisburg). No interest, no dividends, no sales.
+  // W-2: box 1 and box 5 and box 16 $190,000, box 3 $184,500, box 2 $40,000, box 4 $11,439 (6.2% x 184,500,
+  //   IRC §3101(a), https://www.law.cornell.edu/uscode/text/26/3101), box 6 $2,755 (1.45% only [3102]), box 17 $6,000.
+  // Schedule C (single expense total; line-item questions not started, so /flowKnockoutScheduleCOutOfScope is
+  //   complete false): Example Consulting, gross receipts $64,858, expenses $12,000, line 31 net profit $52,858.
+  //   26 U.S.C. 61, 162 (https://www.law.cornell.edu/uscode/text/26/162).
+  // Schedule SE: NESE = round(52,858 x 0.9235) = 48,814 (26 U.S.C. 1402(a)(12),
+  //   https://www.law.cornell.edu/uscode/text/26/1402). OASDI wage base $184,500 is already used by box 3, so the
+  //   12.4% OASDI part is $0 (26 U.S.C. 1402(b)(1); the 2026 base is $184,500, 90 FR 49050). HI = round(48,814 x
+  //   0.029) = 1,416 (26 U.S.C. 1401(b)(1),
+  //   https://www.law.cornell.edu/uscode/text/26/1401). Deductible half = round(1,416 x 0.5) = 708 (26 U.S.C. 164(f),
+  //   Schedule 1 line 15). The questions for lines 1a, 1b, 4b, Part II, 5a, 5b, checkbox A, and 8c are answered no,
+  //   so /flowKnockoutScheduleSEOutOfScope is complete false (26 U.S.C. 1402(a), 1402(c)(1), 1402(e), 1402(g),
+  //   1402(j), 1402(l)).
+  // Form 1040: line 1a 190,000; Schedule 1 line 3 52,858; line 8 52,858; line 9 242,858; line 10 708; line 11 AGI
+  //   242,150.
+  // Schedule A: real estate tax $40,400. Line 5e is the smaller of line 5d or $40,400 (AGI is under the $505,000
+  //   phase-down). IRC §164(b)(7)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/164): "in the case of any
+  //   taxable year beginning in calendar year 2026, $40,400". No mortgage interest, no gifts, so line 18 is 40,400.
+  //   The head-of-household standard deduction is $24,150 [RP p. 18 §4.14(1) "Heads of Households (§ 1(j)(2)(B))
+  //   $24,150"], so the filer itemizes. No senior deduction (born after January 1, 1962).
+  // Form 8995 (computed; the return still stops because there is no TY2026 template): line 2 = 52,858 - 708 =
+  //   52,150; line 5 = round(20% x 52,150) = 10,430 (26 U.S.C. 199A(a),
+  //   https://www.law.cornell.edu/uscode/text/26/199A). Line 11, taxable income before the deduction, = 242,150 -
+  //   40,400 = 201,750, which is the head-of-household threshold. Rev. Proc. 2025-32 §3.26, PDF pp. 21-22:
+  //   "All Other Returns $201,750". At the threshold, not over it, so Form 8995-A does not apply. Line 14 =
+  //   round(20% x 201,750) = 40,350. Line 16 minimum $400 does not bind (active QBI is at least $1,000, 199A(i)).
+  //   Line 17 = 10,430 -> Form 1040 line 13b.
+  // Form 1040: line 14 40,400 + 10,430 = 50,830; line 15 191,320.
+  // Line 16, over $100,000 so the Tax Computation Worksheet [GI p. 36], [RP] p. 10 §4.01 Table 2 (Heads of
+  //   Households): "Over $105,700 but not over $201,750 $16,155 plus 24% of the excess over $105,700":
+  //   16,155 + 24% x 85,620 = 36,703.80, entered 36,704.
+  // Form 6251 [6251] [55] [55d]: line 1a 50,830 (no Schedule 1-A line 43); line 1b 191,320; line 2a 40,400 (Schedule A
+  //   line 5e; the QBI deduction is not an AMT preference and is not added back); line 4 AMTI 231,720, under the
+  //   $500,000 phaseout [RP p. 17], so line 5 exemption 90,100 [RP p. 16 "Unmarried Individuals (other than Surviving
+  //   Spouses) $90,100", which is also the head-of-household amount]; line 6 141,620; line 7 26% x 141,620 =
+  //   36,821.20, entered 36,821 (141,620 is not over $244,500 [RP p. 16]); line 10 regular tax 36,704; line 11 AMT
+  //   117. No preference items, and the return is not married filing separately.
+  // Form 8959 [3101]: Medicare wages 190,000 are under $200,000, so line 7 is 0. Part IV: line 13 NESE 48,814;
+  //   line 16 = 200,000 - 190,000 = 10,000 (26 U.S.C. 1401(b)(2)(B)); line 17 38,814; line 18 round(38,814 x 0.009)
+  //   = 349 (Schedule 2 line 11).
+  // Form 8960 is computed and the return stops (/flowKnockoutForm8960Unsupported). MAGI 242,150 is over the $200,000
+  //   head-of-household threshold [1411], and the return has both Schedule C and itemized deductions. Line 4b (the
+  //   non-section 1411 trade-or-business adjustment) and the Part II itemized allocation are not modeled. A
+  //   materially participating consulting business is generally not net investment income under §1411(c)(2). The
+  //   engine still puts Schedule C net profit on line 4a and still adds line 17 to Schedule 2 line 6. Those dollars
+  //   are what the graph computes; they are not a filed NIIT. Line 4a 52,858; line 8 and line 12 52,858; line 15
+  //   242,150 - 200,000 = 42,150; line 16 42,150; line 17 round(42,150 x 0.038) = 1,602.
+  // Schedule 2 line 21 = SE tax 1,416 + line 17 1,602 + additional Medicare 349 = 3,367. Line 2 (AMT) is Form 1040
+  //   line 17, not line 21.
+  // Child tax credit: one qualifying child under 17, maximum $2,200 [RP p. 14 §4.05(1)]. IRC §24(h)(3)
+  //   (https://www.law.cornell.edu/uscode/text/26/24): "the threshold amount shall be $400,000 in the case of a joint
+  //   return ($200,000 in any other case)". IRC §24(b): the credit "shall be reduced by $50 for each $1,000 (or
+  //   fraction thereof)" of AGI over that threshold. Excess 42,150 rounds up to 43,000; 5% x 43,000 = 2,150; credit
+  //   2,200 - 2,150 = 50. EIC is $0 [EITC].
+  // Form 1040: line 18 36,704 + 117 = 36,821; line 19 50; line 22 36,771; line 23 3,367; line 24 total tax 40,138;
+  //   line 25a 40,000; amount owed 138.
+  // PA-40 as modeled, not as a filed business return [PA] [TRC]. Line 4 is $0
+  //   (/flowKnockoutPaUnsupportedIncome): 72 P.S. §7303(a)(2)
+  //   (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/) and [PA] p. 17
+  //   LINE 4 (PA Schedule C). This scenario does not add that income. Line 1a = box 16 190,000. Lines 9 and 11
+  //   190,000. Line 12 3.07% x 190,000 = 5,833.00. Line 13 and line 24 6,000. Schedule SP: eligibility income is
+  //   line 9, $190,000, which is over the 10% column for an unmarried claimant with one dependent child
+  //   (base $6,500 + $9,500, plus $2,250 to the 10% column = $18,250). 72 P.S. §7304
+  //   (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7304/). Line 21 is $0.
+  //   Line 29 overpayment 6,000 - 5,833 = 167.00. The PA-40 is not filed: /flowKnockoutStateReturn is true.
+  // Print: /flowKnockoutPaUnsupportedIncome, /flowKnockoutAmtPreferenceItems (answered no, so complete false here),
+  //   and /flowKnockoutAmtMfsAddBack (not married filing separately) are on the print-refusal list. This return is
+  //   refused by the PA stop and by /flowKnockoutForm8995WithoutTy2026Template. No Form 8995 template is added.
+  const g = graph(profileFPaAmtScheduleC);
+  const expectStoppedOnly = (fg: Fg) => {
+    const stopped = new Set(PROFILE_F_STOPPED);
+    for (const path of submissionBlockingFacts.filter((p) => !p.includes(`*`) && p !== `/flowIncomplete`)) {
+      const r = get(fg, path);
+      if (stopped.has(path)) {
+        expect(r.complete, path).toBe(true);
+        expect(r.get, path).toBe(true);
+      } else {
+        expect(r.complete && r.get === true, path).toBe(false);
+      }
+    }
+  };
+
+  it(`Schedule C single expense total and Schedule SE`, () => {
+    expect(get(g, `/scheduleCBusinesses/#${profileFBusinessId}/businessName` as string).get).toBe(
+      `Example Consulting`
+    );
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expectDollars(g, {
+      '/scheduleCNetProfitOrLoss': `52858.00`,
+      '/schedule1Line3': `52858.00`,
+      '/primaryFilerSeNetEarnings': `48814.00`,
+      '/primaryFilerSeSocialSecurityTax': `0.00`,
+      '/primaryFilerSeMedicareTax': `1416.00`,
+      '/selfEmploymentTax': `1416.00`,
+      '/deductibleSelfEmploymentTax': `708.00`,
+      '/schedule1Line15': `708.00`,
+    });
+  });
+  it(`Form 1040 income, Schedule A, and Form 8995 at the head-of-household threshold`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`headOfHousehold`);
+    expect(get(g, `/form8995Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleCQbi`).get).toBe(false);
+    expectDollars(g, {
+      '/wages': `190000.00`,
+      '/totalIncome': `242858.00`,
+      '/adjustmentsToIncome': `708.00`,
+      '/agi': `242150.00`,
+      '/scheduleALine5e': `40400.00`,
+      '/scheduleALine18': `40400.00`,
+      '/standardOrItemizedDeductions': `40400.00`,
+      '/form8995Line2': `52150.00`,
+      '/form8995Line5': `10430.00`,
+      '/form8995Line11': `201750.00`,
+      '/form8995Line14': `40350.00`,
+      '/form8995Line16': `400.00`,
+      '/form8995Line17': `10430.00`,
+      '/qualifiedBusinessIncomeDeduction': `10430.00`,
+      '/totalDeductions': `50830.00`,
+      '/taxableIncome': `191320.00`,
+      '/tentativeTaxFromTaxableIncome': `36704.00`,
+    });
+  });
+  it(`Form 6251 AMT under the exemption phaseout`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtMfsAddBack`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtMfsAddBack`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(true);
+    expectDollars(g, {
+      '/form6251Line1a': `50830.00`,
+      '/form6251Line1b': `191320.00`,
+      '/form6251Line2a': `40400.00`,
+      '/form6251Line4': `231720.00`,
+      '/form6251Line5': `90100.00`,
+      '/form6251Line6': `141620.00`,
+      '/form6251Line7': `36821.00`,
+      '/form6251Line10': `36704.00`,
+      '/amt': `117.00`,
+      '/schedule2Line2': `117.00`,
+    });
+  });
+  it(`Form 8959 on self-employment income, and Form 8960 dollars that are computed but not filed`, () => {
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(true);
+    expect(get(g, `/requiresForm8960`).get).toBe(true);
+    expectDollars(g, {
+      '/form8959Line1': `190000.00`,
+      '/form8959Line7': `0.00`,
+      '/form8959Line13': `48814.00`,
+      '/form8959Line16': `10000.00`,
+      '/form8959Line17': `38814.00`,
+      '/form8959Line18': `349.00`,
+      '/line11AdditionalMedicareTax': `349.00`,
+      '/form8960Line4a': `52858.00`,
+      '/form8960Line8': `52858.00`,
+      '/form8960Line12': `52858.00`,
+      '/form8960Line13': `242150.00`,
+      '/form8960Line14': `200000.00`,
+      '/form8960Line15': `42150.00`,
+      '/form8960Line16': `42150.00`,
+      '/form8960Line17': `1602.00`,
+      '/schedule2Line4': `1416.00`,
+      '/schedule2Line6NetInvestmentIncomeTax': `1602.00`,
+      '/line21OfSchedule2': `3367.00`,
+    });
+  });
+  it(`child tax credit after the phaseout, total tax, and the amount owed`, () => {
+    expect(get(g, `/familyAndHousehold/#${profileFChildId}/tin/isSSN` as string).get).toBe(true);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expectDollars(g, {
+      '/totalCtc': `50.00`,
+      '/nonRefundableCredits': `50.00`,
+      '/additionalCtc': `0.00`,
+      '/earnedIncomeCredit': `0.00`,
+      '/taxLessNonRefundableCredits': `36771.00`,
+      '/totalTax': `40138.00`,
+      '/formW2Withholding': `40000.00`,
+      '/totalPayments': `40000.00`,
+      '/balanceDue': `138.00`,
+    });
+    expect(get(g, `/eitcQualified`).get).toBe(false);
+  });
+  it(`PA-40 line 4 stays $0 and the return stops; Schedule SP does not qualify`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/paLine4`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/paSpLine15`).get.toString()).toBe(`0/1`);
+    expectDollars(g, {
+      '/paLine1a': `190000.00`,
+      '/paLine1c': `190000.00`,
+      '/paLine9': `190000.00`,
+      '/paLine11': `190000.00`,
+      '/paLine12': `5833.00`,
+      '/paLine13': `6000.00`,
+      '/paSpLine11': `190000.00`,
+      '/paLine21': `0.00`,
+      '/paLine24': `6000.00`,
+      '/paLine26': `0.00`,
+      '/paLine29': `167.00`,
+    });
+    for (const path of [
+      `/flowKnockoutQbiPriorYearCarryforward`,
+      `/flowKnockoutQbiCooperativePatron`,
+      `/flowKnockoutQbiMixedParticipation`,
+      `/flowKnockoutScheduleCSpouseBusiness`,
+      `/flowKnockoutScheduleCEarnedIncomeCredits`,
+      `/flowKnockoutPaScheduleA`,
+      `/flowKnockoutPaScheduleB`,
+      `/flowKnockoutPaScheduleD`,
+      `/flowKnockoutPaDividends`,
+      `/flowKnockoutPaPartYear`,
+      `/flowKnockoutPaUnsupportedItems`,
+      `/flowKnockoutPaNonresidentPaSourcePay`,
+      `/flowKnockoutPaSpUnsupported`,
+    ]) {
+      expect(get(g, path).complete, path).toBe(true);
+      expect(get(g, path).get, path).toBe(false);
+    }
+    expectStoppedOnly(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile F negative rows (each stops the return)`, () => {
+  const stops = (facts: Record<string, unknown>, knockout: string) => {
+    const n = graph(facts);
+    expect(submissionBlockingFacts).toContain(knockout);
+    expect(get(n, knockout).complete, knockout).toBe(true);
+    expect(get(n, knockout).get, knockout).toBe(true);
+    expect(get(n, `/flowIsKnockedOut`).complete).toBe(true);
+    expect(get(n, `/flowIsKnockedOut`).get).toBe(true);
+    return n;
+  };
+
+  it(`depreciation (Form 4562) stops on the Schedule C out-of-scope knockout`, () => {
+    stops(
+      {
+        ...profileFPaAmtScheduleC,
+        [`/scheduleCBusinesses/#${profileFBusinessId}/hasDepreciationOrSection179`]: createBooleanWrapper(true),
+      },
+      `/flowKnockoutScheduleCOutOfScope`
+    );
+  });
+  it(`one dollar less of state and local tax puts line 11 over the Form 8995 threshold`, () => {
+    // Itemized deduction 40,399. Taxable income before the QBI deduction = 242,150 - 40,399 = 201,751, over the
+    // $201,750 head-of-household threshold, so Form 8995-A applies and is not computed.
+    const n = stops(
+      { ...profileFPaAmtScheduleC, '/scheduleAWritableRealEstateTaxes': createDollarWrapper(`40399`) },
+      `/flowKnockoutQbiAboveThreshold`
+    );
+    expectDollars(n, { '/form8995Line11': `201751.00`, '/agi': `242150.00` });
+    expect(get(n, `/flowKnockoutScheduleCQbi`).get).toBe(true);
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(n, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+  });
+  it(`AMT preference items stop the return and are not added into line 4`, () => {
+    const n = stops(
+      { ...profileFPaAmtScheduleC, '/hasAmtPreferenceItems': createBooleanWrapper(true) },
+      `/flowKnockoutAmtPreferenceItems`
+    );
+    expectDollars(n, { '/form6251Line4': `231720.00`, '/amt': `117.00` });
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
   });
 });
