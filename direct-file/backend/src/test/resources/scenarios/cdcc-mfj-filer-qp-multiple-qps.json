@@ -1325,6 +1325,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/scheduleEHasPartIVIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/secondaryFilerMadeLessThanDisabledOrStudentMonthlyIncome": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false

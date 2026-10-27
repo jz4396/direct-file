@@ -32,7 +32,7 @@ headings:
   /heading/income/schedule-e/estate-boxes: Anote el ingreso del Anexo K-1 (Formulario 1041)
   /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 5, 6, 7 y 8?
   /heading/income/schedule-e/estate-limits: ¿Se aplica algún límite de pérdida a este caudal hereditario o fideicomiso?
-  /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC?
+  /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC (Anexo Q, Formulario 1066)?
   /heading/income/schedule-e/k1-intro: Agregue cada sociedad colectiva y sociedad anónima de tipo S
   /heading/income/schedule-e/k1-name: ¿Cuál es el nombre de la sociedad colectiva o sociedad anónima de tipo S?
   /heading/income/schedule-e/k1-scope:
@@ -67,7 +67,8 @@ info:
       Conteste que sí si fue socio, accionista de una sociedad anónima de tipo S o beneficiario de un caudal hereditario
       o fideicomiso, aunque no haya tenido ingresos de alquiler o regalías y aunque no haya recibido el dinero. Se puede
       declarar una sociedad colectiva o de tipo S que solo tenga ingreso ordinario del negocio si usted participó de
-      forma importante. Otras situaciones del Anexo K-1 detienen esta declaración.
+      forma importante. Otras situaciones del Anexo K-1 detienen esta declaración. Una participación residual en un
+      REMIC es una pregunta aparte. No conteste que sí aquí solo porque recibió el Anexo Q (Formulario 1066).
   /info/income/schedule-e/part-ii-line-27:
     body: >-
       Conteste que sí si declara una pérdida que no se permitió en un año anterior por los límites de riesgo o de base,
@@ -75,8 +76,8 @@ info:
   /info/income/schedule-e/part-iii:
     body: >-
       Conteste que sí si es beneficiario de un caudal hereditario o fideicomiso, aunque no haya recibido el ingreso.
-      Debe tener un Anexo K-1 (Formulario 1041). Se puede declarar el ingreso ordinario del negocio y otro ingreso de
-      alquiler si usted participó de forma importante. Otras cantidades detienen esta declaración.
+      Debe tener un Anexo K-1 (Formulario 1041). Se puede declarar el ingreso ordinario del negocio si usted participó
+      de forma importante. Otro ingreso de alquiler detiene esta declaración.
   /info/income/schedule-e/estate-intro:
     body: >-
       Agregue una entrada por cada caudal hereditario o fideicomiso. Use el nombre y las cantidades del Anexo K-1
@@ -91,8 +92,8 @@ info:
   /info/income/schedule-e/estate-boxes:
     body: >-
       Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Conteste que sí a la participación
-      importante si intervino de forma regular, continua y considerable. Las casillas 6 y 8 no pasivas van en la columna
-      (f).
+      importante si intervino de forma regular, continua y considerable. La casilla 6 va en la columna (f) si participó
+      de forma importante. Las casillas 7 y 8 son ingreso de alquiler y detienen esta declaración.
   /info/income/schedule-e/estate-other:
     body: >-
       Conteste que sí si alguna casilla distinta de las casillas 5, 6, 7 y 8 tiene una cantidad, incluso intereses,
@@ -102,8 +103,10 @@ info:
       Conteste que sí a la primera pregunta si se aplica un límite de base. Conteste que sí a la segunda si alguna
       cantidad no está en riesgo. Conteste que sí a la tercera si tiene una deducción o pérdida pasiva.
   /info/income/schedule-e/part-iv:
-    body:
-      Conteste que sí si tiene una participación residual en un conducto de inversión hipotecaria inmobiliaria (REMIC).
+    body: >-
+      Conteste que sí si tiene una participación residual en un conducto de inversión hipotecaria inmobiliaria (REMIC),
+      aunque no tenga una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario o fideicomiso. Debe tener
+      un Anexo Q (Formulario 1066).
   /info/income/schedule-e/k1-intro:
     body: >-
       Agregue una entrada por cada sociedad colectiva o sociedad anónima de tipo S. Use el nombre y el ingreso ordinario
@@ -195,18 +198,18 @@ info:
     alertText:
       body:
         - p: >-
-            Esta herramienta puede declarar el ingreso ordinario del negocio y otro ingreso de alquiler de un caudal
-            hereditario o fideicomiso nacional si usted participó de forma importante y esas cantidades no son una
-            pérdida. Una pérdida, una actividad pasiva, ingreso de cartera o de alquiler de bienes raíces, otra cantidad
-            del Anexo K-1, un fideicomiso extranjero o un límite de base, de riesgo o de pérdida pasiva necesitan
-            formularios que esta herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta
-            declaración.
+            Esta herramienta puede declarar el ingreso ordinario del negocio de un caudal hereditario o fideicomiso
+            nacional si usted participó de forma importante y esa cantidad no es una pérdida. Otro ingreso de alquiler,
+            ingreso de alquiler de bienes raíces, una pérdida, una actividad pasiva, otra cantidad del Anexo K-1, un
+            fideicomiso extranjero o un límite de base, de riesgo o de pérdida pasiva necesitan formularios que esta
+            herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-part-iv:
     alertText:
       body:
         - p: >-
-            Una participación residual en un REMIC se declara en el Anexo E. Esta herramienta todavía no acepta eso.
-            Tendrá que usar otra manera de presentar esta declaración.
+            Una participación residual en un REMIC se declara en la Parte IV del Anexo E a partir del Anexo Q
+            (Formulario 1066). Esta herramienta todavía no acepta eso. Tendrá que usar otra manera de presentar esta
+            declaración.
   /info/knockout/schedule-e-personal-use:
     alertText:
       body:
@@ -278,7 +281,7 @@ fields:
       "no": "No"
   /scheduleEHasPartIVIncome:
     boolean:
-      "yes": Sí, tengo una participación residual en un REMIC
+      "yes": Sí, tengo una participación residual en un REMIC (Anexo Q)
       "no": "No"
   /scheduleEEstates/*/entityName:
     name: Nombre
@@ -430,7 +433,7 @@ dataviews:
     /scheduleEPartIILine27:
       ¿Está declarando una pérdida no permitida de un año anterior o gastos de sociedad no reembolsados?
     /scheduleEHasPartIIIIncome: ¿Recibió un Anexo K-1 de un caudal hereditario o fideicomiso?
-    /scheduleEHasPartIVIncome: ¿Tiene una participación residual en un REMIC?
+    /scheduleEHasPartIVIncome: ¿Tiene una participación residual en un REMIC (Anexo Q)?
     /scheduleEK1s/*/entityName: Nombre de la sociedad colectiva o sociedad anónima de tipo S
     /scheduleEK1s/*/entityType: Sociedad colectiva o sociedad anónima de tipo S
     /scheduleEK1s/*/isForeignPartnership: ¿Es una sociedad extranjera?

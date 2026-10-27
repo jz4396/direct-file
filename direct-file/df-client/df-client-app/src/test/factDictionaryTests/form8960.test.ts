@@ -249,6 +249,7 @@ describe(`Form 8960 NIIT (#83): stops instead of zeros (BlockSubmissionOnTrue, /
   const scheduleE = {
     '/hadScheduleEIncome': createBooleanWrapper(true),
     '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+    '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
     '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
     '/scheduleEHasPersonalUse': createBooleanWrapper(false),
     '/scheduleEHasDepreciation': createBooleanWrapper(false),

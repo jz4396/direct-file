@@ -15,10 +15,14 @@
   amount is column (k); no column (e) or (f); line 27 no.
 
   Part III supported path (every estate or trust on line 33): domestic beneficiary, not a foreign trust,
-  no Form 8082 inconsistent treatment. Schedule K-1 (Form 1041) box 6 and box 8 are each at least zero
-  and the filer materially participates, so those amounts are line 33 column (f). Box 5 and box 7 are
-  zero. Every other box is blank or zero. No basis limit, no amount not at risk, and no passive
-  deduction or loss. Part IV (REMIC) is an explicit stop and is not computed.
+  no Form 8082 inconsistent treatment. Schedule K-1 (Form 1041) box 6 is at least zero and the filer
+  materially participates, so that amount is line 33 column (f). Box 5, box 7, and box 8 are zero. Box 8
+  is other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity,
+  and 469(c)(4) applies that rule without regard to material participation. It is not 469(c)(7) rental
+  real estate professional income. A nonzero box 8 is column (d) and stops the return. Every other box is
+  blank or zero. No basis limit, no amount not at risk, and no passive deduction or loss. Part IV (REMIC,
+  Schedule Q (Form 1066)) is asked of every filer, including a filer who answered the K-1 question no.
+  A yes is an explicit stop and is not computed.
 
   Sources (2026 drafts, PDF page numbers = printed page + 1 because of the draft coversheet):
   - Instructions for Schedule E (2026) draft, https://www.irs.gov/pub/irs-dft/i1040se%2D%2Ddft.pdf
@@ -285,7 +289,7 @@
     </Fact>
 
     <Fact path="/scheduleEHasPartIIIncome">
-      <Name>Has partnership, S corporation, estate, trust, or REMIC income (Schedule E Parts II-IV)</Name>
+      <Name>Has partnership, S corporation, estate, or trust income (Schedule E Parts II and III)</Name>
       <Description>
         #232 and #238. Asked of every filer, not only after a yes to rental or royalty income
         (/hasScheduleEIncome). 2026 draft Instructions for Schedule E
@@ -307,7 +311,8 @@
         on line 32. A loss, passive activity, foreign partnership, PTP, column (e) or (f), any amount
         other than box 1, Schedule K-1 (Form 1065) box 14 code A, a QBI statement (box 20 code Z or box
         17 code V), or line 27 stops the return. Part III is computed only on its supported path.
-        Part IV stops the return. See /flowKnockoutScheduleEPartII.
+        A residual interest in a REMIC is not this question. Schedule Q (Form 1066) is
+        /scheduleEHasPartIVIncome, asked even when this answer is no. See /flowKnockoutScheduleEPartII.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -530,7 +535,7 @@
         K-1 (Form 1041) from the fiduciary." 26 U.S.C. 652(a) (https://www.law.cornell.edu/uscode/text/26/652)
         and 662(a) (https://www.law.cornell.edu/uscode/text/26/662). A yes opens the Schedule K-1
         (Form 1041) interview. The supported path is computed on line 37. A loss, passive activity,
-        box 5, box 7, any other box, a foreign trust, Form 8082, a basis limit, an at-risk limit, or a
+        box 5, box 7, box 8, any other box, a foreign trust, Form 8082, a basis limit, an at-risk limit, or a
         passive deduction stops the return. See /flowKnockoutScheduleEPartIII.
       </Description>
       <Export downstreamFacts="true" />
@@ -544,9 +549,12 @@
       <Description>
         2026 draft Instructions for Schedule E, PDF p. 14: "If you are the holder of a residual interest
         in a REMIC, use Part IV to report your total share of the REMIC's taxable income or loss for each
-        quarter included in your tax year." 26 U.S.C. 860C
+        quarter included in your tax year. You should receive Schedule Q (Form 1066) and instructions from
+        the REMIC for each quarter." Asked of every filer, including a filer who answered
+        /scheduleEHasPartIIIncome no. 26 U.S.C. 860C
         (https://www.law.cornell.edu/uscode/text/26/860C). Part IV is not computed. A yes stops the return,
-        and line 39 stays incomplete so the REMIC amount is not entered as zero.
+        and line 39 stays incomplete so the REMIC amount is not entered as zero. An unanswered question
+        leaves /flowKnockoutScheduleEPartIV incomplete, so the print is refused.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -1677,8 +1685,12 @@
       <Name>Schedule K-1 (Form 1041) box 8 other rental income</Name>
       <Description>
         Schedule K-1 (Form 1041) (2025) page 2: box 8 "Other rental income" is reported on "Schedule E, line
-        33, column (d) or (f)". Material participation puts a nonnegative amount in column (f). A negative
-        amount stops the return.
+        33, column (d) or (f)". 26 U.S.C. 469(c)(2) (https://www.law.cornell.edu/uscode/text/26/469): the term
+        passive activity includes any rental activity, except as provided in 469(c)(7). 26 U.S.C. 469(c)(4):
+        material participation is not taken into account in determining whether an activity is a rental activity
+        under (c)(2). Box 8 is not 469(c)(7) rental real estate (that exception is box 7, and Schedule E line 43
+        is not computed). A nonnegative amount is column (d) only. Any nonzero amount stops the return. A
+        negative amount also stops the return.
       </Description>
       <Writable>
         <Dollar />
@@ -1689,8 +1701,8 @@
       <Name>Material participation in this estate or trust activity</Name>
       <Description>
         26 U.S.C. 469(h)(1): a taxpayer materially participates when involved "on a regular, continuous, and
-        substantial basis." Yes puts nonnegative box 6 and box 8 in column (f). No is passive (column (d)) and
-        stops the return.
+        substantial basis." Yes puts nonnegative box 6 in column (f). Box 8 stays in column (d): 26 U.S.C.
+        469(c)(2) and 469(c)(4). No is passive (column (d)) and stops the return.
       </Description>
       <Writable>
         <Boolean />
@@ -1815,6 +1827,22 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEEstates/*/box8Nonzero">
+      <Name>Box 8 is not zero</Name>
+      <Description>
+        Other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4). Not 469(c)(7) rental real estate professional
+        income.
+      </Description>
+      <Derived>
+        <Not>
+          <Equal>
+            <Left><Dependency path="../box8" /></Left>
+            <Right><Dollar>0</Dollar></Right>
+          </Equal>
+        </Not>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleEEstates/*/isForeign">
       <Name>Foreign beneficiary or foreign trust</Name>
       <Derived>
@@ -1828,11 +1856,12 @@
     <Fact path="/scheduleEEstates/*/columnF">
       <Name>Line 33 column (f) other income</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, column (f): "Other income from Schedule K-1". Nonpassive box 6 and
-        box 8, plus nonnegative box 5, rounded to whole dollars. 26 U.S.C. 6102(a): "the fractional part of a
-        dollar shall be disregarded unless it amounts to one-half dollar or more, in which case it shall be
-        increased to one dollar." A loss leaves this amount incomplete. A filed return has box 5 at zero, so
-        column (f) is box 6 plus box 8.
+        Schedule E (2026) draft, PDF p. 3, column (f): "Other income from Schedule K-1". Nonpassive box 6,
+        plus nonnegative box 5, rounded to whole dollars. Box 8 is not included. 26 U.S.C. 469(c)(2) and
+        469(c)(4) make other rental income passive without regard to material participation, so it is column
+        (d). 26 U.S.C. 6102(a): "the fractional part of a dollar shall be disregarded unless it amounts to
+        one-half dollar or more, in which case it shall be increased to one dollar." A loss leaves this amount
+        incomplete. A filed return has box 5 at zero, so column (f) is box 6.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1849,10 +1878,6 @@
                   <Left><Dependency path="../box6" /></Left>
                   <Right><Dollar>0</Dollar></Right>
                 </GreaterThanOrEqual>
-                <GreaterThanOrEqual>
-                  <Left><Dependency path="../box8" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
-                </GreaterThanOrEqual>
               </All>
             </When>
             <Then>
@@ -1860,7 +1885,6 @@
                 <Add>
                   <Dependency path="../box5" />
                   <Dependency path="../box6" />
-                  <Dependency path="../box8" />
                 </Add>
               </Round>
             </Then>
@@ -1879,10 +1903,6 @@
                   <Left><Dependency path="../box6" /></Left>
                   <Right><Dollar>0</Dollar></Right>
                 </GreaterThanOrEqual>
-                <GreaterThanOrEqual>
-                  <Left><Dependency path="../box8" /></Left>
-                  <Right><Dollar>0</Dollar></Right>
-                </GreaterThanOrEqual>
               </All>
             </When>
             <Then>
@@ -1898,9 +1918,10 @@
     <Fact path="/scheduleEEstates/*/columnD">
       <Name>Line 33 column (d) passive income</Name>
       <Description>
-        Schedule E (2026) draft, PDF p. 3, column (d): "Passive income from Schedule K-1". Nonpassive filers
-        still report nonnegative box 7 here. A passive filer also reports nonnegative box 6 and box 8. A filed
-        return has column (d) at zero because passive income and box 7 stop the return.
+        Schedule E (2026) draft, PDF p. 3, column (d): "Passive income from Schedule K-1". Nonnegative box 7
+        and box 8 are reported here whether or not the filer materially participates. 26 U.S.C. 469(c)(2) and
+        469(c)(4). A passive filer also reports nonnegative box 6. A filed return has column (d) at zero
+        because passive income, box 7, and box 8 stop the return.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1955,7 +1976,10 @@
             </When>
             <Then>
               <Round>
-                <Dependency path="../box7" />
+                <Add>
+                  <Dependency path="../box7" />
+                  <Dependency path="../box8" />
+                </Add>
               </Round>
             </Then>
           </Case>
@@ -1966,9 +1990,10 @@
     <Fact path="/scheduleEEstates/*/isSupported">
       <Name>This estate or trust is in the supported Part III slice</Name>
       <Description>
-        Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5 and box 7
-        zero, box 6 and box 8 at least zero, no other K-1 amount, no basis limit, no amount not at risk, and
-        no passive deduction or loss.
+        Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 7, and
+        box 8 zero, box 6 at least zero, no other K-1 amount, no basis limit, no amount not at risk, and no
+        passive deduction or loss. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is
+        not on the supported path.
       </Description>
       <Derived>
         <All>
@@ -1988,10 +2013,10 @@
             <Left><Dependency path="../box6" /></Left>
             <Right><Dollar>0</Dollar></Right>
           </GreaterThanOrEqual>
-          <GreaterThanOrEqual>
+          <Equal>
             <Left><Dependency path="../box8" /></Left>
             <Right><Dollar>0</Dollar></Right>
-          </GreaterThanOrEqual>
+          </Equal>
           <Not><Dependency path="../hasOtherK1Amount" /></Not>
           <Not><Dependency path="../basisLimitApplies" /></Not>
           <Not><Dependency path="../anyAmountNotAtRisk" /></Not>
@@ -2292,9 +2317,11 @@
       <Name>Schedule E line 39</Name>
       <Description>
         Schedule E (2026) draft, PDF p. 3, line 39: "Combine columns (d) and (e) only. Enter the result here
-        and include in the total on line 41 below." Part IV is not computed. $0 when the filer answered no.
-        Incomplete when the filer answered yes, so a REMIC residual interest is not entered as zero.
-        26 U.S.C. 860C.
+        and include in the total on line 41 below." Part IV is not computed. $0 when the filer answered no,
+        and $0 while the question is unanswered so the rest of the return can still be computed. The unanswered
+        question leaves /flowKnockoutScheduleEPartIV incomplete, so the print is refused. Incomplete when the
+        filer answered yes, so a REMIC residual interest is not entered as zero. This does not depend on
+        /scheduleEHasPartIIIncome. 26 U.S.C. 860C. Schedule Q (Form 1066).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2303,18 +2330,8 @@
             <When>
               <Not>
                 <IsComplete>
-                  <Dependency path="/scheduleEHasPartIIIncome" />
+                  <Dependency path="/scheduleEHasPartIVIncome" />
                 </IsComplete>
-              </Not>
-            </When>
-            <Then>
-              <Dollar>0</Dollar>
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Not>
-                <Dependency path="/scheduleEHasPartIIIncome" />
               </Not>
             </When>
             <Then>
@@ -2417,6 +2434,29 @@
             <Left>
               <Count>
                 <Dependency path="/scheduleEEstates/*/box7Nonzero" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIIBox8">
+      <Name>Knockout: Schedule K-1 (Form 1041) box 8</Name>
+      <Description>Other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity. 26 U.S.C. 469(c)(4) applies that rule without regard to material participation. Box 8 is not 469(c)(7) rental real estate professional income. A nonzero amount is column (d) and stops the return. Form 8960 line 4a does not take it. Complete false when Part III is no.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <Dependency path="/scheduleEHasPartIIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEEstates/*/box8Nonzero" />
               </Count>
             </Left>
             <Right>
@@ -2575,6 +2615,7 @@
           <Dependency path="/flowKnockoutScheduleEPartIIINotMaterialParticipation" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox5" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox7" />
+          <Dependency path="/flowKnockoutScheduleEPartIIIBox8" />
           <Dependency path="/flowKnockoutScheduleEPartIIIOtherK1Amount" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBasis" />
           <Dependency path="/flowKnockoutScheduleEPartIIIAtRisk" />
@@ -2589,7 +2630,7 @@
       <Name>Schedule E Part III supported path is complete</Name>
       <Description>
         The filer answered yes, at least one estate or trust is listed, every row is complete, and every row
-        is supported nonpassive income from box 6 or box 8.
+        is supported nonpassive income from box 6. Box 8 is not supported. 26 U.S.C. 469(c)(2) and 469(c)(4).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2642,14 +2683,18 @@
         and line 37 is not a silent zero. Complete false when either answer is no, and when every line 33
         estate or trust is the supported path. True when /scheduleEPartIIIOutOfScope is true.
 
-        Supported path. Schedule K-1 (Form 1041) (2025) page 2: box 6 "Ordinary business income" and box 8
-        "Other rental income" are reported on "Schedule E, line 33, column (d) or (f)". Material participation
-        (26 U.S.C. 469(h)(1)) puts a nonnegative amount in column (f). 2026 draft Schedule E, PDF p. 3,
-        line 35: "Add columns (d) and (f) of line 34a." Line 37: "Total estate and trust income or (loss).
-        Combine lines 35 and 36." 26 U.S.C. 652(a) and 662(a).
+        Supported path. Schedule K-1 (Form 1041) (2025) page 2: box 6 "Ordinary business income" is reported
+        on "Schedule E, line 33, column (d) or (f)". Material participation (26 U.S.C. 469(h)(1)) puts a
+        nonnegative amount in column (f). Box 8 "Other rental income" is a rental activity. 26 U.S.C. 469(c)(2)
+        includes any rental activity in the term passive activity, and 469(c)(4) applies that rule without
+        regard to material participation. It is not 469(c)(7) rental real estate professional income. A
+        nonnegative box 8 is column (d), and any nonzero box 8 stops the return. 2026 draft Schedule E, PDF
+        p. 3, line 35: "Add columns (d) and (f) of line 34a." Line 37: "Total estate and trust income or
+        (loss). Combine lines 35 and 36." 26 U.S.C. 652(a) and 662(a).
 
         Not net investment income. 26 U.S.C. 1411(c)(2) includes a passive activity. Material-participation
-        box 6 or box 8 is not added to Form 8960 line 4a. Box 5 and box 7 stop the return.
+        box 6 is not added to Form 8960 line 4a. Box 8 is passive under 469(c)(2) and 469(c)(4), is not on
+        line 4a, and stops the return. Box 5 and box 7 stop the return.
 
         Not self-employment. A beneficiary's share of estate or trust income is not entered on Schedule SE.
         26 U.S.C. 1402(a). Not qualified business income. Box 14 code I stops the return. Box 6 is not
@@ -2726,16 +2771,46 @@
     <Fact path="/flowKnockoutScheduleEPartIV">
       <Name>Knockout: Schedule E Part IV (REMIC)</Name>
       <Description>
-        A residual interest in a REMIC is not computed. Cites on /scheduleEHasPartIVIncome. Complete false
-        when /scheduleEHasPartIIIncome is false.
+        A residual interest in a REMIC is not computed. Schedule Q (Form 1066). Cites on
+        /scheduleEHasPartIVIncome. Incomplete while that question is unanswered, so the print is refused.
+        Complete false when the answer is no. True when the answer is yes, including when
+        /scheduleEHasPartIIIncome is no. 26 U.S.C. 860C.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <All>
-          <Dependency path="/scheduleEHasPartIIIncome" />
-          <Dependency path="/scheduleEHasPartIVIncome" />
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIVIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/scheduleEHasPartIVIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIVIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEHasPartIVIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -2922,12 +2997,14 @@
     <Fact path="/flowKnockoutScheduleEPartII">
       <Name>Knockout: Schedule E Part II out of scope, or the K-1 question is unanswered</Name>
       <Description>
-        #85. The question is asked of every filer. Incomplete while /scheduleEHasPartIIIncome is unanswered,
-        so the print is refused and /flowIsKnockedOut stays incomplete (no silent zero of K-1 income).
-        Complete false when the answer is no, and when the supported Part II path is complete. Part III may
-        be no, or every estate or trust may be the supported path (line 37). True when any out-of-scope
-        knockout is true. A yes with an empty or unfinished list, or a Part III yes with no finished estate
-        or trust, stays incomplete so lines 32 and 37 are not filed as zero.
+        #85. The K-1 question is asked of every filer. Incomplete while /scheduleEHasPartIIIncome is
+        unanswered, so the print is refused and /flowIsKnockedOut stays incomplete (no silent zero of K-1
+        income). A yes to /scheduleEHasPartIVIncome makes this true even when the K-1 answer is no, so a
+        Schedule Q (Form 1066) holder is not filed as zero. Complete false when the K-1 answer is no and
+        Part IV is no, and when the supported Part II path is complete and Part IV is no. Part III may
+        be no, or every estate or trust may be the supported path (line 37, box 6 only). True when any
+        out-of-scope knockout is true. A yes with an empty or unfinished list, or a Part III yes with no
+        finished estate or trust, stays incomplete so lines 32 and 37 are not filed as zero.
 
         Income tax. 2026 draft Schedule E, PDF p. 4, line 41: "Total income or (loss). Combine lines 26, 32,
         37, 39, and 40. Enter the result here and on Schedule 1 (Form 1040), line 5." Line 32 is
@@ -2959,6 +3036,14 @@
             </When>
             <Then>
               <Dependency path="/scheduleEHasPartIIIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/flowKnockoutScheduleEPartIV" />
+            </When>
+            <Then>
+              <True />
             </Then>
           </Case>
           <Case>
@@ -3050,12 +3135,13 @@
     <Fact path="/scheduleESectionIsComplete">
       <Name>Schedule E section complete</Name>
       <Description>
-        The rental gate and the K-1 question (/scheduleEHasPartIIIncome) are both answered. The K-1
-        question is required even when /hasScheduleEIncome is false (#232, #238). A yes is not done until
-        the supported Part II path is complete or an out-of-scope knockout is true
-        (/scheduleEPartIIResolved). If the filer has Part I income, every amount and screener is answered
-        too. IsComplete of an unanswered question is false, so an otherwise finished interview stays
-        incomplete until the K-1 question is answered.
+        The rental gate, the K-1 question (/scheduleEHasPartIIIncome), and the REMIC question
+        (/scheduleEHasPartIVIncome) are answered. The K-1 question is required even when /hasScheduleEIncome
+        is false (#232, #238). The REMIC question is required even when the K-1 answer is no, so a Schedule Q
+        (Form 1066) holder is not left at line 39 of $0. A yes is not done until the supported Part II path
+        is complete or an out-of-scope knockout is true (/scheduleEPartIIResolved). If the filer has Part I
+        income, every amount and screener is answered too. IsComplete of an unanswered question is false, so
+        an otherwise finished interview stays incomplete until both questions are answered.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -3087,6 +3173,9 @@
                 <IsComplete>
                   <Dependency path="/scheduleEHasPartIIIncome" />
                 </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIVIncome" />
+                </IsComplete>
                 <Dependency path="/scheduleEPartIIResolved" />
                 <IsComplete>
                   <Dependency path="/scheduleEProvidesSubstantialServices" />
@@ -3108,6 +3197,9 @@
                 </IsComplete>
                 <IsComplete>
                   <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIVIncome" />
                 </IsComplete>
                 <Dependency path="/scheduleEPartIIResolved" />
               </All>

@@ -28,7 +28,7 @@ headings:
   /heading/income/schedule-e/estate-boxes: Enter the income from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 5, 6, 7, and 8?
   /heading/income/schedule-e/estate-limits: Do any loss limits apply to this estate or trust?
-  /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC?
+  /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC (Schedule Q, Form 1066)?
   /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
   /heading/income/schedule-e/k1-name: What is the name of the partnership or S corporation?
   /heading/income/schedule-e/k1-scope:
@@ -61,7 +61,8 @@ info:
       Answer yes if you were a partner, an S corporation shareholder, or a beneficiary of an estate or trust, even if
       you had no rental or royalty income and even if you did not actually receive the money. A partnership or S
       corporation with only ordinary business income, where you materially participated, can be reported. Other Schedule
-      K-1 situations stop this return.
+      K-1 situations stop this return. A residual interest in a REMIC is a separate question. Do not answer yes here
+      only because you received Schedule Q (Form 1066).
   /info/income/schedule-e/part-ii-line-27:
     body: >-
       Answer yes if you are reporting a loss that was not allowed in a prior year because of the at-risk or basis
@@ -69,8 +70,8 @@ info:
   /info/income/schedule-e/part-iii:
     body: >-
       Answer yes if you are a beneficiary of an estate or trust, even if you did not receive the income. You should have
-      a Schedule K-1 (Form 1041). Ordinary business income and other rental income can be reported when you materially
-      participated. Other amounts stop this return.
+      a Schedule K-1 (Form 1041). Ordinary business income can be reported when you materially participated. Other
+      rental income stops this return.
   /info/income/schedule-e/estate-intro:
     body: >-
       Add one entry for each estate or trust. Use the name and the amounts from Schedule K-1 (Form 1041). If you have
@@ -84,7 +85,8 @@ info:
   /info/income/schedule-e/estate-boxes:
     body: >-
       Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. Answer yes to material participation if you were involved
-      on a regular, continuous, and substantial basis. Nonpassive box 6 and box 8 go in column (f).
+      on a regular, continuous, and substantial basis. Box 6 goes in column (f) when you materially participate. Box 7
+      and box 8 are rental income and stop this return.
   /info/income/schedule-e/estate-other:
     body: >-
       Answer yes if any box other than boxes 5, 6, 7, and 8 has an amount, including interest, dividends, capital gain,
@@ -94,7 +96,9 @@ info:
       Answer yes to the first question if a basis limit applies. Answer yes to the second if any amount is not at risk.
       Answer yes to the third if you have a passive deduction or loss.
   /info/income/schedule-e/part-iv:
-    body: Answer yes if you hold a residual interest in a real estate mortgage investment conduit (REMIC).
+    body: >-
+      Answer yes if you hold a residual interest in a real estate mortgage investment conduit (REMIC), even if you have
+      no partnership, S corporation, estate, or trust. You should have a Schedule Q (Form 1066).
   /info/income/schedule-e/k1-intro:
     body: >-
       Add one entry for each partnership or S corporation. Use the name and the ordinary business income from Schedule
@@ -166,16 +170,16 @@ info:
     alertText:
       body:
         - p: >-
-            This tool can report ordinary business income and other rental income from a domestic estate or trust when
-            you materially participated and those amounts are not a loss. A loss, a passive activity, portfolio or
-            rental real estate income, another K-1 amount, a foreign trust, or a basis, at-risk, or passive-loss limit
-            needs forms this tool doesn’t support yet. You’ll need another way to file this return.
+            This tool can report ordinary business income from a domestic estate or trust when you materially participated
+            and that amount is not a loss. Other rental income, rental real estate income, a loss, a passive activity,
+            another K-1 amount, a foreign trust, or a basis, at-risk, or passive-loss limit needs forms this tool
+            doesn’t support yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-part-iv:
     alertText:
       body:
         - p: >-
-            A residual interest in a REMIC is reported on Schedule E. This tool doesn’t support that yet. You’ll need
-            another way to file this return.
+            A residual interest in a REMIC is reported in Part IV of Schedule E from Schedule Q (Form 1066). This tool
+            doesn’t support that yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-personal-use:
     alertText:
       body:
@@ -257,7 +261,7 @@ fields:
       "no": "No"
   /scheduleEHasPartIVIncome:
     boolean:
-      "yes": Yes, I have a residual interest in a REMIC
+      "yes": Yes, I have a residual interest in a REMIC (Schedule Q)
       "no": "No"
   /scheduleEEstates/*/entityName:
     name: Name
@@ -407,7 +411,7 @@ dataviews:
     /scheduleERentalIsTradeOrBusiness: Is any rental a trade or business for the qualified business income deduction?
     /scheduleEPartIILine27: Are you reporting a prior-year unallowed loss or unreimbursed partnership expenses?
     /scheduleEHasPartIIIIncome: Did you receive a Schedule K-1 from an estate or trust?
-    /scheduleEHasPartIVIncome: Do you have a residual interest in a REMIC?
+    /scheduleEHasPartIVIncome: Do you have a residual interest in a REMIC (Schedule Q)?
     /scheduleEK1s/*/entityName: Name of the partnership or S corporation
     /scheduleEK1s/*/entityType: Partnership or S corporation
     /scheduleEK1s/*/isForeignPartnership: Is it a foreign partnership?

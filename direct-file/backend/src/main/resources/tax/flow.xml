@@ -180,6 +180,7 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIINotMaterialParticipation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBox5" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBox7" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBox8" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIOtherK1Amount" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBasis" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIAtRisk" />

@@ -20,8 +20,9 @@ import type { ConditionString } from '../../Condition.js';
  * Schedule E Part I MVP: rental real estate and royalties (#38, spec PR #8; TY2026, filed in 2027).
  * Part I supported: net income with no depreciation and no personal use.
  * Part II supported: domestic partnership or S corporation, nonnegative box 1 only, material participation.
- * Part III supported: domestic estate or trust, nonnegative box 6 and box 8, material participation.
- * Part IV (REMIC) is an explicit stop.
+ * Part III supported: domestic estate or trust, nonnegative box 6 only, material participation.
+ * Box 8 is other rental income (26 U.S.C. 469(c)(2) and 469(c)(4)) and stops the return.
+ * Part IV (REMIC, Schedule Q (Form 1066)) is asked of every filer and is an explicit stop.
  * The Schedule K-1 question is asked of every filer, not only after a yes to rental or royalty income
  * (#232, #238, #85). Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
  */
@@ -52,6 +53,7 @@ export const ScheduleEIncomeSubcategory = (
         conditions: [
           { operator: `isFalse`, condition: `/hasScheduleEIncome` },
           { operator: `isFalse`, condition: `/scheduleEHasPartIIIncome` },
+          { operator: `isFalse`, condition: `/scheduleEHasPartIVIncome` },
         ],
       },
     ]}
@@ -145,7 +147,7 @@ export const ScheduleEIncomeSubcategory = (
         </SubSubcategory>
       </CollectionLoop>
       {knockout(`schedule-e-part-iii-knockout`, `/flowKnockoutScheduleEPartIII`, `schedule-e-part-iii`)}
-      <Screen route='schedule-e-part-iv' condition='/scheduleEHasPartIIIncome'>
+      <Screen route='schedule-e-part-iv'>
         <Heading i18nKey='/heading/income/schedule-e/part-iv' />
         <InfoDisplay i18nKey='/info/income/schedule-e/part-iv' />
         <Boolean path='/scheduleEHasPartIVIncome' />
