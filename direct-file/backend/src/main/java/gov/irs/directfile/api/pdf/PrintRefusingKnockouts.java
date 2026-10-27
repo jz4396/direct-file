@@ -90,9 +90,14 @@ public final class PrintRefusingKnockouts {
             // share of the partnership or S corporation income (even if not received) or loss." 2026 draft
             // Schedule E, PDF p. 4, line 41 combines line 32 into Schedule 1 line 5 (26 U.S.C. 702(a), 1366(a)).
             // The supported path (domestic partnership or S corporation, nonnegative box 1 only, material
-            // participation, no column (e) or (f), line 27 no) is complete false and may print. An unanswered
-            // question, or any out-of-scope K-1 (loss, passive, foreign, PTP, box 14 code A, a section 199A
-            // statement, Part III, Part IV), refuses the print. Asked of every filer, not only after Part I.
+            // participation, no column (e) or (f), line 27 no) is complete false and may print. Supported
+            // Part III column (f) (nonpassive Schedule K-1 (Form 1041) box 6 only) may print on the same
+            // path. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental activity
+            // passive without regard to material participation, so a nonzero box 8 refuses the print.
+            // An unanswered question, or any out-of-scope K-1 (loss, passive, foreign, PTP, box 14 code A,
+            // a section 199A statement, an out-of-scope estate or trust, Part IV), refuses the print. A REMIC
+            // yes (Schedule Q (Form 1066)) refuses through this same path even when the K-1 answer is no.
+            // This list does not gain another Schedule E path. Asked of every filer, not only after Part I.
             "/flowKnockoutScheduleEPartII",
             // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
             // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)

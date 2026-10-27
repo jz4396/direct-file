@@ -930,8 +930,9 @@
       <Name>Schedule 1 line 5: Rental real estate, royalties, partnerships, S corporations, trusts, etc.</Name>
       <Description>#119. Schedule 1 (Form 1040) 2026 draft (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page
         1 (PDF p. 2), Part I, line 5: "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach
-        Schedule E". Same amount as scheduleE /scheduleELine41 (Schedule E line 41 = line 26 + line 32; lines 37
-        and 39 are zero because Part III and Part IV stop the return). Schedule E (2026) draft, PDF p. 4, line 41:
+        Schedule E". Same amount as scheduleE /scheduleELine41 (Schedule E line 41 = line 26 + line 32 + line 37
+        + line 39). Line 37 is estate and trust income on the supported path. Line 39 is $0 when Part IV is no
+        and incomplete when Part IV is yes. Schedule E (2026) draft, PDF p. 4, line 41:
         "Enter the result here and on Schedule 1 (Form 1040), line 5." Printed without ExportZero so a Schedule 1
         with no Schedule E leaves line 5 blank.</Description>
       <Derived>
@@ -1002,7 +1003,7 @@
             <Dependency path="/schedule1TotalOtherIncome" />
             <!-- Schedule 1 line 3 business income (Schedule C) — § 61 / § 162; see scheduleC.xml -->
             <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
-            <!-- Schedule 1 line 5 is Schedule E line 41 (line 26 + line 32). 26 U.S.C. 61(a)(5)-(6), 702(a), 1366(a). -->
+            <!-- Schedule 1 line 5 is Schedule E line 41 (lines 26, 32, 37, and 39). 26 U.S.C. 61(a)(5)-(6), 702(a), 1366(a), 652(a), 662(a). -->
             <Dependency module="scheduleE" path="/scheduleELine41" />
           </Add>
         </Round>

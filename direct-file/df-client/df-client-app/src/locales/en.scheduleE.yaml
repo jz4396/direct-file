@@ -4,6 +4,7 @@ subsubcategories:
   /flow/income/schedule-e:
     schedule-e-eligibility: Rental and royalty income
     schedule-e-k1: Partnership or S corporation
+    schedule-e-estate: Estate or trust
     schedule-e-amounts: Rental and royalty amounts
 headings:
   /heading/income/schedule-e: Rental and royalty income
@@ -21,7 +22,13 @@ headings:
   /heading/income/schedule-e/part-ii-line-27:
     Are you reporting a prior-year unallowed loss or unreimbursed partnership expenses?
   /heading/income/schedule-e/part-iii: Did you receive a Schedule K-1 from an estate or trust?
-  /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC?
+  /heading/income/schedule-e/estate-intro: Add each estate or trust
+  /heading/income/schedule-e/estate-name: What is the name of the estate or trust?
+  /heading/income/schedule-e/estate-scope: Is this a foreign beneficiary, a foreign trust, or an inconsistent treatment?
+  /heading/income/schedule-e/estate-boxes: Enter the income from Schedule K-1 (Form 1041)
+  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 5, 6, 7, and 8?
+  /heading/income/schedule-e/estate-limits: Do any loss limits apply to this estate or trust?
+  /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC (Schedule Q, Form 1066)?
   /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
   /heading/income/schedule-e/k1-name: What is the name of the partnership or S corporation?
   /heading/income/schedule-e/k1-scope:
@@ -33,7 +40,7 @@ headings:
   /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support this Schedule K-1 situation
   /heading/knockout/schedule-e-part-ii-line-27:
     This tool doesn’t yet support a prior-year unallowed loss or unreimbursed partnership expenses
-  /heading/knockout/schedule-e-part-iii: This tool doesn’t yet support income from an estate or trust
+  /heading/knockout/schedule-e-part-iii: This tool doesn’t yet support this estate or trust situation
   /heading/knockout/schedule-e-part-iv: This tool doesn’t yet support a residual interest in a REMIC
   /heading/knockout/schedule-e-personal-use: This tool doesn’t yet support rentals you also used personally
   /heading/knockout/schedule-e-depreciation: This tool doesn’t yet support depreciation or vehicle expenses
@@ -54,7 +61,8 @@ info:
       Answer yes if you were a partner, an S corporation shareholder, or a beneficiary of an estate or trust, even if
       you had no rental or royalty income and even if you did not actually receive the money. A partnership or S
       corporation with only ordinary business income, where you materially participated, can be reported. Other Schedule
-      K-1 situations stop this return.
+      K-1 situations stop this return. A residual interest in a REMIC is a separate question. Do not answer yes here
+      only because you received Schedule Q (Form 1066).
   /info/income/schedule-e/part-ii-line-27:
     body: >-
       Answer yes if you are reporting a loss that was not allowed in a prior year because of the at-risk or basis
@@ -62,9 +70,35 @@ info:
   /info/income/schedule-e/part-iii:
     body: >-
       Answer yes if you are a beneficiary of an estate or trust, even if you did not receive the income. You should have
-      a Schedule K-1 (Form 1041).
+      a Schedule K-1 (Form 1041). Ordinary business income can be reported when you materially participated. Other
+      rental income stops this return.
+  /info/income/schedule-e/estate-intro:
+    body: >-
+      Add one entry for each estate or trust. Use the name and the amounts from Schedule K-1 (Form 1041). If you have
+      only an estate or trust, you can finish the partnership list without adding one.
+  /info/income/schedule-e/estate-name:
+    body: This is line 33, column (a), of Schedule E.
+  /info/income/schedule-e/estate-scope:
+    body: >-
+      Answer yes to foreign beneficiary if Schedule K-1 (Form 1041) item H says foreign beneficiary. Answer yes if the
+      trust is a foreign trust, or if you are treating an item differently from the estate or trust.
+  /info/income/schedule-e/estate-boxes:
+    body: >-
+      Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. Answer yes to material participation if you were involved
+      on a regular, continuous, and substantial basis. Box 6 goes in column (f) when you materially participate. Box 7
+      and box 8 are rental income and stop this return.
+  /info/income/schedule-e/estate-other:
+    body: >-
+      Answer yes if any box other than boxes 5, 6, 7, and 8 has an amount, including interest, dividends, capital gain,
+      deductions, credits, or box 14.
+  /info/income/schedule-e/estate-limits:
+    body: >-
+      Answer yes to the first question if a basis limit applies. Answer yes to the second if any amount is not at risk.
+      Answer yes to the third if you have a passive deduction or loss.
   /info/income/schedule-e/part-iv:
-    body: Answer yes if you hold a residual interest in a real estate mortgage investment conduit (REMIC).
+    body: >-
+      Answer yes if you hold a residual interest in a real estate mortgage investment conduit (REMIC), even if you have
+      no partnership, S corporation, estate, or trust. You should have a Schedule Q (Form 1066).
   /info/income/schedule-e/k1-intro:
     body: >-
       Add one entry for each partnership or S corporation. Use the name and the ordinary business income from Schedule
@@ -136,14 +170,16 @@ info:
     alertText:
       body:
         - p: >-
-            Income from an estate or trust is reported on Schedule E from Schedule K-1 (Form 1041), even if you did not
-            receive it. This tool doesn’t support that yet. You’ll need another way to file this return.
+            This tool can report ordinary business income from a domestic estate or trust when you materially participated
+            and that amount is not a loss. Other rental income, rental real estate income, a loss, a passive activity,
+            another K-1 amount, a foreign trust, or a basis, at-risk, or passive-loss limit needs forms this tool
+            doesn’t support yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-part-iv:
     alertText:
       body:
         - p: >-
-            A residual interest in a REMIC is reported on Schedule E. This tool doesn’t support that yet. You’ll need
-            another way to file this return.
+            A residual interest in a REMIC is reported in Part IV of Schedule E from Schedule Q (Form 1066). This tool
+            doesn’t support that yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-personal-use:
     alertText:
       body:
@@ -225,8 +261,69 @@ fields:
       "no": "No"
   /scheduleEHasPartIVIncome:
     boolean:
-      "yes": Yes, I have a residual interest in a REMIC
+      "yes": Yes, I have a residual interest in a REMIC (Schedule Q)
       "no": "No"
+  /scheduleEEstates/*/entityName:
+    name: Name
+  /scheduleEEstates/*/isForeignBeneficiary:
+    boolean:
+      "yes": Yes, I am a foreign beneficiary
+      "no": "No"
+  /scheduleEEstates/*/isForeignTrust:
+    boolean:
+      "yes": Yes, it is a foreign trust
+      "no": "No"
+  /scheduleEEstates/*/inconsistentTreatment:
+    boolean:
+      "yes": Yes, I am treating an item differently
+      "no": "No"
+  /scheduleEEstates/*/box5:
+    name: Box 5, other portfolio and nonbusiness income
+  /scheduleEEstates/*/box6:
+    name: Box 6, ordinary business income
+  /scheduleEEstates/*/box7:
+    name: Box 7, net rental real estate income
+  /scheduleEEstates/*/box8:
+    name: Box 8, other rental income
+  /scheduleEEstates/*/materiallyParticipates:
+    boolean:
+      "yes": Yes, I materially participated
+      "no": No, I didn’t materially participate
+  /scheduleEEstates/*/hasOtherK1Amount:
+    boolean:
+      "yes": Yes, another box has an amount
+      "no": No, every other box is blank or zero
+  /scheduleEEstates/*/basisLimitApplies:
+    boolean:
+      "yes": Yes, a basis limit applies
+      "no": "No"
+  /scheduleEEstates/*/anyAmountNotAtRisk:
+    boolean:
+      "yes": Yes, some amount is not at risk
+      "no": "No"
+  /scheduleEEstates/*/passiveDeductionOrLoss:
+    boolean:
+      "yes": Yes, there is a passive deduction or loss
+      "no": "No"
+  /scheduleEEstates:
+    controls:
+      add: Add an estate or trust
+      complete_zero: I don’t have one to add
+      complete: I’m done adding estates and trusts
+      back: Go to the list
+    collectionListing:
+      itemHeading1: "{{/scheduleEEstates/*/entityName}}"
+      itemHeading2: Incomplete estate or trust
+      label2: Estate or trust
+    deleteControl:
+      text: <LinkModal1>Remove</LinkModal1>
+      LinkModal1:
+        header: Are you sure you want to remove this estate or trust?
+        body:
+          - p: This can’t be undone.
+        controls:
+          confirm: Remove
+          cancel: Cancel
   /scheduleEK1EntityTypeOptions:
     P: Partnership
     S: S corporation
@@ -282,6 +379,7 @@ fields:
     collectionListing:
       itemHeading1: "{{/scheduleEK1s/*/entityName}}"
       itemHeading2: Incomplete partnership or S corporation
+      label2: Partnership or S corporation
     deleteControl:
       text: <LinkModal1>Remove</LinkModal1>
       LinkModal1:
@@ -313,7 +411,7 @@ dataviews:
     /scheduleERentalIsTradeOrBusiness: Is any rental a trade or business for the qualified business income deduction?
     /scheduleEPartIILine27: Are you reporting a prior-year unallowed loss or unreimbursed partnership expenses?
     /scheduleEHasPartIIIIncome: Did you receive a Schedule K-1 from an estate or trust?
-    /scheduleEHasPartIVIncome: Do you have a residual interest in a REMIC?
+    /scheduleEHasPartIVIncome: Do you have a residual interest in a REMIC (Schedule Q)?
     /scheduleEK1s/*/entityName: Name of the partnership or S corporation
     /scheduleEK1s/*/entityType: Partnership or S corporation
     /scheduleEK1s/*/isForeignPartnership: Is it a foreign partnership?
@@ -326,3 +424,16 @@ dataviews:
     /scheduleEK1s/*/hasOtherK1Amount: Does any box other than box 1 have an amount?
     /scheduleEK1s/*/basisComputationRequired: Is column (e) checked?
     /scheduleEK1s/*/anyAmountNotAtRisk: Is any amount not at risk?
+    /scheduleEEstates/*/entityName: Name of the estate or trust
+    /scheduleEEstates/*/isForeignBeneficiary: Are you a foreign beneficiary?
+    /scheduleEEstates/*/isForeignTrust: Is it a foreign trust?
+    /scheduleEEstates/*/inconsistentTreatment: Are you treating an item differently from the estate or trust?
+    /scheduleEEstates/*/box5: Box 5, other portfolio and nonbusiness income
+    /scheduleEEstates/*/box6: Box 6, ordinary business income
+    /scheduleEEstates/*/box7: Box 7, net rental real estate income
+    /scheduleEEstates/*/box8: Box 8, other rental income
+    /scheduleEEstates/*/materiallyParticipates: Did you materially participate?
+    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 5, 6, 7, and 8 have an amount?
+    /scheduleEEstates/*/basisLimitApplies: Does a basis limit apply?
+    /scheduleEEstates/*/anyAmountNotAtRisk: Is any amount not at risk?
+    /scheduleEEstates/*/passiveDeductionOrLoss: Is there a passive deduction or loss?

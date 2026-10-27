@@ -84,6 +84,8 @@ export const baseFilerData = {
   [`/madeIraContributions`]: createBooleanWrapper(false),
   // Schedule K-1 is asked of every filer. Answered no keeps /flowKnockoutScheduleEPartII complete false.
   '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  // Schedule Q (Form 1066) is asked of every filer. Answered no keeps /flowKnockoutScheduleEPartIV complete false.
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
 };
 
 export const singleFilerData = {
@@ -99,6 +101,7 @@ export const singleFilerData = {
   [`/hasCdccCarryoverAmountFromPriorTaxYear`]: createBooleanWrapper(false),
   [`/flowKnockoutHouseholdEmployee`]: createBooleanWrapper(false),
   '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
 };
 
 export const marriedFilerData = {
@@ -122,6 +125,7 @@ export const marriedFilerData = {
   [`/hasCdccCarryoverAmountFromPriorTaxYear`]: createBooleanWrapper(false),
   [`/flowKnockoutHouseholdEmployee`]: createBooleanWrapper(false),
   '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
 };
 
 export const mfjFilerData = {
@@ -952,6 +956,7 @@ export const filerWithW2NoDeductionsNoCreditsBaseData = {
   [`/hasForeignTrustsTransactions`]: createBooleanWrapper(false),
   [`/selfSelectPin`]: createPinWrapper(`12349`),
   '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
 };
 
 export const filerWithZeroBalanceData = {

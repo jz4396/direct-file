@@ -432,9 +432,10 @@ class PrintRefusingKnockoutsTest {
     /**
      * #85. 2026 draft Instructions for Schedule E, PDF p. 11: report the partnership or S corporation share "even if
      * not received." A yes with no entity is not filed as zero: line 32 and Schedule 1 line 5 stay incomplete and the
-     * knockout stays incomplete, so the print is refused. Part III (estate or trust) is out of scope and refuses with
-     * the knockout true. Schedule SE line 2 stays Schedule C only. An answered no does not refuse. An unanswered
-     * question refuses and leaves the Schedule E section incomplete.
+     * knockout stays incomplete, so the print is refused. Part III yes without an estate leaves line 37 and the
+     * knockout incomplete, so the print is still refused and the income is not a silent zero. Part IV yes refuses
+     * with the knockout true and leaves line 39 incomplete. Schedule SE line 2 stays Schedule C only. An answered no
+     * does not refuse. An unanswered question refuses and leaves the Schedule E section incomplete.
      */
     @Test
     void k1WithoutPartIIncomeOmitsScheduleEAndScheduleSeLine2AndRefusesThePrint() throws Exception {
@@ -468,10 +469,23 @@ class PrintRefusingKnockoutsTest {
         Map<String, FactTypeWithItem> partIII = new HashMap<>(k1Only);
         partIII.put("/scheduleEHasPartIIIIncome", yes);
         Graph estate = fgs.getGraph(partIII);
-        assertEquals(Boolean.TRUE, estate.get("/flowKnockoutScheduleEPartIII").get());
-        assertEquals(Boolean.TRUE, estate.get(SCHEDULE_E_PART_II_KNOCKOUT).get());
-        assertEquals(Boolean.TRUE, estate.get("/flowIsKnockedOut").get());
+        assertFalse(
+                estate.get("/flowKnockoutScheduleEPartIII").complete(),
+                "Part III yes without an estate stays incomplete");
+        assertFalse(estate.get("/scheduleEPartIIILine37").complete(), "line 37 is not a silent zero");
+        assertFalse(estate.get("/schedule1Line5").complete(), "Schedule 1 line 5 is not a silent zero");
+        assertFalse(estate.get(SCHEDULE_E_PART_II_KNOCKOUT).complete(), "yes without an estate stays incomplete");
         assertEquals(List.of(SCHEDULE_E_PART_II_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(estate));
+
+        Map<String, FactTypeWithItem> partIV = new HashMap<>(k1Only);
+        partIV.put("/scheduleEHasPartIIIIncome", no);
+        partIV.put("/scheduleEHasPartIVIncome", yes);
+        Graph remic = fgs.getGraph(partIV);
+        assertEquals(Boolean.TRUE, remic.get("/flowKnockoutScheduleEPartIV").get());
+        assertEquals(Boolean.TRUE, remic.get(SCHEDULE_E_PART_II_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, remic.get("/flowIsKnockedOut").get());
+        assertFalse(remic.get("/scheduleEPartIVLine39").complete(), "line 39 is not a silent zero");
+        assertEquals(List.of(SCHEDULE_E_PART_II_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(remic));
 
         Map<String, FactTypeWithItem> scheduleC = scheduleCOnly();
         Graph scheduleCGraph = fgs.getGraph(scheduleC);

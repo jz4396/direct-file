@@ -90,6 +90,10 @@
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
+    "/scheduleEHasPartIVIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
     "/socialSecurityReports": {
       "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
       "item": {
