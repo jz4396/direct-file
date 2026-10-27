@@ -167,6 +167,7 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIMoreThanFour" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIMoreThanTwo" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIILoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIINotMaterialParticipation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeA" />

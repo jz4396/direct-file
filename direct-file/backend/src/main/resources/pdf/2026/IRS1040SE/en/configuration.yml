@@ -13,8 +13,8 @@
 # one Part I total, not a property address, so column A carries lines 3, 4, 19, 20, and 21. Lines 5-18 and 22 stay
 # blank: depreciation and a loss are refused, and the expense total is line 19 "Other" so line 20 still adds lines
 # 5 through 19. 26 U.S.C. 61(a)(5), 61(a)(6), 212. Schedule E (2026) draft line 21: "Subtract line 20 from line 3
-# (rents) and/or 4 (royalties)." Line 26 is that total. Line 41 is /scheduleELine41 (line 26 + line 32), the same
-# amount as Schedule 1 line 5.
+# (rents) and/or 4 (royalties)." Line 26 is that total. Line 41 is /scheduleELine41 (lines 26, 32, 37, and 39).
+# Line 39 is $0 when the REMIC answer is no and incomplete when it is yes. The same amount is Schedule 1 line 5.
 #
 # Part II prints only the supported path already computed in scheduleE.xml: up to four domestic partnerships or
 # S corporations, column (a) name, column (b) P or S, column (k), line 29a column (k), lines 30 and 32, and line 27
@@ -24,11 +24,24 @@
 # 2026 draft Instructions for Schedule E, PDF p. 9, say to attach a continuation sheet, which this package does not
 # produce, and lines 29a-32 would still include that entity.
 #
-# Not mapped, left blank. Parts III and IV, line 27 Yes, line 31, lines 34-40, and lines 42-43 are not computed
-# here. An unanswered K-1 question, a loss, depreciation (Form 4562), personal use (26 U.S.C. 280A), substantial
-# services, a trade-or-business rental (26 U.S.C. 199A), Part III, or Part IV refuses the print. $0 amounts print
-# blank unless the fact is marked ExportZero (/scheduleENetIncome prints 0 when Part I is no and Part II is yes, so
-# line 26 still foots into line 41).
+# Part III prints the supported path: up to two estates or trusts, column (a) name and column (f) (nonpassive
+# Schedule K-1 (Form 1041) box 6), line 34a columns (d) and (f), and lines 35-37. 26 U.S.C. 652(a), 662(a).
+# Schedule K-1 (Form 1041) (2025) page 2 reports box 6 on line 33, column (d) or (f). Material participation
+# (26 U.S.C. 469(h)(1)) puts a nonnegative box 6 in column (f). Column (d) on the row stays blank: a supported
+# return has it at zero, and a nonzero box 8 is passive under 26 U.S.C. 469(c)(2) and 469(c)(4) and refuses the
+# print. Line 34a column (d) is that zero and is marked ExportZero, so it prints 0. A third estate refuses the
+# print (/flowKnockoutScheduleEPartIIIMoreThanTwo): PDF p. 10 says to attach a continuation sheet, which this
+# package does not produce, and lines 34a-37 would still include that estate. Column (b) EIN is not collected.
+#
+# Part IV is not mapped. A REMIC yes makes /flowKnockoutScheduleEPartIV true, which makes
+# /flowKnockoutScheduleEPartII true even when the K-1 answer is no. Line 39 stays incomplete, so it is not
+# entered as zero. 26 U.S.C. 860C. Schedule Q (Form 1066).
+#
+# Not mapped, left blank: line 27 Yes, line 31, line 33 columns (c) and (e), lines 34b, 38, 40, 42, and 43.
+# An unanswered K-1 or REMIC question, a loss, depreciation (Form 4562), personal use (26 U.S.C. 280A),
+# substantial services, a trade-or-business rental (26 U.S.C. 199A), or an out-of-scope estate or trust refuses
+# the print. $0 amounts print blank unless the fact is marked ExportZero (/scheduleENetIncome prints 0 when
+# Part I is no and Part II is yes, so line 26 still foots into line 41).
 includeWhen: /pdfIncludeScheduleE
 customMaps:
   template:
@@ -88,6 +101,29 @@ form:
       f2_48[0]: /scheduleEPartIILine30 # "30. Add columns (h) and (k) of line 29a."
       # f2_49[0]: line 31. Always $0 when line 30 is complete, and $0 prints blank.
       f2_50[0]: /scheduleEPartIILine32 # "32. Total partnership and S corporation income or (loss)."
+      Table_Line33a-b[0]:
+        RowA[0]:
+          f2_51[0]: /scheduleEEstates/[0]/entityName # "33. Row: A. Column: (a) Name."
+          # f2_52[0]: column (b) EIN. Not collected.
+        RowB[0]:
+          f2_53[0]: /scheduleEEstates/[1]/entityName # "Row: B. Column: (a) Name."
+          # f2_54[0]: column (b) EIN. Not collected.
+      Table_Line33c-f[0]:
+        RowA[0]:
+          # f2_55[0]: column (c). A passive deduction refuses the print.
+          # f2_56[0]: column (d). A nonzero box 8 refuses the print. A supported row is zero and prints blank.
+          # f2_57[0]: column (e). A deduction or loss refuses the print.
+          f2_58[0]: /scheduleEEstates/[0]/columnF # "(f) Other income from Schedule K-1."
+        RowB[0]:
+          # f2_59[0] / f2_60[0] / f2_61[0]: columns (c), (d), and (e). Same as row A.
+          f2_62[0]: /scheduleEEstates/[1]/columnF # "Row: B. Column: (f) Other income from Schedule K-1."
+      f2_64[0]: /scheduleEPartIIILine34aColumnD # "34a. (d) Passive income from Schedule K-1."
+      f2_66[0]: /scheduleEPartIIILine34aColumnF # "34a. (f) Other income from Schedule K-1."
+      # f2_67[0] / f2_69[0]: line 34b columns (c) and (e). A deduction or loss refuses the print.
+      f2_71[0]: /scheduleEPartIIILine35 # "35. Add columns (d) and (f) of line 34a."
+      f2_72[0]: /scheduleEPartIIILine36 # "36. Add columns (c) and (e) of line 34b." $0 prints blank.
+      f2_73[0]: /scheduleEPartIIILine37 # "37. Total estate and trust income or (loss). Combine lines 35 and 36."
+      # f2_74 through f2_79: Part IV. A REMIC yes refuses the print. Line 39 is not entered as zero.
     Page3[0]:
       f3_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Page 3. Name(s) shown on return."
       f3_2[0]: /primaryFiler/tin # "Your social security number."

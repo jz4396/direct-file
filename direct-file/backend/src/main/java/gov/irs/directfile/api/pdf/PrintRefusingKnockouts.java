@@ -121,6 +121,11 @@ public final class PrintRefusingKnockouts {
             // the fifth name would be omitted. Complete false when Part II is not reported, the entity list is not
             // finished (/flowKnockoutScheduleEPartII already refuses that), or the finished list has four or fewer.
             "/flowKnockoutScheduleEPartIIMoreThanFour",
+            // More than two estates or trusts. 2026 draft Instructions for Schedule E, PDF p. 10: attach a
+            // continuation sheet. Lines 34a, 35, and 37 include every estate, and line 33 has only two rows, so
+            // the third name would be omitted. Complete false when Part III is not reported, the estate list is
+            // not finished (/flowKnockoutScheduleEPartII already refuses that), or the finished list has two or fewer.
+            "/flowKnockoutScheduleEPartIIIMoreThanTwo",
             // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
             // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)
             // threshold; above it Form 8995-A applies. A prior-year QBI loss carryforward (Form 8995 line 3), a

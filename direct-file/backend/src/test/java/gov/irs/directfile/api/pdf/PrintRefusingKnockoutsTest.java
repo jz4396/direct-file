@@ -80,6 +80,7 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
     static final String SCHEDULE_E_PART_II_KNOCKOUT = "/flowKnockoutScheduleEPartII";
     static final String SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT = "/flowKnockoutScheduleEPartIIMoreThanFour";
+    static final String SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT = "/flowKnockoutScheduleEPartIIIMoreThanTwo";
     static final String QBI_ABOVE_THRESHOLD_KNOCKOUT = "/flowKnockoutQbiAboveThreshold";
     static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
@@ -161,6 +162,7 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
                 SCHEDULE_E_PART_II_KNOCKOUT, // Schedule E Parts II-III and Schedule SE K-1 box 14 code A
                 SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT, // line 28 has four rows; no continuation sheet
+                SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT, // line 33 has two rows; no continuation sheet
                 QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
                 QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
                 QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
@@ -176,7 +178,7 @@ class PrintRefusingKnockoutsTest {
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
         // #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(39, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(40, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

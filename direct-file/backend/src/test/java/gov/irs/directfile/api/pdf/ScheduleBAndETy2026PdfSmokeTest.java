@@ -27,6 +27,7 @@ import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_D
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_LOSS_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT;
+import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PERSONAL_USE_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
@@ -55,12 +56,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * $10,000, so line 2 and line 4 are $10,000 (line 3, Form 8815, is not claimed). Schedule E Part I: $12,000 rents +
  * $500 royalties − $4,000 expenses = $8,500 (26 U.S.C. 61(a)(5), 61(a)(6), 212). Wages stay at $50,000 so modified
  * AGI is under the 26 U.S.C. 1411(b) threshold and Form 8960 does not stop the return. A supported Part II K-1 of
- * $12,000 makes line 41 and Schedule 1 line 5 $20,500 (26 U.S.C. 702(a)).
+ * $12,000 makes line 41 and Schedule 1 line 5 $20,500 (26 U.S.C. 702(a)). A supported Part III estate, box 6
+ * $9,000 in column (f), makes line 37 $9,000 and, with Part I, line 41 $17,500 (26 U.S.C. 652(a), 662(a)).
+ * /scheduleEHasPartIVIncome is answered no on every printable fixture. A REMIC yes refuses the print even when
+ * the K-1 answer is no (26 U.S.C. 860C).
  */
 class ScheduleBAndETy2026PdfSmokeTest {
     static final String W2 = Form8959Form8960Ty2026PdfSmokeTest.W2;
     static final String INT = Form8959Form8960Ty2026PdfSmokeTest.INT;
     static final String K1 = "b7e1c2a0-1111-4222-8333-444455556666";
+    static final String ESTATE = "c8f2d3b1-2222-4333-8444-555566667777";
+    static final String ESTATE_2 = "c8f2d3b1-2222-4333-8444-555566667778";
     static final String SB_FOOTER = "Schedule B (Form 1040) 2026";
     static final String SE_FOOTER = "Schedule E (Form 1040) 2026";
     static final String SB_TEMPLATE = "pdf/2026/IRS1040SB/en/f1040sb--dft.pdf";
@@ -77,6 +83,10 @@ class ScheduleBAndETy2026PdfSmokeTest {
         standardDeduction(m);
         partIScreeners(m, "12000.00", "500.00", "4000.00");
         m.put("/scheduleEHasPartIIIncome", bool(false));
+        // #257: the Part II stop is also true when the REMIC answer is yes, even if the K-1 answer is no.
+        // An unanswered REMIC question leaves that stop incomplete, so a printable fixture answers it no.
+        m.put("/scheduleEHasPartIIIIncome", bool(false));
+        m.put("/scheduleEHasPartIVIncome", bool(false));
         return syntheticFiler(m);
     }
 
@@ -124,6 +134,36 @@ class ScheduleBAndETy2026PdfSmokeTest {
         partIIGate(m);
         m.put("/scheduleEK1s", collection(K1));
         k1(m, K1, "Northwind Partners", "P", "12000.00");
+        return m;
+    }
+
+    /** Supported Part III estate: domestic, box 6 only, material participation. Box 8 is zero. */
+    static void estate(Map<String, String> m, String id, String name, String box6) {
+        String p = "/scheduleEEstates/#" + id + "/";
+        m.put(p + "entityName", string(name));
+        m.put(p + "isForeignBeneficiary", bool(false));
+        m.put(p + "isForeignTrust", bool(false));
+        m.put(p + "inconsistentTreatment", bool(false));
+        m.put(p + "box5", dollar("0.00"));
+        m.put(p + "box6", dollar(box6));
+        m.put(p + "box7", dollar("0.00"));
+        m.put(p + "box8", dollar("0.00"));
+        m.put(p + "materiallyParticipates", bool(true));
+        m.put(p + "hasOtherK1Amount", bool(false));
+        m.put(p + "basisLimitApplies", bool(false));
+        m.put(p + "anyAmountNotAtRisk", bool(false));
+        m.put(p + "passiveDeductionOrLoss", bool(false));
+    }
+
+    /** Part I $8,500 plus one supported estate, box 6 $9,000. Line 41 = $17,500. */
+    static Map<String, String> partIAndPartIII() {
+        Map<String, String> m = partI();
+        partIIGate(m);
+        m.put("/scheduleEHasPartIIIIncome", bool(true));
+        m.put("/scheduleEEstatesIsDone", bool(true));
+        m.put("/scheduleEK1s", EMPTY_COLLECTION);
+        m.put("/scheduleEEstates", collection(ESTATE));
+        estate(m, ESTATE, "Harbor Trust", "9000.00");
         return m;
     }
 
@@ -204,7 +244,14 @@ class ScheduleBAndETy2026PdfSmokeTest {
             blank(se, "f2_6[0]", "line 28A name");
             blank(se, "f2_49[0]", "line 31");
             blank(se, "f2_50[0]", "line 32");
-            blank(se, "f2_51[0]", "Part III");
+            blank(se, "f2_51[0]", "line 33A name");
+            blank(se, "f2_58[0]", "line 33A column (f)");
+            amount(se, "f2_64[0]", 0, "line 34a column (d) is zero");
+            amount(se, "f2_66[0]", 0, "line 34a column (f) is zero");
+            blank(se, "f2_71[0]", "line 35");
+            blank(se, "f2_72[0]", "line 36");
+            blank(se, "f2_73[0]", "line 37");
+            blank(se, "f2_79[0]", "line 39 Part IV");
             blank(se, "f3_3[0]", "line 40");
             amount(se, "f3_4[0]", 8500, "line 41");
             blank(se, "f3_5[0]", "line 42");
@@ -237,11 +284,58 @@ class ScheduleBAndETy2026PdfSmokeTest {
             amount(se, "f2_48[0]", 12000, "line 30");
             blank(se, "f2_49[0]", "line 31");
             amount(se, "f2_50[0]", 12000, "line 32");
+            blank(se, "f2_51[0]", "line 33A name");
+            amount(se, "f2_64[0]", 0, "line 34a column (d)");
+            amount(se, "f2_66[0]", 0, "line 34a column (f)");
             blank(se, "f2_73[0]", "line 37 Part III");
             blank(se, "f2_79[0]", "line 39 Part IV");
             amount(se, "f3_4[0]", 20500, "line 41 = 8,500 + 12,000");
             Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
             amount(s1, "f1_09[0]", 20500, "Schedule 1 line 5 = line 41");
+        }
+    }
+
+    @Test
+    void scheduleEPartIIIPrintsColumnFAndFootsToLine41() throws Exception {
+        byte[] bytes = generate(partIAndPartIII());
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            amount(se, "f2_5[0]", 8500, "line 26");
+            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
+            blank(se, "f2_52[0]", "line 33A EIN");
+            blank(se, "f2_56[0]", "line 33A column (d)");
+            amount(se, "f2_58[0]", 9000, "line 33A column (f)");
+            blank(se, "f2_53[0]", "line 33B name");
+            amount(se, "f2_64[0]", 0, "line 34a column (d)");
+            amount(se, "f2_66[0]", 9000, "line 34a column (f)");
+            amount(se, "f2_71[0]", 9000, "line 35");
+            blank(se, "f2_72[0]", "line 36");
+            amount(se, "f2_73[0]", 9000, "line 37");
+            blank(se, "f2_74[0]", "Part IV name");
+            blank(se, "f2_79[0]", "line 39");
+            amount(se, "f3_4[0]", 17500, "line 41 = 8,500 + 9,000");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "f1_09[0]", 17500, "Schedule 1 line 5 = line 41");
+        }
+
+        Map<String, String> two = partI();
+        partIIGate(two);
+        two.put("/scheduleEHasPartIIIIncome", bool(true));
+        two.put("/scheduleEEstatesIsDone", bool(true));
+        two.put("/scheduleEK1s", EMPTY_COLLECTION);
+        two.put("/scheduleEEstates", collection(ESTATE, ESTATE_2));
+        estate(two, ESTATE, "Harbor Trust", "3000.00");
+        estate(two, ESTATE_2, "Cedar Trust", "2500.00");
+        byte[] both = generate(two);
+        try (PDDocument doc = Loader.loadPDF(both)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
+            amount(se, "f2_58[0]", 3000, "row A column (f)");
+            assertEquals("Cedar Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_53[0]").trim());
+            amount(se, "f2_62[0]", 2500, "row B column (f)");
+            amount(se, "f2_66[0]", 5500, "line 34a column (f)");
+            amount(se, "f2_73[0]", 5500, "line 37");
+            amount(se, "f3_4[0]", 14000, "line 41 = 8,500 + 5,500");
         }
     }
 
@@ -285,6 +379,21 @@ class ScheduleBAndETy2026PdfSmokeTest {
             k1(five, ids[i], "Entity " + (i + 1), "P", "100.00");
         }
         refuses(five, SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT);
+
+        Map<String, String> box8 = partIAndPartIII();
+        box8.put("/scheduleEEstates/#" + ESTATE + "/box8", dollar("1500.00"));
+        refuses(box8, SCHEDULE_E_PART_II_KNOCKOUT);
+
+        Map<String, String> remic = partI();
+        remic.put("/scheduleEHasPartIVIncome", bool(true));
+        refuses(remic, SCHEDULE_E_PART_II_KNOCKOUT);
+
+        Map<String, String> third = partIAndPartIII();
+        String thirdId = "c8f2d3b1-2222-4333-8444-555566667779";
+        third.put("/scheduleEEstates", collection(ESTATE, ESTATE_2, thirdId));
+        estate(third, ESTATE_2, "Cedar Trust", "2500.00");
+        estate(third, thirdId, "Elm Trust", "100.00");
+        refuses(third, SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT);
     }
 
     @Test
@@ -339,6 +448,13 @@ class ScheduleBAndETy2026PdfSmokeTest {
                         Map.entry("f2_42[0]", "29a. (k)"),
                         Map.entry("f2_48[0]", "30. Add columns"),
                         Map.entry("f2_50[0]", "32. Total partnership"),
+                        Map.entry("f2_51[0]", "33."),
+                        Map.entry("f2_58[0]", "(f) Other income"),
+                        Map.entry("f2_64[0]", "34a. (d)"),
+                        Map.entry("f2_66[0]", "34a. (f)"),
+                        Map.entry("f2_71[0]", "35. Add columns"),
+                        Map.entry("f2_72[0]", "36. Add columns"),
+                        Map.entry("f2_73[0]", "37. Total estate"),
                         Map.entry("f3_4[0]", "41. Total income")));
     }
 
