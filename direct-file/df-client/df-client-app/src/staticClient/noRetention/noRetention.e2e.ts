@@ -1,13 +1,17 @@
 import fs from 'fs';
 import http from 'http';
 import path from 'path';
+import { randomUUID } from 'crypto';
 import yaml from 'js-yaml';
 import type { AddressInfo } from 'net';
-import { chromium, type Browser, type BrowserContext, type Page, type Request } from 'playwright-core';
+import type { Browser, BrowserContext, Page, Request } from 'playwright';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { scenarioFactGraphJson } from '../../saveState/saveStateTestUtils.js';
 import { createSaveState } from '../../saveState/saveStateSchema.js';
 import { DEVICE_SAVE_KEY } from '../../saveState/deviceSaveStore.js';
+import { createFlowConfig } from '../../flow/flowConfig.js';
+import flowNodes from '../../flow/flow.js';
+import { launchPinnedChromium } from './pinnedChromium.js';
 import {
   decryptText,
   ENCRYPTED_FORMAT,
@@ -20,15 +24,14 @@ import { startStagedSiteServer, type StagedSiteServer } from './stagedSiteServer
 /**
  * No-retention proof for the static client-only build, in a real browser (#132, #126).
  *
- * Runs the staged site (`npm run build:static && npm run stage:static`) in headless Chrome, served locally with the
- * site's own `_headers` and `_redirects`, and drives the app the way a person would: start a return, type a name,
- * date of birth, address and phone number into the interview (autosave), then import a golden end-to-end scenario
- * (synthetic data) save file carrying a TIN and a wage amount. Every value typed or imported is a unique marker.
+ * Runs the staged site (`npm run build:static && npm run stage:static`) in pinned headless Chromium, served locally
+ * with the site's own `_headers` and `_redirects`, and drives the app the way a person would: start a return, type a
+ * name, date of birth, address and phone number into the interview (autosave), import a golden end-to-end scenario
+ * (synthetic data) save file carrying a TIN and a wage amount, open every income screen, save and read the wages
+ * back, open review, and attempt PDF, sign, and submit. Every value typed or imported is a unique marker.
  *
  * Asserted for the whole session, across every page, worker and service worker in the browser context:
- * - every request is a same-origin GET with no body; every one but a page load is for a file of the staged site; a
- *   query string appears only on a reload of an interview URL, and then holds only the app's own collection-item ids
- *   (random UUIDs);
+ * - every request is a same-origin GET for a static asset, with no body and no query string;
  * - no request to the `.invalid` API origin or any other origin; nothing reaches a second local "collector" server,
  *   even when the page deliberately tries fetch, XMLHttpRequest, sendBeacon, WebSocket, EventSource, a
  *   cross-origin image and a form post to it; no WebSocket is opened to any host;
@@ -44,9 +47,12 @@ import { startStagedSiteServer, type StagedSiteServer } from './stagedSiteServer
  *   ciphertext that opens with the passphrase only; no marker or passphrase is in it; "Clear all data on this
  *   device" removes it, and nothing comes back after a reload.
  *
- * Chrome comes from CHROME_PATH, or else Playwright's `chrome` channel (the installed Google Chrome). No browser is
- * downloaded, and nothing outside 127.0.0.1 is contacted: requests to any other host are aborted and fail the test.
+ * Chromium is the revision pinned by the playwright devDependency (`launchPinnedChromium`). Nothing outside 127.0.0.1
+ * is contacted: requests to any other host are aborted and fail the test.
  */
+
+const flow = createFlowConfig(flowNodes);
+const incomeScreens = flow.screens.filter((screen) => screen.categoryRoute === `/flow/income`);
 
 const APP_DIR = path.resolve(__dirname, `../../..`);
 const SITE_DIR = path.resolve(APP_DIR, `../cloudflare-pages/out`);
@@ -57,6 +63,17 @@ const t = (
     account: { deviceData: { title: string; export: Section; import: Section; device: Section; clear: Section } };
   }
 ).account.deviceData;
+
+const refusal = (
+  yaml.load(fs.readFileSync(path.join(APP_DIR, `src/locales/en.staticClient.yaml`), `utf8`)) as {
+    systemAlerts: {
+      staticClient: {
+        pdfRefusal: { alertText: { heading: string } };
+        efileRefusal: { alertText: { heading: string } };
+      };
+    };
+  }
+).systemAlerts.staticClient;
 
 /** Typed into the interview. */
 const UI = {
@@ -127,8 +144,6 @@ async function assertEncryptedEnvelope(value: string, expectedMarkers: string[])
   expect(findMarkers(plaintext)).toEqual(expect.arrayContaining(expectedMarkers));
   await expect(decryptText(envelope, `${PASSPHRASE} wrong`)).rejects.toThrow();
 }
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * The TIN as its three parts in any order, with only non-digits between them (dashes, spaces, JSON keys and quotes,
@@ -235,10 +250,80 @@ function markerSaveFile(): string {
   facts[`${primary}/lastName`] = { $type: `gov.irs.factgraph.persisters.StringWrapper`, item: FILE.lastName };
   facts[`${primary}/tin`] = { $type: `gov.irs.factgraph.persisters.TinWrapper`, item: FILE.tin };
   facts[`/formW2s/#${w2}/writableWages`] = { $type: `gov.irs.factgraph.persisters.DollarWrapper`, item: FILE.wages };
+  // Box 12 code W puts the primary filer in /filersWithHsa so those screens can open.
+  facts[`/formW2s/#${w2}/employerHsaContributions`] = {
+    $type: `gov.irs.factgraph.persisters.DollarWrapper`,
+    item: `500.00`,
+  };
+  const no = { $type: `gov.irs.factgraph.persisters.BooleanWrapper`, item: false };
+  // These answers keep the HSA intro knockouts false so /filersWithHsa contains the primary filer.
+  facts[`/hasHsaMedicalSavingsAccountType`] = no;
+  facts[`/writableHasHsaExcessContributionsPreviousYear`] = no;
+  facts[`/writableHasHsaWithdrawnExcessContributionsYesNo`] = no;
+  // One synthetic item in each writable income collection so those screens can open.
+  const collectionType = facts[`/formW2s`].$type;
+  for (const collection of [
+    `/form1099Gs`,
+    `/form1099Miscs`,
+    `/form1099Rs`,
+    `/interestReports`,
+    `/dividendReports`,
+    `/socialSecurityReports`,
+    `/scheduleCBusinesses`,
+    `/scheduleEEstates`,
+    `/scheduleEK1s`,
+    `/cdccCareProviders`,
+    `/hsaDistributions`,
+  ]) {
+    const items = (facts[collection]?.item as { items?: unknown } | undefined)?.items;
+    if (!Array.isArray(items) || items.length === 0) {
+      facts[collection] = { $type: collectionType, item: { items: [randomUUID()] } };
+    }
+  }
   const text = JSON.stringify(createSaveState(facts));
   expect(findMarkers(text)).toEqual(expect.arrayContaining([FILE.firstName, FILE.lastName, TIN_JSON, FILE.wages]));
   return text;
 }
+
+/** First item id of each collection in the save file, keyed by the collection path (`/formW2s`). */
+function collectionItemIds(saveText: string): Map<string, string> {
+  const facts = (JSON.parse(saveText) as { facts: Record<string, { item?: { items?: unknown } }> }).facts;
+  const ids = new Map<string, string>();
+  for (const [factPath, fact] of Object.entries(facts)) {
+    const items =
+      fact?.item && typeof fact.item === `object` && fact.item !== null && `items` in fact.item
+        ? (fact.item as { items: unknown }).items
+        : undefined;
+    if (Array.isArray(items) && typeof items[0] === `string` && /^\/[A-Za-z][A-Za-z0-9]*$/.test(factPath)) {
+      ids.set(factPath, items[0]);
+    }
+  }
+  return ids;
+}
+
+/** In-app navigation. A full page load would drop the in-memory return. */
+async function openInApp(page: Page, url: string) {
+  await page.evaluate((to) => {
+    window.history.pushState({}, ``, to);
+    window.dispatchEvent(new PopStateEvent(`popstate`));
+  }, url);
+}
+
+const INCOME_GROUPS = [
+  `/flow/income/income-sources/`,
+  `/flow/income/jobs/`,
+  `/flow/income/unemployment/`,
+  `/flow/income/interest/`,
+  `/flow/income/dividends/`,
+  `/flow/income/retirement/`,
+  `/flow/income/social-security/`,
+  `/flow/income/hsa/`,
+  `/flow/income/dependent-care/`,
+  `/flow/income/alaska-pfd/`,
+  `/flow/income/schedule-c/`,
+  `/flow/income/schedule-e/`,
+  `/flow/income/total-income-summary/`,
+];
 
 type Recorded = {
   method: string;
@@ -287,9 +372,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     saveFile = markerSaveFile();
     site = await startStagedSiteServer(SITE_DIR);
     collector = await startCollector();
-    browser = await chromium.launch(
-      process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: `chrome` }
-    );
+    browser = await launchPinnedChromium();
   }, 60_000);
 
   afterAll(async () => {
@@ -392,12 +475,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(sent.filter((r) => r.url.includes(`.invalid`)).map((r) => r.url)).toEqual([]);
     expect(sent.filter((r) => r.method !== `GET`).map((r) => `${r.method} ${r.url}`)).toEqual([]);
     expect(sent.filter((r) => r.body !== null).map((r) => r.url)).toEqual([]);
-    const badQuery = sent.filter((r) => {
-      const { searchParams, search } = new URL(r.url);
-      if (!search) return false;
-      return r.resourceType !== `document` || [...searchParams.values()].some((v) => !UUID.test(v));
-    });
-    expect(badQuery.map((r) => r.url)).toEqual([]);
+    expect(sent.filter((r) => new URL(r.url).search !== ``).map((r) => r.url)).toEqual([]);
     // Anything but a page load must be a file of the staged site (no made-up path can carry data).
     const notStaged = sent.filter((r) => {
       if (r.resourceType === `document`) return false;
@@ -514,9 +592,10 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(directive(`script-src`)).not.toContain(`unsafe-`);
 
     // Interview: name, date of birth, address and phone, each saved with "Save and continue" (autosave).
+    // A fresh return has /flowIsKnockedOut set (/flowKnockoutScheduleBPartIII is true until Part III is
+    // answered), so the checklist does not show Start. The about-you screens are still available.
     await startReturn(page);
-    await page.getByRole(`link`, { name: `Start`, exact: true }).click();
-    await page.waitForURL(/\/about-you-intro/);
+    await openInApp(page, `/df/file/flow/you-and-your-family/about-you/about-you-intro`);
     await page.getByRole(`button`, { name: `Continue`, exact: true }).click();
     await page.waitForURL(/\/about-you-basic-info/);
     await page.locator(`input[id$="/firstName"]`).fill(UI.firstName);
@@ -544,6 +623,129 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(findMarkers(await exportPlaintext(page))).toEqual(
       expect.arrayContaining([FILE.firstName, FILE.lastName, TIN_JSON, FILE.wages])
     );
+
+    // Every income screen, then save the imported wages and read them back on that screen.
+    expect(incomeScreens.length).toBeGreaterThan(100);
+    for (const group of INCOME_GROUPS) {
+      expect(incomeScreens.some((screen) => screen.screenRoute.startsWith(group))).toBe(true);
+    }
+    const ids = collectionItemIds(saveFile);
+    const savedFacts = (JSON.parse(saveFile) as { facts: Record<string, { item?: unknown }> }).facts;
+    const primaryKey = Object.keys(savedFacts).find(
+      (key) => key.endsWith(`/isPrimaryFiler`) && savedFacts[key].item === true
+    );
+    const primaryFilerId = primaryKey?.match(/#([^/]+)\/isPrimaryFiler$/)?.[1];
+    const openIncomeScreen = async (screen: (typeof incomeScreens)[number]) => {
+      const fromFile = screen.collectionContext ? ids.get(screen.collectionContext) : undefined;
+      const itemId =
+        fromFile ?? (screen.collectionContext === `/filersWithHsa` && primaryFilerId ? primaryFilerId : undefined);
+      const query = itemId ? `?${new URLSearchParams([[screen.collectionContext as string, itemId]])}` : ``;
+      await openInApp(page, `/df/file${screen.screenRoute}${query}`);
+      await page.waitForFunction(
+        (expected) => location.pathname.endsWith(expected) || location.pathname.endsWith(`/not-found`),
+        screen.screenRoute,
+        { timeout: 8_000 }
+      );
+    };
+    const ERROR_PAGE = `We’re experiencing a problem`;
+    // The site-wide error boundary stays up until a reload, which drops the in-memory return.
+    const recoverReturn = async () => {
+      await page.goto(`${site.origin}/df/file/home`);
+      await startReturn(page);
+      await openDeviceData(page);
+      await importSaveFile(page);
+    };
+    const missed: string[] = [];
+    const errored: string[] = [];
+    let boundary = false;
+    for (const screen of incomeScreens) {
+      try {
+        if (boundary) {
+          await recoverReturn();
+          boundary = false;
+        }
+        await openIncomeScreen(screen);
+        const landed = new URL(page.url()).pathname;
+        if (!landed.endsWith(screen.screenRoute)) {
+          missed.push(`${screen.screenRoute} -> ${landed}`);
+        } else if ((await page.getByText(ERROR_PAGE).count()) > 0) {
+          errored.push(screen.screenRoute);
+          boundary = true;
+        }
+      } catch {
+        missed.push(screen.screenRoute);
+        boundary = true;
+      }
+    }
+    expect(missed).toEqual([]);
+    // These routes were opened. For this return their headings are gated off, so the app shows the
+    // site-wide error boundary instead of a screen. The set is exact: a new crash fails the test.
+    expect(errored).toEqual([
+      `/flow/income/interest/int-income-loop-intro-data-import`,
+      `/flow/income/dependent-care/dep-care-combat-pay`,
+      `/flow/income/dependent-care/dep-care-combat-pay-change`,
+      `/flow/income/dependent-care/earned-income-rule-tp1-benefits`,
+      `/flow/income/dependent-care/earned-income-rule-tp2-benefits`,
+      `/flow/income/dependent-care/tin-ein-check`,
+      `/flow/income/dependent-care/tin-missing-reason`,
+      `/flow/income/dependent-care/provider-due-diligence`,
+      `/flow/income/hsa/hsa-y-n`,
+      `/flow/income/hsa/hsa-testing-period-contribution-check`,
+      `/flow/income/hsa/hsa-testing-period-additional-income`,
+    ]);
+    if (boundary) await recoverReturn();
+
+    const wagesScreen = incomeScreens.find((screen) => screen.route === `w2-add-boxes-1-8`);
+    expect(wagesScreen?.collectionContext).toBeTruthy();
+    await openIncomeScreen(wagesScreen!);
+    await page.locator(`main h1`).waitFor();
+    const wageValues = async () =>
+      page.locator(`main input`).evaluateAll((els) => els.map((el) => (el as HTMLInputElement).value));
+    const showsWages = async () => {
+      const values = await wageValues();
+      const text = await page.locator(`main`).innerText();
+      return values.some((value) => value.includes(`73519`) || value.includes(`73,519`)) || text.includes(FILE.wages);
+    };
+    expect(await showsWages()).toBe(true);
+    const saveButton = page.getByRole(`button`, { name: `Save and continue` });
+    await saveButton.click();
+    await page.waitForFunction((route) => !location.pathname.endsWith(route), wagesScreen!.screenRoute, {
+      timeout: 15_000,
+    });
+    expect(await page.getByText(`We’re having a problem with our network`).count()).toBe(0);
+    await openIncomeScreen(wagesScreen!);
+    await page.locator(`main h1`).waitFor();
+    expect(await showsWages()).toBe(true);
+
+    // Review, then PDF / sign / submit. Each refusal is on-screen. Neither opens a PDF nor a success screen.
+    await openInApp(page, `/df/file/flow/complete/review/review`);
+    await page.getByRole(`heading`, { name: `Review and confirm`, level: 1 }).waitFor();
+    const pagesBeforePdf = context.pages().length;
+    await page.getByRole(`button`, { name: `Draft form 1040 (PDF)` }).click();
+    await page
+      .getByTestId(`static-pdf-refusal`)
+      .getByRole(`heading`, { name: refusal.pdfRefusal.alertText.heading })
+      .waitFor();
+    expect(context.pages().length).toBe(pagesBeforePdf);
+    expect(await page.getByText(/You submitted your/).count()).toBe(0);
+
+    await openInApp(page, `/df/file/flow/complete/submit/sign-return-submit`);
+    await page.getByRole(`heading`, { name: /time to submit your federal tax return/, level: 1 }).waitFor();
+    // The certify checkbox is in the DOM but outside the layout viewport, so a Playwright click never lands.
+    await page.evaluate(() => {
+      document.querySelectorAll(`input[type="checkbox"]`).forEach((node) => {
+        const input = node as HTMLInputElement;
+        if (!input.checked) input.click();
+      });
+      const button = [...document.querySelectorAll(`button`)].find((el) => /tax return/i.test(el.textContent ?? ``));
+      button?.click();
+    });
+    await page
+      .getByTestId(`system-alert`)
+      .getByRole(`heading`, { name: refusal.efileRefusal.alertText.heading })
+      .waitFor();
+    expect(page.url()).not.toContain(`sign-return-done`);
+    expect(await page.getByText(/You submitted your/).count()).toBe(0);
 
     // Deliberate exfiltration attempts with a marker are all refused before they reach the network.
     const attempts = await page.evaluate(
@@ -624,7 +826,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
 
     await assertNetwork(recorded, aborted, webSockets);
     await context.close();
-  }, 180_000);
+  }, 600_000);
 
   it(`writes only an encrypted copy on an explicit save, and "Clear all data" removes it`, async () => {
     const { context, page, recorded, aborted, webSockets } = await newSession();

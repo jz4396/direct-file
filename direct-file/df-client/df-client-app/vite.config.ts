@@ -143,10 +143,24 @@ export const configOptions: UserConfig = {
   },
 };
 
+/** Static builds must not ship the clientside-intercept fixtures. The import specifier ends in `.js`. */
+function stripDevDataImport(): Plugin {
+  const stub = path.resolve(__dirname, `src/staticClient/devDataImportStub.ts`);
+  return {
+    name: `df-strip-dev-data-import`,
+    enforce: `pre`,
+    resolveId(source) {
+      if (source.includes(`DevDataImportConfig`)) return stub;
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 // Production and `--mode static` builds ship only the app page; only `--mode development` adds the all-screens
 // tool (see src/buildConfig/buildInputs.ts). The dev server serves all-screens either way.
+// The static build swaps out the clientside-intercept fixtures so they are not a test-data loader in the bundle.
 export default defineConfig(({ mode }) => ({
   ...configOptions,
+  plugins: [...(configOptions.plugins ?? []), ...(mode === `static` ? [stripDevDataImport()] : [])],
   build: { ...configOptions.build, rollupOptions: { input: buildInputs(__dirname, mode) } },
 }));
