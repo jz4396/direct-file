@@ -80,6 +80,10 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_C_QBI_KNOCKOUT = "/flowKnockoutScheduleCQbi";
     static final String SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleCOutOfScope";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
+    /** Form 6251 lines 2c-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). */
+    static final String AMT_PREFERENCE_KNOCKOUT = "/flowKnockoutAmtPreferenceItems";
+    /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
+    static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
     /**
      * #87: the knockout that waits only on Form 8995, which still has no TY2026 template. Schedule C and Schedule 3-A
      * are pinned (#239), so they are no longer in this list. The field-map tests for a Schedule C return fill their
@@ -118,7 +122,7 @@ class PrintRefusingKnockoutsTest {
     }
 
     @Test
-    void listHoldsTheCodeQScheduleEicPaScheduleNrhForm2210Form8962ScheduleEQbiAndForm8995Knockouts() {
+    void listHoldsThePrintRefusingKnockoutsIncludingTheForm6251Stops() {
         List<String> expected = new ArrayList<>(List.of(
                 CODE_Q_KNOCKOUT, // Form 8949 code Q
                 SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
@@ -143,11 +147,13 @@ class PrintRefusingKnockoutsTest {
                 QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
                 SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
                 SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
-                FORM_8995_KNOCKOUT)); // Form 8995 is attached and has no TY2026 template or MeF mapping
+                FORM_8995_KNOCKOUT, // Form 8995 is attached and has no TY2026 template or MeF mapping
+                AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2t, 3 and 8
+                AMT_MFS_ADD_BACK_KNOCKOUT)); // MFS AMTI over $640,200, add-back not computed
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
-        // #123 adds the PA-40 and Schedule SP stops besides NRH. #246 adds /flowKnockoutScheduleEPartII.
-        // #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(28, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the two Form 6251 stops.
+        // #246 adds /flowKnockoutScheduleEPartII. #239 drops the Schedule C and Schedule 3-A template knockouts.
+        assertEquals(30, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -534,9 +540,7 @@ class PrintRefusingKnockoutsTest {
         assertTrue(computed.get(QBI_ABOVE_THRESHOLD_KNOCKOUT).complete());
         assertEquals(Boolean.TRUE, computed.get("/form8995Required").get());
         assertEquals(
-                List.of(FORM_8995_KNOCKOUT),
-                PrintRefusingKnockouts.refusingPaths(computed),
-                "no Form 8995 template");
+                List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(computed), "no Form 8995 template");
         assertEquals(Boolean.TRUE, computed.get("/flowIsKnockedOut").get(), "submission is blocked too");
         FactTypeWithItem yes = mapper.readValue(
                 "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
@@ -740,5 +744,101 @@ class PrintRefusingKnockoutsTest {
         assertEquals(Boolean.TRUE, actc.get("/pdfIncludeSchedule3A").get(), "Schedule 3-A is attached");
         assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(actc), "Schedule 3-A does not refuse the print");
         assertEquals(Boolean.FALSE, actc.get("/flowIsKnockedOut").get());
+    }
+
+    /**
+     * #89. Form 6251 (2026) draft, PDF p. 2 (form p. 1), line 4: "Combine lines 1b through 3. (If married filing
+     * separately and line 4 is more than $640,200, see instructions.)" A yes to the adjustments question would print
+     * lines 2c-2t, 3 and 8 blank (26 U.S.C. 55(b)(2), 56, 57). An MFS return over $640,200 would print line 4 without
+     * the 26 U.S.C. 55(d)(2) add-back. Both already block submission. The supported golden end-to-end scenario
+     * (synthetic data) leaves both complete and false, so that return still prints.
+     */
+    @Test
+    void form6251StopsRefuseThePrintAndASupportedReturnDoesNot() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        Map<String, FactTypeWithItem> supported = smoke(Form6251Ty2026PdfSmokeTest.amtScenario());
+        Graph printed = fgs.getGraph(supported);
+        assertEquals(Boolean.TRUE, printed.get("/form6251Required").get(), "Who Must File item 1");
+        assertCompleteFalse(printed, AMT_PREFERENCE_KNOCKOUT);
+        assertCompleteFalse(printed, AMT_MFS_ADD_BACK_KNOCKOUT);
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(printed), "supported AMT return prints");
+
+        ObjectMapper mapper = new ObjectMapper();
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        Map<String, FactTypeWithItem> adjustments = new HashMap<>(supported);
+        adjustments.put("/hasAmtPreferenceItems", yes);
+        Graph partial = fgs.getGraph(adjustments);
+        assertEquals(Boolean.TRUE, partial.get(AMT_PREFERENCE_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, partial.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(AMT_PREFERENCE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(partial));
+
+        Map<String, FactTypeWithItem> mfs = mfsAboveAddBack(supported);
+        Graph addBack = fgs.getGraph(mfs);
+        assertTrue(addBack.get("/form6251Line4").complete(), "line 4 is computed");
+        assertTrue(
+                new BigDecimal(addBack.get("/form6251Line4").get().toString()).compareTo(new BigDecimal("640200")) > 0,
+                "line 4 is over $640,200");
+        assertEquals(Boolean.TRUE, addBack.get(AMT_MFS_ADD_BACK_KNOCKOUT).get());
+        assertEquals(Boolean.FALSE, addBack.get(AMT_PREFERENCE_KNOCKOUT).get());
+        assertEquals(List.of(AMT_MFS_ADD_BACK_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(addBack));
+
+        Map<String, FactTypeWithItem> atThreshold = new HashMap<>(mfs);
+        atThreshold.put(
+                "/formW2s/#959c03d1-af4a-447f-96aa-d19397048a44/writableWages",
+                mapper.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.DollarWrapper\",\"item\":\"640200.00\"}",
+                        FactTypeWithItem.class));
+        atThreshold.put(
+                "/soldCapitalAssets",
+                mapper.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}",
+                        FactTypeWithItem.class));
+        atThreshold.put(
+                "/form8949Transactions",
+                mapper.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.CollectionWrapper\",\"item\":{\"items\":[]}}",
+                        FactTypeWithItem.class));
+        Graph boundary = fgs.getGraph(atThreshold);
+        assertTrue(boundary.get("/form6251Line4").complete(), "line 4 at the threshold");
+        assertTrue(
+                new BigDecimal(boundary.get("/form6251Line4").get().toString()).compareTo(new BigDecimal("640200"))
+                        <= 0,
+                "line 4 at or under $640,200: " + boundary.get("/form6251Line4").get());
+        assertCompleteFalse(boundary, AMT_MFS_ADD_BACK_KNOCKOUT);
+        assertFalse(PrintRefusingKnockouts.refusingPaths(boundary).contains(AMT_MFS_ADD_BACK_KNOCKOUT));
+    }
+
+    static void assertCompleteFalse(Graph graph, String path) {
+        Result<Object> result = graph.get(path);
+        assertTrue(result.complete(), path + " complete");
+        assertEquals(Boolean.FALSE, result.get(), path);
+    }
+
+    /** The supported AMT scenario switched to married filing separately, so line 4 is over the add-back threshold. */
+    static Map<String, FactTypeWithItem> mfsAboveAddBack(Map<String, FactTypeWithItem> supported) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, FactTypeWithItem> mfs = new HashMap<>(supported);
+        mfs.put(
+                "/filingStatus",
+                mapper.readValue(
+                        PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue(
+                                "marriedFilingSeparately", "/filingStatusOptions"),
+                        FactTypeWithItem.class));
+        mfs.put(
+                "/maritalStatus",
+                mapper.readValue(
+                        PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("married", "/maritalStatusOptions"),
+                        FactTypeWithItem.class));
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        FactTypeWithItem no = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}", FactTypeWithItem.class);
+        mfs.put("/MFSSpouseFilingReturn", yes);
+        mfs.put("/MFSLivingSpouseFilingReturn", yes);
+        mfs.put("/MFSSpouseHasGrossIncome", yes);
+        mfs.put("/livedTogetherAllYearWithSpouse", yes);
+        mfs.put("/MFSSpouse65OrOlder", no);
+        return mfs;
     }
 }

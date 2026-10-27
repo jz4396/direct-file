@@ -355,6 +355,72 @@ class PdfKnockoutRefusalTest {
         Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 
+    /**
+     * #89. Form 6251 (2026) draft, PDF p. 2 (form p. 1), line 2i: "Exercise of incentive stock options (excess of AMT
+     * income over regular tax income)"; line 3: "Other adjustments, including income-based related adjustments"; line
+     * 4: "Combine lines 1b through 3." A yes leaves lines 2c-2t, 3 and 8 blank (26 U.S.C. 55(b)(2), 56, 57). The
+     * English print refuses on /flowKnockoutAmtPreferenceItems. Without that entry the same return would print Form
+     * 6251 with those lines blank, not $0. Spanish is refused because the TY2026 template is outside pdf/2026/
+     * (26 U.S.C. 6011(a)).
+     */
+    @Test
+    void amtPreferenceItemsYesRefusesAPartial6251() throws Exception {
+        Map<String, FactTypeWithItem> facts =
+                PrintRefusingKnockoutsTest.smoke(Form6251Ty2026PdfSmokeTest.amtScenario());
+        facts.put(
+                "/hasAmtPreferenceItems",
+                MAPPER.readValue(
+                        "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
+                        FactTypeWithItem.class));
+        assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.AMT_PREFERENCE_KNOCKOUT);
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !p.equals(PrintRefusingKnockoutsTest.AMT_PREFERENCE_KNOCKOUT))
+                .toList();
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false, without);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            Map<String, String> f = Form6251Ty2026PdfSmokeTest.form6251Fields(doc);
+            assertFalse(f.isEmpty(), "without the stop, Form 6251 would print");
+            for (String suffix : List.of(
+                    "Page1[0].f1_13[0]", // 2i
+                    "Page1[0].f1_25[0]", // 3
+                    "Page1[0].f1_30[0]", // 8
+                    "Page2[0].f2_3[0]")) { // 14
+                assertEquals("", Form6251Ty2026PdfSmokeTest.field(f, suffix), suffix + " blank, not $0");
+            }
+            assertTrue(Form6251Ty2026PdfSmokeTest.line(f, "f1_26[0]") > 0, "line 4 would still print");
+        }
+    }
+
+    /**
+     * #89. Form 6251 (2026) draft, PDF p. 2 (form p. 1), line 4: "(If married filing separately and line 4 is more
+     * than $640,200, see instructions.)" 26 U.S.C. 55(d)(2) last sentence increases AMTI for a married individual
+     * filing a separate return once the exemption is fully phased out. That add-back is not computed. The English
+     * print refuses on /flowKnockoutAmtMfsAddBack; without that entry the same return would print Form 6251. Spanish
+     * is refused because the TY2026 template is outside pdf/2026/ (26 U.S.C. 6011(a)).
+     */
+    @Test
+    void mfsAmtiOverAddBackThresholdRefusesThePrint() throws Exception {
+        Map<String, FactTypeWithItem> supported =
+                PrintRefusingKnockoutsTest.smoke(Form6251Ty2026PdfSmokeTest.amtScenario());
+        Map<String, FactTypeWithItem> facts = PrintRefusingKnockoutsTest.mfsAboveAddBack(supported);
+        var graph = factGraphService.getGraph(facts);
+        assertTrue(
+                new java.math.BigDecimal(graph.get("/form6251Line4").get().toString())
+                                .compareTo(new java.math.BigDecimal("640200"))
+                        > 0,
+                "line 4");
+        assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.AMT_MFS_ADD_BACK_KNOCKOUT);
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !p.equals(PrintRefusingKnockoutsTest.AMT_MFS_ADD_BACK_KNOCKOUT))
+                .toList();
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false, without);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            Map<String, String> f = Form6251Ty2026PdfSmokeTest.form6251Fields(doc);
+            assertFalse(f.isEmpty(), "without the stop, Form 6251 would print");
+            assertTrue(Form6251Ty2026PdfSmokeTest.line(f, "f1_26[0]") > 64020000, "line 4 in cents, over $640,200");
+        }
+    }
+
     @Test
     void printRefusingKnockoutsAreSubmissionBlockingFacts() throws Exception {
         assertTrue(PrintRefusingKnockouts.FACT_PATHS.stream()

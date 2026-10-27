@@ -14,14 +14,18 @@
 # Part III amounts are whole dollars in the fact graph (#178: lines 18, 31, 34 and 39 round half up), so the pseudo-facts
 # print the same .00 amounts as every other line.
 #
-# Not mapped, left blank (never a silent 0), because a nonzero amount is a stop that blocks submission:
+# Not mapped, left blank (never a silent 0). A nonzero amount is a stop. The two Form 6251 stops are also in
+# PrintRefusingKnockouts, so a return that hits one cannot print this form with those lines blank:
 #   2b  Schedule 1 line 1 / 8z tax refund: Form 1099-G box 2 refunds and 8z income are unsupported income sources
 #       (/incomeSourcesSupported = false is part of /flowIsKnockedOut); the app has no Schedule 1 line 1 or 8z input.
-#   2c-2t, 3  AMT adjustments and preferences: /flowKnockoutAmtPreferenceItems (/hasAmtPreferenceItems). Line 2g
-#       (private activity bond interest, 1099-INT box 9) is also /flowKnockoutHasBonds.
+#   2c-2t, 3  AMT adjustments and preferences: /flowKnockoutAmtPreferenceItems (/hasAmtPreferenceItems), in
+#       PrintRefusingKnockouts. Line 2g (private activity bond interest, 1099-INT box 9) is also /flowKnockoutHasBonds.
 #   8   AMT foreign tax credit: 1099-INT foreign tax /flowKnockoutHasForeignTaxPaid; 1099-DIV foreign tax
 #       /flowKnockoutDividendForeignTaxPaid whenever line 7 > $0 (always true when this form prints).
 #   14  Schedule D line 19 (unrecaptured §1250 gain): /flowKnockoutUnrecaptured1250Gain.
+# Married filing separately with line 4 over $640,200 is /flowKnockoutAmtMfsAddBack (26 U.S.C. 55(d)(2) last
+# sentence), also in PrintRefusingKnockouts. Line 4 is mapped, and the add-back is not computed, so the package
+# is refused instead of printing line 4 without it.
 #   35-37  "If line 14 is zero or blank, skip lines 35 through 37" (line 37 is 0 in line 38).
 #   33-34  blank when "lines 32 and 12 are the same, skip lines 33 through 37" (Irs6251PdfForm).
 # $0 amounts print blank (FactGraphService zero suppression) except where the form says "enter -0-": lines 6, 7, 9,

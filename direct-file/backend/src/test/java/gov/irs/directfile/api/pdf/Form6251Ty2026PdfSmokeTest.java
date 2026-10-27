@@ -1,11 +1,16 @@
 package gov.irs.directfile.api.pdf;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
@@ -17,6 +22,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
 
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.cents;
@@ -25,6 +31,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -312,5 +319,110 @@ class Form6251Ty2026PdfSmokeTest {
                 "1000.00", facts.getOptional("~form6251PartIIILine26").get().toString(), "26 = line 21");
         assertEquals("", facts.getOptional("~form6251PartIIILine33").orElse("").toString(), "33 skipped");
         assertEquals("", facts.getOptional("~form6251PartIIILine34").orElse("").toString(), "34 skipped");
+    }
+
+    /**
+     * Each mapped amount field's tooltip on the 2026 draft names the line the field map fills. Lines that are a stop
+     * (2b-2t, 3, 8, 14, 35-37) stay unmapped, so they cannot print $0.
+     */
+    @Test
+    void mappedFieldTooltipsNameTheComputedLinesAndUnsupportedLinesStayUnmapped() throws Exception {
+        Map<String, String> expected = new LinkedHashMap<>();
+        expected.put("f1_1[0]", "Name(s) shown on Form 1040");
+        expected.put("f1_2[0]", "Your social security number");
+        expected.put("f1_3[0]", "1a. Subtract Schedule 1-A");
+        expected.put("f1_4[0]", "1b. Subtract line 1a");
+        expected.put("f1_5[0]", "2a. If filing Schedule A");
+        expected.put("f1_26[0]", "4. Alternative minimum taxable income");
+        expected.put("f1_27[0]", "5. Exemption");
+        expected.put("f1_28[0]", "6. Subtract line 5 from line 4");
+        expected.put("f1_29[0]", "7. If you are filing Form 2555");
+        expected.put("f1_31[0]", "9. Tentative minimum tax");
+        expected.put("f1_32[0]", "10. Add Form 1040");
+        expected.put("f1_33[0]", "11. A M T");
+        expected.put("f2_1[0]", "12. Enter the amount from Form 6251, line 6");
+        expected.put("f2_2[0]", "13. Enter the amount from line 4");
+        expected.put("f2_4[0]", "15. If you did not complete a Schedule D Tax Worksheet");
+        expected.put("f2_5[0]", "16. Enter the smaller of line 12 or line 15");
+        expected.put("f2_6[0]", "17. Subtract line 16 from line 12");
+        expected.put("f2_7[0]", "18. If line 17 is $244,500 or less");
+        expected.put("f2_8[0]", "19. Enter:");
+        expected.put("f2_9[0]", "20. Enter the amount from line 5");
+        expected.put("f2_10[0]", "21. Subtract line 20 from line 19");
+        expected.put("f2_11[0]", "22. Enter the smaller of line 12 or line 13");
+        expected.put("f2_12[0]", "23. Enter the smaller of line 21 or line 22");
+        expected.put("f2_13[0]", "24. Subtract line 23 from line 22");
+        expected.put("f2_14[0]", "25. Enter:");
+        expected.put("f2_15[0]", "26. Enter the amount from line 21");
+        expected.put("f2_16[0]", "27. Enter the amount from line 5");
+        expected.put("f2_17[0]", "28. Add line 26 and line 27");
+        expected.put("f2_18[0]", "29. Subtract line 28 from line 25");
+        expected.put("f2_19[0]", "30. Enter the smaller of line 24 or line 29");
+        expected.put("f2_20[0]", "31. Multiply line 30 by 15%");
+        expected.put("f2_21[0]", "32. Add lines 23 and 30");
+        expected.put("f2_22[0]", "33. Subtract line 32 from line 22");
+        expected.put("f2_23[0]", "34. Multiply line 33 by 20%");
+        expected.put("f2_27[0]", "38. Add lines 18, 31, 34, and 37");
+        expected.put("f2_28[0]", "39. If line 12 is $244,500 or less");
+        expected.put("f2_29[0]", "40. Enter the smaller of line 38 or line 39");
+
+        List<String> unmapped = List.of(
+                "f1_6[0]",
+                "f1_7[0]",
+                "f1_8[0]",
+                "f1_9[0]",
+                "f1_10[0]",
+                "f1_11[0]",
+                "f1_12[0]",
+                "f1_13[0]",
+                "f1_14[0]",
+                "f1_15[0]",
+                "f1_16[0]",
+                "f1_17[0]",
+                "f1_18[0]",
+                "f1_19[0]",
+                "f1_20[0]",
+                "f1_21[0]",
+                "f1_22[0]",
+                "f1_23[0]",
+                "f1_24[0]",
+                "f1_25[0]",
+                "f1_30[0]",
+                "f2_3[0]",
+                "f2_24[0]",
+                "f2_25[0]",
+                "f2_26[0]");
+
+        String config = new String(
+                new ClassPathResource("pdf/2026/IRS6251/en/configuration.yml").getContentAsByteArray(),
+                StandardCharsets.UTF_8);
+        try (PDDocument doc =
+                Loader.loadPDF(new ClassPathResource("pdf/2026/IRS6251/en/f6251--dft.pdf").getContentAsByteArray())) {
+            var form = doc.getDocumentCatalog().getAcroForm();
+            int mapped = 0;
+            Matcher matcher = Pattern.compile("^\\s+(f[12]_\\d+\\[0\\]):\\s").matcher("");
+            for (String line : config.split("\n")) {
+                matcher.reset(line);
+                if (!matcher.find()) {
+                    continue;
+                }
+                mapped++;
+                String name = matcher.group(1);
+                assertTrue(expected.containsKey(name), "tooltip expectation for mapped field " + name);
+                assertFalse(unmapped.contains(name), name + " is a stop and must stay unmapped");
+                PDField field =
+                        form.getField("topmostSubform[0].Page" + (name.startsWith("f1_") ? "1" : "2") + "[0]." + name);
+                assertNotNull(field, name + " exists in the draft");
+                String tooltip = field.getAlternateFieldName().replaceAll("\\s+", " ");
+                assertTrue(
+                        tooltip.contains(expected.get(name)),
+                        name + " tooltip names the line: expected \"" + expected.get(name) + "\" in \"" + tooltip
+                                + "\"");
+            }
+            assertEquals(expected.size(), mapped, "every computed line is mapped");
+            for (String name : unmapped) {
+                assertFalse(config.contains(name + ":"), name + " is not a field-map key");
+            }
+        }
     }
 }

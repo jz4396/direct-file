@@ -14,8 +14,10 @@ import gov.irs.factgraph.monads.Result;
  * unless every one of them is complete and false, and the PDF endpoint answers 400 with every refusing path as
  * {@code blockingFacts}.
  *
- * <p>Each entry must be a {@code <BlockSubmissionOnTrue />} knockout listed in {@code /flowIsKnockedOut}, and is
- * removed when the form it waits for has a template and field map. One path per line.
+ * <p>Each entry must be a {@code <BlockSubmissionOnTrue />} knockout listed in {@code /flowIsKnockedOut}. An entry that
+ * only waits for a missing template is removed once that form has a template and field map. An entry that stops a
+ * return from printing a form whose lines this tool does not compute stays, even when the form itself is in the
+ * package. One path per line.
  */
 @Slf4j
 public final class PrintRefusingKnockouts {
@@ -118,7 +120,24 @@ public final class PrintRefusingKnockouts {
             // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your
             // return."; 2026 Instructions for Form 8995 draft, PDF p. 6, line 18, "This is the amount to be carried
             // forward to the next year." There is no TY2026 Form 8995 template or MeF mapping, so it would be left off.
-            "/flowKnockoutForm8995WithoutTy2026Template");
+            "/flowKnockoutForm8995WithoutTy2026Template",
+            // Form 6251 lines 2c-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4 would combine
+            // lines 1b through 3 as if the adjustments were zero. Form 6251 (2026) draft,
+            // https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, PDF p. 2 (form p. 1), line 2i: "Exercise of incentive
+            // stock options (excess of AMT income over regular tax income)"; line 3: "Other adjustments, including
+            // income-based related adjustments"; line 4: "Alternative minimum taxable income. Combine lines 1b through
+            // 3." 26 U.S.C. 55(b)(2), 56, 57. Already BlockSubmissionOnTrue via /hasAmtPreferenceItems.
+            "/flowKnockoutAmtPreferenceItems",
+            // Married filing separately and line 4 over $640,200. Form 6251 (2026) draft, PDF p. 2 (form p. 1),
+            // line 4: "(If married filing separately and line 4 is more than $640,200, see instructions.)" 26 U.S.C.
+            // 55(d)(2) last sentence: "In the case of a taxpayer described in paragraph (1)(C), alternative minimum
+            // taxable income shall be increased by the lesser of (i) 25 percent of the excess of alternative minimum
+            // taxable income (determined without regard to this sentence) over the minimum amount of such income (as
+            // so determined) for which the exemption amount under paragraph (1)(C) is zero, or (ii) such exemption
+            // amount (determined without regard to this paragraph)." That add-back is not implemented. $640,200 is the
+            // Rev. Proc. 2025-32 §4.10 complete phaseout amount for a married individual filing a separate return
+            // (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 17). Printing line 4 without it understates AMTI.
+            "/flowKnockoutAmtMfsAddBack");
 
     private PrintRefusingKnockouts() {}
 
