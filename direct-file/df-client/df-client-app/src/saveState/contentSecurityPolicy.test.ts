@@ -14,6 +14,10 @@ describe(`content security policy`, () => {
     expect(d[`base-uri`]).toBe(`'self'`);
   });
 
+  it(`disallows a <base> element in the static client`, () => {
+    expect(directives(buildContentSecurityPolicy(undefined, { staticClientOnly: true }))[`base-uri`]).toBe(`'none'`);
+  });
+
   it(`limits network access to this origin and the backend origin`, () => {
     expect(directives(buildContentSecurityPolicy(`http://localhost:8080/df/file/api/`))[`connect-src`]).toBe(
       `'self' http://localhost:8080`

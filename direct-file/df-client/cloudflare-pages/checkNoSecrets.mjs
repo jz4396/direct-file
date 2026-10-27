@@ -3,8 +3,9 @@
 //
 //   node checkNoSecrets.mjs <dir>
 //
-// Looks for the exact values of CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (when set) and for Cloudflare's
-// prefixed API keys and tokens (cfk_, cfut_, cfat_, cfoat_). Prints only file names, never a value.
+// Looks for the exact values of CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_KEY (the legacy
+// global key) when they are set, and for Cloudflare's prefixed API keys and tokens (cfk_, cfut_, cfat_, cfoat_).
+// Prints only file names, never a value.
 import fs from 'fs';
 import path from 'path';
 
@@ -33,7 +34,11 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(im
     console.error('usage: node checkNoSecrets.mjs <dir>');
     process.exit(2);
   }
-  const found = filesWithSecrets(dir, [process.env.CLOUDFLARE_API_TOKEN, process.env.CLOUDFLARE_ACCOUNT_ID]);
+  const found = filesWithSecrets(dir, [
+    process.env.CLOUDFLARE_API_TOKEN,
+    process.env.CLOUDFLARE_ACCOUNT_ID,
+    process.env.CLOUDFLARE_API_KEY,
+  ]);
   if (found.length) {
     console.error(
       `A deploy credential or Cloudflare token is in these staged files; not deploying:\n  ${found.join('\n  ')}`

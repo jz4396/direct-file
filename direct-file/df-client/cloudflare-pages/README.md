@@ -7,9 +7,10 @@ data ever leaves the browser**.
 | File                 | Purpose                                                                                                  |
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `build.sh`           | Generate, build (`build:static`), `check:production-build`, stage and check into `out/`. No credentials. |
+| `check-install.sh`   | Runs `build.sh --install`: lockfile install with no lifecycle scripts, then the production checks.       |
 | `deploy.sh`          | Direct upload from a workstation: `build.sh`, `checkNoSecrets.mjs`, then the pinned wrangler.            |
 | `checkNoSecrets.mjs` | Fails if a staged file holds a deploy credential's value or a Cloudflare token. Prints file names only.  |
-| `_headers`           | CSP (`connect-src 'none'`, `form-action 'none'`, `frame-ancestors 'none'`) and other headers.            |
+| `_headers`           | CSP (`base-uri 'none'`, `connect-src 'none'`, `form-action 'none'`, `frame-ancestors 'none'`) and others. |
 | `_redirects`         | `/` → `/df/file/`.                                                                                       |
 | `robots.txt`         | `Disallow: /`.                                                                                           |
 
@@ -35,7 +36,7 @@ repository owner in the Cloudflare dashboard. Nothing in this repository creates
 | Create, list, read, autosave, delete a return; session keep-alive                              | Answered locally.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | PDF, preview, sign, submit, submission status, data import (`/populate`), state transfer       | Return `501 {"message":"not-available-in-static-client"}`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `fetch` to anything else, `XMLHttpRequest`, `WebSocket`, `EventSource`, `navigator.sendBeacon` | Blocked in the page (`src/staticClient/networkGuard.ts`). They throw, or `sendBeacon` returns `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Content-Security-Policy (both the `<meta>` tag and the `_headers` header)                      | `connect-src 'none'`, `form-action 'none'`, `frame-src 'none'`, `script-src 'self'`. The header also sends `frame-ancestors 'none'`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Content-Security-Policy (both the `<meta>` tag and the `_headers` header)                      | `base-uri 'none'`, `connect-src 'none'`, `form-action 'none'`, `frame-src 'none'`, `script-src 'self'`. The header also sends `frame-ancestors 'none'`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | Analytics (GTM)                                                                                | Both the script and the `<noscript>` iframe are removed from `index.html` at build time.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | Telemetry, devtools, test-data loading, data import, state transfer, auto sign-out             | Off.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Sign-out link                                                                                  | Clears browser storage, then does a full page load to `/df/file/home?signed-out=1`. That drops the in-memory return.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -85,14 +86,14 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
   through `playwright-core`, downloads no browser and makes no request off 127.0.0.1.
 - `src/staticClient/staticBranding.test.tsx`: in static mode the layout shows the notice (English and Spanish), with
   no close control, no government banner, no IRS logo and no agency footer. The regular build still shows them.
-- `src/staticClient/pagesConfig.test.ts`: the `_headers` CSP matches the CSP builder; `X-Robots-Tag`, `robots.txt`,
-  the static title and description, and the `.env.static` values; the deploy tooling pin. It also runs the bundle
-  checker on a good site and on one bad site per rule.
+- `src/staticClient/pagesConfig.test.ts`: the `_headers` CSP matches the CSP builder, including `base-uri 'none'`;
+  `X-Robots-Tag`, `robots.txt`, the static title and description, and the `.env.static` values; the deploy tooling
+  pin. It also runs the bundle checker on a good site and on one bad site per rule.
 - `npm run stage:static` (`src/staticClient/checkStaticBundle.ts`) checks the built bundle before every deploy, and
   the deploy stops if it fails. It requires:
 
-  - the headers (CSP with `connect-src 'none'`, `frame-ancestors 'none'` and `form-action 'none'`, nosniff, DENY,
-    `X-Robots-Tag: noindex`);
+  - the headers (CSP with `base-uri 'none'`, `connect-src 'none'`, `frame-ancestors 'none'` and `form-action 'none'`,
+    nosniff, DENY, `X-Robots-Tag: noindex`);
   - a static CSP `<meta>` on every HTML page, with no `'unsafe-eval'` or `'unsafe-inline'` in `script-src`, and no
     inline or third-party scripts;
   - the network guard and the `.invalid` API URL, and no other absolute API URL, `localhost:<port>` URL or
@@ -119,8 +120,10 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
 
 - `src/staticClient/pagesScripts.test.ts`: `build.sh` exits 2 when `CLOUDFLARE_API_TOKEN`,
   `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_KEY` or a `VITE_*` variable is set, printing the name and not the value;
-  `checkNoSecrets.mjs` fails on a staged file holding a credential's value or a prefixed token, naming the file and
-  not the value; neither script turns on xtrace or echoes a credential.
+  `checkNoSecrets.mjs` fails on a staged file holding the value of `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+  or `CLOUDFLARE_API_KEY`, or a prefixed token, naming the file and not the value; neither script turns on xtrace
+  or echoes a credential. `check-install.sh` runs `build.sh --install` (npm ci --ignore-scripts, then
+  `check:production-build` and `stage:static`).
 - `src/staticClient/noCommittedSecrets.test.ts`: no tracked file in the repository holds a prefixed Cloudflare token
   or assigns a Cloudflare credential variable a literal value.
 
@@ -129,6 +132,7 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
 Cloudflare clones the repository and runs `build.sh --install` on each push to the production branch. The build
 installs the client's locked dependencies with `npm ci --ignore-scripts`, so no dependency install script runs,
 and runs the same checks as `deploy.sh`. If a check fails, the build fails and nothing is published.
+`check-install.sh` runs that command with Cloudflare credentials and `VITE_*` / `REACT_APP_*` variables removed.
 
 Repository owner, one time, in the Cloudflare dashboard (**Workers & Pages → Create → Pages → Connect to Git**):
 
@@ -194,7 +198,8 @@ Steps 1 and 3 are for the repository owner and are done by hand; nothing in the 
 `deploy.sh` never prints the token or the account ID. It keeps xtrace off and passes neither value on a command
 line. It runs `build.sh` (generation, build, checks, staging) and `npm ci` under
 `env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID -u CLOUDFLARE_API_KEY`, then runs `checkNoSecrets.mjs` on
-`out/` with the credentials in its environment (it looks for their exact values and prints only file names),
+`out/` with the credentials in its environment (it looks for the exact values of `CLOUDFLARE_API_TOKEN`,
+`CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_KEY` when set, and prints only file names),
 masks both values in wrangler's output, and sets `WRANGLER_SEND_METRICS=false`.
 
 ### Free-plan limits
