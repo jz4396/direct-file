@@ -33,8 +33,7 @@ form:
       # Part I, Additional Income
       f1_07[0]: /schedule1Line3 # 3 "Business income or (loss). Attach Schedule C"
       # Schedule E (2026) draft, PDF p. 4, line 41: "Enter the result here and on Schedule 1 (Form 1040), line 5."
-      # /schedule1Line5 is line 41 (Part I line 26 + Part II line 32). There is no Schedule E template; Part I
-      # already flows here the same way.
+      # /schedule1Line5 is line 41 (Part I line 26 + Part II line 32). The 2026 Schedule E draft is IRS1040SE.
       f1_09[0]: /schedule1Line5 # 5 "Rental real estate, royalties, partnerships, S corporations, trusts, etc. Attach Schedule E"
       Line7_ReadOrder[0]:
         c1_3[0]: /xmlHasRepaidUnemploymentCompensation # 7 "If you repaid a 2026 overpayment (see instructions), check here"

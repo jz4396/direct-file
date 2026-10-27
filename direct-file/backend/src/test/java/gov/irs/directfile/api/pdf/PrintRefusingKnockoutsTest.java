@@ -71,8 +71,15 @@ class PrintRefusingKnockoutsTest {
     static final String SEP_ANSWER = "/writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod";
     static final String PTC_SCENARIO = "ptc-annual-amounts-rounding.json";
 
+    static final String INTEREST_SUBTRACTION_KNOCKOUT = "/flowKnockoutInterestScheduleBSubtraction";
+    static final String SCHEDULE_B_PART_III_KNOCKOUT = "/flowKnockoutScheduleBPartIII";
+    static final String SCHEDULE_E_LOSS_KNOCKOUT = "/flowKnockoutScheduleELoss";
+    static final String SCHEDULE_E_DEPRECIATION_KNOCKOUT = "/flowKnockoutScheduleEDepreciation";
+    static final String SCHEDULE_E_PERSONAL_USE_KNOCKOUT = "/flowKnockoutScheduleEPersonalUse";
+    static final String SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT = "/flowKnockoutScheduleESubstantialServices";
     static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
     static final String SCHEDULE_E_PART_II_KNOCKOUT = "/flowKnockoutScheduleEPartII";
+    static final String SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT = "/flowKnockoutScheduleEPartIIMoreThanFour";
     static final String QBI_ABOVE_THRESHOLD_KNOCKOUT = "/flowKnockoutQbiAboveThreshold";
     static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
@@ -145,8 +152,15 @@ class PrintRefusingKnockoutsTest {
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed
         expected.addAll(List.of(
+                INTEREST_SUBTRACTION_KNOCKOUT, // Schedule B line 1 subtraction not computed
+                SCHEDULE_B_PART_III_KNOCKOUT, // Schedule B line 7a Yes or line 8 Yes
+                SCHEDULE_E_LOSS_KNOCKOUT, // Schedule E Part I loss
+                SCHEDULE_E_DEPRECIATION_KNOCKOUT, // Form 4562
+                SCHEDULE_E_PERSONAL_USE_KNOCKOUT, // 26 U.S.C. 280A
+                SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT, // substantial services belong on Schedule C
                 SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
                 SCHEDULE_E_PART_II_KNOCKOUT, // Schedule E Parts II-III and Schedule SE K-1 box 14 code A
+                SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT, // line 28 has four rows; no continuation sheet
                 QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
                 QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
                 QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
@@ -162,7 +176,7 @@ class PrintRefusingKnockoutsTest {
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
         // #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(32, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(39, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

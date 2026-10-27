@@ -1309,6 +1309,27 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleBPartIII">
+      <Name>Knockout: Schedule B Part III yes (FinCEN Form 114 or Form 3520)</Name>
+      <Description>Schedule B (2026) draft line 7a question 1 or line 8 is Yes. Instructions for Schedule B
+        (Form 1040) (2025) p. 3, Line 7a—Question 2: a U.S. person may have to file FinCEN Form 114 and list the
+        foreign country on line 7b. Line 8: "If you were the grantor of, or transferor to, a foreign trust that
+        existed during 2025, you may have to file Form 3520." Those forms are not produced. Question 2 and line 7b
+        are left blank, so a Yes refuses the print instead of filing them empty. Same answers as
+        /hasForeignAccountsOrTrusts. Complete false when /hasForeignAccounts, /isForeignTrustsGrantor, and
+        /hasForeignTrustsTransactions are all complete and false. Incomplete when any of them is unanswered, which
+        also leaves /flowIsKnockedOut incomplete.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Dependency module="income" path="/hasForeignAccounts" />
+          <Dependency module="income" path="/isForeignTrustsGrantor" />
+          <Dependency module="income" path="/hasForeignTrustsTransactions" />
+        </Any>
+      </Derived>
+    </Fact>
+
     <Fact path="/interestReports/*/writableInterestOnGovernmentBonds">
       <Name>Interest on government bonds</Name>
       <Description>Box 3 on the 1099-INT. This is the writable optional fact. Can be left incomplete. Please use the

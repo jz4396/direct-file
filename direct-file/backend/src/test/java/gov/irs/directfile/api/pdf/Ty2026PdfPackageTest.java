@@ -153,6 +153,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS1040S3A", 1),
             Map.entry("IRS1040SA", 2),
             Map.entry("IRS1040SB", 1),
+            Map.entry("IRS1040SE", 3),
             Map.entry("IRS1040SC", 2),
             Map.entry("IRS1040SD", 2),
             Map.entry("IRS1040SSE", 2),
@@ -435,7 +436,12 @@ class Ty2026PdfPackageTest {
     void scenariosTogetherPrintEveryConfiguredTy2026FormOrListItAsExcluded() throws Exception {
         Set<String> printed = new TreeSet<>();
         for (Map<String, String> s :
-                List.of(investor(), itemizer(), paTaxForgiveness(), selfEmployedFamily("4000.00"))) {
+                List.of(
+                        investor(),
+                        itemizer(),
+                        paTaxForgiveness(),
+                        selfEmployedFamily("4000.00"),
+                        ScheduleBAndETy2026PdfSmokeTest.partI())) {
             printed.addAll(render(s, null, null).forms.keySet());
         }
         for (String s : List.of(FAMILY, SAVER, HSA)) {
@@ -1081,7 +1087,7 @@ class Ty2026PdfPackageTest {
      */
     static void assertTemplatePinned(String name, ConfiguredPdfProperties t) throws Exception {
         if (!t.getLocation().startsWith("pdf/2026/")) {
-            return; // 2024 templates (Schedule B, W-2) have no 2026 manifest
+            return; // 2024 templates (W-2) have no 2026 manifest
         }
         String pinned = pinnedSha256.get(t.getLocation());
         assertTrue(pinned != null, name + " template is pinned in a pdf/2026 SHA-256 manifest");

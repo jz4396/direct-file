@@ -1,0 +1,97 @@
+# #17: 2026 Schedule E (Form 1040), Supplemental Income and Loss. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f1040se--dft.pdf (early-release draft, "Created 5/6/26", 4 PDF pages,
+# 258,978 bytes), committed byte-identical to irs.gov; SHA-256
+# 0bee231f1ecb2470fb884b1f9cee7707eddee8994ce479fc563850b2dd3c5aed (pinned in pdf/2026/draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). Fields are keyed by their AcroForm tooltip (pypdf). Form pages 1-3 = PDF
+# pp. 2-4. When the final 2026 Schedule E is released (#124), re-download it, re-hash it and re-verify every field
+# below before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+# No 2026 Spanish Schedule E draft is posted (irs.gov returns 404 for f1040ses--dft.pdf, f1040sesp--dft.pdf, and
+# f1040ses.pdf). Spanish returns print this English form. There is no es entry, and none pointing at a 2024 template.
+#
+# Included when /pdfIncludeScheduleE (Part I income, or an answered yes to Schedule K-1 income). The interview stores
+# one Part I total, not a property address, so column A carries lines 3, 4, 19, 20, and 21. Lines 5-18 and 22 stay
+# blank: depreciation and a loss are refused, and the expense total is line 19 "Other" so line 20 still adds lines
+# 5 through 19. 26 U.S.C. 61(a)(5), 61(a)(6), 212. Schedule E (2026) draft line 21: "Subtract line 20 from line 3
+# (rents) and/or 4 (royalties)." Line 26 is that total. Line 41 is /scheduleELine41 (line 26 + line 32), the same
+# amount as Schedule 1 line 5.
+#
+# Part II prints only the supported path already computed in scheduleE.xml: up to four domestic partnerships or
+# S corporations, column (a) name, column (b) P or S, column (k), line 29a column (k), lines 30 and 32, and line 27
+# No. 26 U.S.C. 702(a), 1366(a). Column (d) EIN is not collected. Columns (c), (e), (f), (g), (h), (i), and (j) stay
+# blank because a supported return has them unchecked or zero, and a yes on any of them refuses the print
+# (/flowKnockoutScheduleEPartII). A fifth entity refuses the print (/flowKnockoutScheduleEPartIIMoreThanFour): the
+# 2026 draft Instructions for Schedule E, PDF p. 9, say to attach a continuation sheet, which this package does not
+# produce, and lines 29a-32 would still include that entity.
+#
+# Not mapped, left blank. Parts III and IV, line 27 Yes, line 31, lines 34-40, and lines 42-43 are not computed
+# here. An unanswered K-1 question, a loss, depreciation (Form 4562), personal use (26 U.S.C. 280A), substantial
+# services, a trade-or-business rental (26 U.S.C. 199A), Part III, or Part IV refuses the print. $0 amounts print
+# blank unless the fact is marked ExportZero (/scheduleENetIncome prints 0 when Part I is no and Part II is yes, so
+# line 26 still foots into line 41).
+includeWhen: /pdfIncludeScheduleE
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Page 1. Name(s) shown on return."
+      f1_2[0]: /primaryFiler/tin # "Your social security number."
+      Table_Income[0]:
+        Line3[0]:
+          f1_28[0]: /scheduleERents # "3. Rents received. Properties. Column: A."
+        Line4[0]:
+          f1_31[0]: /scheduleERoyalties # "4. Royalties received. Column: Properties. A."
+      Table_Expenses[0]:
+        Line19[0]:
+          f1_83[0]: /scheduleEExpenses # "19. Other. Column: Properties. A."
+        Line20[0]:
+          f1_86[0]: /scheduleEExpenses # "20. Total expenses. Add lines 5 through 19. Column: Properties. A."
+        Line21[0]:
+          f1_89[0]: /scheduleENetIncome # "21. Subtract line 20 from line 3 (rents) and/or 4 (royalties)."
+      f1_95[0]: /scheduleERents # "23a. Total of all amounts reported on line 3 for all rental properties."
+      f1_96[0]: /scheduleERoyalties # "23b. Total of all amounts reported on line 4 for all royalty properties."
+      # f1_97[0]: 23c total of line 12. Mortgage interest is not separated from the line 19 total.
+      # f1_98[0]: 23d total of line 18. Depreciation (Form 4562) is refused, not entered as zero.
+      f1_99[0]: /scheduleEExpenses # "23e. Total of all amounts reported on line 20 for all properties."
+    Page2[0]:
+      # f2_1 / f2_2: name and SSN. The tooltip says not to enter them if they are shown on the other side.
+      f2_3[0]: /scheduleENetIncome # "24. Income. Add positive amounts shown on line 21."
+      # f2_4[0]: line 25 losses. A loss refuses the print.
+      f2_5[0]: /scheduleENetIncome # "26. Total rental real estate and royalty income or (loss)."
+      # c2_1[0]: line 27 Yes. A yes refuses the print.
+      c2_1[1]: /scheduleEPartIILine27No # "27. No."
+      Table_Line28a-f[0]:
+        RowA[0]:
+          f2_6[0]: /scheduleEK1s/[0]/entityName # "28. Row: A. Column: (a) Name."
+          f2_7[0]: /scheduleEK1s/[0]/entityType # "Row: A. Column: (b) Enter P for partnership; S for S corporation."
+        RowB[0]:
+          f2_9[0]: /scheduleEK1s/[1]/entityName
+          f2_10[0]: /scheduleEK1s/[1]/entityType
+        RowC[0]:
+          f2_12[0]: /scheduleEK1s/[2]/entityName
+          f2_13[0]: /scheduleEK1s/[2]/entityType
+        RowD[0]:
+          f2_15[0]: /scheduleEK1s/[3]/entityName
+          f2_16[0]: /scheduleEK1s/[3]/entityType
+      Table_Line28g-k[0]:
+        RowA[0]:
+          f2_22[0]: /scheduleEK1s/[0]/columnK # "(k) Nonpassive income from Schedule K-1."
+        RowB[0]:
+          f2_27[0]: /scheduleEK1s/[1]/columnK
+        RowC[0]:
+          f2_32[0]: /scheduleEK1s/[2]/columnK
+        RowD[0]:
+          f2_37[0]: /scheduleEK1s/[3]/columnK
+      f2_42[0]: /scheduleEPartIILine29aColumnK # "29a. (k) Nonpassive income from Schedule K-1."
+      f2_48[0]: /scheduleEPartIILine30 # "30. Add columns (h) and (k) of line 29a."
+      # f2_49[0]: line 31. Always $0 when line 30 is complete, and $0 prints blank.
+      f2_50[0]: /scheduleEPartIILine32 # "32. Total partnership and S corporation income or (loss)."
+    Page3[0]:
+      f3_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Page 3. Name(s) shown on return."
+      f3_2[0]: /primaryFiler/tin # "Your social security number."
+      # f3_3[0]: line 40 Form 4835. Not collected.
+      f3_4[0]: /scheduleELine41 # "41. Total income or (loss). Combine lines 26, 32, 37, 39, and 40. ... Schedule 1 (Form 1040), line 5."
+      # f3_5[0]: line 42 farming and fishing. Not collected.
+      # f3_6[0]: line 43 real estate professionals. Not collected.
