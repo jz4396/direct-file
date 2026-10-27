@@ -1,3 +1,9 @@
+formBoxGroups:
+  w2: Form W-2
+  int: Form 1099-INT
+  div: Form 1099-DIV
+  r: Form 1099-R
+  scheduleC: Schedule C
 subsubcategories:
   /flow/you-and-your-family/about-you:
     your-basic-information: Your basic information
@@ -198,9 +204,11 @@ subsubcategories:
   /flow/income/alaska-pfd:
     pfd-basic-info: PFD Information
 headings:
-  /heading/credits-and-deductions/deductions/overtime-other: "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
+  /heading/credits-and-deductions/deductions/overtime-other:
+    "Did you have qualified overtime pay that isn’t shown on a Form W-2 in box 12 with code TT?"
   /heading/knockout/overtime-not-computable: "This tool doesn’t yet support your overtime pay"
-  /heading/credits-and-deductions/deductions/overtime-flsa: "Is your overtime amount only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
+  /heading/credits-and-deductions/deductions/overtime-flsa:
+    "Is your overtime amount only the extra “half” of time-and-a-half that federal law (FLSA) requires?"
   /heading/account/reset-return: Reset draft {{/taxYear}} federal tax return
   /heading/account/remove-return: Remove draft {{/taxYear}} federal tax return information from Direct File
   /heading/account/reset-success: "{{/taxYear}} federal tax return reset"
@@ -2471,8 +2479,8 @@ headings:
     alternative calculation for year of marriage to lower your repayment amount. Direct File doesn’t support this tax
     situation yet.<br /><br />Do you want to use the alternative calculation?
   /heading/credits-and-deductions/credits/ptc-income-based-sep: >-
-    Did you enroll in any of your Marketplace plans during a special enrollment period based on your expected
-    household income?
+    Did you enroll in any of your Marketplace plans during a special enrollment period based on your expected household
+    income?
   /heading/credits-and-deductions/credits/ptc-not-qualified-has-aptc:
     You don’t qualify for the Premium Tax Credit (PTC) this year, so you’ll need to repay the advance payments of PTC.
   /heading/credits-and-deductions/credits/cdcc/cdcc-qualified-people:
@@ -2741,16 +2749,23 @@ iconLists:
     payment_method: <strong>Payment method</strong><br />Pay after I file
 info:
   /info/credits-and-deductions/deductions/overtime-other:
-    body: "For example, your employer didn’t use code TT, so you’d figure the overtime premium from pay stubs, payroll records, or a statement from your employer, or your overtime was reported on Form 1099-NEC or 1099-MISC."
+    body:
+      "For example, your employer didn’t use code TT, so you’d figure the overtime premium from pay stubs, payroll
+      records, or a statement from your employer, or your overtime was reported on Form 1099-NEC or 1099-MISC."
   /info/knockout/overtime-not-computable:
     alertText:
       body:
-        - p: "This tool can only use qualified overtime shown on Form W-2 in box 12 with code TT. It can’t yet handle overtime figured from pay records or reported on Form 1099-NEC or 1099-MISC."
+        - p:
+            "This tool can only use qualified overtime shown on Form W-2 in box 12 with code TT. It can’t yet handle
+            overtime figured from pay records or reported on Form 1099-NEC or 1099-MISC."
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/credits-and-deductions/deductions/overtime-flsa:
-    body: "Only the part of overtime pay above your regular rate that the Fair Labor Standards Act requires counts, usually the “half” in time-and-a-half. Extra pay under a union contract or state law, holiday or weekend premiums, and overtime for FLSA-exempt employees don’t count."
+    body:
+      "Only the part of overtime pay above your regular rate that the Fair Labor Standards Act requires counts, usually
+      the “half” in time-and-a-half. Extra pay under a union contract or state law, holiday or weekend premiums, and
+      overtime for FLSA-exempt employees don’t count."
   /info/you-and-your-family/you/intro-data-import:
     body:
       - p: We’ll fill in some of your basic information that the IRS already has on file.
@@ -2839,8 +2854,8 @@ info:
       Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/you-and-your-family/about-you/state-breather-fl-info:
     body: >-
-      Florida doesn’t tax the income of individuals, so you don’t need to file a Florida state income tax return.
-      You only need to file your federal return.
+      Florida doesn’t tax the income of individuals, so you don’t need to file a Florida state income tax return. You
+      only need to file your federal return.
   /info/you-and-your-family/about-you/state-breather-nj-info:
     body: Direct File supports simple tax needs for taxpayers in {{/filerResidenceAndIncomeState}}.
   /info/you-and-your-family/about-you/state-breather-nj-alert:
@@ -5947,9 +5962,8 @@ info:
       modals:
         text: >-
           <p>Direct File doesn’t support Form 1099-R on this return. You’ll need to file using another tool.</p>
-          <p>Direct File supports only some simple Form 1099-R situations.
-          <sharedModal1099rSupportedSituations>What Form 1099-R situations aren’t yet supported in Direct
-          File?</sharedModal1099rSupportedSituations></p>
+          <p>Direct File supports only some simple Form 1099-R situations. <sharedModal1099rSupportedSituations>What
+          Form 1099-R situations aren’t yet supported in Direct File?</sharedModal1099rSupportedSituations></p>
   /info/income/retirement/nonstandard-corrected:
     body:
       - p:
@@ -12323,8 +12337,11 @@ info:
   /info/knockout/generic-other-ways-to-file:
     alertText:
       body:
+        - p: >-
+            <LinkCite>IRS forms and instructions</LinkCite> explain the rule that stopped this return.
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
       urls:
+        LinkCite: https://www.irs.gov/forms-instructions
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/knockout/generic-other-ways-to-file-help:
     alertText:
@@ -12567,15 +12584,15 @@ info:
     body: You can only report unemployment compensation from {{/filerResidenceAndIncomeState}} within Direct File.
   /info/knockout/income/jobs/w2-fl-state-withholding-ko:
     body: >-
-      Florida has no state income tax, but one of your W-2s shows state income tax withheld in box 17. You may
-      need to file a return in another state, which Direct File doesn’t support yet.
+      Florida has no state income tax, but one of your W-2s shows state income tax withheld in box 17. You may need to
+      file a return in another state, which Direct File doesn’t support yet.
   /info/knockout/income/jobs/w2-other-state-ko:
     body: You can only report employment income from {{/filerResidenceAndIncomeState}} within Direct File.
   /info/knockout/form-8959-unsupported:
     body: >-
-      One of your W-2s shows railroad retirement (RRTA) compensation in box 14, and your income may be high enough
-      that you owe Additional Medicare Tax on it, or that tax may have been withheld. This tool figures Additional
-      Medicare Tax on Medicare wages and self-employment income, but not on RRTA compensation.
+      One of your W-2s shows railroad retirement (RRTA) compensation in box 14, and your income may be high enough that
+      you owe Additional Medicare Tax on it, or that tax may have been withheld. This tool figures Additional Medicare
+      Tax on Medicare wages and self-employment income, but not on RRTA compensation.
   /info/knockout/form-8959-unsupported-accordion:
     heading: Box 14 - Railroad retirement (RRTA) compensation
     body:
@@ -16854,11 +16871,10 @@ modals:
           This credit is a percentage of your qualified child and dependent care expenses, and the percentage is based
           on your Adjusted Gross Income (AGI).
       - p: >-
-          The credit ranges from {{/cdccMinAllowedPercentage}}% to {{/cdccMaxAllowedPercentage}}% of your
-          expenses up to {{/cdccMaxClaimableExpenseWithOneQP}} for one qualifying person and
-          {{/cdccMaxClaimableExpenseWithTwoQP}} for two qualifying people. This means the biggest credit you can get is
-          {{/cdccMaxAllowedCreditWithOneQP}} for one qualifying person and {{/cdccMaxAllowedCreditWithTwoQP}} for two or
-          more qualifying people.
+          The credit ranges from {{/cdccMinAllowedPercentage}}% to {{/cdccMaxAllowedPercentage}}% of your expenses up to
+          {{/cdccMaxClaimableExpenseWithOneQP}} for one qualifying person and {{/cdccMaxClaimableExpenseWithTwoQP}} for
+          two qualifying people. This means the biggest credit you can get is {{/cdccMaxAllowedCreditWithOneQP}} for one
+          qualifying person and {{/cdccMaxAllowedCreditWithTwoQP}} for two or more qualifying people.
       - p:
           This credit is <strong>nonrefundable</strong>.  This means that it can reduce your taxes, but it won’t reduce
           what you owe below $0. In other words, it can’t give you a refund.
@@ -17038,8 +17054,7 @@ modals:
           - li:
               If the advance payments of PTC are more than your PTC, the difference is excess advance PTC. On your
               {{/taxYear}} return you repay the full difference. Household income does not lower that repayment.
-          - li:
-              If you didn’t qualify for PTC but had advance payments of PTC, you repay all of those advance payments.
+          - li: If you didn’t qualify for PTC but had advance payments of PTC, you repay all of those advance payments.
   sharedModalAptcRepaymentLimitation:
     header: How is a repayment limitation calculated?
     urls:
@@ -17602,6 +17617,7 @@ fields:
         AfterFilingDeadline: Choose a new payment date before your federal tax filing deadline to continue
         PastDate: You picked a payment date that’s in the past
     dollar:
+      formatHint: Enter dollars and cents, like 0.00
       errorMessages:
         TooManyDecimals: Must have only one decimal (.)
         InvalidHyphens:
@@ -18420,7 +18436,7 @@ fields:
         requirements. If you decide to claim them, you can update your choice.
   /formW2s:
     controls:
-      add: Add W-2
+      add: Add another Form W-2
       complete_zero: I don’t have any W-2s to add
       complete: I’m done adding W-2s
       back: Go to jobs list
@@ -18432,7 +18448,7 @@ fields:
       label2: Taxable amount
       value2: <strong>{{/formW2s/*/wages}}</strong>
     importedDeleteControl:
-      text: <LinkModal1>Remove W-2</LinkModal1>
+      text: <LinkModal1>Remove this Form W-2</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this W-2 from your tax return?
         body:
@@ -18442,7 +18458,7 @@ fields:
           confirm: Remove this W-2 from my tax return
           cancel: Cancel
     deleteControl:
-      text: <LinkModal1>Remove W-2</LinkModal1>
+      text: <LinkModal1>Remove this Form W-2</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this W-2 from your tax return?
         body:
@@ -18474,7 +18490,7 @@ fields:
           cancel: Cancel
   /form1099Rs:
     controls:
-      add: Add Form 1099-R
+      add: Add another Form 1099-R
       complete_zero: I don’t have any Forms 1099-R to add
       complete: I’m done adding Forms 1099-R
       back: Go to Form 1099-R list
@@ -18486,7 +18502,7 @@ fields:
       label2: Taxable Amount
       value2: <strong>{{/form1099Rs/*/taxableAmount}}</strong>
     deleteControl:
-      text: <LinkModal1>Remove 1099-R</LinkModal1>
+      text: <LinkModal1>Remove this Form 1099-R</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this 1099-R from your tax return?
         body:
@@ -18716,7 +18732,7 @@ fields:
     name: Amount of withdrawn excess (extra) contributions and earnings on them
   /interestReports:
     controls:
-      add: Add interest income
+      add: Add another Form 1099-INT
       complete_zero: I don’t have any interest income to add
       complete: I’m done adding interest income
       back: Go to interest income list
@@ -18728,7 +18744,7 @@ fields:
       label2: Taxable amount
       value2: <strong>{{/interestReports/*/taxableInterest}}</strong>
     deleteControl:
-      text: <LinkModal1>Remove income</LinkModal1>
+      text: <LinkModal1>Remove this Form 1099-INT</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this interest income from your tax return?
         body:
@@ -18737,7 +18753,7 @@ fields:
           confirm: Remove this interest income from my tax return
           cancel: Cancel
     importedDeleteControl:
-      text: <LinkModal1>Remove income</LinkModal1>
+      text: <LinkModal1>Remove this Form 1099-INT</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this 1099-INT from your tax return?
         body:
@@ -18831,8 +18847,9 @@ fields:
                 plan. This amount is taxable.
   /formW2s/*/writableBox12Code:
     name: Box 12 Code
-    delete: Remove {{code}}
-    add: Add box 12 code
+    /code: "Form W-2 box 12, code #{{number}}"
+    delete: Remove Form W-2 box 12 {{code}}
+    add: Add another Form W-2 box 12 code
     blank: No codes in Box 12
   /formW2s/*/writableBox14Code:
     name: <strong>Box 14</strong> - Code
@@ -20079,6 +20096,8 @@ checklist:
     heading: Income
   /flow/income/income-sources:
     heading: Income sources
+    dataItems:
+      capitalGainsNone: "Schedule D and Form 8949: no sales of capital assets"
   /flow/income/alaska-pfd:
     heading: Alaska Permanent Fund Dividend
     dataItems:
@@ -20134,6 +20153,7 @@ checklist:
     dataItems:
       standardDeduction: "Standard deduction: {{/standardDeduction}}"
       adjustment: "Adjustment: {{/adjustmentsTotal}}"
+      schedule1A: "Schedule 1-A: tips, overtime, car loan interest, and the senior deduction"
   /flow/credits-and-deductions/care-providers:
     heading: Care providers
   /flow/credits-and-deductions/credits:
@@ -23958,7 +23978,8 @@ dataviews:
     /1095As/*/writablePtcMonthlyAptcPremiumDec: December advance payment of PTC
     /1095As/*/writableAptcAnnualAmount: Annual advance payment of PTC
     /writableWantsToUseAltCalculations: Do you want to use the alternative calculation?
-    /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod: Enrolled during an income-based special enrollment period?
+    /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod:
+      Enrolled during an income-based special enrollment period?
     /receivedImproperClaims: >-
       Since 2015, has the IRS denied or reduced the amount of any of these credits that you took for any reason other
       than a math error: Child Tax Credit, Additional Child Tax Credit, Credit for Other Dependents?

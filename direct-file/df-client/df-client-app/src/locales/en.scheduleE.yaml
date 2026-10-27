@@ -170,10 +170,10 @@ info:
     alertText:
       body:
         - p: >-
-            This tool can report ordinary business income from a domestic estate or trust when you materially participated
-            and that amount is not a loss. Other rental income, rental real estate income, a loss, a passive activity,
-            another K-1 amount, a foreign trust, or a basis, at-risk, or passive-loss limit needs forms this tool
-            doesn’t support yet. You’ll need another way to file this return.
+            This tool can report ordinary business income from a domestic estate or trust when you materially
+            participated and that amount is not a loss. Other rental income, rental real estate income, a loss, a
+            passive activity, another K-1 amount, a foreign trust, or a basis, at-risk, or passive-loss limit needs
+            forms this tool doesn’t support yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-part-iv:
     alertText:
       body:
@@ -307,7 +307,7 @@ fields:
       "no": "No"
   /scheduleEEstates:
     controls:
-      add: Add an estate or trust
+      add: Add another estate or trust
       complete_zero: I don’t have one to add
       complete: I’m done adding estates and trusts
       back: Go to the list
@@ -316,13 +316,13 @@ fields:
       itemHeading2: Incomplete estate or trust
       label2: Estate or trust
     deleteControl:
-      text: <LinkModal1>Remove</LinkModal1>
+      text: <LinkModal1>Remove this estate or trust</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this estate or trust?
         body:
           - p: This can’t be undone.
         controls:
-          confirm: Remove
+          confirm: Remove this estate or trust
           cancel: Cancel
   /scheduleEK1EntityTypeOptions:
     P: Partnership
@@ -372,7 +372,7 @@ fields:
       "no": "No"
   /scheduleEK1s:
     controls:
-      add: Add a partnership or S corporation
+      add: Add another partnership or S corporation
       complete_zero: I don’t have one to add
       complete: I’m done adding partnerships and S corporations
       back: Go to the list
@@ -381,13 +381,13 @@ fields:
       itemHeading2: Incomplete partnership or S corporation
       label2: Partnership or S corporation
     deleteControl:
-      text: <LinkModal1>Remove</LinkModal1>
+      text: <LinkModal1>Remove this partnership or S corporation</LinkModal1>
       LinkModal1:
         header: Are you sure you want to remove this partnership or S corporation?
         body:
           - p: This can’t be undone.
         controls:
-          confirm: Remove
+          confirm: Remove this partnership or S corporation
           cancel: Cancel
 checklist:
   /flow/income/schedule-e:

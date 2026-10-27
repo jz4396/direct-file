@@ -167,7 +167,7 @@ info:
 fields:
   /dividendReports:
     controls:
-      add: Agregar un Formulario 1099-DIV
+      add: Agregar otro Formulario 1099-DIV
       complete_zero: No tengo Formularios 1099-DIV que agregar
       complete: Terminé de agregar los Formularios 1099-DIV
       back: Ir a la lista de dividendos
@@ -178,7 +178,7 @@ fields:
       label2: Dividendos ordinarios
       value2: <strong>{{/dividendReports/*/ordinaryDividends}}</strong>
     deleteControl:
-      text: <LinkModal1>Eliminar Formulario 1099-DIV</LinkModal1>
+      text: <LinkModal1>Eliminar este Formulario 1099-DIV</LinkModal1>
       LinkModal1:
         header: ¿Está seguro de que quiere eliminar este Formulario 1099-DIV de su declaración de impuestos?
         body:

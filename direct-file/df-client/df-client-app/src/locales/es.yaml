@@ -1,3 +1,9 @@
+formBoxGroups:
+  w2: Formulario W-2
+  int: Formulario 1099-INT
+  div: Formulario 1099-DIV
+  r: Formulario 1099-R
+  scheduleC: Anexo C
 articles:
   and: "y"
   and_y: e
@@ -97,16 +103,25 @@ button:
   yesThisIsCorrect: Sí, está correcta
 info:
   /info/credits-and-deductions/deductions/overtime-other:
-    body: "Por ejemplo, tu empleador no usó el código TT, así que calcularías la prima por horas extras con tus talones de pago, registros de nómina o una declaración de tu empleador, o tus horas extras se declararon en el Formulario 1099-NEC o 1099-MISC."
+    body:
+      "Por ejemplo, tu empleador no usó el código TT, así que calcularías la prima por horas extras con tus talones de
+      pago, registros de nómina o una declaración de tu empleador, o tus horas extras se declararon en el Formulario
+      1099-NEC o 1099-MISC."
   /info/knockout/overtime-not-computable:
     alertText:
       body:
-        - p: "Esta herramienta solo puede usar las horas extras calificadas que aparecen en el Formulario W-2, casilla 12, con el código TT. Todavía no admite horas extras calculadas con registros de pago ni declaradas en el Formulario 1099-NEC o 1099-MISC."
+        - p:
+            "Esta herramienta solo puede usar las horas extras calificadas que aparecen en el Formulario W-2, casilla
+            12, con el código TT. Todavía no admite horas extras calculadas con registros de pago ni declaradas en el
+            Formulario 1099-NEC o 1099-MISC."
         - p: <Link1>Encuentra otras maneras de presentar tus impuestos federales.</Link1>
       urls:
         Link1: https://www.irs.gov/es/filing/individuals/how-to-file
   /info/credits-and-deductions/deductions/overtime-flsa:
-    body: "Solo cuenta la parte del pago de horas extras por encima de tu tarifa regular que exige la Ley de Normas Justas de Trabajo, por lo general la “mitad” de tiempo y medio. No cuentan los pagos adicionales por un contrato sindical o ley estatal, las primas por días festivos o fines de semana ni las horas extras de empleados exentos de la FLSA."
+    body:
+      "Solo cuenta la parte del pago de horas extras por encima de tu tarifa regular que exige la Ley de Normas Justas
+      de Trabajo, por lo general la “mitad” de tiempo y medio. No cuentan los pagos adicionales por un contrato sindical
+      o ley estatal, las primas por días festivos o fines de semana ni las horas extras de empleados exentos de la FLSA."
   /info/income/w2/add:
     helpText:
       modals:
@@ -8086,8 +8101,11 @@ info:
     alertText:
       body:
         - p: >-
-            <Link1>Encuentra otras maneras de presentar tus impuestos federales</Link1>.
+            Las <LinkCite>instrucciones de los formularios del IRS</LinkCite> explican la regla que detuvo esta
+            declaración.
+        - p: <Link1>Encuentra otras maneras de presentar tus impuestos federales</Link1>.
       urls:
+        LinkCite: https://www.irs.gov/es/forms-instructions
         Link1: https://www.irs.gov/es/filing/individuals/how-to-file
   /info/knockout/generic-other-ways-to-file-help:
     alertText:
@@ -8760,9 +8778,9 @@ info:
           por cuenta propia, pero no sobre compensación RRTA.
   /info/knockout/income/jobs/w2-fl-state-withholding-ko:
     body: >-
-      Florida no tiene impuesto estatal sobre los ingresos, pero uno de tus formularios W-2 muestra impuestos
-      estatales retenidos en la casilla 17. Es posible que tengas que presentar una declaración en otro estado, lo
-      cual Direct File aún no acepta.
+      Florida no tiene impuesto estatal sobre los ingresos, pero uno de tus formularios W-2 muestra impuestos estatales
+      retenidos en la casilla 17. Es posible que tengas que presentar una declaración en otro estado, lo cual Direct
+      File aún no acepta.
   /info/knockout/income/jobs/w2-other-state-ko:
     body: >-
       Con Direct File, sólo puedes declarar ingresos del trabajo de {{/filerResidenceAndIncomeState}}.
@@ -14320,8 +14338,8 @@ info:
     helpText:
       modals:
         text: >-
-          <p>Direct File no acepta el Formulario 1099-R en esta declaración. Tendrás que presentar tus impuestos con otra
-          herramienta.</p> <p>Direct File sólo acepta algunas situaciones simples de Formularios 1099-R.
+          <p>Direct File no acepta el Formulario 1099-R en esta declaración. Tendrás que presentar tus impuestos con
+          otra herramienta.</p> <p>Direct File sólo acepta algunas situaciones simples de Formularios 1099-R.
           <sharedModal1099rSupportedSituations>Qué Formularios 1099-R Direct File
           aceptará.</sharedModal1099rSupportedSituations></p>
   /info/income/retirement/launch-1099R-alert:
@@ -15770,9 +15788,9 @@ modals:
           Este crédito es un porcentaje de tus gastos calificados por el cuidado de hijos y dependientes, y el
           porcentaje se basa en tu ingreso bruto ajustado (AGI en inglés).
       - p: >-
-          El crédito va desde {{/cdccMinAllowedPercentage}}% a {{/cdccMaxAllowedPercentage}}% de tus gastos
-          hasta {{/cdccMaxClaimableExpenseWithOneQP}} por una persona calificada y {{/cdccMaxClaimableExpenseWithTwoQP}}
-          por dos personas calificadas. Esto significa que el crédito máximo que se puede recibir es
+          El crédito va desde {{/cdccMinAllowedPercentage}}% a {{/cdccMaxAllowedPercentage}}% de tus gastos hasta
+          {{/cdccMaxClaimableExpenseWithOneQP}} por una persona calificada y {{/cdccMaxClaimableExpenseWithTwoQP}} por
+          dos personas calificadas. Esto significa que el crédito máximo que se puede recibir es
           {{/cdccMaxAllowedCreditWithOneQP}} por una persona calificada y {{/cdccMaxAllowedCreditWithTwoQP}} por dos o
           más personas calificadas.
 
@@ -16682,7 +16700,7 @@ fields:
         InvalidOfficeCode: Por favor, verifica tu código de oficina
   /formW2s:
     controls:
-      add: Agregar un Formulario W-2
+      add: Agregar otro Formulario W-2
       complete: Terminé de agregar Formularios W-2
       back: Ir a la lista de trabajos
       complete_zero: No tengo ningún W-2 que agregar
@@ -16694,7 +16712,7 @@ fields:
       itemHeading2: Formulario W-2 de {{/formW2s/*/filer/fullName}}
       itemDescription: Revisa la información de tu Formulario W-2 y edítala, si es necesario.
     deleteControl:
-      text: <LinkModal1>Eliminar W-2</LinkModal1>
+      text: <LinkModal1>Eliminar este Formulario W-2</LinkModal1>
       LinkModal1:
         header: >-
           ¿Estás seguro que deseas eliminar este Formulario W-2 de tu declaración de impuestos?
@@ -16706,7 +16724,7 @@ fields:
           confirm: Eliminar este Formulario W-2 de mi declaración de impuestos
           cancel: Cancelar
     importedDeleteControl:
-      text: <LinkModal1>Eliminar W-2</LinkModal1>
+      text: <LinkModal1>Eliminar este Formulario W-2</LinkModal1>
       LinkModal1:
         header: >-
           ¿Estás seguro que deseas eliminar este Formulario W-2 de tu declaración de impuestos?
@@ -16765,7 +16783,7 @@ fields:
     postalCode: Código postal del empleador
   /interestReports:
     controls:
-      add: Agregar ingresos por intereses
+      add: Agregar otro Formulario 1099-INT
       complete: Terminé de agregar los ingresos por intereses
       back: Ir a la lista de ingresos por intereses
       complete_zero: No tengo ingresos por intereses que agregar
@@ -16777,7 +16795,7 @@ fields:
       itemDescription: Revisa tu Formulario 1099-INT y edita si es necesario.
       itemHeading2: Los ingresos por intereses de {{/interestReports/*/filer/fullName}}
     deleteControl:
-      text: <LinkModal1>Eliminar ingreso</LinkModal1>
+      text: <LinkModal1>Eliminar este Formulario 1099-INT</LinkModal1>
       LinkModal1:
         header: >-
           ¿Estás seguro que deseas eliminar este ingreso por intereses de tu declaración de impuestos?
@@ -16788,7 +16806,7 @@ fields:
           confirm: Eliminar este ingreso por intereses de mi declaración
           cancel: Cancelar
     importedDeleteControl:
-      text: <LinkModal1>Eliminar ingreso</LinkModal1>
+      text: <LinkModal1>Eliminar este Formulario 1099-INT</LinkModal1>
       LinkModal1:
         header: >-
           ¿Quieres eliminar este 1099-INT de tu declaración?
@@ -16879,7 +16897,7 @@ fields:
       value2: <strong>{{/socialSecurityReports/*/netBenefits}}</strong>
       itemHeading2: Beneficio de Seguro Social
     deleteControl:
-      text: <LinkModal1>Eliminar ingreso</LinkModal1>
+      text: <LinkModal1>Eliminar este ingreso de Seguro Social</LinkModal1>
       LinkModal1:
         header: >-
           ¿Estás seguro que deseas eliminar este ingreso de Seguro Social de tu declaración de impuestos?
@@ -16951,6 +16969,7 @@ fields:
       Checking: Cheques
       Savings: Ahorros
     dollar:
+      formatHint: Escriba dólares y centavos, como 0.00
       errorMessages:
         InvalidCharacters: Ingresa un número válido. Esto debe verse así 0.00
         TooManyDecimals: Debe tener sólo un decimal (.)
@@ -17140,8 +17159,9 @@ fields:
       "no": No, pero la casilla 14 tiene otro(s) código(s)
   /formW2s/*/writableBox12Code:
     name: <strong>Casilla 12</strong> - Selecciona un código
-    delete: Eliminar {{code}}
-    add: Agregar el código de la casilla 12
+    /code: "Formulario W-2 casilla 12, código #{{number}}"
+    delete: Eliminar la casilla 12 del Formulario W-2 {{code}}
+    add: Agregar otro código de la casilla 12 del Formulario W-2
     blank: No hay códigos en la casilla 12
   /formW2s/*/writableDependentCareBenefits:
     name: <strong>Casilla 10</strong> - Beneficios por el cuidado de dependientes
@@ -19007,7 +19027,7 @@ fields:
         No, no vivíamos separados y/o no teníamos por escrito un acuerdo o decreto de separación
   /form1099Rs:
     controls:
-      add: Agregar el Formulario 1099-R
+      add: Agregar otro Formulario 1099-R
       complete: Terminé de agregar Formularios 1099-R
       back: Ir a la lista de Formularios 1099-R
       complete_zero: No tengo Formularios 1099-R que agregar
@@ -19019,7 +19039,7 @@ fields:
       value2: <strong>{{/form1099Rs/*/taxableAmount}}</strong>
       label1: Pagado a {{/form1099Rs/*/filer/fullName}}
     deleteControl:
-      text: <LinkModal1>Eliminar el 1099-R</LinkModal1>
+      text: <LinkModal1>Eliminar este Formulario 1099-R</LinkModal1>
       LinkModal1:
         header: >-
           ¿Estás seguro que quieres eliminar este 1099-R de tu declaración de impuestos?
@@ -19359,6 +19379,8 @@ checklist:
     heading: Ingresos
   /flow/income/income-sources:
     heading: Fuentes de ingresos
+    dataItems:
+      capitalGainsNone: "Anexo D y Formulario 8949: no hubo ventas de bienes de capital"
   /flow/credits-and-deductions:
     heading: Deducciones y créditos
   /flow/credits-and-deductions/deductions:
@@ -19366,6 +19388,8 @@ checklist:
     dataItems:
       standardDeduction: "Deducción estándar: {{/standardDeduction}}"
       adjustment: "Ajustes: {{/adjustmentsTotal}}"
+      schedule1A:
+        "Anexo 1-A: propinas, horas extras, intereses de préstamo de auto y la deducción para personas mayores"
   /flow/credits-and-deductions/credits:
     heading: Créditos
     dataItems:
@@ -19599,9 +19623,11 @@ afterDeadlineBanner:
     ¿Aún necesitas enviar tu declaración del impuesto federal? <LinkEFileOptions>Encuentra otra manera de
     enviarla</LinkEFileOptions>
 headings:
-  /heading/credits-and-deductions/deductions/overtime-other: "¿Tuviste pago de horas extras calificadas que no aparece en un Formulario W-2, casilla 12, con el código TT?"
+  /heading/credits-and-deductions/deductions/overtime-other:
+    "¿Tuviste pago de horas extras calificadas que no aparece en un Formulario W-2, casilla 12, con el código TT?"
   /heading/knockout/overtime-not-computable: "Esta herramienta todavía no admite tu pago de horas extras"
-  /heading/credits-and-deductions/deductions/overtime-flsa: "¿Tu cantidad de horas extras es solo la “mitad” adicional de tiempo y medio que exige la ley federal (FLSA)?"
+  /heading/credits-and-deductions/deductions/overtime-flsa:
+    "¿Tu cantidad de horas extras es solo la “mitad” adicional de tiempo y medio que exige la ley federal (FLSA)?"
   /heading/you-and-your-family/about-you/intro: En esta sección, te haremos algunas preguntas sobre ti.
   /heading/you-and-your-family/about-you/basic-info: Comparte alguna información básica sobre ti
   /heading/you-and-your-family/about-you/contact-info: Comparte tu información de contacto
@@ -21226,7 +21252,8 @@ headings:
     ¿Tu cónyuge recibió el Dividendo del Fondo Permanente de Alaska (PFD) en el {{taxYear}}?
   /heading/you-and-your-family/about-you/state-income-1099-misc-pfd: >-
     ¿Recibiste el Dividendo del Fondo Permanente de Alaska (PFD) en el {{/taxYear}}?
-  /heading/you-and-your-family/about-you/state-breather-fl: Florida no tiene declaración estatal de impuestos sobre los ingresos.
+  /heading/you-and-your-family/about-you/state-breather-fl:
+    Florida no tiene declaración estatal de impuestos sobre los ingresos.
   /heading/you-and-your-family/about-you/state-breather-nj:
     Dijiste que viviste en {{/filerResidenceAndIncomeState}} todo el {{/taxYear}} y que ganaste todos tus ingresos ahí.
   /heading/you-and-your-family/spouse/will-be-claimed: >-
@@ -22053,8 +22080,8 @@ headings:
     cálculo alternativo para el año del matrimonio para reducir la cantidad que debes devolver. Direct File aún no
     acepta este tipo de situación tributaria.<br /><br />¿Quieres usar el cálculo alternativo?
   /heading/credits-and-deductions/credits/ptc-income-based-sep: >-
-    ¿Te inscribiste en alguno de tus planes del Mercado durante un período de inscripción especial basado en el
-    ingreso familiar que esperabas?
+    ¿Te inscribiste en alguno de tus planes del Mercado durante un período de inscripción especial basado en el ingreso
+    familiar que esperabas?
   /heading/credits-and-deductions/credits/ptc-end-of-1095-a: >-
     Agregaste tu Formulario 1095-A para la póliza del Mercado {{/1095As/*/policyNumber}}.<br /><br />Continuemos.
   /heading/credits-and-deductions/credits/ptc-annual-aptc: >-
@@ -22431,7 +22458,8 @@ dataviews:
     /flow/credits-and-deductions/care-providers:
       care-providers-info: Proveedores de cuidados
   /flow/credits-and-deductions/deductions:
-    /overtimeNotOnW2CodeTT: "¿Tuviste pago de horas extras calificadas que no aparece en un Formulario W-2, casilla 12, con el código TT?"
+    /overtimeNotOnW2CodeTT:
+      "¿Tuviste pago de horas extras calificadas que no aparece en un Formulario W-2, casilla 12, con el código TT?"
     /overtimeFlsaConfirmed: "¿Tu cantidad de horas extras es solo la prima requerida por la FLSA?"
     assertions:
       /taxableIncome: Tu ingreso tributable es de {{/taxableIncome}}.
@@ -23849,7 +23877,8 @@ dataviews:
       En algún momento del  {{/taxYear}}, ¿Te inscribiste en un plan de salud del Mercado que califica para el Crédito
       tributario de prima (PTC)?
     /writableWantsToUseAltCalculations: ¿Quieres usar el cálculo alternativo?
-    /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod: ¿Se inscribió durante un período de inscripción especial basado en el ingreso?
+    /writableEnrolledDuringIncomeBasedSpecialEnrollmentPeriod:
+      ¿Se inscribió durante un período de inscripción especial basado en el ingreso?
     /1095As/*/writableAptcAnnualAmount: Pago anual adelantado del PTC
     /1095As/*/writablePtcMonthlyAptcPremiumJan: Pago adelantado del PTC de enero
     /1095As/*/writablePtcMonthlyAptcPremiumFeb: Pago adelantado del PTC de febrero

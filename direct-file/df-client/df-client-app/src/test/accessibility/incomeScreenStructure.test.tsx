@@ -140,12 +140,23 @@ describe(`Income screen fixes`, () => {
     return config;
   };
 
-  it(`W-2 boxes 10-11: no empty hint, the inputs aren't described by one, the modal links stay`, async () => {
+  it(`W-2 boxes 10-11: format hints are tied to the inputs, and the modal links stay`, async () => {
     await renderScreen(byRoute(`w2-add-boxes-10-11`));
-    expect(document.querySelectorAll(`.usa-hint`)).toHaveLength(0);
+    const hints = document.querySelectorAll(`.usa-hint`);
+    expect(hints).toHaveLength(2);
+    for (const hint of hints) expect(hint.textContent).toMatch(/dollars and cents/);
     const inputs = screen.getAllByRole(`textbox`);
     expect(inputs).toHaveLength(2);
-    for (const input of inputs) expect(input).not.toHaveAttribute(`aria-describedby`);
+    for (const input of inputs) {
+      const describedBy = input.getAttribute(`aria-describedby`) ?? ``;
+      expect(describedBy).not.toBe(``);
+      expect(
+        describedBy
+          .split(/\s+/)
+          .map((id) => document.getElementById(id)?.textContent ?? ``)
+          .join(` `)
+      ).toMatch(/dollars and cents/);
+    }
     expect(screen.getByRole(`button`, { name: `What are dependent care benefits?` })).toBeInTheDocument();
     expect(screen.getByRole(`button`, { name: `What are nonqualified plans?` })).toBeInTheDocument();
   });

@@ -9,6 +9,8 @@ const PageTitle: FC<{
   children: string | ReactNode;
   large?: boolean;
   redactedTitle: string;
+  /** Override when a screen renders more than one conditional heading, so ids stay unique. */
+  headingId?: string;
 }> = (props) => {
   const location = useLocation();
 
@@ -25,7 +27,7 @@ const PageTitle: FC<{
   return (
     <>
       <Helmet title={props.redactedTitle} />
-      <h1 className={headingClasses} id={PAGE_HEADING_ID}>
+      <h1 className={headingClasses} id={props.headingId ?? PAGE_HEADING_ID}>
         {props.children}
       </h1>
     </>

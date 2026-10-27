@@ -81,6 +81,7 @@ const DFAlert: FC<DFAlertProps> = ({
   context,
   additionalComponents,
   children,
+  role,
   ...props
 }) => {
   const translationComponents = useMemo(() => {
@@ -117,8 +118,12 @@ const DFAlert: FC<DFAlertProps> = ({
 
   const { headingValue, bodyValue } = keyValues;
 
+  // Knockout copy is an alert: name (its text), role, and the warning state (WCAG 2.1 SC 4.1.2).
+  const knockoutAlert = typeof i18nKey === `string` && i18nKey.includes(`/knockout/`);
+  const alertRole = role ?? (knockoutAlert ? `alert` : undefined);
+
   return (
-    <Alert type={type} heading={headingValue} {...props} validation slim>
+    <Alert type={type} heading={headingValue} {...props} role={alertRole} validation slim>
       {bodyValue}
       {children}
     </Alert>

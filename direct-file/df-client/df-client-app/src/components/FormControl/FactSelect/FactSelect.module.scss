@@ -3,4 +3,9 @@
 .box-fact {
   border-bottom: units('2px') solid color('base-lighter') !important;
   padding-bottom: units(4) !important;
+
+  :global(.usa-button) {
+    min-height: units(4);
+    min-width: units(4);
+  }
 }

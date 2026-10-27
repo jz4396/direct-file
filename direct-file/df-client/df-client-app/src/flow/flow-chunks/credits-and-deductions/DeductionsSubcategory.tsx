@@ -36,6 +36,10 @@ export const DeductionsSubcategory = (
         itemKey: `adjustment`,
         conditions: [`/hasAdjustments`],
       },
+      {
+        itemKey: `schedule1A`,
+        conditions: [`/deductionsSectionComplete`],
+      },
     ]}
   >
     <Assertion
@@ -599,7 +603,11 @@ export const DeductionsSubcategory = (
       </CollectionLoop>
       {/* #66: Schedule 1-A line 28 has two VIN rows; more than two vehicles is a stop (IRC §163(h)(4)(B)(iii)). */}
       <SubSubcategory route='car-loan-vehicles-limit'>
-        <Screen route='car-loan-more-than-two-knockout' condition='/flowKnockoutCarLoanMoreThanTwoVins' isKnockout={true}>
+        <Screen
+          route='car-loan-more-than-two-knockout'
+          condition='/flowKnockoutCarLoanMoreThanTwoVins'
+          isKnockout={true}
+        >
           <IconDisplay name='ErrorOutline' size={9} isCentered />
           <Heading i18nKey='/heading/knockout/car-loan-more-than-two' />
           <DFAlert i18nKey='/info/knockout/car-loan-more-than-two' headingLevel='h3' type='warning' />

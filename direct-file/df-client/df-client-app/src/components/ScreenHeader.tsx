@@ -30,8 +30,16 @@ export const ScreenHeader = ({
         collectionId={collectionId}
       />
     ))}
-    {headings.map((h) => (
-      <Heading key={`${h.props.i18nKey}--${conditionsAsKeySuffix(h)}`} {...h.props} collectionId={collectionId} />
+    {headings.map((h, index) => (
+      <Heading
+        key={`${h.props.i18nKey}--${conditionsAsKeySuffix(h)}`}
+        {...h.props}
+        collectionId={collectionId}
+        // The first heading keeps the shared page-heading id (yes/no groups point at it).
+        // Later headings are mutually exclusive in the interview and only appear together
+        // in the all-screens view, so they need their own ids (WCAG 2.1 SC 4.1.1).
+        headingId={index === 0 ? undefined : `page-heading-${index}`}
+      />
     ))}
   </div>
 );

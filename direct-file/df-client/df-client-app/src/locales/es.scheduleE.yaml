@@ -327,7 +327,7 @@ fields:
       "no": "No"
   /scheduleEEstates:
     controls:
-      add: Agregar un caudal hereditario o fideicomiso
+      add: Agregar otro caudal hereditario o fideicomiso
       complete_zero: No tengo uno para agregar
       complete: Terminé de agregar caudales y fideicomisos
       back: Volver a la lista
@@ -336,13 +336,13 @@ fields:
       itemHeading2: Caudal o fideicomiso incompleto
       label2: Caudal hereditario o fideicomiso
     deleteControl:
-      text: <LinkModal1>Quitar</LinkModal1>
+      text: <LinkModal1>Quitar este caudal hereditario o fideicomiso</LinkModal1>
       LinkModal1:
         header: ¿Seguro que quiere quitar este caudal hereditario o fideicomiso?
         body:
           - p: Esto no se puede deshacer.
         controls:
-          confirm: Quitar
+          confirm: Quitar este caudal hereditario o fideicomiso
           cancel: Cancelar
   /scheduleEK1EntityTypeOptions:
     P: Sociedad colectiva
@@ -392,7 +392,7 @@ fields:
       "no": "No"
   /scheduleEK1s:
     controls:
-      add: Agregar una sociedad colectiva o sociedad anónima de tipo S
+      add: Agregar otra sociedad colectiva o sociedad anónima de tipo S
       complete_zero: No tengo una para agregar
       complete: Terminé de agregar sociedades
       back: Volver a la lista
@@ -401,13 +401,13 @@ fields:
       itemHeading2: Sociedad incompleta
       label2: Sociedad colectiva o sociedad anónima de tipo S
     deleteControl:
-      text: <LinkModal1>Quitar</LinkModal1>
+      text: <LinkModal1>Quitar esta sociedad colectiva o sociedad anónima de tipo S</LinkModal1>
       LinkModal1:
         header: ¿Seguro que quiere quitar esta sociedad colectiva o sociedad anónima de tipo S?
         body:
           - p: Esto no se puede deshacer.
         controls:
-          confirm: Quitar
+          confirm: Quitar esta sociedad colectiva o sociedad anónima de tipo S
           cancel: Cancelar
 checklist:
   /flow/income/schedule-e:
