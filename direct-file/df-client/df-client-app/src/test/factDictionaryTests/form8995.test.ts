@@ -35,10 +35,19 @@ const business = (id: string, gross: number, expenses: number, active = true) =>
   [`/scheduleCBusinesses/#${id}/writableTotalExpenses`]: createDollarWrapper(`${expenses}`),
   [`/scheduleCBusinesses/#${id}/materiallyParticipates`]: createBooleanWrapper(active),
 });
+const seScopeNo = {
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
+};
 const scheduleC = (biz: Record<string, unknown>, ids: string[], extra: Record<string, unknown> = {}) => ({
   '/hadSelfEmploymentIncome': createBooleanWrapper(true),
   '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
   '/qbiIsCooperativePatron': createBooleanWrapper(false),
+  ...seScopeNo,
   '/scheduleCBusinesses': createCollectionWrapper(ids),
   ...biz,
   '/scheduleCBusinessesIsDone': createBooleanWrapper(true),

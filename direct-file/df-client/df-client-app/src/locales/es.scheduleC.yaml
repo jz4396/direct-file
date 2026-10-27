@@ -14,6 +14,13 @@ headings:
   /heading/income/schedule-c/business-basics: Infórmenos sobre este negocio
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
+  /heading/income/schedule-c/farm: ¿Tuvo ingresos de agricultura o pagos del Programa de Reservas para la Conservación?
+  /heading/income/schedule-c/church-employee: ¿Tuvo ingresos como empleado de una iglesia?
+  /heading/income/schedule-c/optional-method: ¿Quiere usar un método opcional para calcular el impuesto sobre el trabajo por cuenta propia?
+  /heading/income/schedule-c/minister: ¿Es usted ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o tiene una exención del Formulario 4361 o 4029?
+  /heading/income/schedule-c/notary: ¿Tiene honorarios de notario que están excluidos del impuesto sobre el trabajo por cuenta propia?
+  /heading/income/schedule-c/form-8919: ¿Tuvo salarios declarados en el Formulario 8919?
+  /heading/knockout/schedule-se-out-of-scope: Esta herramienta no puede calcular este impuesto sobre el trabajo por cuenta propia
   /heading/income/schedule-c/part-i: "Ingrese los ingresos de este negocio"
   /heading/income/schedule-c/other-income-form: "¿Estos otros ingresos corresponden a otro formulario?"
   /heading/income/schedule-c/inventory: "¿Este negocio tuvo inventario o costo de mercancías vendidas?"
@@ -42,7 +49,9 @@ info:
   /info/income/schedule-c/intro:
     body: >-
       Esto incluye los ingresos de un negocio por cuenta propia, trabajos esporádicos o trabajo independiente que
-      se declaran en el Anexo C.
+      se declaran en el Anexo C. También incluye ingresos de agricultura, ingresos como empleado de una iglesia,
+      honorarios de notario e ingresos del ministerio. Conteste que sí si alguno corresponde. Conteste que no solo
+      si ninguno corresponde.
   /info/income/schedule-c/qbi-carryforward:
     body: >-
       Usamos los ingresos de su negocio para calcular la deducción por ingreso calificado de negocios (Formulario
@@ -65,6 +74,38 @@ info:
     body: >-
       Los ingresos brutos son el total de los ingresos del negocio antes de los gastos. Los gastos son los costos
       ordinarios y necesarios para operar el negocio (sección 162 del Código de Impuestos Internos).
+  /info/income/schedule-c/farm:
+    body: >-
+      Las líneas 1a y 1b del Anexo SE son la ganancia de agricultura y los pagos del Programa de Reservas para la
+      Conservación. Conteste que sí si alguna corresponde. Esta herramienta no puede calcular esas líneas.
+  /info/income/schedule-c/church-employee:
+    body: >-
+      Los ingresos como empleado de una iglesia van en las líneas 5a y 5b del Anexo SE. Se calculan por separado de
+      los otros ingresos del trabajo por cuenta propia. Conteste que sí si los tiene.
+  /info/income/schedule-c/optional-method:
+    body: >-
+      Los métodos opcionales son la línea 4b y la Parte II del Anexo SE. Conteste que sí si quiere usar un método
+      opcional de agricultura o que no es de agricultura. Esta herramienta calcula solo el método regular.
+  /info/income/schedule-c/minister:
+    body: >-
+      Conteste que sí si es ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o si
+      tiene una exención aprobada del Formulario 4361 o 4029. La vivienda y la exención no se calculan aquí.
+  /info/income/schedule-c/notary:
+    body: >-
+      Los honorarios de notario por un cargo público están excluidos del impuesto sobre el trabajo por cuenta propia.
+      Conteste que sí si necesita esa exclusión. Esta herramienta no puede restar esos honorarios.
+  /info/income/schedule-c/form-8919:
+    body: >-
+      Los salarios del Formulario 8919 van en la línea 8c del Anexo SE. Conteste que sí si los tiene. Las propinas no
+      declaradas del Formulario 4137 detienen la declaración por separado.
+  /info/knockout/schedule-se-out-of-scope:
+    alertText:
+      body:
+        - p: >-
+            Esta declaración necesita una línea del Anexo SE que esta herramienta no calcula. Eso incluye ingresos de
+            agricultura, pagos del Programa de Reservas para la Conservación, ingresos como empleado de una iglesia, un
+            método opcional, el ministerio o una exención del Formulario 4361 o 4029, honorarios de notario o salarios
+            del Formulario 8919. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-c-qbi:
     alertText:
       body:
@@ -118,8 +159,32 @@ info:
 fields:
   /hadSelfEmploymentIncome:
     boolean:
-      "yes": Sí, tuve ingresos de trabajo por cuenta propia, esporádico o independiente
-      "no": No, no tuve ingresos de trabajo por cuenta propia
+      "yes": Sí, tuve ingresos de trabajo por cuenta propia, de agricultura, de iglesia, de notario o del ministerio
+      "no": No, no tuve ingresos de trabajo por cuenta propia, de agricultura, de iglesia, de notario ni del ministerio
+  /hadFarmSelfEmploymentIncome:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /hadChurchEmployeeIncome:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /usesSeOptionalMethod:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /hasMinisterOrSeExemption:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /hasNotarySeExclusion:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /hadForm8919Wages:
+    boolean:
+      "yes": Sí
+      "no": "No"
   /qbiHasPriorYearLossCarryforward:
     boolean:
       "yes": Sí, tengo una pérdida que se traslada

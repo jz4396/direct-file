@@ -14,6 +14,13 @@ headings:
   /heading/income/schedule-c/business-basics: Tell us about this business
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
   /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
+  /heading/income/schedule-c/farm: Did you have farm income or Conservation Reserve Program payments?
+  /heading/income/schedule-c/church-employee: Did you have church employee income?
+  /heading/income/schedule-c/optional-method: Do you want to use an optional method to figure self-employment tax?
+  /heading/income/schedule-c/minister: Are you a minister, a member of a religious order, or a Christian Science practitioner, or do you have a Form 4361 or Form 4029 exemption?
+  /heading/income/schedule-c/notary: Do you have notary fees that are excluded from self-employment tax?
+  /heading/income/schedule-c/form-8919: Did you have wages reported on Form 8919?
+  /heading/knockout/schedule-se-out-of-scope: This tool can’t figure this self-employment tax
   /heading/income/schedule-c/part-i: "Enter income for this business"
   /heading/income/schedule-c/other-income-form: "Does this other income belong on another form?"
   /heading/income/schedule-c/inventory: "Did this business have inventory or cost of goods sold?"
@@ -40,7 +47,10 @@ headings:
   /heading/knockout/schedule-c-out-of-scope: "This tool can’t complete this Schedule C"
 info:
   /info/income/schedule-c/intro:
-    body: This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C.
+    body: >-
+      This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C. It also
+      includes farm income, church employee income, notary fees, and income from the ministry. Answer yes if any of
+      those apply. Answer no only if none of them apply.
   /info/income/schedule-c/qbi-carryforward:
     body: >-
       We use your business income to figure the qualified business income deduction (Form 8995). Answer yes if your
@@ -60,6 +70,37 @@ info:
     body: >-
       Gross receipts are your total business income before expenses. Expenses are ordinary and necessary costs
       of running the business (Internal Revenue Code section 162).
+  /info/income/schedule-c/farm:
+    body: >-
+      Schedule SE lines 1a and 1b are farm profit and Conservation Reserve Program payments. Answer yes if either
+      applies. This tool cannot figure those lines.
+  /info/income/schedule-c/church-employee:
+    body: >-
+      Church employee income goes on Schedule SE lines 5a and 5b. It is figured separately from other
+      self-employment income. Answer yes if you have it.
+  /info/income/schedule-c/optional-method:
+    body: >-
+      The optional methods are Schedule SE line 4b and Part II. Answer yes if you want to use a farm or nonfarm
+      optional method. This tool figures only the regular method.
+  /info/income/schedule-c/minister:
+    body: >-
+      Answer yes if you are a minister, a member of a religious order, or a Christian Science practitioner, or if
+      you have an approved Form 4361 or Form 4029 exemption. Housing and the exemption are not figured here.
+  /info/income/schedule-c/notary:
+    body: >-
+      Notary fees for a public office are excluded from self-employment tax. Answer yes if you need that exclusion.
+      This tool cannot subtract those fees.
+  /info/income/schedule-c/form-8919:
+    body: >-
+      Form 8919 wages go on Schedule SE line 8c. Answer yes if you have them. Unreported tips on Form 4137 are a
+      separate stop.
+  /info/knockout/schedule-se-out-of-scope:
+    alertText:
+      body:
+        - p: >-
+            This return needs a Schedule SE line this tool does not figure. That includes farm income, Conservation
+            Reserve Program payments, church employee income, an optional method, ministry or a Form 4361 or Form 4029
+            exemption, notary fees, or Form 8919 wages. You will need another way to file this return.
   /info/knockout/schedule-c-qbi:
     alertText:
       body:
@@ -113,8 +154,32 @@ info:
 fields:
   /hadSelfEmploymentIncome:
     boolean:
-      "yes": Yes, I had self-employment, gig, or freelance income
-      "no": No, I didn’t have self-employment income
+      "yes": Yes, I had self-employment, farm, church-employee, notary, or ministry income
+      "no": No, I didn’t have self-employment, farm, church-employee, notary, or ministry income
+  /hadFarmSelfEmploymentIncome:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /hadChurchEmployeeIncome:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /usesSeOptionalMethod:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /hasMinisterOrSeExemption:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /hasNotarySeExclusion:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /hadForm8919Wages:
+    boolean:
+      "yes": Yes
+      "no": "No"
   /qbiHasPriorYearLossCarryforward:
     boolean:
       "yes": Yes, I have a loss carryforward

@@ -79,6 +79,7 @@ class PrintRefusingKnockoutsTest {
     static final String QBI_MIXED_PARTICIPATION_KNOCKOUT = "/flowKnockoutQbiMixedParticipation";
     static final String SCHEDULE_C_QBI_KNOCKOUT = "/flowKnockoutScheduleCQbi";
     static final String SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleCOutOfScope";
+    static final String SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleSEOutOfScope";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     /** Form 6251 lines 2c-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). */
     static final String AMT_PREFERENCE_KNOCKOUT = "/flowKnockoutAmtPreferenceItems";
@@ -152,6 +153,7 @@ class PrintRefusingKnockoutsTest {
                 QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
                 SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
                 SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
+                SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT, // Schedule SE line this tool does not compute
                 FORM_8995_KNOCKOUT, // Form 8995 is attached and has no TY2026 template or MeF mapping
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2t, 3 and 8
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
@@ -160,7 +162,7 @@ class PrintRefusingKnockoutsTest {
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
         // #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(31, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(32, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -732,6 +734,54 @@ class PrintRefusingKnockoutsTest {
                 Ty2026PdfPackageTest.FAMILY, Ty2026PdfPackageTest.CTC_FILER_SSN, true);
         Ty2026PdfPackageTest.noEitc(facts);
         return facts;
+    }
+
+    /**
+     * Schedule SE lines 1a, 1b, 4b, Part II, 5a, 5b, checkbox A, and 8c. 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8),
+     * 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), and 1402(l). A return with no self-employment
+     * income is complete false. An unanswered question while self-employment income is yes refuses the print. Every
+     * answer no does not. Any yes refuses the print.
+     */
+    @Test
+    void scheduleSeOutOfScopeRefusesPrintUntilEveryQuestionIsNo() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        FactTypeWithItem yes = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
+        String ko = SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT;
+
+        Graph absent = fgs.getGraph(SubmissionBlockingFactsTest.golden());
+        assertTrue(absent.get(ko).complete(), "no self-employment income is complete");
+        assertEquals(Boolean.FALSE, absent.get(ko).get());
+        assertFalse(PrintRefusingKnockouts.refusingPaths(absent).contains(ko));
+
+        Map<String, String> openFacts = new HashMap<>(
+                ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "30000.00"));
+        for (String path : List.of(
+                "/hadFarmSelfEmploymentIncome",
+                "/hadChurchEmployeeIncome",
+                "/usesSeOptionalMethod",
+                "/hasMinisterOrSeExemption",
+                "/hasNotarySeExclusion",
+                "/hadForm8919Wages")) {
+            openFacts.remove(path);
+        }
+        Graph open = fgs.getGraph(smoke(openFacts));
+        assertFalse(open.get(ko).complete(), "unanswered stays incomplete");
+        assertTrue(PrintRefusingKnockouts.refusingPaths(open).contains(ko));
+
+        Graph supported = fgs.getGraph(scheduleCOnly());
+        assertTrue(supported.get(ko).complete());
+        assertEquals(Boolean.FALSE, supported.get(ko).get());
+        assertFalse(PrintRefusingKnockouts.refusingPaths(supported).contains(ko));
+        assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(supported));
+
+        Map<String, FactTypeWithItem> farmFacts = new HashMap<>(scheduleCOnly());
+        farmFacts.put("/hadFarmSelfEmploymentIncome", yes);
+        Graph farm = fgs.getGraph(farmFacts);
+        assertEquals(Boolean.TRUE, farm.get(ko).get());
+        assertEquals(Boolean.TRUE, farm.get("/flowIsKnockedOut").get());
+        assertTrue(PrintRefusingKnockouts.refusingPaths(farm).contains(ko));
     }
 
     /**

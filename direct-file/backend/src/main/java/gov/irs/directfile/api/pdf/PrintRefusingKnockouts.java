@@ -115,6 +115,13 @@ public final class PrintRefusingKnockouts {
             // participation (Form 8582, 26 U.S.C. 469) or that is not fully at risk (line 32b, Form 6198,
             // 26 U.S.C. 465). Complete false when the filer has no Schedule C or only the single expense total.
             "/flowKnockoutScheduleCOutOfScope",
+            // Schedule SE lines this tool does not compute. 2026 draft Schedule SE: lines 1a and 1b (farm and
+            // Conservation Reserve Program payments; 26 U.S.C. 1402(a), 1402(a)(1)), line 4b and Part II (optional
+            // methods; 1402(a), 1402(l)), lines 5a and 5b (church employee income; 1402(a)(14), 1402(j)), checkbox A
+            // and ministry (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees (1402(c)(1)), and line 8c
+            // (Form 8919). Complete false when the filer has no self-employment income or answers every question no.
+            // An unanswered question while self-employment income is yes refuses the print.
+            "/flowKnockoutScheduleSEOutOfScope",
             // Form 8995 goes with every return that has Schedule C QBI or loss: Instructions for Form 1040 (2025)
             // draft,
             // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your

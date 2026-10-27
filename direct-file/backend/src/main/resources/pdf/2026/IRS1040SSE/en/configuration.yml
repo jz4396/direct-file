@@ -21,19 +21,24 @@
 # Schedule 2 line 4 (/schedule2Line4, the sum of each filer's line 12); 13 = line 12 x 50% (26 U.S.C. 164(f)(1)),
 # also on Schedule 1 line 15 (/schedule1Line15, the sum of each filer's line 13). Line 7 ($184,500, 90 FR 49047 p. 49050) is preprinted on the form (f1_13 is a 1-point field).
 #
-# Not mapped, left blank (never a silent 0); the tool collects no input for any of them:
-#   A    Form 4361 minister / religious order exemption checkbox: no clergy or Form 4361 input.
-#   1a, 1b  Schedule F farm profit, Conservation Reserve Program payments, and farm-partnership Schedule K-1
-#           (Form 1065) box 14 code A. No Schedule F input. Box 14 code A (farm on line 1a, other than farming
-#           on line 2) is not entered as zero on a filed return. A supported Schedule E Part II K-1 has box 14
-#           code A at zero (26 U.S.C. 1402(a)). A nonzero amount stops the return (scheduleE
+# Not mapped, left blank. A yes on scheduleSE /flowKnockoutScheduleSEOutOfScope refuses the print. An
+# answered no is why the line stays blank. An unanswered question, when /hadSelfEmploymentIncome is yes, also
+# refuses the print.
+#   A    Form 4361 / Form 4029 and ministry (26 U.S.C. 1402(a)(8), 1402(c)(4), 1402(e), 1402(g)):
+#        /hasMinisterOrSeExemption.
+#   1a, 1b  Schedule F farm profit and Conservation Reserve Program payments (/hadFarmSelfEmploymentIncome;
+#           26 U.S.C. 1402(a), 1402(a)(1)), and farm-partnership Schedule K-1 (Form 1065) box 14 code A.
+#           Box 14 code A is not entered as zero on a filed return. A supported Schedule E Part II K-1 has
+#           box 14 code A at zero (26 U.S.C. 1402(a)). A nonzero amount stops the return (scheduleE
 #           /flowKnockoutScheduleEPartIIBox14CodeA). An unanswered K-1 question also refuses the print
 #           (scheduleE /flowKnockoutScheduleEPartII). An answered no is complete false, so a Schedule C-only
 #           package still prints.
-#   4b and Part II (lines 14-17), farm and nonfarm optional methods: not offered.
-#   5a, 5b  church employee income: no input.
+#   4b and Part II (lines 14-17), farm and nonfarm optional methods (/usesSeOptionalMethod; 26 U.S.C. 1402(a),
+#           1402(l)).
+#   5a, 5b  church employee income (/hadChurchEmployeeIncome; 26 U.S.C. 1402(a)(14), 1402(j)).
 #   8b   Form 4137 unreported tips: stops the return (unreportedTips /flowKnockoutUnreportedTips).
-#   8c   Form 8919 wages: no input (income /wagesFrom8919 is $0).
+#   8c   Form 8919 wages (/hadForm8919Wages). income /wagesFrom8919 is $0. Notary fees excluded under
+#        26 U.S.C. 1402(c)(1) (/hasNotarySeExclusion) are not subtracted from line 3.
 # $0 amounts print blank (FactGraphService zero suppression). With line 8a at or above $184,500 the form says skip
 # lines 8b through 10; /scheduleSELine8d, /primaryFilerSeRemainingSocialSecurityWageBase and /primaryFilerSeSocialSecurityTax are then $0, so
 # lines 8d, 9 and 10 print blank.
