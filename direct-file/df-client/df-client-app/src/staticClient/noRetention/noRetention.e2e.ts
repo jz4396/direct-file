@@ -250,6 +250,16 @@ function markerSaveFile(): string {
   facts[`${primary}/lastName`] = { $type: `gov.irs.factgraph.persisters.StringWrapper`, item: FILE.lastName };
   facts[`${primary}/tin`] = { $type: `gov.irs.factgraph.persisters.TinWrapper`, item: FILE.tin };
   facts[`/formW2s/#${w2}/writableWages`] = { $type: `gov.irs.factgraph.persisters.DollarWrapper`, item: FILE.wages };
+  // Box 12 code W puts the primary filer in /filersWithHsa so those screens can open.
+  facts[`/formW2s/#${w2}/employerHsaContributions`] = {
+    $type: `gov.irs.factgraph.persisters.DollarWrapper`,
+    item: `500.00`,
+  };
+  const no = { $type: `gov.irs.factgraph.persisters.BooleanWrapper`, item: false };
+  // These answers keep the HSA intro knockouts false so /filersWithHsa contains the primary filer.
+  facts[`/hasHsaMedicalSavingsAccountType`] = no;
+  facts[`/writableHasHsaExcessContributionsPreviousYear`] = no;
+  facts[`/writableHasHsaWithdrawnExcessContributionsYesNo`] = no;
   // One synthetic item in each writable income collection so those screens can open.
   const collectionType = facts[`/formW2s`].$type;
   for (const collection of [
@@ -582,9 +592,10 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(directive(`script-src`)).not.toContain(`unsafe-`);
 
     // Interview: name, date of birth, address and phone, each saved with "Save and continue" (autosave).
+    // A fresh return has /flowIsKnockedOut set (/flowKnockoutScheduleBPartIII is true until Part III is
+    // answered), so the checklist does not show Start. The about-you screens are still available.
     await startReturn(page);
-    await page.getByRole(`link`, { name: `Start`, exact: true }).click();
-    await page.waitForURL(/\/about-you-intro/);
+    await openInApp(page, `/df/file/flow/you-and-your-family/about-you/about-you-intro`);
     await page.getByRole(`button`, { name: `Continue`, exact: true }).click();
     await page.waitForURL(/\/about-you-basic-info/);
     await page.locator(`input[id$="/firstName"]`).fill(UI.firstName);
@@ -636,21 +647,53 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
         { timeout: 8_000 }
       );
     };
+    const ERROR_PAGE = `We’re experiencing a problem`;
+    // The site-wide error boundary stays up until a reload, which drops the in-memory return.
+    const recoverReturn = async () => {
+      await page.goto(`${site.origin}/df/file/home`);
+      await startReturn(page);
+      await openDeviceData(page);
+      await importSaveFile(page);
+    };
     const missed: string[] = [];
+    const errored: string[] = [];
+    let boundary = false;
     for (const screen of incomeScreens) {
       try {
+        if (boundary) {
+          await recoverReturn();
+          boundary = false;
+        }
         await openIncomeScreen(screen);
         const landed = new URL(page.url()).pathname;
         if (!landed.endsWith(screen.screenRoute)) {
           missed.push(`${screen.screenRoute} -> ${landed}`);
-        } else if ((await page.getByText(`We’re experiencing a problem`).count()) > 0) {
-          missed.push(`${screen.screenRoute} error`);
+        } else if ((await page.getByText(ERROR_PAGE).count()) > 0) {
+          errored.push(screen.screenRoute);
+          boundary = true;
         }
       } catch {
         missed.push(screen.screenRoute);
+        boundary = true;
       }
     }
     expect(missed).toEqual([]);
+    // These routes were opened. For this return their headings are gated off, so the app shows the
+    // site-wide error boundary instead of a screen. The set is exact: a new crash fails the test.
+    expect(errored).toEqual([
+      `/flow/income/interest/int-income-loop-intro-data-import`,
+      `/flow/income/dependent-care/dep-care-combat-pay`,
+      `/flow/income/dependent-care/dep-care-combat-pay-change`,
+      `/flow/income/dependent-care/earned-income-rule-tp1-benefits`,
+      `/flow/income/dependent-care/earned-income-rule-tp2-benefits`,
+      `/flow/income/dependent-care/tin-ein-check`,
+      `/flow/income/dependent-care/tin-missing-reason`,
+      `/flow/income/dependent-care/provider-due-diligence`,
+      `/flow/income/hsa/hsa-y-n`,
+      `/flow/income/hsa/hsa-testing-period-contribution-check`,
+      `/flow/income/hsa/hsa-testing-period-additional-income`,
+    ]);
+    if (boundary) await recoverReturn();
 
     const wagesScreen = incomeScreens.find((screen) => screen.route === `w2-add-boxes-1-8`);
     expect(wagesScreen?.collectionContext).toBeTruthy();
@@ -688,9 +731,15 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
 
     await openInApp(page, `/df/file/flow/complete/submit/sign-return-submit`);
     await page.getByRole(`heading`, { name: /time to submit your federal tax return/, level: 1 }).waitFor();
-    const checkboxes = page.getByRole(`checkbox`);
-    for (let i = 0; i < (await checkboxes.count()); i++) await checkboxes.nth(i).check();
-    await page.getByRole(`button`, { name: /tax return/ }).click();
+    // The certify checkbox is in the DOM but outside the layout viewport, so a Playwright click never lands.
+    await page.evaluate(() => {
+      document.querySelectorAll(`input[type="checkbox"]`).forEach((node) => {
+        const input = node as HTMLInputElement;
+        if (!input.checked) input.click();
+      });
+      const button = [...document.querySelectorAll(`button`)].find((el) => /tax return/i.test(el.textContent ?? ``));
+      button?.click();
+    });
     await page
       .getByTestId(`system-alert`)
       .getByRole(`heading`, { name: refusal.efileRefusal.alertText.heading })

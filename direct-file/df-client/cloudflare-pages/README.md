@@ -52,6 +52,9 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
 - **There's no primary filer TIN or email.** In the regular app these come from sign-in and are read-only, so a
   static-client return can't reach a complete, fileable state.
 - **There's no PDF, signing or e-file.** The static build is for working through the interview only.
+- **The checklist hides Start on a fresh return.** `/flowKnockoutScheduleBPartIII` is true until Schedule B
+  Part III is answered, so `/flowIsKnockedOut` is true and the checklist does not offer Start. The about-you
+  screens are still available.
 - The real-browser test (`npm run test:no-retention`) walks a golden end-to-end scenario (synthetic data): create,
   every income screen, autosave, read-back, review, and the PDF, sign, and submit attempts. Those attempts show a
   refusal. They do not download a PDF or open the submitted screen. PDF, sign, and submit are also covered by the
