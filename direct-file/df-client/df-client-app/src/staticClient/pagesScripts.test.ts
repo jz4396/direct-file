@@ -7,8 +7,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 /**
  * The shell side of the Cloudflare Pages deploy (../cloudflare-pages): build.sh refuses a build environment that
- * holds a Cloudflare credential, and checkNoSecrets.mjs stops a deploy whose staged files contain one. Neither
- * prints the value. The values here are random and made up at run time.
+ * holds a Cloudflare credential, and checkNoSecrets.mjs stops a deploy whose staged files contain one (including
+ * the exact value of CLOUDFLARE_API_KEY). Neither prints the value. The values here are random and made up at
+ * run time. `check-install.sh` is the Pages Git-integration build (`build.sh --install`); run it to install from
+ * the lockfile with no lifecycle scripts and require the production-build and staging checks to pass.
  */
 const PAGES = path.resolve(__dirname, `../../../cloudflare-pages`);
 const fakeValue = () => `test-${crypto.randomBytes(16).toString(`hex`)}`;
@@ -43,11 +45,24 @@ describe(`build.sh`, () => {
   });
 
   it(`keeps xtrace off and never echoes a credential`, () => {
-    for (const f of [`build.sh`, `deploy.sh`]) {
+    for (const f of [`build.sh`, `deploy.sh`, `check-install.sh`]) {
       const script = fs.readFileSync(path.join(PAGES, f), `utf8`);
       expect(script).toMatch(/^set \+x$/m);
       expect(script).not.toMatch(/set -x|echo[^\n]*\$\{?CLOUDFLARE_(API_TOKEN|ACCOUNT_ID|API_KEY)/);
     }
+  });
+
+  it(`--install installs from the lockfile without lifecycle scripts, then runs the production checks`, () => {
+    const build = fs.readFileSync(path.join(PAGES, `build.sh`), `utf8`);
+    const check = fs.readFileSync(path.join(PAGES, `check-install.sh`), `utf8`);
+    expect(build).toMatch(/if \[\[ "\$\{1:-\}" == "--install" \]\]; then/);
+    const installAt = build.indexOf(`npm ci --ignore-scripts`);
+    const prodAt = build.indexOf(`npm run --silent check:production-build`);
+    const stageAt = build.indexOf(`npm run --silent stage:static`);
+    expect(installAt).toBeGreaterThan(-1);
+    expect(prodAt).toBeGreaterThan(installAt);
+    expect(stageAt).toBeGreaterThan(prodAt);
+    expect(check).toContain(`"$HERE/build.sh" --install`);
   });
 });
 
@@ -71,7 +86,7 @@ describe(`checkNoSecrets.mjs`, () => {
     expect(r.status).toBe(0);
   });
 
-  it.each([`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`])(
+  it.each([`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_KEY`])(
     `fails when a staged file holds the value of %s, naming the file only`,
     (name) => {
       const value = fakeValue();

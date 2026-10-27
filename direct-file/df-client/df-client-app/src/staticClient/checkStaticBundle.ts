@@ -12,7 +12,8 @@ import { STATIC_BACKEND_URL } from './staticMode.js';
  * Checks a staged static client-only site (stageStaticSite.ts) before it is deployed. Returns a list of problems;
  * an empty list means the bundle passed.
  *
- * - `_headers` sends a CSP with `connect-src 'none'` and `frame-ancestors 'none'`, plus nosniff and DENY framing.
+ * - `_headers` sends a CSP with `connect-src 'none'`, `base-uri 'none'` and `frame-ancestors 'none'`, plus nosniff
+ *   and DENY framing.
  * - Every HTML page carries the static CSP <meta> (`connect-src 'none'`) and has no inline or third-party script.
  * - The JavaScript was built in static mode: it contains the network guard and the `.invalid` backend URL, and no
  *   other backend URL (a localhost API, or any absolute `.../df/file/api/` URL) or analytics loader.
@@ -27,6 +28,7 @@ import { STATIC_BACKEND_URL } from './staticMode.js';
  */
 export const REQUIRED_HEADERS = [
   /Content-Security-Policy:[^\n]*connect-src 'none'/,
+  /Content-Security-Policy:[^\n]*base-uri 'none'/,
   /Content-Security-Policy:[^\n]*frame-ancestors 'none'/,
   /Content-Security-Policy:[^\n]*form-action 'none'/,
   /X-Content-Type-Options: nosniff/,

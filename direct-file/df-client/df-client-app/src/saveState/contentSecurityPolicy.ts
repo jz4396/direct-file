@@ -9,8 +9,9 @@
  * `frame-ancestors` and reporting can't be set from a <meta> tag; set them as response headers where the client
  * is served.
  *
- * In static client-only mode (src/staticClient) the page talks to no server at all, so `connect-src` and
- * `form-action` are `'none'`.
+ * In static client-only mode (src/staticClient) the page talks to no server at all, so `connect-src`,
+ * `form-action` and `base-uri` are `'none'`. `base-uri 'none'` stops an injected `<base>` element from
+ * retargeting relative URLs.
  */
 export function buildContentSecurityPolicy(backendUrl?: string, opts: { staticClientOnly?: boolean } = {}): string {
   let backendOrigin = ``;
@@ -24,7 +25,7 @@ export function buildContentSecurityPolicy(backendUrl?: string, opts: { staticCl
     `default-src 'self'`,
     `script-src 'self'`,
     `object-src 'none'`,
-    `base-uri 'self'`,
+    opts.staticClientOnly ? `base-uri 'none'` : `base-uri 'self'`,
     opts.staticClientOnly ? `form-action 'none'` : `form-action 'self'`,
     `frame-src 'none'`,
     `worker-src 'self'`,

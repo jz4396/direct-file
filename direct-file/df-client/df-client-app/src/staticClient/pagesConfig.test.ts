@@ -21,6 +21,8 @@ describe(`Cloudflare Pages config for the static client`, () => {
   it(`sends the static CSP plus frame-ancestors 'none', nosniff and DENY on every path`, () => {
     const csp = `${buildContentSecurityPolicy(undefined, { staticClientOnly: true })}; frame-ancestors 'none'`;
     expect(headers).toContain(`/*\n  Content-Security-Policy: ${csp}\n`);
+    expect(csp).toContain(`base-uri 'none'`);
+    expect(headers).toContain(`base-uri 'none'`);
     expect(csp).toContain(`connect-src 'none'`);
     expect(csp).toContain(`form-action 'none'`);
     expect(headers).toContain(`  X-Content-Type-Options: nosniff\n`);
@@ -227,6 +229,11 @@ describe(`static bundle check`, () => {
       `headers without X-Robots-Tag`,
       { _headers: read(path.join(PAGES, `_headers`)).replace(/ *X-Robots-Tag:[^\n]*\n/, ``) },
       /X-Robots-Tag/,
+    ],
+    [
+      `headers without base-uri 'none'`,
+      { _headers: read(path.join(PAGES, `_headers`)).replace(`base-uri 'none'`, `base-uri 'self'`) },
+      /base-uri 'none'/,
     ],
     [
       `a bundle without the guard (regular build)`,
