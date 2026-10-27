@@ -1150,15 +1150,16 @@ describe(`golden end-to-end scenario (synthetic data): profile E, PA to FL part-
     expect(get(partial, `/flowKnockoutPaScheduleB`).get).toBe(true);
     expect(get(partial, `/flowKnockoutPaDividends`).get).toBe(true);
     expect(get(partial, `/flowIsKnockedOut`).get).toBe(true);
-    // Unanswered allocation: PA-40 line 3 stays incomplete (not $0) and the Schedule B knockout is not yet true.
+    // Unanswered allocation: PA-40 line 3 stays incomplete (not $0). The Schedule B and dividend stops stay
+    // incomplete, so submission and print fail closed.
     const withoutAllocation = { ...profileEPaToFlAmtDividends };
     delete withoutAllocation[`/paPartYearResidentDividends`];
     const bare = graph(withoutAllocation);
     expect(get(bare, `/paLine3`).complete).toBe(false);
     expect(get(bare, `/paLine9`).complete).toBe(false);
-    expect(get(bare, `/flowKnockoutPaScheduleB`).complete).toBe(true);
-    expect(get(bare, `/flowKnockoutPaScheduleB`).get).toBe(false);
-    expect(get(bare, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(bare, `/flowKnockoutPaScheduleB`).complete).toBe(false);
+    expect(get(bare, `/flowKnockoutPaDividends`).complete).toBe(false);
+    expect(get(bare, `/flowIsKnockedOut`).complete).toBe(false);
   });
 });
 

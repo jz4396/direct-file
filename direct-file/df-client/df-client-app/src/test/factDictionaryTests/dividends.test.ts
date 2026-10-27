@@ -113,6 +113,9 @@ const build = (extra: Record<string, unknown>, status: Record<string, unknown> =
     '/soldCapitalAssets': createBooleanWrapper(false),
     '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    '/paHasExemptObligationDividends': createBooleanWrapper(false),
+    '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+    '/paHasSpNontaxableIncome': createBooleanWrapper(false),
     ...state(`nj`),
     ...paW2(40000),
     ...extra,
@@ -382,11 +385,11 @@ describe(`PA-40 line 3 dividends (PA-40 IN (2025) p. 15 and PA Schedule B p. 32)
     expect(val(allResident, `/paLine3`)).toBe(`700.00`);
     expect(get(allResident, `/flowKnockoutPaDividends`).get).toBe(false);
     expect(get(allResident, `/flowIsKnockedOut`).get).toBe(false);
-    // Unanswered: line 3 is incomplete, not $0, and the knockout is not yet true.
+    // Unanswered allocation: line 3 is incomplete, not $0, and the knockout stays incomplete.
     const unanswered = partYear();
     expect(get(unanswered, `/paLine3`).complete).toBe(false);
-    expect(get(unanswered, `/flowKnockoutPaDividends`).complete).toBe(true);
-    expect(get(unanswered, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(unanswered, `/flowKnockoutPaDividends`).complete).toBe(false);
+    expect(get(unanswered, `/flowIsKnockedOut`).complete).toBe(false);
   });
   it(`not a PA return: never asked, never blocked`, () => {
     const g = build({ ...divs({ box1a: 700 }), '/paHasExemptObligationDividends': createBooleanWrapper(true) });

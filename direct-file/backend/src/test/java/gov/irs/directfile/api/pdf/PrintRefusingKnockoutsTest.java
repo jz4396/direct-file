@@ -42,6 +42,15 @@ class PrintRefusingKnockoutsTest {
     static final String CODE_Q_KNOCKOUT = "/flowKnockoutForm8949CodeQ";
     static final String SCHEDULE_EIC_KNOCKOUT = "/flowKnockoutScheduleEicWithoutTy2026Template";
     static final String PA_NRH_KNOCKOUT = "/flowKnockoutPaNonresidentPaSourcePay";
+    static final String PA_UE_KNOCKOUT = "/flowKnockoutPaUnreimbursedEmployeeExpenses";
+    static final String PA_DIVIDENDS_KNOCKOUT = "/flowKnockoutPaDividends";
+    static final String PA_UNSUPPORTED_ITEMS_KNOCKOUT = "/flowKnockoutPaUnsupportedItems";
+    static final String PA_UNSUPPORTED_INCOME_KNOCKOUT = "/flowKnockoutPaUnsupportedIncome";
+    static final String PA_SP_KNOCKOUT = "/flowKnockoutPaSpUnsupported";
+    static final String PA_PART_YEAR_KNOCKOUT = "/flowKnockoutPaPartYear";
+    static final String PA_SCHEDULE_A_KNOCKOUT = "/flowKnockoutPaScheduleA";
+    static final String PA_SCHEDULE_B_KNOCKOUT = "/flowKnockoutPaScheduleB";
+    static final String PA_SCHEDULE_D_KNOCKOUT = "/flowKnockoutPaScheduleD";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
     static final String FORM_8962_TEMPLATE_KNOCKOUT = "/flowKnockoutForm8962WithoutTy2026Template";
     static final List<String> PTC_KNOCKOUTS = List.of(
@@ -114,6 +123,15 @@ class PrintRefusingKnockoutsTest {
                 CODE_Q_KNOCKOUT, // Form 8949 code Q
                 SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
                 PA_NRH_KNOCKOUT, // PA Schedule NRH
+                PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
+                PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
+                PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14-16, 22, 23, 25
+                PA_UNSUPPORTED_INCOME_KNOCKOUT, // PA-40 lines 4 and 6 and unclassified income
+                PA_SP_KNOCKOUT, // Schedule SP Tax Forgiveness
+                PA_PART_YEAR_KNOCKOUT, // PA/FL part-year cases not computed
+                PA_SCHEDULE_A_KNOCKOUT, // PA Schedule A
+                PA_SCHEDULE_B_KNOCKOUT, // PA Schedule B
+                PA_SCHEDULE_D_KNOCKOUT, // PA Schedule D
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed
         expected.addAll(List.of(
@@ -127,8 +145,9 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
                 FORM_8995_KNOCKOUT)); // Form 8995 is attached and has no TY2026 template or MeF mapping
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
-        // #246 adds /flowKnockoutScheduleEPartII. #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(19, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        // #123 adds the PA-40 and Schedule SP stops besides NRH. #246 adds /flowKnockoutScheduleEPartII.
+        // #239 drops the Schedule C and Schedule 3-A template knockouts.
+        assertEquals(28, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

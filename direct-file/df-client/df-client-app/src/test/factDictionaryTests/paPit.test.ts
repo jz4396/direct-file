@@ -181,6 +181,24 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       `/flowKnockoutPaUnreimbursedEmployeeExpenses`
     );
   });
+  it(`line 1b left unanswered stays incomplete (#102)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaUnreimbursedEmployeeExpenses`, `/flowIsKnockedOut`];
+    const { factGraph: g } = setupFactGraph({
+      ...noW2,
+      ...baseFilerData,
+      ...singleFilerData,
+      [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+      '/livedTogetherAllYearWithSpouse': createBooleanWrapper(true),
+      '/soldCapitalAssets': createBooleanWrapper(false),
+      '/paHasUnsupportedItems': createBooleanWrapper(false),
+      '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+      ...pa(),
+      ...w2(50000, 50000, 1535),
+    });
+    expect(get(g, `/flowKnockoutPaUnreimbursedEmployeeExpenses`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).complete).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).complete).toBe(false);
+  });
   it(`line 1b = no: line 1b $0, line 1c = line 1a, no knockout (#102)`, ({ task }) => {
     task.meta.testedFactPaths = [`/paLine1b`, `/paLine1c`];
     const g = build(singleFilerData, w2(50000, 50000, 1535));

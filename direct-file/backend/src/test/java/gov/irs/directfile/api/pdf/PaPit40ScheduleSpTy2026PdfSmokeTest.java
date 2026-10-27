@@ -40,13 +40,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * <p>Golden end-to-end scenario (synthetic data, same filer as the Schedule D smoke fixture): single full-year PA
  * resident, one W-2 with $15,000 wages and PA compensation (box 16) and $500 PA tax withheld (box 17), two dependent
- * children, and the fixture's two Form 8949 sales changed to a $1,000 net loss
- * ($4,000 gain, $5,000 loss). Worked figures (whole dollars, half-up, p. 4):
+ * children, and no Form 8949 sales. Any sale needs PA Schedule D (/flowKnockoutPaScheduleD), which is not produced,
+ * so a sale refuses the print and line 5 stays blank on a return that prints. Worked figures (whole dollars, half-up,
+ * p. 4):
  *
  * <pre>
- *   PA-40: 1a 15,000  1c 15,000  5 1,000 with the loss oval  9 15,000 (losses not added, p. 20)  11 15,000
+ *   PA-40: 1a 15,000  1b blank  1c 15,000  5 blank  9 15,000  11 15,000
  *          12 461 (15,000 x 3.07% = 460.50)  13 500  19a Unmarried  19b 2  20 15,000  21 461  24 961 (500 + 460.50)
- *          26 blank  29 500  30 500
+ *          26 blank  28 blank  29 500  30 500
  *   SP:    line 1 15,000  11 15,000; table base 6,500 + 2 x 9,500 = 25,500 (p. 39), so line 15 = 1.0
  *          12 461  14 461  16 461
  * </pre>
@@ -117,6 +118,11 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         m.put("/address", paAddress());
         m.put("/formW2s/#" + W2 + "/writableStateWages", dollar("50000.00"));
         m.put("/formW2s/#" + W2 + "/writableStateWithholding", dollar("1535.00"));
+        // Answered no. An unanswered screener stays incomplete and PrintRefusingKnockouts refuses the PDF.
+        m.put("/paHasUnreimbursedEmployeeExpenses", bool(false));
+        m.put("/paHasUnsupportedItems", bool(false));
+        m.put("/paHasSpNontaxableIncome", bool(false));
+        m.put("/paPartYearHasNonresidentPaSourcePay", bool(false));
         return m;
     }
 
@@ -142,6 +148,15 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         m.put("/paPartYearMoveDate", day("2026-07-01"));
         m.put("/formW2s/#" + W2 + "/paPartYearW2State", enumValue("pa", "/paPartYearW2StateOptions"));
         m.put("/form8949Transactions", EMPTY_COLLECTION);
+        return m;
+    }
+
+    /** FL to PA on April 1: PA residency is the move date through December 31 (PA-40 IN (2025) p. 6). */
+    static Map<String, String> flToPaScenario() {
+        Map<String, String> m = partYearScenario();
+        m.put("/paPartYearMove", enumValue("flToPa", "/paPartYearMoveOptions"));
+        m.put("/paPartYearMoveDate", day("2026-04-01"));
+        m.put("/paSchoolDistrictCode", string("22275"));
         return m;
     }
 
@@ -471,6 +486,26 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p2, "Tax Forgiveness", "Off", "line 19a (no forgiveness)");
             blank(p2, "20. Total Eligibility Income", "line 20");
             blank(p2, "21. Tax Forgiveness Credit", "line 21");
+            assertTrue(fieldsOnPages(doc, SP_PAGE1).isEmpty(), "no Schedule SP without a credit");
+            blank(p2, "22. Resident Credit", "line 22");
+        }
+    }
+
+    @Test
+    void flToPaMoverPrintsThePaResidencyPeriod() throws Exception {
+        byte[] bytes = generate(flToPaScenario());
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PA40_PAGE1);
+            assertFalse(p1.isEmpty(), "PA-40 printed");
+            is(p1, "Residency Status", "3", "(P) Part-Year Resident (p. 6)");
+            is(p1, "Part Year Resident from", "04/01", "PA residency from the move date");
+            is(p1, "Part year resident to", "12/31", "through the end of the year");
+            is(p1, "Enter five digit School Code from list on pags 42 & 43", "22275", "still in PA on Dec. 31");
+            is(p1, "Name of School District", "HARRISBURG CITY", "school district name (pp. 46-47)");
+            is(p1, "1a. Gross Compensation", "50,000.00", "line 1a (PA W-2 box 16)");
+            Map<String, String> p2 = fieldsOnPages(doc, PA40_PAGE2);
+            is(p2, "12. PA Tax Liability. Multiply Line 11 by 3.07%", "1,535.00", "line 12 = 50,000 x 3.07%");
+            blank(p2, "22. Resident Credit", "line 22");
             assertTrue(fieldsOnPages(doc, SP_PAGE1).isEmpty(), "no Schedule SP without a credit");
         }
     }

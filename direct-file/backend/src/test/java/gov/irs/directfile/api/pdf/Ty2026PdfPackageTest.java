@@ -309,6 +309,9 @@ class Ty2026PdfPackageTest {
         m.put("/dividendReports/#" + div + "/receivedAsNominee", bool(false));
         m.put("/dividendReports/#" + div + "/hasSeenLastAvailableScreen", bool(true));
         m.put("/dividendReportsIsDone", bool(true));
+        // No U.S. or PA obligation dividends. Unanswered, /flowKnockoutPaDividends and /flowKnockoutPaScheduleB stay
+        // incomplete and the print is refused (PA-40 IN (2025) p. 32).
+        m.put("/paHasExemptObligationDividends", bool(false));
 
         String car = Schedule1ATy2026PdfSmokeTest.V1;
         m.put("/carLoanHadInterest", bool(true));
@@ -738,6 +741,8 @@ class Ty2026PdfPackageTest {
         assertEquals(1842, paAmt(pa2, "13. Total PA Tax Withheld"), "13 = W-2 box 17");
         assertEquals(1842, paAmt(pa2, "24. Total Payments and Credits"), "24 = 13 + ... (only 13)");
         assertEquals(paTax - 1842, paAmt(pa2, "26. TAX DUE"), "26 = 12 - 24");
+        // Line 27 is not computed. Line 28 is the same /paLine26 amount (PA-40 IN (2025) p. 24).
+        assertEquals(paTax - 1842, paAmt(pa2, "28. TOTAL PAYMENT"), "28 = 26");
     }
 
     @Test
