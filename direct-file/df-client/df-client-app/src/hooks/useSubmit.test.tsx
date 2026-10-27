@@ -15,6 +15,8 @@ import {
   SystemAlertContext,
   SystemAlertKey,
 } from '../context/SystemAlertContext/SystemAlertContext.js';
+import { STATIC_UNAVAILABLE } from '../staticClient/localApi.js';
+import { STATIC_EFILE_REFUSAL_KEY } from '../staticClient/staticRefusal.js';
 
 const mocks = vi.hoisted(() => {
   return {
@@ -483,6 +485,66 @@ describe(useSubmit.name, () => {
           i18nKey: `generic.submissionError`,
         })
       );
+    });
+
+    it(`refuses static-client sign and submit without reporting success`, async () => {
+      vi.stubEnv(`VITE_STATIC_CLIENT_ONLY`, `true`);
+      mocks.save.mockRejectedValueOnce({ message: STATIC_UNAVAILABLE });
+
+      const {
+        result: { current: signAndSubmit },
+      } = renderHook(() => useSubmit(), {
+        wrapper: ({ children }) => (
+          <Wrapper store={setupStore()} initialTaxReturn={TAX_RETURN}>
+            {children}
+          </Wrapper>
+        ),
+      });
+
+      let outcome: { hasSubmitError: boolean; isRetryDisabled: boolean } | undefined;
+      await act(async () => {
+        outcome = await signAndSubmit();
+      });
+
+      expect(outcome).toEqual({ hasSubmitError: true, isRetryDisabled: false });
+      expect(mocks.setSystemAlert).toHaveBeenCalledWith(
+        SystemAlertKey.SUBMIT,
+        expect.objectContaining({
+          type: `error`,
+          i18nKey: STATIC_EFILE_REFUSAL_KEY,
+        })
+      );
+      vi.unstubAllEnvs();
+    });
+
+    it(`keeps a generic error for the same message outside the static client`, async () => {
+      vi.stubEnv(`VITE_STATIC_CLIENT_ONLY`, ``);
+      mocks.save.mockRejectedValueOnce({ message: STATIC_UNAVAILABLE });
+
+      const {
+        result: { current: signAndSubmit },
+      } = renderHook(() => useSubmit(), {
+        wrapper: ({ children }) => (
+          <Wrapper store={setupStore()} initialTaxReturn={TAX_RETURN}>
+            {children}
+          </Wrapper>
+        ),
+      });
+
+      let outcome: { hasSubmitError: boolean; isRetryDisabled: boolean } | undefined;
+      await act(async () => {
+        outcome = await signAndSubmit();
+      });
+
+      expect(outcome).toEqual({ hasSubmitError: true, isRetryDisabled: false });
+      expect(mocks.setSystemAlert).toHaveBeenCalledWith(
+        SystemAlertKey.SUBMIT,
+        expect.objectContaining({
+          type: `error`,
+          i18nKey: `generic.submissionError`,
+        })
+      );
+      vi.unstubAllEnvs();
     });
   });
 });

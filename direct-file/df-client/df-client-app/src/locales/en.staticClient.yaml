@@ -9,3 +9,17 @@ staticClient:
       them.
   pageTitle: Direct File interview preview (unofficial)
   homeLinkText: Direct File preview
+systemAlerts:
+  staticClient:
+    pdfRefusal:
+      alertText:
+        heading: This preview can’t print a return
+        body:
+          - p: >-
+              No PDF was created. This preview can’t print a return, and nothing was sent.
+    efileRefusal:
+      alertText:
+        heading: This preview can’t e-file
+        body:
+          - p: >-
+              The return was not signed or submitted. This preview can’t e-file, and nothing was sent.

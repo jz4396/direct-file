@@ -13,6 +13,7 @@ import {
 import { FactGraph } from '@irs/js-factgraph-scala';
 import { TaxReturnsContext } from '../context/TaxReturnsContext.js';
 import { Condition } from '../flow/Condition.js';
+import { staticEfileRefusalKey } from '../staticClient/staticRefusal.js';
 
 const NONRETRIABLE_ERRORS = [`tinMismatch`, `uneditableTaxReturn`];
 
@@ -74,11 +75,13 @@ export const useSubmit = () => {
     } catch (e) {
       hasSubmitError = true;
 
+      // Static client: the local API refuses sign and submit. Say so, and do not continue to the success screen.
+      const refusal = staticEfileRefusalKey(e);
       let config: SetSystemAlertConfig = {
         type: `error`,
-        i18nKey: `generic.submissionError`,
+        i18nKey: refusal ?? `generic.submissionError`,
       };
-      if (isTranslateable(e)) {
+      if (!refusal && isTranslateable(e)) {
         // Don't allow retries if the error is not retriable
         isRetryDisabled = NONRETRIABLE_ERRORS.includes(e.apiErrorKey);
         if (i18n.exists(`${SYSTEM_ALERT_I18N_PREFIX}.${e.apiErrorKey}`)) {

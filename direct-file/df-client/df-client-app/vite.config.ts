@@ -146,7 +146,23 @@ export const configOptions: UserConfig = {
 // https://vitejs.dev/config/
 // Production and `--mode static` builds ship only the app page; only `--mode development` adds the all-screens
 // tool (see src/buildConfig/buildInputs.ts). The dev server serves all-screens either way.
+// The static build swaps out the clientside-intercept fixtures so they are not a test-data loader in the bundle.
 export default defineConfig(({ mode }) => ({
   ...configOptions,
+  resolve: {
+    ...configOptions.resolve,
+    alias: [
+      ...(mode === `static`
+        ? [
+            {
+              find: /DevDataImportConfig\.ts$/,
+              replacement: path.resolve(__dirname, `src/staticClient/devDataImportStub.ts`),
+            },
+          ]
+        : []),
+      { find: `@`, replacement: path.resolve(__dirname, `src`) },
+      { find: `@trussworks/react-uswds/lib/index.css`, replacement: reactUswdsCss },
+    ],
+  },
   build: { ...configOptions.build, rollupOptions: { input: buildInputs(__dirname, mode) } },
 }));

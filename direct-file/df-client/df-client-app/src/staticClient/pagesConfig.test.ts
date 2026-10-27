@@ -204,6 +204,9 @@ describe(`static bundle check`, () => {
       { 'df/file/assets/x.js': `"https://www.googletagmanager.com/gtm.js"` },
       /analytics loader/,
     ],
+    [`a tag manager`, { 'df/file/assets/x.js': `const s="https://cdn.segment.com/analytics.js";` }, /tag manager/],
+    [`a test-data loader`, { 'df/file/assets/x.js': `import data from "src/test/testData";` }, /test-data loader/],
+    [`a data-import fixture`, { 'df/file/assets/x.js': `"email":"Homer.Simpson@test.email"` }, /test-data loader/],
     [
       `an inline script`,
       { 'index.html': goodHtml.replace(`</head>`, `<script>alert(1)</script></head>`) },

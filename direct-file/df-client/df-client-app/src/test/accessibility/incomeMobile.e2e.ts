@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 import { randomUUID } from 'crypto';
-import { chromium, type Browser, type Page } from 'playwright-core';
+import type { Browser, Page } from 'playwright';
+import { launchPinnedChromium } from '../../staticClient/noRetention/pinnedChromium.js';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { scenarioFactGraphJson } from '../../saveState/saveStateTestUtils.js';
 import { createSaveState } from '../../saveState/saveStateSchema.js';
@@ -24,8 +25,8 @@ import { startStagedSiteServer, type StagedSiteServer } from '../../staticClient
  *   target). Links inside a sentence are exempt, as the criterion allows. (The 44px of SC 2.5.5 is AAA and isn't
  *   asserted.)
  *
- * Chrome comes from CHROME_PATH, or else Playwright's `chrome` channel (the installed Google Chrome). No browser is
- * downloaded, and requests to any host but the local server are aborted.
+ * Chromium is the revision pinned by the playwright devDependency. Requests to any host but the local server are
+ * aborted.
  */
 
 const APP_DIR = path.resolve(__dirname, `../../..`);
@@ -186,9 +187,7 @@ describe(`Income screens at 320px wide (reflow and target size)`, () => {
     }
     ({ text: saveFile, ids } = saveFileWithItems());
     site = await startStagedSiteServer(SITE_DIR);
-    browser = await chromium.launch(
-      process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : { channel: `chrome` }
-    );
+    browser = await launchPinnedChromium();
     const context = await browser.newContext({
       viewport: { width: WIDTH, height: 640 },
       deviceScaleFactor: 2,

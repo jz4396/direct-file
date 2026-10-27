@@ -6,6 +6,8 @@ import styles from './DownloadPDFButton.module.scss';
 import { useFetchPdf } from '../../hooks/useApiHook.js';
 import classNames from 'classnames';
 import LoadingIndicator from '../LoadingIndicator/LoadingIndicator.js';
+import DFAlert from '../Alert/DFAlert.js';
+import { STATIC_PDF_REFUSAL_I18N } from '../../staticClient/staticRefusal.js';
 
 type DownloadPDFButtonProps = {
   taxId: string;
@@ -23,7 +25,7 @@ const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({
   frontpage = false,
 }) => {
   const { online } = useContext(NetworkConnectionContext);
-  const { fetchPdf, loading } = useFetchPdf();
+  const { fetchPdf, loading, refused } = useFetchPdf();
 
   const handleClick = useCallback(async () => {
     if (taxId && !loading) void fetchPdf(taxId);
@@ -41,15 +43,29 @@ const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({
 
   const buttonStyle = frontpage ? styles.dfFrontPageButtonWrapper : styles.dfDownloadButtonWrapper;
 
+  const refusal = refused ? (
+    <DFAlert
+      i18nKey={STATIC_PDF_REFUSAL_I18N}
+      collectionId={null}
+      type='error'
+      headingLevel='h2'
+      data-testid='static-pdf-refusal'
+    />
+  ) : null;
+
   if (inline)
     return (
-      <Button type={`button`} onClick={handleClick} unstyled className={buttonClasses}>
-        <Translation i18nKey={i18nKey} collectionId={null} context={context} />
-      </Button>
+      <>
+        {refusal}
+        <Button type={`button`} onClick={handleClick} unstyled className={buttonClasses}>
+          <Translation i18nKey={i18nKey} collectionId={null} context={context} />
+        </Button>
+      </>
     );
 
   return (
     <div className={buttonStyle}>
+      {refusal}
       <Button type='button' onClick={handleClick} outline className={wrappedButtonClasses}>
         {loading ? (
           <LoadingIndicator i18nKey='loadingIndicator.downloadingPDF' inline delayMS={0} />

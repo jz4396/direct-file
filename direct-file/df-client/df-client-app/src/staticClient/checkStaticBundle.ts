@@ -16,7 +16,8 @@ import { STATIC_BACKEND_URL } from './staticMode.js';
  *   and DENY framing.
  * - Every HTML page carries the static CSP <meta> (`connect-src 'none'`) and has no inline or third-party script.
  * - The JavaScript was built in static mode: it contains the network guard and the `.invalid` backend URL, and no
- *   other backend URL (a localhost API, or any absolute `.../df/file/api/` URL) or analytics loader.
+ *   other backend URL (a localhost API, or any absolute `.../df/file/api/` URL), analytics loader, tag manager, or
+ *   test-data loader.
  * - No asset calls fetch/sendBeacon/EventSource/WebSocket/XMLHttpRequest.open/importScripts with a URL on another
  *   origin, has a WebSocket URL, or names an absolute data endpoint (`/api/`, `/graphql`, `/collect`, telemetry).
  * - No staged file holds a Cloudflare API key or token, a credential variable name, a literal bearer token, or
@@ -83,6 +84,11 @@ const ROBOTS_DISALLOW_ALL = (text: string) => /^User-agent: \*$/m.test(text) && 
 const FORBIDDEN_IN_ASSETS: [RegExp, string][] = [
   [/localhost:\d+/, `a localhost URL`],
   [/googletagmanager\.com/, `the analytics loader`],
+  [/google-analytics\.com|segment\.(?:com|io)|hotjar\.com|fullstory\.com|doubleclick\.net/, `a tag manager`],
+  [
+    /DevDataImportConfig|Homer\.Simpson@test\.email|filerWithW2NoDeductionsNoCreditsBaseData|test\/testData|jsonScenarios\//,
+    `a test-data loader`,
+  ],
   [/\bwss?:\/\/[A-Za-z0-9]/, `a WebSocket URL`],
 ];
 

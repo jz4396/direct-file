@@ -10,6 +10,7 @@ import {
 } from '../misc/apiHelpers.js';
 import { SessionClock } from '../auth/session.js';
 import { useEffectOnce } from './useEffectOnce.js';
+import { staticPdfRefusalKey } from '../staticClient/staticRefusal.js';
 
 export type ReadOptions<T> = {
   headers?: { [key: string]: string };
@@ -428,17 +429,22 @@ export const useFetchPdf = (): UseFetchPdfResponse => {
   const { i18n } = useTranslation();
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
+  const [refused, setRefused] = useState<boolean>(false);
 
   const callFetchPdf = (taxId: string) => {
     (async () => {
+      setRefused(false);
       const url = `${import.meta.env.VITE_BACKEND_URL}v1/taxreturns/${taxId}/pdf/${i18n.resolvedLanguage}`;
       try {
         await fetchPdf(url, { hooks: { setLoading, setSuccess } });
-      } catch (error) {
-        return;
+      } catch {
+        // A non-PDF response, including the static client's 501, must not look like a download.
+        setSuccess(false);
+        setLoading(false);
+        if (staticPdfRefusalKey()) setRefused(true);
       }
     })();
   };
 
-  return { loading, success, fetchPdf: callFetchPdf };
+  return { loading, success, refused, fetchPdf: callFetchPdf };
 };

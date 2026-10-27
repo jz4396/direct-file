@@ -11,6 +11,7 @@ import { ReadError } from '../misc/apiHelpers.js';
 import { TaxReturnsContextProvider } from '../context/TaxReturnsContext.js';
 import { SystemAlertContextProvider } from '../context/SystemAlertContext/SystemAlertContext.js';
 import { taxReturnFetch } from '../redux/slices/tax-return/taxReturnFetch.js';
+import { STATIC_BACKEND_URL } from '../staticClient/staticMode.js';
 
 import { Provider } from 'react-redux';
 import { store } from '../redux/store.js';
@@ -570,5 +571,23 @@ describe(`useFetchPdf()`, () => {
     });
     await waitFor(() => expect(result.current.loading).toBe(false));
     await waitFor(() => expect(result.current.success).toBe(false));
+    expect(result.current.refused).toBe(false);
+    expect(global.open).not.toHaveBeenCalled();
+  });
+
+  test(`static client refuses the PDF and does not open one`, async () => {
+    vi.stubEnv(`VITE_STATIC_CLIENT_ONLY`, `true`);
+    vi.stubEnv(`VITE_BACKEND_URL`, STATIC_BACKEND_URL);
+    (global.fetch as Mock).mockResolvedValue(
+      createFetchResponse({ data: { message: `not-available-in-static-client` }, status: 501 })
+    );
+    const { result } = renderHook(() => useFetchPdf());
+    act(() => {
+      result.current.fetchPdf(`1234`);
+    });
+    await waitFor(() => expect(result.current.refused).toBe(true));
+    expect(result.current.success).toBe(false);
+    expect(global.open).not.toHaveBeenCalled();
+    vi.unstubAllEnvs();
   });
 });

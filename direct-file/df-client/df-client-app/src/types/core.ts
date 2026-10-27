@@ -101,6 +101,8 @@ export interface UseSaveResponse<T> extends Omit<FetchResponse<T>, 'callRead'> {
 
 export type UseFetchPdfResponse = Omit<FetchResponse<null>, `data` | 'callRead'> & {
   fetchPdf: (taxId: string) => void;
+  /** True after the static client refuses a PDF. Stays false when a PDF is actually opened. */
+  refused: boolean;
 };
 
 export interface AuthAPIResponse {
