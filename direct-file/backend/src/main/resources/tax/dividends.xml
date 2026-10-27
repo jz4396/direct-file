@@ -22,7 +22,7 @@
     with the line 7b "Schedule D not required" box under line 7a Exception 1 (/capitalGainDistributionsWithoutScheduleD,
     income /capitalGainsOrLosses), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13); either way it reaches
     QDCG worksheet line 3 (scheduleD3 /qdcgLine3). PA-40 stops on box 2a (paPit /flowKnockoutPaDividends).
-  Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut), never zeroed:
+  Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut, and PrintRefusingKnockouts), never zeroed:
     boxes 2b-2f, 6, 8-16                         -> /flowKnockoutDividendUnsupportedBoxes
     box 3 above the stock's basis                -> /flowKnockoutNondividendDistributionsOverBasis
     box 1b not meeting the holding period        -> /flowKnockoutQualifiedDividendsHoldingPeriod

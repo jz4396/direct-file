@@ -8,8 +8,15 @@
 // supported.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
-import { createBooleanWrapper, createCollectionWrapper } from '../persistenceWrappers.js';
+import {
+  createBooleanWrapper,
+  createCollectionItemWrapper,
+  createCollectionWrapper,
+  createDollarWrapper,
+  createStringWrapper,
+} from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
+import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 import {
   baseFilerData,
   filerWithW2NoDeductionsNoCreditsBaseData,
@@ -28,8 +35,8 @@ const minimal = Object.fromEntries(
 
 type PartIII = { accounts?: boolean; grantor?: boolean; transactions?: boolean };
 
-const graph = (interest: Record<string, unknown>, partIII: PartIII = {}) =>
-  setupFactGraph({
+const graph = (interest: Record<string, unknown>, partIII: PartIII = {}, answerPartIII = true) => {
+  const facts: Record<string, unknown> = {
     ...minimal,
     ...baseFilerData,
     ...singleFilerData,
@@ -40,7 +47,14 @@ const graph = (interest: Record<string, unknown>, partIII: PartIII = {}) =>
     '/hasForeignAccounts': createBooleanWrapper(partIII.accounts ?? false),
     '/isForeignTrustsGrantor': createBooleanWrapper(partIII.grantor ?? false),
     '/hasForeignTrustsTransactions': createBooleanWrapper(partIII.transactions ?? false),
-  }).factGraph;
+  };
+  if (!answerPartIII) {
+    delete facts['/hasForeignAccounts'];
+    delete facts['/isForeignTrustsGrantor'];
+    delete facts['/hasForeignTrustsTransactions'];
+  }
+  return setupFactGraph(facts).factGraph;
+};
 type Fg = ReturnType<typeof graph>;
 const val = (fg: Fg, p: string) => fg.get(p as ConcretePath).get;
 const dollars = (fg: Fg, p: string) => val(fg, p).toString();
@@ -161,4 +175,56 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
     expect(val(fg, `/requiresScheduleB`)).toBe(true);
     expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
   });
+
+  it(`ordinary dividends over $1,500 with Part III "No" does not stop the return`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/requiresScheduleBForOrdinaryDividends`,
+      `/scheduleBPartIIIAnswered`,
+      `/flowKnockoutScheduleBPartIII`,
+    ];
+    const fg = graph({ ...oneReport(10), ...oneDividend(2000) });
+    expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(true);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
+    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(false);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutScheduleBPartIII`);
+  });
+
+  it(`ordinary dividends over $1,500 with Part III unanswered stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleBPartIIIAnswered`, `/flowKnockoutScheduleBPartIII`];
+    const fg = graph({ ...oneReport(10), ...oneDividend(1500.5) }, {}, false);
+    expect(dollars(fg, `/ordinaryDividends`)).toBe(`1501.00`);
+    expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(true);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
+    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(true);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
+  });
+
+  it(`ordinary dividends of exactly $1,500 with Part III unanswered does not stop the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/requiresScheduleBForOrdinaryDividends`, `/flowKnockoutScheduleBPartIII`];
+    const fg = graph({ ...oneReport(10), ...oneDividend(1500) }, {}, false);
+    expect(dollars(fg, `/ordinaryDividends`)).toBe(`1500.00`);
+    expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
+    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(false);
+  });
+
+  it(`line 7a "Yes" stops the return even when dividends are under $1,500`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutScheduleBPartIII`];
+    const fg = graph({ ...oneReport(10), ...oneDividend(100) }, { accounts: true });
+    expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
+    expect(val(fg, `/flowKnockoutScheduleBPartIII`)).toBe(true);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
+  });
+});
+
+const divId = `b0860000-0000-4000-8000-0000000000d1`;
+const oneDividend = (box1a: number) => ({
+  '/dividendReports': createCollectionWrapper([divId]),
+  [`/dividendReports/#${divId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/dividendReports/#${divId}/payer`]: createStringWrapper(`Index Fund Co`),
+  [`/dividendReports/#${divId}/ordinaryDividends`]: createDollarWrapper(`${box1a}`),
+  [`/dividendReports/#${divId}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+  [`/dividendReports/#${divId}/receivedAsNominee`]: createBooleanWrapper(false),
+  [`/dividendReports/#${divId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+  '/dividendReportsIsDone': createBooleanWrapper(true),
 });

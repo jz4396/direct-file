@@ -98,6 +98,22 @@ class PrintRefusingKnockoutsTest {
     static final String AMT_PREFERENCE_UNANSWERED_KNOCKOUT = "/flowKnockoutAmtPreferenceItemsUnanswered";
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
+    /** Form 1099-DIV boxes 2b-2f, 6 and 8-16, including section 1202 and collectibles. */
+    static final String DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT = "/flowKnockoutDividendUnsupportedBoxes";
+    /** 26 U.S.C. 301(c)(3)(A): box 3 above basis, reported on Form 8949. */
+    static final String DIVIDEND_OVER_BASIS_KNOCKOUT = "/flowKnockoutNondividendDistributionsOverBasis";
+    /** 26 U.S.C. 1(h)(11)(B)(iii): box 1b that is not a qualified dividend. */
+    static final String DIVIDEND_HOLDING_PERIOD_KNOCKOUT = "/flowKnockoutQualifiedDividendsHoldingPeriod";
+    /** 26 U.S.C. 199A(b)(1)(B): box 5. The dividend QBI deduction is not computed. */
+    static final String DIVIDEND_SECTION_199A_KNOCKOUT = "/flowKnockoutSection199ADividends";
+    /** 26 U.S.C. 904(j): box 7 that needs Form 1116. */
+    static final String DIVIDEND_FOREIGN_TAX_KNOCKOUT = "/flowKnockoutDividendForeignTaxPaid";
+    /** Nominee ordinary dividends. The Schedule B Part II subtraction is not computed. */
+    static final String DIVIDEND_NOMINEE_KNOCKOUT = "/flowKnockoutDividendNominee";
+    /** Box 1b or box 5 larger than box 1a. */
+    static final String DIVIDEND_INCONSISTENT_KNOCKOUT = "/flowKnockoutDividendAmountsInconsistent";
+
+    static final String DIVIDEND_ID = "13500000-0000-4000-8000-000000000502";
     /**
      * #87: the knockout that waits only on Form 8995, which still has no TY2026 template. Schedule C and Schedule 3-A
      * are pinned (#239), so they are no longer in this list. The field-map tests for a Schedule C return fill their
@@ -173,12 +189,20 @@ class PrintRefusingKnockoutsTest {
                 FORM_8995_KNOCKOUT, // Form 8995 is attached and has no TY2026 template or MeF mapping
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2t, 3 and 8
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
-                AMT_MFS_ADD_BACK_KNOCKOUT)); // MFS AMTI over $640,200, add-back not computed
+                AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
+                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2f, 6, 8-16
+                DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
+                DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
+                DIVIDEND_SECTION_199A_KNOCKOUT, // box 5
+                DIVIDEND_FOREIGN_TAX_KNOCKOUT, // box 7 that needs Form 1116
+                DIVIDEND_NOMINEE_KNOCKOUT, // nominee dividends
+                DIVIDEND_INCONSISTENT_KNOCKOUT)); // box 1b or 5 larger than box 1a
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
-        // #239 drops the Schedule C and Schedule 3-A template knockouts.
-        assertEquals(40, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        // #239 drops the Schedule C and Schedule 3-A template knockouts. #258 already lists Schedule B Part III.
+        // #86 appends the 1099-DIV stops and does not list Part III again.
+        assertEquals(47, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -785,8 +809,8 @@ class PrintRefusingKnockoutsTest {
         assertEquals(Boolean.FALSE, absent.get(ko).get());
         assertFalse(PrintRefusingKnockouts.refusingPaths(absent).contains(ko));
 
-        Map<String, String> openFacts = new HashMap<>(
-                ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "30000.00"));
+        Map<String, String> openFacts =
+                new HashMap<>(ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "30000.00"));
         for (String path : List.of(
                 "/hadFarmSelfEmploymentIncome",
                 "/hadChurchEmployeeIncome",
@@ -1003,8 +1027,153 @@ class PrintRefusingKnockoutsTest {
         assertCompleteFalse(pa, PA_SP_KNOCKOUT);
         assertEquals(Boolean.TRUE, pa.get(FORM_8995_KNOCKOUT).get());
         assertEquals(
-                List.of(PA_UNSUPPORTED_INCOME_KNOCKOUT, FORM_8995_KNOCKOUT),
-                PrintRefusingKnockouts.refusingPaths(pa));
+                List.of(PA_UNSUPPORTED_INCOME_KNOCKOUT, FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(pa));
         assertEquals("0.00", pa.get("/paLine4").get().toString());
+    }
+
+    static final List<String> DIVIDEND_PRINT_KNOCKOUTS = List.of(
+            DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT,
+            DIVIDEND_OVER_BASIS_KNOCKOUT,
+            DIVIDEND_HOLDING_PERIOD_KNOCKOUT,
+            DIVIDEND_SECTION_199A_KNOCKOUT,
+            DIVIDEND_FOREIGN_TAX_KNOCKOUT,
+            DIVIDEND_NOMINEE_KNOCKOUT,
+            DIVIDEND_INCONSISTENT_KNOCKOUT,
+            SCHEDULE_B_PART_III_KNOCKOUT);
+
+    static void putJson(Map<String, FactTypeWithItem> facts, ObjectMapper mapper, String path, String json)
+            throws Exception {
+        facts.put(path, mapper.readValue(json, FactTypeWithItem.class));
+    }
+
+    /** Boxes 1a, 1b, 2a and 4 on the golden 1099-DIV, Part III answered "No". */
+    static Map<String, FactTypeWithItem> commonDividendReturn(ObjectMapper mapper) throws Exception {
+        Map<String, FactTypeWithItem> facts = SubmissionBlockingFactsTest.golden();
+        String div = "/dividendReports/#" + DIVIDEND_ID;
+        putJson(facts, mapper, div + "/writableCapitalGainDistributions", ScheduleATy2026PdfSmokeTest.dollar("500.00"));
+        putJson(facts, mapper, div + "/writableFederalTaxWithheld", ScheduleATy2026PdfSmokeTest.dollar("40.00"));
+        return facts;
+    }
+
+    /**
+     * #86. Form 1040 line 3b is ordinary dividends (box 1a), line 3a is qualified dividends (box 1b), and box 2a goes
+     * through the QDCG worksheet. Box 4 is line 25b. Schedule B Part II is required when line 3b is over $1,500.
+     * Out-of-scope boxes stop the print. A Part III "Yes", or a blank Part III when Schedule B is required, stops the
+     * print. "No" prints.
+     */
+    @Test
+    void dividendCommonPathPrintsAndOutOfScopeRefuses() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        ObjectMapper mapper = new ObjectMapper();
+        String div = "/dividendReports/#" + DIVIDEND_ID;
+        Graph common = fgs.getGraph(commonDividendReturn(mapper));
+        assertEquals("1000000.00", common.get("/ordinaryDividends").get().toString(), "line 3b");
+        assertEquals("1000000.00", common.get("/qualifiedDividends").get().toString(), "line 3a");
+        assertEquals("1000000.00", common.get("/qdcgLine2").get().toString(), "QDCG line 2");
+        assertEquals(
+                Boolean.TRUE,
+                common.get("/capitalGainDistributionsWithoutScheduleD").get());
+        assertEquals("500.00", common.get("/capitalGainsOrLosses").get().toString(), "line 7a");
+        assertEquals("500.00", common.get("/qdcgLine3").get().toString(), "QDCG line 3");
+        assertEquals(
+                "40.00", common.get("/totalDividendFederalTaxWithheld").get().toString(), "box 4");
+        assertEquals(
+                Boolean.TRUE,
+                common.get("/requiresScheduleBForOrdinaryDividends").get());
+        assertEquals(Boolean.TRUE, common.get("/requiresScheduleB").get());
+        assertEquals(Boolean.TRUE, common.get("/scheduleBPartIIIAnswered").get());
+        for (String path : DIVIDEND_PRINT_KNOCKOUTS) {
+            assertCompleteFalse(common, path);
+        }
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(common), "supported 1099-DIV prints");
+        assertEquals(Boolean.FALSE, common.get("/flowIsKnockedOut").get());
+
+        Map<String, FactTypeWithItem> boxes = commonDividendReturn(mapper);
+        putJson(boxes, mapper, div + "/hasUnsupportedBoxes", ScheduleATy2026PdfSmokeTest.bool(true));
+        assertEquals(
+                List.of(DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(boxes)));
+
+        Map<String, FactTypeWithItem> overBasis = commonDividendReturn(mapper);
+        putJson(
+                overBasis,
+                mapper,
+                div + "/writableNondividendDistributions",
+                ScheduleATy2026PdfSmokeTest.dollar("10.00"));
+        putJson(
+                overBasis,
+                mapper,
+                div + "/nondividendDistributionsExceedBasis",
+                ScheduleATy2026PdfSmokeTest.bool(true));
+        assertEquals(
+                List.of(DIVIDEND_OVER_BASIS_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(overBasis)));
+
+        Map<String, FactTypeWithItem> holding = commonDividendReturn(mapper);
+        putJson(
+                holding,
+                mapper,
+                div + "/qualifiedDividendsHoldingPeriodNotMet",
+                ScheduleATy2026PdfSmokeTest.bool(true));
+        assertEquals(
+                List.of(DIVIDEND_HOLDING_PERIOD_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(holding)));
+
+        Map<String, FactTypeWithItem> section199a = commonDividendReturn(mapper);
+        putJson(
+                section199a,
+                mapper,
+                div + "/writableSection199ADividends",
+                ScheduleATy2026PdfSmokeTest.dollar("100.00"));
+        assertEquals(
+                List.of(DIVIDEND_SECTION_199A_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(section199a)));
+
+        Map<String, FactTypeWithItem> foreignTax = commonDividendReturn(mapper);
+        putJson(foreignTax, mapper, div + "/writableForeignTaxPaid", ScheduleATy2026PdfSmokeTest.dollar("301.00"));
+        putJson(foreignTax, mapper, div + "/foreignTaxElectionRequirementsMet", ScheduleATy2026PdfSmokeTest.bool(true));
+        assertEquals(
+                List.of(DIVIDEND_FOREIGN_TAX_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(foreignTax)));
+
+        Map<String, FactTypeWithItem> nominee = commonDividendReturn(mapper);
+        putJson(nominee, mapper, div + "/receivedAsNominee", ScheduleATy2026PdfSmokeTest.bool(true));
+        assertEquals(List.of(DIVIDEND_NOMINEE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(nominee)));
+
+        Map<String, FactTypeWithItem> inconsistent = commonDividendReturn(mapper);
+        putJson(
+                inconsistent,
+                mapper,
+                div + "/writableQualifiedDividends",
+                ScheduleATy2026PdfSmokeTest.dollar("1000001.00"));
+        assertEquals(
+                List.of(DIVIDEND_INCONSISTENT_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(inconsistent)));
+
+        Map<String, FactTypeWithItem> foreignAccount = commonDividendReturn(mapper);
+        putJson(foreignAccount, mapper, "/hasForeignAccounts", ScheduleATy2026PdfSmokeTest.bool(true));
+        assertEquals(
+                List.of(SCHEDULE_B_PART_III_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(foreignAccount)));
+
+        Map<String, FactTypeWithItem> unanswered = commonDividendReturn(mapper);
+        unanswered.remove("/hasForeignAccounts");
+        unanswered.remove("/isForeignTrustsGrantor");
+        unanswered.remove("/hasForeignTrustsTransactions");
+        Graph open = fgs.getGraph(unanswered);
+        assertEquals(Boolean.FALSE, open.get("/scheduleBPartIIIAnswered").get());
+        assertEquals(List.of(SCHEDULE_B_PART_III_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(open));
+
+        Map<String, FactTypeWithItem> under = commonDividendReturn(mapper);
+        putJson(under, mapper, div + "/ordinaryDividends", ScheduleATy2026PdfSmokeTest.dollar("1500.00"));
+        putJson(under, mapper, div + "/writableQualifiedDividends", ScheduleATy2026PdfSmokeTest.dollar("1500.00"));
+        putJson(under, mapper, div + "/writableCapitalGainDistributions", ScheduleATy2026PdfSmokeTest.dollar("0.00"));
+        under.remove("/hasForeignAccounts");
+        under.remove("/isForeignTrustsGrantor");
+        under.remove("/hasForeignTrustsTransactions");
+        Graph atLimit = fgs.getGraph(under);
+        assertEquals("1500.00", atLimit.get("/ordinaryDividends").get().toString());
+        assertEquals(
+                Boolean.FALSE,
+                atLimit.get("/requiresScheduleBForOrdinaryDividends").get());
+        assertCompleteFalse(atLimit, SCHEDULE_B_PART_III_KNOCKOUT);
+        assertFalse(PrintRefusingKnockouts.refusingPaths(atLimit).contains(SCHEDULE_B_PART_III_KNOCKOUT));
     }
 }
