@@ -215,6 +215,7 @@
         exceeds" the threshold, with §55(d)(4)(A)(ii)(IV) (as amended by P.L. 119-21 §70107) "by substituting '50
         percent' for '25 percent'", https://www.law.cornell.edu/uscode/text/26/55. Consistent with Rev. Proc. 2025-32 p.
         17 complete-phaseout amounts (threshold + 2 x exemption).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Multiply>
           <Rational>50/100</Rational>
@@ -360,6 +361,7 @@
         whole dollars, you must round all amounts." Every other amount on this return is whole dollars, so Part III is
         too; line 38 then adds the amounts as entered on lines 18, 31 and 34, and line 40 compares the entered lines 38
         and 39.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Switch>
@@ -549,6 +551,7 @@
         dollars, you must round all amounts." Every other amount on this return is whole dollars, so Part III is too;
         line 38 then adds the amounts as entered on lines 18, 31 and 34, and line 40 compares the entered lines 38 and
         39.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -600,6 +603,7 @@
         whole dollars, you must round all amounts." Every other amount on this return is whole dollars, so Part III is
         too; line 38 then adds the amounts as entered on lines 18, 31 and 34, and line 40 compares the entered lines 38
         and 39.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -633,6 +637,7 @@
         round to whole dollars, you must round all amounts." Every other amount on this return is whole dollars, so Part
         III is too; line 38 then adds the amounts as entered on lines 18, 31 and 34, and line 40 compares the entered
         lines 38 and 39.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Switch>
@@ -695,6 +700,7 @@
         if married filing separately)". IRC §55(b)(1)(A).</Description>
       <Export downstreamFacts="true" />
       <ExportZero />
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Switch>

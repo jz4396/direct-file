@@ -2,15 +2,17 @@ import { describe, it, expect } from 'vitest';
 import { readXmlModules } from '../../fact-dictionary/yearConfig/yearConfig.js';
 
 /**
- * Every non-zero <Dollar> literal in the fact dictionary belongs to a fact tagged
- * <TaxYear>, so it is listed in the year's parameter file with the authority for it
- * (Rev. Proc. page and quote, IRC section and quote, or the HHS poverty guidelines notice).
+ * Every non-zero <Dollar> literal, every <Rational> with denominator 100, and every <Int>
+ * whose absolute value is at least 100 belongs to a fact tagged <TaxYear>, so it is listed
+ * in the year's parameter file with the authority for it (Rev. Proc. page and quote, IRC
+ * section and quote, an IRS form or instructions page and quote, or the HHS poverty
+ * guidelines notice). Fact paths written with single quotes are included.
  *
  * The facts below are the only exceptions. A `structural` entry is arithmetic, not a
- * tax-law amount (rounding to a table band, cents, a sign test). A `remaining` entry is a
- * tax-law amount that still needs a citable source or a review of its value before it can
- * be tagged. A new untagged Dollar literal, or an entry here that no longer needs to be
- * here, fails this test.
+ * tax-law amount (rounding to a table band, cents, a sign test, a field length). A
+ * `remaining` entry is a tax-law amount that still needs a citable source or a review of
+ * its value before it can be tagged. A new untagged literal of those kinds, or an entry
+ * here that no longer needs to be here, fails this test.
  */
 type Exception = { kind: `structural` | `remaining`; reason: string };
 
@@ -65,8 +67,8 @@ const EXCEPTIONS: Record<string, Exception> = {
   '/taxableSocialSecurityBenefits': { kind: `remaining`, reason: `§ 86(a)(2) 85 percent stored as a Dollar` },
   '/socialSecurityBenefitsWkshtLine16': { kind: `remaining`, reason: `§ 86(a) 85 and 50 percent stored as Dollars` },
   '/w2MinAmount': {
-    kind: `remaining`,
-    reason: `unused $600 W-2 floor; not the Rev. Proc. 2025-32 §2.15 §6041(a) $2,000 threshold, and not on a knockout`,
+    kind: `structural`,
+    reason: `unused $600 constant; Form W-2 furnishing is § 6051(a), not the § 6041(a) information-return threshold`,
   },
   '/paScheduleAThreshold': {
     kind: `remaining`,
@@ -88,6 +90,34 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `remaining`,
     reason: `standing PA Tax Forgiveness 10% column ($2,250); 2026 PA-40 instructions are not published`,
   },
+  '/phaseInRatesFor1Qc': {
+    kind: `remaining`,
+    reason: `§ 32(b)(1) prints the one-child credit percentage as 34 in the table column, without a percent sign`,
+  },
+  '/phaseInRatesFor2Qc': {
+    kind: `remaining`,
+    reason: `§ 32(b)(1) prints the two-child credit percentage as 40 in the table column, without a percent sign`,
+  },
+  '/phaseInRatesFor3OrMoreQc': {
+    kind: `remaining`,
+    reason: `§ 32(b)(1) prints the three-child credit percentage as 45 in the table column, without a percent sign`,
+  },
+  '/isTaxYearLeapYear': {
+    kind: `structural`,
+    reason: `calendar years divisible by 4, standing in for the leap-year rule; 2026 is not one of them`,
+  },
+  '/familyAndHousehold/*/daysLivedWithTPInUS': {
+    kind: `structural`,
+    reason: `cumulative days at each month-end, used to test whether the person lived with the taxpayer`,
+  },
+  '/isHouseholdIncome401PercentOfPovertyLine': {
+    kind: `structural`,
+    reason: `one more than the § 36B 400 percent of the poverty line, so income above that line compares at 401`,
+  },
+  '/form8949Transactions/*/description': {
+    kind: `structural`,
+    reason: `Form 8949 column (a) description is limited to 100 characters`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,
@@ -99,23 +129,36 @@ for (const field of [
   EXCEPTIONS[`/1095As/*/${field}`] = { kind: `structural`, reason: CENTS_INPUT };
 }
 
-const FACT_PATTERN = /<Fact path="([^"]+)">([\s\S]*?)<\/Fact>/g;
-const DOLLAR_PATTERN = /<Dollar>([^<]*)<\/Dollar>/g;
+const FACT_PATTERN = /<Fact path=["']([^"']+)["']>([\s\S]*?)<\/Fact>/g;
+const AMOUNT_PATTERN = /<(Dollar|Int|Rational)>([^<]*)<\/\1>/g;
 
-function untaggedDollarFacts(modules: Map<string, string>): Map<string, string[]> {
+/** Non-zero dollars, percentage rationals (n/100), and ints of at least 100. */
+function isGuardedLiteral(type: string, text: string): boolean {
+  if (type === `Dollar`) return Number(text) !== 0;
+  if (type === `Int`) return Math.abs(Number(text)) >= 100;
+  if (type === `Rational`) {
+    const [num, den] = text.split(`/`);
+    return den === `100` && num !== `0`;
+  }
+  return false;
+}
+
+function untaggedAmountFacts(modules: Map<string, string>): Map<string, string[]> {
   const found = new Map<string, string[]>();
   for (const xml of modules.values()) {
     for (const m of xml.matchAll(FACT_PATTERN)) {
       if (m[2].includes(`<TaxYear>`)) continue;
-      const amounts = [...m[2].matchAll(DOLLAR_PATTERN)].map((d) => d[1].trim()).filter((v) => Number(v) !== 0);
+      const amounts = [...m[2].matchAll(AMOUNT_PATTERN)]
+        .filter((d) => isGuardedLiteral(d[1], d[2].trim()))
+        .map((d) => `${d[1]}:${d[2].trim()}`);
       if (amounts.length) found.set(m[1], amounts);
     }
   }
   return found;
 }
 
-describe(`untagged Dollar literals`, () => {
-  const found = untaggedDollarFacts(readXmlModules());
+describe(`untagged Dollar, percentage, and large Int literals`, () => {
+  const found = untaggedAmountFacts(readXmlModules());
 
   it(`appear only in facts listed as structural or remaining, each with a reason`, () => {
     const unlisted = [...found.keys()].filter((f) => !(f in EXCEPTIONS));
@@ -125,7 +168,7 @@ describe(`untagged Dollar literals`, () => {
     }
   });
 
-  it(`lists no fact that has no untagged Dollar literal`, () => {
+  it(`lists no fact that has no untagged Dollar, percentage, or large Int literal`, () => {
     const stale = Object.keys(EXCEPTIONS).filter((f) => !found.has(f));
     expect(stale, `remove these from EXCEPTIONS`).toEqual([]);
   });

@@ -87,6 +87,7 @@
       <Export mef="true" />
       <ExportZero />
 
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>

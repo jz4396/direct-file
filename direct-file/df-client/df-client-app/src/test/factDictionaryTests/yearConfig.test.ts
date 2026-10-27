@@ -183,7 +183,14 @@ describe(`accepted authorities`, () => {
 
   it(`a statute cite (IRC section, URL, and quote) with no Rev. Proc. cite`, () => {
     expect(config.sources[`irc`].kind).toBe(`statute`);
-    for (const fact of [`/scheduleASaltLimitBeforeMfsHalving`, `/schedule1ALine9`, `/edcExemptionAmount`]) {
+    for (const fact of [
+      `/scheduleASaltLimitBeforeMfsHalving`,
+      `/schedule1ALine9`,
+      `/edcExemptionAmount`,
+      `/netEdcAmount`,
+      `/form8995Line5`,
+      `/nonItemizerCharitableIfStandard`,
+    ]) {
       expect(param(config, fact).cite.every((x) => x.source === `irc`)).toBe(true);
       expect(validateConfig(onlyFrom(fact, `irc`), facts)).toEqual([]);
     }
