@@ -1,0 +1,20 @@
+# Phase A hosting gate: static Cloudflare Pages, no Cloudflare Containers.
+# Deploys stay out of GitHub Actions. This workflow only runs the fail-closed check.
+name: no-cloudflare-containers
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Confirm Phase A does not use Cloudflare Containers
+        run: node direct-file/df-client/cloudflare-pages/checkNoContainers.mjs

@@ -28,6 +28,11 @@ if [[ -n "$STRAY" ]]; then
   exit 2
 fi
 
+# Stop before generating or publishing if the tree would use Cloudflare Containers.
+# Static Pages on the free plan is the only Cloudflare path; the JVM and PDF stack is local Docker.
+echo "==> Confirming Phase A does not use Cloudflare Containers"
+node "$HERE/checkNoContainers.mjs" "$HERE/../../.."
+
 if [[ "${1:-}" == "--install" ]]; then
   echo "==> Installing the client dependencies (npm ci --ignore-scripts)"
   (cd "$CLIENT" && npm ci --ignore-scripts --no-audit --no-fund --loglevel=error)

@@ -111,3 +111,138 @@ describe(`checkNoSecrets.mjs`, () => {
     expect(execFileSync(process.execPath, [`--check`, path.join(PAGES, `checkNoSecrets.mjs`)]).toString()).toBe(``);
   });
 });
+
+describe(`checkNoContainers.mjs`, () => {
+  let dir = ``;
+  afterEach(() => {
+    if (dir) fs.rmSync(dir, { recursive: true, force: true });
+    dir = ``;
+  });
+
+  const run = (files: Record<string, string>) => {
+    if (dir) fs.rmSync(dir, { recursive: true, force: true });
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), `pages-containers-`));
+    for (const [name, text] of Object.entries(files)) {
+      const dest = path.join(dir, name);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.writeFileSync(dest, text);
+    }
+    return spawnSync(process.execPath, [path.join(PAGES, `checkNoContainers.mjs`), dir], { encoding: `utf8` });
+  };
+
+  it(`accepts this repository: static Pages on the free plan, JVM and PDF on local Docker`, () => {
+    const script = path.join(PAGES, `checkNoContainers.mjs`);
+    const r = spawnSync(process.execPath, [script, path.resolve(PAGES, `../../..`)], {
+      encoding: `utf8`,
+    });
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain(`does not use Cloudflare Containers`);
+    expect(r.stderr).toBe(``);
+  });
+
+  it(`rejects a wrangler.toml containers binding and names the file`, () => {
+    const r = run({ 'wrangler.toml': `name = "demo"\n[[containers]]\nimage = "./Dockerfile"\n` });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain(`wrangler.toml`);
+    expect(r.stderr).toContain(`containers binding`);
+    expect(r.stderr).toContain(`Cloudflare Pages free plan`);
+    expect(r.stderr).toContain(`local Docker`);
+  });
+
+  it(`rejects a wrangler.json containers key`, () => {
+    const r = run({ 'app/wrangler.json': `{"containers":[{"image":"./Dockerfile"}]}\n` });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain(path.join(`app`, `wrangler.json`));
+  });
+
+  it(`rejects a package.json dependency on the Containers SDK`, () => {
+    const sdk = [`@cloudflare`, `containers`].join(`/`);
+    const r = run({ 'package.json': `{"dependencies":{"${sdk}":"0.0.0"}}\n` });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain(`package.json`);
+    expect(r.stderr).toContain(sdk);
+  });
+
+  it(`rejects a workflow that runs a Containers command`, () => {
+    const r = run({
+      '.github/workflows/containers.yml': `jobs:\n  build:\n    steps:\n      - run: npx wrangler containers build\n`,
+    });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain(`containers.yml`);
+    expect(r.stderr).toContain(`wrangler containers command`);
+  });
+
+  it(`rejects a push to the Cloudflare container registry`, () => {
+    const r = run({ 'push.sh': `docker push registry.cloudflare.com/example/app:1\n` });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain(`push.sh`);
+    expect(r.stderr).toContain(`container registry`);
+  });
+
+  it(`rejects a Worker deploy in a shell script`, () => {
+    const r = run({ 'ship.sh': `npx wrangler deploy\n` });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain(`ship.sh`);
+    expect(r.stderr).toContain(`Worker deploy`);
+  });
+
+  it(`allows wrangler pages deploy and local docker compose`, () => {
+    const r = run({
+      'cloudflare-pages/deploy.sh': `./node_modules/.bin/wrangler pages deploy out --project-name demo --branch main\n`,
+      'docker-compose.yaml': `services:\n  api:\n    container_name: direct-file-api\n`,
+      'scripts/local-docker.sh': `# local Docker containers for the JVM and PDF stack\n`,
+    });
+    expect(r.status).toBe(0);
+    expect(r.stderr).toBe(``);
+  });
+
+  it(`rejects a Dockerfile on the Pages path and allows one for local JVM services`, () => {
+    const banned = run({ 'direct-file/df-client/cloudflare-pages/Dockerfile': `FROM scratch\n` });
+    expect(banned.status).toBe(1);
+    expect(banned.stderr).toContain(`Dockerfile`);
+    const allowed = run({ 'direct-file/backend/Dockerfile-local': `FROM eclipse-temurin:17\n` });
+    expect(allowed.status).toBe(0);
+  });
+
+  it(`is invoked by build.sh and deploy.sh before a Pages upload`, () => {
+    const build = fs.readFileSync(path.join(PAGES, `build.sh`), `utf8`);
+    const deploy = fs.readFileSync(path.join(PAGES, `deploy.sh`), `utf8`);
+    expect(build).toContain(`checkNoContainers.mjs`);
+    expect(build.indexOf(`checkNoContainers.mjs`)).toBeLessThan(build.indexOf(`generate-fact-dictionary`));
+    expect(deploy.indexOf(`checkNoContainers.mjs`)).toBeGreaterThan(-1);
+    expect(deploy.indexOf(`checkNoContainers.mjs`)).toBeLessThan(deploy.indexOf(`pages deploy "$OUT"`));
+  });
+
+  it(`documents the free-plan boundary and the CI workflow does not deploy`, () => {
+    const readme = fs.readFileSync(path.join(PAGES, `README.md`), `utf8`);
+    expect(readme).toContain(`## Cloudflare Containers are not part of Phase A`);
+    expect(readme).toContain(`does not require paid Cloudflare Containers`);
+    expect(readme).toContain(`checkNoContainers.mjs`);
+    expect(readme).toContain(`free plan`);
+    expect(readme).toContain(`local Docker`);
+    const workflow = fs.readFileSync(
+      path.resolve(PAGES, `../../../.github/workflows/no-cloudflare-containers.yml`),
+      `utf8`
+    );
+    expect(workflow).toContain(`checkNoContainers.mjs`);
+    expect(workflow).not.toMatch(/\bwrangler\b/);
+    expect(workflow).not.toContain(`pages deploy`);
+  });
+
+  it(`is plain Node.js with no dependencies`, () => {
+    const text = fs.readFileSync(path.join(PAGES, `checkNoContainers.mjs`), `utf8`);
+    const imports = [...text.matchAll(/^import .* from '([^']+)';$/gm)].map((m) => m[1]);
+    expect(imports.sort()).toEqual([`fs`, `path`]);
+    expect(execFileSync(process.execPath, [`--check`, path.join(PAGES, `checkNoContainers.mjs`)]).toString()).toBe(``);
+  });
+
+  it(`exits 2 when the directory argument is missing`, () => {
+    const script = path.join(PAGES, `checkNoContainers.mjs`);
+    const missing = path.join(os.tmpdir(), `missing-pages-root`);
+    const r = spawnSync(process.execPath, [script, missing], {
+      encoding: `utf8`,
+    });
+    expect(r.status).toBe(2);
+    expect(r.stderr).toContain(`usage:`);
+  });
+});

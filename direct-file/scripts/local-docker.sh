@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # One-command local Docker stack for Direct File.
+# Docker Engine on this machine (JVM and PDF). This is not Cloudflare Containers.
+# The public client is static files on the Cloudflare Pages free plan
+# (df-client/cloudflare-pages/README.md).
 #
 #   scripts/local-docker.sh [up]   build and start, wait until healthy
 #   scripts/local-docker.sh down   stop and remove containers (keeps data)

@@ -1,13 +1,14 @@
 # Static client-only build on Cloudflare Pages
 
 This directory deploys a **static, client-only** build of `df-client-app` to Cloudflare Pages on the free plan:
-static assets only. There are no Pages Functions or Workers. The build has no Direct File backend, and **no return
-data ever leaves the browser**.
+static assets only. There are no Pages Functions, no Workers, and no Cloudflare Containers. The build has no Direct
+File backend, and **no return data ever leaves the browser**.
 
 | File                 | Purpose                                                                                                  |
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `build.sh`           | Generate, build (`build:static`), `check:production-build`, stage and check into `out/`. No credentials. |
 | `check-install.sh`   | Runs `build.sh --install`: lockfile install with no lifecycle scripts, then the production checks.       |
+| `checkNoContainers.mjs` | Fails the build and the upload if the tree would use Cloudflare Containers. Plain Node.js.            |
 | `deploy.sh`          | Direct upload from a workstation: `build.sh`, `checkNoSecrets.mjs`, then the pinned wrangler.            |
 | `checkNoSecrets.mjs` | Fails if a staged file holds a deploy credential's value or a Cloudflare token. Prints file names only.  |
 | `_headers`           | CSP (`base-uri 'none'`, `connect-src 'none'`, `form-action 'none'`, `frame-ancestors 'none'`) and others. |
@@ -23,6 +24,36 @@ to Git, and the reverse):
 
 Creating the Cloudflare account and the Pages project, and connecting the repository, are manual steps for the
 repository owner in the Cloudflare dashboard. Nothing in this repository creates them.
+
+## Cloudflare Containers are not part of Phase A
+
+Phase A hosting is two pieces, and only the first one uses Cloudflare:
+
+1. **Public client.** Cloudflare Pages on the free plan, static files only. Git integration runs
+   `build.sh --install`. Direct upload runs `wrangler pages deploy` (and, one time, `wrangler pages project create`;
+   local preview uses `wrangler pages dev`). Those are the only wrangler subcommands on this path.
+2. **JVM and PDF stack.** Local Docker (`direct-file/scripts/local-docker.sh` and `docker-compose*.yaml`). That is
+   Docker Engine on the machine running the stack. It is not Cloudflare Containers.
+
+Cloudflare Containers attaches a container image to a Worker. It is a separate product from Pages and is not
+included with the Pages free plan. This repository does not ship a Worker or a container image to Cloudflare.
+Phase A does not require paid Cloudflare Containers.
+
+`build.sh` (Git integration and direct upload) and `deploy.sh` (before the upload) run `checkNoContainers.mjs`.
+The script exits 1, and the build or upload stops, when any of these is present:
+
+- a `wrangler.toml`, `wrangler.json`, or `wrangler.jsonc` that declares a containers binding (`[[containers]]`, a
+  `containers =` assignment, or a `"containers"` key);
+- a `package.json` that depends on `@cloudflare/containers`;
+- a shell script, a file under this directory, or a GitHub Actions workflow that runs `wrangler containers`, runs
+  `wrangler deploy` (a Worker deploy), or references `registry.cloudflare.com`;
+- a `Dockerfile` under this directory.
+
+`wrangler pages deploy` does not match that Worker-deploy check. Local `docker-compose` files and the Dockerfiles
+under `backend/`, `submit/`, `status/`, and the other services are local Docker, so they are not an error.
+`.github/workflows/no-cloudflare-containers.yml` runs the same script on pull requests and on pushes to `main`.
+It does not deploy. The Pages project in the dashboard stays a static Pages project: no Containers binding, and the
+build command stays `build.sh --install`.
 
 ## What the static build changes
 
@@ -137,7 +168,9 @@ does not claim that the server build keeps no return data.
   `checkNoSecrets.mjs` fails on a staged file holding the value of `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
   or `CLOUDFLARE_API_KEY`, or a prefixed token, naming the file and not the value; neither script turns on xtrace
   or echoes a credential. `check-install.sh` runs `build.sh --install` (npm ci --ignore-scripts, then
-  `check:production-build` and `stage:static`).
+  `check:production-build` and `stage:static`). `checkNoContainers.mjs` accepts this repository and a tree whose
+  only wrangler command is `wrangler pages deploy`, and it rejects a containers binding, the Containers SDK, a
+  Worker deploy, a Containers command in a workflow, and a Dockerfile on the Pages path.
 - `src/staticClient/noCommittedSecrets.test.ts`: no tracked file in the repository holds a prefixed Cloudflare token
   or assigns a Cloudflare credential variable a literal value.
 
