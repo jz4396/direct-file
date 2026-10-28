@@ -1,5 +1,5 @@
 import fs from 'fs';
-import http from 'http';
+import http, { type IncomingHttpHeaders } from 'http';
 import path from 'path';
 import type { AddressInfo } from 'net';
 
@@ -12,9 +12,18 @@ import type { AddressInfo } from 'net';
  * - any path that isn't a file gets the root `index.html` (Pages' single-page-app fallback, since there is no
  *   404.html).
  *
- * Only GET and HEAD are answered. Every request is recorded, and the server listens on 127.0.0.1 only.
+ * Only GET and HEAD are answered. Every request is recorded, including its headers, and the server listens on
+ * 127.0.0.1 only. The no-retention test scans that log for a query string, a cookie, or a marker.
  */
-export type ServedRequest = { method: string; url: string; body: string };
+export type ServedRequest = { method: string; url: string; headers: string; body: string };
+
+/** One line per header, names sorted, so a test can search the log without depending on Node's key order. */
+export function formatRequestHeaders(headers: IncomingHttpHeaders): string {
+  return Object.entries(headers)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, value]) => `${name}: ${Array.isArray(value) ? value.join(`, `) : value ?? ``}`)
+    .join(`\n`);
+}
 
 export type StagedSiteServer = {
   origin: string;
@@ -89,7 +98,12 @@ export async function startStagedSiteServer(siteDir: string): Promise<StagedSite
     req.on(`data`, (c: Buffer) => chunks.push(c));
     req.on(`end`, () => {
       const method = req.method ?? `GET`;
-      requests.push({ method, url: req.url ?? ``, body: Buffer.concat(chunks).toString(`utf8`) });
+      requests.push({
+        method,
+        url: req.url ?? ``,
+        headers: formatRequestHeaders(req.headers),
+        body: Buffer.concat(chunks).toString(`utf8`),
+      });
       if (method !== `GET` && method !== `HEAD`) {
         res.writeHead(405, headers).end();
         return;

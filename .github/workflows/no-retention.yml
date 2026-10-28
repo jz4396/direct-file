@@ -7,13 +7,16 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "20"
           cache: npm
@@ -21,6 +24,23 @@ jobs:
       - name: Install client dependencies without lifecycle scripts
         working-directory: direct-file/df-client
         run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Screen pinned Playwright packages
+        working-directory: direct-file/df-client
+        run: |
+          node --input-type=module <<'EOF'
+          import { readFileSync } from "node:fs";
+          const lock = JSON.parse(readFileSync("package-lock.json", "utf8"));
+          for (const name of ["playwright", "playwright-core"]) {
+            const locked = lock.packages["node_modules/" + name];
+            if (!locked || locked.version !== "1.64.0") throw new Error(name + " is not locked at 1.64.0");
+            const pkg = JSON.parse(readFileSync("node_modules/" + name + "/package.json", "utf8"));
+            if (pkg.version !== locked.version) throw new Error(name + "@" + pkg.version);
+            const scripts = pkg.scripts ?? {};
+            for (const key of ["preinstall", "install", "postinstall", "prepare"]) {
+              if (scripts[key]) throw new Error(name + " declares a " + key + " script");
+            }
+          }
+          EOF
       - name: Install pinned Chromium
         working-directory: direct-file/df-client
         run: npx playwright install --with-deps chromium
