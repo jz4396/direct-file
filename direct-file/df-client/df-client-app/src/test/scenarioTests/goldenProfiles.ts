@@ -1,7 +1,8 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
-// older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends) and
-// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C).
+// older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
+// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C) and profile G (married
+// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -38,7 +39,16 @@ export const GOLDEN_SSN_PATTERN = /^9\d{2}-?\d{2}-?\d{4}$/;
  * number 0000. SSNs containing group number 00 or serial number 0000 will continue to be invalid."
  * goldenProfiles.test.ts checks the group number.
  */
-export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [`444-00-4444`, `444-00-0333`, `444-00-1007`, `444-00-1008`];
+export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
+  `444-00-4444`,
+  `444-00-0333`,
+  `444-00-1007`,
+  `444-00-1008`,
+  `444-00-2001`,
+  `444-00-2002`,
+  `444-00-2003`,
+  `444-00-2004`,
+];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
 
@@ -96,14 +106,19 @@ export type W2 = {
   box17?: number;
   paPartYearState?: `pa` | `fl`;
   residentPeriodWages?: number;
+  /** Defaults to the primary filer. */
+  filerId?: string;
+  /** Defaults to the `ssn` argument of `w2s`. */
+  tin?: [string, string, string];
 };
 const w2s = (ssn: [string, string, string], ...forms: W2[]) => {
   let out: Record<string, unknown> = { '/formW2s': createCollectionWrapper(forms.map((f) => f.id)) };
   for (const f of forms) {
     const p = `/formW2s/#${f.id}`;
+    const tin = f.tin ?? ssn;
     out = {
       ...out,
-      [`${p}/filer`]: createCollectionItemWrapper(primaryFilerId),
+      [`${p}/filer`]: createCollectionItemWrapper(f.filerId ?? primaryFilerId),
       [`${p}/employerName`]: createStringWrapper(f.employer),
       [`${p}/ein`]: createEinWrapper(...f.ein),
       [`${p}/employerAddress`]: createAddressWrapper(`500 Sample Ave`, `Harrisburg`, `17101`, `PA`),
@@ -112,7 +127,7 @@ const w2s = (ssn: [string, string, string], ...forms: W2[]) => {
       [`${p}/thirdPartySickPay`]: createBooleanWrapper(false),
       [`${p}/hasRRTACodes`]: createBooleanWrapper(false),
       [`${p}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
-      [`${p}/tin`]: createTinWrapper({ area: ssn[0], group: ssn[1], serial: ssn[2] }),
+      [`${p}/tin`]: createTinWrapper({ area: tin[0], group: tin[1], serial: tin[2] }),
       [`${p}/nonstandardOrCorrectedChoice`]: createEnumWrapper(`neither`, `/form1099RsNonstandardCorrectedOptions`),
       [`${p}/writableCombatPay`]: createDollarWrapper(`0`),
       [`${p}/writableDependentCareBenefits`]: createDollarWrapper(`0`),
@@ -577,6 +592,92 @@ export const profileFPaAmtScheduleC = {
   '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
 };
 
+/**
+ * Profile G (issue #135 suggested profile 2): married filing jointly, Florida resident, two qualifying children.
+ * Each spouse has $28,000 of W-2 wages. Each child has $3,000 of qualifying care expenses (Form 2441). Schedule 8812,
+ * the child and dependent care credit, and the earned income credit for two children are all computed. The return
+ * still stops on /flowKnockoutScheduleEicWithoutTy2026Template: a nonzero EIC with a qualifying child needs Schedule
+ * EIC, and the tie-breaker for a child who is the qualifying child of more than one person is not fully modeled.
+ */
+const harper: Person = { first: `Harper`, last: `Example`, ssn: [`444`, `00`, `2001`], dob: `1985-06-12` };
+const reese: Person = { first: `Reese`, last: `Example`, ssn: [`444`, `00`, `2002`], dob: `1986-11-03` };
+export const profileGChild1Id = `13500000-0000-4000-8000-000000001003`;
+export const profileGChild2Id = `13500000-0000-4000-8000-000000001004`;
+const profileGChild = (id: string, dob: string, first: string, serial: string) => ({
+  ...makeChildData(id, dob),
+  [`/familyAndHousehold/#${id}/firstName`]: createStringWrapper(first),
+  [`/familyAndHousehold/#${id}/writableMiddleInitial`]: createStringWrapper(``),
+  [`/familyAndHousehold/#${id}/lastName`]: createStringWrapper(`Example`),
+  [`/familyAndHousehold/#${id}/monthsLivedWithTPInUS`]: createEnumWrapper(`twelve`, `/monthsLivedWithTPInUSOptions`),
+  [`/familyAndHousehold/#${id}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial }),
+  [`/familyAndHousehold/#${id}/hasIpPin`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${id}/unableToCareForSelf`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${id}/cdccHasDependentCareExpenses`]: createBooleanWrapper(true),
+  [`/familyAndHousehold/#${id}/cdccHadExpensesPaidToQualifyingProvider`]: createBooleanWrapper(true),
+  [`/familyAndHousehold/#${id}/writableCdccQualifyingExpenseAmount`]: createDollarWrapper(`3000`),
+});
+export const profileGPrimaryW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001001`,
+  employer: `Example Harbor Co`,
+  ein: [`00`, `0002101`],
+  box1: 28000,
+  box2: 500,
+  box3: 28000,
+  // 6.2% x 28,000 (IRC §3101(a), https://www.law.cornell.edu/uscode/text/26/3101).
+  box4: 1736,
+  box5: 28000,
+  // 1.45% x 28,000; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
+  box6: 406,
+  filerId: primaryFilerId,
+  tin: harper.ssn,
+};
+export const profileGSpouseW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001002`,
+  employer: `Sample Studio LLC`,
+  ein: [`00`, `0002102`],
+  box1: 28000,
+  box2: 500,
+  box3: 28000,
+  box4: 1736,
+  box5: 28000,
+  box6: 406,
+  filerId: spouseId,
+  tin: reese.ssn,
+};
+export const profileGMfjTwoChildren = {
+  ...single(harper, { street: `123 Example St`, city: `Tampa`, zip: `33602`, state: `FL` }),
+  ...mfjFilerData,
+  ...spouse(reese),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(harper.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`onlySame`, `/primaryFilerW2And1099IntStateOptions`),
+  '/familyAndHousehold': createCollectionWrapper([profileGChild1Id, profileGChild2Id]),
+  ...profileGChild(profileGChild1Id, `2018-04-12`, `Robin`, `2003`),
+  ...profileGChild(profileGChild2Id, `2020-09-15`, `Sky`, `2004`),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(true),
+  '/writableCdccTotalQualifiedDependentCareExpenses': createDollarWrapper(`6000`),
+  '/cdccHasCreditForPriorYearExpenses': createBooleanWrapper(false),
+  '/cdccClaimedCreditForPriorYearExpenses': createBooleanWrapper(true),
+  '/cdccClaimedMaxCreditForPriorTaxYear': createBooleanWrapper(true),
+  '/receivedImproperClaims': createBooleanWrapper(false),
+  '/eitcQcOfAnother': createBooleanWrapper(false),
+  '/eitcHadImproperClaims': createBooleanWrapper(false),
+  // Schedule 3-A line 7 yes, line 8 yes: a U.S. citizen who wants the federal public benefit keeps line 32b at $0,
+  // so the EIC and the additional child tax credit stay in the refund. 8 U.S.C. 1641(b).
+  '/schedule3AWantsFederalPublicBenefit': createBooleanWrapper(true),
+  '/schedule3AIsCitizenNationalOrQualifiedAlien': createBooleanWrapper(true),
+  ...w2s(harper.ssn, profileGPrimaryW2, profileGSpouseW2),
+};
+
+/** Profile G with a different pair of W-2s (negative rows). */
+export const profileGWithW2s = (...forms: W2[]) => ({
+  ...profileGMfjTwoChildren,
+  ...w2s(harper.ssn, ...forms),
+});
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -590,4 +691,5 @@ export const goldenProfiles = {
   profileDHohItemizerChild,
   profileEPaToFlAmtDividends,
   profileFPaAmtScheduleC,
+  profileGMfjTwoChildren,
 };

@@ -1,7 +1,8 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
-// older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends) and
-// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C).
+// older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
+// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C) and profile G (married
+// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -110,13 +111,15 @@
 // [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
-//      fixture SSNs other than profiles C, D, and F are in the 900 area, which SSA never issues; the app reads them as
-//      neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profiles C and D use
+//      fixture SSNs other than profiles C, D, F, and G are in the 900 area, which SSA never issues; the app reads them
+//      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
-//      child uses 444-00-1008, also group 00. Every childless profile's AGI is above $19,540, so EITC is $0 on each.
-//      Profile D's AGI is above the one-child "Completed Phaseout Amount (All other filing statuses)" of "$51,593"
-//      ([RP] p. 15 §4.06(1)), and profile F's AGI is above that amount too, so EITC is $0 on both. The other profiles
-//      have no child, so their CTC is $0. Profile F's child tax credit is reduced by the §24(b) phaseout.
+//      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
+//      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
+//      "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), and profile F's AGI
+//      is above that amount too, so EITC is $0 on both. Profile G is under the two-child joint completed phaseout and
+//      its EITC is computed in that block. The other profiles have no child, so their CTC is $0. Profile F's child tax
+//      credit is reduced by the §24(b) phaseout.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -160,6 +163,12 @@ import {
   profileFBusinessId,
   profileFChildId,
   profileFPaAmtScheduleC,
+  profileGChild1Id,
+  profileGChild2Id,
+  profileGMfjTwoChildren,
+  profileGPrimaryW2,
+  profileGSpouseW2,
+  profileGWithW2s,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -222,13 +231,21 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
     }
     expect(checked).toBeGreaterThan(0);
   });
-  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; no profile gets EITC, and only profiles D and F get CTC`, () => {
+  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; only profile G gets EITC, and only profiles D, F, and G get CTC`, () => {
     for (const [name, facts] of Object.entries(goldenProfiles)) {
       const g = graph(facts);
-      const groupZero = name.startsWith(`profileC`) || name.startsWith(`profileD`) || name.startsWith(`profileF`);
-      const hasChild = name.startsWith(`profileD`) || name.startsWith(`profileF`);
+      const groupZero =
+        name.startsWith(`profileC`) ||
+        name.startsWith(`profileD`) ||
+        name.startsWith(`profileF`) ||
+        name.startsWith(`profileG`);
+      const hasChild = name.startsWith(`profileD`) || name.startsWith(`profileF`) || name.startsWith(`profileG`);
       expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(groupZero);
       expect(get(g, `/primaryFiler/tin/isITIN`).get, name).toBe(false);
+      if (name.startsWith(`profileG`)) {
+        expect(get(g, `/earnedIncomeCredit`).get.toString(), name).not.toBe(`0.00`);
+        continue; // profile G checks the child tax credit, Form 2441 and the EITC in its own block
+      }
       expect(get(g, `/earnedIncomeCredit`).get.toString(), name).toBe(`0.00`);
       if (hasChild) continue; // profiles D and F check the child tax credit and EITC in their own blocks below
       expect(get(g, `/eitcQualified`).get, name).toBe(false);
@@ -1397,9 +1414,7 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
   };
 
   it(`Schedule C single expense total and Schedule SE`, () => {
-    expect(get(g, `/scheduleCBusinesses/#${profileFBusinessId}/businessName` as string).get).toBe(
-      `Example Consulting`
-    );
+    expect(get(g, `/scheduleCBusinesses/#${profileFBusinessId}/businessName` as string).get).toBe(`Example Consulting`);
     expect(get(g, `/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
     expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
     expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
@@ -1583,5 +1598,221 @@ describe(`golden end-to-end scenario (synthetic data): profile F negative rows (
     );
     expectDollars(n, { '/form6251Line4': `231720.00`, '/amt': `117.00` });
     expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+  });
+});
+
+// The only submission-blocking fact this return sets true. Schedule EIC is required for a nonzero EIC with a
+// qualifying child, and /flowKnockoutScheduleEicWithoutTy2026Template stays until the §152(c)(4) tie-breaker is fully
+// modeled (eitc.xml). The credit itself is computed.
+const PROFILE_G_STOPPED = [`/flowKnockoutScheduleEicWithoutTy2026Template`, `/flowIsKnockedOut`];
+
+describe(`golden end-to-end scenario (synthetic data): profile G, MFJ, two children, Schedule 8812, Form 2441, EITC`, () => {
+  // Married filing jointly, Florida resident [FL]. Harper Example, born 1985-06-12, SSN 444-00-2001. Reese Example,
+  //   born 1986-11-03, SSN 444-00-2002. Robin Example, born 2018-04-12 (8 at year end), SSN 444-00-2003. Sky Example,
+  //   born 2020-09-15 (6 at year end), SSN 444-00-2004. Each child lived in the home 12 months. Every SSN is group 00
+  //   [SSA]. No interest, no dividends, no sales, standard deduction.
+  // W-2 #1 (Harper): box 1, box 3 and box 5 $28,000, box 2 $500, box 4 $1,736 (6.2%, IRC §3101(a)), box 6 $406
+  //   (1.45% only [3102]). W-2 #2 (Reese): the same. No box 10 dependent care benefits, no box 12, no box 17.
+  // Form 2441 qualifying expenses $3,000 for each child ($6,000 together), paid to a care provider. No prior-year
+  //   credit.
+  // Form 1040: line 1a/1z and line 9 and line 11 (AGI) 56,000. Line 12 standard deduction 32,200 [RP p. 18 §4.14(1)
+  //   "Married Individuals Filing Joint Returns and Surviving Spouses $32,200"]. Neither spouse is 65 or older or
+  //   blind, so no additional amount. Line 15 taxable income 23,800.
+  // Line 16, Tax Table [GI p. 36]. Row for 23,800 is the $50 row whose midpoint is 23,825 (the same midpoint rule as
+  //   [GI] p. 69). [RP] p. 10 §4.01 Table 1: "Not over $24,800 — 10% of the taxable income." 10% x 23,825 = 2,382.50,
+  //   which rounds to 2,383 (half up, as [GI] p. 69 rounds 10% x $3,025 = $302.50 to 303).
+  // Form 2441, IRC §21 (https://www.law.cornell.edu/uscode/text/26/21). §21(b)(1)(A): a qualifying individual "has not
+  //   attained age 13". §21(c): expenses "shall not exceed— (1) $3,000 if there is 1 qualifying individual ... or (2)
+  //   $6,000 if there are 2 or more". §21(d)(1): the expenses taken into account "shall not exceed— (A) in the case of
+  //   an individual who is not married ... such individual's earned income ... or (B) in the case of an individual who
+  //   is married ... the lesser of such individual's earned income or the earned income of his spouse". Each spouse's
+  //   earned income is $28,000, so line 6 is the $6,000 of expenses. §21(a)(2), as amended for 2026: "the term
+  //   'applicable percentage' means 50 percent— (A) reduced (but not below 35 percent) by 1 percentage point for each
+  //   $2,000 or fraction thereof by which the taxpayer's adjusted gross income ... exceeds $15,000". AGI $56,000 is
+  //   $41,000 over $15,000, which is 21 points, so 50% − 21% = 29%, and the 35% floor applies. 2026 Form 2441 draft
+  //   https://www.irs.gov/pub/irs-dft/f2441--dft.pdf (SHA-256 67eca7567ce5ff06e72d40a07db487f406da33139e664c0c0d9c67a4e31e9385),
+  //   instructions What's New: the maximum percentage is 50%. Line 9a = round(35% x 6,000) = 2,100. Line 10, the
+  //   credit limit worksheet, is Form 1040 line 18, 2,383 (no foreign tax credit). Line 11 = the smaller of 2,100 and
+  //   2,383 = 2,100, which is Schedule 3 line 2 and part of line 8.
+  // Schedule 8812, IRC §24 (https://www.law.cornell.edu/uscode/text/26/24). Two qualifying children under 17.
+  //   [RP] p. 14 §4.05(1): "the maximum amount of the credit allowed under § 24(a) is $2,200." Line 5 = 2 x 2,200 =
+  //   4,400. §24(h)(3): "the threshold amount shall be $400,000 in the case of a joint return ($200,000 in any other
+  //   case)." AGI is under $400,000, so the §24(b) phaseout is 0 and line 12 is 4,400. Credit Limit Worksheet A,
+  //   line 13 = line 18 minus the Schedule 3 credits that come ahead of the child tax credit = 2,383 − 2,100 = 283.
+  //   Line 14 (Form 1040 line 19) = the smaller of 4,400 and 283 = 283. Line 16a remaining = 4,117.
+  //   [RP] p. 14 §4.05(2): "the amount used in § 24(d)(1)(A) to determine the amount of the credit under § 24 that may
+  //   be refundable is $1,700." Line 16b = 2 x 1,700 = 3,400, and the remaining potential additional credit is the
+  //   smaller of 4,117 and 3,400 = 3,400. §24(h)(6) substitutes "$2,500" for "$3,000" in §24(d)(1)(B)(i). Earned
+  //   income over that threshold is 56,000 − 2,500 = 53,500. §24(d)(1)(B)(i): "15 percent of so much of the taxpayer's
+  //   earned income ... as exceeds" that amount: round(15% x 53,500) = 8,025. Two children, so the three-or-more
+  //   worksheet does not apply. Additional child tax credit (line 27, Form 1040 line 28) = the smaller of 3,400 and
+  //   8,025 = 3,400. 2026 Schedule 8812 draft https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf (SHA-256
+  //   0638b2863bdaeadfd3fccee12a9145bf92a442d8de156584c5602cc7e3881422).
+  // EITC, IRC §32 (https://www.law.cornell.edu/uscode/text/26/32). §32(b): two qualifying children, credit percentage
+  //   40 percent, phaseout percentage 21.06 percent. [RP] p. 15 §4.06(1): earned income amount "Two $18,290";
+  //   "Threshold Phaseout Amount (Married Filing Jointly) ... Two $31,160"; "Completed Phaseout Amount (Married Filing
+  //   Jointly) ... Two $65,899". Maximum credit = round(40% x 18,290) = 7,316. §32(i) and [RP] p. 15 §4.06(2): the
+  //   credit "is not allowed ... if the aggregate amount of certain investment income exceeds $12,200." Investment
+  //   income is $0. The EIC table uses $50 rows and the credit at the midpoint (the same construction as the Tax
+  //   Table). Earned income and AGI are both $56,000, so the row midpoint is $56,025. That is above $31,160 + $25, so
+  //   the phaseout applies: 21.06% x (56,025 − 31,160) = 21.06% x 24,865 = 5,236.569. 7,316 − 5,236.569 = 2,079.431,
+  //   which rounds to 2,079. The AGI column is the same amount, so line 27a is 2,079. 2026 Schedule EIC draft
+  //   https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf (SHA-256
+  //   fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3): "Complete and attach to Form 1040 or 1040-SR
+  //   only if you have a qualifying child." §32(c)(3)(D)(i) requires the child's name, age and TIN on the return. The
+  //   tool stops the return on /flowKnockoutScheduleEicWithoutTy2026Template because the §152(c)(4) tie-breaker is not
+  //   fully modeled. The dollars above are what the graph computes.
+  // Form 1040: line 18 2,383; line 19 283; line 20 2,100; line 21 2,383; line 22 and line 24 0. Line 27a 2,079; line 28
+  //   3,400; line 32a 5,479. Schedule 3-A (2026 draft, a filer who is a U.S. citizen and elects to receive the federal
+  //   public benefit): line 2 5,479, line 5 0, line 6 5,479, line 8 amount 0, so Form 1040 line 32b is 0 and line 32c
+  //   is 5,479. Line 25a 1,000; line 33 6,479; line 34 overpayment 6,479; amount owed 0.
+  // Form 8959 is not required (Medicare wages $56,000 are under the $250,000 joint threshold [3101]). Form 8960 is not
+  //   required (MAGI $56,000 is under the $250,000 joint threshold [1411]).
+  const g = graph(profileGMfjTwoChildren);
+  const expectStoppedOnly = (fg: Fg) => {
+    const stopped = new Set(PROFILE_G_STOPPED);
+    for (const path of submissionBlockingFacts.filter((p) => !p.includes(`*`) && p !== `/flowIncomplete`)) {
+      const r = get(fg, path);
+      if (stopped.has(path)) {
+        expect(r.complete, path).toBe(true);
+        expect(r.get, path).toBe(true);
+      } else {
+        expect(r.complete && r.get === true, path).toBe(false);
+      }
+    }
+  };
+
+  it(`filing status, two qualifying children, and wages`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`marriedFilingJointly`);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/secondaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/familyAndHousehold/#${profileGChild1Id}/tin/isSSN` as string).get).toBe(true);
+    expect(get(g, `/familyAndHousehold/#${profileGChild2Id}/tin/isSSN` as string).get).toBe(true);
+    expect(get(g, `/ctcEligibleDependents`).get.toString()).toBe(`2`);
+    expect(get(g, `/numEitcDependentsCollectionForCalculation`).get.toString()).toBe(`2`);
+    expectDollars(g, {
+      '/wages': `56000.00`,
+      '/totalIncome': `56000.00`,
+      '/agi': `56000.00`,
+      '/standardOrItemizedDeductions': `32200.00`,
+      '/taxableIncome': `23800.00`,
+      '/tentativeTaxFromTaxableIncome': `2383.00`,
+    });
+  });
+  it(`Form 2441 child and dependent care credit at the 35% floor`, () => {
+    expect(get(g, `/cdccQualified`).get).toBe(true);
+    expect(get(g, `/knockoutCdccWorksheetA`).get).toBe(false);
+    expect(get(g, `/cdccCareExpensesDecimalAmount`).get.toString()).toBe(`0.35`);
+    expectDollars(g, {
+      '/cdccQualifyingExpenses': `6000.00`,
+      '/cdccLowerOfEarnedIncomeAndExpenses': `6000.00`,
+      '/cdccTentativeExpenseAmount': `2100.00`,
+      '/cdccCreditLimit': `2383.00`,
+      '/cdccTotalCredit': `2100.00`,
+      '/line8OfSchedule3': `2100.00`,
+    });
+  });
+  it(`Schedule 8812 nonrefundable child tax credit and additional child tax credit`, () => {
+    expectDollars(g, {
+      '/totalPotentialCtc': `4400.00`,
+      '/dependentCreditPhaseout': `0.00`,
+      '/dependentCreditLessPhaseout': `4400.00`,
+      '/sched8812CreditLimit': `283.00`,
+      '/totalCtcAndOdc': `283.00`,
+      '/totalCtc': `283.00`,
+      '/totalOdc': `0.00`,
+      '/remainingCtcAndOdc': `4117.00`,
+      '/totalPotentialActc': `3400.00`,
+      '/remainingPotentialActc': `3400.00`,
+      '/regularMaximumActc': `8025.00`,
+      '/additionalCtc': `3400.00`,
+    });
+  });
+  it(`EITC for two children, in the phaseout`, () => {
+    expect(get(g, `/eitcQualified`).get).toBe(true);
+    expect(get(g, `/eitcRoundedAGI`).get.toString()).toBe(`56025.00`);
+    expectDollars(g, {
+      '/earnedIncomeCredit': `2079.00`,
+    });
+  });
+  it(`Form 1040 credits, payments and refund; Schedule 3-A leaves the refund in place`, () => {
+    expect(get(g, `/pdfIncludeSchedule3A`).get).toBe(true);
+    expect(get(g, `/schedule3ALine8`).get.toString()).toBe(`0.00`);
+    expectDollars(g, {
+      '/nonRefundableCredits': `2383.00`,
+      '/taxLessNonRefundableCredits': `0.00`,
+      '/line21OfSchedule2': `0.00`,
+      '/totalTax': `0.00`,
+      '/totalOtherPaymentsRefundableCredits': `5479.00`,
+      '/schedule3ALine2': `5479.00`,
+      '/schedule3ALine6': `5479.00`,
+      '/schedule3AAmountForForm1040Line32b': `0.00`,
+      '/form1040Line32c': `5479.00`,
+      '/formW2Withholding': `1000.00`,
+      '/totalPayments': `6479.00`,
+      '/overpayment': `6479.00`,
+      '/balanceDue': `0.00`,
+    });
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+  });
+  it(`Florida resident: no state return; the return stops only because Schedule EIC is not produced`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowKnockoutFloridaStateWithholding`).get).toBe(false);
+    expect(get(g, `/pdfIncludeScheduleEic`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEicWithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).complete).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expectStoppedOnly(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile G negative rows (each stops the return)`, () => {
+  const stops = (facts: Record<string, unknown>, knockout: string) => {
+    const n = graph(facts);
+    expect(submissionBlockingFacts).toContain(knockout);
+    expect(get(n, knockout).complete, knockout).toBe(true);
+    expect(get(n, knockout).get, knockout).toBe(true);
+    expect(get(n, `/flowIsKnockedOut`).complete).toBe(true);
+    expect(get(n, `/flowIsKnockedOut`).get).toBe(true);
+    return n;
+  };
+
+  it(`a Florida W-2 with state tax withheld in box 17 [FL]`, () => {
+    const n = stops(
+      {
+        ...profileGMfjTwoChildren,
+        ...profileGWithW2s({ ...profileGPrimaryW2, box16: 28000, box17: 100 }, profileGSpouseW2),
+      },
+      `/flowKnockoutFloridaStateWithholding`
+    );
+    expectDollars(n, {
+      '/cdccTotalCredit': `2100.00`,
+      '/totalCtc': `283.00`,
+      '/additionalCtc': `3400.00`,
+      '/earnedIncomeCredit': `2079.00`,
+    });
+    expect(get(n, `/flowKnockoutScheduleEicWithoutTy2026Template`).get).toBe(true);
+  });
+  it(`a household employee stops the return`, () => {
+    const n = stops(
+      { ...profileGMfjTwoChildren, '/flowKnockoutHouseholdEmployee': createBooleanWrapper(true) },
+      `/flowIsKnockedOut`
+    );
+    expect(get(n, `/flowKnockoutHouseholdEmployee`).get).toBe(true);
+    expectDollars(n, { '/cdccTotalCredit': `2100.00`, '/earnedIncomeCredit': `2079.00` });
+  });
+  it(`Form 2441 prior-year worksheet A stops the return and does not invent a prior-year credit`, () => {
+    const n = stops(
+      {
+        ...profileGMfjTwoChildren,
+        '/cdccHasCreditForPriorYearExpenses': createBooleanWrapper(true),
+        '/cdccClaimedCreditForPriorYearExpenses': createBooleanWrapper(false),
+      },
+      `/flowIsKnockedOut`
+    );
+    expect(get(n, `/knockoutCdccWorksheetA`).get).toBe(true);
+    expectDollars(n, { '/cdccCreditForPriorYearExpenses': `0.00`, '/cdccTotalCredit': `2100.00` });
   });
 });

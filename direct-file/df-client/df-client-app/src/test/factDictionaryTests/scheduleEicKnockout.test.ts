@@ -86,12 +86,17 @@ describe(`Schedule EIC without a TY2026 template (#208)`, () => {
     expect(knockedOut).toContain(`<Dependency module="eitc" path="${KO}" />`);
   });
 
-  it.each(Object.entries(goldenProfiles))(`golden profile %s: the knockout is complete and false`, (_, profile) => {
-    const { get } = graph(profile);
-    expect(get(`/pdfIncludeScheduleEic`).get).toBe(false);
-    expect(get(KO).complete).toBe(true);
-    expect(get(KO).get).toBe(false);
-  });
+  it.each(Object.entries(goldenProfiles))(
+    `golden profile %s: the Schedule EIC knockout is complete, and true only for a nonzero EIC with a qualifying child`,
+    (name, profile) => {
+      const { get } = graph(profile);
+      // Profile G claims the EIC for two qualifying children, so Schedule EIC applies and the return stops.
+      const schedule = name === `profileGMfjTwoChildren`;
+      expect(get(`/pdfIncludeScheduleEic`).get, name).toBe(schedule);
+      expect(get(KO).complete, name).toBe(true);
+      expect(get(KO).get, name).toBe(schedule);
+    }
+  );
 
   it(`every backend scenario: the knockout is complete, and true only with Schedule EIC`, () => {
     const folder = `./src/test/factDictionaryTests/backend-scenarios`;
