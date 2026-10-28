@@ -107,11 +107,13 @@ describe(`#239 Schedule C and Schedule 3-A print`, () => {
   });
 
   it.each(Object.entries(goldenProfiles))(
-    `golden profile %s: Schedule 3-A is not attached and Form 1040 still prints`,
-    (_, profile) => {
+    `golden profile %s: Form 1040 prints; Schedule 3-A is attached only when a refundable credit is claimed`,
+    (name, profile) => {
       const { get } = graph(profile);
+      // Profile G claims the EIC and the additional child tax credit, so Schedule 3-A is attached.
+      const schedule3A = name === `profileGMfjTwoChildren`;
       expect(get(`/pdfIncludeSchedule3A`).complete).toBe(true);
-      expect(get(`/pdfIncludeSchedule3A`).get).toBe(false);
+      expect(get(`/pdfIncludeSchedule3A`).get).toBe(schedule3A);
       expect(get(`/pdfIncludeForm1040`).get).toBe(true);
     }
   );
