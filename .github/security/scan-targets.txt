@@ -1,0 +1,22 @@
+# Tracked package-lock.json and pom.xml files the dependency gate must scan.
+# dependency-audit.mjs fails if this list and `git ls-files` disagree.
+direct-file/backend/pom.xml
+direct-file/boms/directfile-bom/pom.xml
+direct-file/boms/irs-spring-boot-starter-parent/pom.xml
+direct-file/boms/pom.xml
+direct-file/df-client/cloudflare-pages/package-lock.json
+direct-file/df-client/df-common/package-lock.json
+direct-file/df-client/package-lock.json
+direct-file/email-service/pom.xml
+direct-file/libs/data-models/pom.xml
+direct-file/libs/pom.xml
+direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml
+direct-file/libs/starters/irs-spring-boot-starter-openfeature/pom.xml
+direct-file/libs/starters/irs-spring-boot-starter-test/pom.xml
+direct-file/libs/starters/irs-spring-boot-starter-validation/pom.xml
+direct-file/libs/starters/pom.xml
+direct-file/package-lock.json
+direct-file/state-api/pom.xml
+direct-file/status/pom.xml
+direct-file/submit/pom.xml
+direct-file/utils/pdf-to-yaml/pom.xml
