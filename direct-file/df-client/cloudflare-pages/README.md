@@ -83,9 +83,12 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
 - **There's no primary filer TIN or email.** In the regular app these come from sign-in and are read-only, so a
   static-client return can't reach a complete, fileable state.
 - **There's no PDF, signing or e-file.** The static build is for working through the interview only.
-- **The checklist hides Start on a fresh return.** `/flowKnockoutScheduleBPartIII` is true until Schedule B
-  Part III is answered, so `/flowIsKnockedOut` is true and the checklist does not offer Start. The about-you
-  screens are still available.
+- **Unanswered Schedule B Part III does not knock the interview out.** `/flowKnockoutScheduleBPartIII` is complete
+  false until line 7a or line 8 is "Yes", so a fresh return still offers Start on the checklist. The print is
+  still refused through `/flowPrintRefuseScheduleBPartIII` when Part III is unanswered or any answer is "Yes"
+  (Instructions for Schedule B (Form 1040) (2025) p. 1: the schedule is required for over $1,500 of taxable
+  interest or ordinary dividends; pp. 2–3, FinCEN Form 114, 31 U.S.C. 5314, Form 8938, 26 U.S.C. 6038D, and
+  Form 3520, 26 U.S.C. 6048). The browser test enters About you through that Start control.
 - The real-browser test (`npm run test:no-retention`) walks a golden end-to-end scenario (synthetic data): create,
   every income screen, autosave, read-back, review, and the PDF, sign, and submit attempts. Those attempts show a
   refusal. They do not download a PDF or open the submitted screen. PDF, sign, and submit are also covered by the
@@ -112,21 +115,28 @@ does not claim that the server build keeps no return data.
   browser storage.
 - `src/staticClient/noRetention/noRetention.e2e.ts` (`npm run test:no-retention`, which generates the fact
   dictionary, then builds and stages the site): pinned Chromium against the staged site, served on 127.0.0.1 with
-  its own `_headers` and `_redirects`. It types unique marker values into the interview (name, date of birth,
-  address, phone), imports a golden end-to-end scenario (synthetic data) save file with a marker TIN and wage
-  amount, and opens every income screen. It asserts that every request from the page and its workers is a
+  its own `_headers` and `_redirects`. It opens About you from the checklist Start control, types unique marker
+  values into the interview (name, date of birth, address, phone), imports a golden end-to-end scenario (synthetic
+  data) save file with a marker TIN and wage amount, and opens every income screen. It asserts that every request
+  from the page and its workers is a
   same-origin `GET` with no body and no query string, for a staged file unless it is a page load,
   and with no marker in it (plain, JSON-escaped, URL-encoded, UTF-16, base64 or base64url, and the TIN even split
-  into its parts); that nothing goes to the `.invalid` API origin or any other origin and no WebSocket opens; that
-  a deliberate `fetch`, `XMLHttpRequest`, `sendBeacon`, `WebSocket`, `EventSource`, cross-origin image and form
-  post are all refused; that the CSP response header has `connect-src`, `form-action` and `frame-ancestors`
-  `'none'`; and that `localStorage`, `sessionStorage`, IndexedDB, Cache Storage, the origin private file system,
-  cookies and service workers are empty after switching to Español, after the session and after a reload. Only
+  into its parts) and no cookie. The local server records every request's URL, headers and body, and that log is
+  the same set of method-and-path pairs the browser recorded for the scenario. Nothing goes to the `.invalid` API
+  origin or any other origin and no WebSocket opens. A deliberate `fetch`, `XMLHttpRequest`, `sendBeacon`,
+  `WebSocket`, `EventSource`, cross-origin image, form post, blob worker and cross-origin worker script are all
+  refused. The CSP response header has `connect-src`, `form-action` and `frame-ancestors` `'none'`, `worker-src
+  'self'` and `script-src 'self'`. `localStorage`, `sessionStorage`, IndexedDB, Cache Storage, the origin private
+  file system, cookies and service workers are empty after switching to Español, after the session and after a
+  reload. Only
   "Save on this device" writes: one envelope with exactly the expected fields (PBKDF2-SHA-256 at the configured
   iterations, 16-byte salt, 12-byte IV, base64 AES-GCM ciphertext that opens with the passphrase only) and no
   marker, and "Clear all data on this device" removes it. It runs in the Chromium revision pinned by
-  `playwright@1.64.0` (Chromium 156.0.8078.4, browsers.json revision 1248). `playwright@1.64.0` and
-  `playwright-core@1.64.0` declare no lifecycle scripts, so `npm ci --ignore-scripts` does not download a browser.
+  `playwright@1.64.0` (Chromium 156.0.8078.4, browsers.json revision 1248). Launch fails when `browser.version()`
+  is not that `browserVersion`. `playwright@1.64.0` and `playwright-core@1.64.0` were published on 2026-10-07,
+  are Apache-2.0, declare no lifecycle scripts, and are pinned in `direct-file/df-client/package-lock.json` by
+  version and `sha512` integrity, so `npm ci --ignore-scripts` does not download a browser. CI rejects a lockfile or
+  installed package that is not 1.64.0 or that declares `preinstall`, `install`, `postinstall` or `prepare`.
   Install that revision with `npx playwright install chromium` (CI uses `--with-deps`). The test makes no request
   off 127.0.0.1.
 - `src/staticClient/staticBranding.test.tsx`: in static mode the layout shows the notice (English and Spanish), with

