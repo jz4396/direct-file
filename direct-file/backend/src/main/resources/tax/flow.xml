@@ -119,7 +119,6 @@
           <Dependency module="ptc" path="/selfReportedHasMultiple1095As" />
           <Dependency module="ptc" path="/hasImmigrationStatusNotEligibleForMarketplace" />
           <Dependency module="ptc" path="/wantsToUseAltCalculations" />
-          <Dependency module="ptc" path="/flowKnockoutForm8962WithoutTy2026Template" />
           <Dependency module="ptc" path="/flowKnockoutPtcAllocationOfPolicyAmounts" />
           <Dependency module="ptc" path="/flowKnockoutPtcAlternativeCalculationForYearOfMarriage" />
           <Dependency module="ptc" path="/flowKnockoutPtcSelfEmployedHealthInsurance" />

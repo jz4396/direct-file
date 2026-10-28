@@ -81,7 +81,6 @@ const knockouts = [
   `/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl`,
   `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
 ];
-const TEMPLATE_KNOCKOUT = `/flowKnockoutForm8962WithoutTy2026Template`;
 const expectNoPtcKnockout = (g: ReturnType<typeof fg>) => {
   for (const k of knockouts) expect(val(g, k), k).toBe(`false`);
 };
@@ -368,25 +367,25 @@ describe(`Form 8962 (2026) knockouts`, () => {
     ).toBe(`false`);
   });
 
-  it(`unresolved /needsToFileForm8962 on a return with a Form 1095-A fails closed`, ({ task }) => {
+  it(`unresolved /needsToFileForm8962 does not stop once the other PTC answers are no`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/form8962NeededOrUnresolved`,
-      TEMPLATE_KNOCKOUT,
       `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
+      `/form8962Line6No`,
     ];
     // $4,500 of advance payments: answered, Schedule 2 line 1a is the $566 excess (Form 8962 (2026) draft line 27).
     const answered = ptcReturn(31300, 5000, 6000, 4500) as Record<string, unknown>;
     expect(val(fg(answered), `/lesserOfNetPtcAmountAndRepaymentLimitation`)).toBe(`566.00`);
+    expect(val(fg(answered), `/form8962Line6No`)).toBe(`true`);
     const without = (key: string) => Object.fromEntries(Object.entries(answered).filter(([k]) => k !== key));
     for (const missing of [`/filers/#${primaryFilerId}/canBeClaimed`, `/writableHasPtcQualifyingPlan`]) {
       const g = fg(without(missing));
       expect(raw(g, `/needsToFileForm8962`).complete, missing).toBe(false);
       expect(val(g, `/form8962NeededOrUnresolved`), missing).toBe(`true`);
-      expect(val(g, TEMPLATE_KNOCKOUT), missing).toBe(`true`);
-      expect(val(g, `/flowIsKnockedOut`), missing).toBe(`true`);
-      // The guard is true, so each knockout's own condition decides: "no" to the special enrollment period question
-      // stays false, and leaving it unanswered fails closed.
+      // The missing-template stop is gone. "No" on the special enrollment period question stays false, so this
+      // unresolved return is not knocked out. Leaving that question unanswered still fails closed.
       expect(val(g, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`), missing).toBe(`false`);
+      expect(val(g, `/flowIsKnockedOut`), missing).toBe(`false`);
       const sepOpen = fg(
         Object.fromEntries(
           Object.entries(without(missing)).filter(
@@ -395,14 +394,16 @@ describe(`Form 8962 (2026) knockouts`, () => {
         )
       );
       expect(val(sepOpen, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`), missing).toBe(`true`);
-      expect(val(sepOpen, TEMPLATE_KNOCKOUT), missing).toBe(`true`);
       expect(val(sepOpen, `/flowIsKnockedOut`), missing).toBe(`true`);
     }
   });
 
-  it(`qualifying plan yes with an empty Form 1095-A list fails closed`, ({ task }) => {
-    task.meta.testedFactPaths = [`/form8962NeededOrUnresolved`, TEMPLATE_KNOCKOUT];
-    // The only 1095-A deleted: /needsToFileForm8962 reads a definite no from the empty collection.
+  it(`qualifying plan yes with an empty Form 1095-A list does not stop when the other PTC answers are no`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [`/form8962NeededOrUnresolved`, `/needsToFileForm8962`];
+    // The only 1095-A deleted: /needsToFileForm8962 reads a definite no from the empty collection. The guard stays
+    // true for the other PTC knockouts, and none of those knockouts apply.
     for (const advance of [true, false]) {
       const emptied = Object.fromEntries(
         Object.entries(ptcReturn(31300, 5000, 6000, 4500)).filter(([k]) => !k.startsWith(`/1095As/`))
@@ -416,8 +417,7 @@ describe(`Form 8962 (2026) knockouts`, () => {
       expect(val(g, `/writableHasPtcQualifyingPlan`)).toBe(`true`);
       expect(val(g, `/needsToFileForm8962`), `${advance}`).toBe(`false`);
       expect(val(g, `/form8962NeededOrUnresolved`), `${advance}`).toBe(`true`);
-      expect(val(g, TEMPLATE_KNOCKOUT), `${advance}`).toBe(`true`);
-      expect(val(g, `/flowIsKnockedOut`), `${advance}`).toBe(`true`);
+      expect(val(g, `/flowIsKnockedOut`), `${advance}`).toBe(`false`);
     }
   });
 
@@ -449,19 +449,24 @@ describe(`Form 8962 (2026) knockouts`, () => {
     expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
   });
 
-  it(`any return that files Form 8962 stops until a TY2026 Form 8962 template lands`, ({ task }) => {
-    // Form 8962 (2026) draft, PDF p. 1: "Attach to Form 1040, 1040-SR, or 1040-NR." Only the 2024 template exists,
-    // and its lines 28-29 are "Reserved for future use" on the 2026 draft (Rev. Proc. 2025-32 sec. 2.04, PDF p. 5).
-    task.meta.testedFactPaths = [TEMPLATE_KNOCKOUT];
+  it(`a computed Form 8962 return is not stopped for lack of a template`, ({ task }) => {
+    // Form 8962 (2026) draft, PDF p. 1: "Attach to Form 1040, 1040-SR, or 1040-NR." Lines 28-29 are "Reserved for
+    // future use" (Rev. Proc. 2025-32 sec. 2.04, PDF p. 5). The 2026 draft is the template, so filing Form 8962 is
+    // not itself a stop.
+    task.meta.testedFactPaths = [`/needsToFileForm8962`, `/flowIsKnockedOut`, `/form8962Line6No`];
     const g = fg(ptcReturn(31300, 5000, 6000, 4500));
     expect(val(g, `/needsToFileForm8962`)).toBe(`true`);
-    expect(val(g, TEMPLATE_KNOCKOUT)).toBe(`true`);
-    expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
-    expect(val(fg(filerWithW2NoDeductionsNoCreditsBaseData), TEMPLATE_KNOCKOUT)).toBe(`false`);
+    expect(val(g, `/isHouseholdIncome401PercentOfPovertyLine`)).toBe(`false`);
+    expect(val(g, `/form8962Line6No`)).toBe(`true`);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(`false`);
+    const over = fg(ptcReturn(62800, 5000, 6000, 3000));
+    expect(val(over, `/isHouseholdIncome401PercentOfPovertyLine`)).toBe(`true`);
+    expect(val(over, `/form8962Line6No`)).toBe(`false`);
+    expectNoPtcKnockout(g);
   });
 
   it(`no Marketplace plan, and a W-2-only return: every PTC knockout is complete false`, ({ task }) => {
-    task.meta.testedFactPaths = [...knockouts, TEMPLATE_KNOCKOUT];
+    task.meta.testedFactPaths = [...knockouts];
     const noPlan = Object.fromEntries(
       Object.entries(
         ptcReturn(31300, 5000, 6000, 0, { '/writableHasPtcQualifyingPlan': createBooleanWrapper(false) })
@@ -469,7 +474,6 @@ describe(`Form 8962 (2026) knockouts`, () => {
     );
     const g = fg({ ...noPlan, '/1095As': createCollectionWrapper([]) });
     expectNoPtcKnockout(g);
-    expect(val(g, TEMPLATE_KNOCKOUT)).toBe(`false`);
     expectNoPtcKnockout(fg(filerWithW2NoDeductionsNoCreditsBaseData));
   });
 });

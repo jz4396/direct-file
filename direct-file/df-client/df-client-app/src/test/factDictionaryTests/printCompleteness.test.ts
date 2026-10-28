@@ -30,7 +30,11 @@ import {
 import { goldenProfiles, profile5AmtAnd8959 } from '../scenarioTests/goldenProfiles.js';
 import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 
-const REMOVED = [`/flowKnockoutScheduleCWithoutTy2026Template`, `/flowKnockoutSchedule3AWithoutTy2026Template`];
+const REMOVED = [
+  `/flowKnockoutScheduleCWithoutTy2026Template`,
+  `/flowKnockoutSchedule3AWithoutTy2026Template`,
+  `/flowKnockoutForm8962WithoutTy2026Template`,
+];
 const businessId = `08900000-0000-4000-8000-000000000001`;
 const childId = `08900000-0000-4000-8000-000000000002`;
 

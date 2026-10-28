@@ -113,22 +113,6 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutForm8962WithoutTy2026Template">
-      <Name>Knockout: the return needs a TY2026 Form 8962, which this tool can't produce yet</Name>
-      <Description>#88: true when Form 8962 is needed. Form 8962 (2026) draft, Created 4/21/26
-        (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, SHA-256
-        5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35), PDF p. 1: "Attach to Form 1040, 1040-SR, or
-        1040-NR." The only Form 8962 template here is the 2024 form, whose Part III still has the repayment limitation
-        lines that the 2026 draft marks "Reserved for future use" (lines 28-29; Rev. Proc. 2025-32 sec. 2.04,
-        https://www.irs.gov/pub/irs-drop/rp-25-32.pdf, PDF p. 5). Same pattern as eitc
-        /flowKnockoutScheduleEicWithoutTy2026Template. Complete and false only when Form 8962 is known not to be needed;
-        fails closed through /form8962NeededOrUnresolved while that is unresolved.</Description>
-      <BlockSubmissionOnTrue />
-      <Export downstreamFacts="true" />
-      <Derived>
-        <Dependency path="/form8962NeededOrUnresolved" />
-      </Derived>
-    </Fact>
     <Fact path="/flowKnockoutPtcAllocationOfPolicyAmounts">
       <Name>Knockout: Form 8962 Part IV allocation of policy amounts</Name>
       <Description>#88: Form 8962 (2026) draft, Created 4/21/26 (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf), PDF
@@ -288,9 +272,8 @@
       <Description>#88: 26 U.S.C. 36B(c)(3)(A)(iii), see /enrolledDuringIncomeBasedSpecialEnrollmentPeriod. Such a plan
         is not a qualified health plan, so its months are not coverage months; separating those months from the rest of
         the Form 1095-A is not supported. Fails closed: true on "yes" and true while the question is unanswered on a
-        return that needs Form 8962; complete false only on "no" or when Form 8962 is not needed (same
-        /needsToFileForm8962
-        guard as /flowKnockoutForm8962WithoutTy2026Template).</Description>
+        return that needs Form 8962; complete false only on "no" or when Form 8962 is not needed
+        (/form8962NeededOrUnresolved is false).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -1771,8 +1754,9 @@
     </Fact>
 
     <Fact path="/isHouseholdIncome401PercentOfPovertyLine">
-      <!-- Not currently used, but theoretically used for line 6 of Form 8962 -->
-      <Description>Whether line 5 on Form 8962 has the value 401</Description>
+      <Name>Form 8962 line 6 Yes</Name>
+      <Description>#88: Form 8962 (2026) draft, PDF p. 1, line 6: "Did you enter 401% on line 5? ... Yes. You are not
+        eligible to take the PTC." True when line 5 is 401. The No box is /form8962Line6No.</Description>
       <Derived>
         <Equal>
           <Left>
@@ -1782,6 +1766,18 @@
             <Int>401</Int>
           </Right>
         </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8962Line6No">
+      <Name>Form 8962 line 6 No</Name>
+      <Description>#88: Form 8962 (2026) draft, PDF p. 1, line 6: "Did you enter 401% on line 5? No. Continue to line 7."
+        True when line 5 is not 401. The Yes box is /isHouseholdIncome401PercentOfPovertyLine. Complete whenever line 5
+        is complete; false when line 5 is 401.</Description>
+      <Derived>
+        <Not>
+          <Dependency path="/isHouseholdIncome401PercentOfPovertyLine" />
+        </Not>
       </Derived>
     </Fact>
 

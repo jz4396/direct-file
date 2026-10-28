@@ -52,9 +52,7 @@ class PrintRefusingKnockoutsTest {
     static final String PA_SCHEDULE_B_KNOCKOUT = "/flowKnockoutPaScheduleB";
     static final String PA_SCHEDULE_D_KNOCKOUT = "/flowKnockoutPaScheduleD";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
-    static final String FORM_8962_TEMPLATE_KNOCKOUT = "/flowKnockoutForm8962WithoutTy2026Template";
     static final List<String> PTC_KNOCKOUTS = List.of(
-            FORM_8962_TEMPLATE_KNOCKOUT,
             "/flowKnockoutPtcAllocationOfPolicyAmounts",
             "/flowKnockoutPtcAlternativeCalculationForYearOfMarriage",
             "/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl",
@@ -171,7 +169,7 @@ class PrintRefusingKnockoutsTest {
                 PA_SCHEDULE_B_KNOCKOUT, // PA Schedule B
                 PA_SCHEDULE_D_KNOCKOUT, // PA Schedule D
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
-        expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed
+        expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed (the template itself prints)
         expected.addAll(List.of(
                 INTEREST_SUBTRACTION_KNOCKOUT, // Schedule B line 1 subtraction not computed
                 SCHEDULE_B_PART_III_PRINT_REFUSE, // Schedule B Part III blank or Yes; not /flowIsKnockedOut
@@ -337,9 +335,9 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * A Form 1095-A return is refused by the Form 8962 template knockout alone; a "yes" to the income-based special
-     * enrollment period question (26 U.S.C. 36B(c)(3)(A)(iii)) adds its own stop. Without Form 8962 every one is
-     * complete and false.
+     * A Form 1095-A return that Form 8962 computes is not refused for lack of a template. A "yes" to the income-based
+     * special enrollment period question (26 U.S.C. 36B(c)(3)(A)(iii)), or leaving it unanswered, still refuses. A
+     * "no" clears that stop. Without Form 8962 every PTC knockout is complete and false.
      */
     @Test
     void form8962StopsRefuseThePrint() throws Exception {
@@ -354,23 +352,20 @@ class PrintRefusingKnockoutsTest {
         assertTrue(computed.get(SEP_KNOCKOUT).complete());
         assertEquals(Boolean.TRUE, computed.get(SEP_KNOCKOUT).get());
         assertEquals(Boolean.TRUE, computed.get("/flowIsKnockedOut").get(), "submission is blocked too");
-        assertEquals(
-                List.of(FORM_8962_TEMPLATE_KNOCKOUT, SEP_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(computed));
+        assertEquals(List.of(SEP_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(computed));
         FactTypeWithItem yes = mapper.readValue(
                 "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}", FactTypeWithItem.class);
         FactTypeWithItem no = mapper.readValue(
                 "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}", FactTypeWithItem.class);
         Map<String, FactTypeWithItem> answeredYes = new HashMap<>(facts);
         answeredYes.put(SEP_ANSWER, yes);
-        assertEquals(
-                List.of(FORM_8962_TEMPLATE_KNOCKOUT, SEP_KNOCKOUT),
-                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(answeredYes)));
-        // Only a "no" clears it; the template stop remains.
+        assertEquals(List.of(SEP_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(answeredYes)));
+        // Only a "no" clears it. The return can then print Form 8962.
         Map<String, FactTypeWithItem> answeredNo = new HashMap<>(facts);
         answeredNo.put(SEP_ANSWER, no);
         Graph cleared = fgs.getGraph(answeredNo);
         assertEquals(Boolean.FALSE, cleared.get(SEP_KNOCKOUT).get());
-        assertEquals(List.of(FORM_8962_TEMPLATE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(cleared));
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(cleared));
 
         Map<String, FactTypeWithItem> w2Only = scenarioFacts(mapper, PTC_NONE_SCENARIO);
         Graph none = fgs.getGraph(w2Only);
@@ -381,11 +376,10 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * A Form 1095-A return with $4,500 of advance payments whose /needsToFileForm8962 is unresolved (the dependent
-     * answer or the qualifying-plan answer missing) must not print: its Schedule 2 line 1a would read $0 instead of the
-     * Form 8962 line 27 excess (Form 8962 (2026) draft, PDF p. 1, line 27: "Enter the difference here and on Schedule 2
-     * (Form 1040), line 1a"). The same holds for a qualifying-plan yes whose only Form 1095-A was deleted. The guard
-     * /form8962NeededOrUnresolved fails closed, so the template knockout refuses.
+     * A Form 1095-A return whose /needsToFileForm8962 is unresolved, or whose only Form 1095-A was deleted after a
+     * qualifying-plan yes, still leaves the income-based special enrollment period question unanswered. That stop
+     * fails closed (26 U.S.C. 36B(c)(3)(A)(iii)) through /form8962NeededOrUnresolved, so the package is not printed
+     * with Schedule 2 line 1a at $0 in place of Form 8962 line 27 (Form 8962 (2026) draft, PDF p. 1, line 27).
      */
     @Test
     void unresolvedForm8962ReturnIsRefusedByThePrintPath() throws Exception {
@@ -406,7 +400,7 @@ class PrintRefusingKnockoutsTest {
                         "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
                         FactTypeWithItem.class));
         // The qualifying-plan answer is yes but the only Form 1095-A was deleted: /needsToFileForm8962 is a definite
-        // no, and the guard still refuses.
+        // no, and the unanswered special-enrollment question still refuses.
         Map<String, Map<String, FactTypeWithItem>> cases = new LinkedHashMap<>();
         for (String missing : List.of("/canBeClaimed", "/writableHasPtcQualifyingPlan")) {
             Map<String, FactTypeWithItem> unresolved = new HashMap<>(facts);
@@ -425,11 +419,12 @@ class PrintRefusingKnockoutsTest {
             } else {
                 assertFalse(needs.complete(), missing);
             }
-            Result<Object> template = graph.get(FORM_8962_TEMPLATE_KNOCKOUT);
-            assertTrue(template.complete() && Boolean.TRUE.equals(template.get()), missing);
+            assertEquals(Boolean.TRUE, graph.get("/form8962NeededOrUnresolved").get(), missing);
+            assertEquals(Boolean.TRUE, graph.get(SEP_KNOCKOUT).get(), missing);
             assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get(), missing);
             List<String> refused = PrintRefusingKnockouts.refusingPaths(graph);
-            assertTrue(refused.contains(FORM_8962_TEMPLATE_KNOCKOUT), missing + " " + refused);
+            assertTrue(refused.contains(SEP_KNOCKOUT), missing + " " + refused);
+            assertFalse(refused.contains("/flowKnockoutForm8962WithoutTy2026Template"), missing);
             TaxReturn taxReturn = new TaxReturn();
             taxReturn.setTaxYear(2026);
             taxReturn.setFactsWithoutDirtyingEntity(unresolved);
@@ -676,9 +671,11 @@ class PrintRefusingKnockoutsTest {
 
     /**
      * Every backend scenario refuses exactly the knockouts its own facts call for, worked out here from the facts the
-     * knockouts read: Schedule EIC (/pdfIncludeScheduleEic), Form 8962 (/needsToFileForm8962, no TY2026 template) and
-     * Form 8995 (/form8995Required). Schedule C and Schedule 3-A print (#239): a business no longer refuses on its
-     * own, and Form 1040 line 27a, 28 or 29 above $0 attaches Schedule 3-A instead of refusing. None has a Form 8949
+     * knockouts read: Schedule EIC (/pdfIncludeScheduleEic) and Form 8995 (/form8995Required). Form 8962 prints when
+     * /needsToFileForm8962 is true (#88). A Form 8962 scenario that leaves the income-based special enrollment period
+     * question unanswered still refuses through that stop. Schedule C and Schedule 3-A print (#239): a business no
+     * longer refuses on its own, and Form 1040 line 27a, 28 or 29 above $0 attaches Schedule 3-A instead of refusing.
+     * None has a Form 8949
      * code Q row or a PA/FL part-year return, and each knockout is complete in each, so fail-closed refuses no clean
      * return. The code Q refusal through the real print path is
      * ScheduleDForm8949PdfSmokeTest#codeQReturnIsRefusedByThePrintPath. {@link #PTC_BELOW_100_SCENARIO} also has
@@ -712,7 +709,6 @@ class PrintRefusingKnockoutsTest {
             }
             Result<Object> form8962 = graph.get("/needsToFileForm8962");
             if (form8962.complete() && Boolean.TRUE.equals(form8962.get())) {
-                expected.add(FORM_8962_TEMPLATE_KNOCKOUT);
                 if (PTC_BELOW_100_SCENARIO.equals(file.getFilename())) {
                     expected.add("/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl");
                 }

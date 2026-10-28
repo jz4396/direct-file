@@ -161,6 +161,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS6251", 2),
             Map.entry("IRS8959", 1),
             Map.entry("IRS8960", 1),
+            Map.entry("IRS8962", 2),
             Map.entry("IRS1040S8812", 2),
             Map.entry("IRS2441", 2),
             Map.entry("IRS8880", 1),
@@ -191,7 +192,6 @@ class Ty2026PdfPackageTest {
                     "2026 draft template committed (ScheduleEicTy2026PdfSmokeTest), but an EIC return with a qualifying"
                             + " child is refused by /flowKnockoutScheduleEicWithoutTy2026Template (26 U.S.C."
                             + " 152(c)(4) tie-breaker). Schedule 3-A prints on the ACTC package (#239)."),
-            Map.entry("IRS8962", "2024 Form 8962 template only; no 2026 form committed"),
             Map.entry("FORM9000", "2021 Form 9000 template only (alternative media preference)"),
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
             Map.entry("IRS8862", "2024 Form 8862 template only; no 2026 form committed"),
@@ -446,6 +446,13 @@ class Ty2026PdfPackageTest {
         for (String s : List.of(FAMILY, SAVER, HSA)) {
             printed.addAll(renderFacts(scenarioFile(s), null, null).forms.keySet());
         }
+        // #88: ptc-annual-amounts-rounding files Form 8962. The scenario leaves the income-based special enrollment
+        // question unanswered, which refuses the print; "no" is the supported answer (26 U.S.C. 36B(c)(3)(A)(iii)).
+        Map<String, FactTypeWithItem> ptc = scenarioFile(PrintRefusingKnockoutsTest.PTC_SCENARIO);
+        ptc.put(
+                PrintRefusingKnockoutsTest.SEP_ANSWER,
+                MAPPER.readValue(bool(false), FactTypeWithItem.class));
+        printed.addAll(renderFacts(ptc, null, null).forms.keySet());
         assertEquals(PAGES.keySet(), printed, "forms printed across the scenarios");
         Set<String> notPrinted = new TreeSet<>(templates.keySet());
         notPrinted.removeAll(printed);
