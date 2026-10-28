@@ -267,45 +267,6 @@ pdf/2024/IRS8862/es/f8862sp_accessible.pdf	topmostSubform[0].Page3[0].c3_5[0]	Bt
 pdf/2024/IRS8862/es/f8862sp_accessible.pdf	topmostSubform[0].Page3[0].c3_5[1]	Btn	19b. Estudiante 2. No.
 pdf/2024/IRS8862/es/f8862sp_accessible.pdf	topmostSubform[0].Page3[0].c3_6[0]	Btn	19b. Estudiante 3. Sí.
 pdf/2024/IRS8862/es/f8862sp_accessible.pdf	topmostSubform[0].Page3[0].c3_6[1]	Btn	19b. Estudiante 3. No.
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page1[0].f1_5[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page1[0].f1_95[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_1[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_2[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_3[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_4[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines30e-g[0].f2_5[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines30e-g[0].f2_6[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines30e-g[0].f2_7[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_8[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_9[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_10[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_11[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines31e-g[0].f2_12[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines31e-g[0].f2_13[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines31e-g[0].f2_14[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_15[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_16[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_17[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_18[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines32e-g[0].f2_19[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines32e-g[0].f2_20[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines32e-g[0].f2_21[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_22[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_23[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_24[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_25[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines33e-g[0].f2_26[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines33e-g[0].f2_27[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].Lines33e-g[0].f2_28[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_29[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_30[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_31[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_32[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_33[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_34[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_35[0]	Tx	
-pdf/2024/IRS8962/en/f8962.pdf	topmostSubform[0].Page2[0].f2_36[0]	Tx	
 pdf/2024/IRSW2/en/fw2.pdf	topmostSubform[0].CopyB[0].Col_Left[0].f2_04[0]	Tx	
 pdf/2024/IRSW2/en/fw2.pdf	topmostSubform[0].CopyB[0].Boxes15_ReadOrder[0].f2_31[0]	Tx	
 pdf/2024/IRSW2/en/fw2.pdf	topmostSubform[0].CopyB[0].Boxes15_ReadOrder[0].f2_32[0]	Tx	
@@ -1005,6 +966,46 @@ pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_32[0]	Tx	19b. H
 pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_33[0]	Tx	19c. Subtract line 19b from line 19a. If zero or less, enter 0.
 pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_34[0]	Tx	20. Enter the smaller of line 18c or line 19c.
 pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_35[0]	Tx	21. Net investment income tax for estates and trusts. Multiply line 20 b...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page1[0].f1_5[0]	Tx	2b. Enter the total of your dependents' modified A G I. See instructions...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	Part I I. Premium Tax Credit Claim and Reconciliation of Advance Payment...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_1[0]	Tx	Page 2. Part I V. Allocation of Policy Amounts. Complete the following i...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_2[0]	Tx	(b) S S N of other taxpayer.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_3[0]	Tx	(c) Allocation start month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_4[0]	Tx	(d) Allocation stop month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines30e-g[0].Line30e[0].f2_5[0]	Tx	Allocation percentage applied to monthly amounts. (e) Premium percentage...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines30e-g[0].Line30f[0].f2_6[0]	Tx	(f) S L C S P percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines30e-g[0].f2_7[0]	Tx	(g) Advance payment of the P T C percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_8[0]	Tx	Allocation 2. 31. (a) Policy number (Form 1095-A, line 2).
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_9[0]	Tx	(b) S S N of other taxpayer.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_10[0]	Tx	(c) Allocation start month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_11[0]	Tx	(d) Allocation stop month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines31e-g[0].Line31e[0].f2_12[0]	Tx	Allocation percentage applied to monthly amounts. (e) Premium percentage...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines31e-g[0].Line31f[0].f2_13[0]	Tx	(f) S L C S P percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines31e-g[0].f2_14[0]	Tx	(g) Advance payment of the P T C percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_15[0]	Tx	Allocation 3. 32. (a) Policy number (Form 1095-A, line 2).
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_16[0]	Tx	(b) S S N of other taxpayer.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_17[0]	Tx	(c) Allocation start month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_18[0]	Tx	(d) Allocation stop month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines32e-g[0].Line32e[0].f2_19[0]	Tx	Allocation percentage applied to monthly amounts. (e) Premium percentage...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines32e-g[0].Line32f[0].f2_20[0]	Tx	(f) S L C S P percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines32e-g[0].f2_21[0]	Tx	(g) Advance payment of the P T C percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_22[0]	Tx	Allocation 4. 33. (a) Policy number (Form 1095-A, line 2).
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_23[0]	Tx	(b) S S N of other taxpayer.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_24[0]	Tx	(c) Allocation start month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_25[0]	Tx	(d) Allocation stop month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines33e-g[0].Line33e[0].f2_26[0]	Tx	Allocation percentage applied to monthly amounts. (e) Premium percentage...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines33e-g[0].Line33f[0].f2_27[0]	Tx	(f) S L C S P percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].Lines33e-g[0].f2_28[0]	Tx	(g) Advance payment of the P T C percentage.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].c2_1[0]	Btn	34. Have you completed all policy amount allocations? Yes. Multiply the ...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].c2_1[1]	Btn	34. No. See the instructions to report additional policy amount allocati...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_29[0]	Tx	Part V. Alternative Calculation for Year of Marriage. Complete line(s) 3...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_30[0]	Tx	(b) Alternative monthly contribution amount.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_31[0]	Tx	(c) Alternative start month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_32[0]	Tx	(d) Alternative stop month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_33[0]	Tx	36. Alternative entries for your spouse's S S N. (a) Alternative family ...
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_34[0]	Tx	(b) Alternative monthly contribution amount.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_35[0]	Tx	(c) Alternative start month.
+pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_36[0]	Tx	(d) Alternative stop month.
 pdf/2026/PA40/en/2025_pa-40.pdf	Extension	Btn	Click on oval if an extension was filed for the return
 pdf/2026/PA40/en/2025_pa-40.pdf	Amended Return	Btn	Click on Oval if this is an Amended PA-40 Return
 pdf/2026/PA40/en/2025_pa-40.pdf	Final Return	Tx	Final Return. Indicate reason:

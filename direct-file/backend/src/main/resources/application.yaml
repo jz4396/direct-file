@@ -374,9 +374,9 @@ direct-file:
       - name: IRS8962
         year: 2026
         language-code: en
-        location: pdf/2024/IRS8962/en/f8962.pdf
+        location: pdf/2026/IRS8962/en/f8962--dft.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS8962/en/configuration.yml
+        configuration-location: pdf/2026/IRS8962/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: CTC_DEPENDENTS_STATEMENT

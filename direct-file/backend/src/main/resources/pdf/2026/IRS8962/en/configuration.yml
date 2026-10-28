@@ -1,0 +1,158 @@
+# #88: 2026 Form 8962, Premium Tax Credit (PTC). DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f8962--dft.pdf (early-release draft, "Created 4/21/26"), committed
+# byte-identical to irs.gov; SHA-256 5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35
+# (pinned in pdf/2026/draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Field names and line captions
+# come from this draft's AcroForm tooltips (pypdf). They are not the 2024 field names: the 2026 draft inserts line 2b
+# and line 6 checkboxes, so the annual row starts at f1_12 (2024: f1_13) and lines 24-27 are f1_90-f1_93 (2024:
+# f1_91-f1_94). When the final 2026 Form 8962 is released, re-download it, re-hash it and re-verify every field name
+# and line number here before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+# No 2026 Instructions for Form 8962 are posted (irs.gov/pub/irs-dft/i8962--dft.pdf is still the 2025 instructions).
+# No 2026 Spanish Form 8962 draft (f8962sp--dft.pdf is 404); this English draft is the template.
+#
+# Included when /needsToFileForm8962. Part IV (shared policy allocation) and Part V (alternative calculation for year
+# of marriage) are not computed: /flowKnockoutPtcAllocationOfPolicyAmounts and
+# /flowKnockoutPtcAlternativeCalculationForYearOfMarriage. Line 9 Yes is that case, so a printed form checks line 9 No.
+#
+# Not mapped, left blank (never a silent 0):
+#   2b  dependents' modified AGI. Household income here is the filer's MAGI (/householdIncome = /ptcMagi). No
+#       dependents' MAGI fact, so line 2b is not entered as $0.
+#   9 Yes  allocating policy amounts or the alternative calculation for year of marriage. Those returns are knocked
+#       out, so a printed form does not check Yes.
+#   28, 29  "Reserved for future use" (Rev. Proc. 2025-32 sec. 2.04: the 26 U.S.C. 36B(f)(2)(B) repayment limitation
+#       is removed). The 2024 map put the excess repayment on the old line 29. On this draft that amount is line 27
+#       (/netPtcAmountWhenNegative) and Schedule 2 line 1a (/lesserOfNetPtcAmountAndRepaymentLimitation). Do not
+#       write it on lines 28-29.
+#   Part IV lines 30-34 and Part V lines 35-36. The two knockouts above refuse the print, so those lines are not $0.
+# $0 amounts print blank (FactGraphService zero suppression) except where the form says "enter -0-": line 26
+# (/netPtcAmountWhenZeroOrPositive has <ExportZero />). Lines 12-23 stay blank when line 10 is Yes
+# (/ptcCanReportAnnualTotals); line 11 stays blank when line 10 is No.
+includeWhen: /needsToFileForm8962
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name shown on your return"
+      f1_2[0]: /primaryFiler/tin # "Your social security number"
+      c1_1[0]: /claimingMfsException # A "married filing separately" exception
+      f1_3[0]: /taxFamilySize # 1 "Tax family size"
+      f1_4[0]: /ptcMagi # 2a "Modified AGI"
+      # f1_5[0]: 2b dependents' modified AGI. Not computed; leave blank.
+      f1_6[0]: /householdIncome # 3 "Household income. Add the amounts on lines 2a and 2b"
+      Line4_ReadOrder[0]:
+        c1_2[0]: /federalPovertyLineLocationIsAlaska # 4a Alaska
+        c1_2[1]: /federalPovertyLineLocationIsHawaii # 4b Hawaii
+        c1_2[2]: /federalPovertyLineLocationIsOther # 4c Other 48 states and DC
+      f1_7[0]: /federalPovertyLevelThreshold # 4 amount
+      f1_8[0]: /householdIncomeAsPercent # 5 "Household income as a percentage of federal poverty line"
+      c1_3[0]: /form8962Line6No # 6 No. Continue to line 7
+      c1_3[1]: /isHouseholdIncome401PercentOfPovertyLine # 6 Yes. Not eligible to take the PTC
+      f1_9[0]: /formattedApplicableFigure # 7 "Applicable figure"
+      f1_10[0]: /ptcAnnualContributionAmount # 8a "Annual contribution amount"
+      f1_11[0]: /ptcMontlyContributionAmount # 8b "Monthly contribution amount"
+      # c1_4[0]: 9 Yes. Allocation or alternative calculation for year of marriage: knocked out.
+      c1_4[1]: /flowTrue # 9 No. Continue to line 10
+      c1_5[0]: /ptcCanReportAnnualTotals # 10 Yes. Continue to line 11
+      c1_5[1]: /needsToFileForm8962Monthly # 10 No. Continue to lines 12-23
+      Part2_Table1[0]:
+        BodyRow1[0]:
+          f1_12[0]: /totalPtcAnnualPremium # 11(a) annual enrollment premiums
+          f1_13[0]: /totalAnnualSlcspPremium # 11(b) annual applicable SLCSP premium
+          f1_14[0]: /submittedAnnualContributionAmountForAnnual # 11(c) annual contribution amount
+          f1_15[0]: /annualMaxPremiumAssitance # 11(d) annual maximum premium assistance
+          f1_16[0]: /annualPtcAllowed # 11(e) annual PTC allowed
+          f1_17[0]: /totalAnnualAptcAmount # 11(f) annual advance payment of PTC
+      Part2_Table2[0]:
+        BodyRow1[0]:
+          f1_18[0]: /monthlyPtcPremiumForJan # 12 January (a)
+          f1_19[0]: /monthlyPtcSlcspPremiumForJan # 12 (b)
+          f1_20[0]: /monthlyPtcContributionAmountForJan # 12 (c)
+          f1_21[0]: /monthlyPtcMaxPremiumAssitanceForJan # 12 (d)
+          f1_22[0]: /monthlyPtcAllowedForJan # 12 (e)
+          f1_23[0]: /monthlyAptcPremiumForJan # 12 (f)
+        BodyRow2[0]:
+          f1_24[0]: /monthlyPtcPremiumForFeb # 13 February (a)
+          f1_25[0]: /monthlyPtcSlcspPremiumForFeb
+          f1_26[0]: /monthlyPtcContributionAmountForFeb
+          f1_27[0]: /monthlyPtcMaxPremiumAssitanceForFeb
+          f1_28[0]: /monthlyPtcAllowedForFeb
+          f1_29[0]: /monthlyAptcPremiumForFeb
+        BodyRow3[0]:
+          f1_30[0]: /monthlyPtcPremiumForMar # 14 March (a)
+          f1_31[0]: /monthlyPtcSlcspPremiumForMar
+          f1_32[0]: /monthlyPtcContributionAmountForMar
+          f1_33[0]: /monthlyPtcMaxPremiumAssitanceForMar
+          f1_34[0]: /monthlyPtcAllowedForMar
+          f1_35[0]: /monthlyAptcPremiumForMar
+        BodyRow4[0]:
+          f1_36[0]: /monthlyPtcPremiumForApr # 15 April (a)
+          f1_37[0]: /monthlyPtcSlcspPremiumForApr
+          f1_38[0]: /monthlyPtcContributionAmountForApr
+          f1_39[0]: /monthlyPtcMaxPremiumAssitanceForApr
+          f1_40[0]: /monthlyPtcAllowedForApr
+          f1_41[0]: /monthlyAptcPremiumForApr
+        BodyRow5[0]:
+          f1_42[0]: /monthlyPtcPremiumForMay # 16 May (a)
+          f1_43[0]: /monthlyPtcSlcspPremiumForMay
+          f1_44[0]: /monthlyPtcContributionAmountForMay
+          f1_45[0]: /monthlyPtcMaxPremiumAssitanceForMay
+          f1_46[0]: /monthlyPtcAllowedForMay
+          f1_47[0]: /monthlyAptcPremiumForMay
+        BodyRow6[0]:
+          f1_48[0]: /monthlyPtcPremiumForJun # 17 June (a)
+          f1_49[0]: /monthlyPtcSlcspPremiumForJun
+          f1_50[0]: /monthlyPtcContributionAmountForJun
+          f1_51[0]: /monthlyPtcMaxPremiumAssitanceForJun
+          f1_52[0]: /monthlyPtcAllowedForJun
+          f1_53[0]: /monthlyAptcPremiumForJun
+        BodyRow7[0]:
+          f1_54[0]: /monthlyPtcPremiumForJul # 18 July (a)
+          f1_55[0]: /monthlyPtcSlcspPremiumForJul
+          f1_56[0]: /monthlyPtcContributionAmountForJul
+          f1_57[0]: /monthlyPtcMaxPremiumAssitanceForJul
+          f1_58[0]: /monthlyPtcAllowedForJul
+          f1_59[0]: /monthlyAptcPremiumForJul
+        BodyRow8[0]:
+          f1_60[0]: /monthlyPtcPremiumForAug # 19 August (a)
+          f1_61[0]: /monthlyPtcSlcspPremiumForAug
+          f1_62[0]: /monthlyPtcContributionAmountForAug
+          f1_63[0]: /monthlyPtcMaxPremiumAssitanceForAug
+          f1_64[0]: /monthlyPtcAllowedForAug
+          f1_65[0]: /monthlyAptcPremiumForAug
+        BodyRow9[0]:
+          f1_66[0]: /monthlyPtcPremiumForSep # 20 September (a)
+          f1_67[0]: /monthlyPtcSlcspPremiumForSep
+          f1_68[0]: /monthlyPtcContributionAmountForSep
+          f1_69[0]: /monthlyPtcMaxPremiumAssitanceForSep
+          f1_70[0]: /monthlyPtcAllowedForSep
+          f1_71[0]: /monthlyAptcPremiumForSep
+        BodyRow10[0]:
+          f1_72[0]: /monthlyPtcPremiumForOct # 21 October (a)
+          f1_73[0]: /monthlyPtcSlcspPremiumForOct
+          f1_74[0]: /monthlyPtcContributionAmountForOct
+          f1_75[0]: /monthlyPtcMaxPremiumAssitanceForOct
+          f1_76[0]: /monthlyPtcAllowedForOct
+          f1_77[0]: /monthlyAptcPremiumForOct
+        BodyRow11[0]:
+          f1_78[0]: /monthlyPtcPremiumForNov # 22 November (a)
+          f1_79[0]: /monthlyPtcSlcspPremiumForNov
+          f1_80[0]: /monthlyPtcContributionAmountForNov
+          f1_81[0]: /monthlyPtcMaxPremiumAssitanceForNov
+          f1_82[0]: /monthlyPtcAllowedForNov
+          f1_83[0]: /monthlyAptcPremiumForNov
+        BodyRow12[0]:
+          f1_84[0]: /monthlyPtcPremiumForDec # 23 December (a)
+          f1_85[0]: /monthlyPtcSlcspPremiumForDec
+          f1_86[0]: /monthlyPtcContributionAmountForDec
+          f1_87[0]: /monthlyPtcMaxPremiumAssitanceForDec
+          f1_88[0]: /monthlyPtcAllowedForDec
+          f1_89[0]: /monthlyAptcPremiumForDec
+      f1_90[0]: /totalPtcAmountAllowed # 24 "Total PTC"
+      f1_91[0]: /totalAptcAmountTaken # 25 "Advance payment of PTC"
+      f1_92[0]: /netPtcAmountWhenZeroOrPositive # 26 "Net PTC" ... Schedule 3 (Form 1040), line 9
+      f1_93[0]: /netPtcAmountWhenNegative # 27 "Excess advance payment of PTC" ... Schedule 2 (Form 1040), line 1a
+      # f1_94[0]: 28 "Reserved for future use"
+      # f1_95[0]: 29 "Reserved for future use"
+    # Page 2 Part IV (lines 30-34) and Part V (lines 35-36) are not mapped. See the knockouts above.
