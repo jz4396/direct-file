@@ -84,6 +84,11 @@ const knockouts = [
 const expectNoPtcKnockout = (g: ReturnType<typeof fg>) => {
   for (const k of knockouts) expect(val(g, k), k).toBe(`false`);
 };
+/** True only when /flowIsKnockedOut is complete and true. An incomplete result is not a stop. */
+const knockedOut = (g: ReturnType<typeof fg>) => {
+  const r = raw(g, `/flowIsKnockedOut`);
+  return r.complete && r.get.toString() === `true`;
+};
 const business = `88b00000-0000-4000-8000-000000000001`;
 
 describe(`Form 8962 (2026) golden scenarios`, () => {
@@ -385,7 +390,7 @@ describe(`Form 8962 (2026) knockouts`, () => {
       // The missing-template stop is gone. "No" on the special enrollment period question stays false, so this
       // unresolved return is not knocked out. Leaving that question unanswered still fails closed.
       expect(val(g, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`), missing).toBe(`false`);
-      expect(val(g, `/flowIsKnockedOut`), missing).toBe(`false`);
+      expect(knockedOut(g), missing).toBe(false);
       const sepOpen = fg(
         Object.fromEntries(
           Object.entries(without(missing)).filter(
@@ -417,7 +422,7 @@ describe(`Form 8962 (2026) knockouts`, () => {
       expect(val(g, `/writableHasPtcQualifyingPlan`)).toBe(`true`);
       expect(val(g, `/needsToFileForm8962`), `${advance}`).toBe(`false`);
       expect(val(g, `/form8962NeededOrUnresolved`), `${advance}`).toBe(`true`);
-      expect(val(g, `/flowIsKnockedOut`), `${advance}`).toBe(`false`);
+      expect(knockedOut(g), `${advance}`).toBe(false);
     }
   });
 
@@ -458,7 +463,9 @@ describe(`Form 8962 (2026) knockouts`, () => {
     expect(val(g, `/needsToFileForm8962`)).toBe(`true`);
     expect(val(g, `/isHouseholdIncome401PercentOfPovertyLine`)).toBe(`false`);
     expect(val(g, `/form8962Line6No`)).toBe(`true`);
-    expect(val(g, `/flowIsKnockedOut`)).toBe(`false`);
+    // This fixture leaves unrelated interview questions unanswered, so /flowIsKnockedOut stays incomplete.
+    // Filing Form 8962 is not what makes it true.
+    expect(knockedOut(g)).toBe(false);
     const over = fg(ptcReturn(62800, 5000, 6000, 3000));
     expect(val(over, `/isHouseholdIncome401PercentOfPovertyLine`)).toBe(`true`);
     expect(val(over, `/form8962Line6No`)).toBe(`false`);

@@ -202,11 +202,12 @@ class PrintRefusingKnockoutsTest {
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
-        // #239 drops the Schedule C and Schedule 3-A template knockouts. Schedule B Part III is
+        // #239 drops the Schedule C and Schedule 3-A template knockouts. #88 drops the Form 8962 template
+        // knockout now that pdf/2026/IRS8962 prints. Schedule B Part III is
         // /flowPrintRefuseScheduleBPartIII (one path). An unanswered Part III refuses the print and does not
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
-        assertEquals(47, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(46, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
