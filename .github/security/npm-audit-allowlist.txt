@@ -1,0 +1,29 @@
+# High and critical advisories from `npm audit --audit-level=high`.
+# The dependency-audit job fails if this set and the scan differ.
+# Columns: project, package, severity, advisory ids.
+direct-file/df-client	@remix-run/router	high	1112052
+direct-file/df-client	@vitest/coverage-v8	critical	via:vitest
+direct-file/df-client	@vitest/ui	critical	via:vitest
+direct-file/df-client	brace-expansion	high	1123896,1123897,1130588,1130589,1130736,1130737,1240104,1240105,1240108,1240109
+direct-file/df-client	browserslist	high	1153171,1153172
+direct-file/df-client	fast-uri	high	1124064,1130720,1145559,1153168,1158524,1158530,1204921,1239943
+direct-file/df-client	fast-xml-parser	critical	1113567,1113570,1115338
+direct-file/df-client	flatted	high	1114526,1241196
+direct-file/df-client	happy-dom	critical	1108946,1115611,1115698
+direct-file/df-client	immutable	high	1117067,1164796,1224658
+direct-file/df-client	js-yaml	high	1123911,1138115,1193727
+direct-file/df-client	lodash	high	1115806
+direct-file/df-client	minimatch	high	1113459,1113461,1113465,1113538,1113540,1113544,1113546,1113548,1113552
+direct-file/df-client	nanoid	high	1138811,1139427,1153189
+direct-file/df-client	picomatch	high	1115552
+direct-file/df-client	postcss	high	1124252,1139510
+direct-file/df-client	react-router	high	via:@remix-run/router
+direct-file/df-client	react-router-dom	high	via:@remix-run/router,via:react-router
+direct-file/df-client	rollup	high	1113515
+direct-file/df-client	source-map-js	high	1241209
+direct-file/df-client	tinypool	critical	1241260,1241261
+direct-file/df-client	tmp	high	1120654
+direct-file/df-client	vite	high	1242658,via:esbuild
+direct-file/df-client	vitest	critical	1139528,via:@vitest/ui,via:tinypool
+direct-file/df-client	zod	high	1243066
+direct-file/df-client/cloudflare-pages	undici	high	1243113,1243473,1243475,1243478
