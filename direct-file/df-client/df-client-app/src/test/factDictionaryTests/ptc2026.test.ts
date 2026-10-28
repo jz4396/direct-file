@@ -75,6 +75,7 @@ const val = (g: ReturnType<typeof fg>, path: string) => {
   return r.get.toString();
 };
 const knockouts = [
+  `/flowKnockoutForm8962NeededOrUnresolved`,
   `/flowKnockoutPtcAllocationOfPolicyAmounts`,
   `/flowKnockoutPtcAlternativeCalculationForYearOfMarriage`,
   `/flowKnockoutPtcSelfEmployedHealthInsurance`,
@@ -372,25 +373,26 @@ describe(`Form 8962 (2026) knockouts`, () => {
     ).toBe(`false`);
   });
 
-  it(`unresolved /needsToFileForm8962 does not stop once the other PTC answers are no`, ({ task }) => {
+  it(`unresolved /needsToFileForm8962 refuses even when the other PTC answers are no`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/form8962NeededOrUnresolved`,
+      `/flowKnockoutForm8962NeededOrUnresolved`,
       `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
-      `/form8962Line6No`,
     ];
     // $4,500 of advance payments: answered, Schedule 2 line 1a is the $566 excess (Form 8962 (2026) draft line 27).
     const answered = ptcReturn(31300, 5000, 6000, 4500) as Record<string, unknown>;
     expect(val(fg(answered), `/lesserOfNetPtcAmountAndRepaymentLimitation`)).toBe(`566.00`);
-    expect(val(fg(answered), `/form8962Line6No`)).toBe(`true`);
+    expect(val(fg(answered), `/flowKnockoutForm8962NeededOrUnresolved`)).toBe(`false`);
     const without = (key: string) => Object.fromEntries(Object.entries(answered).filter(([k]) => k !== key));
     for (const missing of [`/filers/#${primaryFilerId}/canBeClaimed`, `/writableHasPtcQualifyingPlan`]) {
       const g = fg(without(missing));
       expect(raw(g, `/needsToFileForm8962`).complete, missing).toBe(false);
       expect(val(g, `/form8962NeededOrUnresolved`), missing).toBe(`true`);
-      // The missing-template stop is gone. "No" on the special enrollment period question stays false, so this
-      // unresolved return is not knocked out. Leaving that question unanswered still fails closed.
+      // "No" on the special enrollment period question stays false. The unresolved Form 8962 stop still refuses,
+      // so Schedule 2 line 1a is not printed blank.
       expect(val(g, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`), missing).toBe(`false`);
-      expect(knockedOut(g), missing).toBe(false);
+      expect(val(g, `/flowKnockoutForm8962NeededOrUnresolved`), missing).toBe(`true`);
+      expect(val(g, `/flowIsKnockedOut`), missing).toBe(`true`);
       const sepOpen = fg(
         Object.fromEntries(
           Object.entries(without(missing)).filter(
@@ -399,16 +401,19 @@ describe(`Form 8962 (2026) knockouts`, () => {
         )
       );
       expect(val(sepOpen, `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`), missing).toBe(`true`);
+      expect(val(sepOpen, `/flowKnockoutForm8962NeededOrUnresolved`), missing).toBe(`true`);
       expect(val(sepOpen, `/flowIsKnockedOut`), missing).toBe(`true`);
     }
   });
 
-  it(`qualifying plan yes with an empty Form 1095-A list does not stop when the other PTC answers are no`, ({
-    task,
-  }) => {
-    task.meta.testedFactPaths = [`/form8962NeededOrUnresolved`, `/needsToFileForm8962`];
-    // The only 1095-A deleted: /needsToFileForm8962 reads a definite no from the empty collection. The guard stays
-    // true for the other PTC knockouts, and none of those knockouts apply.
+  it(`qualifying plan yes with an empty Form 1095-A list refuses the print`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8962NeededOrUnresolved`,
+      `/needsToFileForm8962`,
+      `/flowKnockoutForm8962NeededOrUnresolved`,
+    ];
+    // The only 1095-A deleted: /needsToFileForm8962 reads a definite no from the empty collection. Advance payments
+    // still have to be reconciled (Form 8962 (2026) draft, PDF p. 1, line 27), so the return stops.
     for (const advance of [true, false]) {
       const emptied = Object.fromEntries(
         Object.entries(ptcReturn(31300, 5000, 6000, 4500)).filter(([k]) => !k.startsWith(`/1095As/`))
@@ -422,7 +427,8 @@ describe(`Form 8962 (2026) knockouts`, () => {
       expect(val(g, `/writableHasPtcQualifyingPlan`)).toBe(`true`);
       expect(val(g, `/needsToFileForm8962`), `${advance}`).toBe(`false`);
       expect(val(g, `/form8962NeededOrUnresolved`), `${advance}`).toBe(`true`);
-      expect(knockedOut(g), `${advance}`).toBe(false);
+      expect(val(g, `/flowKnockoutForm8962NeededOrUnresolved`), `${advance}`).toBe(`true`);
+      expect(val(g, `/flowIsKnockedOut`), `${advance}`).toBe(`true`);
     }
   });
 

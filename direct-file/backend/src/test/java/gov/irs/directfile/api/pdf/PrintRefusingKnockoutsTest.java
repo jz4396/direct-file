@@ -52,7 +52,9 @@ class PrintRefusingKnockoutsTest {
     static final String PA_SCHEDULE_B_KNOCKOUT = "/flowKnockoutPaScheduleB";
     static final String PA_SCHEDULE_D_KNOCKOUT = "/flowKnockoutPaScheduleD";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
+    static final String FORM_8962_UNRESOLVED_KNOCKOUT = "/flowKnockoutForm8962NeededOrUnresolved";
     static final List<String> PTC_KNOCKOUTS = List.of(
+            FORM_8962_UNRESOLVED_KNOCKOUT,
             "/flowKnockoutPtcAllocationOfPolicyAmounts",
             "/flowKnockoutPtcAlternativeCalculationForYearOfMarriage",
             "/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl",
@@ -169,7 +171,7 @@ class PrintRefusingKnockoutsTest {
                 PA_SCHEDULE_B_KNOCKOUT, // PA Schedule B
                 PA_SCHEDULE_D_KNOCKOUT, // PA Schedule D
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
-        expected.addAll(PTC_KNOCKOUTS); // Form 8962 cases not computed (the template itself prints)
+        expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
                 INTEREST_SUBTRACTION_KNOCKOUT, // Schedule B line 1 subtraction not computed
                 SCHEDULE_B_PART_III_PRINT_REFUSE, // Schedule B Part III blank or Yes; not /flowIsKnockedOut
@@ -202,12 +204,12 @@ class PrintRefusingKnockoutsTest {
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
-        // #239 drops the Schedule C and Schedule 3-A template knockouts. #88 drops the Form 8962 template
-        // knockout now that pdf/2026/IRS8962 prints. Schedule B Part III is
+        // #239 drops the Schedule C and Schedule 3-A template knockouts. #88 prints pdf/2026/IRS8962 and keeps
+        // /flowKnockoutForm8962NeededOrUnresolved when /needsToFileForm8962 is not complete true. Schedule B Part III is
         // /flowPrintRefuseScheduleBPartIII (one path). An unanswered Part III refuses the print and does not
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
-        assertEquals(46, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(47, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -378,9 +380,10 @@ class PrintRefusingKnockoutsTest {
 
     /**
      * A Form 1095-A return whose /needsToFileForm8962 is unresolved, or whose only Form 1095-A was deleted after a
-     * qualifying-plan yes, still leaves the income-based special enrollment period question unanswered. That stop
-     * fails closed (26 U.S.C. 36B(c)(3)(A)(iii)) through /form8962NeededOrUnresolved, so the package is not printed
-     * with Schedule 2 line 1a at $0 in place of Form 8962 line 27 (Form 8962 (2026) draft, PDF p. 1, line 27).
+     * qualifying-plan yes, refuses even when the income-based special enrollment period answer is no.
+     * /flowKnockoutForm8962NeededOrUnresolved is true because /form8962NeededOrUnresolved is true and
+     * /needsToFileForm8962 is not complete true, so Schedule 2 line 1a is not printed blank in place of Form 8962
+     * line 27 (Form 8962 (2026) draft, PDF p. 1, line 27).
      */
     @Test
     void unresolvedForm8962ReturnIsRefusedByThePrintPath() throws Exception {
@@ -388,6 +391,9 @@ class PrintRefusingKnockoutsTest {
         PdfService pdfService = CreditFormsTy2026PdfSmokeTest.pdfService(fgs);
         ObjectMapper mapper = new ObjectMapper();
         Map<String, FactTypeWithItem> facts = scenarioFacts(mapper, PTC_SCENARIO);
+        FactTypeWithItem sepNo = mapper.readValue(
+                "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":false}", FactTypeWithItem.class);
+        facts.put(SEP_ANSWER, sepNo);
         Map<String, FactTypeWithItem> emptied = new HashMap<>(facts);
         emptied.keySet().removeIf(k -> k.startsWith("/1095As/"));
         emptied.put(
@@ -401,7 +407,7 @@ class PrintRefusingKnockoutsTest {
                         "{\"$type\":\"gov.irs.factgraph.persisters.BooleanWrapper\",\"item\":true}",
                         FactTypeWithItem.class));
         // The qualifying-plan answer is yes but the only Form 1095-A was deleted: /needsToFileForm8962 is a definite
-        // no, and the unanswered special-enrollment question still refuses.
+        // no. "No" on the special enrollment period question does not clear the unresolved stop.
         Map<String, Map<String, FactTypeWithItem>> cases = new LinkedHashMap<>();
         for (String missing : List.of("/canBeClaimed", "/writableHasPtcQualifyingPlan")) {
             Map<String, FactTypeWithItem> unresolved = new HashMap<>(facts);
@@ -421,10 +427,11 @@ class PrintRefusingKnockoutsTest {
                 assertFalse(needs.complete(), missing);
             }
             assertEquals(Boolean.TRUE, graph.get("/form8962NeededOrUnresolved").get(), missing);
-            assertEquals(Boolean.TRUE, graph.get(SEP_KNOCKOUT).get(), missing);
+            assertEquals(Boolean.TRUE, graph.get(FORM_8962_UNRESOLVED_KNOCKOUT).get(), missing);
+            assertEquals(Boolean.FALSE, graph.get(SEP_KNOCKOUT).get(), missing);
             assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get(), missing);
             List<String> refused = PrintRefusingKnockouts.refusingPaths(graph);
-            assertTrue(refused.contains(SEP_KNOCKOUT), missing + " " + refused);
+            assertTrue(refused.contains(FORM_8962_UNRESOLVED_KNOCKOUT), missing + " " + refused);
             assertFalse(refused.contains("/flowKnockoutForm8962WithoutTy2026Template"), missing);
             TaxReturn taxReturn = new TaxReturn();
             taxReturn.setTaxYear(2026);
@@ -709,7 +716,12 @@ class PrintRefusingKnockoutsTest {
                 withScheduleEic++;
             }
             Result<Object> form8962 = graph.get("/needsToFileForm8962");
-            if (form8962.complete() && Boolean.TRUE.equals(form8962.get())) {
+            boolean files8962 = form8962.complete() && Boolean.TRUE.equals(form8962.get());
+            Result<Object> guard = graph.get("/form8962NeededOrUnresolved");
+            if (guard.complete() && Boolean.TRUE.equals(guard.get()) && !files8962) {
+                expected.add(FORM_8962_UNRESOLVED_KNOCKOUT);
+            }
+            if (files8962) {
                 if (PTC_BELOW_100_SCENARIO.equals(file.getFilename())) {
                     expected.add("/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl");
                 }

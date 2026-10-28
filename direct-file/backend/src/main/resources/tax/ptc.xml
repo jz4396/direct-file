@@ -113,6 +113,34 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutForm8962NeededOrUnresolved">
+      <Name>Knockout: Form 8962 needed or unresolved, and not a complete yes</Name>
+      <Description>#88: Form 8962 (2026) draft, https://www.irs.gov/pub/irs-dft/f8962--dft.pdf, PDF p. 1, line 26
+        ("Net PTC") goes to Schedule 3 (Form 1040), line 9, and line 27 ("Excess advance payment of PTC") goes to
+        Schedule 2 (Form 1040), line 1a. Those are Form 1040's net premium tax credit and the excess advance PTC
+        repayment. True when /form8962NeededOrUnresolved is true and /needsToFileForm8962 is not a complete true:
+        /needsToFileForm8962 is still unresolved on a return with a Form 1095-A, or the qualifying-plan answer is yes
+        and every Form 1095-A was deleted (so /needsToFileForm8962 is a definite no from the empty collection). Either
+        case would print Schedule 2 line 1a and Form 1040 line 31 blank while advance payments still have to be
+        reconciled. Complete false when Form 8962 is not in play, and when /needsToFileForm8962 is complete true (the
+        2026 draft then prints). This is not the removed missing-template stop.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/form8962NeededOrUnresolved" />
+          <Not>
+            <All>
+              <IsComplete>
+                <Dependency path="/needsToFileForm8962" />
+              </IsComplete>
+              <Dependency path="/needsToFileForm8962" />
+            </All>
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutPtcAllocationOfPolicyAmounts">
       <Name>Knockout: Form 8962 Part IV allocation of policy amounts</Name>
       <Description>#88: Form 8962 (2026) draft, Created 4/21/26 (https://www.irs.gov/pub/irs-dft/f8962--dft.pdf), PDF
