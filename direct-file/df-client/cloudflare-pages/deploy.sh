@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Manual deploy of the static client-only build to Cloudflare Pages (free tier). See README.md.
+# Manual deploy of the static client-only build to Cloudflare Pages (free plan). See README.md.
+# Does not deploy Cloudflare Containers. checkNoContainers.mjs fails the run if the tree would.
 #
 #   CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... ./deploy.sh            # build, check, deploy
 #   ./deploy.sh --dry-run                                                     # build and check only, no credentials
@@ -69,6 +70,9 @@ fi
 
 # No wrangler usage metrics.
 export WRANGLER_SEND_METRICS=false
+# Same gate as build.sh, before any upload. Static Pages only.
+echo "==> Confirming Phase A does not use Cloudflare Containers"
+node "$HERE/checkNoContainers.mjs" "$HERE/../../.."
 # Build, check and install without the Cloudflare credentials in the environment.
 nocreds() { env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID -u CLOUDFLARE_API_KEY "$@"; }
 
