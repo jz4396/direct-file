@@ -29,9 +29,16 @@ import gov.irs.directfile.models.FactEvaluationResult;
  * <p>Form 8949 (2025) p. 1: "Check only one box. If more than one box applies for your short-term transactions,
  * complete a separate Form 8949, page 1, for each applicable box. If you have more short-term transactions than will
  * fit on this page for one or more of the boxes, complete as many forms with the same box checked as you need." (p. 2
- * says the same for long-term). Form 8949 instr. (2025) p. 3: "Check only one box on each Part I."; p. 4: "Check only
- * one box on each Part II." Form 8949 (2025) line 2: "Totals. Add the amounts in columns (d), (e), (g), and (h)
- * (subtract negative amounts). Enter each total here".
+ * says the same for long-term). The committed form has 11 rows in each Part (Row1 through Row11), so a twelfth
+ * same-box transaction starts another form. Form 8949 instr. (2025) p. 3: "Check only one box on each Part I."; p. 4:
+ * "Check only one box on each Part II." Form 8949 (2025) line 2: "Totals. Add the amounts in columns (d), (e), (g),
+ * and (h) (subtract negative amounts). Enter each total here".
+ *
+ * <p>Schedule D instr. (2025) p. D-1, What's New: "New codes to use for reporting digital asset transactions. Codes
+ * G, H, I, J, K, and L were added to lines 1b, 2, 3, 8b, 9, and 10 to represent the reporting of digital asset
+ * transactions." Boxes G/H/I (Part I) and J/K/L (Part II) are checked from printBoxG–printBoxL. Those facts are true
+ * only for that letter, so a digital-asset row does not check box A–F. Schedule D still totals G with A on line 1b
+ * (and H/2, I/3, J/8b, K/9, L/10) because the form line says "Box A or Box G" and the matching pairs.
  *
  * <p>The configuration maps row 1 only (Row1[0], fields f1_03..f1_10 / f2_03..f2_10). Row r of the committed PDF uses
  * the same columns with field numbers offset by 8 * (r - 1), up to Row11 (f1_83..f1_90 / f2_83..f2_90); verified with

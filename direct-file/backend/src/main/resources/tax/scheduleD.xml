@@ -1316,10 +1316,12 @@
     </Fact>
 
     <!-- #39: one print checkbox per Form 8949 box. The isBox* facts above group G-L with A-F for the Schedule D
-         totals, so they would check box A for a box G row. Form 8949 instr. (2025) p. 3: "Check only one box on each
-         Part I."; p. 4: "Check only one box on each Part II." Each printBox* fact is true only for its own box, so exactly
-         one box per Part is checked. G/H/I and J/K/L are the Form 1099-DA digital-asset boxes (Form 8949 (2025)
-         Part I and Part II box lists). -->
+         totals, so they would check box A for a box G row. Schedule D instr. (2025) p. D-1, What's New: "New codes
+         to use for reporting digital asset transactions. Codes G, H, I, J, K, and L were added to lines 1b, 2, 3, 8b,
+         9, and 10 to represent the reporting of digital asset transactions." Form 8949 instr. (2025) p. 3: "Check
+         only one box on each Part I."; p. 4: "Check only one box on each Part II." Each printBox* fact is true only
+         for its own box, so exactly one box per Part is checked. G/H/I and J/K/L are the Form 1099-DA digital-asset
+         boxes (Form 8949 (2025) Part I and Part II box lists). -->
     <Fact path="/form8949Transactions/*/printBoxA">
       <Description>Form 8949 box A checkbox; true only when this row's box is A.</Description>
       <Derived>

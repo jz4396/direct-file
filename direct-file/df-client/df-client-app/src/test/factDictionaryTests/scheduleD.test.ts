@@ -26,7 +26,7 @@ import {
 /**
  * Schedule D + Form 8949 — worked examples for TY2026.
  * Cites: Rev. Proc. 2025-32 §4.03 p.13; IRC §1211(b), §1212(b), §1222; Form 8949 instr. (2025) pp.3–4, p.11;
- * Schedule D instr. (2025) p.3, p.10, p.14; QDCG Tax Worksheet—Form 1040 instr. (2025) p.38.
+ * Schedule D instr. (2025) p. D-1 (codes G–L), p.3, p.10, p.14; QDCG Tax Worksheet—Form 1040 instr. (2025) p.38.
  */
 
 const tx1 = `a1111111-1111-4111-8111-111111111111`;
@@ -392,6 +392,43 @@ describe(`Schedule D / Form 8949 — digital-asset boxes G–L`, () => {
     expect(get(factGraph, `/scheduleDLine1b`)).toBe(`1000.00`);
     expect(get(factGraph, `/scheduleDLine8b`)).toBe(`4000.00`);
     expect(get(factGraph, `/scheduleDLine16`)).toBe(`5000.00`);
+  });
+
+  it(`Boxes H, I, K, and L total on Schedule D lines 2, 3, 9, and 10`, ({ task }) => {
+    // Schedule D instr. (2025) p. D-1, What's New: "Codes G, H, I, J, K, and L were added to lines 1b, 2, 3, 8b, 9,
+    // and 10". Line labels: line 2 Box B or H, line 3 Box C or I, line 9 Box E or K, line 10 Box F or L.
+    // Column (h) = (d) - (e) (Form 8949 instr. (2025) p. 11).
+    const h = `b3333333-3333-4333-8333-333333333333`;
+    const i = `b4444444-4444-4444-8444-444444444444`;
+    const k = `b5555555-5555-4555-8555-555555555555`;
+    const l = `b6666666-6666-4666-8666-666666666666`;
+    task.meta.testedFactPaths = [
+      `/scheduleDLine2`,
+      `/scheduleDLine3`,
+      `/scheduleDLine9`,
+      `/scheduleDLine10`,
+      `/scheduleDLine7`,
+      `/scheduleDLine15`,
+      `/scheduleDLine16`,
+    ];
+    const { factGraph } = setupFactGraph({
+      ...singleFilerData,
+      '/form8949Transactions': createCollectionWrapper([h, i, k, l]),
+      ...tx(h, { description: `ETH`, proceeds: `2000`, costBasis: `500`, box: `H`, holdingPeriod: `shortTerm` }),
+      ...tx(i, { description: `SOL`, proceeds: `800`, costBasis: `1000`, box: `I`, holdingPeriod: `shortTerm` }),
+      ...tx(k, { description: `ADA`, proceeds: `4000`, costBasis: `1000`, box: `K`, holdingPeriod: `longTerm` }),
+      ...tx(l, { description: `DOT`, proceeds: `700`, costBasis: `200`, box: `L`, holdingPeriod: `longTerm` }),
+      '/form8949TransactionsIsDone': createBooleanWrapper(true),
+    });
+    expect(get(factGraph, `/scheduleDLine1b`)).toBe(`0.00`);
+    expect(get(factGraph, `/scheduleDLine2`)).toBe(`1500.00`);
+    expect(get(factGraph, `/scheduleDLine3`)).toBe(`-200.00`);
+    expect(get(factGraph, `/scheduleDLine7`)).toBe(`1300.00`);
+    expect(get(factGraph, `/scheduleDLine8b`)).toBe(`0.00`);
+    expect(get(factGraph, `/scheduleDLine9`)).toBe(`3000.00`);
+    expect(get(factGraph, `/scheduleDLine10`)).toBe(`500.00`);
+    expect(get(factGraph, `/scheduleDLine15`)).toBe(`3500.00`);
+    expect(get(factGraph, `/scheduleDLine16`)).toBe(`4800.00`);
   });
 
   it(`Part II box with a short-term holding period blocks submission (IRC §1222)`, ({ task }) => {
