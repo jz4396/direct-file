@@ -1,6 +1,10 @@
 package gov.irs.directfile.api.pdf;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,14 +13,19 @@ import java.util.UUID;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.junit.jupiter.api.Test;
 
+import gov.irs.directfile.api.pdf.load.PdfConfiguration;
+import gov.irs.directfile.models.EvaluatedFactInfo;
 import gov.irs.directfile.models.FactEvaluationResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * #40: Form 8949 multi-row packing. One box per form (Form 8949 (2025) p. 1; instr. (2025) p. 3 / p. 4), up to 11
@@ -108,5 +117,122 @@ class Irs8949PdfFormTest {
                         String.format("topmostSubform[0].%s.Row1[0].f%s_03[0]", part[0], part[1]), 12)));
             }
         }
+    }
+
+    /**
+     * Schedule D instr. (2025) p. D-1, What's New: "New codes to use for reporting digital asset transactions. Codes
+     * G, H, I, J, K, and L were added to lines 1b, 2, 3, 8b, 9, and 10 to represent the reporting of digital asset
+     * transactions." Each code checks only its own Form 8949 box (Part I c1_1[0..5] = A, B, C, G, H, I; Part II
+     * c2_1[0..5] = D, E, F, J, K, L).
+     */
+    @Test
+    void digitalAssetBoxesFillOnlyTheirOwnCheckbox() throws Exception {
+        String[] partI = {"A", "B", "C", "G", "H", "I"};
+        String[] partII = {"D", "E", "F", "J", "K", "L"};
+        for (String box : new String[] {"G", "H", "I", "J", "K", "L"}) {
+            UUID id = new UUID(0, 1);
+            FactEvaluationResult facts = new FactEvaluationResult();
+            facts.put("/form8949Transactions", new EvaluatedFactInfo("java.util.List", List.of(id)));
+            facts.put("/form8949Transactions/#" + id + "/printBox" + box, Boolean.TRUE);
+            boolean shortTerm = "GHI".indexOf(box) >= 0;
+            String part = shortTerm ? "PartI" : "PartII";
+            String prefix = "/form8949Transactions/#" + id + "/print" + part;
+            facts.put(prefix + "Description", "0.5 BTC");
+            facts.put(prefix + "Proceeds", "3000.00");
+            facts.put(prefix + "CostBasis", "2000.00");
+            facts.put(prefix + "GainOrLoss", "1000.00");
+
+            List<PDDocument> docs = generate(facts);
+            try {
+                assertEquals(1, docs.size(), box);
+                PDAcroForm form = docs.get(0).getDocumentCatalog().getAcroForm();
+                assertCheckedBox(form, "Page1[0].c1_1", partI, shortTerm ? box : null);
+                assertCheckedBox(form, "Page2[0].c2_1", partII, shortTerm ? null : box);
+                String description = shortTerm
+                        ? "Page1[0].Table_Line1_Part1[0].Row1[0].f1_03[0]"
+                        : "Page2[0].Table_Line1_Part2[0].Row1[0].f2_03[0]";
+                assertEquals("0.5 BTC", text(form, description), box);
+                String line2 = shortTerm ? "Page1[0].f1_95[0]" : "Page2[0].f2_95[0]";
+                assertEquals("1000.00", text(form, line2), box + " line 2 (h)");
+                String otherLine2 = shortTerm ? "Page2[0].f2_95[0]" : "Page1[0].f1_95[0]";
+                assertEquals("", text(form, otherLine2), box + " other part line 2 stays blank");
+            } finally {
+                for (PDDocument doc : docs) {
+                    doc.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * Form 8949 (2025) p. 1: "If you have more short-term transactions than will fit on this page for one or more of
+     * the boxes, complete as many forms with the same box checked as you need." Each Part has 11 rows.
+     */
+    @Test
+    void twelveSameBoxRowsPackElevenThenOne() throws Exception {
+        List<UUID> ids = ids(12);
+        FactEvaluationResult facts = new FactEvaluationResult();
+        facts.put("/form8949Transactions", new EvaluatedFactInfo("java.util.List", ids));
+        for (int i = 0; i < ids.size(); i++) {
+            String prefix = "/form8949Transactions/#" + ids.get(i) + "/printPartI";
+            facts.put("/form8949Transactions/#" + ids.get(i) + "/printBoxG", Boolean.TRUE);
+            facts.put(prefix + "Description", String.format("row%02d", i + 1));
+            facts.put(prefix + "Proceeds", "10.00");
+            facts.put(prefix + "CostBasis", "4.00");
+            facts.put(prefix + "Adjustment", "1.00");
+            facts.put(prefix + "GainOrLoss", "7.00");
+        }
+        List<PDDocument> docs = generate(facts);
+        try {
+            assertEquals(2, docs.size());
+            PDAcroForm first = docs.get(0).getDocumentCatalog().getAcroForm();
+            String description = "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_03[0]";
+            String gain = "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_10[0]";
+            assertEquals("row01", first.getField(Irs8949PdfForm.rowFieldName(description, 1)).getValueAsString());
+            assertEquals("row11", first.getField(Irs8949PdfForm.rowFieldName(description, 11)).getValueAsString());
+            assertEquals("7.00", first.getField(Irs8949PdfForm.rowFieldName(gain, 11)).getValueAsString());
+            assertEquals("110.00", text(first, "Page1[0].f1_91[0]"), "11 rows x 10.00 proceeds");
+            assertEquals("44.00", text(first, "Page1[0].f1_92[0]"), "11 rows x 4.00 basis");
+            assertEquals("11.00", text(first, "Page1[0].f1_94[0]"), "11 rows x 1.00 adjustment");
+            assertEquals("77.00", text(first, "Page1[0].f1_95[0]"), "11 rows x 7.00 gain");
+            assertTrue(checked(first, "Page1[0].c1_1[3]"), "box G");
+            assertFalse(checked(first, "Page1[0].c1_1[0]"), "box A stays clear");
+
+            PDAcroForm second = docs.get(1).getDocumentCatalog().getAcroForm();
+            assertEquals("row12", second.getField(description).getValueAsString());
+            assertEquals("", second.getField(Irs8949PdfForm.rowFieldName(description, 2)).getValueAsString());
+            assertEquals("7.00", text(second, "Page1[0].f1_95[0]"));
+            assertTrue(checked(second, "Page1[0].c1_1[3]"), "second form still box G");
+        } finally {
+            for (PDDocument doc : docs) {
+                doc.close();
+            }
+        }
+    }
+
+    private static List<PDDocument> generate(FactEvaluationResult facts) throws Exception {
+        PdfConfiguration config;
+        try (InputStream in = new FileInputStream("src/main/resources/pdf/2026/IRS8949/en/configuration.yml")) {
+            config = PdfConfiguration.load(in);
+        }
+        byte[] template = Files.readAllBytes(Path.of(PDF));
+        return new Irs8949PdfForm("IRS8949").generateDocuments(facts, template, config, PdfLanguages.EN);
+    }
+
+    private static void assertCheckedBox(PDAcroForm form, String prefix, String[] boxes, String expected) {
+        for (int i = 0; i < boxes.length; i++) {
+            boolean on = boxes[i].equals(expected);
+            assertEquals(on, checked(form, prefix + "[" + i + "]"), prefix + " box " + boxes[i]);
+        }
+    }
+
+    private static boolean checked(PDAcroForm form, String name) {
+        PDField field = form.getField("topmostSubform[0]." + name);
+        assertTrue(field instanceof PDCheckBox, name);
+        return ((PDCheckBox) field).isChecked();
+    }
+
+    private static String text(PDAcroForm form, String name) throws Exception {
+        return form.getField("topmostSubform[0]." + name).getValueAsString();
     }
 }
