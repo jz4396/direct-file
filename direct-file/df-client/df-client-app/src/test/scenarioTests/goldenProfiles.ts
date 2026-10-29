@@ -1,8 +1,9 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
 // older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
-// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C) and profile G (married
-// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC).
+// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
+// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), and profile H
+// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -678,6 +679,50 @@ export const profileGWithW2s = (...forms: W2[]) => ({
   ...w2s(harper.ssn, ...forms),
 });
 
+/**
+ * Profile H: full-year Pennsylvania resident, single, standard deduction. One W-2, one Schedule E Part I
+ * residential rental (net income; no depreciation, personal use, substantial services, or per-property loss;
+ * not a section 162 trade or business), and one Form 1099-DIV. Ordinary dividends are over $1,500, so federal
+ * Schedule B Part II is required, and at or under $2,500, so PA Schedule B is not. Fixed identifiers: SSN
+ * 900-46-1009, W-2 id 13500000-0000-4000-8000-000000001101, 1099-DIV id
+ * 13500000-0000-4000-8000-000000001102. PA-40 line 6 stays $0: Schedule E income stops the return.
+ */
+const hayden: Person = { first: `Hayden`, last: `Example`, ssn: [`900`, `46`, `1009`], dob: `1988-03-15` };
+export const profileHDividendId = `13500000-0000-4000-8000-000000001102`;
+export const profileHW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001101`,
+  employer: `Example Payroll LLC`,
+  ein: [`00`, `0001101`],
+  box1: 48000,
+  box2: 5200,
+  box3: 48000,
+  // 6.2% x 48,000 (the wage base is $184,500). IRC §3101(a).
+  box4: 2976,
+  box5: 48000,
+  // 1.45% x 48,000; no 0.9% (this employer paid under $200,000, IRC §3102(f)(1)).
+  box6: 696,
+  box16: 48000,
+  box17: 1600,
+};
+export const profileHPaRentalDividends = {
+  ...single(hayden, { street: `123 Example St`, city: `Harrisburg`, zip: `17101`, state: `PA` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+  '/paSchoolDistrictCode': createStringWrapper(`22275`),
+  '/paHasExemptObligationDividends': createBooleanWrapper(false),
+  '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+  ...w2s(hayden.ssn, profileHW2),
+  ...qualifiedDividends(profileHDividendId, `Example Dividend Fund`, 1800, 1200),
+  '/hadScheduleEIncome': createBooleanWrapper(true),
+  '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
+  '/scheduleEHasPersonalUse': createBooleanWrapper(false),
+  '/scheduleEHasDepreciation': createBooleanWrapper(false),
+  '/scheduleEAnyPropertyLoss': createBooleanWrapper(false),
+  '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(false),
+  '/scheduleEWritableRents': createDollarWrapper(`15000`),
+  '/scheduleEWritableRoyalties': createDollarWrapper(`0`),
+  '/scheduleEWritableExpenses': createDollarWrapper(`3000`),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -692,4 +737,5 @@ export const goldenProfiles = {
   profileEPaToFlAmtDividends,
   profileFPaAmtScheduleC,
   profileGMfjTwoChildren,
+  profileHPaRentalDividends,
 };

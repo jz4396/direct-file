@@ -44,6 +44,7 @@ direct-file/df-client/package-lock.json	GHSA-4x5r-pxfx-6jf8	npm	@babel/core	7.23
 direct-file/df-client/package-lock.json	GHSA-52cp-r559-cp3m	npm	js-yaml	4.1.0
 direct-file/df-client/package-lock.json	GHSA-52f5-9888-hmc6	npm	tmp	0.2.1
 direct-file/df-client/package-lock.json	GHSA-587h-7wmj-h5pm	npm	vite	5.4.15
+direct-file/df-client/package-lock.json	GHSA-5fpq-26gf-qwcr	npm	happy-dom	15.10.2
 direct-file/df-client/package-lock.json	GHSA-5gmw-xhrv-c9v3	npm	tinypool	0.8.4
 direct-file/df-client/package-lock.json	GHSA-5p4m-2wfm-xmqj	npm	js-yaml	4.1.0
 direct-file/df-client/package-lock.json	GHSA-5xrq-8626-4rwp	npm	vitest	1.6.1
@@ -70,6 +71,7 @@ direct-file/df-client/package-lock.json	GHSA-9jcx-v3wj-wh4m	npm	react-router	6.2
 direct-file/df-client/package-lock.json	GHSA-9jrq-w75r-8gcw	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-c2c7-rcm5-vvqj	npm	picomatch	2.3.1
 direct-file/df-client/package-lock.json	GHSA-c83g-rgw3-j3cx	npm	browserslist	4.24.2
+direct-file/df-client/package-lock.json	GHSA-c8p4-j97h-3vg8	npm	happy-dom	15.10.2
 direct-file/df-client/package-lock.json	GHSA-f23m-r3pf-42rh	npm	lodash	4.17.21
 direct-file/df-client/package-lock.json	GHSA-f65p-4m7j-42xc	npm	fast-uri	3.0.3
 direct-file/df-client/package-lock.json	GHSA-f886-m6hf-6m8v	npm	brace-expansion	1.1.11
