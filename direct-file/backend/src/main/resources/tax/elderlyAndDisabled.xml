@@ -1381,9 +1381,10 @@
     </Fact>
 
     <Fact path="/edcHalfMagi">
-      <Description>1040 Schedule R line 17: Half of the EDC modified AGI</Description>
+      <Description>1040 Schedule R line 17: Half of the EDC modified AGI. IRC §22(d): the section 22 amount is reduced
+        by one-half of the excess of adjusted gross income over the initial amount.</Description>
       <Export mef="true" />
-
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>

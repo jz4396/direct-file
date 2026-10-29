@@ -523,6 +523,16 @@
       </Derived>
     </Fact>
 
+    <Fact path="/carLoanPartialThousandAddend">
+      <Name>Partial thousand ceiling addend</Name>
+      <Description>Adds $999.99 so dividing by $1,000 increases a partial thousand to the next whole thousand
+        (Schedule 1-A line 34: "increase the result to the next higher whole number"). Same addend as
+        /carLoanLine34. Not a statutory dollar.</Description>
+      <Derived>
+        <Dollar>999.99</Dollar>
+      </Derived>
+    </Fact>
+
     <Fact path="/carLoanLine35">
       <Name>Schedule 1-A lines 34-35 (phaseout)</Name>
       <Description>
@@ -534,15 +544,16 @@
         (or portion
         thereof) by which the modified adjusted gross income of the taxpayer for the taxable year exceeds
         $100,000
-        ($200,000 in the case of a joint return)". Rounding up uses the ctcOdc.xml pattern: add $999.99, then
-        StepwiseMultiply by 200/1000 (whole thousands times $200).
+        ($200,000 in the case of a joint return)". Rounding up uses the ctcOdc.xml pattern: add $999.99
+        (/carLoanPartialThousandAddend), then StepwiseMultiply by 200/1000 (whole thousands times $200).
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <StepwiseMultiply>
           <Multiplicand>
             <Add>
               <Dependency path="/carLoanLine33" />
-              <Dollar>999.99</Dollar>
+              <Dependency path="/carLoanPartialThousandAddend" />
             </Add>
           </Multiplicand>
           <Rate>

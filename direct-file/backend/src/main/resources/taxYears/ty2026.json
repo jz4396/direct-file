@@ -3456,6 +3456,76 @@
           "quote": "the term “required annual payment” means the lesser of— 90 percent of the tax shown on the return for the taxable year (or, if no return is filed, 90 percent of the tax for such year), or 100 percent of the tax shown on the return of the individual for the preceding taxable year."
         }
       ]
+    },
+    {
+      "fact": "/carLoanLine35",
+      "file": "carLoanInterest.xml",
+      "values": [
+        "Rational:200/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 163(h)(4)(C)(ii)(I)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/163",
+          "quote": "shall be reduced (but not below zero) by $200 for each $1,000 (or portion thereof) by which the modified adjusted gross income of the taxpayer for the taxable year exceeds $100,000 ($200,000 in the case of a joint return)."
+        },
+        {
+          "source": "f1040s1a-dft",
+          "section": "Line 35",
+          "page": 4,
+          "quote": "Multiply line 34 by $200"
+        }
+      ]
+    },
+    {
+      "fact": "/saversCreditMultiplierAsRational",
+      "file": "saversCredits.xml",
+      "values": [
+        "Rational:5/10",
+        "Rational:2/10",
+        "Rational:1/10",
+        "Rational:0/10"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 25B(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/25B",
+          "quote": "In the case of a joint return, the applicable percentage is— (A) if the adjusted gross income of the taxpayer is not over $30,000, 50 percent, (B) if the adjusted gross income of the taxpayer is over $30,000 but not over $32,500, 20 percent, (C) if the adjusted gross income of the taxpayer is over $32,500 but not over $50,000, 10 percent, and (D) if the adjusted gross income of the taxpayer is over $50,000, zero percent."
+        }
+      ]
+    },
+    {
+      "fact": "/edcHalfMagi",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Rational:1/2"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(d)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "the section 22 amount shall be reduced by one-half of the excess of the adjusted gross income over $7,500, $10,000, or $5,000, as the case may be."
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleCBusinesses/*/line24bDeductibleMeals",
+      "file": "scheduleC.xml",
+      "values": [
+        "Dollar:0",
+        "Rational:1/2"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 274(n)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/274",
+          "quote": "The amount allowable as a deduction under this chapter for any expense for food or beverages shall not exceed 50 percent of the amount of such expense which would (but for this paragraph) be allowable as a deduction under this chapter."
+        }
+      ]
     }
   ],
   "pendingReview": [

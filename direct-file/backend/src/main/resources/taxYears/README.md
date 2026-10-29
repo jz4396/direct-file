@@ -33,7 +33,7 @@ boolean `enabled` fails backend startup and the client's registry loader; there 
 - Every dollar amount and percentage rate a parameter holds must appear in one of its quotes,
   written as the source prints it (`$32,200`, `$206,583.50`, `22%`; statute text may write
   `22 percent`).
-- A non-zero `<Dollar>` literal, a `<Rational>` with denominator 100, or an `<Int>` whose
+- A non-zero `<Dollar>` literal, a `<Rational>` other than 0 or n/n, or an `<Int>` whose
   absolute value is at least 100, in a fact that has no `<TaxYear>` tag, fails
   `src/test/factDictionaryTests/untaggedDollarLiterals.test.ts` unless that test lists the fact
   as `structural` (rounding, cents, unit conversion, a field length) or `remaining` (a tax-law
