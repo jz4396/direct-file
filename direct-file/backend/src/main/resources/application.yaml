@@ -294,9 +294,9 @@ direct-file:
       - name: SCHEDULE_R
         year: 2026
         language-code: en
-        location: pdf/2024/SCHEDULE_R/en/f1040sr_accessible.pdf
+        location: pdf/2026/SCHEDULE_R/en/f1040sr--dft.pdf
         location-type: classpath
-        configuration-location: pdf/2024/SCHEDULE_R/en/configuration.yml
+        configuration-location: pdf/2026/SCHEDULE_R/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS8862

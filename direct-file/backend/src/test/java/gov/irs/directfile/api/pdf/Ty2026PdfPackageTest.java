@@ -110,6 +110,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   filer too); $13,000 ordinary dividends; Schedule C profit $4,000 (or $10,000); no W-2.
  *   Prints Form 1040, Schedules 1, 2, 3-A, B, C, SE and 8812 (Part II-B, lines 22-27). Form 8995 still refuses
  *   the public path (#87).
+ * Scenario 8, elderly or disabled credit (#89): single, under 65, retired on permanent and total disability;
+ *   W-2 $17,000 of taxable disability income. Prints Form 1040, Schedule 3, Schedule R and the W-2.
+ *   Schedule R line 22 equals Schedule 3 line 6d (26 U.S.C. 22; Schedule R (2026) draft line 22).
  * </pre>
  */
 class Ty2026PdfPackageTest {
@@ -154,6 +157,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS1040SA", 2),
             Map.entry("IRS1040SB", 1),
             Map.entry("IRS1040SE", 3),
+            Map.entry("SCHEDULE_R", 2),
             Map.entry("IRS1040SC", 2),
             Map.entry("IRS1040SD", 2),
             Map.entry("IRS1040SSE", 2),
@@ -176,7 +180,6 @@ class Ty2026PdfPackageTest {
      */
     static final Map<String, String> EXCLUDED = Map.ofEntries(
             Map.entry("DEPENDENTS_STATEMENT", "2024 statement template only (more than 4 dependents)"),
-            Map.entry("SCHEDULE_R", "2024 Schedule R template only; no 2026 form committed"),
             // Form 2441 attachments (more than three qualifying persons or care providers; Part I line 1c due
             // diligence) are not IRS forms, so there is no 2026 draft: they still print the pdf/2024 statement
             // templates, two of which print "2024" in a column heading.
@@ -440,7 +443,8 @@ class Ty2026PdfPackageTest {
                 itemizer(),
                 paTaxForgiveness(),
                 selfEmployedFamily("4000.00"),
-                ScheduleBAndETy2026PdfSmokeTest.partI())) {
+                ScheduleBAndETy2026PdfSmokeTest.partI(),
+                ScheduleRTy2026PdfSmokeTest.disabledSingle())) {
             printed.addAll(render(s, null, null).forms.keySet());
         }
         for (String s : List.of(FAMILY, SAVER, HSA)) {

@@ -25,7 +25,6 @@ b0fe2d6f071f55b8a8d532331bf2d4a7448a3770820ce5dcfbc8d5dd4668a545  pdf/2024/IRS88
 bc23aa51f00e0e15846427555f2281a3eb26bbcf09e3d26a35265155c5cc64e7  pdf/2024/ODC_DEPENDENTS_STATEMENT/es/SPANISH_Additional_statement_for_Form_8862_-_Credit_for_other_dependents.pdf  pages=1  mapped=60  unmapped=0
 26f474ae7c6caa4042bbb17177e2021ac971fbdf4a6754bac379e11713818142  pdf/2024/SCHEDULE_LEP/en/f1040lep-p.pdf  pages=1  mapped=23  unmapped=0
 68759fbaeb811546c88ff6f42c3b8b3bf59da048d80229d741e40ec6588a5822  pdf/2024/SCHEDULE_LEP/es/f1040les-p.pdf  pages=1  mapped=23  unmapped=0
-c4e19ea548313a3fa930e46e6c61cc72c22c3e2eca838939ceeaaad79c23d508  pdf/2024/SCHEDULE_R/en/f1040sr_accessible.pdf  pages=2  mapped=27  unmapped=0
 e044e765ace334c76bda7910bd3193fc813c7789d06340124359b885c98d58d0  pdf/2026/IRS1040/en/f1040--dft.pdf  pages=3  mapped=131  unmapped=76
 fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3  pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf  pages=3  mapped=35  unmapped=3
 a017a1b717d1c70ff8d831ef8b73c730e5b24f147c394c37f792035a9df22fad  pdf/2026/IRS1040S1/en/f1040s1--dft.pdf  pages=3  mapped=16  unmapped=56
@@ -50,3 +49,4 @@ c94550b7d4b735b11e9901c5dbff5dab0aa6dcbbefab04864c61cd5275cafec8  pdf/2026/IRS88
 5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35  pdf/2026/IRS8962/en/f8962--dft.pdf  pages=3  mapped=101  unmapped=40
 fcd7648601f3ce5a7a258be49c54aa1c604e1c61c1fe9175351451ac6087d8b3  pdf/2026/PA40/en/2025_pa-40.pdf  pages=2  mapped=44  unmapped=48
 cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b  pdf/2026/PA40SP/en/2025_pa-40sp.pdf  pages=8  mapped=55  unmapped=41
+0fcbd9fe296b470b2a0ceadc497380159f7d872f7aa11d86ae856bbd2234f5b6  pdf/2026/SCHEDULE_R/en/f1040sr--dft.pdf  pages=3  mapped=27  unmapped=0
