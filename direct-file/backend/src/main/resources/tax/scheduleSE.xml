@@ -97,6 +97,7 @@
         (https://www.law.cornell.edu/uscode/text/26/1402#a_12): the deduction equals net earnings times one-half of the
         sum of the 1401(a) and (b) rates, so 1 - (12.4% + 2.9%) / 2 = 0.9235.
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -309,6 +310,7 @@
         12.4 percent of the amount of the
         self-employment income for such taxable year".
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -361,6 +363,7 @@
         self-employment income".
         No wage base applies.
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -400,6 +403,7 @@
         1401 (other than the taxes imposed by section 1401(b)(2))".
       </Description>
       <Export downstreamFacts="true" />
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -443,6 +447,7 @@
         (https://www.law.cornell.edu/uscode/text/26/1402#a_12): the deduction equals net earnings times one-half of the
         sum of the 1401(a) and (b) rates, so 1 - (12.4% + 2.9%) / 2 = 0.9235.
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -585,6 +590,7 @@
         12.4 percent of the amount of the
         self-employment income for such taxable year".
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -637,6 +643,7 @@
         self-employment income".
         No wage base applies.
       </Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -676,6 +683,7 @@
         1401 (other than the taxes imposed by section 1401(b)(2))".
       </Description>
       <Export downstreamFacts="true" />
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>

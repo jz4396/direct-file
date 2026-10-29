@@ -324,6 +324,7 @@
         dollar of income received by that resident during that resident's taxable year at the rate of three and seven
         hundredths per cent."</Description>
       <Export downstreamFacts="true" />
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Multiply>
           <Rational>307/10000</Rational>
