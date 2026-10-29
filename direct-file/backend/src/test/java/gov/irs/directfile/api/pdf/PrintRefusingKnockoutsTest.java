@@ -164,7 +164,7 @@ class PrintRefusingKnockoutsTest {
                 PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
                 PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
                 PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14-16, 22, 23, 25
-                PA_UNSUPPORTED_INCOME_KNOCKOUT, // PA-40 lines 4 and 6 and unclassified income
+                PA_UNSUPPORTED_INCOME_KNOCKOUT, // PA-40 line 4; line 6 only for a K-1 or part-year Schedule E
                 PA_SP_KNOCKOUT, // Schedule SP Tax Forgiveness
                 PA_PART_YEAR_KNOCKOUT, // PA/FL part-year cases not computed
                 PA_SCHEDULE_A_KNOCKOUT, // PA Schedule A

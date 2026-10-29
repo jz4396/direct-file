@@ -98,6 +98,7 @@ describe(`PA-40 core (#78)`, () => {
     const g = build(singleFilerData, w2(57000, 60000, 2000));
     expect(get(g, `/stateReturnIsPa`).get).toBe(true);
     expect(val(g, `/paLine1a`)).toBe(`60000.00`);
+    expect(val(g, `/paLine6`)).toBe(`0.00`);
     expect(val(g, `/paLine9`)).toBe(`60000.00`);
     expect(val(g, `/paLine12`)).toBe(`1842.00`);
     expect(val(g, `/paLine13`)).toBe(`2000.00`);
@@ -124,6 +125,7 @@ describe(`PA-40 core (#78)`, () => {
     expect(val(g, `/interestIncome`)).toBe(`2000.00`);
     expect(val(g, `/paLine2`)).toBe(`1200.00`);
     expect(val(g, `/paLine3`)).toBe(`0.00`); // no 1099-DIV
+    expect(val(g, `/paLine6`)).toBe(`0.00`);
     expect(val(g, `/paLine9`)).toBe(`41200.00`);
     expect(val(g, `/paLine12`)).toBe(`1264.84`); // 41,200 × 0.0307
   });
@@ -326,6 +328,160 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       build(mfjFilerData, { ...w2(80000, 80000, 2456), ...sale(14000, 10000) }),
       `/flowKnockoutPaUnsupportedIncome`
     );
+  });
+});
+
+/**
+ * PA-40 line 6 from federal Schedule E Part I. Tax Reform Code of 1971 §303(a)(4): "Net gains or income derived
+ * from or in the form of rents, royalties, patents and copyrights." PA-40 IN (2025) p. 18, LINE 6: "You may use
+ * federal Schedule E, if using only Part I, and with the following adjustments". A K-1 or a PA/FL part-year resident
+ * stops (p. 18 partner/S corporation share; p. 43 nonresident PA-source rents). No part-year allocation.
+ */
+const partI = (rents: string, royalties: string, expenses: string, k1 = false) => ({
+  '/hadScheduleEIncome': createBooleanWrapper(true),
+  '/scheduleEHasPartIIIncome': createBooleanWrapper(k1),
+  '/scheduleEHasPartIIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
+  '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
+  '/scheduleEHasPersonalUse': createBooleanWrapper(false),
+  '/scheduleEHasDepreciation': createBooleanWrapper(false),
+  '/scheduleEAnyPropertyLoss': createBooleanWrapper(false),
+  '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(false),
+  '/scheduleEWritableRents': createDollarWrapper(rents),
+  '/scheduleEWritableRoyalties': createDollarWrapper(royalties),
+  '/scheduleEWritableExpenses': createDollarWrapper(expenses),
+});
+const k1Id = `b7e1c2a0-1111-4222-8333-444455556666`;
+/** Supported Part II K-1: domestic partnership, nonnegative box 1 only, material participation. */
+const supportedK1 = {
+  '/scheduleEHasPartIIIncome': createBooleanWrapper(true),
+  '/scheduleEPartIILine27': createBooleanWrapper(false),
+  '/scheduleEHasPartIIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
+  '/scheduleEK1sIsDone': createBooleanWrapper(true),
+  '/scheduleEK1s': createCollectionWrapper([k1Id]),
+  [`/scheduleEK1s/#${k1Id}/entityName`]: createStringWrapper(`Northwind Partners`),
+  [`/scheduleEK1s/#${k1Id}/entityType`]: createEnumWrapper(`P`, `/scheduleEK1EntityTypeOptions`),
+  [`/scheduleEK1s/#${k1Id}/isForeignPartnership`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${k1Id}/isPubliclyTradedPartnership`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${k1Id}/isTradingBusiness`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${k1Id}/box1`]: createDollarWrapper(`12000`),
+  [`/scheduleEK1s/#${k1Id}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleEK1s/#${k1Id}/box14CodeA`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${k1Id}/hasQbiStatement`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${k1Id}/hasOtherK1Amount`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${k1Id}/basisComputationRequired`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${k1Id}/anyAmountNotAtRisk`]: createBooleanWrapper(false),
+};
+
+describe(`PA-40 line 6 rents from Schedule E Part I`, () => {
+  it(`full-year resident: line 6 equals federal Part I net rents`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine6`, `/paLine9`, `/paLine12`, `/scheduleENetIncome`];
+    // $12,000 rents − $4,000 expenses = $8,000. W-2 box 16 $50,000. Line 9 = 58,000. 58,000 × 0.0307 = 1,780.60.
+    const g = build(singleFilerData, { ...w2(50000, 50000, 1535), ...partI(`12000`, `0`, `4000`) });
+    expect(val(g, `/scheduleENetIncome`)).toBe(`8000.00`);
+    expect(val(g, `/paLine6`)).toBe(`8000.00`);
+    expect(val(g, `/paLine1a`)).toBe(`50000.00`);
+    expect(val(g, `/paLine9`)).toBe(`58000.00`);
+    expect(val(g, `/paLine12`)).toBe(`1780.60`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`line 6 matches the federal Schedule E net after it is rounded to the dollar`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine6`, `/scheduleENetIncome`];
+    // $10,000.10 rents − $2,500.40 expenses = $7,499.70. Schedule E line 26 rounds that to $7,500.
+    // Line 6 is that same dollar, not a second rounding.
+    const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...partI(`10000.10`, `0`, `2500.40`) });
+    expect(val(g, `/scheduleENetIncome`)).toBe(`7500.00`);
+    expect(val(g, `/paLine6`)).toBe(`7500.00`);
+    expect(val(g, `/paLine9`)).toBe(`47500.00`);
+  });
+
+  it(`Part I royalties already collected are in the same line 6 net`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine6`, `/scheduleENetIncome`];
+    // $12,000 rents + $500 royalties − $4,000 expenses = $8,500. PA-40 IN (2025) p. 18 allows federal Schedule E
+    // Part I. Royalties from another form are still /flowKnockoutPaUnsupportedIncome (1099-MISC).
+    const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...partI(`12000`, `500`, `4000`) });
+    expect(val(g, `/scheduleENetIncome`)).toBe(`8500.00`);
+    expect(val(g, `/paLine6`)).toBe(`8500.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+  });
+
+  it(`Schedule K-1 present: stop, and line 6 is not the Part I net`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaUnsupportedIncome`,
+      `/paLine6`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // The federal Part II path is supported, so the stop is the PA classification, not the federal K-1 knockout.
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 1535),
+      ...partI(`12000`, `0`, `4000`, true),
+      ...supportedK1,
+    });
+    expect(val(g, `/scheduleENetIncome`)).toBe(`8000.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/paLine6`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaUnsupportedIncome`);
+  });
+
+  it(`PA/FL part-year resident with Part I rents: stop, no allocation`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/paLine6`, `/flowIsKnockedOut`];
+    // PA-40 IN (2025) p. 43 taxes a nonresident on Pennsylvania rental property. Location is not collected.
+    const g = build(singleFilerData, {
+      ...w2(30000, 30000, 921),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+      '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+      ...partI(`12000`, `0`, `4000`),
+    });
+    expect(get(g, `/stateReturnIsPa`).get).toBe(false);
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(true);
+    expect(val(g, `/scheduleENetIncome`)).toBe(`8000.00`);
+    expect(get(g, `/paLine6`).complete).toBe(false);
+    expect(get(g, `/paLine9`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`part-year resident without Schedule E: line 6 stays $0 and does not stop`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine6`, `/paLine1a`, `/flowKnockoutPaUnsupportedIncome`];
+    const g = build(singleFilerData, {
+      ...w2(30000, 30000, 921),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+      '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+    });
+    expect(val(g, `/paLine1a`)).toBe(`30000.00`);
+    expect(val(g, `/paLine6`)).toBe(`0.00`);
+    expect(val(g, `/paLine9`)).toBe(`30000.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`W-2 and interest, no Schedule E: line 6 is $0 and line 2 is unchanged`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine1a`, `/paLine2`, `/paLine6`, `/paLine9`];
+    // box 16 $40,000; 1099-INT box 1 $1,200. No box 3, so PA Schedule A is not required.
+    const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(1200) });
+    expect(val(g, `/paLine1a`)).toBe(`40000.00`);
+    expect(val(g, `/paLine2`)).toBe(`1200.00`);
+    expect(val(g, `/paLine6`)).toBe(`0.00`);
+    expect(val(g, `/paLine9`)).toBe(`41200.00`);
+    expect(val(g, `/paLine12`)).toBe(`1264.84`); // 41,200 × 0.0307
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleA`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
 });
 

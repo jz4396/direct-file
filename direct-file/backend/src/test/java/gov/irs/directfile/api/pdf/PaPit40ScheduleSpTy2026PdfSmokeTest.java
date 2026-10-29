@@ -23,14 +23,19 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrint;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -371,6 +376,7 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             blank(p1, "5. Net Gain or Loss from Sale, etc. of Property", "line 5 ($0; any sale is a Schedule D stop)");
             is(p1, "4. Loss", "Off", "line 4 loss oval");
             is(p1, "6. Loss", "Off", "line 6 loss oval");
+            blank(p1, "6. Net Income or Loss from Rents, etc", "line 6 ($0; no Schedule E)");
             is(p1, "9. Total PA Taxable Income", "15,000.00", "line 9 (p. 20)");
             blank(p1, "10.  Other Deductions", "line 10");
             is(p1, "11. Adjusted PA Taxable Income", "15,000.00", "line 11 (p. 21)");
@@ -394,6 +400,62 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p2, "30. Refund", "500.00", "line 30 = line 29");
             blank(p2, "31. Credit", "line 31");
         }
+    }
+
+    /**
+     * Full-year resident, Schedule E Part I rents $12,000 minus expenses $4,000. PA-40 IN (2025) p. 18, LINE 6: "You
+     * may use federal Schedule E, if using only Part I, and with the following adjustments". Tax Reform Code of 1971
+     * §303(a)(4). Line 6 is $8,000 and line 9 is wages $50,000 plus that net.
+     */
+    @Test
+    void pa40Line6PrintsFederalScheduleEPartINetRents() throws Exception {
+        Map<String, String> m = paResident();
+        m.put("/form8949Transactions", EMPTY_COLLECTION);
+        m.put("/paSchoolDistrictCode", string("22275"));
+        ScheduleBAndETy2026PdfSmokeTest.partIScreeners(m, "12000.00", "0.00", "4000.00");
+        m.put("/scheduleEHasPartIIIncome", bool(false));
+        m.put("/scheduleEHasPartIIIIncome", bool(false));
+        m.put("/scheduleEHasPartIVIncome", bool(false));
+        byte[] bytes = generate(m);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PA40_PAGE1);
+            is(p1, "1a. Gross Compensation", "50,000.00", "line 1a");
+            is(p1, "6. Loss", "Off", "line 6 loss oval");
+            is(p1, "6. Net Income or Loss from Rents, etc", "8,000.00", "line 6 = 12,000 − 4,000");
+            is(p1, "9. Total PA Taxable Income", "58,000.00", "line 9 includes line 6");
+        }
+    }
+
+    @Test
+    void pa40RefusesScheduleEWhenAK1IsPresent() throws Exception {
+        Map<String, String> m = paResident();
+        m.put("/form8949Transactions", EMPTY_COLLECTION);
+        m.put("/paSchoolDistrictCode", string("22275"));
+        ScheduleBAndETy2026PdfSmokeTest.partIScreeners(m, "12000.00", "0.00", "4000.00");
+        ScheduleBAndETy2026PdfSmokeTest.partIIGate(m);
+        m.put("/scheduleEK1s", collection(ScheduleBAndETy2026PdfSmokeTest.K1));
+        ScheduleBAndETy2026PdfSmokeTest.k1(m, ScheduleBAndETy2026PdfSmokeTest.K1, "Northwind Partners", "P", "12000.00");
+        refusesPa(m);
+    }
+
+    @Test
+    void pa40RefusesScheduleEForAPartYearResident() throws Exception {
+        Map<String, String> m = partYearScenario();
+        ScheduleBAndETy2026PdfSmokeTest.partIScreeners(m, "12000.00", "0.00", "4000.00");
+        m.put("/scheduleEHasPartIIIncome", bool(false));
+        m.put("/scheduleEHasPartIIIIncome", bool(false));
+        m.put("/scheduleEHasPartIVIncome", bool(false));
+        refusesPa(m);
+    }
+
+    /** Print fails closed on /flowKnockoutPaUnsupportedIncome. No new print-refuse path. */
+    static void refusesPa(Map<String, String> facts) {
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertEquals(
+                List.of("/flowKnockoutPaUnsupportedIncome"),
+                e.getBody().getProperties().get("blockingFacts"));
     }
 
     @Test

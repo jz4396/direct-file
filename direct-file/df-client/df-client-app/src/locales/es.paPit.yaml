@@ -125,9 +125,10 @@ info:
     alertText:
       body:
         - p:
-            Esto incluye ingresos de negocio o de alquiler, distribuciones de jubilación, ingresos del Formulario
-            1099-MISC, intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania en el encasillado
-            16 o ventas de bienes en una declaración conjunta.
+            Esto incluye ingresos de negocio, ingresos de alquiler o regalías de un Anexo K-1, ingresos de alquiler o
+            regalías como residente parte del año, distribuciones de jubilación, ingresos del Formulario 1099-MISC,
+            intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania en el encasillado 16 o ventas
+            de bienes en una declaración conjunta.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
