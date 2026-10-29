@@ -108,6 +108,18 @@ class Pa40PdfForm extends PaPdfForm {
                 PREFIX + "Line5Loss",
                 line5.map(v -> paAmount(v).startsWith("-")).orElse(false));
 
+        // Line 6, p. 18, LINE 6: "You may use federal Schedule E, if using only Part I, and with the following
+        // adjustments". Tax Reform Code of 1971 §303(a)(4): "Net gains or income derived from or in the form of rents,
+        // royalties, patents and copyrights." /paLine6 is that federal Part I net for a full-year resident. $0 prints
+        // blank. A loss fills the oval and the amount box shows the size (p. 15). A supported return has no loss.
+        final Optional<BigDecimal> line6 = dollars(facts, "/paLine6");
+        facts.put(
+                PREFIX + "Line6",
+                line6.filter(v -> v.signum() != 0).map(v -> paAmount(v.abs())).orElse(""));
+        facts.put(
+                PREFIX + "Line6Loss",
+                line6.map(v -> paAmount(v).startsWith("-")).orElse(false));
+
         // Lines 19a, 19b and 20, p. 22: copied from PA Schedule SP Section I, Section II line 2 and Section III line 11
         // when Tax Forgiveness is claimed on line 21. Line 19a export values: 1 = Unmarried or Separated, 2 = Married.
         final boolean forgiveness = claimsTaxForgiveness(facts);

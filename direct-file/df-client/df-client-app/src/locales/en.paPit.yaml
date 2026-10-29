@@ -111,8 +111,10 @@ info:
     alertText:
       body:
         - p:
-            This includes business or rental income, retirement distributions, Form 1099-MISC income, tax-exempt
-            interest, a Form W-2 without Pennsylvania wages in box 16, or sales of property on a joint return.
+            This includes business income, rental or royalty income from a Schedule K-1, rental or royalty income
+            while you were a part-year Pennsylvania resident, retirement distributions, Form 1099-MISC income,
+            tax-exempt interest, a Form W-2 without Pennsylvania wages in box 16, or sales of property on a joint
+            return.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html

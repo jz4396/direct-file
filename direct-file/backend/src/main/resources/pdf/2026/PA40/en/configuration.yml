@@ -8,10 +8,16 @@
 # Field names are the PDF's own fully qualified AcroForm names (PDFBox). Each mapped box was checked against the printed
 # line caption beside it, and the filled pages were rendered. Page cites ("p.") are to the PA-40 IN (2025) booklet,
 # https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
-# Pa40PdfForm fills the ~pa40* pseudo-facts (upper case, ovals, part-year dates, line 5 loss oval, lines 19a-20).
+# Pa40PdfForm fills the ~pa40* pseudo-facts (upper case, ovals, part-year dates, line 5 and line 6 loss ovals, lines 19a-20).
 # Amounts: whole dollars rounded half-up (p. 4), written as the form shows them (1,234.00); $0 prints blank.
 #
 # Included when stateReturn /stateReturnPaFiled (full-year resident, #78, or PA/FL part-year resident, #80).
+#
+# Line 6 is mapped (~pa40Line6 and the loss oval). Full-year federal Schedule E Part I net is /paLine6. Tax Reform
+# Code of 1971 §303(a)(4): "Net gains or income derived from or in the form of rents, royalties, patents and
+# copyrights." PA-40 IN (2025) p. 18, LINE 6: "You may use federal Schedule E, if using only Part I, and with the
+# following adjustments". $0 prints blank. A Schedule K-1, or Schedule E Part I income of a PA/FL part-year resident,
+# is /flowKnockoutPaUnsupportedIncome and does not print.
 #
 # Not mapped, left blank. Each is either never entered on a supported return or is a stop that keeps the return
 # from reaching print. The stops below are BlockSubmissionOnTrue facts in stateReturn /flowKnockoutStateReturn
@@ -19,8 +25,7 @@
 # unless every listed path is complete and false, so a yes or an unanswered screener refuses the package instead of
 # printing the unmodeled line blank:
 #   1b                  unreimbursed employee business expenses: /flowKnockoutPaUnreimbursedEmployeeExpenses (#102).
-#   4, 6 (and ovals)    business and rents: /paLine4 and /paLine6 are $0 (Schedule C businesses are
-#                       /flowKnockoutPaUnsupportedIncome; Schedule E income is a stop).
+#   4 (and oval)        business: /paLine4 is $0 (Schedule C is /flowKnockoutPaUnsupportedIncome).
 #   7, 8                estate/trust, gambling/lottery: /flowKnockoutPaUnsupportedItems.
 #   10 and Code         other deductions (Schedule O, 529, ABLE, MSA/HSA): /flowKnockoutPaUnsupportedItems.
 #   14-16, REV-459B     prior-year credit, estimated and extension payments: /flowKnockoutPaUnsupportedItems.
@@ -69,6 +74,7 @@ otherRequiredFacts:
   - /paSchoolCode
   - /paPartYearMoveDate
   - /paLine5
+  - /paLine6
   - /paSpLine11
   - /paSpLine16
   - /paSpDependentChildCount
@@ -105,6 +111,8 @@ form:
   "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3; federal ordinary dividends (Form 1040 line 3b) when PA Schedule B lines 2-10 are $0; $0 prints blank. Schedule B stop /flowKnockoutPaScheduleB (p. 32)
   "5. Loss": ~pa40Line5Loss # p. 15, "If entering a loss, fill in the oval next to the line"
   "5. Net Gain or Loss from Sale, etc. of Property": ~pa40Line5 # p. 17, LINE 5 (size of a loss; see the oval)
+  "6. Loss": ~pa40Line6Loss # p. 15, same loss oval; p. 18, LINE 6
+  "6. Net Income or Loss from Rents, etc": ~pa40Line6 # p. 18, LINE 6 (federal Schedule E Part I net; $0 blank)
   "9. Total PA Taxable Income": /paLine9 # p. 20, LINE 9 (losses are not added)
   "11. Adjusted PA Taxable Income": /paLine11 # p. 21, LINE 11 (9 minus 10)
   # Lines 12-30, page 2.

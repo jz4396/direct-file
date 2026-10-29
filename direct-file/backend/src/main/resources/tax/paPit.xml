@@ -216,12 +216,59 @@
     </Fact>
     <Fact path="/paLine6">
       <Name>PA-40 line 6 rents, royalties, patents, copyrights</Name>
-      <Description>#78: PA-40 (2025),
-        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf
-        line 6. Schedule E income knocks out, so $0. 72 P.S. §7303(a)
-        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(4).</Description>
+      <Description>Tax Reform Code of 1971 §303(a)(4), 72 P.S. §7303(a)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(4): "Net gains or
+        income derived from or in the form of rents, royalties, patents and copyrights." PA-40 IN (2025),
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 18, LINE 6: "Report the total income (loss) from all PA Schedules E and all PA Schedules RK-1 or NRK-1.
+        Generally, you must use PA Schedule E. You may use federal Schedule E, if using only Part I, and with the
+        following adjustments:" "Report passive rental/royalty loss in full, rather than carry it over to future
+        years." "Add any capital gains and distributions that you report on other federal schedules." "Do not take any
+        depreciation expense on sales tax that you elected to currently expense for PA personal income tax purposes."
+        "You must separately show your share of any rental or royalty gain (loss) that you realize as a partner, a
+        shareholder of a PA S corporation, or other entity." For a full-year PA resident with no Schedule K-1
+        (/scheduleEHasPartIIIncome false), line 6 is federal Schedule E Part I net income (/scheduleENetIncome: line 3
+        rents plus line 4 royalties the Part I path already collects, minus expenses). The supported Part I path has no
+        loss, no depreciation, and no property sale in this class, so those adjustments do not change the federal net.
+        A K-1, or Schedule E Part I income of a PA/FL part-year resident, leaves this line incomplete
+        (/flowKnockoutPaUnsupportedIncome). $0 when there is no Schedule E Part I income, and on a return that is not a
+        PA-40.</Description>
       <Derived>
-        <Dollar>0</Dollar>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency module="stateReturn" path="/stateReturnIsPa" />
+                <Not>
+                  <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleENetIncome" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
     <Fact path="/paLine7">
@@ -635,7 +682,8 @@
       <Name>Flow knockout: income PA-40 core does not classify</Name>
       <Description>#78: PA-40 IN (2025),
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
-        p. 17 (LINE 4 business, PA Schedule C), p. 17-19 (LINE 6 rents, Schedule E), pp. 13-14 (1099-R: PA taxability
+        p. 17 (LINE 4 business, PA Schedule C), p. 18 (LINE 6: full-year federal Schedule E Part I is /paLine6; a K-1 or
+        a PA/FL part-year resident with Schedule E Part I still stops), pp. 13-14 (1099-R: PA taxability
         depends on plan/age/code), 1099-MISC (must be classified), box 8 tax-exempt interest (PA taxes other states'
         obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with property
         sales (p. 7: "You may not offset the income of the taxpayer with a loss from the spouse and vice versa", not
@@ -663,8 +711,18 @@
               </Right>
             </GreaterThan>
             <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
-            <Dependency module="scheduleE" path="/hasScheduleEIncome" />
-            <!-- Partnership and S corporation income (Schedule E Part II) is not classified on PA-40 in this slice. -->
+            <!-- Full-year Schedule E Part I net is PA-40 line 6 (/paLine6). A PA/FL part-year resident is not
+                 allocated. PA-40 IN (2025) p. 43: "As a nonresident, you must report your net income (and pay the PA
+                 income tax due) or loss from rental property located in Pennsylvania, and income from royalties,
+                 patents, and copyrights for the use of your property in Pennsylvania." Property location is not
+                 collected, so this stops instead of treating the federal net as the PA amount. -->
+            <All>
+              <Dependency path="/paPartYearSupported" />
+              <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+            </All>
+            <!-- K-1 income is not classified on line 6. PA-40 IN (2025) p. 18: "You must separately show your share of
+                 any rental or royalty gain (loss) that you realize as a partner, a shareholder of a PA S corporation,
+                 or other entity." Partnership, S corporation, estate, and trust income use this gate. -->
             <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
             <GreaterThan>
               <Left>
