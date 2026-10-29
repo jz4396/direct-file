@@ -142,6 +142,7 @@
         i8959 (2026) p.3, Line 7: "Multiply line 6 by 0.9% (0.009). This is your
         Additional Medicare Tax on your wages."
         Rate: 26 U.S.C. 3101(b)(2) "0.9 percent".</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -277,6 +278,7 @@
         (joint), 1/2 of
         that (MFS), or $200,000 (any other case).</Description>
       <Export mef="true" downstreamFacts="true" />
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -312,6 +314,7 @@
         by 1.45% (0.0145).
         This is your regular Medicare tax withholding on Medicare wages". Rate:
         26 U.S.C. 3101(b)(1) (1.45 percent).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>

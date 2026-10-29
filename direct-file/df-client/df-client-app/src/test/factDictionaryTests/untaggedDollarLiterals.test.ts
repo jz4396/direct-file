@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readXmlModules } from '../../fact-dictionary/yearConfig/yearConfig.js';
 
 /**
- * Every non-zero <Dollar> literal, every <Rational> with denominator 100, and every <Int>
+ * Every non-zero <Dollar> literal, every <Rational> that is not 0 and not n/n, and every <Int>
  * whose absolute value is at least 100 belongs to a fact tagged <TaxYear>, so it is listed
  * in the year's parameter file with the authority for it (Rev. Proc. page and quote, IRC
  * section and quote, an IRS form or instructions page and quote, or the HHS poverty
@@ -21,12 +21,27 @@ const TAX_TABLE = `Tax Table band rounding ($5/$25/$50 bands up to $100,000 and 
 const EITC_TABLE = `EIC Table band rounding`;
 const UNIT_DOLLAR = `multiplies by $1 to turn a ratio into a Dollar`;
 const PHASEOUT_ROUNDING = `rounds up to the next $1,000 before the phaseout rate`;
+const THOUSAND_SCALE = `1/1000 scale factor: count of whole $1,000s before a phaseout that is cited on the threshold fact`;
+const HUNDRED_SCALE = `100/1 scale factor: multiplies that count by the $100 already cited on the phaseout fact`;
 
 const EXCEPTIONS: Record<string, Exception> = {
-  '/carLoanLine34': { kind: `structural`, reason: PHASEOUT_ROUNDING },
-  '/carLoanLine35': { kind: `structural`, reason: PHASEOUT_ROUNDING },
+  '/carLoanPartialThousandAddend': {
+    kind: `structural`,
+    reason: `adds $999.99 so a partial $1,000 increases to the next whole thousand before the § 163(h)(4)(C) rate on /carLoanLine35`,
+  },
+  '/carLoanLine34': {
+    kind: `structural`,
+    reason: `adds $999.99 then multiplies by 1/1000 to round up to the next $1,000; the $200 rate is /carLoanLine35`,
+  },
   '/roundedDependentCreditMagiAboveThreshold': { kind: `structural`, reason: PHASEOUT_ROUNDING },
-  '/cdccCareExpensesDecimalAmount': { kind: `structural`, reason: `§ 21(a)(2) percentage steps written as decimals` },
+  '/cdccCareExpensesSecondPhaseoutStep': {
+    kind: `structural`,
+    reason: `§ 21(a)(2) one percentage point per $2,000 ($4,000 joint) stored as 1/2000 and 1/4000`,
+  },
+  '/cdccCareExpensesDecimalAmount': {
+    kind: `structural`,
+    reason: `§ 21(a)(2) percentage steps written as decimals, including the 1/2000 step`,
+  },
   '/writableCdccCarryoverAmountFromPriorTaxYear': { kind: `structural`, reason: `minimum of one cent` },
   '/maxEitcFromAGI': { kind: `structural`, reason: EITC_TABLE },
   '/eitcAmountWithoutCombatPay': { kind: `structural`, reason: EITC_TABLE },
@@ -49,7 +64,10 @@ const EXCEPTIONS: Record<string, Exception> = {
     reason: `$10 Form 1099-G payer reporting floor; bounds an input, not a tax amount`,
   },
   '/householdIncomeAsPercent': { kind: `structural`, reason: UNIT_DOLLAR },
-  '/applicableFigure': { kind: `structural`, reason: `Form 8962 instructions Table 2 interpolation steps` },
+  '/applicableFigure': {
+    kind: `structural`,
+    reason: `Form 8962 line 7 applicable figure rounded to four decimals by scaling with 1/10000`,
+  },
   '/ptcAnnualContributionAmount': { kind: `structural`, reason: UNIT_DOLLAR },
   '/meetsOneDollarCombinedCreditLimit': {
     kind: `structural`,
@@ -84,7 +102,7 @@ const EXCEPTIONS: Record<string, Exception> = {
   },
   '/paSpLine15': {
     kind: `remaining`,
-    reason: `standing PA Tax Forgiveness $250 columns; 2026 PA-40 instructions are not published`,
+    reason: `standing PA Tax Forgiveness $250 columns and 9/10 through 1/10; #102 parked, 2026 PA-40 instructions are not published`,
   },
   '/paSpCouldQualify': {
     kind: `remaining`,
@@ -118,6 +136,14 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `Form 8949 column (a) description is limited to 100 characters`,
   },
+  '/schedule1ALine13': { kind: `structural`, reason: THOUSAND_SCALE },
+  '/schedule1ALine14': { kind: `structural`, reason: HUNDRED_SCALE },
+  '/schedule1AOvertimeLine25': { kind: `structural`, reason: THOUSAND_SCALE },
+  '/schedule1AOvertimeLine26': { kind: `structural`, reason: HUNDRED_SCALE },
+  '/overtimeSelfFiguredAmount': {
+    kind: `structural`,
+    reason: `premium share of a reported total: 1/3 of time-and-a-half, 1/4 of double time, or 1/2 of the premium (§ 225(c)(1) excess over the regular rate)`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,
@@ -132,13 +158,13 @@ for (const field of [
 const FACT_PATTERN = /<Fact path=["']([^"']+)["']>([\s\S]*?)<\/Fact>/g;
 const AMOUNT_PATTERN = /<(Dollar|Int|Rational)>([^<]*)<\/\1>/g;
 
-/** Non-zero dollars, percentage rationals (n/100), and ints of at least 100. */
+/** Non-zero dollars, rationals other than 0 and n/n, and ints of at least 100. */
 function isGuardedLiteral(type: string, text: string): boolean {
   if (type === `Dollar`) return Number(text) !== 0;
   if (type === `Int`) return Math.abs(Number(text)) >= 100;
   if (type === `Rational`) {
     const [num, den] = text.split(`/`);
-    return den === `100` && num !== `0`;
+    return num !== `0` && num !== den;
   }
   return false;
 }
@@ -157,7 +183,7 @@ function untaggedAmountFacts(modules: Map<string, string>): Map<string, string[]
   return found;
 }
 
-describe(`untagged Dollar, percentage, and large Int literals`, () => {
+describe(`untagged Dollar, Rational, and large Int literals`, () => {
   const found = untaggedAmountFacts(readXmlModules());
 
   it(`appear only in facts listed as structural or remaining, each with a reason`, () => {
@@ -168,7 +194,7 @@ describe(`untagged Dollar, percentage, and large Int literals`, () => {
     }
   });
 
-  it(`lists no fact that has no untagged Dollar, percentage, or large Int literal`, () => {
+  it(`lists no fact that has no untagged Dollar, Rational, or large Int literal`, () => {
     const stale = Object.keys(EXCEPTIONS).filter((f) => !found.has(f));
     expect(stale, `remove these from EXCEPTIONS`).toEqual([]);
   });

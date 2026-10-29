@@ -147,6 +147,17 @@
       "url": "https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf",
       "kind": "pdf",
       "sha256": "0638b2863bdaeadfd3fccee12a9145bf92a442d8de156584c5602cc7e3881422"
+    },
+    "f1040sse-dft": {
+      "title": "Schedule SE (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf",
+      "kind": "pdf",
+      "sha256": "a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c"
+    },
+    "pa-trc": {
+      "title": "Tax Reform Code of 1971, section 302 (72 P.S. § 7302)",
+      "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/1971/0/0002..HTM",
+      "kind": "statute"
     }
   },
   "parameters": [
@@ -3094,6 +3105,425 @@
           "section": "§ 36B(c)(1)(A)",
           "url": "https://www.law.cornell.edu/uscode/text/26/36B",
           "quote": "a taxpayer whose household income for the taxable year equals or exceeds 100 percent but does not exceed 400 percent of an amount equal to the poverty line for a family of the size involved."
+        }
+      ]
+    },
+    {
+      "fact": "/primaryFilerSeNetEarnings",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Rational:9235/10000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1402(a)(12)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1402",
+          "quote": "in lieu of the deduction provided by section 164(f) (relating to deduction for one-half of self-employment taxes), there shall be allowed a deduction equal to the product of— the taxpayer’s net earnings from self-employment for the taxable year (determined without regard to this paragraph), and one-half of the sum of the rates imposed by subsections (a) and (b) of section 1401 for such year (determined without regard to the rate imposed under paragraph (2) of section 1401(b))"
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 4a",
+          "page": 2,
+          "quote": "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235). Otherwise, enter amount from line 3"
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryFilerSeNetEarnings",
+      "file": "scheduleSE.xml",
+      "valuesFrom": "/primaryFilerSeNetEarnings",
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1402(a)(12)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1402",
+          "quote": "in lieu of the deduction provided by section 164(f) (relating to deduction for one-half of self-employment taxes), there shall be allowed a deduction equal to the product of— the taxpayer’s net earnings from self-employment for the taxable year (determined without regard to this paragraph), and one-half of the sum of the rates imposed by subsections (a) and (b) of section 1401 for such year (determined without regard to the rate imposed under paragraph (2) of section 1401(b))"
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 4a",
+          "page": 2,
+          "quote": "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235). Otherwise, enter amount from line 3"
+        }
+      ]
+    },
+    {
+      "fact": "/primaryFilerSeSocialSecurityTax",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Rational:124/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1401(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "In addition to other taxes, there shall be imposed for each taxable year, on the self-employment income of every individual, a tax equal to 12.4 percent of the amount of the self-employment income for such taxable year."
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 10",
+          "page": 2,
+          "quote": "Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryFilerSeSocialSecurityTax",
+      "file": "scheduleSE.xml",
+      "valuesFrom": "/primaryFilerSeSocialSecurityTax",
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1401(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "In addition to other taxes, there shall be imposed for each taxable year, on the self-employment income of every individual, a tax equal to 12.4 percent of the amount of the self-employment income for such taxable year."
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 10",
+          "page": 2,
+          "quote": "Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"
+        }
+      ]
+    },
+    {
+      "fact": "/primaryFilerSeMedicareTax",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Rational:29/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1401(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "In addition to the tax imposed by the preceding subsection, there shall be imposed for each taxable year, on the self-employment income of every individual, a tax equal to 2.9 percent of the amount of the self-employment income for such taxable year."
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 11",
+          "page": 2,
+          "quote": "Multiply line 6 by 2.9% (0.029)"
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryFilerSeMedicareTax",
+      "file": "scheduleSE.xml",
+      "valuesFrom": "/primaryFilerSeMedicareTax",
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1401(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "In addition to the tax imposed by the preceding subsection, there shall be imposed for each taxable year, on the self-employment income of every individual, a tax equal to 2.9 percent of the amount of the self-employment income for such taxable year."
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 11",
+          "page": 2,
+          "quote": "Multiply line 6 by 2.9% (0.029)"
+        }
+      ]
+    },
+    {
+      "fact": "/primaryFilerDeductibleSelfEmploymentTax",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Rational:1/2"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 164(f)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/164",
+          "quote": "there shall be allowed as a deduction for the taxable year an amount equal to one-half of the taxes imposed by section 1401 (other than the taxes imposed by section 1401(b)(2)) for such taxable year."
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 13",
+          "page": 2,
+          "quote": "Deduction for one-half of self-employment tax. Multiply line 12 by 50% (0.50)."
+        }
+      ]
+    },
+    {
+      "fact": "/secondaryFilerDeductibleSelfEmploymentTax",
+      "file": "scheduleSE.xml",
+      "valuesFrom": "/primaryFilerDeductibleSelfEmploymentTax",
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 164(f)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/164",
+          "quote": "there shall be allowed as a deduction for the taxable year an amount equal to one-half of the taxes imposed by section 1401 (other than the taxes imposed by section 1401(b)(2)) for such taxable year."
+        },
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 13",
+          "page": 2,
+          "quote": "Deduction for one-half of self-employment tax. Multiply line 12 by 50% (0.50)."
+        }
+      ]
+    },
+    {
+      "fact": "/form8959Line7",
+      "file": "form8959.xml",
+      "values": [
+        "Rational:9/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 3101(b)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/3101",
+          "quote": "a tax equal to 0.9 percent of wages which are received with respect to employment (as defined in section 3121(b)) during any taxable year beginning after December 31, 2012, and which are in excess of— (A) in the case of a joint return, $250,000, (B) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under subparagraph (A), and (C) in any other case, $200,000."
+        }
+      ]
+    },
+    {
+      "fact": "/form8959Line18",
+      "file": "form8959.xml",
+      "values": [
+        "Rational:9/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1401(b)(2)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1401",
+          "quote": "a tax equal to 0.9 percent of the self-employment income for such taxable year which is in excess of— (i) in the case of a joint return, $250,000, (ii) in the case of a married taxpayer (as defined in section 7703) filing a separate return, ½ of the dollar amount determined under clause (i), and (iii) in any other case, $200,000."
+        }
+      ]
+    },
+    {
+      "fact": "/form8959Line21",
+      "file": "form8959.xml",
+      "values": [
+        "Rational:145/10000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 3101(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/3101",
+          "quote": "In addition to the tax imposed by the preceding subsection, there is hereby imposed on the income of every individual a tax equal to 1.45 percent of the wages (as defined in section 3121(a)) received by him with respect to employment (as defined in section 3121(b))."
+        }
+      ]
+    },
+    {
+      "fact": "/form8960Line17",
+      "file": "form8960.xml",
+      "values": [
+        "Rational:38/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 1411(a)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1411",
+          "quote": "In the case of an individual, there is hereby imposed (in addition to any other tax imposed by this subtitle) for each taxable year a tax equal to 3.8 percent of the lesser of— (A) net investment income for such taxable year, or (B) the excess (if any) of the modified adjusted gross income for such taxable year over the threshold amount."
+        }
+      ]
+    },
+    {
+      "fact": "/paLine12",
+      "file": "paPit.xml",
+      "values": [
+        "Rational:307/10000"
+      ],
+      "cite": [
+        {
+          "source": "pa-trc",
+          "section": "§ 302(a)",
+          "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/1971/0/0002..HTM",
+          "quote": "every resident individual, estate or trust shall be subject to, and shall pay for the privilege of receiving each of the classes of income hereinafter enumerated in section 303, a tax upon each dollar of income received by that resident during that resident’s taxable year at the rate of three and seven hundredths per cent."
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleALine3",
+      "file": "scheduleA.xml",
+      "values": [
+        "Rational:75/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 213(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/213",
+          "quote": "There shall be allowed as a deduction the expenses paid during the taxable year, not compensated for by insurance or otherwise, for medical care of the taxpayer, his spouse, or a dependent (as defined in section 152, determined without regard to subsections (b)(1), (b)(2), and (d)(1)(B) thereof), to the extent that such expenses exceed 7.5 percent of adjusted gross income."
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleALine4",
+      "file": "scheduleA.xml",
+      "values": [
+        "Dollar:0",
+        "Rational:75/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 213(a)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/213",
+          "quote": "There shall be allowed as a deduction the expenses paid during the taxable year, not compensated for by insurance or otherwise, for medical care of the taxpayer, his spouse, or a dependent (as defined in section 152, determined without regard to subsections (b)(1), (b)(2), and (d)(1)(B) thereof), to the extent that such expenses exceed 7.5 percent of adjusted gross income."
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleALine13",
+      "file": "scheduleA.xml",
+      "values": [
+        "Dollar:0",
+        "Rational:5/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 170(b)(1)(I)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/170",
+          "quote": "Any charitable contribution otherwise allowable (without regard to this subparagraph) as a deduction under this section shall be allowed only to the extent that the aggregate of such contributions exceeds 0.5 percent of the taxpayer’s contribution base for the taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/phaseInRatesFor0Qc",
+      "file": "eitc4.xml",
+      "values": [
+        "Rational:765/10000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 32(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/32",
+          "quote": "The credit percentage and the phaseout percentage shall be determined as follows: In the case of an eligible individual with: The credit percentage is: The phaseout percentage is: 1 qualifying child 34 15.98; 2 qualifying children 40 21.06; 3 or more qualifying children 45 21.06; No qualifying children 7.65 7.65",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/eitcPhaseOutRate",
+      "file": "eitc4.xml",
+      "values": [
+        "Int:0",
+        "Rational:765/10000",
+        "Int:1",
+        "Rational:1598/10000",
+        "Int:2",
+        "Rational:2106/10000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 32(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/32",
+          "quote": "The credit percentage and the phaseout percentage shall be determined as follows: In the case of an eligible individual with: The credit percentage is: The phaseout percentage is: 1 qualifying child 34 15.98; 2 qualifying children 40 21.06; 3 or more qualifying children 45 21.06; No qualifying children 7.65 7.65",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/earlyDistributionAdditionalTax",
+      "file": "form1099Rs.xml",
+      "values": [
+        "Rational:1/10"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 72(t)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/72",
+          "quote": "If any taxpayer receives any amount from a qualified retirement plan (as defined in section 4974(c)), the taxpayer’s tax under this chapter for the taxable year in which such amount is received shall be increased by an amount equal to 10 percent of the portion of such amount which is includible in gross income."
+        }
+      ]
+    },
+    {
+      "fact": "/form2210Line5",
+      "file": "form2210.xml",
+      "values": [
+        "Rational:9/10"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 6654(d)(1)(B)(i)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/6654",
+          "quote": "the term “required annual payment” means the lesser of— 90 percent of the tax shown on the return for the taxable year (or, if no return is filed, 90 percent of the tax for such year), or 100 percent of the tax shown on the return of the individual for the preceding taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/carLoanLine35",
+      "file": "carLoanInterest.xml",
+      "values": [
+        "Rational:200/1000"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 163(h)(4)(C)(ii)(I)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/163",
+          "quote": "shall be reduced (but not below zero) by $200 for each $1,000 (or portion thereof) by which the modified adjusted gross income of the taxpayer for the taxable year exceeds $100,000 ($200,000 in the case of a joint return)."
+        },
+        {
+          "source": "f1040s1a-dft",
+          "section": "Line 35",
+          "page": 4,
+          "quote": "Multiply line 34 by $200"
+        }
+      ]
+    },
+    {
+      "fact": "/saversCreditMultiplierAsRational",
+      "file": "saversCredits.xml",
+      "values": [
+        "Rational:5/10",
+        "Rational:2/10",
+        "Rational:1/10",
+        "Rational:0/10"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 25B(b)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/25B",
+          "quote": "In the case of a joint return, the applicable percentage is— (A) if the adjusted gross income of the taxpayer is not over $30,000, 50 percent, (B) if the adjusted gross income of the taxpayer is over $30,000 but not over $32,500, 20 percent, (C) if the adjusted gross income of the taxpayer is over $32,500 but not over $50,000, 10 percent, and (D) if the adjusted gross income of the taxpayer is over $50,000, zero percent."
+        }
+      ]
+    },
+    {
+      "fact": "/edcHalfMagi",
+      "file": "elderlyAndDisabled.xml",
+      "values": [
+        "Rational:1/2"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 22(d)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/22",
+          "quote": "the section 22 amount shall be reduced by one-half of the excess of the adjusted gross income over $7,500, $10,000, or $5,000, as the case may be."
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleCBusinesses/*/line24bDeductibleMeals",
+      "file": "scheduleC.xml",
+      "values": [
+        "Dollar:0",
+        "Rational:1/2"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 274(n)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/274",
+          "quote": "The amount allowable as a deduction under this chapter for any expense for food or beverages shall not exceed 50 percent of the amount of such expense which would (but for this paragraph) be allowable as a deduction under this chapter."
         }
       ]
     }

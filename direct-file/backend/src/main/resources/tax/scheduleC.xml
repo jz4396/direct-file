@@ -2311,7 +2311,9 @@
     <Fact path="/scheduleCBusinesses/*/line24bDeductibleMeals">
       <Name>Schedule C line 24b</Name>
       <Description>Deductible meals: half of the amount entered, rounded half up to the nearest dollar, when the 50
-        percent limit applies. Zero when meals were not chosen. Incomplete when a different limit applies.</Description>
+        percent limit applies. Zero when meals were not chosen. Incomplete when a different limit applies. IRC
+        §274(n)(1).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>

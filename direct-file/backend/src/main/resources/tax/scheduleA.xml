@@ -286,6 +286,7 @@
       <Name>Schedule A line 3 (PDF)</Name>
       <Description>#67: printed value of Schedule A (Form 1040) 2026 draft line 3 "Multiply line 2 by 7.5% (0.075)",
         line 2 = Form 1040 line 11b (AGI). Same expression /scheduleALine4 subtracts; IRC §213(a).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
           <Multiply>
@@ -313,6 +314,7 @@
         "Multiply line 2 by 7.5% (0.075)"; line 4 = line 1 minus line 3, not below zero. IRC §213(a)
         (https://www.law.cornell.edu/uscode/text/26/213): "to the extent that such expenses exceed 7.5 percent of
         adjusted gross income."</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>
@@ -469,6 +471,7 @@
         "shall be allowed only to the extent that the aggregate of such contributions exceeds 0.5 percent of the
         taxpayer's contribution base". Contribution base = AGI (no NOL carryback in scope). The 60% cash limit
         (§170(b)(1)(G)) is a knockout.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>

@@ -395,7 +395,8 @@
 
     <Fact path="/saversCreditMultiplierAsRational">
       <Description>The savers credit multiplier as a rational number so that we can multiply it for Form 8880 line 10
-        calculations</Description>
+        calculations. IRC §25B(b): 50 percent, 20 percent, 10 percent, or zero percent.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>

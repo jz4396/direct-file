@@ -188,6 +188,7 @@
     </Fact>
     <Fact path="/phaseInRatesFor0Qc">
       <Name>Phase in rate for 0 qualifying children</Name>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Rational>765/10000</Rational>
       </Derived>
@@ -281,6 +282,7 @@
     <Fact path="/eitcPhaseOutRate">
       <Name>EITC phase out rate</Name>
       <Description>The rate at which EITC phases out as income exceeds the threshold amount.</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Switch>
           <Case>
