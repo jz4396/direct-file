@@ -1,8 +1,9 @@
 // Golden end-to-end scenarios (synthetic data), #135: profiles 5 and 7, profile A (dividends + NIIT), profile B
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
 // older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
-// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C) and profile G (married
-// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC).
+// profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
+// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), and profile H
+// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -112,7 +113,8 @@
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
 //      fixture SSNs other than profiles C, D, F, and G are in the 900 area, which SSA never issues; the app reads them
-//      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profiles C and D use
+//      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
+//      900-46-1009 (group 46, outside the ITIN ranges). Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
 //      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
@@ -169,6 +171,8 @@ import {
   profileGPrimaryW2,
   profileGSpouseW2,
   profileGWithW2s,
+  profileHDividendId,
+  profileHPaRentalDividends,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -1814,5 +1818,265 @@ describe(`golden end-to-end scenario (synthetic data): profile G negative rows (
     );
     expect(get(n, `/knockoutCdccWorksheetA`).get).toBe(true);
     expectDollars(n, { '/cdccCreditForPriorYearExpenses': `0.00`, '/cdccTotalCredit': `2100.00` });
+  });
+});
+
+// Stops this profile asserts. Each one is <BlockSubmissionOnTrue />. The return does not add a PA-40 line 6
+// amount. PA Schedule E is not produced.
+const PROFILE_H_STOPPED = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+
+describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, Schedule E rental, and dividends`, () => {
+  // Single, full-year Pennsylvania resident [PA] [TRC]; born 1988-03-15 (under 65, not blind), SSN 900-46-1009
+  //   (900 area, group 46, outside the ITIN ranges). Address 123 Example St, Harrisburg, PA 17101. School code
+  //   22275 (Harrisburg). Fixed identifiers. Standard deduction, the same choice as profile 7.
+  // W-2: box 1, box 3, box 5, and box 16 $48,000; box 2 $5,200; box 4 $2,976 (6.2% x 48,000, IRC §3101(a),
+  //   https://www.law.cornell.edu/uscode/text/26/3101; the 2026 OASDI wage base is $184,500); box 6 $696
+  //   (1.45% only [3102]); box 17 $1,600.
+  // Schedule E Part I, one residential rental, the supported totals (no per-property address is collected).
+  //   Instructions for Schedule E (2026) draft, https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf, printed p. 2
+  //   (PDF p. 3): "Use Schedule E (Form 1040) to report income or loss from rental real estate, royalties,
+  //   partnerships, S corporations, estates, trusts, and residual interests in REMICs."
+  //   Line 3 rents $15,000; line 4 royalties $0; lines 5-17 and 19 expenses $3,000; line 18 depreciation $0
+  //   (answered no, so Form 4562 is not required). 26 U.S.C. 61(a)(5),
+  //   https://www.law.cornell.edu/uscode/text/26/61: gross income includes "Rents". 26 U.S.C. 212,
+  //   https://www.law.cornell.edu/uscode/text/26/212: a deduction for ordinary and necessary expenses "for the
+  //   production or collection of income" and "for the management, conservation, or maintenance of property held
+  //   for the production of income".
+  //   Line 21 = 15,000 + 0 - 3,000 = 12,000. No loss, so lines 22 and 25 are $0 and Form 8582 / Form 6198 do not
+  //   apply (26 U.S.C. 469, 465, 461(l)). Line 26 = 12,000. Schedule E (2026) draft,
+  //   https://www.irs.gov/pub/irs-dft/f1040se--dft.pdf, p. 1, line 26: "Total rental real estate and royalty
+  //   income or (loss). ... Schedule 1 (Form 1040), line 5." Part II, Part III, and Part IV are answered no, so
+  //   lines 32, 37, and 39 are $0. Line 41 = 12,000. Not a section 162 trade or business (26 U.S.C. 199A), no
+  //   personal use (26 U.S.C. 280A), no substantial services. K-1s are out of scope.
+  // Form 1099-DIV: payer Example Dividend Fund; box 1a $1,800; box 1b $1,200. Box 1b is not larger than box 1a.
+  //   No box 2a, box 5, nominee, or other unsupported box. Holding period met. Ordinary dividends are over
+  //   $1,500, so Schedule B is required. Instructions for Schedule B (Form 1040) (2025),
+  //   https://www.irs.gov/pub/irs-pdf/i1040sb.pdf, p. 1: "You had over $1,500 of taxable interest or ordinary
+  //   dividends." Part III is answered no (no foreign account, no foreign trust). $1,800 is not over $2,500.
+  // Form 1040: line 1a 48,000; line 2b 0; line 3a 1,200; line 3b 1,800; Schedule 1 line 5 and line 8 12,000;
+  //   line 9 and line 11 (AGI) 61,800. No adjustments. Line 12 standard deduction 16,100 [RP p. 18 §4.14(1):
+  //   "Unmarried Individuals (other than Surviving Spouses and Heads of Households) ... $16,100"]. Line 15
+  //   taxable income 45,700. AGI is under the $200,000 single threshold [1411 (b)(3)], so Form 8960 line 17 is
+  //   $0 and the Schedule E rents do not stop the federal return. No Form 8959 (Medicare wages under $200,000
+  //   [3101]). AMTI 61,800 is under the $90,100 exemption [RP p. 16], so AMT is $0.
+  // Line 16, QDCG worksheet [GI p. 38]: 1) 45,700  2) 1,200  3) 0 (no Schedule D; /soldCapitalAssets is no)
+  //   4) 1,200  5) 44,500  6) 49,450 [RP p. 13 §4.03: "All Other Individuals $49,450 $545,500"]  7) 45,700
+  //   8) 44,500  9) 1,200 (taxed at 0%; taxable income is under the zero-rate amount)  10) 1,200  11) 1,200
+  //   12) 0  13) 545,500  14) 45,700  15) 45,700  16) 0  17) 0  18) 0  19) 1,200  20) 0  21) 0
+  //   22) tax on 44,500 by the Tax Table [GI p. 36: "If your taxable income is less than $100,000, you must use
+  //   the Tax Table"]: row 44,500-44,550, midpoint 44,525, [RP p. 11 Table 3] 1,240 + 12% x (44,525 - 12,400) =
+  //   1,240 + 12% x 32,125 = 5,095  23) 5,095
+  //   24) tax on 45,700: row 45,700-45,750, midpoint 45,725: 1,240 + 12% x (45,725 - 12,400) = 1,240 + 12% x
+  //   33,325 = 5,239  25) smaller = 5,095.
+  // Total tax 5,095; withholding 5,200; overpayment 105. EITC is $0 [EITC]: the TIN is not an SSN, and AGI is
+  //   over $19,540. No qualifying child, so the child tax credit is $0.
+  // PA-40 as modeled, not as a filed rental return [PA] [TRC]. Line 6 stays $0. [PA] p. 17-19, LINE 6: "LINE 6.
+  //   NET INCOME OR LOSS FROM RENTS, ROYALTIES, PATENTS, OR COPYRIGHTS" and "Rental income includes the amounts
+  //   you receive for the use of, or the right to use, your real or personal property" and "Report the total
+  //   income (loss) from all PA Schedules E". 72 P.S. §7303(a)(4)
+  //   (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/). This scenario
+  //   does not invent that amount: the engine leaves line 6 at $0 and /flowKnockoutPaUnsupportedIncome is true
+  //   because Schedule E Part I is present. The PA-40 is not filed: /flowKnockoutStateReturn is true.
+  //   What is computed uses the classes that are supported. Line 1a = box 16 48,000 [PA p. 10]. Line 1b $0
+  //   (no unreimbursed employee expenses). Line 1c 48,000. Line 2 $0. Line 3 = federal line 3b 1,800 [PA p. 15,
+  //   LINE 3: "Report all dividend income received or credited during 2025."; p. 32: with no Schedule B lines
+  //   2 through 10, "you must report your income on Line 3 of the PA-40, but you do not have to submit PA
+  //   Schedule B"]. $1,800 is not over the $2,500 tool limit. Lines 4, 5, 6, 7, and 8 are $0. Line 9 adds only
+  //   the positive amounts [PA p. 20]: 48,000 + 1,800 = 49,800. Line 10 $0. Line 11 49,800. Line 12 3.07% x
+  //   49,800 = 1,528.86 [TRC] [PA p. 21]. Line 13 and line 24 1,600. Line 21 $0 (eligibility income 49,800 is
+  //   over the tax-forgiveness table). Line 26 $0. Line 29 overpayment 1,600 - 1,528.86 = 71.14.
+  const g = graph(profileHPaRentalDividends);
+  const expectStoppedOnly = (fg: Fg) => {
+    const stopped = new Set(PROFILE_H_STOPPED);
+    for (const path of submissionBlockingFacts.filter((p) => !p.includes(`*`) && p !== `/flowIncomplete`)) {
+      const r = get(fg, path);
+      if (stopped.has(path)) {
+        expect(r.complete, path).toBe(true);
+        expect(r.get, path).toBe(true);
+      } else {
+        expect(r.complete && r.get === true, path).toBe(false);
+      }
+    }
+  };
+
+  it(`Schedule E Part I net rental income on Schedule 1 line 5`, () => {
+    expect(get(g, `/hasScheduleEIncome`).get).toBe(true);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+    expect(get(g, `/requiresSchedule1`).get).toBe(true);
+    for (const path of [
+      `/flowKnockoutScheduleELoss`,
+      `/flowKnockoutScheduleEDepreciation`,
+      `/flowKnockoutScheduleEPersonalUse`,
+      `/flowKnockoutScheduleESubstantialServices`,
+      `/flowKnockoutScheduleETradeOrBusinessQbi`,
+      `/flowKnockoutScheduleEEitc`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowKnockoutScheduleEPartIV`,
+    ]) {
+      expect(get(g, path).complete, path).toBe(true);
+      expect(get(g, path).get, path).toBe(false);
+    }
+    expectDollars(g, {
+      '/scheduleERents': `15000.00`,
+      '/scheduleERoyalties': `0.00`,
+      '/scheduleEExpenses': `3000.00`,
+      '/scheduleENetIncome': `12000.00`,
+      '/scheduleEPartIILine32': `0.00`,
+      '/scheduleEPartIIILine37': `0.00`,
+      '/scheduleELine41': `12000.00`,
+      '/schedule1Line5': `12000.00`,
+    });
+  });
+  it(`Form 1040 income, standard deduction, and line 16 tax (QDCG worksheet)`, () => {
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).get).toBe(false);
+    expect(get(g, `/requiresSchedule2`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expectDollars(g, {
+      '/wages': `48000.00`,
+      '/interestIncome': `0.00`,
+      '/ordinaryDividends': `1800.00`,
+      '/qualifiedDividends': `1200.00`,
+      '/otherIncome': `12000.00`,
+      '/totalIncome': `61800.00`,
+      '/adjustmentsToIncome': `0.00`,
+      '/agi': `61800.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/taxableIncome': `45700.00`,
+      '/qdcgLine1': `45700.00`,
+      '/qdcgLine2': `1200.00`,
+      '/qdcgLine3': `0.00`,
+      '/qdcgLine4': `1200.00`,
+      '/qdcgLine5': `44500.00`,
+      '/qdcgLine6': `49450.00`,
+      '/qdcgLine9': `1200.00`,
+      '/qdcgLine10': `1200.00`,
+      '/qdcgLine12': `0.00`,
+      '/qdcgLine13': `545500.00`,
+      '/qdcgLine18': `0.00`,
+      '/qdcgLine21': `0.00`,
+      '/qdcgLine22': `5095.00`,
+      '/qdcgLine23': `5095.00`,
+      '/qdcgLine24': `5239.00`,
+      '/qdcgLine25': `5095.00`,
+      '/tentativeTaxFromTaxableIncome': `5095.00`,
+      '/amt': `0.00`,
+      '/form6251Line4': `61800.00`,
+      '/form8959Line7': `0.00`,
+      '/form8960Line13': `61800.00`,
+      '/form8960Line14': `200000.00`,
+      '/form8960Line17': `0.00`,
+      '/totalTax': `5095.00`,
+      '/formW2Withholding': `5200.00`,
+      '/totalPayments': `5200.00`,
+      '/overpayment': `105.00`,
+    });
+  });
+  it(`PA-40 line 6 stays $0 and the return stops; wages and dividends are still computed`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(false);
+    expect(get(g, `/paSchoolCode`).get.toString()).toBe(`22275`);
+    expect(get(g, `/paLine6`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expectDollars(g, {
+      '/paLine1a': `48000.00`,
+      '/paLine1b': `0.00`,
+      '/paLine1c': `48000.00`,
+      '/paLine2': `0.00`,
+      '/paLine3': `1800.00`,
+      '/paLine4': `0.00`,
+      '/paLine5': `0.00`,
+      '/paLine6': `0.00`,
+      '/paLine9': `49800.00`,
+      '/paLine11': `49800.00`,
+      '/paLine12': `1528.86`,
+      '/paLine13': `1600.00`,
+      '/paLine21': `0.00`,
+      '/paLine24': `1600.00`,
+      '/paLine26': `0.00`,
+      '/paLine29': `71.14`,
+    });
+    for (const path of [
+      `/flowKnockoutPaScheduleA`,
+      `/flowKnockoutPaScheduleB`,
+      `/flowKnockoutPaScheduleD`,
+      `/flowKnockoutPaDividends`,
+      `/flowKnockoutPaPartYear`,
+      `/flowKnockoutPaUnsupportedItems`,
+      `/flowKnockoutPaNonresidentPaSourcePay`,
+      `/flowKnockoutPaSpUnsupported`,
+      `/flowKnockoutPaUnreimbursedEmployeeExpenses`,
+    ]) {
+      expect(get(g, path).complete, path).toBe(true);
+      expect(get(g, path).get, path).toBe(false);
+    }
+    expectStoppedOnly(g);
+  });
+  it(`answering the rental no leaves line 6 at $0 and clears the PA stop`, () => {
+    // The same wages and dividends, with Schedule E Part I answered no. Line 6 is still $0. Nothing in this
+    // scenario supplies a PA rental amount.
+    const n = graph({ ...profileHPaRentalDividends, '/hadScheduleEIncome': createBooleanWrapper(false) });
+    expect(get(n, `/hasScheduleEIncome`).get).toBe(false);
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(n, `/flowKnockoutStateReturn`).get).toBe(false);
+    expectDollars(n, {
+      '/scheduleENetIncome': `0.00`,
+      '/agi': `49800.00`,
+      '/paLine3': `1800.00`,
+      '/paLine6': `0.00`,
+      '/paLine9': `49800.00`,
+      '/paLine12': `1528.86`,
+      '/paLine29': `71.14`,
+    });
+    expectNotStopped(n);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile H negative rows (each stops the return)`, () => {
+  const stops = (facts: Record<string, unknown>, knockout: string) => {
+    const n = graph(facts);
+    expect(submissionBlockingFacts).toContain(knockout);
+    expect(get(n, knockout).complete, knockout).toBe(true);
+    expect(get(n, knockout).get, knockout).toBe(true);
+    expect(get(n, `/flowIsKnockedOut`).complete).toBe(true);
+    expect(get(n, `/flowIsKnockedOut`).get).toBe(true);
+    return n;
+  };
+
+  it(`depreciation (Form 4562) stops on the Schedule E depreciation knockout`, () => {
+    const n = stops(
+      { ...profileHPaRentalDividends, '/scheduleEHasDepreciation': createBooleanWrapper(true) },
+      `/flowKnockoutScheduleEDepreciation`
+    );
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expectDollars(n, { '/scheduleENetIncome': `12000.00`, '/paLine6': `0.00` });
+  });
+  it(`expenses above rents stop on the Schedule E loss knockout`, () => {
+    // Rents 15,000 - expenses 20,000 = a 5,000 loss. 26 U.S.C. 469, 465, and 461(l) are not computed.
+    const n = stops(
+      { ...profileHPaRentalDividends, '/scheduleEWritableExpenses': createDollarWrapper(`20000`) },
+      `/flowKnockoutScheduleELoss`
+    );
+    expectDollars(n, { '/scheduleENetIncome': `-5000.00`, '/paLine6': `0.00` });
+  });
+  it(`ordinary dividends of $2,501 stop on the PA Schedule B knockout`, () => {
+    // One dollar over the $2,500 tool limit. PA-40 Schedule B is not produced. The federal Schedule B
+    // threshold is $1,500 ("over $1,500"); $2,501 is still only box 1a and box 1b.
+    const n = stops(
+      {
+        ...profileHPaRentalDividends,
+        [`/dividendReports/#${profileHDividendId}/ordinaryDividends`]: createDollarWrapper(`2501`),
+        [`/dividendReports/#${profileHDividendId}/writableQualifiedDividends`]: createDollarWrapper(`1200`),
+      },
+      `/flowKnockoutPaScheduleB`
+    );
+    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expectDollars(n, { '/ordinaryDividends': `2501.00`, '/paLine3': `2501.00`, '/paLine6': `0.00` });
   });
 });
