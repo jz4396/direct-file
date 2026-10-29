@@ -1,0 +1,62 @@
+# #89: 2026 Schedule R (Form 1040), Credit for the Elderly or the Disabled. DRAFT-BASED MAPPING.
+# Source: https://www.irs.gov/pub/irs-dft/f1040sr--dft.pdf (early-release draft, PDF metadata CreationDate
+# 2026-04-21, title "2026 Schedule R (Form 1040)", 3 PDF pages, 208,960 bytes), committed byte-identical to
+# irs.gov; SHA-256 0fcbd9fe296b470b2a0ceadc497380159f7d872f7aa11d86ae856bbd2234f5b6 (pinned in
+# ../../draft-pdf-sha256.txt and rechecked by DraftPdfHashManifestTest). Field names match the prior-year
+# Schedule R map. Captions below are this draft's AcroForm tooltips.
+# When the final 2026 Schedule R is released (#124), re-download it, re-hash it and re-verify every field
+# name and line number here before swapping it in.
+# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+# The draft is two form pages (Part I and Part II, then Part III). Attachment Sequence No. 16.
+# No 2026 Spanish Schedule R draft is posted. irs.gov/pub/irs-dft/f1040srsp--dft.pdf and f1040srs.pdf are 404.
+# f1040srs--dft.pdf is the 2026 Spanish Form 1040-SR, not Schedule R. Spanish returns print this English form.
+# There is no es entry, and none pointing at the 2024 template.
+#
+# Included when /isReceivingEdc (a positive credit). 26 U.S.C. 22(a): "an amount equal to 15 percent of such
+# individual's section 22 amount". Line 22 of this draft: "Credit for the elderly or the disabled. Enter the
+# smaller of line 20 or line 21. Also enter this amount on Schedule 3 (Form 1040), line 6d." That amount is
+# /totalEdc, the same fact as Schedule 3 line 6d.
+# Initial amounts and the AGI / nontaxable ceilings are IRC §22(c)(2) and §22(d). Instructions for Schedule R
+# (2026) draft, https://www.irs.gov/pub/irs-dft/i1040sr--dft.pdf, SHA-256
+# 6f30613aacd956f145fea666527ad68bea5d5f8a87072270f9a17e14f41ae661, PDF p. 7, Table 1. Income Limits.
+#
+# Not a separate fill-in: Part II is the physician's statement checkbox only. The statement itself is kept for
+# the filer's records (2026 draft instructions, Part II); it is not a field on this form. $0 amounts print blank
+# (FactGraphService zero suppression) except line 13c, which says "enter -0-" and whose fact has <ExportZero />.
+includeWhen: /isReceivingEdc
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Page 1. Name(s) shown on return."
+      f1_2[0]: /primaryFiler/tin # "Your social security number."
+      c1_1[0]: /edcLine1 # 1 "You were 65 or older."
+      c1_1[1]: /edcLine2 # 2 "You were under 65 and you retired on permanent and total disability."
+      Married[0]:
+        c1_1[0]: /edcLine3 # 3 "Both spouses were 65 or older."
+        c1_1[1]: /edcLine4 # 4 "Both spouses were under 65, but only one spouse retired on permanent and total disability."
+        c1_1[2]: /edcLine5 # 5 "Both spouses were under 65, and both retired on permanent and total disability."
+        c1_1[3]: /edcLine6 # 6 "One spouse was 65 or older, and the other spouse was under 65 and retired on permanent and total disability."
+        c1_1[4]: /edcLine7 # 7 "One spouse was 65 or older, and the other spouse was under 65 and not retired on permanent and total disability."
+      MarriedSeparate[0]:
+        c1_1[0]: /edcLine8 # 8 "You were 65 or older and you lived apart from your spouse for all of 2026."
+        c1_1[1]: /edcLine9 # 9 "You were under 65, you retired on permanent and total disability, and you lived apart from your spouse for all of 2026."
+      c1_2[0]: /allDisabledEdcQualifiedDontNeedPhysicianStatement # Part II "check this box. If you checked this box, you don't have to get another statement for 2026."
+    Page2[0]:
+      f2_1[0]: /edcFilingStatusAmt # 10 "Box 1, 2, 4, or 7, Enter: $5,000. Box 3, 5, or 6, Enter: $7,500. Box 8 or 9, Enter: $3,750."
+      f2_2[0]: /statusBasedDisabilityIncome # 11 taxable disability income (box 6 adds $5,000)
+      f2_3[0]: /lesserOfFilingStatusAmountAndTaxableDisabilityIncome # 12 "smaller of line 10 or line 11"
+      f2_4[0]: /edcNonTaxableSocialSecurityAndRailroadBenefits # 13a nontaxable social security and railroad retirement
+      f2_5[0]: /edcNonTaxableIncomeNotIncludingSocialSecurityAndRrb # 13b nontaxable veterans' pensions and other excluded benefits
+      f2_6[0]: /edcTotalNonTaxableAmount # 13c "Add lines 13a and 13b." "enter 0 on line 13c"
+      f2_7[0]: /agi # 14 "Enter the amount from Form 1040 or 1040-SR, line 11b."
+      f2_8[0]: /edcExemptionAmount # 15 "Box 1 or 2, Enter: $7,500. Box 3, 4, 5, 6, or 7, Enter: $10,000. Box 8 or 9, Enter: $5,000."
+      f2_9[0]: /edcMagi # 16 "Subtract line 15 from line 14. If zero or less, enter 0."
+      f2_10[0]: /edcHalfMagi # 17 "Enter one-half of line 16."
+      f2_11[0]: /edcAdjustedCreditAmount # 18 "Add lines 13c and 17."
+      f2_12[0]: /edcNetCreditAmount # 19 "Subtract line 18 from line 12."
+      f2_13[0]: /netEdcAmount # 20 "Multiply line 19 by 15% (0.15)."
+      f2_14[0]: /edcTaxLiabilityLimit # 21 "Tax liability limit. Enter the amount from the Credit Limit Worksheet in the instructions."
+      f2_15[0]: /totalEdc # 22 "Enter the smaller of line 20 or line 21. Also enter this amount on Schedule 3 (Form 1040), line 6d."
