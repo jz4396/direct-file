@@ -113,6 +113,9 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "box1", dollar(box1));
         m.put(p + "materiallyParticipates", bool(true));
         m.put(p + "box14CodeA", dollar("0.00"));
+        m.put(p + "box14CodeAWasReduced", bool(false));
+        m.put(p + "box14CodeAIsFarm", bool(false));
+        m.put(p + "box14CodeANotLimitedPartnerAmount", bool(false));
         m.put(p + "hasQbiStatement", bool(false));
         m.put(p + "hasOtherK1Amount", bool(false));
         m.put(p + "basisComputationRequired", bool(false));

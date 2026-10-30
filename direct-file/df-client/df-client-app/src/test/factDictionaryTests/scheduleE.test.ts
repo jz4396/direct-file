@@ -50,6 +50,9 @@ const k1 = (id: string, box1: string, type: `P` | `S`, extra: Record<string, unk
   [`/scheduleEK1s/#${id}/box1`]: createDollarWrapper(box1),
   [`/scheduleEK1s/#${id}/materiallyParticipates`]: createBooleanWrapper(true),
   [`/scheduleEK1s/#${id}/box14CodeA`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/box14CodeAWasReduced`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${id}/box14CodeAIsFarm`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${id}/box14CodeANotLimitedPartnerAmount`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/hasQbiStatement`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/hasOtherK1Amount`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/basisComputationRequired`]: createBooleanWrapper(false),
@@ -198,17 +201,18 @@ describe(`Schedule E Part I MVP (#38)`, () => {
     expect(Boolean(section.complete && section.get)).toBe(false);
   });
 
-  it(`Schedule SE line 2 stays Schedule C only when K-1 box 14 code A applies (#238)`, ({ task }) => {
+  it(`Schedule C plus K-1 box 14 code A is on line 2 and stops for the QBI split (#84)`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/primaryFilerSeNetProfit`,
-      `/selfEmploymentTax`,
-      `/scheduleENetIncome`,
+      `/flowKnockoutScheduleEPartIIBox14CodeA`,
+      `/flowKnockoutScheduleCQbiAndK1Box14CodeA`,
       `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
     ];
-    // 2026 draft Schedule SE, PDF p. 2, line 2: "Net profit or (loss) from Schedule C, line 31; and Schedule
-    // K-1 (Form 1065), box 14, code A (other than farming)". Line 1a is the farm amount. 26 U.S.C. 1402(a).
-    // $10,000 gross - $2,000 expenses = $8,000 on line 2. Box 14 code A is not added, so line 2 and the SE
-    // tax match the Schedule C-only return. The knockout stops the return that would file that omission.
+    // 2026 draft Schedule SE, PDF p. 2, line 2 adds Schedule C line 31 and nonfarm box 14 code A.
+    // 26 U.S.C. 1402(a). Treas. Reg. 1.199A-3(b)(1)(vi) attributes the deductible part of SE tax to each
+    // trade. $10,000 gross - $2,000 expenses = $8,000. Box 14 code A $12,000. Line 2 is $20,000. The
+    // return stops because that split is not computed.
     const businessId = `a59c03d1-af4a-447f-96aa-d19397048a01`;
     const scheduleC = {
       '/hadSelfEmploymentIncome': createBooleanWrapper(true),
@@ -243,12 +247,12 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       ...box14,
     });
     expect(get(withoutK1, `/primaryFilerSeNetProfit`).get.toString()).toBe(`8000.00`);
-    expect(get(withoutK1, `/flowKnockoutScheduleEPartII`).get).toBe(false);
-    expect(get(withK1, `/primaryFilerSeNetProfit`).get.toString()).toBe(`8000.00`);
-    expect(get(withK1, `/selfEmploymentTax`).get.toString()).toBe(get(withoutK1, `/selfEmploymentTax`).get.toString());
+    expect(get(withoutK1, `/flowKnockoutScheduleCQbiAndK1Box14CodeA`).get).toBe(false);
+    expect(get(withK1, `/primaryFilerSeNetProfit`).get.toString()).toBe(`20000.00`);
     expect(get(withK1, `/scheduleENetIncome`).get.toString()).toBe(`0.00`);
-    expect(get(withK1, `/flowKnockoutScheduleEPartIIBox14CodeA`).get).toBe(true);
-    expect(get(withK1, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(withK1, `/flowKnockoutScheduleEPartIIBox14CodeA`).get).toBe(false);
+    expect(get(withK1, `/flowKnockoutScheduleCQbiAndK1Box14CodeA`).get).toBe(true);
+    expect(get(withK1, `/flowKnockoutScheduleEPartII`).get).toBe(false);
     expect(get(withK1, `/flowIsKnockedOut`).get).toBe(true);
   });
 
@@ -286,6 +290,11 @@ const partIIKnockouts = [
   `/flowKnockoutScheduleEPartIILoss`,
   `/flowKnockoutScheduleEPartIINotMaterialParticipation`,
   `/flowKnockoutScheduleEPartIIBox14CodeA`,
+  `/flowKnockoutScheduleEPartIIBox14CodeAReduction`,
+  `/flowKnockoutScheduleEPartIIBox14CodeAFarm`,
+  `/flowKnockoutScheduleEPartIIBox14CodeALimitedPartner`,
+  `/flowKnockoutScheduleEPartIIBox14CodeAMfj`,
+  `/flowKnockoutScheduleCQbiAndK1Box14CodeA`,
   `/flowKnockoutScheduleEPartIIQbiCode`,
   `/flowKnockoutScheduleEPartIIOtherK1Amount`,
   `/flowKnockoutScheduleEPartIIColumnE`,
@@ -381,9 +390,34 @@ describe(`Schedule E Part II ordinary income (#85)`, () => {
       { [`/scheduleEK1s/#${partnershipId}/materiallyParticipates`]: createBooleanWrapper(false) },
     ],
     [
-      `box 14 code A`,
+      `box 14 code A reduced by expenses`,
+      `/flowKnockoutScheduleEPartIIBox14CodeAReduction`,
+      {
+        [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`12000`),
+        [`/scheduleEK1s/#${partnershipId}/box14CodeAWasReduced`]: createBooleanWrapper(true),
+      },
+    ],
+    [
+      `farm box 14 code A or code B`,
+      `/flowKnockoutScheduleEPartIIBox14CodeAFarm`,
+      { [`/scheduleEK1s/#${partnershipId}/box14CodeAIsFarm`]: createBooleanWrapper(true) },
+    ],
+    [
+      `limited partner amount is not only guaranteed payments`,
+      `/flowKnockoutScheduleEPartIIBox14CodeALimitedPartner`,
+      {
+        [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`12000`),
+        [`/scheduleEK1s/#${partnershipId}/box14CodeANotLimitedPartnerAmount`]: createBooleanWrapper(true),
+      },
+    ],
+    [
+      `S corporation box 14 code A`,
       `/flowKnockoutScheduleEPartIIBox14CodeA`,
-      { [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`12000`) },
+      {
+        [`/scheduleEK1s/#${partnershipId}/entityType`]: createEnumWrapper(`S`, `/scheduleEK1EntityTypeOptions`),
+        [`/scheduleEK1s/#${partnershipId}/entityName`]: createStringWrapper(`Northwind Inc`),
+        [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`12000`),
+      },
     ],
     [
       `box 20 code Z`,

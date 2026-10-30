@@ -10,9 +10,12 @@
   knocked out with BlockSubmissionOnTrue.
 
   Part II supported path (every entity on line 28): domestic partnership (P) or S corporation (S), column
-  (c) unchecked; box 1 ordinary business income >= 0 and every other K-1 box blank or zero (including
-  Form 1065 box 14 and box 20 code Z, and Form 1120-S box 17 code V); material participation yes, so the
-  amount is column (k); no column (e) or (f); line 27 no.
+  (c) unchecked; box 1 ordinary business income >= 0; material participation yes, so the amount is column
+  (k); no column (e) or (f); line 27 no. Form 1065 box 14 code A that is not from farming is added to
+  Schedule SE line 2 (26 U.S.C. 1402(a)). A reduction of that amount, farming or box 14 code B, a limited
+  partner amount that is not only guaranteed payments for services (1402(a)(13)), a joint return, and
+  Schedule C qualified business income together with that amount are stops. An S corporation still enters
+  box 14 code A as zero. Box 20 code Z and Form 1120-S box 17 code V stay stops.
 
   Part III supported path (every estate or trust on line 33): domestic beneficiary, not a foreign trust,
   no Form 8082 inconsistent treatment. Schedule K-1 (Form 1041) box 6 is at least zero and the filer
@@ -307,13 +310,11 @@
         652(a)
         (https://www.law.cornell.edu/uscode/text/26/652), 662(a)
         (https://www.law.cornell.edu/uscode/text/26/662).
-        A yes is the gate for Part II. The supported path (ordinary nonpassive box 1 only) is computed
-        on line 32. A
-        loss, passive activity, foreign partnership, PTP, column (e) or (f), any amount
-        other than box 1, Schedule K-1
-        (Form 1065) box 14 code A, a QBI statement (box 20 code Z or box
-        17 code V), or line 27 stops the return. Part
-        III is computed only on its supported path.
+        A yes is the gate for Part II. The supported path (ordinary nonpassive box 1, and nonfarm Form 1065
+        box 14 code A on Schedule SE line 2) is computed on line 32. A loss, passive activity, foreign
+        partnership, PTP, column (e) or (f), any amount other than box 1 and box 14 code A, a QBI statement
+        (box 20 code Z or box 17 code V), or line 27 stops the return. Part III is computed only on its
+        supported path.
         A residual interest in a REMIC is not this question. Schedule Q (Form
         1066) is
         /scheduleEHasPartIVIncome, asked even when this answer is no. See /flowKnockoutScheduleEPartII.
@@ -710,18 +711,66 @@
         Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)."
         26 U.S.C. 1402(a)
         (https://www.law.cornell.edu/uscode/text/26/1402). 2026 draft Instructions for
-        Schedule E, PDF p. 12: "Enter the
+        Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf), PDF p. 5, Partnership Income or
+        Loss: general partners include box 14 code A on Schedule SE line 1a or line 2; limited partners
+        include only guaranteed payments for services (26 U.S.C. 1402(a)(13)); if the filer reduces the
+        amount, attach an explanation. 2026 draft Instructions for Schedule E, PDF p. 12: "Enter the
         amount from box 14, code A, of Schedule K-1 (Form 1065), on Schedule
         SE after you reduce this amount by any
         allowable expenses attributable to that income." PDF p. 13:
         "Your share of the net income of an S corporation is
-        not subject to self-employment tax." A nonzero
-        amount is not added to Schedule SE line 2; it stops the return.
-        Enter zero when box 14 code A is blank,
-        including every S corporation.
+        not subject to self-employment tax." A partnership amount that was not reduced, is not from
+        farming, and is the right limited-partner amount is added to Schedule SE line 2 on a return that
+        is not a joint return. Enter zero when box 14 code A is blank, including every S corporation. A
+        nonzero amount on an S corporation stops the return.
       </Description>
       <Writable>
         <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAWasReduced">
+      <Name>Box 14 code A was reduced by allowable expenses</Name>
+      <Description>
+        2026 draft Instructions for Schedule SE, PDF p. 5: if the filer reduces the self-employment amount
+        from the K-1, attach an explanation. 2026 draft Instructions for Schedule E, PDF p. 12, say to
+        reduce box 14 code A by allowable expenses attributable to that income before entering it on
+        Schedule SE. Unreimbursed partnership expenses and other 26 U.S.C. 1402(a) expenses need that
+        explanation. This return does not attach it, so a yes stops the return. Answer no when the amount
+        in /scheduleEK1s/*/box14CodeA is the full box 14 code A from the K-1. Asked only for a partnership.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAIsFarm">
+      <Name>Box 14 code A is farm income, or box 14 code B has an amount</Name>
+      <Description>
+        2026 draft Schedule SE, PDF p. 2, line 1a is farm profit, including a farm partnership's box 14
+        code A. Line 2 is the same code "other than farming." Box 14 code B is gross farming or fishing
+        income. 26 U.S.C. 1402(a) and 1402(a)(1). Neither line 1a nor code B is computed here, so a yes
+        stops the return. Answer no when code A is not from farming and code B is blank or zero.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeANotLimitedPartnerAmount">
+      <Name>Box 14 code A is not the limited-partner self-employment amount</Name>
+      <Description>
+        26 U.S.C. 1402(a)(13) (https://www.law.cornell.edu/uscode/text/26/1402#a_13): a limited partner's
+        net earnings from self-employment exclude the distributive share, "other than guaranteed payments
+        described in section 707(c) to that partner for services actually rendered to or on behalf of the
+        partnership to the extent that those payments are established to be in the nature of remuneration
+        for those services." 2026 draft Instructions for Schedule SE, PDF p. 5: limited partners include
+        only guaranteed payments for services, on Schedule SE line 1a or line 2. A general partner, and a
+        limited partner whose box 14 code A is already only those guaranteed payments, answers no. A yes
+        means the amount is not the 1402(a)(13) amount, and the return stops.
+      </Description>
+      <Writable>
+        <Boolean />
       </Writable>
     </Fact>
 
@@ -743,14 +792,15 @@
     <Fact path="/scheduleEK1s/*/hasOtherK1Amount">
       <Name>Any Schedule K-1 amount other than box 1</Name>
       <Description>
-        Any box other than box 1 ordinary business income (loss), including guaranteed payments, interest,
-        dividends, royalties, section 179, credits, and other separately stated items. 26 U.S.C. 702(a)(1)-(7)
-        and
-        1366(a)(1)(A) require those items to be taken into account separately. They are not entered on
-        Schedule E line 28
-        column (k) in this slice, so any such amount stops the return. Answer no only when
-        every other box is blank or
-        zero.
+        Any box other than box 1 ordinary business income (loss) and, for a partnership, box 14 code A.
+        Box 4 guaranteed payments are always included. Answer yes when box 4 has an amount, including when
+        those payments are also in box 14 code A. 26 U.S.C. 707(c) guaranteed payments are separately stated
+        under 702(a). Box 14 code A is the self-employment amount under 26 U.S.C. 1402(a) and does not take
+        the place of box 4. The same yes covers interest, dividends, royalties, section 179, credits, and
+        other separately stated items. 26 U.S.C. 702(a)(1)-(7) and 1366(a)(1)(A) require those items to be
+        taken into account separately. They are not entered on Schedule E line 28 column (k) in this slice,
+        so any such amount stops the return. Answer no only when every other box is blank or zero. Box 14
+        code A is entered on its own line and, when supported, on Schedule SE line 2.
       </Description>
       <Writable>
         <Boolean />
@@ -830,6 +880,272 @@
             </Right>
           </Equal>
         </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/isPartnership">
+      <Name>Schedule K-1 is Form 1065</Name>
+      <Description>
+        Line 28 column (b) is P. Box 14 code A is a Form 1065 amount. An S corporation is not a partnership.
+      </Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../entityType" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/scheduleEK1EntityTypeOptions">P</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAReductionStops">
+      <Name>This partnership reduced box 14 code A</Name>
+      <Description>True when a partnership answers yes on /scheduleEK1s/*/box14CodeAWasReduced.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <Dependency path="../box14CodeAWasReduced" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAFarmStops">
+      <Name>This partnership has farm self-employment income</Name>
+      <Description>True when a partnership answers yes on /scheduleEK1s/*/box14CodeAIsFarm.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <Dependency path="../box14CodeAIsFarm" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeALimitedPartnerStops">
+      <Name>Box 14 code A is not the section 1402(a)(13) amount</Name>
+      <Description>
+        True when a partnership answers yes on /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <Dependency path="../box14CodeANotLimitedPartnerAmount" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAIncludedOnScheduleSE">
+      <Name>This box 14 code A is included on Schedule SE line 2</Name>
+      <Description>
+        A partnership amount that was not reduced, is not from farming, and is the right amount under
+        26 U.S.C. 1402(a)(13), on a return that is not married filing jointly. A joint return has no fact
+        for which spouse holds the partnership interest, and each spouse files a separate Schedule SE
+        (2026 draft Instructions for Schedule SE, PDF p. 3). The amount is not assigned to one spouse.
+        An S corporation is not included. 26 U.S.C. 1402(a).
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <Not>
+            <Dependency path="../box14CodeAWasReduced" />
+          </Not>
+          <Not>
+            <Dependency path="../box14CodeAIsFarm" />
+          </Not>
+          <Not>
+            <Dependency path="../box14CodeANotLimitedPartnerAmount" />
+          </Not>
+          <Not>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAOnScheduleSE">
+      <Name>Box 14 code A amount on Schedule SE line 2</Name>
+      <Description>
+        The entered box 14 code A when /scheduleEK1s/*/box14CodeAIncludedOnScheduleSE is true, otherwise $0.
+        A loss is included. 2026 draft Schedule SE, line 2, is net profit or (loss).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../box14CodeAIncludedOnScheduleSE" />
+            </When>
+            <Then>
+              <Dependency path="../box14CodeA" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAExcludedFromScheduleSE">
+      <Name>Nonzero box 14 code A is not on Schedule SE line 2</Name>
+      <Description>
+        True when box 14 code A is not zero and it is not included on line 2. That is an S corporation
+        amount, a reduction, farming, a limited-partner amount that is not only guaranteed payments for
+        services, or a joint return.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../box14CodeAIsNonzero" />
+          <Not>
+            <Dependency path="../box14CodeAIncludedOnScheduleSE" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeASePathSupported">
+      <Name>Box 14 code A is in the supported Part II path</Name>
+      <Description>
+        An S corporation with box 14 code A at zero, or a partnership that did not reduce the amount, is
+        not farming, and reports the 26 U.S.C. 1402(a)(13) amount. A joint return is a separate stop.
+      </Description>
+      <Derived>
+        <Any>
+          <All>
+            <Not>
+              <Dependency path="../isPartnership" />
+            </Not>
+            <Equal>
+              <Left>
+                <Dependency path="../box14CodeA" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </Equal>
+          </All>
+          <All>
+            <Dependency path="../isPartnership" />
+            <Not>
+              <Dependency path="../box14CodeAWasReduced" />
+            </Not>
+            <Not>
+              <Dependency path="../box14CodeAIsFarm" />
+            </Not>
+            <Not>
+              <Dependency path="../box14CodeANotLimitedPartnerAmount" />
+            </Not>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1Box14CodeANonfarmTotal">
+      <Name>Schedule SE line 2: nonfarm Form 1065 box 14 code A</Name>
+      <Description>
+        Sum of /scheduleEK1s/*/box14CodeAOnScheduleSE, rounded to the dollar. 26 U.S.C. 6102(a). $0 when
+        /scheduleEHasPartIIIncome is unanswered or no, and when the K-1 list is not started, so a return
+        with no K-1 does not leave Schedule SE line 2 incomplete. A started list with an unanswered box 14
+        question leaves the sum incomplete. 2026 draft Schedule SE, line 2. 26 U.S.C. 1402(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1s" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleEK1s/*/box14CodeAOnScheduleSE" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1HasNonzeroBox14CodeA">
+      <Name>A Schedule K-1 has nonzero box 14 code A</Name>
+      <Description>
+        True when any /scheduleEK1s/*/box14CodeA is not zero. Used to stop a joint return and a return
+        that also has Schedule C qualified business income. Complete false when the K-1 list is empty or
+        not started. Incomplete while a listed K-1 has not answered box 14 code A.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1s" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleEK1s/*/box14CodeAIsNonzero" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -963,9 +1279,8 @@
       <Name>This K-1 is in the supported Part II slice</Name>
       <Description>
         Domestic partnership or S corporation, column (c) unchecked, not a PTP, not a trading business, box 1
-        at least zero, box 14 code A zero, no section 199A statement, no other K-1 amount, column (e) and
-        column (f)
-        unchecked, and material participation yes.
+        at least zero, box 14 code A on the supported Schedule SE path, no section 199A statement, no other
+        K-1 amount, column (e) and column (f) unchecked, and material participation yes.
       </Description>
       <Derived>
         <All>
@@ -987,14 +1302,7 @@
               <Dollar>0</Dollar>
             </Right>
           </GreaterThanOrEqual>
-          <Equal>
-            <Left>
-              <Dependency path="../box14CodeA" />
-            </Left>
-            <Right>
-              <Dollar>0</Dollar>
-            </Right>
-          </Equal>
+          <Dependency path="../box14CodeASePathSupported" />
           <Not>
             <Dependency path="../hasQbiStatement" />
           </Not>
@@ -1046,6 +1354,22 @@
           <IsComplete>
             <Dependency path="../box14CodeA" />
           </IsComplete>
+          <Any>
+            <Not>
+              <Dependency path="../isPartnership" />
+            </Not>
+            <All>
+              <IsComplete>
+                <Dependency path="../box14CodeAWasReduced" />
+              </IsComplete>
+              <IsComplete>
+                <Dependency path="../box14CodeAIsFarm" />
+              </IsComplete>
+              <IsComplete>
+                <Dependency path="../box14CodeANotLimitedPartnerAmount" />
+              </IsComplete>
+            </All>
+          </Any>
           <IsComplete>
             <Dependency path="../hasQbiStatement" />
           </IsComplete>
@@ -1445,10 +1769,13 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleEPartIIBox14CodeA">
-      <Name>Knockout: Schedule K-1 (Form 1065) box 14 code A</Name>
+      <Name>Knockout: box 14 code A is not on Schedule SE line 2</Name>
       <Description>
-        A nonzero box 14 code A belongs on Schedule SE line 1a or line 2 and is not added there. Cites on
-        /scheduleEK1s/*/box14CodeA. Complete false when /scheduleEHasPartIIIncome is false.
+        A nonzero box 14 code A that is not included on Schedule SE line 2. The supported case (nonfarm
+        Form 1065 code A, not reduced, the 26 U.S.C. 1402(a)(13) amount, not a joint return) is false
+        here and the amount is /scheduleEK1Box14CodeANonfarmTotal. An S corporation amount, a reduction,
+        farming, a limited-partner amount that is not only guaranteed payments, or a joint return is true.
+        Complete false when /scheduleEHasPartIIIncome is false. Cites on /scheduleEK1s/*/box14CodeA.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -1458,13 +1785,113 @@
           <GreaterThan>
             <Left>
               <Count>
-                <Dependency path="/scheduleEK1s/*/box14CodeAIsNonzero" />
+                <Dependency path="/scheduleEK1s/*/box14CodeAExcludedFromScheduleSE" />
               </Count>
             </Left>
             <Right>
               <Int>0</Int>
             </Right>
           </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIBox14CodeAReduction">
+      <Name>Knockout: box 14 code A was reduced</Name>
+      <Description>
+        The filer reduced box 14 code A by unreimbursed partnership expenses or other 26 U.S.C. 1402(a)
+        expenses. The 2026 draft Instructions for Schedule SE, PDF p. 5, require an attached explanation.
+        That attachment is not produced, so the return stops. Complete false when
+        /scheduleEHasPartIIIncome is false.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/box14CodeAReductionStops" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIBox14CodeAFarm">
+      <Name>Knockout: farm partnership self-employment income</Name>
+      <Description>
+        Farming belongs on Schedule SE line 1a, and box 14 code B is not computed. 26 U.S.C. 1402(a) and
+        1402(a)(1). 2026 draft Schedule SE, line 2, is code A other than farming. Complete false when
+        /scheduleEHasPartIIIncome is false.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/box14CodeAFarmStops" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIBox14CodeALimitedPartner">
+      <Name>Knockout: box 14 code A is not the limited-partner amount</Name>
+      <Description>
+        26 U.S.C. 1402(a)(13): a limited partner includes only guaranteed payments for services. The filer
+        says the entered box 14 code A is not that amount. 2026 draft Instructions for Schedule SE, PDF
+        p. 5. Complete false when /scheduleEHasPartIIIncome is false.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/box14CodeALimitedPartnerStops" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIBox14CodeAMfj">
+      <Name>Knockout: joint return with Form 1065 box 14 code A</Name>
+      <Description>
+        Each spouse with self-employment income files a separate Schedule SE. 2026 draft Instructions for
+        Schedule SE, PDF p. 3. 26 U.S.C. 1402(b) tests net earnings for the individual. The Schedule K-1
+        row does not record which spouse holds the interest, so a nonzero box 14 code A on a joint return
+        cannot be placed on one Schedule SE. A zero amount has nothing to place and does not stop the
+        return. Complete false when /scheduleEHasPartIIIncome is false or the filing status is not married
+        filing jointly.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          <Dependency path="/scheduleEK1HasNonzeroBox14CodeA" />
         </All>
       </Derived>
     </Fact>
@@ -3167,6 +3594,10 @@
           <Dependency path="/flowKnockoutScheduleEPartIILoss" />
           <Dependency path="/flowKnockoutScheduleEPartIINotMaterialParticipation" />
           <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeA" />
+          <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeAReduction" />
+          <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeAFarm" />
+          <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeALimitedPartner" />
+          <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeAMfj" />
           <Dependency path="/flowKnockoutScheduleEPartIIQbiCode" />
           <Dependency path="/flowKnockoutScheduleEPartIIOtherK1Amount" />
           <Dependency path="/flowKnockoutScheduleEPartIIColumnE" />
@@ -3313,12 +3744,12 @@
         /scheduleEPartIIILine37. 26 U.S.C. 702(a), 1366(a), 652(a),
         and 662(a).
 
-        Self-employment. A supported return has
-        box 14 code A at zero, so Schedule SE line 2 stays Schedule C
-        only. A nonzero box 14 code A is
-        /flowKnockoutScheduleEPartIIBox14CodeA. 26 U.S.C. 1402(a). 2026
-        draft Schedule SE, PDF p. 2, line 2 includes that
-        code.
+        Self-employment. Nonfarm Form 1065 box 14 code A is scheduleSE /primaryFilerSeNetProfit (Schedule
+        SE line 2) when it was not reduced, it is the 26 U.S.C. 1402(a)(13) amount, and the return is not
+        a joint return. A reduction, farming or box 14 code B, a limited-partner amount that is not only
+        guaranteed payments, a joint return, or an S corporation amount is
+        /flowKnockoutScheduleEPartIIBox14CodeA or the matching stop. 26 U.S.C. 1402(a). 2026 draft
+        Schedule SE, PDF p. 2, line 2. 2026 draft Instructions for Schedule SE, PDF p. 5.
 
         Net investment income. 26 U.S.C. 1411(c)(2) includes a passive activity or trading in financial
         instruments

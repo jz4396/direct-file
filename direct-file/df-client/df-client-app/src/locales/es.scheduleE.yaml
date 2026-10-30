@@ -40,9 +40,12 @@ headings:
   /heading/income/schedule-e/k1-box1: Anote el ingreso ordinario del negocio y si participó de forma importante
   /heading/income/schedule-e/k1-box14:
     Anote las ganancias del trabajo por cuenta propia del Anexo K-1 (Formulario 1065), casilla 14, código A
+  /heading/income/schedule-e/k1-box14-scope: ¿Esta es la cantidad que corresponde al Anexo SE?
   /heading/income/schedule-e/k1-other: ¿Este Anexo K-1 declara algo además de la casilla 1?
   /heading/income/schedule-e/k1-columns: ¿Tiene que marcar la columna (e) o la columna (f) en la línea 28 del Anexo E?
   /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta esta situación del Anexo K-1
+  /heading/knockout/schedule-c-k1-box14:
+    Esta herramienta todavía no divide el impuesto del trabajo por cuenta propia entre el Anexo C y una sociedad
   /heading/knockout/schedule-e-part-ii-line-27:
     Esta herramienta todavía no acepta una pérdida no permitida de un año anterior ni gastos de sociedad no reembolsados
   /heading/knockout/schedule-e-part-iii:
@@ -127,12 +130,19 @@ info:
   /info/income/schedule-e/k1-box14:
     body: >-
       Anote la cantidad de la casilla 14, código A. Anote 0 si esa casilla está en blanco. El ingreso ordinario de una
-      sociedad anónima de tipo S no es ganancia del trabajo por cuenta propia; anote 0 para una sociedad de tipo S.
+      sociedad anónima de tipo S no es ganancia del trabajo por cuenta propia; anote 0 para una sociedad de tipo S. Para
+      una sociedad colectiva, una pantalla posterior pregunta si esta cantidad va en la línea 2 del Anexo SE.
+  /info/income/schedule-e/k1-box14-scope:
+    body: >-
+      La línea 2 del Anexo SE incluye esta cantidad cuando no es de agricultura, usted no la redujo y es la cantidad
+      correcta para un socio comanditario. Una reducción necesita una explicación adjunta. La agricultura y la casilla
+      14 código B van en la línea 1a. Un socio comanditario incluye solo los pagos garantizados por servicios.
   /info/income/schedule-e/k1-other:
     body: >-
       Conteste que sí a la primera pregunta si el K-1 incluye una declaración para la casilla 20, código Z (Formulario
       1065) o la casilla 17, código V (Formulario 1120-S). Conteste que sí a la segunda pregunta si alguna casilla
-      distinta de la casilla 1 tiene una cantidad.
+      distinta de la casilla 1, y distinta de la casilla 14 código A, tiene una cantidad. La casilla 4, pagos
+      garantizados, es sí aunque esa cantidad también esté incluida en la casilla 14 código A.
   /info/income/schedule-e/k1-columns:
     body: >-
       Conteste que sí a la primera pregunta si recibió una distribución, dispuso de acciones o recibió un pago de un
@@ -182,11 +192,20 @@ info:
     alertText:
       body:
         - p: >-
-            Esta herramienta puede declarar una sociedad colectiva nacional o una sociedad anónima de tipo S que solo
-            tenga ingreso ordinario del negocio si usted participó de forma importante. Una pérdida, una actividad
-            pasiva, una sociedad extranjera, una sociedad que cotiza en bolsa, una distribución u otro cálculo de base,
-            ganancias del trabajo por cuenta propia u otra cantidad del Anexo K-1 necesitan formularios que esta
-            herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta declaración.
+            Esta herramienta puede declarar una sociedad colectiva nacional o una sociedad anónima de tipo S con ingreso
+            ordinario del negocio si usted participó de forma importante, incluida la casilla 14 código A del Anexo K-1
+            (Formulario 1065) que no es de agricultura. Una pérdida, una actividad pasiva, una sociedad extranjera, una
+            sociedad que cotiza en bolsa, una distribución u otro cálculo de base, la agricultura, una reducción de esa
+            cantidad del trabajo por cuenta propia, una cantidad de socio comanditario que no es solo pagos garantizados
+            por servicios, una declaración conjunta con esa cantidad u otra cantidad del Anexo K-1 necesitan formularios
+            que esta herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-k1-box14:
+    alertText:
+      body:
+        - p: >-
+            La parte deducible del impuesto del trabajo por cuenta propia tiene que dividirse entre el Anexo C y una
+            sociedad cuando ambos tienen ganancias del trabajo por cuenta propia. Esta herramienta todavía no divide esa
+            deducción. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-part-ii-line-27:
     alertText:
       body:
@@ -374,6 +393,18 @@ fields:
       "no": No, no participé de forma importante
   /scheduleEK1s/*/box14CodeA:
     name: Casilla 14, código A
+  /scheduleEK1s/*/box14CodeAWasReduced:
+    boolean:
+      "yes": Sí, reduje la casilla 14 código A por gastos
+      "no": No, esta es la cantidad completa de la casilla 14 código A
+  /scheduleEK1s/*/box14CodeAIsFarm:
+    boolean:
+      "yes": Sí, es ingreso de agricultura o tengo la casilla 14 código B
+      "no": No, no es de agricultura
+  /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount:
+    boolean:
+      "yes": Sí, soy socio comanditario y esta cantidad no es solo pagos garantizados por servicios
+      "no": No, esta es la cantidad correcta para el Anexo SE
   /scheduleEK1s/*/hasQbiStatement:
     boolean:
       "yes": Sí, hay una declaración para la casilla 20 código Z o la casilla 17 código V
@@ -442,8 +473,13 @@ dataviews:
     /scheduleEK1s/*/box1: Casilla 1, ingreso o (pérdida) ordinaria del negocio
     /scheduleEK1s/*/materiallyParticipates: ¿Participó de forma importante?
     /scheduleEK1s/*/box14CodeA: Casilla 14, código A
+    /scheduleEK1s/*/box14CodeAWasReduced: ¿Redujo la casilla 14 código A por gastos permitidos?
+    /scheduleEK1s/*/box14CodeAIsFarm: ¿Es ingreso de agricultura, o tiene la casilla 14 código B?
+    /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount:
+      ¿La casilla 14 código A es más que los pagos garantizados por servicios porque es socio comanditario?
     /scheduleEK1s/*/hasQbiStatement: ¿Hay una declaración para la casilla 20 código Z o la casilla 17 código V?
-    /scheduleEK1s/*/hasOtherK1Amount: ¿Alguna casilla distinta de la casilla 1 tiene una cantidad?
+    /scheduleEK1s/*/hasOtherK1Amount:
+      ¿Alguna casilla distinta de la casilla 1 o de la casilla 14 código A tiene una cantidad?
     /scheduleEK1s/*/basisComputationRequired: ¿Está marcada la columna (e)?
     /scheduleEK1s/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/entityName: Nombre del caudal hereditario o fideicomiso

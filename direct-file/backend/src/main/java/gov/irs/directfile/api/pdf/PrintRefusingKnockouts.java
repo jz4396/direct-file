@@ -128,8 +128,9 @@ public final class PrintRefusingKnockouts {
             // Part III column (f) (nonpassive Schedule K-1 (Form 1041) box 6 only) may print on the same
             // path. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental activity
             // passive without regard to material participation, so a nonzero box 8 refuses the print.
-            // An unanswered question, or any out-of-scope K-1 (loss, passive, foreign, PTP, box 14 code A,
-            // a section 199A statement, an out-of-scope estate or trust, Part IV), refuses the print. A REMIC
+            // An unanswered question, or any out-of-scope K-1 (loss, passive, foreign, PTP, box 14 code A
+            // that is not the supported nonfarm Form 1065 amount on Schedule SE line 2, a section 199A
+            // statement, an out-of-scope estate or trust, Part IV), refuses the print. A REMIC
             // yes (Schedule Q (Form 1066)) refuses through this same path even when the K-1 answer is no.
             // This list does not gain another Schedule E path. Asked of every filer, not only after Part I.
             "/flowKnockoutScheduleEPartII",
@@ -152,6 +153,13 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutQbiPriorYearCarryforward",
             "/flowKnockoutQbiCooperativePatron",
             "/flowKnockoutQbiMixedParticipation",
+            // Schedule C qualified business income and Form 1065 box 14 code A on the same return. Treas.
+            // Reg. 1.199A-3(b)(1)(vi) reduces QBI by the deductible part of self-employment tax attributable
+            // to that trade. Form 8995 line 2 subtracts the whole deduction from Schedule C. A nonzero box
+            // 14 code A is also Schedule SE line 2 (26 U.S.C. 1402(a)), so the deduction has to be split.
+            // That split is not computed. Complete false when either piece is absent. The Schedule E
+            // umbrella does not include this path.
+            "/flowKnockoutScheduleCQbiAndK1Box14CodeA",
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
             "/flowKnockoutScheduleCQbi",
@@ -177,8 +185,9 @@ public final class PrintRefusingKnockouts {
             // Conservation Reserve Program payments; 26 U.S.C. 1402(a), 1402(a)(1)), line 4b and Part II (optional
             // methods; 1402(a), 1402(l)), lines 5a and 5b (church employee income; 1402(a)(14), 1402(j)), checkbox A
             // and ministry (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees (1402(c)(1)), and line 8c
-            // (Form 8919). Complete false when the filer has no self-employment income or answers every question no.
-            // An unanswered question while self-employment income is yes refuses the print.
+            // (Form 8919). Complete false when there is no Schedule C self-employment income and no nonzero
+            // Form 1065 box 14 code A, or when every question is answered no. An unanswered question while
+            // either applies refuses the print. 26 U.S.C. 1402(a).
             "/flowKnockoutScheduleSEOutOfScope",
             // Form 8995 goes with every return that has Schedule C QBI or loss: Instructions for Form 1040 (2025)
             // draft,

@@ -35,9 +35,12 @@ headings:
     Is this a foreign partnership, a publicly traded partnership, or a trading business?
   /heading/income/schedule-e/k1-box1: Enter ordinary business income and whether you materially participated
   /heading/income/schedule-e/k1-box14: Enter self-employment earnings from Schedule K-1 (Form 1065), box 14, code A
+  /heading/income/schedule-e/k1-box14-scope: Is this the amount that belongs on Schedule SE?
   /heading/income/schedule-e/k1-other: Does this Schedule K-1 report anything besides box 1?
   /heading/income/schedule-e/k1-columns: Do you have to check column (e) or column (f) on Schedule E line 28?
   /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support this Schedule K-1 situation
+  /heading/knockout/schedule-c-k1-box14:
+    This tool doesn’t yet split self-employment tax between Schedule C and a partnership
   /heading/knockout/schedule-e-part-ii-line-27:
     This tool doesn’t yet support a prior-year unallowed loss or unreimbursed partnership expenses
   /heading/knockout/schedule-e-part-iii: This tool doesn’t yet support this estate or trust situation
@@ -118,11 +121,18 @@ info:
   /info/income/schedule-e/k1-box14:
     body: >-
       Enter the amount from box 14, code A. Enter 0 if that box is blank. An S corporation’s ordinary income is not
-      self-employment earnings; enter 0 for an S corporation.
+      self-employment earnings; enter 0 for an S corporation. For a partnership, a later screen asks whether this amount
+      goes on Schedule SE line 2.
+  /info/income/schedule-e/k1-box14-scope:
+    body: >-
+      Schedule SE line 2 includes this amount when it is not from farming, you did not reduce it, and it is the right
+      amount for a limited partner. A reduction needs an attached explanation. Farming and box 14 code B go on line 1a.
+      A limited partner includes only guaranteed payments for services.
   /info/income/schedule-e/k1-other:
     body: >-
       Answer yes to the first question if the K-1 includes a statement for box 20, code Z (Form 1065) or box 17, code V
-      (Form 1120-S). Answer yes to the second question if any box other than box 1 has an amount.
+      (Form 1120-S). Answer yes to the second question if any box other than box 1, and other than box 14 code A, has an
+      amount. Box 4 guaranteed payments are a yes even when that amount is also included in box 14 code A.
   /info/income/schedule-e/k1-columns:
     body: >-
       Answer yes to the first question if you received a distribution, disposed of stock, or received a loan repayment
@@ -156,10 +166,19 @@ info:
     alertText:
       body:
         - p: >-
-            This tool can report a domestic partnership or S corporation with only ordinary business income when you
-            materially participated. A loss, a passive activity, a foreign partnership, a publicly traded partnership, a
-            distribution or other basis computation, self-employment earnings, or any other K-1 amount needs forms this
+            This tool can report a domestic partnership or S corporation with ordinary business income when you
+            materially participated, including Schedule K-1 (Form 1065) box 14 code A that is not from farming. A loss,
+            a passive activity, a foreign partnership, a publicly traded partnership, a distribution or other basis
+            computation, farming, a reduction of that self-employment amount, a limited partner amount that is not only
+            guaranteed payments for services, a joint return with that amount, or any other K-1 amount needs forms this
             tool doesn’t support yet. You’ll need another way to file this return.
+  /info/knockout/schedule-c-k1-box14:
+    alertText:
+      body:
+        - p: >-
+            The deductible part of self-employment tax has to be split between Schedule C and a partnership when both
+            have self-employment earnings. This tool doesn’t split that deduction yet. You’ll need another way to file
+            this return.
   /info/knockout/schedule-e-part-ii-line-27:
     alertText:
       body:
@@ -354,6 +373,18 @@ fields:
       "no": No, I didn’t materially participate
   /scheduleEK1s/*/box14CodeA:
     name: Box 14, code A
+  /scheduleEK1s/*/box14CodeAWasReduced:
+    boolean:
+      "yes": Yes, I reduced box 14 code A by expenses
+      "no": No, this is the full box 14 code A amount
+  /scheduleEK1s/*/box14CodeAIsFarm:
+    boolean:
+      "yes": Yes, this is farm income or I have box 14 code B
+      "no": No, it is not from farming
+  /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount:
+    boolean:
+      "yes": Yes, I am a limited partner and this amount is not only guaranteed payments for services
+      "no": No, this is the right amount for Schedule SE
   /scheduleEK1s/*/hasQbiStatement:
     boolean:
       "yes": Yes, there is a statement for box 20 code Z or box 17 code V
@@ -420,8 +451,12 @@ dataviews:
     /scheduleEK1s/*/box1: Box 1 ordinary business income or (loss)
     /scheduleEK1s/*/materiallyParticipates: Did you materially participate?
     /scheduleEK1s/*/box14CodeA: Box 14, code A
+    /scheduleEK1s/*/box14CodeAWasReduced: Did you reduce box 14 code A by allowable expenses?
+    /scheduleEK1s/*/box14CodeAIsFarm: Is this farm income, or do you have box 14 code B?
+    /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount:
+      Is box 14 code A more than guaranteed payments for services because you are a limited partner?
     /scheduleEK1s/*/hasQbiStatement: Is there a statement for box 20 code Z or box 17 code V?
-    /scheduleEK1s/*/hasOtherK1Amount: Does any box other than box 1 have an amount?
+    /scheduleEK1s/*/hasOtherK1Amount: Does any box other than box 1 or box 14 code A have an amount?
     /scheduleEK1s/*/basisComputationRequired: Is column (e) checked?
     /scheduleEK1s/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/entityName: Name of the estate or trust

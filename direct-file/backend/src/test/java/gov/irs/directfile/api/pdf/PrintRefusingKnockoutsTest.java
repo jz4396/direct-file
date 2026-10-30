@@ -90,6 +90,7 @@ class PrintRefusingKnockoutsTest {
     static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
     static final String QBI_MIXED_PARTICIPATION_KNOCKOUT = "/flowKnockoutQbiMixedParticipation";
+    static final String SCHEDULE_C_QBI_AND_K1_BOX14_KNOCKOUT = "/flowKnockoutScheduleCQbiAndK1Box14CodeA";
     static final String SCHEDULE_C_QBI_KNOCKOUT = "/flowKnockoutScheduleCQbi";
     static final String SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleCOutOfScope";
     static final String SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleSEOutOfScope";
@@ -190,6 +191,7 @@ class PrintRefusingKnockoutsTest {
                 QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
                 QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
                 QBI_MIXED_PARTICIPATION_KNOCKOUT, // active and non-active businesses
+                SCHEDULE_C_QBI_AND_K1_BOX14_KNOCKOUT, // Schedule C QBI and Form 1065 box 14 code A
                 SCHEDULE_C_QBI_KNOCKOUT, // any of the four Form 8995 stops with Schedule C income
                 SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
                 SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT, // Schedule SE line this tool does not compute
@@ -213,7 +215,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(48, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(49, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

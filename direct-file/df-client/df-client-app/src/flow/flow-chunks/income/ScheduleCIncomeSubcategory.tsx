@@ -61,6 +61,17 @@ export const ScheduleCIncomeSubcategory = (
         <SaveAndOrContinueButton />
       </Screen>
 
+      <Screen
+        route='schedule-c-k1-box14-knockout'
+        condition='/flowKnockoutScheduleCQbiAndK1Box14CodeA'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/schedule-c-k1-box14' />
+        <DFAlert i18nKey='/info/knockout/schedule-c-k1-box14' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+
       <Screen route='schedule-c-qbi-knockout' condition='/flowKnockoutScheduleCQbi' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/schedule-c-qbi' />
@@ -68,37 +79,37 @@ export const ScheduleCIncomeSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
 
-      <Screen route='schedule-c-farm' condition='/hadSelfEmploymentIncome'>
+      <Screen route='schedule-c-farm' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/farm' />
         <InfoDisplay i18nKey='/info/income/schedule-c/farm' />
         <Boolean path='/hadFarmSelfEmploymentIncome' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-c-church-employee' condition='/hadSelfEmploymentIncome'>
+      <Screen route='schedule-c-church-employee' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/church-employee' />
         <InfoDisplay i18nKey='/info/income/schedule-c/church-employee' />
         <Boolean path='/hadChurchEmployeeIncome' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-c-optional-method' condition='/hadSelfEmploymentIncome'>
+      <Screen route='schedule-c-optional-method' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/optional-method' />
         <InfoDisplay i18nKey='/info/income/schedule-c/optional-method' />
         <Boolean path='/usesSeOptionalMethod' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-c-minister' condition='/hadSelfEmploymentIncome'>
+      <Screen route='schedule-c-minister' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/minister' />
         <InfoDisplay i18nKey='/info/income/schedule-c/minister' />
         <Boolean path='/hasMinisterOrSeExemption' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-c-notary' condition='/hadSelfEmploymentIncome'>
+      <Screen route='schedule-c-notary' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/notary' />
         <InfoDisplay i18nKey='/info/income/schedule-c/notary' />
         <Boolean path='/hasNotarySeExclusion' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-c-form-8919' condition='/hadSelfEmploymentIncome'>
+      <Screen route='schedule-c-form-8919' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/form-8919' />
         <InfoDisplay i18nKey='/info/income/schedule-c/form-8919' />
         <Boolean path='/hadForm8919Wages' />

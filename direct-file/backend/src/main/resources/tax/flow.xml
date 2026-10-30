@@ -174,6 +174,11 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIILoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIINotMaterialParticipation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeA" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeAReduction" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeAFarm" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeALimitedPartner" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeAMfj" />
+          <Dependency module="form8995" path="/flowKnockoutScheduleCQbiAndK1Box14CodeA" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIQbiCode" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIOtherK1Amount" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIColumnE" />

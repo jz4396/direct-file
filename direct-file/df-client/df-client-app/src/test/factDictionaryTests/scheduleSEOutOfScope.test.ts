@@ -106,11 +106,16 @@ describe(`Schedule SE out-of-scope lines`, () => {
   });
 
   it(`an unanswered question while self-employment income is yes stays incomplete`, ({ task }) => {
-    task.meta.testedFactPaths = [KO, `/flowIsKnockedOut`];
+    task.meta.testedFactPaths = [KO, `/flowKnockoutForm8995WithoutTy2026Template`, `/selfEmploymentTax`];
     const { '/hadFarmSelfEmploymentIncome': _farm, ...rest } = scheduleC();
     const g = fg({ ...noW2, ...rest });
+    // The Schedule SE operand stays incomplete, so lines 1a, 4b, 5a, and 8c are not filed as zero.
+    // 26 U.S.C. 1402(a). Schedule C still requires Form 8995, and that form has no TY2026 template, so
+    // /flowIsKnockedOut is complete true while this question is unanswered.
     expect(read(g, KO).complete).toBe(false);
-    expect(read(g, `/flowIsKnockedOut`).complete).toBe(false);
+    expect(read(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(read(g, `/flowIsKnockedOut`).complete).toBe(true);
+    expect(read(g, `/flowIsKnockedOut`).get).toBe(true);
     expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`1130.00`);
   });
 });
