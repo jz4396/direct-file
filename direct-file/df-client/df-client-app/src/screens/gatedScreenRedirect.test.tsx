@@ -10,7 +10,7 @@ import { setupStore } from '../redux/store.js';
 import { scenarioFactGraphJson } from '../saveState/saveStateTestUtils.js';
 import ErrorBoundary from '../utils/errorBoundary.js';
 import BaseScreen from './BaseScreen.js';
-import { gatedScreenRedirect, visibleHeadingCount } from './gatedScreenRedirect.js';
+import { gatedScreenRedirect, settledGatedLanding, visibleHeadingCount } from './gatedScreenRedirect.js';
 
 vi.mock(`../components/Screen.js`, () => ({
   default: () => <h1>interview screen</h1>,
@@ -150,5 +150,69 @@ describe(`gated income screens redirect`, () => {
     expect(screen.getByTestId(`wages`)).toHaveTextContent(WAGES);
     expect(screen.queryByText(/experiencing a problem/)).not.toBeInTheDocument();
     expect(screen.getByTestId(`path`).textContent).not.toBe(route);
+  });
+});
+
+/** Same W-2, 1099-INT, and 1099-R population incomeMobile.e2e.ts opens directly. */
+const INCOME_MOBILE_SUBCATEGORIES: Record<string, string> = {
+  '/flow/income/jobs': `/formW2s`,
+  '/flow/income/interest': `/interestReports`,
+  '/flow/income/retirement': `/form1099Rs`,
+};
+
+function incomeMobileReturn(): { facts: FactJson; ids: Record<string, string> } {
+  const mobileFacts = scenarioFactGraphJson() as FactJson;
+  const ids: Record<string, string> = {
+    '/formW2s': (mobileFacts[`/formW2s`].item as { items: string[] }).items[0],
+  };
+  const collectionType = mobileFacts[`/formW2s`].$type;
+  for (const collection of [`/interestReports`, `/form1099Rs`]) {
+    ids[collection] = randomUUID();
+    mobileFacts[collection] = { $type: collectionType, item: { items: [ids[collection]] } };
+  }
+  return { facts: mobileFacts, ids };
+}
+
+describe(`income mobile routes settle without a redirect loop`, () => {
+  const { facts: mobileFacts, ids: mobileIds } = incomeMobileReturn();
+  const mobileGraph = new InterceptingFactGraph(mobileFacts);
+  const mobileScreens = flow.screens.filter(
+    (s) =>
+      s.subcategoryRoute in INCOME_MOBILE_SUBCATEGORIES &&
+      (!s.collectionContext || s.collectionContext === INCOME_MOBILE_SUBCATEGORIES[s.subcategoryRoute])
+  );
+
+  function queryFor(screen: (typeof mobileScreens)[number]): string {
+    if (!screen.collectionContext) return ``;
+    const id = mobileIds[screen.collectionContext];
+    return id ? `?${new URLSearchParams([[screen.collectionContext, id]])}` : ``;
+  }
+
+  it(`keeps the data-entry screens and sends gated routes to a screen that can be shown`, () => {
+    expect(mobileScreens.length).toBeGreaterThan(60);
+    const stayed: string[] = [];
+    const redirected: string[] = [];
+    for (const screen of mobileScreens) {
+      const landing = settledGatedLanding(screen, mobileGraph, flow, queryFor(screen));
+      if (landing.path === `/checklist`) {
+        redirected.push(`${screen.route} -> /checklist`);
+        continue;
+      }
+      const destination = flow.screensByRoute.get(landing.path);
+      expect(destination, `${screen.screenRoute} -> ${landing.path}`).toBeDefined();
+      if (!destination) continue;
+      const again = settledGatedLanding(destination, mobileGraph, flow, landing.search);
+      expect(again.path, `${screen.screenRoute} -> ${landing.path}`).toBe(destination.screenRoute);
+      if (landing.path === screen.screenRoute) stayed.push(screen.route);
+      else redirected.push(`${screen.route} -> ${destination.route}`);
+    }
+
+    expect(stayed).toEqual(expect.arrayContaining([`w2-add-boxes-1-8`, `retirement-add-box-7-checkbox`]));
+    // Box 1 sits behind the has-1099 gate. This return has not answered that, so the screen redirects.
+    expect(redirected.some((line) => line.startsWith(`1099-int-add-box-1`))).toBe(true);
+    expect(redirected.some((line) => line.startsWith(`int-income-loop-intro-data-import`))).toBe(true);
+    expect(stayed.length).toBeGreaterThan(30);
+    expect(redirected.length).toBeGreaterThan(30);
+    expect(mobileGraph.toJSON()).toBe(new InterceptingFactGraph(mobileFacts).toJSON());
   });
 });

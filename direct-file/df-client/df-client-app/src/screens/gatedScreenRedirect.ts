@@ -78,3 +78,63 @@ export function gatedScreenRedirect(
   if (!target || target === screen.fullRoute(collectionId)) return CHECKLIST;
   return target;
 }
+
+/**
+ * Collection id BaseScreen reads for this URL: filer ids come from the return, everything else from the query.
+ */
+function collectionIdForSearch(screen: ScreenConfig, factGraph: FactGraph, search: string): string | null {
+  const collectionName = screen.collectionContext;
+  // eslint-disable-next-line eqeqeq
+  if (collectionName == undefined) return null;
+  if (collectionName === `/primaryFiler` || collectionName === `/secondaryFiler`) {
+    const filer = factGraph.get(collectionName);
+    return filer.complete ? filer.get.idString : null;
+  }
+  const query = search.startsWith(`?`) ? search.slice(1) : search;
+  return new URLSearchParams(query).get(collectionName);
+}
+
+/** fullRoute copies window.location.search, which is the query the interview is open on. */
+function withLocationSearch<T>(search: string, run: () => T): T {
+  const previous = `${window.location.pathname}${window.location.search}`;
+  const query = search === `` ? `` : search.startsWith(`?`) ? search : `?${search}`;
+  window.history.pushState({}, ``, `${window.location.pathname}${query}`);
+  try {
+    return run();
+  } finally {
+    window.history.pushState({}, ``, previous || `/`);
+  }
+}
+
+export type GatedLanding = { path: string; search: string };
+
+/**
+ * Pathname the interview settles on, following the same redirects as BaseScreen.
+ * A screen that can be shown settles on its own route. The query is the one fullRoute
+ * would keep, so a later hop sees the same collection id the browser would.
+ */
+export function settledGatedLanding(
+  screen: ScreenConfig,
+  factGraph: FactGraph,
+  flow: FlowConfig,
+  search = ``
+): GatedLanding {
+  const seen = new Set<string>();
+  let current = screen;
+  let currentSearch = search === `` || search.startsWith(`?`) ? search : `?${search}`;
+  for (let hop = 0; hop < 8; hop++) {
+    const marker = `${current.screenRoute}${currentSearch}`;
+    if (seen.has(marker)) return { path: CHECKLIST, search: `` };
+    seen.add(marker);
+    const collectionId = collectionIdForSearch(current, factGraph, currentSearch);
+    const target = withLocationSearch(currentSearch, () => gatedScreenRedirect(current, factGraph, collectionId, flow));
+    if (!target) return { path: current.screenRoute, search: currentSearch };
+    const path = target.split(`?`)[0];
+    if (path === CHECKLIST) return { path: CHECKLIST, search: `` };
+    const next = flow.screensByRoute.get(path);
+    if (!next) return { path, search: target.includes(`?`) ? target.slice(target.indexOf(`?`)) : `` };
+    current = next;
+    currentSearch = target.includes(`?`) ? target.slice(target.indexOf(`?`)) : ``;
+  }
+  return { path: CHECKLIST, search: `` };
+}
