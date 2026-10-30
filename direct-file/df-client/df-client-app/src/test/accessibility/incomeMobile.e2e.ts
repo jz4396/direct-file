@@ -9,6 +9,8 @@ import { scenarioFactGraphJson } from '../../saveState/saveStateTestUtils.js';
 import { createSaveState } from '../../saveState/saveStateSchema.js';
 import { createFlowConfig } from '../../flow/flowConfig.js';
 import flowNodes from '../../flow/flow.js';
+import { InterceptingFactGraph } from '../../factgraph/InterceptingFactGraph.js';
+import { settledGatedLanding } from '../../screens/gatedScreenRedirect.js';
 import { startStagedSiteServer, type StagedSiteServer } from '../../staticClient/noRetention/stagedSiteServer.js';
 
 /**
@@ -16,7 +18,8 @@ import { startStagedSiteServer, type StagedSiteServer } from '../../staticClient
  *
  * Runs the staged static site (`npm run build:static && npm run stage:static`) in headless Chrome, imports a
  * synthetic return with one W-2, one 1099-INT and one 1099-R, and opens every W-2, 1099-INT and 1099-R screen
- * directly, then checks:
+ * directly. Screens that can be shown are measured below. A screen whose gate or headings do not apply
+ * redirects to the section's first showable screen or the checklist, and the test asserts that path.
  *
  * - WCAG 2.1 SC 1.4.10 (Reflow): at a 320px-wide viewport the page doesn't scroll sideways, and no visible
  *   element sticks out past the right edge.
@@ -47,16 +50,18 @@ const SUBCATEGORIES: Record<string, string> = {
   '/flow/income/interest': `/interestReports`,
   '/flow/income/retirement': `/form1099Rs`,
 };
-// This screen sits behind the data-import gate and every one of its headings requires that no 1099-INT has been
-// added yet. The return used here has one, so the screen has no heading by design and the app shows its error page.
-const SKIPPED_ROUTES = new Set([`/flow/income/interest/int-income-loop-intro-data-import`]);
 const screens = flow.screens.filter(
   (s) =>
     s.subcategoryRoute in SUBCATEGORIES &&
-    !SKIPPED_ROUTES.has(s.screenRoute) &&
     // Screens outside the form's collection loop (the intro and hub screens) are opened without an item.
     (!s.collectionContext || s.collectionContext === SUBCATEGORIES[s.subcategoryRoute])
 );
+
+function screenQuery(collectionContext: string | undefined, ids: Record<string, string>): string {
+  if (!collectionContext) return ``;
+  const id = ids[collectionContext];
+  return id ? `?${new URLSearchParams([[collectionContext, id]])}` : ``;
+}
 
 /** The golden scenario with one item added to each of the 1099-INT and 1099-R collections. */
 function saveFileWithItems(): { text: string; ids: Record<string, string> } {
@@ -154,12 +159,16 @@ describe(`Income screens at 320px wide (reflow and target size)`, () => {
   /** History API navigation, so the imported return (held in memory) stays. */
   async function openInApp(url: string) {
     await page.evaluate((to) => {
+      const holder = window as unknown as { __dfIncomeMobileSettle?: string };
+      delete holder.__dfIncomeMobileSettle;
       window.history.pushState({}, ``, to);
       window.dispatchEvent(new PopStateEvent(`popstate`));
     }, url);
   }
 
   let saveFile: string;
+  /** Pathname each screen settles on: its own route, or the gated redirect. */
+  let landings: Map<string, string>;
 
   /** A new return in a fresh page load, with the save file imported. */
   async function startWithReturn() {
@@ -185,7 +194,18 @@ describe(`Income screens at 320px wide (reflow and target size)`, () => {
     if (!fs.existsSync(path.join(SITE_DIR, `index.html`))) {
       throw new Error(`${SITE_DIR} not found: run npm run build:static && npm run stage:static first`);
     }
-    ({ text: saveFile, ids } = saveFileWithItems());
+    const loaded = saveFileWithItems();
+    saveFile = loaded.text;
+    ids = loaded.ids;
+    const factGraph = new InterceptingFactGraph(
+      JSON.parse(saveFile).facts as Record<string, { $type: string; item: unknown }>
+    );
+    landings = new Map(
+      screens.map((screen) => [
+        screen.screenRoute,
+        settledGatedLanding(screen, factGraph, flow, screenQuery(screen.collectionContext, ids)).path,
+      ])
+    );
     site = await startStagedSiteServer(SITE_DIR);
     browser = await launchPinnedChromium();
     const context = await browser.newContext({
@@ -233,16 +253,34 @@ describe(`Income screens at 320px wide (reflow and target size)`, () => {
   });
 
   it.each(screens.map((s) => [s.screenRoute, s] as const))(`%s`, async (_route, config) => {
-    const query = config.collectionContext
-      ? `?${new URLSearchParams([[config.collectionContext, ids[config.collectionContext]]])}`
-      : ``;
+    const query = screenQuery(config.collectionContext, ids);
+    const landing = landings.get(config.screenRoute) ?? config.screenRoute;
     await openInApp(`/df/file${config.screenRoute}${query}`);
-    await page.waitForFunction((route) => window.location.pathname.endsWith(route), config.screenRoute, {
-      timeout: 5_000,
-    });
+    // Two matching polls, so a redirect that lands after the first paint is the path we assert.
+    await page.waitForFunction(
+      ({ route, errorText }) => {
+        const path = window.location.pathname;
+        const crashed = (document.body?.innerText ?? ``).includes(errorText);
+        const heading = document.querySelector(`main h1`) !== null;
+        const arrived = path.endsWith(route);
+        const ready = crashed || path.endsWith(`/not-found`) || (heading && arrived);
+        const marker = `${path}\n${crashed}\n${heading}`;
+        const holder = window as unknown as { __dfIncomeMobileSettle?: string };
+        const previous = holder.__dfIncomeMobileSettle;
+        holder.__dfIncomeMobileSettle = marker;
+        return ready && previous === marker;
+      },
+      { route: landing, errorText: ERROR_PAGE_TEXT },
+      { timeout: 8_000, polling: 50 }
+    );
+    const landed = new URL(page.url()).pathname;
     const errorPage = page.getByText(ERROR_PAGE_TEXT);
-    await page.locator(`main h1`).or(errorPage).first().waitFor({ timeout: 5_000 });
-    expect(await errorPage.count(), pageErrors.join(`\n`)).toBe(0);
+    expect(await errorPage.count(), pageErrors.join(`\n`) || landed).toBe(0);
+    expect(landed.endsWith(`/not-found`), `${config.screenRoute} -> ${landed}`).toBe(false);
+    expect(landed.endsWith(landing), `${config.screenRoute} -> ${landed}`).toBe(true);
+    expect(aborted).toEqual([]);
+    // A gated screen is not shown. Its destination is measured when that screen is opened itself.
+    if (landing !== config.screenRoute) return;
     const measured = await page.evaluate(measure, { width: WIDTH, minTarget: MIN_TARGET });
     expect(measured.heading).not.toBe(``);
     expect({ scrollWidth: measured.scrollWidth, overflowing: measured.overflowing }).toEqual({
@@ -250,6 +288,5 @@ describe(`Income screens at 320px wide (reflow and target size)`, () => {
       overflowing: [],
     });
     expect(measured.smallTargets).toEqual([]);
-    expect(aborted).toEqual([]);
   });
 });

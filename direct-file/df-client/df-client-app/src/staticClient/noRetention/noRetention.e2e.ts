@@ -691,9 +691,25 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
       const query = itemId ? `?${new URLSearchParams([[screen.collectionContext as string, itemId]])}` : ``;
       await openInApp(page, `/df/file${screen.screenRoute}${query}`);
       await page.waitForFunction(
-        (expected) => location.pathname.endsWith(expected) || location.pathname.endsWith(`/not-found`),
+        (expected) => {
+          const path = location.pathname;
+          const crashed = (document.body?.innerText ?? ``).includes(`We’re experiencing a problem`);
+          const heading = document.querySelector(`main h1`) !== null;
+          const onScreen =
+            path.endsWith(expected) ||
+            path.endsWith(`/checklist`) ||
+            path.includes(`/flow/`) ||
+            path.includes(`/data-view`);
+          const ready = crashed || path.endsWith(`/not-found`) || (heading && onScreen);
+          // Two matching polls, so a redirect or the error boundary that lands after the first paint is seen.
+          const marker = `${path}\n${crashed}\n${heading}`;
+          const holder = window as unknown as { __dfIncomeSettle?: string };
+          const previous = holder.__dfIncomeSettle;
+          holder.__dfIncomeSettle = marker;
+          return ready && previous === marker;
+        },
         screen.screenRoute,
-        { timeout: 8_000 }
+        { timeout: 8_000, polling: 50 }
       );
     };
     const ERROR_PAGE = `We’re experiencing a problem`;
@@ -715,11 +731,15 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
         }
         await openIncomeScreen(screen);
         const landed = new URL(page.url()).pathname;
-        if (!landed.endsWith(screen.screenRoute)) {
-          missed.push(`${screen.screenRoute} -> ${landed}`);
-        } else if ((await page.getByText(ERROR_PAGE).count()) > 0) {
+        const crashed = (await page.getByText(ERROR_PAGE).count()) > 0;
+        const redirected =
+          !landed.endsWith(screen.screenRoute) &&
+          (landed.includes(`/flow/`) || landed.endsWith(`/checklist`) || landed.includes(`/data-view`));
+        if (crashed) {
           errored.push(screen.screenRoute);
           boundary = true;
+        } else if (!landed.endsWith(screen.screenRoute) && !redirected) {
+          missed.push(`${screen.screenRoute} -> ${landed}`);
         }
       } catch {
         missed.push(screen.screenRoute);
@@ -727,21 +747,9 @@ describe(`static client: no taxpayer data is kept in the browser or sent anywher
       }
     }
     expect(missed).toEqual([]);
-    // These routes were opened. For this return their headings are gated off, so the app shows the
-    // site-wide error boundary instead of a screen. The set is exact: a new crash fails the test.
-    expect(errored).toEqual([
-      `/flow/income/interest/int-income-loop-intro-data-import`,
-      `/flow/income/dependent-care/dep-care-combat-pay`,
-      `/flow/income/dependent-care/dep-care-combat-pay-change`,
-      `/flow/income/dependent-care/earned-income-rule-tp1-benefits`,
-      `/flow/income/dependent-care/earned-income-rule-tp2-benefits`,
-      `/flow/income/dependent-care/tin-ein-check`,
-      `/flow/income/dependent-care/tin-missing-reason`,
-      `/flow/income/dependent-care/provider-due-diligence`,
-      `/flow/income/hsa/hsa-y-n`,
-      `/flow/income/hsa/hsa-testing-period-contribution-check`,
-      `/flow/income/hsa/hsa-testing-period-additional-income`,
-    ]);
+    // Gated screens redirect to the section's first applicable screen or the checklist.
+    // Landing on the site-wide error boundary is a failure. The set must stay empty.
+    expect(errored).toEqual([]);
     if (boundary) await recoverReturn();
 
     const wagesScreen = incomeScreens.find((screen) => screen.route === `w2-add-boxes-1-8`);
