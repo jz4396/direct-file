@@ -32,7 +32,8 @@ boolean `enabled` fails backend startup and the client's registry loader; there 
   the IRC section; the federal poverty line cites the HHS notice.
 - Every dollar amount and percentage rate a parameter holds must appear in one of its quotes,
   written as the source prints it (`$32,200`, `$206,583.50`, `22%`; statute text may write
-  `22 percent`).
+  `22 percent`). A `form: "table"` cite may also cover a whole-number rate with the bare table
+  token (`34` in `34 15.98`) instead of `34%` or `34 percent`.
 - A non-zero `<Dollar>` literal, a `<Rational>` other than 0 or n/n, or an `<Int>` whose
   absolute value is at least 100, in a fact that has no `<TaxYear>` tag, fails
   `src/test/factDictionaryTests/untaggedDollarLiterals.test.ts` unless that test lists the fact

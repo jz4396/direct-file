@@ -11,6 +11,7 @@ import {
   applyParameterToXml,
   loadTaxYearConfig,
   loadTaxYearRegistry,
+  quoteCoverageErrors,
   quotedForms,
   readXmlModules,
   taggedFacts,
@@ -248,5 +249,34 @@ describe(`quotedForms`, () => {
     expect(quotedForms(`Rational:22/100`)).toBe(`22%`);
     expect(quotedForms(`Dollar:0`)).toBeNull();
     expect(quotedForms(`Int:2`)).toBeNull();
+  });
+});
+
+describe(`quoteCoverageErrors with form: "table"`, () => {
+  const tableQuote =
+    `The credit percentage and the phaseout percentage shall be determined as follows: In the case of an eligible individual with: The credit percentage is: The phaseout percentage is: 1 qualifying child 34 15.98; 2 qualifying children 40 21.06; 3 or more qualifying children 45 21.06; No qualifying children 7.65 7.65`;
+
+  it(`covers a whole-number rate with the bare table token`, () => {
+    expect(
+      quoteCoverageErrors(`/phaseInRatesFor1Qc`, [`Rational:34/100`], [
+        { source: `irc`, section: `§ 32(b)(1)(A)`, url: `https://www.law.cornell.edu/uscode/text/26/32`, quote: tableQuote, form: `table` },
+      ])
+    ).toEqual([]);
+  });
+
+  it(`does not treat a bare table token as coverage without form: "table"`, () => {
+    expect(
+      quoteCoverageErrors(`/phaseInRatesFor1Qc`, [`Rational:34/100`], [
+        { source: `irc`, section: `§ 32(b)(1)(A)`, url: `https://www.law.cornell.edu/uscode/text/26/32`, quote: tableQuote },
+      ])
+    ).toEqual([`/phaseInRatesFor1Qc: cited quotes do not contain 34%`]);
+  });
+
+  it(`does not let a longer number cover a bare whole-token rate`, () => {
+    expect(
+      quoteCoverageErrors(`/phaseInRatesFor1Qc`, [`Rational:34/100`], [
+        { source: `irc`, section: `§ 32(b)(1)(A)`, url: `https://www.law.cornell.edu/uscode/text/26/32`, quote: `threshold 340 phaseout`, form: `table` },
+      ])
+    ).toEqual([`/phaseInRatesFor1Qc: cited quotes do not contain 34%`]);
   });
 });
