@@ -10,7 +10,8 @@
  *     notice in the Federal Register) with a page and a quote;
  *   - a `statute` source (the Internal Revenue Code) with a section like "§ 1211(b)(1)", a URL for
  *     that section, and a quote.
- * Every dollar amount and rate the parameter holds must appear in one of its quotes.
+ * Every dollar amount and rate the parameter holds must appear in one of its quotes
+ * (`22%` / `22 percent`, or a bare whole table token when `form: "table"`).
  *
  * The parameter file is the source of truth for the values. applyYearConfig.ts writes them into
  * the fact dictionary XML; yearConfig.test.ts fails if the XML and the file disagree, if a
@@ -315,11 +316,35 @@ export function alternateQuotedForms(form: string): string[] {
   return form.endsWith(`%`) ? [form, `${form.slice(0, -1)} percent`] : [form];
 }
 
+/**
+ * `form: "table"` cites may print a whole-number rate as a bare token (`34 15.98`) rather than
+ * `34%` or `34 percent`. Match only a whole token so `340` or `34.5` do not cover `34%`.
+ */
+export function quoteHasBareRateToken(quotes: string, percentForm: string): boolean {
+  if (!percentForm.endsWith(`%`)) {
+    return false;
+  }
+  const bare = percentForm.slice(0, -1);
+  if (!/^\d+$/.test(bare)) {
+    return false;
+  }
+  return new RegExp(`(?<![0-9.])${bare}(?![0-9.])`).test(quotes);
+}
+
+/** True when the quotes cover `form` via prose spellings, or — for table cites — a bare whole token. */
+export function quoteCoversForm(quotes: string, form: string, table: boolean): boolean {
+  if (alternateQuotedForms(form).some((spelling) => quotes.includes(spelling))) {
+    return true;
+  }
+  return table && quoteHasBareRateToken(quotes, form);
+}
+
 /** Every dollar amount and percentage rate the parameter holds must appear in one of its quotes. */
 export function quoteCoverageErrors(where: string, values: string[], cites: Cite[]): string[] {
   const quotes = cites.map((c) => c.quote).join(`\n`);
+  const table = cites.some((c) => c.form === `table`);
   const missing = [...new Set(values.map(quotedForms).filter((v): v is string => v !== null))].filter(
-    (v) => !alternateQuotedForms(v).some((form) => quotes.includes(form))
+    (v) => !quoteCoversForm(quotes, v, table)
   );
   return missing.length ? [`${where}: cited quotes do not contain ${missing.join(`, `)}`] : [];
 }

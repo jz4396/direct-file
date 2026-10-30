@@ -656,7 +656,9 @@
       <Name>Taxable Social security benefits</Name>
       <Description>Taxable Social security benefits to report on line 6b of Form 1040. This is also line 18 of the
         Social Security Benefits Worksheet. We use the SSBW from instructions for 1040. There is a similar worksheet in
-        Pub 915 where the line numbers are different and will confuse you.</Description>
+        Pub 915 where the line numbers are different and will confuse you. IRC §86(a)(2)(B): 85 percent of the social
+        security benefits received during the taxable year.</Description>
+      <TaxYear>2026</TaxYear>
 
       <Export downstreamFacts="true" mef="true" />
       <Derived>
@@ -689,7 +691,7 @@
                   <Multiply>
                     <!-- The result of this multiplication is wksht line 17-->
                     <Dependency path="/socialSecurityBenefits" />
-                    <Dollar>0.85</Dollar>
+                    <Rational>85/100</Rational>
                   </Multiply>
                 </LesserOf>
               </Then>
@@ -749,7 +751,8 @@
       <Name>Social Security Benefits Worksheet Line 16</Name>
       <Description>Per filing status ceilings on when social security benefits will start being taxed. We use the SSBW
         from instructions for 1040. There is a similar worksheet in Pub 915 where the line numbers are different and
-        will confuse you.</Description>
+        will confuse you. IRC §86(a)(1) one-half and §86(a)(2) 85 percent.</Description>
+      <TaxYear>2026</TaxYear>
 
       <Derived>
         <Switch>
@@ -766,7 +769,7 @@
             <Then>
               <Multiply>
                 <Dependency path="/socialSecurityBenefitsWkshtLine7" />
-                <Dollar>0.85</Dollar>
+                <Rational>85/100</Rational>
               </Multiply>
             </Then>
           </Case>
@@ -798,13 +801,13 @@
               <Add>
                 <Multiply>
                   <Dependency path="/socialSecurityBenefitsWkshtLine11" />
-                  <Dollar>0.85</Dollar>
+                  <Rational>85/100</Rational>
                 </Multiply>
                 <LesserOf>
                   <!-- The result of this LesserOf is line 14-->
                   <Multiply>
                     <Dependency path="/socialSecurityBenefits" />
-                    <Dollar>0.50</Dollar>
+                    <Rational>1/2</Rational>
                   </Multiply>
                   <Multiply>
                     <!-- the result of this multiply is line 13 -->
@@ -813,7 +816,7 @@
                       <Dependency path="/socialSecurityBenefitsWkshtLine9" />
                       <Dependency path="/socialSecurityBenefitsWkshtLine10" />
                     </LesserOf>
-                    <Dollar>0.50</Dollar>
+                    <Rational>1/2</Rational>
                   </Multiply>
                 </LesserOf>
               </Add>

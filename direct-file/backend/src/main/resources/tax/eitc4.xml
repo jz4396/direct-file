@@ -195,18 +195,21 @@
     </Fact>
     <Fact path="/phaseInRatesFor1Qc">
       <Name>Phase in rate for 1 qualifying child</Name>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Rational>34/100</Rational>
       </Derived>
     </Fact>
     <Fact path="/phaseInRatesFor2Qc">
       <Name>Phase in rate for 2 qualifying children</Name>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Rational>40/100</Rational>
       </Derived>
     </Fact>
     <Fact path="/phaseInRatesFor3OrMoreQc">
       <Name>Phase in rate for 3 or more qualifying children</Name>
+      <TaxYear>2026</TaxYear>
       <Derived>
         <Rational>45/100</Rational>
       </Derived>
