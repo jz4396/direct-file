@@ -84,12 +84,13 @@ Also served on every path (`_headers`): `X-Robots-Tag: noindex, nofollow`, `X-Co
   static-client return can't reach a complete, fileable state.
 - **There's no PDF, signing or e-file.** The static build is for working through the interview only.
 - **Unanswered Schedule B Part III does not knock the interview out.** `/flowKnockoutScheduleBPartIII` is complete
-  false until line 8 is "Yes" or, after a Yes on line 7a, Form 8938 is required. A Yes on line 7a prints, with
-  question 2 and line 7b countries when FinCEN Form 114 is required. A fresh return still offers Start on the
-  checklist. The print is still refused through `/flowPrintRefuseScheduleBPartIII` when Part III is unanswered
-  (including an unanswered question 2), when line 7b is blank and FinCEN Form 114 is required, or when line 8 or
-  Form 8938 is "Yes" (2026 draft Instructions for Schedule B, PDF pp. 3–4: FinCEN Form 114, 31 U.S.C. 5314, when
-  the aggregate value exceeds $10,000; Form 8938, 26 U.S.C. 6038D; Form 3520, 26 U.S.C. 6048). The browser test
+  false until line 8 is "Yes", Form 8938 is required, or the countries do not fit on line 7b. A Yes on line 7a
+  prints, with question 2 and line 7b countries when FinCEN Form 114 is required and every country fits. A fresh
+  return still offers Start on the checklist. The print is still refused through `/flowPrintRefuseScheduleBPartIII`
+  when Part III is unanswered (including an unanswered question 2 or an unanswered "do the countries fit?" question),
+  when line 7b is blank and FinCEN Form 114 is required, or when line 8, Form 8938, or "the countries do not fit" is
+  the stop (2026 draft Instructions for Schedule B, PDF p. 4, Line 7b: "Attach a separate statement if you need more
+  space"; FinCEN Form 114, 31 U.S.C. 5314; Form 8938, 26 U.S.C. 6038D; Form 3520, 26 U.S.C. 6048). The browser test
   enters About you through that Start control.
 - The real-browser test (`npm run test:no-retention`) walks a golden end-to-end scenario (synthetic data): create,
   every income screen, autosave, read-back, review, and the PDF, sign, and submit attempts. Those attempts show a

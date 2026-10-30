@@ -23,8 +23,8 @@
           <Dependency module="interest" path="/flowKnockoutInterestScheduleBSubtraction" />
           <!-- Unanswered Part III, including an unanswered line 7a question 2, is
                /flowPrintRefuseScheduleBPartIII (print only), not this operand. A Yes on line 7a question 1
-               is not an operand: question 2 and line 7b print. Line 8 Yes and Form 8938 Yes are
-               /flowKnockoutScheduleBPartIII. -->
+               is not an operand: question 2 and line 7b print when every country fits. Line 8 Yes, Form 8938 Yes,
+               and line 7b countries that do not fit are /flowKnockoutScheduleBPartIII. -->
           <Dependency module="interest" path="/flowKnockoutScheduleBPartIII" />
           <Dependency module="dividends" path="/flowKnockoutDividendUnsupportedBoxes" />
           <Dependency module="dividends" path="/flowKnockoutNondividendDistributionsOverBasis" />

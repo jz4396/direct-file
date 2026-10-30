@@ -46,6 +46,7 @@ type PartIII = {
   form8938?: boolean;
   country?: string;
   countryLine2?: string;
+  countriesFit?: boolean;
 };
 
 const graph = (
@@ -76,6 +77,9 @@ const graph = (
   }
   if (partIII.countryLine2 !== undefined) {
     facts['/foreignAccountCountryLine2'] = createStringWrapper(partIII.countryLine2);
+  }
+  if (partIII.countriesFit !== undefined) {
+    facts['/foreignAccountCountriesFitOnLine7b'] = createBooleanWrapper(partIII.countriesFit);
   }
   if (answerPartIII === false) {
     delete facts['/hasForeignAccounts'];
@@ -219,6 +223,7 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
       fbar: true,
       country: `France`,
       countryLine2: `Japan`,
+      countriesFit: true,
       form8938: false,
     });
     expect(val(fg, `/scheduleBLine7aQuestion2Yes`)).toBe(true);
@@ -248,6 +253,62 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
     expect(val(fg, PRINT_REFUSE)).toBe(false);
     expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
+  });
+
+  it(`line 7b countries that fit print and do not knock the interview out`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBLine7bCountryLine1`,
+      `/scheduleBPartIIIOutOfScope`,
+      PRINT_REFUSE,
+      FLOW_KNOCKOUT,
+    ];
+    const fg = graph(oneReport(10), {
+      accounts: true,
+      fbar: true,
+      country: `Côte d’Ivoire`,
+      countriesFit: true,
+      form8938: false,
+    });
+    expect(val(fg, `/scheduleBLine7bCountryLine1`)).toBe(`Côte d’Ivoire`);
+    expect(val(fg, `/scheduleBPartIIIOutOfScope`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(false);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
+  });
+
+  it(`line 7b countries that do not fit are an out-of-scope knockout`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBPartIIIOutOfScope`,
+      `/scheduleBPartIIIAnswered`,
+      PRINT_REFUSE,
+      FLOW_KNOCKOUT,
+    ];
+    const fg = graph(oneReport(10), {
+      accounts: true,
+      fbar: true,
+      country: `France`,
+      countriesFit: false,
+    });
+    expect(val(fg, `/scheduleBPartIIIOutOfScope`)).toBe(true);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(true);
+    expect(interviewKnockedOut(fg)).toBe(true);
+  });
+
+  it(`an unanswered "do the countries fit?" question refuses the print and does not knock out`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBPartIIIOutOfScope`,
+      `/scheduleBPartIIIAnswered`,
+      PRINT_REFUSE,
+      FLOW_KNOCKOUT,
+    ];
+    const fg = graph(oneReport(10), { accounts: true, fbar: true, country: `France`, form8938: false });
+    expect(val(fg, `/scheduleBPartIIIOutOfScope`)).toBe(false);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
   });
 
   it(`FBAR required with no country refuses the print and does not knock the interview out`, ({ task }) => {
@@ -381,6 +442,7 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
         accounts: true,
         fbar: true,
         country: `Canada`,
+        countriesFit: true,
         form8938: false,
       }
     );

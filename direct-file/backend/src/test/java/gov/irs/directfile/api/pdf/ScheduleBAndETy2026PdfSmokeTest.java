@@ -424,6 +424,7 @@ class ScheduleBAndETy2026PdfSmokeTest {
         fbarYes.put("/requiredToFileFinCENForm114", bool(true));
         fbarYes.put("/foreignAccountCountryLine1", string("France"));
         fbarYes.put("/foreignAccountCountryLine2", string("Japan"));
+        fbarYes.put("/foreignAccountCountriesFitOnLine7b", bool(true));
         fbarYes.put("/requiredToFileForm8938", bool(false));
         byte[] yesBytes = generate(fbarYes);
         try (PDDocument doc = Loader.loadPDF(yesBytes)) {
@@ -461,6 +462,19 @@ class ScheduleBAndETy2026PdfSmokeTest {
         Map<String, String> unansweredQ2 = partI();
         unansweredQ2.put("/hasForeignAccounts", bool(true));
         refuses(unansweredQ2, SCHEDULE_B_PART_III_PRINT_REFUSE);
+
+        Map<String, String> countriesOpen = partI();
+        countriesOpen.put("/hasForeignAccounts", bool(true));
+        countriesOpen.put("/requiredToFileFinCENForm114", bool(true));
+        countriesOpen.put("/foreignAccountCountryLine1", string("France"));
+        refuses(countriesOpen, SCHEDULE_B_PART_III_PRINT_REFUSE);
+
+        Map<String, String> countriesDoNotFit = partI();
+        countriesDoNotFit.put("/hasForeignAccounts", bool(true));
+        countriesDoNotFit.put("/requiredToFileFinCENForm114", bool(true));
+        countriesDoNotFit.put("/foreignAccountCountryLine1", string("France"));
+        countriesDoNotFit.put("/foreignAccountCountriesFitOnLine7b", bool(false));
+        refuses(countriesDoNotFit, SCHEDULE_B_PART_III_PRINT_REFUSE);
 
         Map<String, String> form8938 = partI();
         form8938.put("/hasForeignAccounts", bool(true));

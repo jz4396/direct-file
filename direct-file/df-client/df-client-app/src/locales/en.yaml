@@ -665,6 +665,10 @@ headings:
     Accounts (FBAR), to report that financial interest or signature authority?
   /heading/income/income-sources/foreign-account-countries:
     List the name of each foreign country where the financial account is located.
+  /heading/income/income-sources/foreign-account-countries-fit:
+    Do all the countries fit on these two lines?
+  /heading/income/income-sources/foreign-account-countries-fit-mfj:
+    Do all the countries where you or {{/secondaryFiler/firstName}} had an account fit on these two lines?
   /heading/income/income-sources/form-8938-required:
     Are you required to file Form 8938, Statement of Specified Foreign Financial Assets, with your tax return?
   /heading/income/income-sources/form-8938-required-mfj:
@@ -2675,7 +2679,9 @@ headings:
   /heading/knockout/forms-missing/net-investment: Direct File doesn’t yet support the amount of income you received.
   /heading/knockout/income-sources-supported: Direct File doesn’t support the forms required to report all income types.
   /heading/knockout/digital-assets: Direct File doesn’t yet support the forms required to report digital assets.
-  /heading/knockout/foreign-accounts-trusts: Direct File doesn’t yet support Form 8938 or a foreign trust (Form 3520).
+  /heading/knockout/foreign-accounts-trusts:
+    Direct File doesn’t yet support Form 8938, a foreign trust (Form 3520), or a separate statement of foreign
+    countries.
   /heading/knockout/ira-contributions:
     Direct File doesn’t yet support Individual Retirement Arrangement (IRA) contributions.
   /heading/knockout/est-tax-payments-name-change: Direct File doesn’t support attachments yet.
@@ -4652,7 +4658,13 @@ info:
     body:
       - p:
           If you are required to file FinCEN Form 114, enter each foreign country where an account is located. Use the
-          second line if you need it.
+          second line if you need it. Line 7b says to attach a separate statement if you need more space.
+  /info/income/income-sources/foreign-account-countries-fit:
+    body:
+      - p:
+          Schedule B line 7b has two lines for country names. The instructions say to attach a separate statement if
+          you need more space. Direct File can’t attach that statement. Answer Yes only if every country fits on these
+          two lines. Answer No if you need more space.
   /info/income/income-sources/form-8938-required:
     body:
       - p:
@@ -12538,7 +12550,9 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/knockout/foreign-accounts-trusts:
-    body: Direct File doesn’t yet support Form 8938 or Form 3520 for a foreign trust.
+    body:
+      Direct File doesn’t yet support Form 8938, Form 3520 for a foreign trust, or a separate statement when the
+      foreign countries do not fit on Schedule B line 7b.
     alertText:
       body:
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
@@ -23346,6 +23360,9 @@ dataviews:
       Are you required to file FinCEN Form 114 to report that financial interest or signature authority?
     /foreignAccountCountryLine1: Foreign country where the account is located
     /foreignAccountCountryLine2: Another foreign country, if you need a second line
+    /foreignAccountCountriesFitOnLine7b: Do all the countries fit on these two lines?
+    /foreignAccountCountriesFitOnLine7b_spouse:
+      Do all the countries where you or your spouse had an account fit on these two lines?
     /requiredToFileForm8938: Are you required to file Form 8938 with your tax return?
     /requiredToFileFinCENForm114_spouse:
       Are you or your spouse required to file FinCEN Form 114 to report that financial interest or signature authority?

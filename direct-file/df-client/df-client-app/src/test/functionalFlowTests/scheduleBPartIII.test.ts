@@ -47,7 +47,7 @@ describe(`Schedule B Part III flow`, () => {
     ).toRouteNextTo(`${sources}/form-8938-required`);
   });
 
-  it(`countries route to the Form 8938 question`, ({ task }) => {
+  it(`countries route to the "do they fit?" question`, ({ task }) => {
     expect(
       givenFacts(
         graph(
@@ -55,7 +55,37 @@ describe(`Schedule B Part III flow`, () => {
           { '/foreignAccountCountryLine1': `France` }
         )
       ).atPath(`${sources}/foreign-account-countries`, null, task)
+    ).toRouteNextTo(`${sources}/foreign-account-countries-fit`);
+  });
+
+  it(`countries that fit route to the Form 8938 question`, ({ task }) => {
+    expect(
+      givenFacts(
+        graph(
+          {
+            '/hasForeignAccounts': true,
+            '/requiredToFileFinCENForm114': true,
+            '/foreignAccountCountriesFitOnLine7b': true,
+          },
+          { '/foreignAccountCountryLine1': `France` }
+        )
+      ).atPath(`${sources}/foreign-account-countries-fit`, null, task)
     ).toRouteNextTo(`${sources}/form-8938-required`);
+  });
+
+  it(`countries that do not fit route to the knockout`, ({ task }) => {
+    expect(
+      givenFacts(
+        graph(
+          {
+            '/hasForeignAccounts': true,
+            '/requiredToFileFinCENForm114': true,
+            '/foreignAccountCountriesFitOnLine7b': false,
+          },
+          { '/foreignAccountCountryLine1': `France` }
+        )
+      ).atPath(`${sources}/foreign-account-countries-fit`, null, task)
+    ).toRouteNextTo(`${sources}/foreign-accounts-trusts-knockout`);
   });
 
   it(`Form 8938 "No" continues to the foreign trust grantor question`, ({ task }) => {
@@ -106,6 +136,26 @@ describe(`Schedule B Part III flow`, () => {
           '/isForeignTrustsGrantor': false,
           '/hasForeignTrustsTransactions': false,
         })
+      ).atPath(`${sources}/foreign-trusts-transactions`, null, task)
+    ).toRouteNextTo(`${sources}/digital-assets-received`);
+  });
+
+  it(`line 7a "Yes" with countries that fit, Form 8938 "No", and line 8 "No" moves on to digital assets`, ({
+    task,
+  }) => {
+    expect(
+      givenFacts(
+        graph(
+          {
+            '/hasForeignAccounts': true,
+            '/requiredToFileFinCENForm114': true,
+            '/foreignAccountCountriesFitOnLine7b': true,
+            '/requiredToFileForm8938': false,
+            '/isForeignTrustsGrantor': false,
+            '/hasForeignTrustsTransactions': false,
+          },
+          { '/foreignAccountCountryLine1': `France` }
+        )
       ).atPath(`${sources}/foreign-trusts-transactions`, null, task)
     ).toRouteNextTo(`${sources}/digital-assets-received`);
   });

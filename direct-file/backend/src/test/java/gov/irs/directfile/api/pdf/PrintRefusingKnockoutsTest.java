@@ -76,7 +76,10 @@ class PrintRefusingKnockoutsTest {
     /** Fail-closed print gate. Not an operand of {@code /flowIsKnockedOut}. */
     static final String SCHEDULE_B_PART_III_PRINT_REFUSE = "/flowPrintRefuseScheduleBPartIII";
 
-    /** Interview knockout: "Yes" on line 7a or line 8. Complete false while Part III is unanswered. */
+    /**
+     * Interview knockout: line 8 Yes, Form 8938 Yes, or line 7b countries that do not fit. Complete false while Part
+     * III is unanswered.
+     */
     static final String SCHEDULE_B_PART_III_FLOW_KNOCKOUT = "/flowKnockoutScheduleBPartIII";
 
     static final String SCHEDULE_E_LOSS_KNOCKOUT = "/flowKnockoutScheduleELoss";
@@ -1201,6 +1204,7 @@ class PrintRefusingKnockoutsTest {
         putJson(fbar, mapper, "/requiredToFileFinCENForm114", ScheduleATy2026PdfSmokeTest.bool(true));
         putJson(fbar, mapper, "/foreignAccountCountryLine1", ScheduleATy2026PdfSmokeTest.string("France"));
         putJson(fbar, mapper, "/foreignAccountCountryLine2", ScheduleATy2026PdfSmokeTest.string("Japan"));
+        putJson(fbar, mapper, "/foreignAccountCountriesFitOnLine7b", ScheduleATy2026PdfSmokeTest.bool(true));
         putJson(fbar, mapper, "/requiredToFileForm8938", ScheduleATy2026PdfSmokeTest.bool(false));
         Graph printed = fgs.getGraph(fbar);
         assertEquals("France", printed.get("/scheduleBLine7bCountryLine1").get());
@@ -1210,6 +1214,31 @@ class PrintRefusingKnockoutsTest {
         assertCompleteFalse(printed, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
         assertEquals(Boolean.FALSE, printed.get("/flowIsKnockedOut").get());
         assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(printed), "7a Yes with Q2 and countries prints");
+
+        Map<String, FactTypeWithItem> countriesFitNo = commonDividendReturn(mapper);
+        putJson(countriesFitNo, mapper, "/hasForeignAccounts", ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(countriesFitNo, mapper, "/requiredToFileFinCENForm114", ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(countriesFitNo, mapper, "/foreignAccountCountryLine1", ScheduleATy2026PdfSmokeTest.string("France"));
+        putJson(countriesFitNo, mapper, "/foreignAccountCountriesFitOnLine7b", ScheduleATy2026PdfSmokeTest.bool(false));
+        Graph needStatement = fgs.getGraph(countriesFitNo);
+        assertEquals(Boolean.TRUE, needStatement.get("/scheduleBPartIIIOutOfScope").get());
+        assertEquals(Boolean.TRUE, needStatement.get(SCHEDULE_B_PART_III_PRINT_REFUSE).get());
+        assertEquals(Boolean.TRUE, needStatement.get(SCHEDULE_B_PART_III_FLOW_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, needStatement.get("/flowIsKnockedOut").get());
+        assertEquals(
+                List.of(SCHEDULE_B_PART_III_PRINT_REFUSE), PrintRefusingKnockouts.refusingPaths(needStatement));
+
+        Map<String, FactTypeWithItem> countriesFitOpen = commonDividendReturn(mapper);
+        putJson(countriesFitOpen, mapper, "/hasForeignAccounts", ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(countriesFitOpen, mapper, "/requiredToFileFinCENForm114", ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(countriesFitOpen, mapper, "/foreignAccountCountryLine1", ScheduleATy2026PdfSmokeTest.string("France"));
+        Graph fitUnanswered = fgs.getGraph(countriesFitOpen);
+        assertEquals(Boolean.FALSE, fitUnanswered.get("/scheduleBPartIIIAnswered").get());
+        assertEquals(Boolean.TRUE, fitUnanswered.get(SCHEDULE_B_PART_III_PRINT_REFUSE).get());
+        assertCompleteFalse(fitUnanswered, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
+        assertNotFlowKnockedOut(fitUnanswered);
+        assertEquals(
+                List.of(SCHEDULE_B_PART_III_PRINT_REFUSE), PrintRefusingKnockouts.refusingPaths(fitUnanswered));
 
         Map<String, FactTypeWithItem> form8938 = commonDividendReturn(mapper);
         putJson(form8938, mapper, "/hasForeignAccounts", ScheduleATy2026PdfSmokeTest.bool(true));

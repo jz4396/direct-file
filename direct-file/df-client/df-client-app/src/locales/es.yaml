@@ -9441,7 +9441,9 @@ info:
                 Si recibes un Formulario 1099-INT que incluye una cantidad que recibiste como nominatario del dueño
                 verdadero, no puedes usar Direct File.
   /info/knockout/foreign-accounts-trusts:
-    body: Direct File todavía no acepta el Formulario 8938 ni el Formulario 3520 de un fideicomiso extranjero.
+    body: >-
+      Direct File todavía no acepta el Formulario 8938, el Formulario 3520 de un fideicomiso extranjero ni una
+      declaración por separado cuando los países extranjeros no caben en la línea 7b del Anexo B.
     alertText:
       body:
         - p: <Link1>Encuentra otras maneras de presentar tus impuestos.</Link1>
@@ -9458,7 +9460,14 @@ info:
     body:
       - p: >-
           Si tienes que presentar el Formulario 114 de FinCEN, escribe cada país extranjero donde está una cuenta. Usa
-          la segunda línea si la necesitas.
+          la segunda línea si la necesitas. La línea 7b dice que adjuntes una declaración por separado si necesitas más
+          espacio.
+  /info/income/income-sources/foreign-account-countries-fit:
+    body:
+      - p: >-
+          La línea 7b del Anexo B tiene dos líneas para los nombres de los países. Las instrucciones dicen que adjuntes
+          una declaración por separado si necesitas más espacio. Direct File no puede adjuntar esa declaración. Contesta
+          Sí solo si todos los países caben en estas dos líneas. Contesta No si necesitas más espacio.
   /info/income/income-sources/form-8938-required:
     body:
       - p: >-
@@ -20977,8 +20986,9 @@ headings:
   /heading/you-and-your-family/about-you/breather-1099-misc-pfd: Gracias por dejarnos saber.
   /heading/knockout/forms-missing/1099-int-state-tax-withheld-ko: >-
     Direct File aún no permite las retenciones estatales de ingresos de intereses.
-  /heading/knockout/foreign-accounts-trusts:
-    Direct File todavía no acepta el Formulario 8938 ni un fideicomiso extranjero (Formulario 3520).
+  /heading/knockout/foreign-accounts-trusts: >-
+    Direct File todavía no acepta el Formulario 8938, un fideicomiso extranjero (Formulario 3520) ni una declaración
+    por separado de países extranjeros.
   /heading/income/income-sources/foreign-trusts-transactions: >-
     En algún momento durante el {{/taxYear}}, ¿tuviste una transacción con un fideicomiso extranjero?
   /heading/income/income-sources/foreign-trusts-transactions-mfj: >-
@@ -21003,6 +21013,10 @@ headings:
     Financial Accounts (FBAR), para informar ese interés financiero o autoridad de firma?
   /heading/income/income-sources/foreign-account-countries: >-
     Escribe el nombre de cada país extranjero donde está la cuenta financiera.
+  /heading/income/income-sources/foreign-account-countries-fit: >-
+    ¿Caben todos los países en estas dos líneas?
+  /heading/income/income-sources/foreign-account-countries-fit-mfj: >-
+    ¿Caben en estas dos líneas todos los países donde tú o {{/secondaryFiler/firstName}} tuvieron una cuenta?
   /heading/income/income-sources/form-8938-required: >-
     ¿Tienes que presentar el Formulario 8938, Statement of Specified Foreign Financial Assets, con tu declaración?
   /heading/income/income-sources/form-8938-required-mfj: >-
@@ -23224,6 +23238,9 @@ dataviews:
       de firma?
     /foreignAccountCountryLine1: País extranjero donde está la cuenta
     /foreignAccountCountryLine2: Otro país extranjero, si necesitas una segunda línea
+    /foreignAccountCountriesFitOnLine7b: ¿Caben todos los países en estas dos líneas?
+    /foreignAccountCountriesFitOnLine7b_spouse: >-
+      ¿Caben en estas dos líneas todos los países donde tú o tu cónyuge tuvieron una cuenta?
     /requiredToFileForm8938: ¿Tienes que presentar el Formulario 8938 con tu declaración?
     /requiredToFileForm8938_spouse: ¿Tú o tu cónyuge tienen que presentar el Formulario 8938 con tu declaración?
     /hasForeignAccounts_spouse: >-

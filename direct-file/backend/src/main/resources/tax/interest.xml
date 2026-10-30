@@ -15,12 +15,9 @@
         include on line 2a any exempt-interest dividends from a mutual fund or other regulated investment company. This
         amount should be shown in box 12 of Form 1099-DIV." Line 2a is the sum of every 1099-INT box 8 and every
         1099-DIV box 12. Cents are included in the addition and only the total is rounded (p. 23, Rounding Off to
-        Whole
-        Dollars: "If you have to add two or more amounts to figure the amount to enter on a line, include cents
-        when
-        adding the amounts and round off only the total."). 1099-OID tax-exempt OID is not collected. Amortized
-        bond
-        premium on a tax-exempt bond (1099-INT box 13) is not netted: any amount in boxes 9-13 stops the return
+        Whole Dollars: "If you have to add two or more amounts to figure the amount to enter on a line, include cents
+        when adding the amounts and round off only the total."). 1099-OID tax-exempt OID is not collected. Amortized
+        bond premium on a tax-exempt bond (1099-INT box 13) is not netted: any amount in boxes 9-13 stops the return
         (/flowKnockoutHasBonds). Specified private activity bond interest (1099-INT box 9 and 1099-DIV box 13) stops the
         return (26 U.S.C. 57(a)(5), Form 6251 line 2g). Mapped to IRS1040 f1_58[0].</Description>
       <Export downstreamFacts="true" mef="true" />
@@ -1165,14 +1162,10 @@
         is specified private activity bond interest: 26 U.S.C. 57(a)(5) (https://www.law.cornell.edu/uscode/text/26/57)
         makes that interest a tax preference, reported on Form 6251 line 2g, which is not computed. Box 13 is bond
         premium on a tax-exempt bond. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25,
-        Line 2a:
-        "if you acquired a tax-exempt bond at a premium, only report the net amount of tax-exempt interest on
-        line 2a
-        (that is, the excess of the tax-exempt interest received during the year over the amortized bond premium
-        for the
-        year)." That net is not computed, so any box 13 amount stops the return. Boxes 10-12 (market discount,
-        bond
-        premium, and bond premium on Treasury obligations) stop with them.</Description>
+        Line 2a: "if you acquired a tax-exempt bond at a premium, only report the net amount of tax-exempt interest on
+        line 2a (that is, the excess of the tax-exempt interest received during the year over the amortized bond premium
+        for the year)." That net is not computed, so any box 13 amount stops the return. Boxes 10-12 (market discount,
+        bond premium, and bond premium on Treasury obligations) stop with them.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -1344,7 +1337,9 @@
         Form 8938
         after line 7a question 1 is Yes, ends the questions. A No on line 7a still needs line 8. A Yes
         on line 7a needs
-        question 2, line 7b when FinCEN Form 114 is required, Form 8938 No, and line 8 No.
+        question 2, line 7b when FinCEN Form 114 is required, a Yes that every country fits, Form 8938 No,
+        and line 8 No.
+        No, because the countries do not fit, ends the questions.
         An unanswered question is not
         "No". 2026 draft Instructions for Schedule B PDF pp. 3–4.</Description>
       <Derived>
@@ -1392,6 +1387,19 @@
                 <IsComplete>
                   <Dependency module="income" path="/requiredToFileFinCENForm114" />
                 </IsComplete>
+                <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                <IsComplete>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </Not>
+              </All>
+              <All>
+                <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                </IsComplete>
                 <IsComplete>
                   <Dependency module="income" path="/requiredToFileForm8938" />
                 </IsComplete>
@@ -1402,7 +1410,13 @@
                   <Not>
                     <Dependency module="income" path="/requiredToFileFinCENForm114" />
                   </Not>
-                  <Dependency module="income" path="/foreignAccountCountryLine1Provided" />
+                  <All>
+                    <Dependency module="income" path="/foreignAccountCountryLine1Provided" />
+                    <IsComplete>
+                      <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                    </IsComplete>
+                    <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                  </All>
                 </Any>
                 <IsComplete>
                   <Dependency module="income" path="/isForeignTrustsGrantor" />
@@ -1431,8 +1445,8 @@
         operand of /flowIsKnockedOut: an unanswered line, including an unanswered question 2, does not knock
         the
         interview out. /flowKnockoutScheduleBPartIII is this fact and /scheduleBPartIIIAnswered, so only line 8
-        Yes or
-        Form 8938 Yes knocks the return out. 2026 draft Instructions for Schedule B
+        Yes, Form 8938 Yes, or line 7b countries that do not fit knock the return out. 2026 draft
+        Instructions for Schedule B
         https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
         94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF pp. 3–4. PDF p. 3, Line 7a—Question 1:
         "Check the 'Yes' box even if you aren't required to file FinCEN Form 114." PDF p. 4, Line 7a—Question 2:
@@ -1444,8 +1458,10 @@
         FinCEN Form 114 (FBAR), you may be required to file Form 8938" (26 U.S.C. 6038D). PDF p. 4,
         Line 8: Form 3520 (26
         U.S.C. 6048). Form 8938 and Form 3520 are not produced, so those Yes answers refuse
-        the print. Question 2
-        unanswered, or line 7b blank when FinCEN Form 114 is required, also refuses the print.
+        the print. PDF p. 4, Line 7b: "Attach a separate statement if you need more space." That statement is not
+        produced, so No on whether the countries fit refuses the print and stops the return. Question 2
+        unanswered, line 7b blank when FinCEN Form 114 is required, or that fit question unanswered, also
+        refuses the print.
         An unanswered line 7a or
         line 8 is not "No", including when interest and ordinary dividends are not over
         $1,500. Exactly $1,500 with every
@@ -1501,6 +1517,29 @@
             <When>
               <All>
                 <IsComplete>
+                  <Dependency module="income" path="/hasForeignAccounts" />
+                </IsComplete>
+                <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                </IsComplete>
+                <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                <IsComplete>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
                   <Dependency path="/scheduleBPartIIIAnswered" />
                 </IsComplete>
                 <Dependency path="/scheduleBPartIIIAnswered" />
@@ -1524,8 +1563,8 @@
 
     <Fact path="/flowKnockoutScheduleBPartIII">
       <Name>Knockout: Schedule B Part III foreign account or trust</Name>
-      <Description>True only when Schedule B line 8 is Yes or, after line 7a question 1 is Yes, Form 8938 is
-        required.
+      <Description>True only when Schedule B line 8 is Yes, Form 8938 is required after line 7a question 1 is Yes,
+        or the countries do not fit on line 7b.
         Wired into /flowIsKnockedOut. A Yes on line 7a question 1 or question 2 does not knock the
         interview out: those
         answers print. An unanswered Part III, including an unanswered question 2, is complete
@@ -1775,10 +1814,8 @@
     <Fact path="/interestReports/*/taxExemptInterest">
       <Name>Tax-exempt interest</Name>
       <Description>Form 1099-INT box 8. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25,
-        Line
-        2a: "your tax-exempt stated interest should be shown in box 8 of Form 1099-INT." $0 when this report is not
-        a
-        1099-INT or box 8 is blank. Summed into /taxExemptInterest.</Description>
+        Line 2a: "your tax-exempt stated interest should be shown in box 8 of Form 1099-INT." $0 when this report is not
+        a 1099-INT or box 8 is blank. Summed into /taxExemptInterest.</Description>
       <Export stateSystems="true" />
 
       <Derived>

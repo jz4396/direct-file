@@ -161,7 +161,7 @@
       <Writable>
         <String />
         <Limit type="Match">
-          <String><![CDATA[[A-Za-z][A-Za-z .',\-]*]]></String>
+          <String><![CDATA[[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ][A-Za-zÀ-ÖØ-öø-ÿĀ-ſ .,'’\-]*]]></String>
         </Limit>
         <Limit type="MaxLength">
           <Int>50</Int>
@@ -177,11 +177,22 @@
       <Writable>
         <String />
         <Limit type="Match">
-          <String><![CDATA[[A-Za-z][A-Za-z .',\-]*]]></String>
+          <String><![CDATA[[A-Za-zÀ-ÖØ-öø-ÿĀ-ſ][A-Za-zÀ-ÖØ-öø-ÿĀ-ſ .,'’\-]*]]></String>
         </Limit>
         <Limit type="MaxLength">
           <Int>50</Int>
         </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/foreignAccountCountriesFitOnLine7b">
+      <Name>All foreign countries fit on Schedule B line 7b</Name>
+      <Description>Asked when line 7a question 2 is Yes. 2026 draft Instructions for Schedule B PDF p. 4, Line 7b:
+        "Attach a separate statement if you need more space." Yes means every country fits on the two lines and those
+        lines print. No means a separate statement is required. That statement is not produced, so No stops the return
+        (/scheduleBPartIIIOutOfScope). Unanswered refuses the print and does not knock the interview out.</Description>
+      <Writable>
+        <Boolean />
       </Writable>
     </Fact>
 
@@ -219,6 +230,7 @@
               <All>
                 <Dependency path="/hasForeignAccounts" />
                 <Dependency path="/requiredToFileFinCENForm114" />
+                <Dependency path="/foreignAccountCountriesFitOnLine7b" />
                 <Dependency path="/foreignAccountCountryLine1Provided" />
               </All>
             </When>
@@ -242,6 +254,7 @@
               <All>
                 <Dependency path="/hasForeignAccounts" />
                 <Dependency path="/requiredToFileFinCENForm114" />
+                <Dependency path="/foreignAccountCountriesFitOnLine7b" />
                 <IsComplete>
                   <Dependency path="/foreignAccountCountryLine2" />
                 </IsComplete>
@@ -273,12 +286,11 @@
 
     <Fact path="/scheduleBPartIIIOutOfScope">
       <Name>Schedule B Part III stop</Name>
-      <Description>True when line 8 is Yes or, after a Yes on line 7a, Form 8938 is required. 2026 draft
-        Instructions PDF
-        p. 4, Line 8 (Form 3520, 26 U.S.C. 6048) and PDF p. 3, Form 8938 (26 U.S.C. 6038D).
-        A Yes on line 7a question 1
-        or question 2 is not this stop. Complete false when those answers are No
-        or have not been given.</Description>
+      <Description>True when line 8 is Yes, Form 8938 is required after a Yes on line 7a, or the country list
+        does not fit on line 7b. 2026 draft Instructions PDF p. 4, Line 7b: "Attach a separate statement if you need
+        more space." That statement is not produced. PDF p. 4, Line 8 (Form 3520, 26 U.S.C. 6048) and PDF p. 3,
+        Form 8938 (26 U.S.C. 6038D). A Yes on line 7a question 1 or question 2 is not this stop. Complete false when
+        those answers are No or have not been given.</Description>
       <Derived>
         <Any>
           <All>
@@ -303,6 +315,22 @@
             </IsComplete>
             <Dependency path="/requiredToFileForm8938" />
           </All>
+          <All>
+            <IsComplete>
+              <Dependency path="/hasForeignAccounts" />
+            </IsComplete>
+            <Dependency path="/hasForeignAccounts" />
+            <IsComplete>
+              <Dependency path="/requiredToFileFinCENForm114" />
+            </IsComplete>
+            <Dependency path="/requiredToFileFinCENForm114" />
+            <IsComplete>
+              <Dependency path="/foreignAccountCountriesFitOnLine7b" />
+            </IsComplete>
+            <Not>
+              <Dependency path="/foreignAccountCountriesFitOnLine7b" />
+            </Not>
+          </All>
         </Any>
       </Derived>
     </Fact>
@@ -320,11 +348,23 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowShouldAskForeignAccountCountriesFit">
+      <Name>Ask whether every country fits on line 7b</Name>
+      <Description>Asked when line 7a question 2 is Yes. 2026 draft Instructions PDF p. 4, Line 7b: "Attach a
+        separate statement if you need more space."</Description>
+      <Derived>
+        <All>
+          <Dependency path="/hasForeignAccounts" />
+          <Dependency path="/requiredToFileFinCENForm114" />
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowShouldAskForm8938">
       <Name>Ask whether Form 8938 is required</Name>
-      <Description>Asked after line 7a question 1 is Yes and question 2 is answered, and after line 7b when
-        question 2 is
-        Yes. 2026 draft Instructions PDF p. 3, Form 8938 tip.</Description>
+      <Description>Asked after line 7a question 1 is Yes and question 2 is answered. When question 2 is Yes, line 7b
+        must name a country and every country must fit on the two lines. 2026 draft Instructions PDF p. 3, Form 8938
+        tip, and PDF p. 4, Line 7b.</Description>
       <Derived>
         <All>
           <Dependency path="/hasForeignAccounts" />
@@ -335,7 +375,10 @@
             <Not>
               <Dependency path="/requiredToFileFinCENForm114" />
             </Not>
-            <Dependency path="/foreignAccountCountryLine1Provided" />
+            <All>
+              <Dependency path="/foreignAccountCountryLine1Provided" />
+              <Dependency path="/foreignAccountCountriesFitOnLine7b" />
+            </All>
           </Any>
         </All>
       </Derived>
@@ -368,11 +411,10 @@
 
     <Fact path="/scheduleBForeignAccountFollowUpComplete">
       <Name>Line 7a follow-up is complete for the income section</Name>
-      <Description>True when line 7a is No, or when question 2 is answered, line 7b is filled in if FinCEN
-        Form 114 is
-        required, and Form 8938 is answered. Line 8 must also be answered unless Form 8938 is Yes.
-        Unanswered question 2
-        keeps the income-sources section incomplete.</Description>
+      <Description>True when line 7a is No, or when question 2 is answered. When FinCEN Form 114 is required,
+        line 7b must name a country and the filer must say whether every country fits. No on that question ends the
+        section. Yes still needs Form 8938, and line 8 unless Form 8938 is Yes. Unanswered question 2, or an unanswered
+        fit question, keeps the income-sources section incomplete.</Description>
       <Derived>
         <Any>
           <Not>
@@ -384,28 +426,64 @@
               <Dependency path="/requiredToFileFinCENForm114" />
             </IsComplete>
             <Any>
-              <Not>
-                <Dependency path="/requiredToFileFinCENForm114" />
-              </Not>
-              <Dependency path="/foreignAccountCountryLine1Provided" />
-            </Any>
-            <IsComplete>
-              <Dependency path="/requiredToFileForm8938" />
-            </IsComplete>
-            <Any>
-              <Dependency path="/requiredToFileForm8938" />
               <All>
                 <Not>
-                  <Dependency path="/requiredToFileForm8938" />
+                  <Dependency path="/requiredToFileFinCENForm114" />
                 </Not>
                 <IsComplete>
-                  <Dependency path="/isForeignTrustsGrantor" />
+                  <Dependency path="/requiredToFileForm8938" />
                 </IsComplete>
                 <Any>
-                  <Dependency path="/isForeignTrustsGrantor" />
-                  <IsComplete>
-                    <Dependency path="/hasForeignTrustsTransactions" />
-                  </IsComplete>
+                  <Dependency path="/requiredToFileForm8938" />
+                  <All>
+                    <Not>
+                      <Dependency path="/requiredToFileForm8938" />
+                    </Not>
+                    <IsComplete>
+                      <Dependency path="/isForeignTrustsGrantor" />
+                    </IsComplete>
+                    <Any>
+                      <Dependency path="/isForeignTrustsGrantor" />
+                      <IsComplete>
+                        <Dependency path="/hasForeignTrustsTransactions" />
+                      </IsComplete>
+                    </Any>
+                  </All>
+                </Any>
+              </All>
+              <All>
+                <Dependency path="/requiredToFileFinCENForm114" />
+                <Dependency path="/foreignAccountCountryLine1Provided" />
+                <IsComplete>
+                  <Dependency path="/foreignAccountCountriesFitOnLine7b" />
+                </IsComplete>
+                <Any>
+                  <Not>
+                    <Dependency path="/foreignAccountCountriesFitOnLine7b" />
+                  </Not>
+                  <All>
+                    <Dependency path="/foreignAccountCountriesFitOnLine7b" />
+                    <IsComplete>
+                      <Dependency path="/requiredToFileForm8938" />
+                    </IsComplete>
+                    <Any>
+                      <Dependency path="/requiredToFileForm8938" />
+                      <All>
+                        <Not>
+                          <Dependency path="/requiredToFileForm8938" />
+                        </Not>
+                        <IsComplete>
+                          <Dependency path="/isForeignTrustsGrantor" />
+                        </IsComplete>
+                        <Any>
+                          <Dependency path="/isForeignTrustsGrantor" />
+                          <IsComplete>
+                            <Dependency path="/hasForeignTrustsTransactions" />
+                          </IsComplete>
+                        </Any>
+                      </All>
+                    </Any>
+                  </All>
                 </Any>
               </All>
             </Any>
