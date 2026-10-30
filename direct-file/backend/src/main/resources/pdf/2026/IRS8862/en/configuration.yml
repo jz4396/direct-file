@@ -1,0 +1,151 @@
+# #89: Form 8862 (Rev. December 2025), Information To Claim Certain Credits After Disallowance.
+# YEAR-BASED MAPPING: continuous-use final form for tax year 2026 returns (26 U.S.C. 32(k)(2) / 24(g)
+# recertification after disallowance; Form 8862 Rev. 12-2025 p. 1).
+# Source: https://www.irs.gov/pub/irs-pdf/f8862.pdf (Rev. December 2025, Cat. No. 25145E, Created 1/8/26,
+# 3 PDF pages, 153,254 bytes), committed byte-identical to irs.gov; SHA-256
+# fd783d1f46f1f286cd1d7a2cca8812fc2ec05760478359873e22ba9d05d5f3b5 (pinned in
+# ../../continuous-use-pdf-sha256.txt and rechecked by ContinuousUsePdfHashManifestTest).
+# All 128 AcroForm field names match pdf/2024/IRS8862/en/f8862_accessible.pdf (Rev. October 2024), so this
+# 36-fact field map carries over. Line captions below were checked against the Rev. 12-2025 face text (no
+# /TU tooltips on the final). No 2026 Spanish Form 8862 is posted; es stays on the 2024 template and is
+# refused for TY2026 (26 U.S.C. 6011(a)). CTC/ODC statement attachments stay on pdf/2024.
+#
+# Included when /pdfIncludeForm8862 (EITC and/or CTC/ODC recertification). Part IV (AOTC) stays out of scope.
+includeWhen: /pdfIncludeForm8862
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # Name(s) shown on return
+      f1_02[0]: /primaryFiler/tin # Your social security number
+      Line1_CombField[0]:
+        f1_03[0]: /taxYear # 1 Enter the tax year for which you are filing this form
+      Checkbox1_ReadOrder[0]:
+        c1_1[0]: /eitc8862Required # 2 Earned Income Credit (Complete Part II)
+      Checkbox2_ReadOrder[0]:
+        c1_2[0]: /ctc8862Required # 2 Child Tax Credit/Additional Child Tax Credit/Credit for Other Dependents
+      Checkbox3_ReadOrder[0]:
+        # c1_3[0]: 2 American Opportunity Tax Credit (Complete Part IV) — out of scope
+      # c1_4[0]: 3 Yes — incorrectly reported earned/investment income only; never Yes when this form is included
+      c1_4[1]: /eitc8862Required # 3 No (form is included for a reason other than that Yes path)
+      c1_5[0]: /pdf8862Line4Yes # 4 Yes — claimed as a qualifying child of another taxpayer
+      c1_5[1]: /pdf8862Line4No # 4 No
+      f1_04[0]: /scheduleEicDependents/[0]/fullName # 5a Child 1
+      f1_05[0]: /scheduleEicDependents/[1]/fullName # 5b Child 2
+      f1_06[0]: /scheduleEicDependents/[2]/fullName # 5c Child 3
+      c1_6[0]: /form8862RequiredAndHasQualifyingChildren # Section A (with a qualifying child)
+      c1_6[1]: /form8862RequiredAndHasNoQualifyingChildren # Section B (without a qualifying child)
+      Child1_CombField[0]:
+        f1_07[0]: /scheduleEicDependents/[0]/daysLivedWithTPInUS # 7 Child 1 days in the United States
+      Child2_CombField[0]:
+        f1_08[0]: /scheduleEicDependents/[1]/daysLivedWithTPInUS # 7 Child 2
+      Child3_CombField[0]:
+        f1_09[0]: /scheduleEicDependents/[2]/daysLivedWithTPInUS # 7 Child 3
+      Child1_Birth_Ln8[0]:
+        f1_10[0]: /scheduleEicDependents/[0]/~dobMonth # 8 Child 1 birth MM
+        f1_11[0]: /scheduleEicDependents/[0]/~dobDay # 8 Child 1 birth DD
+      Child1_Death_Ln8[0]:
+        f1_12[0]: /scheduleEicDependents/[0]/~deathMonth # 8 Child 1 death MM
+        f1_13[0]: /scheduleEicDependents/[0]/~deathDay # 8 Child 1 death DD
+      Child2_Birth_Ln8[0]:
+        f1_14[0]: /scheduleEicDependents/[1]/~dobMonth
+        f1_15[0]: /scheduleEicDependents/[1]/~dobDay
+      Child2_Death_Ln8[0]:
+        f1_16[0]: /scheduleEicDependents/[1]/~deathMonth
+        f1_17[0]: /scheduleEicDependents/[1]/~deathDay
+      Child3_Birth_Ln8[0]:
+        f1_18[0]: /scheduleEicDependents/[2]/~dobMonth
+        f1_19[0]: /scheduleEicDependents/[2]/~dobDay
+      Child3_Death_Ln8[0]:
+        f1_20[0]: /scheduleEicDependents/[2]/~deathMonth
+        f1_21[0]: /scheduleEicDependents/[2]/~deathDay
+    Page2[0]:
+      Ln9a_CombField[0]:
+        f2_01[0]: /primaryFiler/daysMainHomeInUS # 9a days main home in the United States
+      Ln9b_CombField[0]:
+        f2_02[0]: /pdfSecondaryFiler/daysMainHomeInUS # 9b spouse's days (if MFJ)
+      f2_03[0]: /primaryFiler/eitc8862Age # 10a your age at the end of the year on line 1
+      f2_04[0]: /pdfSecondaryFiler/eitc8862Age # 10b spouse's age
+      c2_1[0]: /primaryFiler/canBeClaimedNoQc # 11a Yes — can be claimed as a dependent
+      c2_1[1]: /primaryFiler/canNotBeClaimedNoQc # 11a No
+      c2_2[0]: /pdfSecondaryFiler/canBeClaimedNoQc # 11b Yes
+      c2_2[1]: /pdfSecondaryFiler/canNotBeClaimedNoQc # 11b No
+      f2_05[0]: /form8862CtcDependentsCollection/[0]/firstName space /form8862CtcDependentsCollection/[0]/lastNameAndSuffix # 12 Child 1
+      f2_06[0]: /form8862CtcDependentsCollection/[1]/firstName space /form8862CtcDependentsCollection/[1]/lastNameAndSuffix # 12 Child 2
+      f2_07[0]: /form8862CtcDependentsCollection/[2]/firstName space /form8862CtcDependentsCollection/[2]/lastNameAndSuffix # 12 Child 3
+      f2_08[0]: /form8862CtcDependentsCollection/[3]/firstName space /form8862CtcDependentsCollection/[3]/lastNameAndSuffix # 12 Child 4
+      f2_09[0]: /form8862OdcDependentsCollection/[0]/fullName # 13 Other dependent 1
+      f2_10[0]: /form8862OdcDependentsCollection/[1]/fullName # 13 Other dependent 2
+      f2_11[0]: /form8862OdcDependentsCollection/[2]/fullName # 13 Other dependent 3
+      f2_12[0]: /form8862OdcDependentsCollection/[3]/fullName # 13 Other dependent 4
+      c2_3[0]: /form8862CtcDependentsCollection/[0]/residencyTest # 14 Child 1 Yes
+      # c2_3[1]: NO should never be checked (ctcDependent must be a qualifying child, which passes residency test)
+      c2_4[0]: /form8862CtcDependentsCollection/[1]/residencyTest
+      # c2_4[1]: NO should never be checked
+      c2_5[0]: /form8862CtcDependentsCollection/[2]/residencyTest
+      # c2_5[1]: NO should never be checked
+      c2_6[0]: /form8862CtcDependentsCollection/[3]/residencyTest
+      # c2_6[1]: NO should never be checked
+      c2_7[0]: /form8862CtcDependentsCollection/[0]/eligibleCtc # 15 Child 1 Yes
+      # c2_7[1]: NO should never be checked (eligibility is defined in ctcDependentsCollection)
+      c2_8[0]: /form8862CtcDependentsCollection/[1]/eligibleCtc
+      # c2_8[1]: NO should never be checked
+      c2_9[0]: /form8862CtcDependentsCollection/[2]/eligibleCtc
+      # c2_9[1]: NO should never be checked
+      c2_10[0]: /form8862CtcDependentsCollection/[3]/eligibleCtc
+      # c2_10[1]: NO should never be checked
+      c2_11[0]: /form8862CtcDependentsCollection/[0]/isClaimedDependent # 16 Child 1 Yes
+      # c2_11[1]: NO should never be checked (dependent status is defined through ctcDependentsCollection)
+      c2_12[0]: /form8862CtcDependentsCollection/[1]/isClaimedDependent
+      # c2_12[1]: NO should never be checked
+      c2_13[0]: /form8862CtcDependentsCollection/[2]/isClaimedDependent
+      # c2_13[1]: NO should never be checked
+      c2_14[0]: /form8862CtcDependentsCollection/[3]/isClaimedDependent
+      # c2_14[1]: NO should never be checked
+      c2_15[0]: /form8862OdcDependentsCollection/[0]/isClaimedDependent # 16 Other dependent 1 Yes
+      # c2_15[1]: NO should never be checked (Dependent status is defined through odcDependentsCollection)
+      c2_16[0]: /form8862OdcDependentsCollection/[1]/isClaimedDependent
+      # c2_16[1]: NO should never be checked
+      c2_17[0]: /form8862OdcDependentsCollection/[2]/isClaimedDependent
+      # c2_17[1]: NO should never be checked
+      c2_18[0]: /form8862OdcDependentsCollection/[3]/isClaimedDependent
+      # c2_18[1]: NO should never be checked
+      c2_19[0]: /form8862CtcDependentsCollection/[0]/citizenOrUsResidentTest # 17 Child 1 Yes
+      # c2_19[1]: NO should never be checked (included through ctcClaimedDependentsCollection)
+      c2_20[0]: /form8862CtcDependentsCollection/[1]/citizenOrUsResidentTest
+      # c2_20[1]: NO should never be checked
+      c2_21[0]: /form8862CtcDependentsCollection/[2]/citizenOrUsResidentTest
+      # c2_21[1]: NO should never be checked
+      c2_22[0]: /form8862CtcDependentsCollection/[3]/citizenOrUsResidentTest
+      # c2_22[1]: NO should never be checked
+      c2_23[0]: /form8862OdcDependentsCollection/[0]/citizenOrUsResidentTest # 17 Other dependent 1 Yes
+      # c2_23[1]: NO should never be checked (included through odcDependentsCollection)
+      c2_24[0]: /form8862OdcDependentsCollection/[1]/citizenOrUsResidentTest
+      # c2_24[1]: NO should never be checked
+      c2_25[0]: /form8862OdcDependentsCollection/[2]/citizenOrUsResidentTest
+      # c2_25[1]: NO should never be checked
+      c2_26[0]: /form8862OdcDependentsCollection/[3]/citizenOrUsResidentTest
+      # c2_26[1]: NO should never be checked
+    # Page3[0]: Part IV AOTC — out of scope
+      # f3_01[0]: out of scope start v
+      # f3_02[0]:
+      # f3_03[0]:
+      # c3_1[0]:
+      # c3_1[1]:
+      # c3_2[0]:
+      # c3_2[1]:
+      # c3_3[0]:
+      # c3_3[1]:
+      # c3_4[0]:
+      # c3_4[1]:
+      # c3_5[0]:
+      # c3_5[1]:
+      # c3_6[0]:
+      # c3_6[1]: out of scope end ^
+otherRequiredFacts:
+  - /form8862RequiredAndHasQualifyingChildren
+  - /scheduleEicDependents/[0]/birthDateIfBornInTaxYear
+  - /scheduleEicDependents/[1]/birthDateIfBornInTaxYear
+  - /scheduleEicDependents/[2]/birthDateIfBornInTaxYear
+  - /scheduleEicDependents/[0]/deathDateIfDiedInTaxYear
+  - /scheduleEicDependents/[1]/deathDateIfDiedInTaxYear
+  - /scheduleEicDependents/[2]/deathDateIfDiedInTaxYear

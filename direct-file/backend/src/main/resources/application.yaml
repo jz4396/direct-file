@@ -302,11 +302,12 @@ direct-file:
       - name: IRS8862
         year: 2026
         language-code: en
-        location: pdf/2024/IRS8862/en/f8862_accessible.pdf
+        location: pdf/2026/IRS8862/en/f8862.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS8862/en/configuration.yml
+        configuration-location: pdf/2026/IRS8862/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      # No 2026 Spanish Form 8862 is posted; es stays on the 2024 template and is refused for TY2026 print.
       - name: IRS8862
         year: 2026
         language-code: es

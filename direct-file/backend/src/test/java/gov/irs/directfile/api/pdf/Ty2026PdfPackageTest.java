@@ -170,6 +170,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS2441", 2),
             Map.entry("IRS8880", 1),
             Map.entry("IRS8889", 1),
+            Map.entry("IRS8862", 3),
             Map.entry("PA40", 2),
             Map.entry("PA40SP", 2),
             Map.entry("IRSW2", 1));
@@ -197,7 +198,6 @@ class Ty2026PdfPackageTest {
                             + " 152(c)(4) tie-breaker). Schedule 3-A prints on the ACTC package (#239)."),
             Map.entry("FORM9000", "2021 Form 9000 template only (alternative media preference)"),
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
-            Map.entry("IRS8862", "2024 Form 8862 template only; no 2026 form committed"),
             Map.entry("CTC_DEPENDENTS_STATEMENT", "2024 Form 8862 statement template only"),
             Map.entry("ODC_DEPENDENTS_STATEMENT", "2024 Form 8862 statement template only"),
             Map.entry("DF1099R", "2024 Form 1099-R copy template only; no 2026 form committed"));
@@ -247,7 +247,10 @@ class Ty2026PdfPackageTest {
         }
 
         pinnedSha256 = new HashMap<>();
-        for (String manifest : List.of("pdf/2026/draft-pdf-sha256.txt", "pdf/2026/state-interim-pdf-sha256.txt")) {
+        for (String manifest : List.of(
+                "pdf/2026/draft-pdf-sha256.txt",
+                "pdf/2026/state-interim-pdf-sha256.txt",
+                "pdf/2026/continuous-use-pdf-sha256.txt")) {
             try (BufferedReader r = new BufferedReader(
                     new InputStreamReader(new ClassPathResource(manifest).getInputStream(), StandardCharsets.UTF_8))) {
                 String row;
@@ -444,7 +447,8 @@ class Ty2026PdfPackageTest {
                 paTaxForgiveness(),
                 selfEmployedFamily("4000.00"),
                 ScheduleBAndETy2026PdfSmokeTest.partI(),
-                ScheduleRTy2026PdfSmokeTest.disabledSingle())) {
+                ScheduleRTy2026PdfSmokeTest.disabledSingle(),
+                Form8862Ty2026PdfSmokeTest.eitcWithoutChildren())) {
             printed.addAll(render(s, null, null).forms.keySet());
         }
         for (String s : List.of(FAMILY, SAVER, HSA)) {
@@ -453,9 +457,7 @@ class Ty2026PdfPackageTest {
         // #88: ptc-annual-amounts-rounding files Form 8962. The scenario leaves the income-based special enrollment
         // question unanswered, which refuses the print; "no" is the supported answer (26 U.S.C. 36B(c)(3)(A)(iii)).
         Map<String, FactTypeWithItem> ptc = scenarioFile(PrintRefusingKnockoutsTest.PTC_SCENARIO);
-        ptc.put(
-                PrintRefusingKnockoutsTest.SEP_ANSWER,
-                MAPPER.readValue(bool(false), FactTypeWithItem.class));
+        ptc.put(PrintRefusingKnockoutsTest.SEP_ANSWER, MAPPER.readValue(bool(false), FactTypeWithItem.class));
         printed.addAll(renderFacts(ptc, null, null).forms.keySet());
         assertEquals(PAGES.keySet(), printed, "forms printed across the scenarios");
         Set<String> notPrinted = new TreeSet<>(templates.keySet());

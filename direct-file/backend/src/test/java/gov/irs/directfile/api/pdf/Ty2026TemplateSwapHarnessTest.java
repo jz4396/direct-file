@@ -44,7 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * swapping a draft for the final form is one change:
  *
  * <ol>
- *   <li>replace the PDF (and its row in pdf/2026/draft-pdf-sha256.txt or state-interim-pdf-sha256.txt);
+ *   <li>replace the PDF (and its row in pdf/2026/draft-pdf-sha256.txt, state-interim-pdf-sha256.txt, or
+ *       continuous-use-pdf-sha256.txt);
  *   <li>run {@code ./mvnw test -Dtest=Ty2026TemplateSwapHarnessTest -Dty2026.templates.write=true} to rewrite
  *       {@value #MANIFEST} and {@value #UNMAPPED} under src/test/resources;
  *   <li>fix every mapped field this test reports as missing or skipped, then review the diff of the two files: a changed
@@ -60,8 +61,10 @@ class Ty2026TemplateSwapHarnessTest {
     static final String MANIFEST = "ty2026-template-manifest.txt";
     static final String UNMAPPED = "ty2026-unmapped-fields.txt";
     private static final Path GOLDEN_DIR = Path.of("src/test/resources/pdf/2026");
-    private static final List<String> SOURCE_MANIFESTS =
-            List.of("pdf/2026/draft-pdf-sha256.txt", "pdf/2026/state-interim-pdf-sha256.txt");
+    private static final List<String> SOURCE_MANIFESTS = List.of(
+            "pdf/2026/draft-pdf-sha256.txt",
+            "pdf/2026/state-interim-pdf-sha256.txt",
+            "pdf/2026/continuous-use-pdf-sha256.txt");
     private static final int TOOLTIP_CHARS = 72;
 
     /** One configured template file: the union of the fields its configurations map. */
