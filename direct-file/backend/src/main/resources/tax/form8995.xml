@@ -258,6 +258,7 @@
     <Fact path="/form8995Line4">
       <Name>Form 8995 line 4</Name>
       <Description>Line 4: "Total qualified business income. Combine lines 2 and 3. If zero or less, enter -0-".</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>
@@ -309,6 +310,7 @@
       <Name>Form 8995 line 8</Name>
       <Description>Line 8: "Total qualified REIT dividends and PTP income. Combine lines 6 and 7. If zero or less, enter
         -0-".</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>
@@ -411,6 +413,7 @@
     <Fact path="/form8995Line13">
       <Name>Form 8995 line 13</Name>
       <Description>Line 13: "Subtract line 12 from line 11. If zero or less, enter -0-".</Description>
+      <ExportZero />
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>
@@ -595,6 +598,1526 @@
       </Derived>
     </Fact>
 
+
+    <!-- ========== Line 1 rows (PDF). Column (c) sums to line 2. ========== -->
+
+    <Fact path="/form8995Business0">
+      <Name>Form 8995 line 1(i) business</Name>
+      <Description>
+        Schedule C business at index 0, Form 8995 (2026) draft line 1(i). Incomplete when the filer has
+        fewer businesses than this row.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+          </Collection>
+          <Index>
+            <Int>0</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business1">
+      <Name>Form 8995 line 1(ii) business</Name>
+      <Description>
+        Schedule C business at index 1, Form 8995 (2026) draft line 1(ii). Incomplete when the filer has
+        fewer businesses than this row.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+          </Collection>
+          <Index>
+            <Int>1</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business2">
+      <Name>Form 8995 line 1(iii) business</Name>
+      <Description>
+        Schedule C business at index 2, Form 8995 (2026) draft line 1(iii). Incomplete when the filer has
+        fewer businesses than this row.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+          </Collection>
+          <Index>
+            <Int>2</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business3">
+      <Name>Form 8995 line 1(iv) business</Name>
+      <Description>
+        Schedule C business at index 3, Form 8995 (2026) draft line 1(iv). Incomplete when the filer has
+        fewer businesses than this row.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+          </Collection>
+          <Index>
+            <Int>3</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business4">
+      <Name>Form 8995 line 1(v) business</Name>
+      <Description>
+        Schedule C business at index 4, Form 8995 (2026) draft line 1(v). Incomplete when the filer has
+        fewer businesses than this row.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+          </Collection>
+          <Index>
+            <Int>4</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Business0PositiveNet">
+      <Name>Form 8995 line 1(i) positive net profit</Name>
+      <Description>
+        Schedule C net profit on line 1(i), or $0 when that net is a loss or this row has no business.
+        Incomplete while the business list is incomplete. Used to split the deductible part of
+        self-employment tax. A loss is not reduced by that deduction.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Dependency path="/form8995Business0/netProfitOrLoss" />
+              </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business1PositiveNet">
+      <Name>Form 8995 line 1(ii) positive net profit</Name>
+      <Description>
+        Schedule C net profit on line 1(ii), or $0 when that net is a loss or this row has no business.
+        Incomplete while the business list is incomplete.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Dependency path="/form8995Business1/netProfitOrLoss" />
+              </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business2PositiveNet">
+      <Name>Form 8995 line 1(iii) positive net profit</Name>
+      <Description>
+        Schedule C net profit on line 1(iii), or $0 when that net is a loss or this row has no business.
+        Incomplete while the business list is incomplete.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Dependency path="/form8995Business2/netProfitOrLoss" />
+              </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business3PositiveNet">
+      <Name>Form 8995 line 1(iv) positive net profit</Name>
+      <Description>
+        Schedule C net profit on line 1(iv), or $0 when that net is a loss or this row has no business.
+        Incomplete while the business list is incomplete.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>3</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Dependency path="/form8995Business3/netProfitOrLoss" />
+              </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business4PositiveNet">
+      <Name>Form 8995 line 1(v) positive net profit</Name>
+      <Description>
+        Schedule C net profit on line 1(v), or $0 when that net is a loss or this row has no business.
+        Incomplete while the business list is incomplete.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Dependency path="/form8995Business4/netProfitOrLoss" />
+              </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995PositiveNetTotal">
+      <Name>Sum of positive Schedule C net profit on Form 8995 lines 1(i) through 1(v)</Name>
+      <Description>
+        Denominator for splitting the deductible part of self-employment tax across Form 8995 lines 1(i) through 1(v).
+        Losses contribute nothing. Incomplete while the business list is incomplete.
+      </Description>
+      <Derived>
+        <Add>
+            <Dependency path="/form8995Business0PositiveNet" />
+            <Dependency path="/form8995Business1PositiveNet" />
+            <Dependency path="/form8995Business2PositiveNet" />
+            <Dependency path="/form8995Business3PositiveNet" />
+            <Dependency path="/form8995Business4PositiveNet" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995SePlugRow">
+      <Name>Form 8995 row that absorbs the self-employment tax rounding remainder</Name>
+      <Description>
+        Index of the line 1 row with the largest positive Schedule C net profit. The earliest row wins a tie. -1 when
+        every row is zero or a loss, in which case no deductible self-employment tax is assigned.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/form8995Business0PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business0PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business1PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business0PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business2PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business0PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business3PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business0PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business4PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+              </All>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/form8995Business1PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business1PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business2PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business1PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business3PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business1PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business4PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+              </All>
+            </When>
+            <Then>
+              <Int>1</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/form8995Business2PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business2PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business3PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business2PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business4PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+              </All>
+            </When>
+            <Then>
+              <Int>2</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/form8995Business3PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="/form8995Business3PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form8995Business4PositiveNet" />
+                  </Right>
+                </GreaterThanOrEqual>
+              </All>
+            </When>
+            <Then>
+              <Int>3</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/form8995Business4PositiveNet" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+              </All>
+            </When>
+            <Then>
+              <Int>4</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>-1</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Business0ProportionalSe">
+      <Name>Form 8995 line 1(i) rounded share of deductible self-employment tax</Name>
+      <Description>
+        Whole-dollar share of scheduleSE /deductibleSelfEmploymentTax proportional to this row's positive net profit.
+        $0 when the row has no positive profit or no business has positive profit. 26 U.S.C. 6102(a) (half up).
+      </Description>
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Any>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995Business0PositiveNet" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                </Any>
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Multiply>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                  <Divide>
+                    <Dividend>
+                      <Dependency path="/form8995Business0PositiveNet" />
+                    </Dividend>
+                    <Divisors>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Divisors>
+                  </Divide>
+                </Multiply>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business1ProportionalSe">
+      <Name>Form 8995 line 1(ii) rounded share of deductible self-employment tax</Name>
+      <Description>
+        Whole-dollar share of scheduleSE /deductibleSelfEmploymentTax proportional to this row's positive net profit.
+        $0 when the row has no positive profit or no business has positive profit. 26 U.S.C. 6102(a) (half up).
+      </Description>
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Any>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995Business1PositiveNet" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                </Any>
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Multiply>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                  <Divide>
+                    <Dividend>
+                      <Dependency path="/form8995Business1PositiveNet" />
+                    </Dividend>
+                    <Divisors>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Divisors>
+                  </Divide>
+                </Multiply>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business2ProportionalSe">
+      <Name>Form 8995 line 1(iii) rounded share of deductible self-employment tax</Name>
+      <Description>
+        Whole-dollar share of scheduleSE /deductibleSelfEmploymentTax proportional to this row's positive net profit.
+        $0 when the row has no positive profit or no business has positive profit. 26 U.S.C. 6102(a) (half up).
+      </Description>
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Any>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995Business2PositiveNet" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                </Any>
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Multiply>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                  <Divide>
+                    <Dividend>
+                      <Dependency path="/form8995Business2PositiveNet" />
+                    </Dividend>
+                    <Divisors>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Divisors>
+                  </Divide>
+                </Multiply>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business3ProportionalSe">
+      <Name>Form 8995 line 1(iv) rounded share of deductible self-employment tax</Name>
+      <Description>
+        Whole-dollar share of scheduleSE /deductibleSelfEmploymentTax proportional to this row's positive net profit.
+        $0 when the row has no positive profit or no business has positive profit. 26 U.S.C. 6102(a) (half up).
+      </Description>
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Any>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995Business3PositiveNet" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                </Any>
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Multiply>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                  <Divide>
+                    <Dividend>
+                      <Dependency path="/form8995Business3PositiveNet" />
+                    </Dividend>
+                    <Divisors>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Divisors>
+                  </Divide>
+                </Multiply>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business4ProportionalSe">
+      <Name>Form 8995 line 1(v) rounded share of deductible self-employment tax</Name>
+      <Description>
+        Whole-dollar share of scheduleSE /deductibleSelfEmploymentTax proportional to this row's positive net profit.
+        $0 when the row has no positive profit or no business has positive profit. 26 U.S.C. 6102(a) (half up).
+      </Description>
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <Any>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                  <Equal>
+                    <Left>
+                      <Dependency path="/form8995Business4PositiveNet" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </Equal>
+                </Any>
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Multiply>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                  <Divide>
+                    <Dividend>
+                      <Dependency path="/form8995Business4PositiveNet" />
+                    </Dividend>
+                    <Divisors>
+                      <Dependency path="/form8995PositiveNetTotal" />
+                    </Divisors>
+                  </Divide>
+                </Multiply>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Business0SeShare">
+      <Name>Form 8995 line 1(i) deductible self-employment tax</Name>
+      <Description>
+        Deductible self-employment tax assigned to line 1(i). The row with the largest positive net profit
+        (the earliest row on a tie) receives the remainder after the other rows are rounded, so the shares add to
+        scheduleSE /deductibleSelfEmploymentTax. Every other row uses its rounded proportional share. A loss row is $0.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/form8995SePlugRow" />
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                </Minuend>
+                <Subtrahends>
+              <Dependency path="/form8995Business1ProportionalSe" />
+              <Dependency path="/form8995Business2ProportionalSe" />
+              <Dependency path="/form8995Business3ProportionalSe" />
+              <Dependency path="/form8995Business4ProportionalSe" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/form8995Business0ProportionalSe" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business1SeShare">
+      <Name>Form 8995 line 1(ii) deductible self-employment tax</Name>
+      <Description>
+        Deductible self-employment tax assigned to line 1(ii). The row with the largest positive net profit
+        (the earliest row on a tie) receives the remainder after the other rows are rounded, so the shares add to
+        scheduleSE /deductibleSelfEmploymentTax. Every other row uses its rounded proportional share. A loss row is $0.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/form8995SePlugRow" />
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                </Minuend>
+                <Subtrahends>
+              <Dependency path="/form8995Business0ProportionalSe" />
+              <Dependency path="/form8995Business2ProportionalSe" />
+              <Dependency path="/form8995Business3ProportionalSe" />
+              <Dependency path="/form8995Business4ProportionalSe" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/form8995Business1ProportionalSe" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business2SeShare">
+      <Name>Form 8995 line 1(iii) deductible self-employment tax</Name>
+      <Description>
+        Deductible self-employment tax assigned to line 1(iii). The row with the largest positive net profit
+        (the earliest row on a tie) receives the remainder after the other rows are rounded, so the shares add to
+        scheduleSE /deductibleSelfEmploymentTax. Every other row uses its rounded proportional share. A loss row is $0.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/form8995SePlugRow" />
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                </Minuend>
+                <Subtrahends>
+              <Dependency path="/form8995Business0ProportionalSe" />
+              <Dependency path="/form8995Business1ProportionalSe" />
+              <Dependency path="/form8995Business3ProportionalSe" />
+              <Dependency path="/form8995Business4ProportionalSe" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/form8995Business2ProportionalSe" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business3SeShare">
+      <Name>Form 8995 line 1(iv) deductible self-employment tax</Name>
+      <Description>
+        Deductible self-employment tax assigned to line 1(iv). The row with the largest positive net profit
+        (the earliest row on a tie) receives the remainder after the other rows are rounded, so the shares add to
+        scheduleSE /deductibleSelfEmploymentTax. Every other row uses its rounded proportional share. A loss row is $0.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/form8995SePlugRow" />
+                </Left>
+                <Right>
+                  <Int>3</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                </Minuend>
+                <Subtrahends>
+              <Dependency path="/form8995Business0ProportionalSe" />
+              <Dependency path="/form8995Business1ProportionalSe" />
+              <Dependency path="/form8995Business2ProportionalSe" />
+              <Dependency path="/form8995Business4ProportionalSe" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/form8995Business3ProportionalSe" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Business4SeShare">
+      <Name>Form 8995 line 1(v) deductible self-employment tax</Name>
+      <Description>
+        Deductible self-employment tax assigned to line 1(v). The row with the largest positive net profit
+        (the earliest row on a tie) receives the remainder after the other rows are rounded, so the shares add to
+        scheduleSE /deductibleSelfEmploymentTax. Every other row uses its rounded proportional share. A loss row is $0.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/form8995SePlugRow" />
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
+                </Minuend>
+                <Subtrahends>
+              <Dependency path="/form8995Business0ProportionalSe" />
+              <Dependency path="/form8995Business1ProportionalSe" />
+              <Dependency path="/form8995Business2ProportionalSe" />
+              <Dependency path="/form8995Business3ProportionalSe" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/form8995Business4ProportionalSe" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line1iName">
+      <Name>Form 8995 line 1(i) column (a)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(i) column (a): trade, business, or aggregation name. The Schedule C
+        business name. Incomplete when this row has no business, so the PDF field stays blank.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business0/businessName" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iTin">
+      <Name>Form 8995 line 1(i) column (b)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(i) column (b). 2026 Instructions for Form 8995 draft, Specific
+        Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
+        enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
+        Schedule C does not collect an EIN, so this is the owner's TIN.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business0/filer/tin" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iQbi">
+      <Name>Form 8995 line 1(i) column (c)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(i) column (c): qualified business income or (loss). 2026 Instructions
+        for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
+        self-employment tax". This row's Schedule C net profit or loss minus /form8995Business0SeShare. Across the
+        rows that exist, column (c) sums to line 2.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/form8995Business0/netProfitOrLoss" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/form8995Business0SeShare" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iiName">
+      <Name>Form 8995 line 1(ii) column (a)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(ii) column (a): trade, business, or aggregation name. The Schedule C
+        business name. Incomplete when this row has no business, so the PDF field stays blank.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>1</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business1/businessName" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iiTin">
+      <Name>Form 8995 line 1(ii) column (b)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(ii) column (b). 2026 Instructions for Form 8995 draft, Specific
+        Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
+        enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
+        Schedule C does not collect an EIN, so this is the owner's TIN.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>1</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business1/filer/tin" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iiQbi">
+      <Name>Form 8995 line 1(ii) column (c)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(ii) column (c): qualified business income or (loss). 2026 Instructions
+        for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
+        self-employment tax". This row's Schedule C net profit or loss minus /form8995Business1SeShare. Across the
+        rows that exist, column (c) sums to line 2.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>1</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/form8995Business1/netProfitOrLoss" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/form8995Business1SeShare" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iiiName">
+      <Name>Form 8995 line 1(iii) column (a)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(iii) column (a): trade, business, or aggregation name. The Schedule C
+        business name. Incomplete when this row has no business, so the PDF field stays blank.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>2</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business2/businessName" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iiiTin">
+      <Name>Form 8995 line 1(iii) column (b)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(iii) column (b). 2026 Instructions for Form 8995 draft, Specific
+        Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
+        enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
+        Schedule C does not collect an EIN, so this is the owner's TIN.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>2</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business2/filer/tin" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1iiiQbi">
+      <Name>Form 8995 line 1(iii) column (c)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(iii) column (c): qualified business income or (loss). 2026 Instructions
+        for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
+        self-employment tax". This row's Schedule C net profit or loss minus /form8995Business2SeShare. Across the
+        rows that exist, column (c) sums to line 2.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>2</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/form8995Business2/netProfitOrLoss" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/form8995Business2SeShare" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1ivName">
+      <Name>Form 8995 line 1(iv) column (a)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(iv) column (a): trade, business, or aggregation name. The Schedule C
+        business name. Incomplete when this row has no business, so the PDF field stays blank.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>3</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business3/businessName" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1ivTin">
+      <Name>Form 8995 line 1(iv) column (b)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(iv) column (b). 2026 Instructions for Form 8995 draft, Specific
+        Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
+        enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
+        Schedule C does not collect an EIN, so this is the owner's TIN.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>3</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business3/filer/tin" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1ivQbi">
+      <Name>Form 8995 line 1(iv) column (c)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(iv) column (c): qualified business income or (loss). 2026 Instructions
+        for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
+        self-employment tax". This row's Schedule C net profit or loss minus /form8995Business3SeShare. Across the
+        rows that exist, column (c) sums to line 2.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>3</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/form8995Business3/netProfitOrLoss" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/form8995Business3SeShare" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1vName">
+      <Name>Form 8995 line 1(v) column (a)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(v) column (a): trade, business, or aggregation name. The Schedule C
+        business name. Incomplete when this row has no business, so the PDF field stays blank.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>4</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business4/businessName" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1vTin">
+      <Name>Form 8995 line 1(v) column (b)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(v) column (b). 2026 Instructions for Form 8995 draft, Specific
+        Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
+        enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
+        Schedule C does not collect an EIN, so this is the owner's TIN.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>4</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business4/filer/tin" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form8995Line1vQbi">
+      <Name>Form 8995 line 1(v) column (c)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(v) column (c): qualified business income or (loss). 2026 Instructions
+        for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
+        self-employment tax". This row's Schedule C net profit or loss minus /form8995Business4SeShare. Across the
+        rows that exist, column (c) sums to line 2.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>4</Int>
+                  </Right>
+                </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/form8995Business4/netProfitOrLoss" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/form8995Business4SeShare" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line18Pdf">
+      <Name>Form 8995 line 18 amount inside the preprinted parentheses</Name>
+      <Description>
+        Form 8995 (2026) draft, PDF p. 2, line 18: "Total qualified business (loss) carryforward. Combine lines 2 and
+        3. If greater than zero, enter -0-". The parentheses are printed on the form. /form8995Line18 is negative or
+        zero; this fact is that amount's absolute value so the field does not also print a minus. Field f1_34[0].
+        $0 prints because the line says enter -0-.
+      </Description>
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/form8995Line18" />
+          <Subtract>
+            <Minuend>
+              <Dollar>0</Dollar>
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/form8995Line18" />
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line19Pdf">
+      <Name>Form 8995 line 19 amount inside the preprinted parentheses</Name>
+      <Description>
+        Form 8995 (2026) draft, PDF p. 2, line 19: "Total qualified REIT dividends and PTP (loss) carryforward.
+        Combine lines 6 and 7. If greater than zero, enter -0-". The parentheses are printed on the form. Field
+        f1_35[0] is that line. Its /TU tooltip still says line 16 and repeats the line 18 caption; the widget is below
+        line 18 and the printed caption is line 19. /form8995Line19 is negative or zero; this fact is the absolute
+        value. $0 prints because the line says enter -0-.
+      </Description>
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/form8995Line19" />
+          <Subtract>
+            <Minuend>
+              <Dollar>0</Dollar>
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/form8995Line19" />
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8995Required">
       <Name>Form 8995 is filed</Name>
       <Description>The return has Schedule C qualified business income or loss (a loss still files Form 8995 to report
@@ -631,22 +2154,17 @@
     <!-- ========== Knockouts (BlockSubmissionOnTrue, wired into flow /flowIsKnockedOut) ========== -->
 
     <Fact path="/flowKnockoutForm8995WithoutTy2026Template">
-      <Name>Knockout: Form 8995 must be attached and there is no TY2026 Form 8995 template or MeF mapping</Name>
+      <Name>Knockout: Form 8995 must be attached and there is no MeF mapping</Name>
       <Description>
         Form 1040 (2026) draft, PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or
-        Form
-        8995-A". The 2026 Form 1040 instructions are not yet posted; the latest draft, Instructions for Form 1040
-        (2025), Feb 25, 2026 (irs.gov/pub/irs-dft, file i1040gi draft; SHA-256 24ad652c8f89a778), PDF p. 35, line 13a
-        (the QBI line, line 13b on the 2026 form): "Use Form 8995 if: You have qualified business income, ... Attach
-        whichever form you use (Form 8995 or 8995-A) to your return." 2026 Instructions for Form 8995 draft, PDF p. 2,
-        Who Can Take the Deduction: "Individuals and eligible estates and trusts that have QBI use Form 8995 to figure
-        the QBI deduction if: You have QBI, qualified REIT dividends, or qualified PTP income or loss"; PDF p. 6, line
-        18: "This is the amount to be carried forward to the next year." So Form 8995 goes with the return in a loss
-        year too (26 U.S.C. 199A(c)(2)). The Form 8995 lines are computed here, but there is no TY2026 Form 8995 PDF
-        template or MeF mapping, so printing line 13b alone, or submitting it, would leave the form off. True whenever
-        /form8995Required is true; complete false when it is not required (no Schedule C income, or the
-        self-employment
-        question answered no or not yet answered).
+        Form 8995-A". Instructions for Form 1040 (2025) draft (the 2026 instructions are not yet posted), PDF p. 35,
+        the QBI line (line 13b on the 2026 form): "Attach whichever form you use (Form 8995 or 8995-A) to your
+        return." 2026 Instructions for Form 8995 draft, PDF p. 6, line 18: "This is the amount to be carried forward
+        to the next year." The 2026 draft Form 8995 is the print template (pdf/2026/IRS8995, #17), so the package can
+        include it, including in a loss year (26 U.S.C. 199A(c)(2)). There is still no MeF mapping, so submitting
+        line 13b would leave Form 8995 off the electronic return. True whenever /form8995Required is true; complete
+        false when it is not required (no Schedule C income, or the self-employment question answered no or not yet
+        answered).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />

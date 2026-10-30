@@ -993,6 +993,7 @@ pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_33[0]	Tx	36. Al
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_34[0]	Tx	(b) Alternative monthly contribution amount.
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_35[0]	Tx	(c) Alternative start month.
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_36[0]	Tx	(d) Alternative stop month.
+pdf/2026/IRS8995/en/f8995--dft.pdf	topmostSubform[0].Page1[0].Checkbox8pt[0]	Btn	20. Check the box for this line 20 only if indicating a filing of this F...
 pdf/2026/PA40/en/2025_pa-40.pdf	Extension	Btn	Click on oval if an extension was filed for the return
 pdf/2026/PA40/en/2025_pa-40.pdf	Amended Return	Btn	Click on Oval if this is an Amended PA-40 Return
 pdf/2026/PA40/en/2025_pa-40.pdf	Final Return	Tx	Final Return. Indicate reason:

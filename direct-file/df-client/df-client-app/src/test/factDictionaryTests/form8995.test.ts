@@ -97,6 +97,9 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     expect(val(g, `/deductibleSelfEmploymentTax`)).toBe(`3533.00`);
     expect(val(g, `/agi`)).toBe(`46467.00`);
     expect(val(g, `/form8995Line2`)).toBe(`46467.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`46467.00`);
+    expect(val(g, `/form8995Line18Pdf`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line19Pdf`)).toBe(`0.00`);
     expect(val(g, `/form8995Line4`)).toBe(`46467.00`);
     expect(val(g, `/form8995Line5`)).toBe(`9293.00`); // round(9,293.40)
     expect(val(g, `/form8995Line10`)).toBe(`9293.00`);
@@ -153,17 +156,20 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     task.meta.testedFactPaths = [`/form8995Line4`, `/form8995Line17`, `/form8995Line18`];
     const g = fg({ ...noW2, ...scheduleC(business(biz1, 1000, 6000), [biz1]) });
     expect(val(g, `/form8995Line2`)).toBe(`-5000.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`-5000.00`);
     expect(val(g, `/form8995Line4`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line18Pdf`)).toBe(`5000.00`);
     expect(val(g, `/form8995Line17`)).toBe(`0.00`);
     expect(val(g, `/form8995Line18`)).toBe(`-5000.00`);
     expect(val(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`0.00`);
     expectNoQbiKnockout(g);
   });
 
-  it(`Form 8995 has no TY2026 template: knocked out at or below the threshold and in a loss year`, ({ task }) => {
+  it(`Form 8995 PDF prints; submission stays blocked at or below the threshold and in a loss year`, ({ task }) => {
     // Instructions for Form 1040 (2025) draft (no 2026 draft yet), PDF p. 35, QBI line (13b on the 2026 form):
-    // "Attach whichever form you use (Form 8995 or 8995-A) to your return." 2026 Instructions for Form 8995 draft,
-    // PDF p. 6, line 18: "This is the amount to be carried forward to the next year."
+    // "Attach whichever form you use (Form 8995 or 8995-A) to your return." The 2026 draft prints (#17). There is
+    // still no MeF mapping, so sign and submit stay blocked. 2026 Instructions for Form 8995 draft, PDF p. 6,
+    // line 18: "This is the amount to be carried forward to the next year."
     task.meta.testedFactPaths = [`/flowKnockoutForm8995WithoutTy2026Template`, `/flowIsKnockedOut`];
     const computed = fg({ ...noW2, ...scheduleC(business(biz1, 60000, 10000), [biz1]) });
     expect(val(computed, `/flowKnockoutQbiAboveThreshold`)).toBe(`false`);
@@ -226,6 +232,10 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
       ...scheduleC({ ...business(biz1, 30000, 0), ...business(biz2, 20000, 0) }, [biz1, biz2]),
     });
     expect(val(both, `/form8995Line2`)).toBe(`46467.00`);
+    // 30,000 and 20,000 positive nets. Plug is the larger row. Round(3,533 x 20,000 / 50,000) = 1,413.
+    // 30,000 - (3,533 - 1,413) = 27,880 and 20,000 - 1,413 = 18,587.
+    expect(val(both, `/form8995Line1iQbi`)).toBe(`27880.00`);
+    expect(val(both, `/form8995Line1iiQbi`)).toBe(`18587.00`);
     expect(val(both, `/form8995Line17`)).toBe(`6073.00`);
     expectNoQbiKnockout(both);
   });

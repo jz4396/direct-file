@@ -162,14 +162,28 @@ class PdfKnockoutRefusalTest {
 
     /**
      * Instructions for Schedule C (2025), PDF p. 2: "Use Schedule C (Form 1040) to report income or (loss) from a
-     * business you operated or a profession you practiced as a sole proprietor." Schedule C prints (#239). #87: the
-     * same return attaches Form 8995 (Instructions for Form 1040 (2025) draft, PDF p. 35, "Attach whichever form you
-     * use (Form 8995 or 8995-A) to your return."), which has no TY2026 template, so the Form 8995 knockout refuses it.
+     * business you operated or a profession you practiced as a sole proprietor." Schedule C prints (#239). #17: the
+     * same return prints Form 8995 (2026 draft). #87: that fact still blocks sign and submit because there is no MeF
+     * mapping (Instructions for Form 1040 (2025) draft, PDF p. 35, "Attach whichever form you use (Form 8995 or
+     * 8995-A) to your return."). Spanish is refused because the TY2026 template is outside pdf/2026/ (26 U.S.C.
+     * 6011(a)).
      */
     @Test
-    void scheduleCBusinessIsRefused() throws Exception {
-        assertRefusedOnlyBy(
-                PrintRefusingKnockoutsTest.scheduleCOnly(), List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT));
+    void scheduleCBusinessPrintsForm8995AndStillBlocksSubmission() throws Exception {
+        Map<String, FactTypeWithItem> facts = PrintRefusingKnockoutsTest.scheduleCOnly();
+        var graph = factGraphService.getGraph(facts);
+        assertEquals(Boolean.TRUE, graph.get("/form8995Required").get());
+        assertEquals(Boolean.TRUE, graph.get(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph));
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            String text = new org.apache.pdfbox.text.PDFTextStripper().getText(doc);
+            assertTrue(text.contains("Form 8995"), "en prints Form 8995");
+            assertFalse(
+                    text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
+        }
+        Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 
     /**

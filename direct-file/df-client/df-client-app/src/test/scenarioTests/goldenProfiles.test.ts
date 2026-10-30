@@ -1324,7 +1324,7 @@ describe(`golden end-to-end scenario (synthetic data): profile C negative rows (
 });
 
 // Stops this profile asserts. Each one is <BlockSubmissionOnTrue />. Full-year Schedule C is on PA-40 line 4; Form
-// 8995 still has no TY2026 template. No PA Schedule C PDF is produced.
+// 8995 PDF prints (#17); submission still stops because there is no MeF mapping. No PA Schedule C PDF is produced.
 const PROFILE_F_STOPPED = [
   `/flowKnockoutForm8995WithoutTy2026Template`,
   `/flowKnockoutForm8960Unsupported`,
@@ -1358,7 +1358,7 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
   //   taxable year beginning in calendar year 2026, $40,400". No mortgage interest, no gifts, so line 18 is 40,400.
   //   The head-of-household standard deduction is $24,150 [RP p. 18 §4.14(1) "Heads of Households (§ 1(j)(2)(B))
   //   $24,150"], so the filer itemizes. No senior deduction (born after January 1, 1962).
-  // Form 8995 (computed; the return still stops because there is no TY2026 template): line 2 = 52,858 - 708 =
+  // Form 8995 (computed; the PDF prints, #17; submission still stops because there is no MeF mapping): line 2 = 52,858 - 708 =
   //   52,150; line 5 = round(20% x 52,150) = 10,430 (26 U.S.C. 199A(a),
   //   https://www.law.cornell.edu/uscode/text/26/199A). Line 11, taxable income before the deduction, = 242,150 -
   //   40,400 = 201,750, which is the head-of-household threshold. Rev. Proc. 2025-32 §3.26, PDF pp. 21-22:
@@ -1403,7 +1403,7 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
   //   (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7304/). Line 21 is $0.
   //   Line 26 tax due 7,455.74 - 6,000 = 1,455.74. The return still stops: /flowKnockoutForm8995WithoutTy2026Template
   //   and /flowKnockoutForm8960Unsupported. /flowKnockoutPaUnsupportedIncome is false on this supported path.
-  // Print: Form 8995 and Form 8960 refuse the package. /flowKnockoutAmtPreferenceItems (answered no) and
+  // Print: Form 8995 prints (#17). Form 8960 refuses the package. /flowKnockoutAmtPreferenceItems (answered no) and
   //   /flowKnockoutAmtMfsAddBack stay complete false.
   const g = graph(profileFPaAmtScheduleC);
   const expectStoppedOnly = (fg: Fg) => {

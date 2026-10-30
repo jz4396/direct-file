@@ -1,0 +1,75 @@
+# Form 8995, Qualified Business Income Deduction Simplified Computation. DRAFT-BASED MAPPING (#17).
+# Source: https://www.irs.gov/pub/irs-dft/f8995--dft.pdf (early-release draft, Created 5/1/26, 2 pages),
+# committed byte-identical to irs.gov; SHA-256
+# d698390e2990de21b8df9ccb485f9309b817707d4871581118337bf7c1b14fd8 (pinned in ../../draft-pdf-sha256.txt and
+# rechecked by DraftPdfHashManifestTest). 2026 Instructions for Form 8995 draft
+# (https://www.irs.gov/pub/irs-dft/i8995--dft.pdf, SHA-256
+# 7fd77be32b9dfd5ee07338e19f21adad6f71c672ee1fc3ddd325480d70ea219b) are cited and not committed.
+# When the final 2026 Form 8995 is published, re-download, re-hash and re-verify every field below (#124).
+# Page 1 of the file is the "Caution: DRAFT-NOT FOR FILING" cover sheet; skipLeadingPages drops it. The form is the
+# second page. Attachment Sequence No. 55.
+#
+# Included when /form8995Required (Schedule C qualified business income or loss, including a loss year that carries
+# line 18 forward). Instructions for Form 1040 (2025) draft, PDF p. 35, the QBI line (13b on the 2026 form): "Attach
+# whichever form you use (Form 8995 or 8995-A) to your return."
+#
+# Lines 1(i)-1(v) are the first five Schedule C businesses. Column (a) is the business name. Column (b) is the owner's
+# TIN: 2026 Instructions for Form 8995 draft, Specific Instructions, Line 1: "If you don't have an EIN, enter your
+# social security number (SSN) or individual taxpayer identification number (ITIN)." This return does not collect an
+# EIN. Column (c) is that business's net profit or loss less its share of the deductible part of self-employment tax,
+# and those amounts sum to line 2. A sixth business is not given the statement the instructions describe for line 2.
+# Lines 3 and 7 are $0 (a carryforward is a stop) and print blank inside the preprinted parentheses.
+# Lines 4, 8 and 13 say "enter -0-" and carry <ExportZero />. Line 16 does not, so $0 prints blank.
+# Lines 18 and 19 have preprinted parentheses. f1_34[0] is line 18. f1_35[0] sits on line 19 (below line 18); its /TU
+# tooltip still says line 16 and repeats the line 18 caption, which does not match the printed line 19 caption
+# "Total qualified REIT dividends and PTP (loss) carryforward." The mapped amounts are the absolute values.
+# Line 20 (ESBT checkbox) is not mapped. An ESBT is not in this return.
+includeWhen: /form8995Required
+customMaps:
+  template:
+    skipLeadingPages: "1"
+form:
+  topmostSubform[0]:
+    Page1[0]:
+      f1_1[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Name(s) shown on return"
+      f1_2[0]: /primaryFiler/tin # "Your taxpayer identification number"
+      Table[0]:
+        Row1i[0]:
+          f1_3[0]: /form8995Line1iName # 1(i) (a) trade or business name
+          f1_4[0]: /form8995Line1iTin # 1(i) (b) TIN
+          f1_5[0]: /form8995Line1iQbi # 1(i) (c) qualified business income or (loss)
+        Row1ii[0]:
+          f1_6[0]: /form8995Line1iiName
+          f1_7[0]: /form8995Line1iiTin
+          f1_8[0]: /form8995Line1iiQbi
+        Row1iii[0]:
+          f1_9[0]: /form8995Line1iiiName
+          f1_10[0]: /form8995Line1iiiTin
+          f1_11[0]: /form8995Line1iiiQbi
+        Row1iv[0]:
+          f1_12[0]: /form8995Line1ivName
+          f1_13[0]: /form8995Line1ivTin
+          f1_14[0]: /form8995Line1ivQbi
+        Row1v[0]:
+          f1_15[0]: /form8995Line1vName
+          f1_16[0]: /form8995Line1vTin
+          f1_17[0]: /form8995Line1vQbi
+      f1_18[0]: /form8995Line2 # 2 "Total qualified business income or (loss). Combine lines 1i through 1v, column (c)"
+      f1_19[0]: /form8995Line3 # 3 carryforward, inside preprinted parentheses; $0 here
+      f1_20[0]: /form8995Line4 # 4 "If zero or less, enter -0-"
+      f1_21[0]: /form8995Line5 # 5 "Multiply line 4 by 20% (0.20)"
+      f1_22[0]: /form8995Line6 # 6 REIT and PTP income or (loss); $0 here
+      f1_23[0]: /form8995Line7 # 7 REIT/PTP carryforward, inside preprinted parentheses; $0 here
+      f1_24[0]: /form8995Line8 # 8 "If zero or less, enter -0-"
+      f1_25[0]: /form8995Line9 # 9 "Multiply line 8 by 20% (0.20)"
+      f1_26[0]: /form8995Line10 # 10 "Add lines 5 and 9"
+      f1_27[0]: /form8995Line11 # 11 taxable income before the qualified business income deduction
+      f1_28[0]: /form8995Line12 # 12 net capital gain increased by qualified dividends
+      f1_29[0]: /form8995Line13 # 13 "If zero or less, enter -0-"
+      f1_30[0]: /form8995Line14 # 14 "Multiply line 13 by 20% (0.20)"
+      f1_31[0]: /form8995Line15 # 15 "Enter the smaller of line 10 or line 14"
+      f1_32[0]: /form8995Line16 # 16 minimum deduction for active qualified business income
+      f1_33[0]: /form8995Line17 # 17 "Enter the greater of line 15 or line 16"
+      f1_34[0]: /form8995Line18Pdf # 18 QBI loss carryforward, absolute value inside preprinted parentheses
+      f1_35[0]: /form8995Line19Pdf # 19 REIT/PTP loss carryforward (widget is line 19; /TU text is stale)
+      # Checkbox8pt[0] line 20 ESBT: not mapped

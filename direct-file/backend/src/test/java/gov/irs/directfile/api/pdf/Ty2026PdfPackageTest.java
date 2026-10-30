@@ -108,8 +108,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   contributions); self-only HDHP; $770 own HSA contributions. Prints Form 1040, Schedule 1, Form 8889 and two W-2s.
  * Scenario 7, self-employed family (#179 review): head of household; three children under 17 (group-00 test SSNs,
  *   filer too); $13,000 ordinary dividends; Schedule C profit $4,000 (or $10,000); no W-2.
- *   Prints Form 1040, Schedules 1, 2, 3-A, B, C, SE and 8812 (Part II-B, lines 22-27). Form 8995 still refuses
- *   the public path (#87).
+ *   Prints Form 1040, Schedules 1, 2, 3-A, B, C, SE, Form 8995 (#17) and 8812 (Part II-B, lines 22-27).
+ *   Form 8995 still blocks sign and submit (#87; no MeF mapping).
  * Scenario 8, elderly or disabled credit (#89): single, under 65, retired on permanent and total disability;
  *   W-2 $17,000 of taxable disability income. Prints Form 1040, Schedule 3, Schedule R and the W-2.
  *   Schedule R line 22 equals Schedule 3 line 6d (26 U.S.C. 22; 2026 Schedule R line 22).
@@ -137,11 +137,6 @@ class Ty2026PdfPackageTest {
     static final List<String> CTC_CHILD_SERIALS = List.of("1111", "2222", "3333");
 
     static final String FAMILY = "hoh-cdcc.json";
-    /**
-     * The self-employed family attaches Form 8995 (#87), which still has no TY2026 template. Schedule C and
-     * Schedule 3-A print (#239).
-     */
-    static final List<String> FORM_8995_ONLY = List.of(PrintRefusingKnockoutsTest.FORM_8995_KNOCKOUT);
 
     static final String SAVER = "single-simple-savers-credit.json";
     static final String HSA = "hsa-single-filer-contributions-only.json";
@@ -169,6 +164,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS1040S8812", 2),
             Map.entry("IRS2441", 2),
             Map.entry("IRS8880", 1),
+            Map.entry("IRS8995", 1),
             Map.entry("IRS8889", 1),
             Map.entry("IRS8862", 3),
             Map.entry("PA40", 2),
@@ -862,8 +858,7 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyPartIIBPrintsLines22And23() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("4000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf", FORM_8995_ONLY)
-                .filerSsn(CTC_FILER_SSN_DASHED);
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family.pdf").filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
                 "IRS1040",
                 1,
@@ -878,6 +873,8 @@ class Ty2026PdfPackageTest {
                 "IRS1040SC",
                 1,
                 "IRS1040SSE",
+                1,
+                "IRS8995",
                 1,
                 "IRS1040S8812",
                 1));
@@ -920,8 +917,7 @@ class Ty2026PdfPackageTest {
     void selfEmployedFamilyLine20OverLine25() throws Exception {
         Map<String, String> scenario = selfEmployedFamily("10000.00");
         assertScenarioCtcSsnRequirementMet(scenario);
-        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf", FORM_8995_ONLY)
-                .filerSsn(CTC_FILER_SSN_DASHED);
+        Pkg pkg = render(scenario, "e2e-ty2026-self-employed-family-line20.pdf").filerSsn(CTC_FILER_SSN_DASHED);
         pkg.assertForms(Map.of(
                 "IRS1040",
                 1,
@@ -936,6 +932,8 @@ class Ty2026PdfPackageTest {
                 "IRS1040SC",
                 1,
                 "IRS1040SSE",
+                1,
+                "IRS8995",
                 1,
                 "IRS1040S8812",
                 1));
@@ -1138,7 +1136,7 @@ class Ty2026PdfPackageTest {
 
     /**
      * Renders the package. {@code refusedBy} is what the public print path refuses with: empty for a package that
-     * prints, or {@link PrintRefusingKnockoutsTest#TEMPLATE_PENDING} (Form 8995, which still has no template), or null
+     * prints, or {@link PrintRefusingKnockoutsTest#TEMPLATE_PENDING} (PA Schedule C, which still has no PDF), or null
      * to skip that assertion. The package is then filled with only those left out of the refusal check, so the field
      * maps of the forms that do have templates stay tested; every other knockout still refuses.
      */

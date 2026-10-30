@@ -91,6 +91,9 @@ abstract class PdfTemplate {
             // ASN 54
             new PdfForm("IRS8880"),
 
+            // ASN 55 (#17: 2026 draft Form 8995)
+            new PdfForm("IRS8995"),
+
             // ASN 71 (2026 draft Form 8959)
             new PdfForm("IRS8959"),
 

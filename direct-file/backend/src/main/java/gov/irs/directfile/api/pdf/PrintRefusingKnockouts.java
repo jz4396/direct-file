@@ -192,12 +192,6 @@ public final class PrintRefusingKnockouts {
             // Form 1065 box 14 code A, or when every question is answered no. An unanswered question while
             // either applies refuses the print. 26 U.S.C. 1402(a).
             "/flowKnockoutScheduleSEOutOfScope",
-            // Form 8995 goes with every return that has Schedule C QBI or loss: Instructions for Form 1040 (2025)
-            // draft,
-            // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your
-            // return."; 2026 Instructions for Form 8995 draft, PDF p. 6, line 18, "This is the amount to be carried
-            // forward to the next year." There is no TY2026 Form 8995 template or MeF mapping, so it would be left off.
-            "/flowKnockoutForm8995WithoutTy2026Template",
             // Form 6251 lines 2c-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4 would combine
             // lines 1b through 3 as if the adjustments were zero. Form 6251 (2026) draft,
             // https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, PDF p. 2 (form p. 1), line 2i: "Exercise of incentive
