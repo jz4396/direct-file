@@ -82,8 +82,6 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `sign test against the § 1341(a)(3) $3,000 (cited on /maximumSocialSecurityBenefitsRepaidSupported)`,
   },
-  '/taxableSocialSecurityBenefits': { kind: `remaining`, reason: `§ 86(a)(2) 85 percent stored as a Dollar` },
-  '/socialSecurityBenefitsWkshtLine16': { kind: `remaining`, reason: `§ 86(a) 85 and 50 percent stored as Dollars` },
   '/w2MinAmount': {
     kind: `structural`,
     reason: `unused $600 constant; Form W-2 furnishing is § 6051(a), not the § 6041(a) information-return threshold`,
@@ -107,18 +105,6 @@ const EXCEPTIONS: Record<string, Exception> = {
   '/paSpCouldQualify': {
     kind: `remaining`,
     reason: `standing PA Tax Forgiveness 10% column ($2,250); 2026 PA-40 instructions are not published`,
-  },
-  '/phaseInRatesFor1Qc': {
-    kind: `remaining`,
-    reason: `§ 32(b)(1) prints the one-child credit percentage as 34 in the table column, without a percent sign`,
-  },
-  '/phaseInRatesFor2Qc': {
-    kind: `remaining`,
-    reason: `§ 32(b)(1) prints the two-child credit percentage as 40 in the table column, without a percent sign`,
-  },
-  '/phaseInRatesFor3OrMoreQc': {
-    kind: `remaining`,
-    reason: `§ 32(b)(1) prints the three-child credit percentage as 45 in the table column, without a percent sign`,
   },
   '/isTaxYearLeapYear': {
     kind: `structural`,

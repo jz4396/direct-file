@@ -2387,6 +2387,48 @@
       ]
     },
     {
+      "fact": "/taxableSocialSecurityBenefits",
+      "file": "socialSecurity.xml",
+      "values": [
+        "Dollar:0",
+        "Dollar:0",
+        "Rational:85/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 86(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/86",
+          "quote": "85 percent of the social security benefits received during the taxable year."
+        }
+      ]
+    },
+    {
+      "fact": "/socialSecurityBenefitsWkshtLine16",
+      "file": "socialSecurity.xml",
+      "values": [
+        "Rational:85/100",
+        "Dollar:0",
+        "Rational:85/100",
+        "Rational:1/2",
+        "Rational:1/2"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 86(a)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/86",
+          "quote": "Except as provided in paragraph (2), gross income for the taxable year of any taxpayer described in subsection (b) (notwithstanding section 207 of the Social Security Act) includes social security benefits in an amount equal to the lesser of— (A) one-half of the social security benefits received during the taxable year, or (B) one-half of the excess described in subsection (b)(1)."
+        },
+        {
+          "source": "irc",
+          "section": "§ 86(a)(2)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/86",
+          "quote": "85 percent of such excess, plus (ii) the lesser of the amount determined under paragraph (1) or an amount equal to one-half of the difference between the adjusted base amount and the base amount of the taxpayer, or (B) 85 percent of the social security benefits received during the taxable year."
+        }
+      ]
+    },
+    {
       "fact": "/socialSecurityBenefitsWkshtLine8",
       "file": "socialSecurity.xml",
       "values": [
@@ -3402,6 +3444,54 @@
           "section": "§ 32(b)(1)",
           "url": "https://www.law.cornell.edu/uscode/text/26/32",
           "quote": "The credit percentage and the phaseout percentage shall be determined as follows: In the case of an eligible individual with: The credit percentage is: The phaseout percentage is: 1 qualifying child 34 15.98; 2 qualifying children 40 21.06; 3 or more qualifying children 45 21.06; No qualifying children 7.65 7.65",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/phaseInRatesFor1Qc",
+      "file": "eitc4.xml",
+      "values": [
+        "Rational:34/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 32(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/32",
+          "quote": "The credit percentage and the phaseout percentage shall be determined as follows: In the case of an eligible individual with: The credit percentage is: The phaseout percentage is: 1 qualifying child 34 percent 15.98; 2 qualifying children 40 percent 21.06; 3 or more qualifying children 45 percent 21.06; No qualifying children 7.65 7.65",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/phaseInRatesFor2Qc",
+      "file": "eitc4.xml",
+      "values": [
+        "Rational:40/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 32(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/32",
+          "quote": "The credit percentage and the phaseout percentage shall be determined as follows: In the case of an eligible individual with: The credit percentage is: The phaseout percentage is: 1 qualifying child 34 percent 15.98; 2 qualifying children 40 percent 21.06; 3 or more qualifying children 45 percent 21.06; No qualifying children 7.65 7.65",
+          "form": "table"
+        }
+      ]
+    },
+    {
+      "fact": "/phaseInRatesFor3OrMoreQc",
+      "file": "eitc4.xml",
+      "values": [
+        "Rational:45/100"
+      ],
+      "cite": [
+        {
+          "source": "irc",
+          "section": "§ 32(b)(1)(A)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/32",
+          "quote": "The credit percentage and the phaseout percentage shall be determined as follows: In the case of an eligible individual with: The credit percentage is: The phaseout percentage is: 1 qualifying child 34 percent 15.98; 2 qualifying children 40 percent 21.06; 3 or more qualifying children 45 percent 21.06; No qualifying children 7.65 7.65",
           "form": "table"
         }
       ]
