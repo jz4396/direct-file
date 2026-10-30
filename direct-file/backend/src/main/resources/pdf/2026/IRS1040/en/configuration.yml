@@ -77,6 +77,8 @@ form:
       f1_55[0]: /otherEarnedIncome # 1h amount
       f1_56[0]: /combatPayAmount # 1i
       f1_57[0]: /employerIncomeSubtotal # 1z
+      # Line 2a. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25: 1099-INT box 8
+      # plus 1099-DIV box 12. 26 U.S.C. 103(a), 852(b)(5)(B), 6012(d).
       f1_58[0]: /taxExemptInterest # 2a
       f1_59[0]: /interestIncome # 2b
       f1_60[0]: /qualifiedDividends # 3a

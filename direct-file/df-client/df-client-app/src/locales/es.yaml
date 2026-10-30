@@ -512,7 +512,11 @@ info:
   /info/income/interest/add-box-4-1099:
     body: Si la casilla 4 está en blanco, déjala en blanco aquí también.
   /info/income/interest/add-box-8-1099:
-    body: Si la casilla 8 está en blanco, déjala en blanco aquí también.
+    body:
+      - p:
+          La casilla 8 son intereses exentos de impuestos, como los intereses de un bono municipal. Se declaran en la
+          línea 2a del Formulario 1040 y no se incluyen en los ingresos sujetos a impuestos. Si la casilla 8 está en
+          blanco, déjala en blanco aquí también.
   /info/income/interest/add-boxes-15-17-1099:
     body: >-
       Asegúrate de rellenar cualquier casilla que tenga información en el Formulario 1099-INT. Si una casilla está en
@@ -2295,7 +2299,6 @@ info:
                     Formulario 8912 para reclamar los créditos tributarios
                 - li: >-
                     Estás declarando descuento del mercado como ingreso de intereses
-                - li: Recibiste un 1099-INT con intereses exentos de impuestos
             - p: >-
                 Si alguna de estas situaciones no permitidas te aplican, tendrás que presentar tus impuestos usando otra
                 herramienta. <LinkFindOtherWaysToFile>Encuentra otras maneras de presentar tus impuestos
@@ -2339,7 +2342,6 @@ info:
                     Formulario 8912 para reclamar los créditos tributarios
                 - li: >-
                     Estás declarando descuento del mercado como ingreso de intereses
-                - li: Recibiste un 1099-INT con intereses exentos de impuestos
             - p: >-
                 Si alguna de estas situaciones no permitidas te aplican, tendrás que presentar tus impuestos usando otra
                 herramienta. <LinkFindOtherWaysToFile>Encuentra otras maneras de presentar tus impuestos
@@ -8186,10 +8188,6 @@ info:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableForeignTaxPaid)
     body:
       - p: $t(headings./heading/knockout/forms-missing/1099-int-box-6-ko)
-  /info/knockout/forms-missing/1099-int-box-8-ko:
-    heading: $t(dataviews./flow/income/interest./interestReports/*/writableTaxExemptInterest)
-    body:
-      - p: $t(headings./heading/knockout/forms-missing/1099-int-box-8-ko)
   /info/knockout/forms-missing/1099-int-box-9-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableSpecifiedPrivateActivityBondInterest)
     body:
@@ -19706,8 +19704,6 @@ headings:
           en el {{/taxYear}}.
         LinkModal1:
           header: ¿Qué son los ingresos por intereses?
-          urls:
-            LinkFilingOptions: https://www.irs.gov/es/filing/individuals/how-to-file
           body:
             - p: >-
                 Los intereses incluyen ingresos que recibes de cuentas bancarias, inversiones en certificados de
@@ -19733,10 +19729,9 @@ headings:
                     Las agencias de redesarrollo comunitario emiten bonos, cuyos intereses podrían ser libres de
                     impuestos.
             - p: >-
-                Revisa <strong>la casilla 8</strong> de tu copia del Formulario 1099-INT para confirmar si el interés es
-                libre de impuestos. Si recibiste un interés libre de impuestos, Direct File aún no acepta declarar este
-                tipo de ingresos de intereses. <LinkFilingOptions>Encuentra otras maneras de presentar tus impuestos
-                federales</LinkFilingOptions>.
+                Revisa <strong>la casilla 8</strong> de tu copia del Formulario 1099-INT. Los intereses libres de
+                impuestos de la casilla 8 se declaran en la línea 2a del Formulario 1040 y no se incluyen en los
+                ingresos sujetos a impuestos.
   /heading/income/interest/intro-mfj:
     helpText:
       modals:
@@ -19745,8 +19740,6 @@ headings:
           {{/secondaryFiler/firstName, prefixAnd}} recibieron en el {{/taxYear}}.
         LinkModal1:
           header: ¿Qué son los ingresos por intereses?
-          urls:
-            LinkFilingOptions: https://www.irs.gov/es/filing/individuals/how-to-file
           body:
             - p: >-
                 Los intereses incluyen ingresos que recibes de cuentas bancarias, inversiones en certificados de
@@ -19770,10 +19763,9 @@ headings:
                 - li: Comisiones de peajes
                 - li: Las agencias de redesarrollo comunitario emiten bonos, cuyos intereses podrían ser libres
             - p: >-
-                Revisa <strong>la casilla 8</strong> de tu copia del Formulario 1099-INT para confirmar si el interés es
-                libre de impuestos. Si recibiste un interés libre de impuestos, Direct File aún no acepta declarar este
-                tipo de ingresos de intereses. <LinkFilingOptions>Encuentra otras maneras de presentar tus impuestos
-                federales</LinkFilingOptions>.
+                Revisa <strong>la casilla 8</strong> de tu copia del Formulario 1099-INT. Los intereses libres de
+                impuestos de la casilla 8 se declaran en la línea 2a del Formulario 1040 y no se incluyen en los
+                ingresos sujetos a impuestos.
   /heading/income/interest/data-import-breather:
     Primero, revisaremos si podemos llenar algunos datos de tu Formulario 1099-INT del {{/taxYear}} que el IRS tiene
     archivado.
@@ -22174,7 +22166,6 @@ headings:
     ¿{{/secondaryFiler/firstName}} o tú tienen algún Formulario 1099-R para el {{/taxYear}}?
   /heading/knockout/hsa-no-payments-distribution-ko: Direct File aún no acepta esta situación tributaria.
   /heading/income/hsa/distributions: Distribuciones de Cuentas de ahorros para la salud (HSA)
-  /heading/knockout/forms-missing/1099-int-box-8-ko: Direct File aún no acepta reportar intereses exentos de impuestos.
   /heading/knockout/forms-missing/w2-box-12-dependent-ko: Direct File aún no acepta esta situación tributaria.
   /heading/credits-and-deductions/credits/odc-qualified-also-single:
     helpText:

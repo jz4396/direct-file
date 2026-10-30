@@ -261,11 +261,6 @@ export const InterestIncomeSubcategory = (
           />
           <DFAccordion
             headingLevel='h2'
-            i18nKey='/info/knockout/forms-missing/1099-int-box-8-ko'
-            condition='/flowKnockoutTaxExemptInterest'
-          />
-          <DFAccordion
-            headingLevel='h2'
             i18nKey='/info/knockout/forms-missing/1099-int-box-9-ko'
             condition='/interestReports/*/specifiedPrivateActivityBondInterest'
           />
@@ -477,20 +472,6 @@ export const InterestIncomeSubcategory = (
               required={false}
             />
             <SaveAndOrContinueButton />
-          </Screen>
-          <Screen route='1099-int-box-8-ko' condition='/flowKnockoutTaxExemptInterest' isKnockout={true}>
-            <IconDisplay name='ErrorOutline' size={9} isCentered />
-            <Heading
-              batches={[`income-assorted-kos-0`, `schedule-b-0`]}
-              i18nKey='/heading/knockout/forms-missing/1099-int-box-8-ko'
-            />
-            <DFAlert
-              batches={[`income-assorted-kos-0`, `schedule-b-0`]}
-              i18nKey='/info/knockout/generic-other-ways-to-file'
-              headingLevel='h2'
-              type='warning'
-            />
-            <KnockoutButton i18nKey='button.knockout' />
           </Screen>
         </SubSubcategory>
         <SubSubcategory route='int-income-bonds'>

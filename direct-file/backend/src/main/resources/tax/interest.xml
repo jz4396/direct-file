@@ -3,16 +3,33 @@
   <Facts>
 
     <Fact path="/taxExemptInterest">
-      <Name>Tax Exempt Interest</Name>
-      <Description>Tax exempt interest income to report on line 2a of Form 1040. N.B. We write this to box 2a, but then
-        never use it again outside of calculating EITC eligibility and SSB taxibility</Description>
+      <Name>Tax-exempt interest (Form 1040 line 2a)</Name>
+      <Description>Form 1040 line 2a. 26 U.S.C. 103(a) (https://www.law.cornell.edu/uscode/text/26/103): "gross income
+        does not include interest on any State or local bond." 26 U.S.C. 852(b)(5)(B)
+        (https://www.law.cornell.edu/uscode/text/26/852): an exempt-interest dividend "shall be treated by the
+        shareholders for all purposes of this subtitle as an item of interest excludable from gross income under section
+        103(a)." 26 U.S.C. 6012(d) (https://www.law.cornell.edu/uscode/text/26/6012): the return shall include "the
+        amount of interest received or accrued during the taxable year which is exempt from the tax imposed by chapter
+        1." Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 2a: "In general, your
+        tax-exempt stated interest should be shown in box 8 of Form 1099-INT ... Enter the total on line 2a." and "Also
+        include on line 2a any exempt-interest dividends from a mutual fund or other regulated investment company. This
+        amount should be shown in box 12 of Form 1099-DIV." Line 2a is the sum of every 1099-INT box 8 and every
+        1099-DIV box 12. Cents are included in the addition and only the total is rounded (p. 23, Rounding Off to
+        Whole Dollars: "If you have to add two or more amounts to figure the amount to enter on a line, include cents
+        when adding the amounts and round off only the total."). 1099-OID tax-exempt OID is not collected. Amortized
+        bond premium on a tax-exempt bond (1099-INT box 13) is not netted: any amount in boxes 9-13 stops the return
+        (/flowKnockoutHasBonds). Specified private activity bond interest (1099-INT box 9 and 1099-DIV box 13) stops the
+        return (26 U.S.C. 57(a)(5), Form 6251 line 2g). Mapped to IRS1040 f1_58[0].</Description>
       <Export downstreamFacts="true" mef="true" />
 
       <Derived>
         <Round>
-          <CollectionSum>
-            <Dependency path="/interestReports/*/taxExemptInterest" />
-          </CollectionSum>
+          <Add>
+            <CollectionSum>
+              <Dependency path="/interestReports/*/taxExemptInterest" />
+            </CollectionSum>
+            <Dependency module="dividends" path="/totalExemptInterestDividends" />
+          </Add>
         </Round>
       </Derived>
     </Fact>
@@ -1140,10 +1157,15 @@
     </Fact>
 
     <Fact path="/flowKnockoutHasBonds">
-      <Name>Knockout Has Bonds</Name>
-      <Description>Whether user is knocked out for having a bonds. Happens if the user has more than
-        $0 in bonds (boxes 9
-        - 13) across all their 1099-INTs.</Description>
+      <Name>Knockout: 1099-INT boxes 9-13</Name>
+      <Description>More than $0 in 1099-INT boxes 9-13. Box 8 is Form 1040 line 2a and is not part of this stop. Box 9
+        is specified private activity bond interest: 26 U.S.C. 57(a)(5) (https://www.law.cornell.edu/uscode/text/26/57)
+        makes that interest a tax preference, reported on Form 6251 line 2g, which is not computed. Box 13 is bond
+        premium on a tax-exempt bond. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25,
+        Line 2a: "if you acquired a tax-exempt bond at a premium, only report the net amount of tax-exempt interest on
+        line 2a (that is, the excess of the tax-exempt interest received during the year over the amortized bond premium
+        for the year)." That net is not computed, so any box 13 amount stops the return. Boxes 10-12 (market discount,
+        bond premium, and bond premium on Treasury obligations) stop with them.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -1678,8 +1700,9 @@
 
     <Fact path="/interestReports/*/taxExemptInterest">
       <Name>Tax-exempt interest</Name>
-      <Description>Comes from box 8 on a 1099-INT. Set to 0 if there is no 1099 int. We may be able to replace this with
-        a default value in the future.</Description>
+      <Description>Form 1099-INT box 8. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25,
+        Line 2a: "your tax-exempt stated interest should be shown in box 8 of Form 1099-INT." $0 when this report is not
+        a 1099-INT or box 8 is blank. Summed into /taxExemptInterest.</Description>
       <Export stateSystems="true" />
 
       <Derived>
@@ -1720,30 +1743,6 @@
             </Then>
           </Case>
         </Switch>
-      </Derived>
-    </Fact>
-
-    <Fact path="/flowKnockoutTaxExemptInterest">
-      <Description>Knocks out the filer if they have value in Box 8 - Tax Exempt Interest.</Description>
-      <Export downstreamFacts="true" />
-      <Derived>
-        <GreaterThan>
-          <Left>
-            <Count>
-              <NotEqual>
-                <Left>
-                  <Dependency path="/interestReports/*/taxExemptInterest" />
-                </Left>
-                <Right>
-                  <Dollar>0</Dollar>
-                </Right>
-              </NotEqual>
-            </Count>
-          </Left>
-          <Right>
-            <Int>0</Int>
-          </Right>
-        </GreaterThan>
       </Derived>
     </Fact>
 

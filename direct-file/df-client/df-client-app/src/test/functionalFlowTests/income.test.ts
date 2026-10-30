@@ -972,7 +972,7 @@ describe(`The \`income\` subcategory`, () => {
               );
             });
 
-            it(`for having a tax exempt interest amount`, ({ task }) => {
+            it(`box 8 tax-exempt interest continues to boxes 9-14`, ({ task }) => {
               const { factGraph } = setupFactGraph({
                 ...baseIncomeData,
                 [`/interestReports/#${interestReportId}/has1099`]: createBooleanWrapper(has1099),
@@ -992,7 +992,7 @@ describe(`The \`income\` subcategory`, () => {
                   createDollarWrapper(`1`),
               });
               expect(givenFacts(factGraph).atPath(`${path}/1099-int-add-box-8`, interestReportId, task)).toRouteNextTo(
-                `${path}/1099-int-box-8-ko`
+                `${path}/1099-int-add-boxes-9-14?%2FinterestReports=${interestReportId}`
               );
             });
 
