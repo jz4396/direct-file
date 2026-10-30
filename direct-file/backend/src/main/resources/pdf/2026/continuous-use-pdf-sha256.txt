@@ -1,0 +1,8 @@
+# SHA-256 of IRS continuous-use final PDFs committed under pdf/2026, as downloaded from irs.gov/pub/irs-pdf.
+# These forms are not tax-year drafts: a TY2026 return files the current revision (here, Form 8862 Rev. 12-2025).
+# Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the committed files by
+# ContinuousUsePdfHashManifestTest. When IRS publishes a newer revision, re-download, re-hash and re-verify the
+# field map before updating a line here.
+# #124 / harness: Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true rewrites the hash/unmapped-field
+# manifests under src/test/resources/pdf/2026 after a swap.
+fd783d1f46f1f286cd1d7a2cca8812fc2ec05760478359873e22ba9d05d5f3b5  IRS8862/en/f8862.pdf  https://www.irs.gov/pub/irs-pdf/f8862.pdf

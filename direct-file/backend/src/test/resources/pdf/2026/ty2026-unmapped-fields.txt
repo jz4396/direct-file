@@ -185,47 +185,6 @@ pdf/2024/IRS1040S8812/es/f1040s8s_accessible.pdf	topmostSubform[0].Page1[0].f1_5
 pdf/2024/IRS1040S8812/es/f1040s8s_accessible.pdf	topmostSubform[0].Page1[0].f1_6[0]	Tx	2c. Anote las cantidad de la línea 15 de su Formulario 4563.
 pdf/2024/IRS1040S8812/es/f1040s8s_accessible.pdf	topmostSubform[0].Page1[0].f1_7[0]	Tx	2d. Sume las líneas 2a a 2c.
 pdf/2024/IRS1040S8812/es/f1040s8s_accessible.pdf	topmostSubform[0].Page2[0].c2_1[0]	Btn	Página 2. Parte I I-A. Crédito Tributario Adicional por Hijos para Todos...
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page1[0].Checkbox3_ReadOrder[0].c1_3[0]	Btn	2. American Opportunity Tax Credit (Complete Part I V).
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	Part I I. Earned Income Credit. 3. If the only reason your E I C was red...
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_3[1]	Btn	14. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_4[1]	Btn	14. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_5[1]	Btn	14. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_6[1]	Btn	14. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_7[1]	Btn	15. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_8[1]	Btn	15. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_9[1]	Btn	15. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_10[1]	Btn	15. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_11[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_12[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_13[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_14[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_15[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_16[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_17[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_18[1]	Btn	16. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_19[1]	Btn	17. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_20[1]	Btn	17. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_21[1]	Btn	17. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_22[1]	Btn	17. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_23[1]	Btn	17. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_24[1]	Btn	17. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_25[1]	Btn	17. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page2[0].c2_26[1]	Btn	17. No. Caution: If the answer is "No" for question 14, 15, 16, or 17, y...
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].f3_01[0]	Tx	Page 3. Part I V. American Opportunity Tax Credit. Answer the following ...
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].f3_02[0]	Tx	18b. Student 2.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].f3_03[0]	Tx	18c. Student 3.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_1[0]	Btn	19a. Did the student meet the requirements to be an eligible student for...
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_1[1]	Btn	19a. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_2[0]	Btn	19a. Student 2. Yes.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_2[1]	Btn	19a. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_3[0]	Btn	19a. Student 3. Yes.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_3[1]	Btn	19a. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_4[0]	Btn	19b. Has the Hope Scholarship Credit or A O T C been claimed for the stu...
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_4[1]	Btn	19b. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_5[0]	Btn	19b. Student 2. Yes.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_5[1]	Btn	19b. No.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_6[0]	Btn	19b. Student 3. Yes.
-pdf/2024/IRS8862/en/f8862_accessible.pdf	topmostSubform[0].Page3[0].c3_6[1]	Btn	19b. No. Caution: If you answered "No" to question 19a or "Yes" to quest...
 pdf/2024/IRS8862/es/f8862sp_accessible.pdf	topmostSubform[0].Page1[0].c1_3[0]	Btn	2. Crédito Tributario de Oportunidad para Estadounidenses (Complete la P...
 pdf/2024/IRS8862/es/f8862sp_accessible.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	Parte I I. Crédito por Ingreso del Trabajo. 3. Si la única razón por la ...
 pdf/2024/IRS8862/es/f8862sp_accessible.pdf	topmostSubform[0].Page2[0].c2_3[1]	Btn	14. Hijo 1. No.
@@ -932,6 +891,47 @@ pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_3[0]	Tx	14. Ent
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_24[0]	Tx	If line 14 is zero or blank, skip lines 35 through 37 and go to line 38....
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_25[0]	Tx	36. Subtract line 35 from line 12.
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_26[0]	Tx	37. Multiply line 36 by 25% (0.25).
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page1[0].Checkbox3_ReadOrder[0].c1_3[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_3[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_4[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_5[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_6[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_7[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_8[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_9[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_10[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_11[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_12[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_13[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_14[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_15[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_16[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_17[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_18[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_19[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_20[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_21[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_22[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_23[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_24[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_25[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_26[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].f3_01[0]	Tx	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].f3_02[0]	Tx	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].f3_03[0]	Tx	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_1[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_1[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_2[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_2[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_3[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_3[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_4[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_4[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_5[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_5[1]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_6[0]	Btn	
+pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page3[0].c3_6[1]	Btn	
 pdf/2026/IRS8880/en/f8880--dft.pdf	topmostSubform[0].Page2[0].Col2[0].Pg2Worksheet[0].f2_1[0]	Tx	Page 2. Credit Limit Worksheet. Complete this worksheet to figure the am...
 pdf/2026/IRS8880/en/f8880--dft.pdf	topmostSubform[0].Page2[0].Col2[0].Pg2Worksheet[0].f2_2[0]	Tx	2. Enter the total of your credits from Schedule 3, lines 1 through 3, 6...
 pdf/2026/IRS8880/en/f8880--dft.pdf	topmostSubform[0].Page2[0].Col2[0].Pg2Worksheet[0].f2_3[0]	Tx	3. Subtract line 2 from line 1. Also enter this amount on Form 8880, lin...
@@ -1013,8 +1013,6 @@ pdf/2026/PA40/en/2025_pa-40.pdf	Farmers	Btn	Click on oval if at least two-thirds
 pdf/2026/PA40/en/2025_pa-40.pdf	1b. Unreimbursed Employee Business Expenses	Tx	1b. – Enter the total unreimbursed business expenses from Section III, L...
 pdf/2026/PA40/en/2025_pa-40.pdf	4. Loss	Btn	Loss
 pdf/2026/PA40/en/2025_pa-40.pdf	4. Net Income or Loss from the Operation of a Business, etc	Tx	4. – Enter the net income or loss from the operation of a business, prof...
-pdf/2026/PA40/en/2025_pa-40.pdf	6. Loss	Btn	Loss
-pdf/2026/PA40/en/2025_pa-40.pdf	6. Net Income or Loss from Rents, etc	Tx	6. – Enter the net income or loss from rents, royalties, patents and cop...
 pdf/2026/PA40/en/2025_pa-40.pdf	7. Estate or Trust income	Tx	7. – Enter the total estate and trust income from Line 3 of PA-40 Schedu...
 pdf/2026/PA40/en/2025_pa-40.pdf	8. Gambling and Lottery Winnings	Tx	8. – Enter the total gambling and lottery winnings from Line 6 of PA-40 ...
 pdf/2026/PA40/en/2025_pa-40.pdf	Code	Tx	Enter code per instructions
