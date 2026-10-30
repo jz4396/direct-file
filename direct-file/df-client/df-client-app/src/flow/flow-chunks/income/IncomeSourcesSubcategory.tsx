@@ -7,6 +7,7 @@ import {
   DFAlert,
   Heading,
   InfoDisplay,
+  LimitingString,
   SaveAndOrContinueButton,
   IconDisplay,
   KnockoutButton,
@@ -146,7 +147,59 @@ export const IncomeSourcesSubcategory = (
         <Boolean path='/hasForeignAccounts' batches={[`schedule-b-1`]} />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='foreign-trusts-grantor' condition={{ operator: `isFalse`, condition: `/hasForeignAccounts` }}>
+      <Screen route='foreign-account-fbar' condition='/hasForeignAccounts'>
+        <Heading
+          i18nKey='/heading/income/income-sources/foreign-account-fbar'
+          condition={{ operator: `isFalse`, condition: `/isFilingStatusMFJ` }}
+          batches={[`schedule-b-1`]}
+        />
+        <Heading
+          i18nKey='/heading/income/income-sources/foreign-account-fbar-mfj'
+          condition='/isFilingStatusMFJ'
+          batches={[`schedule-b-1`]}
+        />
+        <InfoDisplay i18nKey='/info/income/income-sources/foreign-account-fbar' batches={[`schedule-b-1`]} />
+        <Boolean path='/requiredToFileFinCENForm114' batches={[`schedule-b-1`]} />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='foreign-account-countries' condition='/flowShouldAskForeignAccountCountries'>
+        <Heading i18nKey='/heading/income/income-sources/foreign-account-countries' batches={[`schedule-b-1`]} />
+        <InfoDisplay i18nKey='/info/income/income-sources/foreign-account-countries' batches={[`schedule-b-1`]} />
+        <LimitingString path='/foreignAccountCountryLine1' />
+        <LimitingString path='/foreignAccountCountryLine2' required={false} />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='foreign-account-countries-fit' condition='/flowShouldAskForeignAccountCountriesFit'>
+        <Heading
+          i18nKey='/heading/income/income-sources/foreign-account-countries-fit'
+          condition={{ operator: `isFalse`, condition: `/isFilingStatusMFJ` }}
+          batches={[`schedule-b-1`]}
+        />
+        <Heading
+          i18nKey='/heading/income/income-sources/foreign-account-countries-fit-mfj'
+          condition='/isFilingStatusMFJ'
+          batches={[`schedule-b-1`]}
+        />
+        <InfoDisplay i18nKey='/info/income/income-sources/foreign-account-countries-fit' batches={[`schedule-b-1`]} />
+        <Boolean path='/foreignAccountCountriesFitOnLine7b' batches={[`schedule-b-1`]} />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='form-8938-required' condition='/flowShouldAskForm8938'>
+        <Heading
+          i18nKey='/heading/income/income-sources/form-8938-required'
+          condition={{ operator: `isFalse`, condition: `/isFilingStatusMFJ` }}
+          batches={[`schedule-b-1`]}
+        />
+        <Heading
+          i18nKey='/heading/income/income-sources/form-8938-required-mfj'
+          condition='/isFilingStatusMFJ'
+          batches={[`schedule-b-1`]}
+        />
+        <InfoDisplay i18nKey='/info/income/income-sources/form-8938-required' batches={[`schedule-b-1`]} />
+        <Boolean path='/requiredToFileForm8938' batches={[`schedule-b-1`]} />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='foreign-trusts-grantor' condition='/flowShouldAskScheduleBLine8'>
         <Heading
           i18nKey='/heading/income/income-sources/foreign-trusts-grantor'
           condition={{ operator: `isFalse`, condition: `/isFilingStatusMFJ` }}
@@ -199,11 +252,7 @@ export const IncomeSourcesSubcategory = (
         <Boolean path='/hasForeignTrustsTransactions' batches={[`schedule-b-1`]} />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen
-        route='foreign-accounts-trusts-knockout'
-        condition={{ operator: `isFalse`, condition: `/doesNotHaveForeignAccountsOrTrusts` }}
-        isKnockout={true}
-      >
+      <Screen route='foreign-accounts-trusts-knockout' condition='/scheduleBPartIIIOutOfScope' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/foreign-accounts-trusts' batches={[`schedule-b-1`]} />
         <DFAlert

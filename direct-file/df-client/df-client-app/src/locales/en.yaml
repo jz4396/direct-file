@@ -657,6 +657,23 @@ headings:
   /heading/income/income-sources/foreign-accounts-mfj:
     At any time during {{/taxYear}}, did you or {{/secondaryFiler/firstName}} have a financial interest in or signature
     authority over a financial account located in a foreign country?
+  /heading/income/income-sources/foreign-account-fbar:
+    Are you required to file FinCEN Form 114, Report of Foreign Bank and Financial Accounts (FBAR), to report that
+    financial interest or signature authority?
+  /heading/income/income-sources/foreign-account-fbar-mfj:
+    Are you or {{/secondaryFiler/firstName}} required to file FinCEN Form 114, Report of Foreign Bank and Financial
+    Accounts (FBAR), to report that financial interest or signature authority?
+  /heading/income/income-sources/foreign-account-countries:
+    List the name of each foreign country where the financial account is located.
+  /heading/income/income-sources/foreign-account-countries-fit:
+    Do all the countries fit on these two lines?
+  /heading/income/income-sources/foreign-account-countries-fit-mfj:
+    Do all the countries where you or {{/secondaryFiler/firstName}} had an account fit on these two lines?
+  /heading/income/income-sources/form-8938-required:
+    Are you required to file Form 8938, Statement of Specified Foreign Financial Assets, with your tax return?
+  /heading/income/income-sources/form-8938-required-mfj:
+    Are you or {{/secondaryFiler/firstName}} required to file Form 8938, Statement of Specified Foreign Financial
+    Assets, with your tax return?
   /heading/income/income-sources/foreign-trusts-grantor: At any time in {{/taxYear}}, did you own a foreign trust?
   /heading/income/income-sources/foreign-trusts-grantor-mfj:
     At any time in {{/taxYear}}, did you or {{/secondaryFiler/firstName}} own a foreign trust?
@@ -2662,7 +2679,9 @@ headings:
   /heading/knockout/forms-missing/net-investment: Direct File doesn’t yet support the amount of income you received.
   /heading/knockout/income-sources-supported: Direct File doesn’t support the forms required to report all income types.
   /heading/knockout/digital-assets: Direct File doesn’t yet support the forms required to report digital assets.
-  /heading/knockout/foreign-accounts-trusts: Direct File doesn’t yet support foreign accounts or foreign trusts.
+  /heading/knockout/foreign-accounts-trusts:
+    Direct File doesn’t yet support Form 8938, a foreign trust (Form 3520), or a separate statement of foreign
+    countries.
   /heading/knockout/ira-contributions:
     Direct File doesn’t yet support Individual Retirement Arrangement (IRA) contributions.
   /heading/knockout/est-tax-payments-name-change: Direct File doesn’t support attachments yet.
@@ -4629,6 +4648,28 @@ info:
                 financial institution maintaining the account.
           urls:
             LinkToFinCENForm114: https://www.fincen.gov/sites/default/files/shared/FBAR%20Line%20Item%20Filing%20Instructions.pdf
+  /info/income/income-sources/foreign-account-fbar:
+    body:
+      - p:
+          Check <strong>Yes</strong> if you must file FinCEN Form 114. A U.S. person must file it when the total value
+          of foreign financial accounts is over $10,000 at any time during {{/taxYear}}. Do not attach FinCEN Form 114
+          to your tax return. Checking Yes or No here does not file that form.
+  /info/income/income-sources/foreign-account-countries:
+    body:
+      - p:
+          If you are required to file FinCEN Form 114, enter each foreign country where an account is located. Use the
+          second line if you need it. Line 7b says to attach a separate statement if you need more space.
+  /info/income/income-sources/foreign-account-countries-fit:
+    body:
+      - p:
+          Schedule B line 7b has two lines for country names. The instructions say to attach a separate statement if
+          you need more space. Direct File can’t attach that statement. Answer Yes only if every country fits on these
+          two lines. Answer No if you need more space.
+  /info/income/income-sources/form-8938-required:
+    body:
+      - p:
+          You may have to file Form 8938 with your tax return even if you do not have to file FinCEN Form 114. If you
+          are required to file Form 8938, you can’t finish in Direct File.
   /info/income/income-sources/foreign-trusts-grantor:
     body:
       - p:
@@ -12509,7 +12550,9 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/knockout/foreign-accounts-trusts:
-    body: Direct File doesn’t yet support foreign accounts or foreign trusts.
+    body:
+      Direct File doesn’t yet support Form 8938, Form 3520 for a foreign trust, or a separate statement when the
+      foreign countries do not fit on Schedule B line 7b.
     alertText:
       body:
         - p: <Link1>Find other ways to file your federal taxes.</Link1>
@@ -17592,6 +17635,10 @@ modals:
           <LinkIRSForm8962Instructions>Learn more about qualified Marketplace health
           plans.</LinkIRSForm8962Instructions>
 fields:
+  /foreignAccountCountryLine1:
+    name: Foreign country
+  /foreignAccountCountryLine2:
+    name: Foreign country, continued
   generics:
     requiredExplainerSimple: Required
     date:
@@ -23309,6 +23356,17 @@ dataviews:
     /hasForeignAccounts:
       At any time during {{/taxYear}}, did you have a financial interest in or signature authority over a financial
       account located in a foreign country?
+    /requiredToFileFinCENForm114:
+      Are you required to file FinCEN Form 114 to report that financial interest or signature authority?
+    /foreignAccountCountryLine1: Foreign country where the account is located
+    /foreignAccountCountryLine2: Another foreign country, if you need a second line
+    /foreignAccountCountriesFitOnLine7b: Do all the countries fit on these two lines?
+    /foreignAccountCountriesFitOnLine7b_spouse:
+      Do all the countries where you or your spouse had an account fit on these two lines?
+    /requiredToFileForm8938: Are you required to file Form 8938 with your tax return?
+    /requiredToFileFinCENForm114_spouse:
+      Are you or your spouse required to file FinCEN Form 114 to report that financial interest or signature authority?
+    /requiredToFileForm8938_spouse: Are you or your spouse required to file Form 8938 with your tax return?
     /hasForeignAccounts_spouse:
       At any time during {{/taxYear}}, did you or your spouse have a financial interest in or signature authority over a
       financial account located in a foreign country?

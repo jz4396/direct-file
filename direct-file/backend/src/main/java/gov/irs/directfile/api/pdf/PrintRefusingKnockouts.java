@@ -99,13 +99,16 @@ public final class PrintRefusingKnockouts {
             // savings bond interest previously reported are subtracted below a subtotal (Instructions for Schedule B
             // (2025) p. 2, Line 1). That subtraction is not computed, so a yes refuses the print.
             "/flowKnockoutInterestScheduleBSubtraction",
-            // Schedule B line 7a question 2 and line 7b (FinCEN Form 114) and line 8 (Form 3520) are not printed.
-            // Instructions for Schedule B (2025) p. 3. A yes to line 7a question 1 or line 8 refuses the print so
-            // those lines are not left blank. Unanswered is not "No": the print is refused unless
-            // /scheduleBPartIIIAnswered is complete, even when interest and ordinary dividends are not over $1,500.
-            // Complete false when every Part III answer is no. Exactly $1,500 with those answers still prints.
-            // Not an operand of /flowIsKnockedOut. /flowKnockoutScheduleBPartIII is this fact and
-            // /scheduleBPartIIIAnswered, so only a "Yes" knocks the interview out.
+            // Schedule B line 7a question 1 Yes prints, with question 2 (FinCEN Form 114, 31 U.S.C. 5314) and
+            // line 7b countries when the FBAR is required. 2026 draft Instructions for Schedule B, PDF pp. 3–4.
+            // Line 8 Yes (Form 3520, 26 U.S.C. 6048), "required to file Form 8938?" Yes (26 U.S.C. 6038D),
+            // and line 7b countries that do not fit (PDF p. 4: attach a separate statement) refuse the print.
+            // An unanswered question 2, a blank line 7b when the FBAR is required, or an unanswered "do the
+            // countries fit?" question refuses the print so those lines are not left blank. Unanswered is not
+            // "No", even under $1,500. Complete false when Part III is the supported answers, including exactly
+            // $1,500 with every No. Not an operand of /flowIsKnockedOut. /flowKnockoutScheduleBPartIII is this
+            // fact and /scheduleBPartIIIAnswered, so only line 8 Yes, Form 8938 Yes, or countries that do not
+            // fit knock the interview out.
             "/flowPrintRefuseScheduleBPartIII",
             // Schedule E Part I loss. Lines 22 and 25 (Form 8582) are not printed. 26 U.S.C. 469, 465, 461(l).
             "/flowKnockoutScheduleELoss",

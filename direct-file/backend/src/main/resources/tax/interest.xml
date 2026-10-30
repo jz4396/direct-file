@@ -1333,76 +1333,143 @@
 
     <Fact path="/scheduleBPartIIIAnswered">
       <Name>Schedule B Part III questions are answered</Name>
-      <Description>True when Schedule B (Form 1040) line 7a and, when line 7a is "No", line 8 have an answer. A "Yes"
-        on
-        line 7a ends the questions (the rest of line 8 is not asked). An unanswered question is not treated as
-        "No".</Description>
+      <Description>True when Part III is answered far enough to print or to stop. A Yes on line 8, or a Yes on
+        Form 8938
+        after line 7a question 1 is Yes, ends the questions. A No on line 7a still needs line 8. A Yes
+        on line 7a needs
+        question 2, line 7b when FinCEN Form 114 is required, a Yes that every country fits, Form 8938 No,
+        and line 8 No.
+        No, because the countries do not fit, ends the questions.
+        An unanswered question is not
+        "No". 2026 draft Instructions for Schedule B PDF pp. 3–4.</Description>
       <Derived>
-        <All>
-          <IsComplete>
-            <Dependency module="income" path="/hasForeignAccounts" />
-          </IsComplete>
-          <Any>
-            <Dependency module="income" path="/hasForeignAccounts" />
-            <All>
-              <IsComplete>
-                <Dependency module="income" path="/isForeignTrustsGrantor" />
-              </IsComplete>
-              <Any>
-                <Dependency module="income" path="/isForeignTrustsGrantor" />
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/isForeignTrustsGrantor" />
+            </IsComplete>
+            <Dependency module="income" path="/isForeignTrustsGrantor" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/hasForeignTrustsTransactions" />
+            </IsComplete>
+            <Dependency module="income" path="/hasForeignTrustsTransactions" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/hasForeignAccounts" />
+            </IsComplete>
+            <Any>
+              <All>
+                <Not>
+                  <Dependency module="income" path="/hasForeignAccounts" />
+                </Not>
+                <IsComplete>
+                  <Dependency module="income" path="/isForeignTrustsGrantor" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/isForeignTrustsGrantor" />
+                </Not>
                 <IsComplete>
                   <Dependency module="income" path="/hasForeignTrustsTransactions" />
                 </IsComplete>
-              </Any>
-            </All>
-          </Any>
-        </All>
+              </All>
+              <All>
+                <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileForm8938" />
+                </IsComplete>
+                <Dependency module="income" path="/requiredToFileForm8938" />
+              </All>
+              <All>
+                <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                </IsComplete>
+                <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                <IsComplete>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </Not>
+              </All>
+              <All>
+                <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileForm8938" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/requiredToFileForm8938" />
+                </Not>
+                <Any>
+                  <Not>
+                    <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                  </Not>
+                  <All>
+                    <Dependency module="income" path="/foreignAccountCountryLine1Provided" />
+                    <IsComplete>
+                      <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                    </IsComplete>
+                    <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                  </All>
+                </Any>
+                <IsComplete>
+                  <Dependency module="income" path="/isForeignTrustsGrantor" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/isForeignTrustsGrantor" />
+                </Not>
+                <IsComplete>
+                  <Dependency module="income" path="/hasForeignTrustsTransactions" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/hasForeignTrustsTransactions" />
+                </Not>
+              </All>
+            </Any>
+          </All>
+        </Any>
       </Derived>
     </Fact>
 
     <Fact path="/flowPrintRefuseScheduleBPartIII">
-      <Name>Print refusal: Schedule B Part III unanswered or "Yes"</Name>
-      <Description>Refuses the printed package unless Schedule B (Form 1040) Part III is answered and every answer is
-        "No". Not an operand of /flowIsKnockedOut: an unanswered line 7a or line 8 does not knock the interview out.
-        /flowKnockoutScheduleBPartIII is this fact and /scheduleBPartIIIAnswered, so only a "Yes" knocks the return
-        out.
-        Schedule B (2026 draft) Part III: "You must complete this part if you (a) had over $1,500 of taxable
-        interest or ordinary dividends; (b) had a foreign account; or (c) received a distribution from, or were a
-        grantor of, or a transferor to, a foreign trust." Instructions for Schedule B (Form 1040) (2025) p. 2, Line
-        7a—Question 1: "Check the 'Yes' box even if you aren't required to file FinCEN Form 114." p. 3, Line
-        7a—Question
-        2: a U.S. person "must file the form if the aggregate value of foreign financial accounts exceeds
-        $10,000 at any
-        time during 2025" (FinCEN Form 114, 31 U.S.C. 5314). p. 2: "Regardless of whether you are
-        required to file FinCEN
-        Form 114 (FBAR), you may be required to file Form 8938" (26 U.S.C. 6038D). p. 3, Line
-        8: "If you were the grantor
-        of, or transferor to, a foreign trust that existed during 2025, you may have to
-        file Form 3520" (26 U.S.C. 6048).
-        FinCEN Form 114, Form 8938 and Form 3520 are not computed, so any "Yes"
-        refuses the print. An unanswered line 7a or line 8 is not "No", including when taxable
-        interest and ordinary dividends are not over $1,500. Exactly $1,500 does not
-        require Schedule B (Instructions for
-        Schedule B (2025) p. 1: "You had over
-        $1,500 of taxable interest or ordinary dividends."), and that return prints
-        when every asked Part III question is "No".</Description>
+      <Name>Print refusal: Schedule B Part III unanswered or out of scope</Name>
+      <Description>Refuses the printed package unless Schedule B Part III can be printed in full. A Yes on line 7a
+        question 1 prints, with question 2 (Yes or No) and, when FinCEN Form 114 is required, line 7b countries.
+        Not an
+        operand of /flowIsKnockedOut: an unanswered line, including an unanswered question 2, does not knock
+        the
+        interview out. /flowKnockoutScheduleBPartIII is this fact and /scheduleBPartIIIAnswered, so only line 8
+        Yes, Form 8938 Yes, or line 7b countries that do not fit knock the return out. 2026 draft
+        Instructions for Schedule B
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF pp. 3–4. PDF p. 3, Line 7a—Question 1:
+        "Check the 'Yes' box even if you aren't required to file FinCEN Form 114." PDF p. 4, Line 7a—Question 2:
+        file
+        FinCEN Form 114 when the aggregate value exceeds $10,000 (31 U.S.C. 5314). PDF p. 4, Line 7b: list the
+        foreign
+        country or countries when FinCEN Form 114 is required. PDF p. 3: "Regardless of whether you are
+        required to file
+        FinCEN Form 114 (FBAR), you may be required to file Form 8938" (26 U.S.C. 6038D). PDF p. 4,
+        Line 8: Form 3520 (26
+        U.S.C. 6048). Form 8938 and Form 3520 are not produced, so those Yes answers refuse
+        the print. PDF p. 4, Line 7b: "Attach a separate statement if you need more space." That statement is not
+        produced, so No on whether the countries fit refuses the print and stops the return. Question 2
+        unanswered, line 7b blank when FinCEN Form 114 is required, or that fit question unanswered, also
+        refuses the print.
+        An unanswered line 7a or
+        line 8 is not "No", including when interest and ordinary dividends are not over
+        $1,500. Exactly $1,500 with every
+        asked Part III question "No" still prints.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
-          <Case>
-            <When>
-              <All>
-                <IsComplete>
-                  <Dependency module="income" path="/hasForeignAccounts" />
-                </IsComplete>
-                <Dependency module="income" path="/hasForeignAccounts" />
-              </All>
-            </When>
-            <Then>
-              <True />
-            </Then>
-          </Case>
           <Case>
             <When>
               <All>
@@ -1423,6 +1490,46 @@
                   <Dependency module="income" path="/hasForeignTrustsTransactions" />
                 </IsComplete>
                 <Dependency module="income" path="/hasForeignTrustsTransactions" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="income" path="/hasForeignAccounts" />
+                </IsComplete>
+                <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileForm8938" />
+                </IsComplete>
+                <Dependency module="income" path="/requiredToFileForm8938" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="income" path="/hasForeignAccounts" />
+                </IsComplete>
+                <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                </IsComplete>
+                <Dependency module="income" path="/requiredToFileFinCENForm114" />
+                <IsComplete>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </IsComplete>
+                <Not>
+                  <Dependency module="income" path="/foreignAccountCountriesFitOnLine7b" />
+                </Not>
               </All>
             </When>
             <Then>
@@ -1456,13 +1563,19 @@
 
     <Fact path="/flowKnockoutScheduleBPartIII">
       <Name>Knockout: Schedule B Part III foreign account or trust</Name>
-      <Description>True only when Schedule B (Form 1040) line 7a or line 8 is "Yes". Wired into /flowIsKnockedOut.
-        An unanswered Part III is complete false here, so the checklist is not knocked out before those questions
-        are reached. The print still fails closed through /flowPrintRefuseScheduleBPartIII. Instructions for
-        Schedule B (Form 1040) (2025) p. 2-3 (FinCEN Form 114, 31 U.S.C. 5314; Form 8938, 26 U.S.C. 6038D; Form
-        3520, 26 U.S.C. 6048). Those forms are not computed, so a "Yes" stops the return. Complete false when every
-        asked Part III question is "No", including when taxable interest and ordinary dividends are exactly $1,500
-        (Instructions for Schedule B (2025) p. 1: "over $1,500").</Description>
+      <Description>True only when Schedule B line 8 is Yes, Form 8938 is required after line 7a question 1 is Yes,
+        or the countries do not fit on line 7b.
+        Wired into /flowIsKnockedOut. A Yes on line 7a question 1 or question 2 does not knock the
+        interview out: those
+        answers print. An unanswered Part III, including an unanswered question 2, is complete
+        false here. The print
+        still fails closed through /flowPrintRefuseScheduleBPartIII. 2026 draft Instructions
+        PDF pp. 3–4 (FinCEN Form
+        114, 31 U.S.C. 5314; Form 8938, 26 U.S.C. 6038D; Form 3520, 26 U.S.C. 6048).
+        Complete false when the supported
+        Part III answers are in place, including exactly $1,500 with every asked
+        question No (2026 draft Instructions PDF
+        p. 2: "over $1,500").</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>

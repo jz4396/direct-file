@@ -208,8 +208,8 @@ class ScheduleBAndETy2026PdfSmokeTest {
             blank(sb, "f1_32[0]", "line 3 Form 8815");
             assertFalse(checked(sb, "c1_1[0]"), "7a Yes");
             assertTrue(checked(sb, "c1_1[1]"), "7a No");
-            blank(sb, "c1_2[0]", "7a question 2 Yes");
-            blank(sb, "c1_2[1]", "7a question 2 No");
+            blank(sb, "c1_2[0]", "7a question 2 Yes stays blank when line 7a is No");
+            blank(sb, "c1_2[1]", "7a question 2 No stays blank when line 7a is No");
             blank(sb, "f1_65[0]", "7b country");
             blank(sb, "f1_66[0]", "7b country line 2");
             assertFalse(checked(sb, "c1_3[0]"), "line 8 Yes");
@@ -418,10 +418,73 @@ class ScheduleBAndETy2026PdfSmokeTest {
     }
 
     @Test
-    void scheduleBRefusesPartIIIYesAndAnInterestSubtraction() throws Exception {
-        Map<String, String> foreign = partI();
-        foreign.put("/hasForeignAccounts", bool(true));
-        refuses(foreign, SCHEDULE_B_PART_III_PRINT_REFUSE);
+    void scheduleBPrintsLine7aYesWithQuestion2AndCountries() throws Exception {
+        Map<String, String> fbarYes = partI();
+        fbarYes.put("/hasForeignAccounts", bool(true));
+        fbarYes.put("/requiredToFileFinCENForm114", bool(true));
+        fbarYes.put("/foreignAccountCountryLine1", string("France"));
+        fbarYes.put("/foreignAccountCountryLine2", string("Japan"));
+        fbarYes.put("/foreignAccountCountriesFitOnLine7b", bool(true));
+        fbarYes.put("/requiredToFileForm8938", bool(false));
+        byte[] yesBytes = generate(fbarYes);
+        try (PDDocument doc = Loader.loadPDF(yesBytes)) {
+            Map<String, String> sb = fieldsOnPages(doc, SB_FOOTER);
+            assertTrue(checked(sb, "c1_1[0]"), "7a Yes");
+            assertFalse(checked(sb, "c1_1[1]"), "7a No");
+            assertTrue(checked(sb, "c1_2[0]"), "7a question 2 Yes");
+            assertFalse(checked(sb, "c1_2[1]"), "7a question 2 No");
+            assertEquals(
+                    "France", ScheduleSETy2026PdfSmokeTest.value(sb, "f1_65[0]").trim());
+            assertEquals(
+                    "Japan", ScheduleSETy2026PdfSmokeTest.value(sb, "f1_66[0]").trim());
+            assertFalse(checked(sb, "c1_3[0]"), "line 8 Yes");
+            assertTrue(checked(sb, "c1_3[1]"), "line 8 No");
+        }
+
+        Map<String, String> fbarNo = partI();
+        fbarNo.put("/hasForeignAccounts", bool(true));
+        fbarNo.put("/requiredToFileFinCENForm114", bool(false));
+        fbarNo.put("/requiredToFileForm8938", bool(false));
+        byte[] noBytes = generate(fbarNo);
+        try (PDDocument doc = Loader.loadPDF(noBytes)) {
+            Map<String, String> sb = fieldsOnPages(doc, SB_FOOTER);
+            assertTrue(checked(sb, "c1_1[0]"), "7a Yes");
+            assertFalse(checked(sb, "c1_2[0]"), "7a question 2 Yes");
+            assertTrue(checked(sb, "c1_2[1]"), "7a question 2 No");
+            blank(sb, "f1_65[0]", "7b blank when FBAR is not required");
+            blank(sb, "f1_66[0]", "7b line 2 blank when FBAR is not required");
+            assertTrue(checked(sb, "c1_3[1]"), "line 8 No");
+        }
+    }
+
+    @Test
+    void scheduleBRefusesPartIIIStopsAndAnInterestSubtraction() throws Exception {
+        Map<String, String> unansweredQ2 = partI();
+        unansweredQ2.put("/hasForeignAccounts", bool(true));
+        refuses(unansweredQ2, SCHEDULE_B_PART_III_PRINT_REFUSE);
+
+        Map<String, String> countriesOpen = partI();
+        countriesOpen.put("/hasForeignAccounts", bool(true));
+        countriesOpen.put("/requiredToFileFinCENForm114", bool(true));
+        countriesOpen.put("/foreignAccountCountryLine1", string("France"));
+        refuses(countriesOpen, SCHEDULE_B_PART_III_PRINT_REFUSE);
+
+        Map<String, String> countriesDoNotFit = partI();
+        countriesDoNotFit.put("/hasForeignAccounts", bool(true));
+        countriesDoNotFit.put("/requiredToFileFinCENForm114", bool(true));
+        countriesDoNotFit.put("/foreignAccountCountryLine1", string("France"));
+        countriesDoNotFit.put("/foreignAccountCountriesFitOnLine7b", bool(false));
+        refuses(countriesDoNotFit, SCHEDULE_B_PART_III_PRINT_REFUSE);
+
+        Map<String, String> form8938 = partI();
+        form8938.put("/hasForeignAccounts", bool(true));
+        form8938.put("/requiredToFileFinCENForm114", bool(false));
+        form8938.put("/requiredToFileForm8938", bool(true));
+        refuses(form8938, SCHEDULE_B_PART_III_PRINT_REFUSE);
+
+        Map<String, String> line8 = partI();
+        line8.put("/isForeignTrustsGrantor", bool(true));
+        refuses(line8, SCHEDULE_B_PART_III_PRINT_REFUSE);
 
         Map<String, String> nominee = partI();
         nominee.put("/interestReports", collection(INT));
@@ -440,14 +503,18 @@ class ScheduleBAndETy2026PdfSmokeTest {
         assertTooltips(
                 "pdf/2026/IRS1040SB/en/configuration.yml",
                 SB_TEMPLATE,
-                Map.of(
-                        "f1_31[0]", "2. Add the amounts on line 1",
-                        "f1_33[0]", "4. Subtract line 3 from line 2",
-                        "f1_64[0]", "6. Add the amounts on line 5",
-                        "c1_1[0]", "Foreign Accounts",
-                        "c1_1[1]", "7a. No",
-                        "c1_3[0]", "foreign trust",
-                        "c1_3[1]", "8. No"));
+                Map.ofEntries(
+                        Map.entry("f1_31[0]", "2. Add the amounts on line 1"),
+                        Map.entry("f1_33[0]", "4. Subtract line 3 from line 2"),
+                        Map.entry("f1_64[0]", "6. Add the amounts on line 5"),
+                        Map.entry("c1_1[0]", "Foreign Accounts"),
+                        Map.entry("c1_1[1]", "7a. No"),
+                        Map.entry("c1_2[0]", "Form 114"),
+                        Map.entry("c1_2[1]", "7a. No"),
+                        Map.entry("f1_65[0]", "foreign country"),
+                        Map.entry("f1_66[0]", "7b. Line 2"),
+                        Map.entry("c1_3[0]", "foreign trust"),
+                        Map.entry("c1_3[1]", "8. No")));
         assertTooltips(
                 "pdf/2026/IRS1040SE/en/configuration.yml",
                 SE_TEMPLATE,

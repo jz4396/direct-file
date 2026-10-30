@@ -3,9 +3,10 @@
 // if any of the following applies. You had over $1,500 of taxable interest or ordinary dividends. ... You had a
 // financial interest in, or signature authority over, a financial account in a foreign country or you received a
 // distribution from, or were a grantor of, or transferor to, a foreign trust."
-// A "Yes" on line 7a or line 8 knocks the return out: FinCEN Form 114 (i1040sb (2025) p. 3, required when "the
-// aggregate value of foreign financial accounts exceeds $10,000"), Form 8938 (p. 2) and Form 3520 (p. 3) are not
-// supported.
+// A "Yes" on line 7a prints, with question 2 and line 7b countries when FinCEN Form 114 is required (2026 draft
+// Instructions for Schedule B, PDF pp. 3–4; 31 U.S.C. 5314, aggregate value exceeds $10,000). Line 8 "Yes"
+// (Form 3520, 26 U.S.C. 6048), "required to file Form 8938?" "Yes" (26 U.S.C. 6038D), and an unanswered question 2
+// stop the return. Question 2 unanswered refuses the print and does not knock the interview out.
 import fs from 'fs';
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
@@ -37,7 +38,16 @@ const minimal = Object.fromEntries(
   Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
 );
 
-type PartIII = { accounts?: boolean; grantor?: boolean; transactions?: boolean };
+type PartIII = {
+  accounts?: boolean;
+  grantor?: boolean;
+  transactions?: boolean;
+  fbar?: boolean;
+  form8938?: boolean;
+  country?: string;
+  countryLine2?: string;
+  countriesFit?: boolean;
+};
 
 const graph = (
   interest: Record<string, unknown>,
@@ -56,10 +66,29 @@ const graph = (
     '/isForeignTrustsGrantor': createBooleanWrapper(partIII.grantor ?? false),
     '/hasForeignTrustsTransactions': createBooleanWrapper(partIII.transactions ?? false),
   };
+  if (partIII.fbar !== undefined) {
+    facts['/requiredToFileFinCENForm114'] = createBooleanWrapper(partIII.fbar);
+  }
+  if (partIII.form8938 !== undefined) {
+    facts['/requiredToFileForm8938'] = createBooleanWrapper(partIII.form8938);
+  }
+  if (partIII.country !== undefined) {
+    facts['/foreignAccountCountryLine1'] = createStringWrapper(partIII.country);
+  }
+  if (partIII.countryLine2 !== undefined) {
+    facts['/foreignAccountCountryLine2'] = createStringWrapper(partIII.countryLine2);
+  }
+  if (partIII.countriesFit !== undefined) {
+    facts['/foreignAccountCountriesFitOnLine7b'] = createBooleanWrapper(partIII.countriesFit);
+  }
   if (answerPartIII === false) {
     delete facts['/hasForeignAccounts'];
     delete facts['/isForeignTrustsGrantor'];
     delete facts['/hasForeignTrustsTransactions'];
+    delete facts['/requiredToFileFinCENForm114'];
+    delete facts['/requiredToFileForm8938'];
+    delete facts['/foreignAccountCountryLine1'];
+    delete facts['/foreignAccountCountryLine2'];
   } else if (answerPartIII === `line7aOnly`) {
     delete facts['/isForeignTrustsGrantor'];
     delete facts['/hasForeignTrustsTransactions'];
@@ -159,20 +188,147 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
   });
 
-  it(`line 7a "Yes" with $10 of interest: Schedule B required and return knocked out`, ({ task }) => {
+  it(`line 7a "Yes" without question 2 refuses the print and does not knock the interview out`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/requiresScheduleB`,
       `/hasForeignAccountsOrTrusts`,
-      `/flowIsKnockedOut`,
+      `/scheduleBPartIIIAnswered`,
+      FLOW_KNOCKOUT,
+      PRINT_REFUSE,
       `/flowShouldAskForeignTrustsTransactions`,
     ];
     const fg = graph(oneReport(10), { accounts: true });
     expect(val(fg, `/requiresScheduleBForInterest`)).toBe(false);
     expect(val(fg, `/requiresScheduleB`)).toBe(true);
     expect(val(fg, `/hasForeignAccountsOrTrusts`)).toBe(true);
-    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
-    // The rest of line 8 is not asked once line 7a is "Yes".
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
+    // Line 8 is asked after question 2, line 7b when required, and Form 8938 No.
     expect(val(fg, `/flowShouldAskForeignTrustsTransactions`)).toBe(false);
+  });
+
+  it(`line 7a "Yes", FBAR required, and countries print and do not stop the return`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBLine7aQuestion2Yes`,
+      `/scheduleBLine7bCountryLine1`,
+      `/scheduleBLine7bCountryLine2`,
+      `/scheduleBPartIIIAnswered`,
+      FLOW_KNOCKOUT,
+      PRINT_REFUSE,
+    ];
+    const fg = graph(oneReport(10), {
+      accounts: true,
+      fbar: true,
+      country: `France`,
+      countryLine2: `Japan`,
+      countriesFit: true,
+      form8938: false,
+    });
+    expect(val(fg, `/scheduleBLine7aQuestion2Yes`)).toBe(true);
+    expect(val(fg, `/scheduleBLine7aQuestion2No`)).toBe(false);
+    expect(val(fg, `/scheduleBLine7bCountryLine1`)).toBe(`France`);
+    expect(val(fg, `/scheduleBLine7bCountryLine2`)).toBe(`Japan`);
+    expect(val(fg, `/doesNotHaveForeignAccounts`)).toBe(false);
+    expect(val(fg, `/isNotForeignTrustsGrantorAndDoesNotHaveForeignTrustsTransactions`)).toBe(true);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(false);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
+  });
+
+  it(`line 7a "Yes" and FBAR not required prints question 2 No and leaves line 7b blank`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBLine7aQuestion2No`,
+      `/scheduleBLine7bCountryLine1`,
+      PRINT_REFUSE,
+      FLOW_KNOCKOUT,
+    ];
+    const fg = graph(oneReport(10), { accounts: true, fbar: false, form8938: false });
+    expect(val(fg, `/scheduleBLine7aQuestion2Yes`)).toBe(false);
+    expect(val(fg, `/scheduleBLine7aQuestion2No`)).toBe(true);
+    expect(fg.get(`/scheduleBLine7bCountryLine1` as ConcretePath).complete).toBe(false);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(false);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
+  });
+
+  it(`line 7b countries that fit print and do not knock the interview out`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBLine7bCountryLine1`,
+      `/scheduleBPartIIIOutOfScope`,
+      PRINT_REFUSE,
+      FLOW_KNOCKOUT,
+    ];
+    const fg = graph(oneReport(10), {
+      accounts: true,
+      fbar: true,
+      country: `Côte d’Ivoire`,
+      countriesFit: true,
+      form8938: false,
+    });
+    expect(val(fg, `/scheduleBLine7bCountryLine1`)).toBe(`Côte d’Ivoire`);
+    expect(val(fg, `/scheduleBPartIIIOutOfScope`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(false);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
+  });
+
+  it(`line 7b countries that do not fit are an out-of-scope knockout`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBPartIIIOutOfScope`,
+      `/scheduleBPartIIIAnswered`,
+      PRINT_REFUSE,
+      FLOW_KNOCKOUT,
+    ];
+    const fg = graph(oneReport(10), {
+      accounts: true,
+      fbar: true,
+      country: `France`,
+      countriesFit: false,
+    });
+    expect(val(fg, `/scheduleBPartIIIOutOfScope`)).toBe(true);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(true);
+    expect(interviewKnockedOut(fg)).toBe(true);
+  });
+
+  it(`an unanswered "do the countries fit?" question refuses the print and does not knock out`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBPartIIIOutOfScope`,
+      `/scheduleBPartIIIAnswered`,
+      PRINT_REFUSE,
+      FLOW_KNOCKOUT,
+    ];
+    const fg = graph(oneReport(10), { accounts: true, fbar: true, country: `France`, form8938: false });
+    expect(val(fg, `/scheduleBPartIIIOutOfScope`)).toBe(false);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
+  });
+
+  it(`FBAR required with no country refuses the print and does not knock the interview out`, ({ task }) => {
+    task.meta.testedFactPaths = [`/foreignAccountCountryLine1Provided`, PRINT_REFUSE, FLOW_KNOCKOUT];
+    const fg = graph(oneReport(10), { accounts: true, fbar: true, form8938: false });
+    expect(val(fg, `/foreignAccountCountryLine1Provided`)).toBe(false);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(false);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(interviewKnockedOut(fg)).toBe(false);
+  });
+
+  it(`required to file Form 8938 stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleBPartIIIOutOfScope`, FLOW_KNOCKOUT, PRINT_REFUSE];
+    const fg = graph(oneReport(10), { accounts: true, fbar: false, form8938: true });
+    expect(val(fg, `/scheduleBPartIIIOutOfScope`)).toBe(true);
+    expect(val(fg, `/scheduleBPartIIIAnswered`)).toBe(true);
+    expect(val(fg, PRINT_REFUSE)).toBe(true);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(true);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
   });
 
   it(`line 8 "Yes" (grantor of a foreign trust): Schedule B required and return knocked out`, ({ task }) => {
@@ -278,13 +434,23 @@ describe(`Schedule B Part III: foreign accounts (line 7a) and foreign trusts (li
     expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
   });
 
-  it(`line 7a "Yes" stops the return even when dividends are under $1,500`, ({ task }) => {
-    task.meta.testedFactPaths = [FLOW_KNOCKOUT, PRINT_REFUSE];
-    const fg = graph({ ...oneReport(10), ...oneDividend(100) }, { accounts: true });
+  it(`line 7a "Yes" with question 2, countries, and Form 8938 No does not stop a small dividend return`, ({ task }) => {
+    task.meta.testedFactPaths = [FLOW_KNOCKOUT, PRINT_REFUSE, `/scheduleBLine7bCountryLine1`];
+    const fg = graph(
+      { ...oneReport(10), ...oneDividend(100) },
+      {
+        accounts: true,
+        fbar: true,
+        country: `Canada`,
+        countriesFit: true,
+        form8938: false,
+      }
+    );
     expect(val(fg, `/requiresScheduleBForOrdinaryDividends`)).toBe(false);
-    expect(val(fg, PRINT_REFUSE)).toBe(true);
-    expect(val(fg, FLOW_KNOCKOUT)).toBe(true);
-    expect(val(fg, `/flowIsKnockedOut`)).toBe(true);
+    expect(val(fg, `/scheduleBLine7bCountryLine1`)).toBe(`Canada`);
+    expect(val(fg, PRINT_REFUSE)).toBe(false);
+    expect(val(fg, FLOW_KNOCKOUT)).toBe(false);
+    expect(val(fg, `/flowIsKnockedOut`)).toBe(false);
   });
 });
 
