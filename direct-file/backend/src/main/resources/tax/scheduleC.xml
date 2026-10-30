@@ -3203,6 +3203,61 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCBusinesses/*/paMealsAddBack">
+      <Name>PA-40 line 4 meals add-back (100% PA minus federal 50%)</Name>
+      <Description>PA-40 C (EX) 03-26 instructions: federal/PA differences include "meals, travel, and entertainment
+        expense deduction of 100 percent by Pennsylvania." Federal Schedule C line 24b takes 50 percent under 26 U.S.C.
+        274(n) when mealsAreStandardHalfLimit. The add-back is writableMeals minus line24bDeductibleMeals so PA-40
+        line 4 (/paLine4) allows the full meal cost. Zero on the single-expense-total path and when meals were not
+        chosen. Incomplete when a non-50-percent meal limit applies (that case is already
+        /flowKnockoutScheduleCOutOfScope).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../usesLegacyExpenseBucket" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../choseMeals" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../mealsAreStandardHalfLimit" />
+                <IsComplete>
+                  <Dependency path="../writableMeals" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../line24bDeductibleMeals" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="../writableMeals" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="../line24bDeductibleMeals" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCBusinesses/*/writableWages">
       <Name>Wages</Name>
       <Description>Schedule C line 26, wages less employment credits. 2026 draft Instructions for Schedule C

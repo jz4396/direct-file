@@ -403,6 +403,51 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
     }
 
     /**
+     * Full-year resident, Schedule C receipts $20,000 and expenses $0. PA-40 IN (2025) p. 17, LINE 4 / Tax Reform Code
+     * of 1971 §303(a)(2). Line 4 is $20,000 and line 9 is wages $50,000 plus that net. No PA Schedule C PDF is in the
+     * package; the federal Schedule C PDF is not the PA schedule.
+     */
+    @Test
+    void pa40Line4PrintsFederalScheduleCNetProfit() throws Exception {
+        Map<String, String> m = paResident();
+        m.put("/form8949Transactions", EMPTY_COLLECTION);
+        m.put("/paSchoolDistrictCode", string("22275"));
+        m.putAll(ScheduleSETy2026PdfSmokeTest.selfEmployed("50000.00", "50000.00", "20000.00"));
+        m.put("/formW2s/#" + W2 + "/writableStateWages", dollar("50000.00"));
+        m.put("/formW2s/#" + W2 + "/writableStateWithholding", dollar("1535.00"));
+        m.put("/filerResidenceAndIncomeState", enumValue("pa", "/scopedStateOptions"));
+        m.put("/address", paAddress());
+        m.put("/paHasUnreimbursedEmployeeExpenses", bool(false));
+        m.put("/paHasUnsupportedItems", bool(false));
+        m.put("/paHasSpNontaxableIncome", bool(false));
+        byte[] bytes = generate(m);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PA40_PAGE1);
+            is(p1, "1a. Gross Compensation", "50,000.00", "line 1a");
+            is(p1, "4. Loss", "Off", "line 4 loss oval");
+            is(p1, "4. Net Income or Loss from the Operation of a Business, etc", "20,000.00", "line 4 = 20,000");
+            is(p1, "9. Total PA Taxable Income", "70,000.00", "line 9 includes line 4");
+        }
+    }
+
+    @Test
+    void pa40RefusesScheduleCForAPartYearResident() throws Exception {
+        Map<String, String> m = partYearScenario();
+        m.putAll(ScheduleSETy2026PdfSmokeTest.selfEmployed("30000.00", "30000.00", "20000.00"));
+        m.put("/formW2s/#" + W2 + "/writableStateWages", dollar("30000.00"));
+        m.put("/formW2s/#" + W2 + "/writableStateWithholding", dollar("921.00"));
+        m.put("/formW2s/#" + W2 + "/paPartYearW2State", enumValue("pa", "/paPartYearW2StateOptions"));
+        m.put("/filerResidenceAndIncomeState", enumValue("moreThanOne", "/scopedStateOptions"));
+        m.put("/paPartYearMove", enumValue("paToFl", "/paPartYearMoveOptions"));
+        m.put("/paPartYearMoveDate", day("2026-07-01"));
+        m.put("/paPartYearHasNonresidentPaSourcePay", bool(false));
+        m.put("/paHasUnreimbursedEmployeeExpenses", bool(false));
+        m.put("/paHasUnsupportedItems", bool(false));
+        m.put("/paHasSpNontaxableIncome", bool(false));
+        refusesPa(m);
+    }
+
+    /**
      * Full-year resident, Schedule E Part I rents $12,000 minus expenses $4,000. PA-40 IN (2025) p. 18, LINE 6: "You
      * may use federal Schedule E, if using only Part I, and with the following adjustments". Tax Reform Code of 1971
      * §303(a)(4). Line 6 is $8,000 and line 9 is wages $50,000 plus that net.
@@ -448,14 +493,16 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         refusesPa(m);
     }
 
-    /** Print fails closed on /flowKnockoutPaUnsupportedIncome. No new print-refuse path. */
+    /** Print fails closed on /flowKnockoutPaUnsupportedIncome (and any other print-refusing path also true). */
     static void refusesPa(Map<String, String> facts) {
         SubmissionBlockingFactsResponseStatusException e = assertThrows(
                 SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-        assertEquals(
-                List.of("/flowKnockoutPaUnsupportedIncome"),
-                e.getBody().getProperties().get("blockingFacts"));
+        @SuppressWarnings("unchecked")
+        List<String> blocking = (List<String>) e.getBody().getProperties().get("blockingFacts");
+        assertTrue(
+                blocking.contains("/flowKnockoutPaUnsupportedIncome"),
+                "PA unsupported-income stop refused the print: " + blocking);
     }
 
     @Test

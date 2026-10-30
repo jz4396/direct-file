@@ -47,10 +47,13 @@ public final class PrintRefusingKnockouts {
             // PA-40 lines 7, 8, 10, 14-16, 22 (Schedule G-L), 23 and 25. PA-40 IN (2025) pp. 19-24. Yes, or an
             // unanswered question on a PA-40, refuses the print.
             "/flowKnockoutPaUnsupportedItems",
-            // PA-40 line 4 (Schedule C) and income this return does not classify (1099-R, 1099-MISC, tax-exempt
-            // interest, a missing box 16, a joint sale, a forfeited-interest penalty). Full-year Schedule E Part I
-            // net is PA-40 line 6. A Schedule K-1, or Schedule E Part I income of a PA/FL part-year resident, still
-            // stops. PA-40 IN (2025) p. 18 and p. 43. Tax Reform Code of 1971 §303(a)(4). 72 P.S. §7303(a).
+            // Income this return does not classify (1099-R, 1099-MISC, tax-exempt interest, a missing box 16, a joint
+            // sale, a forfeited-interest penalty). Full-year federally supported Schedule C is PA-40 line 4; a PA/FL
+            // part-year resident with Schedule C, inventory/COGS until #277, or a joint Schedule C loss still stops.
+            // Full-year Schedule E Part I net is PA-40 line 6. A Schedule K-1, or Schedule E Part I income of a PA/FL
+            // part-year resident, still stops. No PA Schedule C PDF is produced; the federal Schedule C PDF is not the
+            // PA schedule. PA-40 IN (2025) p. 17, p. 18, and p. 43. Tax Reform Code of 1971 §303(a)(2), §303(a)(4).
+            // 72 P.S. §7303(a).
             "/flowKnockoutPaUnsupportedIncome",
             // Tax Forgiveness cases Schedule SP here does not compute. 72 P.S. §7304. PA-40 IN (2025) pp. 36-39.
             // When forgiveness is still possible, an unanswered nontaxable-income question stays incomplete.

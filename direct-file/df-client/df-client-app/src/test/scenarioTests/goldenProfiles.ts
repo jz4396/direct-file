@@ -713,6 +713,11 @@ export const profileHPaRentalDividends = {
   ...w2s(hayden.ssn, profileHW2),
   ...qualifiedDividends(profileHDividendId, `Example Dividend Fund`, 1800, 1200),
   '/hadScheduleEIncome': createBooleanWrapper(true),
+  // #276: answer Part II–IV no so full-year federal Part I nets to PA-40 line 6. Leaving Part II unanswered
+  // left /flowKnockoutPaUnsupportedIncome incomplete/true and /paLine6 at $0.
+  '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
   '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
   '/scheduleEHasPersonalUse': createBooleanWrapper(false),
   '/scheduleEHasDepreciation': createBooleanWrapper(false),

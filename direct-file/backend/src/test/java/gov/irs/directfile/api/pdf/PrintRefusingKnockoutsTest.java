@@ -164,7 +164,7 @@ class PrintRefusingKnockoutsTest {
                 PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
                 PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
                 PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14-16, 22, 23, 25
-                PA_UNSUPPORTED_INCOME_KNOCKOUT, // PA-40 line 4; line 6 only for a K-1 or part-year Schedule E
+                PA_UNSUPPORTED_INCOME_KNOCKOUT, // line 4 stops for part-year/inventory/MFJ loss; line 6 for K-1/part-year E
                 PA_SP_KNOCKOUT, // Schedule SP Tax Forgiveness
                 PA_PART_YEAR_KNOCKOUT, // PA/FL part-year cases not computed
                 PA_SCHEDULE_A_KNOCKOUT, // PA Schedule A
@@ -1003,14 +1003,15 @@ class PrintRefusingKnockoutsTest {
 
     /**
      * A Schedule C return that is not a PA-40 is still refused only by Form 8995. The same business on a full-year
-     * PA-40 is also refused by {@link #PA_UNSUPPORTED_INCOME_KNOCKOUT}: PA-40 line 4 stays $0 (72 P.S. §7303(a)(2);
-     * PA-40 IN (2025) p. 17, LINE 4). The UE and unsupported-items screeners are answered no; unanswered, those stops
-     * stay incomplete and refuse the print. This W-2 has no box 16, so PA taxable income is $0 and Tax Forgiveness is
-     * still possible (72 P.S. §7304). The Schedule SP nontaxable-income screener is answered no for the same reason.
-     * This slice does not add PA Schedule C.
+     * PA-40 reports federal Schedule C line 31 on PA-40 line 4 (72 P.S. §7303(a)(2); PA-40 IN (2025) p. 17, LINE 4;
+     * PA-40 C (EX) 03-26). The PA unsupported-income knockout is false on that supported path. Form 8995 still
+     * refuses the print (no TY2026 template). The UE and unsupported-items screeners are answered no; unanswered,
+     * those stops stay incomplete and refuse the print. This W-2 has no box 16, so PA taxable income is $0 and Tax
+     * Forgiveness is still possible (72 P.S. §7304). The Schedule SP nontaxable-income screener is answered no for the
+     * same reason. This slice does not add a PA Schedule C PDF; the federal Schedule C PDF is not the PA schedule.
      */
     @Test
-    void paScheduleCRefusesOnUnsupportedIncomeAndForm8995() throws Exception {
+    void paScheduleCReportsLine4AndRefusesOnForm8995() throws Exception {
         FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
         Graph notPa = fgs.getGraph(scheduleCOnly());
         assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(notPa));
@@ -1023,6 +1024,11 @@ class PrintRefusingKnockoutsTest {
                 mapper.readValue(
                         PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("pa", "/scopedStateOptions"),
                         FactTypeWithItem.class));
+        // Box 16 is required on a PA-40; scheduleCOnly's W-2 otherwise has wages with no state wages and would
+        // trip /formW2s/*/paMissingStateWages.
+        facts.put(
+                "/formW2s/#" + ScheduleSETy2026PdfSmokeTest.W2 + "/writableStateWages",
+                mapper.readValue(ScheduleATy2026PdfSmokeTest.dollar("170000.00"), FactTypeWithItem.class));
         facts.put(
                 "/paHasUnreimbursedEmployeeExpenses",
                 mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
@@ -1035,15 +1041,15 @@ class PrintRefusingKnockoutsTest {
         Graph pa = fgs.getGraph(facts);
         assertEquals(Boolean.TRUE, pa.get("/stateReturnPaFiled").get());
         assertEquals(Boolean.TRUE, pa.get("/hasScheduleCBusinesses").get());
-        assertEquals(Boolean.TRUE, pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).get());
+        assertEquals(Boolean.FALSE, pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).get());
         assertTrue(pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).complete());
         assertCompleteFalse(pa, PA_UE_KNOCKOUT);
         assertCompleteFalse(pa, PA_UNSUPPORTED_ITEMS_KNOCKOUT);
         assertCompleteFalse(pa, PA_SP_KNOCKOUT);
         assertEquals(Boolean.TRUE, pa.get(FORM_8995_KNOCKOUT).get());
-        assertEquals(
-                List.of(PA_UNSUPPORTED_INCOME_KNOCKOUT, FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(pa));
-        assertEquals("0.00", pa.get("/paLine4").get().toString());
+        assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(pa));
+        // scheduleCOnly: receipts $30,000, expenses $0 → federal line 31 and PA-40 line 4 are $30,000.
+        assertEquals("30000.00", pa.get("/paLine4").get().toString());
     }
 
     static final List<String> DIVIDEND_PRINT_KNOCKOUTS = List.of(

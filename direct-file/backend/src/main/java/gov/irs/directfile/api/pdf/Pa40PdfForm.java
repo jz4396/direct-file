@@ -100,6 +100,18 @@ class Pa40PdfForm extends PaPdfForm {
         // Filing Jointly, 3 = (M) Married, Filing Separately.
         facts.put(PREFIX + "FilingStatus", married ? (joint ? "2" : "3") : "1");
 
+        // Line 4, p. 17, LINE 4 / Tax Reform Code of 1971 §303(a)(2): "Net profits. The net income from the operation
+        // of a business, profession, or other activity…" /paLine4 is federal Schedule C line 31 plus the PA 100% meals
+        // add-back for a full-year resident. $0 prints blank. A loss fills the oval and the amount box shows the size
+        // (p. 15). This slice does not produce a PA Schedule C PDF; the federal Schedule C PDF is not the PA schedule.
+        final Optional<BigDecimal> line4 = dollars(facts, "/paLine4");
+        facts.put(
+                PREFIX + "Line4",
+                line4.filter(v -> v.signum() != 0).map(v -> paAmount(v.abs())).orElse(""));
+        facts.put(
+                PREFIX + "Line4Loss",
+                line4.map(v -> paAmount(v).startsWith("-")).orElse(false));
+
         // Line 5, p. 15: "Under PA law, losses may only be reported on Lines 4, 5, and 6. If entering a loss, fill in
         // the oval next to the line." The amount box takes the size of the loss.
         final Optional<BigDecimal> line5 = dollars(facts, "/paLine5");
