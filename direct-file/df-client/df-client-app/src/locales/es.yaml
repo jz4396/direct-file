@@ -9441,12 +9441,29 @@ info:
                 Si recibes un Formulario 1099-INT que incluye una cantidad que recibiste como nominatario del dueño
                 verdadero, no puedes usar Direct File.
   /info/knockout/foreign-accounts-trusts:
-    body: Direct File todavía no acepta cuentas o fideicomisos en el extranjero.
+    body: Direct File todavía no acepta el Formulario 8938 ni el Formulario 3520 de un fideicomiso extranjero.
     alertText:
       body:
         - p: <Link1>Encuentra otras maneras de presentar tus impuestos.</Link1>
       urls:
         Link1: https://www.irs.gov/es/filing/individuals/how-to-file
+  /info/income/income-sources/foreign-account-fbar:
+    body:
+      - p: >-
+          Contesta <strong>Sí</strong> si tienes que presentar el Formulario 114 de FinCEN. Una persona de los Estados
+          Unidos tiene que presentarlo cuando el valor total de las cuentas financieras en el extranjero es mayor de
+          $10,000 en cualquier momento durante {{/taxYear}}. No adjuntes el Formulario 114 de FinCEN a tu declaración.
+          Contestar Sí o No aquí no presenta ese formulario.
+  /info/income/income-sources/foreign-account-countries:
+    body:
+      - p: >-
+          Si tienes que presentar el Formulario 114 de FinCEN, escribe cada país extranjero donde está una cuenta. Usa
+          la segunda línea si la necesitas.
+  /info/income/income-sources/form-8938-required:
+    body:
+      - p: >-
+          Puede que tengas que presentar el Formulario 8938 con tu declaración aunque no tengas que presentar el
+          Formulario 114 de FinCEN. Si tienes que presentar el Formulario 8938, no puedes terminar en Direct File.
   /info/income/income-sources/foreign-trusts-grantor:
     body:
       - p: >-
@@ -16673,6 +16690,10 @@ modals:
           <LinkIRSForm8962Instructions>Conoce más sobre los planes de salud del Mercado calificados (en
           inglés).</LinkIRSForm8962Instructions>
 fields:
+  /foreignAccountCountryLine1:
+    name: País extranjero
+  /foreignAccountCountryLine2:
+    name: País extranjero, continuación
   /filers/*/firstName:
     name: Nombre
   /filers/*/writableMiddleInitial:
@@ -20956,7 +20977,8 @@ headings:
   /heading/you-and-your-family/about-you/breather-1099-misc-pfd: Gracias por dejarnos saber.
   /heading/knockout/forms-missing/1099-int-state-tax-withheld-ko: >-
     Direct File aún no permite las retenciones estatales de ingresos de intereses.
-  /heading/knockout/foreign-accounts-trusts: Direct File todavía no acepta cuentas o fideicomisos en el extranjero.
+  /heading/knockout/foreign-accounts-trusts:
+    Direct File todavía no acepta el Formulario 8938 ni un fideicomiso extranjero (Formulario 3520).
   /heading/income/income-sources/foreign-trusts-transactions: >-
     En algún momento durante el {{/taxYear}}, ¿tuviste una transacción con un fideicomiso extranjero?
   /heading/income/income-sources/foreign-trusts-transactions-mfj: >-
@@ -20973,6 +20995,19 @@ headings:
   /heading/income/income-sources/foreign-accounts-mfj: >-
     En algún momento durante el {{/taxYear}}, ¿tú o {{/secondaryFiler/firstName}} tuvieron un interés financiero o
     autoridad de firma sobre una cuenta financiera ubicada en un país extranjero?
+  /heading/income/income-sources/foreign-account-fbar: >-
+    ¿Tienes que presentar el Formulario 114 de FinCEN, Report of Foreign Bank and Financial Accounts (FBAR), para
+    informar ese interés financiero o autoridad de firma?
+  /heading/income/income-sources/foreign-account-fbar-mfj: >-
+    ¿Tú o {{/secondaryFiler/firstName}} tienen que presentar el Formulario 114 de FinCEN, Report of Foreign Bank and
+    Financial Accounts (FBAR), para informar ese interés financiero o autoridad de firma?
+  /heading/income/income-sources/foreign-account-countries: >-
+    Escribe el nombre de cada país extranjero donde está la cuenta financiera.
+  /heading/income/income-sources/form-8938-required: >-
+    ¿Tienes que presentar el Formulario 8938, Statement of Specified Foreign Financial Assets, con tu declaración?
+  /heading/income/income-sources/form-8938-required-mfj: >-
+    ¿Tú o {{/secondaryFiler/firstName}} tienen que presentar el Formulario 8938, Statement of Specified Foreign
+    Financial Assets, con tu declaración?
   /heading/credits-and-deductions/credits/cdcc: Crédito por el cuidado de hijos y dependientes
   /heading/credits-and-deductions/credits/cdcc-display-on: $t(headings./heading/credits-and-deductions/credits/cdcc)
   /heading/credits-and-deductions/credits/cdcc-display-off: ""
@@ -23182,6 +23217,15 @@ dataviews:
     /hasForeignAccounts: >-
       En algún momento durante el {{/taxYear}}, ¿tuviste interés financiero en o autoridad de firma sobre una cuenta
       financiera ubicada en el extranjero?
+    /requiredToFileFinCENForm114: >-
+      ¿Tienes que presentar el Formulario 114 de FinCEN para informar ese interés financiero o autoridad de firma?
+    /requiredToFileFinCENForm114_spouse: >-
+      ¿Tú o tu cónyuge tienen que presentar el Formulario 114 de FinCEN para informar ese interés financiero o autoridad
+      de firma?
+    /foreignAccountCountryLine1: País extranjero donde está la cuenta
+    /foreignAccountCountryLine2: Otro país extranjero, si necesitas una segunda línea
+    /requiredToFileForm8938: ¿Tienes que presentar el Formulario 8938 con tu declaración?
+    /requiredToFileForm8938_spouse: ¿Tú o tu cónyuge tienen que presentar el Formulario 8938 con tu declaración?
     /hasForeignAccounts_spouse: >-
       En algún momento durante el {{/taxYear}}, ¿tú o tu cónyuge tuvieron interés financiero en o autoridad de firma
       sobre una cuenta financiera ubicada en el extranjero?

@@ -14,13 +14,13 @@
 # says the same. Line 4 is Form 1040 line 2b. Line 6 is Form 1040 line 3b. 26 U.S.C. 61(a)(4).
 #
 # Not mapped, left blank. A supported return never has an amount for these lines. A yes refuses the print
-# (interest /flowKnockoutInterestScheduleBSubtraction, interest /flowKnockoutScheduleBPartIII):
+# (interest /flowKnockoutInterestScheduleBSubtraction):
 #   3    Excludable interest on series EE and I U.S. savings bonds issued after 1989 (f1_32). Form 8815 is not
 #        computed. Line 4 is line 2 because line 3 is not claimed.
-#   7a question 2 (c1_2) and 7b country lines (f1_65, f1_66). FinCEN Form 114 is not produced. A yes to line 7a
-#        question 1 or to line 8 refuses the print, so question 2 and the country list are never left blank on a
-#        return that answered yes. Instructions for Schedule B (2025) p. 3, Line 7a—Question 2 and Line 8
-#        (Form 3520).
+# Line 7a question 1 Yes prints. Question 2 (c1_2) prints Yes or No. Line 7b (f1_65, f1_66) prints the country
+# names when FinCEN Form 114 is required. 2026 draft Instructions PDF pp. 3–4. Line 8 Yes and "required to file
+# Form 8938?" Yes refuse the print (/flowPrintRefuseScheduleBPartIII). An unanswered question 2 does too.
+# FinCEN Form 114 is not attached (instructions: file it with FinCEN). Form 3520 and Form 8938 are not produced.
 # Nominee interest, accrued interest, and U.S. savings bond interest previously reported are subtracted below a
 # subtotal on line 1 (Instructions for Schedule B). This map puts the full taxable interest on line 1, so a yes
 # refuses the print instead of omitting the subtraction. $0 amounts print blank (FactGraphService zero suppression).
@@ -100,9 +100,9 @@ form:
       TagcorrectingSubform[0]:
         c1_1[0]: /hasForeignAccounts # 7a Yes
         c1_1[1]: /doesNotHaveForeignAccounts # "7a. No."
-      # c1_2[0]: 7a question 2 Yes. FinCEN Form 114. Not mapped.
-      # c1_2[1]: 7a question 2 No. Not mapped.
-      # f1_65[0]: 7b country line 1. Not mapped.
-      # f1_66[0]: 7b country line 2. Not mapped.
+      c1_2[0]: /scheduleBLine7aQuestion2Yes # 7a question 2 Yes. FinCEN Form 114.
+      c1_2[1]: /scheduleBLine7aQuestion2No # "7a. No." question 2
+      f1_65[0]: /scheduleBLine7bCountryLine1 # 7b country line 1
+      f1_66[0]: /scheduleBLine7bCountryLine2 # 7b country line 2
       c1_3[0]: /isForeignTrustsGrantorOrHasForeignTrustsTransactions # 8 Yes
       c1_3[1]: /isNotForeignTrustsGrantorAndDoesNotHaveForeignTrustsTransactions # "8. No."

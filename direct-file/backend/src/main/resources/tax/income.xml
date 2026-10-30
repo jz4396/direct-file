@@ -52,10 +52,17 @@
       <Description>Schedule B (Form 1040) line 7a, question 1: at any time during the tax year, did you have a
         financial
         interest in or signature authority over a financial account located in a foreign country?
-        Instructions for
-        Schedule B (Form 1040) (2025) p. 2, Line 7a—Question 1: "Check the 'Yes' box even if you
-        aren't required to file
-        FinCEN Form 114."</Description>
+        2026 draft Instructions
+        for Schedule B (Form 1040)
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3, Line 7a—Question 1:
+        "Check the 'Yes'
+        box even if you aren't required to file FinCEN Form 114." A Yes prints on Schedule B
+        (2026 draft
+        https://www.irs.gov/pub/irs-dft/f1040sb--dft.pdf, SHA-256
+        aa6272f6b3b8a8c6a2aa6ef9d1069f1edb88fb9df4df60278d198da89cdfd93f, line 7a Yes). Question 2 and line 7b
+        are asked
+        next. Line 8 and Form 8938 are separate stops.</Description>
       <Export mef="true" />
 
       <Writable>
@@ -95,15 +102,329 @@
       </Derived>
     </Fact>
 
+    <Fact path="/requiredToFileFinCENForm114">
+      <Name>Required to file FinCEN Form 114</Name>
+      <Description>Schedule B (Form 1040) line 7a, question 2. 2026 draft Instructions for Schedule B
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 4, Line 7a—Question 2:
+        "Check the 'Yes'
+        box if you are required to file the form. Check the 'No' box if you aren't required
+        to file the form." "A U.S.
+        person that has a financial interest in or signature authority over foreign
+        financial accounts must file the form
+        if the aggregate value of foreign financial accounts exceeds
+        $10,000 at any time during 2026." 31 U.S.C. 5314.
+        "Do not attach FinCEN Form 114 to your tax return."
+        Asked only after line 7a question 1 is Yes. Yes and No both
+        print. Unanswered refuses the print.
+        FinCEN Form 114 is filed with FinCEN, not produced here.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleBLine7aQuestion2Yes">
+      <Name>Schedule B line 7a question 2 Yes</Name>
+      <Description>Yes box for line 7a question 2 on the 2026 draft Schedule B. Checked only when question 1
+        is Yes and
+        FinCEN Form 114 is required. 2026 draft Instructions PDF p. 4, Line 7a—Question 2.</Description>
+      <Derived>
+        <All>
+          <Dependency path="/hasForeignAccounts" />
+          <Dependency path="/requiredToFileFinCENForm114" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBLine7aQuestion2No">
+      <Name>Schedule B line 7a question 2 No</Name>
+      <Description>No box for line 7a question 2. Checked only when question 1 is Yes and FinCEN Form 114 is
+        not
+        required. Left blank when question 1 is No. 2026 draft Instructions PDF p. 4.</Description>
+      <Derived>
+        <All>
+          <Dependency path="/hasForeignAccounts" />
+          <Not>
+            <Dependency path="/requiredToFileFinCENForm114" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/foreignAccountCountryLine1">
+      <Name>Foreign country where the account is located</Name>
+      <Description>Schedule B line 7b, first country line. 2026 draft Instructions PDF p. 4, Line 7b: "If you
+        are
+        required to file FinCEN Form 114, list the name(s) of the foreign country or countries in the
+        space provided on
+        line 7b." 2026 draft Schedule B field f1_65. Required when question 2 is Yes.</Description>
+      <Writable>
+        <String />
+        <Limit type="Match">
+          <String><![CDATA[[A-Za-z][A-Za-z .',\-]*]]></String>
+        </Limit>
+        <Limit type="MaxLength">
+          <Int>50</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/foreignAccountCountryLine2">
+      <Name>Foreign country line 2</Name>
+      <Description>Schedule B line 7b, second country line (2026 draft field f1_66). Optional. 2026 draft
+        Instructions
+        PDF p. 4, Line 7b. A separate statement for more countries is not printed here.</Description>
+      <Writable>
+        <String />
+        <Limit type="Match">
+          <String><![CDATA[[A-Za-z][A-Za-z .',\-]*]]></String>
+        </Limit>
+        <Limit type="MaxLength">
+          <Int>50</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/foreignAccountCountryLine1Provided">
+      <Name>Line 7b names at least one country</Name>
+      <Description>True when the first line 7b country line has text. 2026 draft Instructions PDF p. 4, Line 7b.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/foreignAccountCountryLine1" />
+          </IsComplete>
+          <GreaterThan>
+            <Left>
+              <Length>
+                <Dependency path="/foreignAccountCountryLine1" />
+              </Length>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBLine7bCountryLine1">
+      <Name>Schedule B line 7b country line 1</Name>
+      <Description>Prints the first country line only when line 7a question 1 and question 2 are Yes.
+        2026 draft Schedule
+        B: "If you are required to file FinCEN Form 114, list the name(s)..."</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/hasForeignAccounts" />
+                <Dependency path="/requiredToFileFinCENForm114" />
+                <Dependency path="/foreignAccountCountryLine1Provided" />
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/foreignAccountCountryLine1" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBLine7bCountryLine2">
+      <Name>Schedule B line 7b country line 2</Name>
+      <Description>Prints the second country line when line 7a question 2 is Yes and a second line was entered.
+        Blank
+        when question 2 is No or the second line is empty. 2026 draft Schedule B field f1_66.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/hasForeignAccounts" />
+                <Dependency path="/requiredToFileFinCENForm114" />
+                <IsComplete>
+                  <Dependency path="/foreignAccountCountryLine2" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/foreignAccountCountryLine2" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/requiredToFileForm8938">
+      <Name>Required to file Form 8938</Name>
+      <Description>Whether the filer must file Form 8938 with the return. 2026 draft Instructions for Schedule B
+        PDF p.
+        3, Part III: "Regardless of whether you are required to file FinCEN Form 114 (FBAR), you may be
+        required to file
+        Form 8938, Statement of Specified Foreign Financial Assets, with your income tax return."
+        26 U.S.C. 6038D. Asked
+        after line 7a question 1 is Yes. Yes stops the return. Form 8938 is not produced.
+        No, with question 2 answered
+        and line 8 No, prints Schedule B.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIIOutOfScope">
+      <Name>Schedule B Part III stop</Name>
+      <Description>True when line 8 is Yes or, after a Yes on line 7a, Form 8938 is required. 2026 draft
+        Instructions PDF
+        p. 4, Line 8 (Form 3520, 26 U.S.C. 6048) and PDF p. 3, Form 8938 (26 U.S.C. 6038D).
+        A Yes on line 7a question 1
+        or question 2 is not this stop. Complete false when those answers are No
+        or have not been given.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency path="/isForeignTrustsGrantor" />
+            </IsComplete>
+            <Dependency path="/isForeignTrustsGrantor" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="/hasForeignTrustsTransactions" />
+            </IsComplete>
+            <Dependency path="/hasForeignTrustsTransactions" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="/hasForeignAccounts" />
+            </IsComplete>
+            <Dependency path="/hasForeignAccounts" />
+            <IsComplete>
+              <Dependency path="/requiredToFileForm8938" />
+            </IsComplete>
+            <Dependency path="/requiredToFileForm8938" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowShouldAskForeignAccountCountries">
+      <Name>Ask Schedule B line 7b</Name>
+      <Description>Line 7b is asked when line 7a question 2 is Yes. 2026 draft Instructions PDF p. 4, Line 7b:
+        "If you
+        are required to file FinCEN Form 114, list the name(s) of the foreign country or countries."</Description>
+      <Derived>
+        <All>
+          <Dependency path="/hasForeignAccounts" />
+          <Dependency path="/requiredToFileFinCENForm114" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowShouldAskForm8938">
+      <Name>Ask whether Form 8938 is required</Name>
+      <Description>Asked after line 7a question 1 is Yes and question 2 is answered, and after line 7b when
+        question 2 is
+        Yes. 2026 draft Instructions PDF p. 3, Form 8938 tip.</Description>
+      <Derived>
+        <All>
+          <Dependency path="/hasForeignAccounts" />
+          <IsComplete>
+            <Dependency path="/requiredToFileFinCENForm114" />
+          </IsComplete>
+          <Any>
+            <Not>
+              <Dependency path="/requiredToFileFinCENForm114" />
+            </Not>
+            <Dependency path="/foreignAccountCountryLine1Provided" />
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowShouldAskScheduleBLine8">
+      <Name>Ask Schedule B line 8</Name>
+      <Description>Line 8 is asked when line 7a is No, or when line 7a is Yes, question 2 is answered, line 7b
+        is filled
+        in if FinCEN Form 114 is required, and Form 8938 is not required. A Yes on Form 8938 stops
+        before line 8. 2026
+        draft Schedule B Part III.</Description>
+      <Derived>
+        <Any>
+          <Not>
+            <Dependency path="/hasForeignAccounts" />
+          </Not>
+          <All>
+            <Dependency path="/flowShouldAskForm8938" />
+            <IsComplete>
+              <Dependency path="/requiredToFileForm8938" />
+            </IsComplete>
+            <Not>
+              <Dependency path="/requiredToFileForm8938" />
+            </Not>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBForeignAccountFollowUpComplete">
+      <Name>Line 7a follow-up is complete for the income section</Name>
+      <Description>True when line 7a is No, or when question 2 is answered, line 7b is filled in if FinCEN
+        Form 114 is
+        required, and Form 8938 is answered. Line 8 must also be answered unless Form 8938 is Yes.
+        Unanswered question 2
+        keeps the income-sources section incomplete.</Description>
+      <Derived>
+        <Any>
+          <Not>
+            <Dependency path="/hasForeignAccounts" />
+          </Not>
+          <All>
+            <Dependency path="/hasForeignAccounts" />
+            <IsComplete>
+              <Dependency path="/requiredToFileFinCENForm114" />
+            </IsComplete>
+            <Any>
+              <Not>
+                <Dependency path="/requiredToFileFinCENForm114" />
+              </Not>
+              <Dependency path="/foreignAccountCountryLine1Provided" />
+            </Any>
+            <IsComplete>
+              <Dependency path="/requiredToFileForm8938" />
+            </IsComplete>
+            <Any>
+              <Dependency path="/requiredToFileForm8938" />
+              <All>
+                <Not>
+                  <Dependency path="/requiredToFileForm8938" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="/isForeignTrustsGrantor" />
+                </IsComplete>
+                <Any>
+                  <Dependency path="/isForeignTrustsGrantor" />
+                  <IsComplete>
+                    <Dependency path="/hasForeignTrustsTransactions" />
+                  </IsComplete>
+                </Any>
+              </All>
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowShouldAskForeignTrustsTransactions">
       <Name>Ask about distributions from or transfers to a foreign trust</Name>
-      <Description>The second half of Schedule B (Form 1040) line 8 is asked only after "No" to line 7a and "No"
-        to the
-        foreign trust grantor question. Any earlier "Yes" already leads to the knockout.</Description>
+      <Description>The second half of Schedule B line 8 is asked after the grantor question is No, including
+        when line 7a
+        is Yes and the foreign-account follow-up is in scope. 2026 draft Instructions PDF p. 4,
+        Line 8. A Yes on the
+        grantor question or on Form 8938 skips this question.</Description>
 
       <Derived>
         <All>
-          <Dependency path="/doesNotHaveForeignAccounts" />
+          <Dependency path="/flowShouldAskScheduleBLine8" />
           <Dependency path="/isNotForeignTrustsGrantor" />
         </All>
       </Derived>
@@ -160,21 +481,17 @@
     </Fact>
 
     <Fact path="/hasForeignAccountsOrTrusts">
-      <Description>The TP answered "Yes" to Schedule B (Form 1040) line 7a (question 1) or line 8. Either answer
-        makes
-        Schedule B required and knocks the return out (see /flowIsKnockedOut), because the follow-up filings
-        are not
-        supported. Instructions for Schedule B (Form 1040) (2025) p. 3, Line 7a—Question 2: a U.S. person
-        "must file the
-        form if the aggregate value of foreign financial accounts exceeds $10,000 at any time during
-        2025" (FinCEN Form
-        114, line 7b country list); p. 2, Part III: "Regardless of whether you are required to
-        file FinCEN Form 114
-        (FBAR), you may be required to file Form 8938"; p. 3, Line 8: "If you were the grantor
-        of, or transferor to, a
-        foreign trust that existed during 2025, you may have to file Form 3520." Because
-        any "Yes" knocks out, line 7a
-        question 2 and line 7b are never reached on a supported return.</Description>
+      <Description>The TP answered "Yes" to Schedule B line 7a question 1 or line 8. Either answer makes
+        Schedule B
+        required. 2026 draft Instructions PDF p. 2: "You had a financial interest in, or signature
+        authority over, a
+        financial account in a foreign country or you received a distribution from, or were
+        a grantor of, or transferor
+        to, a foreign trust." A Yes on line 7a question 1 does not by itself stop
+        the return: question 2 and line 7b
+        print (PDF pp. 3–4). Line 8 Yes and Form 8938 Yes stop the return
+        (/scheduleBPartIIIOutOfScope). 31 U.S.C. 5314;
+        26 U.S.C. 6038D; 26 U.S.C. 6048.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -220,6 +537,7 @@
           <IsComplete>
             <Dependency path="/doesNotHaveForeignAccountsOrTrusts" />
           </IsComplete>
+          <Dependency path="/scheduleBForeignAccountFollowUpComplete" />
           <IsComplete>
             <Dependency path="/madeIraContributions" />
           </IsComplete>
