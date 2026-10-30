@@ -32,6 +32,13 @@ headings:
   /heading/income/schedule-c/part-i: "Ingrese los ingresos de este negocio"
   /heading/income/schedule-c/other-income-form: "¿Estos otros ingresos corresponden a otro formulario?"
   /heading/income/schedule-c/inventory: "¿Este negocio tuvo inventario o costo de mercancías vendidas?"
+  /heading/income/schedule-c/inventory-method: "¿Cómo valoró el inventario final?"
+  /heading/income/schedule-c/inventory-change:
+    "¿Cambió la manera de contar o valorar el inventario entre el principio y el final del año?"
+  /heading/income/schedule-c/small-business: "¿Califica como contribuyente de pequeño negocio?"
+  /heading/income/schedule-c/line-35:
+    "¿El inventario al principio del año es distinto del inventario final del año pasado?"
+  /heading/income/schedule-c/inventory-amounts: "Ingrese el costo de mercancías vendidas"
   /heading/income/schedule-c/vehicle:
     "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
   /heading/income/schedule-c/depreciation: "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
@@ -134,8 +141,37 @@ info:
       4797. Esta herramienta no puede calcularlos."
   /info/income/schedule-c/inventory:
     body:
-      "Conteste que sí si necesita la Parte III, costo de mercancías vendidas. Esta herramienta no puede calcular el
-      inventario."
+      "Conteste que sí si necesita la línea 4 y la Parte III del Anexo C. El costo y el menor entre el costo o el
+      mercado se pueden calcular aquí. Cualquier otro método no."
+  /info/income/schedule-c/inventory-method:
+    body:
+      "La línea 33a es el costo. La línea 33b es el menor entre el costo o el mercado. La línea 33c, cualquier otro
+      método, no se puede calcular aquí. Elija materiales y suministros no incidentales solo si no lleva inventario.
+      Ese método no usa la Parte III."
+  /info/income/schedule-c/inventory-change:
+    body:
+      "La línea 34 pregunta si las cantidades, los costos o las valoraciones cambiaron entre el inventario inicial y
+      el final. Conteste que sí si cambiaron. Esta herramienta no puede calcular ese cambio."
+  /info/income/schedule-c/small-business:
+    body:
+      "Califica como contribuyente de pequeño negocio si sus ingresos brutos anuales promedio de los 3 años
+      tributarios anteriores son de $32 millones o menos y no es un refugio fiscal. Ingrese ese promedio. Incluya un
+      negocio predecesor y anualice un año corto antes de ingresarlo. Use 0 si el negocio no existía en esos años.
+      Los ingresos de este año no son ese promedio. Conteste que sí si es un refugio fiscal. Si el promedio es mayor
+      de $32,000,000, o si es un refugio fiscal, esta herramienta no puede calcular la Parte III."
+  /info/income/schedule-c/line-35:
+    body:
+      "La línea 35 es el inventario al principio del año. Si es distinto del inventario final del año pasado, el
+      formulario pide adjuntar una explicación. Esta herramienta no puede presentar esa explicación. Conteste que sí
+      si los montos difieren. Conteste que no si la línea 35 es igual al inventario final del año pasado, incluido
+      cero cuando el negocio es nuevo."
+  /info/income/schedule-c/inventory-amounts:
+    body:
+      "La línea 35 es el inventario al principio del año. La línea 36 son las compras menos los artículos retirados
+      para uso personal. La línea 37 es la mano de obra, sin incluir cantidades que se pagó a usted mismo. La línea 38
+      son materiales y suministros. La línea 39 son otros costos. La línea 41 es el inventario al final del año. La
+      línea 42, que también es la línea 4, es la línea 35 más la línea 36 más las líneas 37 a 39, menos la línea 41.
+      Si ese resultado es menor que cero, esta herramienta no puede completar la declaración."
   /info/income/schedule-c/vehicle:
     body:
       "Conteste que sí si tuvo gastos de automóvil y camión (línea 9) o intereses de un préstamo de vehículo (línea
@@ -196,11 +232,15 @@ info:
       body:
         - p:
             "Este negocio necesita un formulario o un límite de pérdida que esta herramienta no calcula. Eso incluye
-            inventario, gastos de vehículo, depreciación, agotamiento, alquiler de equipo, una oficina en el hogar, el
-            Formulario 7205, comidas que no están limitadas al 50 por ciento, créditos por empleo, intereses que deben
-            asignarse, amortización nueva, más de tres otros gastos, ingresos de la línea 6 de otro formulario, una
-            pérdida en la que no participó materialmente o una pérdida que no está totalmente en riesgo. Tendrá que usar
-            otra manera de presentar esta declaración."
+            un método de inventario distinto del costo o del menor entre el costo o el mercado, un cambio en cómo se
+            valoró el inventario, ingresos brutos anuales promedio de los 3 años anteriores de más de $32,000,000, un
+            refugio fiscal, un costo de mercancías vendidas menor que cero, un inventario inicial distinto del
+            inventario final del año pasado, una declaración de que no lleva inventario
+            mientras la Parte III sigue llena, gastos de vehículo, depreciación, agotamiento, alquiler de equipo, una
+            oficina en el hogar, el Formulario 7205, comidas que no están limitadas al 50 por ciento, créditos por
+            empleo, intereses que deben asignarse, amortización nueva, más de tres otros gastos, ingresos de la línea 6
+            de otro formulario, una pérdida en la que no participó materialmente o una pérdida que no está totalmente
+            en riesgo. Tendrá que usar otra manera de presentar esta declaración."
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -353,6 +393,41 @@ fields:
     boolean:
       "yes": "Sí"
       "no": "No"
+  /scheduleCInventoryMethodOptions:
+    cost: "Costo"
+    lowerOfCostOrMarket: "Menor entre el costo o el mercado"
+    other: "Otro"
+    nonincidentalMaterialsAndSupplies: "Materiales y suministros no incidentales (no lleva inventario)"
+  /scheduleCBusinesses/*/inventoryAccountingMethod:
+    name: "Línea 33, método usado para valorar el inventario final"
+  /scheduleCBusinesses/*/inventoryValuationChanged:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/writablePriorThreeYearAverageGrossReceipts:
+    name: "Ingresos brutos anuales promedio de los 3 años tributarios anteriores"
+  /scheduleCBusinesses/*/isTaxShelter:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/openingInventoryDiffersFromPriorClosing:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/writableInventoryAtBeginning:
+    name: "Línea 35, inventario al principio del año"
+  /scheduleCBusinesses/*/writablePurchases:
+    name: "Compras"
+  /scheduleCBusinesses/*/writablePersonalUseWithdrawals:
+    name: "Costo de los artículos retirados para uso personal"
+  /scheduleCBusinesses/*/writableInventoryLabor:
+    name: "Línea 37, costo de la mano de obra"
+  /scheduleCBusinesses/*/writableInventoryMaterials:
+    name: "Línea 38, materiales y suministros"
+  /scheduleCBusinesses/*/writableInventoryOtherCosts:
+    name: "Línea 39, otros costos"
+  /scheduleCBusinesses/*/writableInventoryAtEnd:
+    name: "Línea 41, inventario al final del año"
   /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan:
     boolean:
       "yes": "Sí"
@@ -435,6 +510,21 @@ dataviews:
     /scheduleCBusinesses/*/writableOtherIncome: "Otros ingresos"
     /scheduleCBusinesses/*/otherIncomeNeedsAnotherForm: "¿Estos otros ingresos corresponden a otro formulario?"
     /scheduleCBusinesses/*/hasInventoryOrCogs: "¿Este negocio tuvo inventario o costo de mercancías vendidas?"
+    /scheduleCBusinesses/*/inventoryAccountingMethod: "¿Cómo valoró el inventario final?"
+    /scheduleCBusinesses/*/inventoryValuationChanged:
+      "¿Cambió la manera de contar o valorar el inventario entre el principio y el final del año?"
+    /scheduleCBusinesses/*/writablePriorThreeYearAverageGrossReceipts:
+      "Ingresos brutos anuales promedio de los 3 años tributarios anteriores"
+    /scheduleCBusinesses/*/isTaxShelter: "¿Es usted un refugio fiscal?"
+    /scheduleCBusinesses/*/openingInventoryDiffersFromPriorClosing:
+      "¿El inventario al principio del año es distinto del inventario final del año pasado?"
+    /scheduleCBusinesses/*/writableInventoryAtBeginning: "Inventario al principio del año"
+    /scheduleCBusinesses/*/writablePurchases: "Compras"
+    /scheduleCBusinesses/*/writablePersonalUseWithdrawals: "Costo de los artículos retirados para uso personal"
+    /scheduleCBusinesses/*/writableInventoryLabor: "Costo de la mano de obra"
+    /scheduleCBusinesses/*/writableInventoryMaterials: "Materiales y suministros"
+    /scheduleCBusinesses/*/writableInventoryOtherCosts: "Otros costos"
+    /scheduleCBusinesses/*/writableInventoryAtEnd: "Inventario al final del año"
     /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan:
       "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
     /scheduleCBusinesses/*/hasDepreciationOrSection179:

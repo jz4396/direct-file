@@ -21,7 +21,12 @@
 #   I/J Forms 1099, the line 1 statutory-employee checkbox.
 #   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
 #   line 20a equipment rent, line 27a (Form 7205), line 30 (Form 8829 or the simplified method),
-#   Part III, Part IV, and Part V lines 4-9.
+#   Part IV, and Part V lines 4-9.
+# Part III (PDF p. 3) is mapped for cost or lower of cost or market: line 36 is purchases less personal-use
+# withdrawals, line 40 adds lines 35 through 39, and line 42 (line 40 minus line 41) is line 4.
+# Line 33c, line 34 yes, a 3-prior-year average over $32,000,000, a tax shelter, line 42 below zero, line 35
+# different from last year's closing inventory, and an inconsistent no-inventory method stop the return
+# instead of printing those lines as zero. 26 U.S.C. 448(c), 448(d)(3), 471(c), 263A(i); Rev. Proc. 2025-32 §4.30.
 # $0 amounts print blank. Line 30 is blank on a supported return, so lines 29 and 31 equal line 7 minus line 28.
 includeForEach: /scheduleCBusinesses
 customMaps:
@@ -38,7 +43,7 @@ form:
       f1_13[0]: /scheduleCBusinesses/*/line1GrossReceipts # 1 "Gross receipts or sales" (26 U.S.C. 61)
       f1_14[0]: /scheduleCBusinesses/*/line2ReturnsAndAllowances # 2 "Returns and allowances"
       f1_15[0]: /scheduleCBusinesses/*/line3 # 3 "Subtract line 2 from line 1"
-      f1_16[0]: /scheduleCBusinesses/*/line4CostOfGoodsSold # 4 "Cost of goods sold" (zero when there is no inventory)
+      f1_16[0]: /scheduleCBusinesses/*/line4CostOfGoodsSold # 4 "Cost of goods sold (from line 42)"; zero when there is no inventory
       f1_17[0]: /scheduleCBusinesses/*/line5GrossProfit # 5 "Gross profit. Subtract line 4 from line 3"
       f1_18[0]: /scheduleCBusinesses/*/line6OtherIncome # 6 "Other income"
       f1_19[0]: /scheduleCBusinesses/*/line7GrossIncome # 7 "Gross income. Add lines 5 and 6"
@@ -68,6 +73,19 @@ form:
       c1_7[1]: /scheduleCBusinesses/*/line32bSomeInvestmentNotAtRisk # 32b
       f1_51[0]: /scheduleCBusinesses/*/netProfitOrLoss # 31 "Net profit or (loss). Subtract line 30 from line 29"
     Page2[0]:
+      c2_1[0]: /scheduleCBusinesses/*/line33aCost # 33a Cost
+      c2_2[0]: /scheduleCBusinesses/*/line33bLowerOfCostOrMarket # 33b Lower of cost or market
+      c2_3[0]: /scheduleCBusinesses/*/line33cOther # 33c Other (the return stops)
+      c2_4[0]: /scheduleCBusinesses/*/line34ChangeYes # 34 Yes (the return stops)
+      c2_4[1]: /scheduleCBusinesses/*/line34ChangeNo # 34 No
+      f2_1[0]: /scheduleCBusinesses/*/line35InventoryAtBeginning # 35 Inventory at beginning of year
+      f2_2[0]: /scheduleCBusinesses/*/line36PurchasesLessPersonalUse # 36 Purchases less personal use
+      f2_3[0]: /scheduleCBusinesses/*/line37InventoryLabor # 37 Cost of labor
+      f2_4[0]: /scheduleCBusinesses/*/line38InventoryMaterials # 38 Materials and supplies
+      f2_5[0]: /scheduleCBusinesses/*/line39InventoryOtherCosts # 39 Other costs
+      f2_6[0]: /scheduleCBusinesses/*/line40GoodsAvailable # 40 Add lines 35 through 39
+      f2_7[0]: /scheduleCBusinesses/*/line41InventoryAtEnd # 41 Inventory at end of year
+      f2_8[0]: /scheduleCBusinesses/*/line42CostOfGoodsSold # 42 Cost of goods sold, also line 4
       f2_15[0]: /scheduleCBusinesses/*/partV1Description # Part V line 1 description
       f2_16[0]: /scheduleCBusinesses/*/partV1Amount # Part V line 1 amount
       f2_17[0]: /scheduleCBusinesses/*/partV2Description

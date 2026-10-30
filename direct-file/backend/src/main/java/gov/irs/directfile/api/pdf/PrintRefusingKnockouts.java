@@ -149,14 +149,23 @@ public final class PrintRefusingKnockouts {
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
             "/flowKnockoutScheduleCQbi",
-            // Schedule C line this tool does not compute. 2026 draft Instructions for Schedule C: Part III
-            // inventory (PDF p. 16), lines 9 and 16b vehicle expenses (PDF pp. 2 and 7, Form 4562), line 13
-            // depreciation (PDF p. 8, Form 4562), line 12 depletion, line 20a equipment rent, line 30 home
-            // office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that are not 50 percent
-            // (PDF p. 11, 26 U.S.C. 274(n)), line 26 employment credits, lines 16a and 16c interest
-            // allocation (PDF p. 9), Form 4562-B amortization (PDF p. 17), a loss without material
+            // Schedule C line this tool does not compute. Part III cost of goods sold is figured for cost or
+            // lower of cost or market with line 34 no, line 42 at least zero, line 35 equal to last year's closing
+            // inventory, a 3-prior-year average that does not exceed $32,000,000, and the filer not a tax shelter
+            // (2026 draft Schedule C, PDF p. 3, lines 33-42 and line 4; instructions PDF p. 16; Rev. Proc. 2025-32
+            // §4.30, PDF p. 23; 26 U.S.C. 448(c), 448(d)(3), 471(a), 471(c), 263A(i)). The same path still refuses
+            // the print for line 33c, a line 34 change, a 3-prior-year average greater than $32,000,000, a tax
+            // shelter, line 42 below zero, line 35 different from last year's closing inventory, the section 471(c)
+            // no-inventory method claimed while Part III is required, or Part III filled in after a no to inventory.
+            // Also lines 9 and 16b vehicle expenses
+            // (PDF pp. 2 and 7, Form 4562), line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, line 20a
+            // equipment rent, line 30 home office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that
+            // are not 50 percent (PDF p. 11, 26 U.S.C. 274(n)), line 26 employment credits, lines 16a and 16c
+            // interest allocation (PDF p. 9), Form 4562-B amortization (PDF p. 17), a loss without material
             // participation (Form 8582, 26 U.S.C. 469) or that is not fully at risk (line 32b, Form 6198,
-            // 26 U.S.C. 465). Complete false when the filer has no Schedule C or only the single expense total.
+            // 26 U.S.C. 465). No path was added: this existing fact is the print-refuse fact for those stops.
+            // Complete false when the filer has no Schedule C, only the single expense total, or a supported
+            // simple Part III. An unanswered Part III question stays incomplete and refuses the print.
             "/flowKnockoutScheduleCOutOfScope",
             // Schedule SE lines this tool does not compute. 2026 draft Schedule SE: lines 1a and 1b (farm and
             // Conservation Reserve Program payments; 26 U.S.C. 1402(a), 1402(a)(1)), line 4b and Part II (optional
