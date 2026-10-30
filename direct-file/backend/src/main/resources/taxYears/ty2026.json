@@ -136,11 +136,11 @@
       "kind": "pdf",
       "sha256": "6f30613aacd956f145fea666527ad68bea5d5f8a87072270f9a17e14f41ae661"
     },
-    "f1040sr-dft": {
-      "title": "Schedule R (Form 1040) (2026), draft",
-      "url": "https://www.irs.gov/pub/irs-dft/f1040sr--dft.pdf",
+    "f1040sr": {
+      "title": "Schedule R (Form 1040) (2026)",
+      "url": "https://www.irs.gov/pub/irs-pdf/f1040sr.pdf",
       "kind": "pdf",
-      "sha256": "0fcbd9fe296b470b2a0ceadc497380159f7d872f7aa11d86ae856bbd2234f5b6"
+      "sha256": "945275e6be3cc7353a3faf165ddd7ccb79e3c8a43abe6678d4c47f8207594cb5"
     },
     "f1040s8-dft": {
       "title": "Schedule 8812 (Form 1040) (2026), draft",
@@ -2830,9 +2830,9 @@
           "quote": "the initial amount shall not exceed the sum of $5,000 plus the disability income for the taxable year of the spouse who has not attained age 65"
         },
         {
-          "source": "f1040sr-dft",
+          "source": "f1040sr",
           "section": "Line 11",
-          "page": 3,
+          "page": 2,
           "quote": "Box 6, add $5,000 to the taxable disability income of the spouse who was under age 65. Enter the total."
         }
       ]

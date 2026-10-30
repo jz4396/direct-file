@@ -62,7 +62,7 @@ abstract class PdfTemplate {
             // ASN 13 (#17: 2026 draft Schedule E)
             new PdfForm("IRS1040SE"),
 
-            // ASN 16 (#89: 2026 draft Schedule R)
+            // ASN 16 (#89 / #124: 2026 Schedule R final)
             new PdfForm("SCHEDULE_R"),
 
             // ASN 17 (#89: 2026 draft Schedule SE)

@@ -5,3 +5,4 @@
 # #124 swap: then run Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true; it fails on any mapped field
 # missing from the new AcroForm and rewrites the hash/unmapped-field manifests under src/test/resources/pdf/2026.
 cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4  IRS1040SC/en/f1040sc.pdf  https://www.irs.gov/pub/irs-pdf/f1040sc.pdf
+945275e6be3cc7353a3faf165ddd7ccb79e3c8a43abe6678d4c47f8207594cb5  SCHEDULE_R/en/f1040sr.pdf  https://www.irs.gov/pub/irs-pdf/f1040sr.pdf

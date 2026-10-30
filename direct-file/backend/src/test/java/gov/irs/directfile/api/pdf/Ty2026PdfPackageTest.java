@@ -112,7 +112,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   the public path (#87).
  * Scenario 8, elderly or disabled credit (#89): single, under 65, retired on permanent and total disability;
  *   W-2 $17,000 of taxable disability income. Prints Form 1040, Schedule 3, Schedule R and the W-2.
- *   Schedule R line 22 equals Schedule 3 line 6d (26 U.S.C. 22; Schedule R (2026) draft line 22).
+ *   Schedule R line 22 equals Schedule 3 line 6d (26 U.S.C. 22; 2026 Schedule R line 22).
  * </pre>
  */
 class Ty2026PdfPackageTest {
