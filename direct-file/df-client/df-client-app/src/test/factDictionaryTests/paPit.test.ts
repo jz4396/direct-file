@@ -398,6 +398,40 @@ const schCMeals = (meals: string) => {
     [`/scheduleCBusinesses/#${id}/mealsAreStandardHalfLimit`]: createBooleanWrapper(true),
   };
 };
+/** 2026 draft Schedule C Part III hand worksheet: line 42 = 5,050; receipts 20,000 → line 31 = 14,950. */
+const schCSimplePartIII = () => {
+  const id = schCBizId;
+  const stops = [
+    `hasCarTruckOrVehicleLoan`,
+    `hasDepreciationOrSection179`,
+    `hasDepletion`,
+    `hasVehicleMachineryEquipmentRent`,
+    `hasHomeOffice`,
+    `hasEnergyEfficientBuildingsDeduction`,
+  ];
+  return {
+    ...Object.fromEntries(stops.map((k) => [`/scheduleCBusinesses/#${id}/${k}`, createBooleanWrapper(false)])),
+    [`/scheduleCBusinesses/#${id}/hasInventoryOrCogs`]: createBooleanWrapper(true),
+    [`/scheduleCBusinesses/#${id}/inventoryAccountingMethod`]: createEnumWrapper(
+      `cost`,
+      `/scheduleCInventoryMethodOptions`
+    ),
+    [`/scheduleCBusinesses/#${id}/inventoryValuationChanged`]: createBooleanWrapper(false),
+    [`/scheduleCBusinesses/#${id}/isTaxShelter`]: createBooleanWrapper(false),
+    [`/scheduleCBusinesses/#${id}/openingInventoryDiffersFromPriorClosing`]: createBooleanWrapper(false),
+    [`/scheduleCBusinesses/#${id}/writablePriorThreeYearAverageGrossReceipts`]: createDollarWrapper(`0`),
+    [`/scheduleCBusinesses/#${id}/writableReturnsAndAllowances`]: createDollarWrapper(`0`),
+    [`/scheduleCBusinesses/#${id}/writableOtherIncome`]: createDollarWrapper(`0`),
+    [`/scheduleCBusinesses/#${id}/hasDeductibleExpenses`]: createBooleanWrapper(false),
+    [`/scheduleCBusinesses/#${id}/writableInventoryAtBeginning`]: createDollarWrapper(`1000`),
+    [`/scheduleCBusinesses/#${id}/writablePurchases`]: createDollarWrapper(`5000`),
+    [`/scheduleCBusinesses/#${id}/writablePersonalUseWithdrawals`]: createDollarWrapper(`200`),
+    [`/scheduleCBusinesses/#${id}/writableInventoryLabor`]: createDollarWrapper(`300`),
+    [`/scheduleCBusinesses/#${id}/writableInventoryMaterials`]: createDollarWrapper(`400`),
+    [`/scheduleCBusinesses/#${id}/writableInventoryOtherCosts`]: createDollarWrapper(`50`),
+    [`/scheduleCBusinesses/#${id}/writableInventoryAtEnd`]: createDollarWrapper(`1500`),
+  };
+};
 
 describe(`PA-40 line 4 net profits from Schedule C`, () => {
   it(`full-year resident: receipts 20000, no expenses → line 4 = 20000; tax × 0.0307`, ({ task }) => {
@@ -472,6 +506,76 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutPaUnsupportedIncome`);
+  });
+
+  it(`unanswered tax-shelter screener on a PA Schedule C stays incomplete`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/paAskScheduleCTaxShelter`,
+      `/paHasScheduleCTaxShelter`,
+      `/flowKnockoutPaUnsupportedIncome`,
+    ];
+    // PA-40 C (EX) 03-26 Form 8271: asked when a PA-40 has Schedule C. Blank is not a no.
+    const g = setupFactGraph({
+      ...noW2,
+      ...baseFilerData,
+      ...singleFilerData,
+      [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+      '/livedTogetherAllYearWithSpouse': createBooleanWrapper(true),
+      '/soldCapitalAssets': createBooleanWrapper(false),
+      '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
+      '/paHasUnsupportedItems': createBooleanWrapper(false),
+      ...pa(),
+      ...w2(50000, 50000, 1535),
+      ...schCBase(`20000`),
+    }).factGraph;
+    expect(get(g, `/paAskScheduleCTaxShelter`).get).toBe(true);
+    expect(get(g, `/paHasScheduleCTaxShelter`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).complete).toBe(false);
+  });
+
+  it(`full-year simple Part III COGS: line 4 = 14950`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/paLine4`,
+      `/scheduleCBusinesses/*/line42CostOfGoodsSold`,
+      `/scheduleCNetProfitOrLoss`,
+    ];
+    // 1,000 + (5,000 − 200) + 300 + 400 + 50 = 6,550; 6,550 − 1,500 = 5,050 COGS.
+    // Receipts $20,000 − 5,050 = line 31 and PA-40 line 4 $14,950. Line-item path omits the single expense total.
+    const { [`/scheduleCBusinesses/#${schCBizId}/writableTotalExpenses`]: _legacy, ...schCNoBucket } =
+      schCBase(`20000`);
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 1535),
+      ...schCNoBucket,
+      ...schCSimplePartIII(),
+    });
+    expect(val(g, `/scheduleCBusinesses/#${schCBizId}/line42CostOfGoodsSold`)).toBe(`5050.00`);
+    expect(val(g, `/scheduleCNetProfitOrLoss`)).toBe(`14950.00`);
+    expect(val(g, `/paLine4`)).toBe(`14950.00`);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+  });
+
+  it(`MFJ Schedule C loss still stops; spouses are not netted`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paHasMfjScheduleCLoss`, `/flowKnockoutPaUnsupportedIncome`, `/flowIsKnockedOut`];
+    // PA-40 IN (2025) p. 7: "You may not offset the income of the taxpayer with a loss from the spouse and vice versa."
+    // Primary profit $10,000 and spouse loss $3,000 would be $7,000 on one combined line 4. The joint loss still stops.
+    const spouseBiz = `b59c03d1-af4a-447f-96aa-d19397048a88`;
+    const g = build(mfjFilerData, {
+      ...w2(80000, 80000, 2456),
+      ...schCBase(`10000`),
+      '/scheduleCBusinesses': createCollectionWrapper([schCBizId, spouseBiz]),
+      [`/scheduleCBusinesses/#${spouseBiz}/filer`]: createCollectionItemWrapper(spouseId),
+      [`/scheduleCBusinesses/#${spouseBiz}/businessName`]: createStringWrapper(`Spouse Shop`),
+      [`/scheduleCBusinesses/#${spouseBiz}/writableGrossReceipts`]: createDollarWrapper(`1000`),
+      [`/scheduleCBusinesses/#${spouseBiz}/writableTotalExpenses`]: createDollarWrapper(`4000`),
+      [`/scheduleCBusinesses/#${spouseBiz}/materiallyParticipates`]: createBooleanWrapper(true),
+    });
+    expect(val(g, `/scheduleCPrimaryFilerNetProfitOrLoss`)).toBe(`10000.00`);
+    expect(val(g, `/scheduleCSecondaryFilerNetProfitOrLoss`)).toBe(`-3000.00`);
+    expect(val(g, `/scheduleCNetProfitOrLoss`)).toBe(`7000.00`);
+    expect(get(g, `/paHasMfjScheduleCLoss`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
   });
 
   it(`W-2 only, no Schedule C: line 4 is $0; PA Schedule C knockout false`, ({ task }) => {
