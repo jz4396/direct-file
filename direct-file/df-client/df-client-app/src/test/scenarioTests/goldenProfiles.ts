@@ -78,6 +78,8 @@ const single = (p: Person, home: Home) => ({
   '/hasAmtPreferenceItems': createBooleanWrapper(false),
   '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
   '/paHasUnsupportedItems': createBooleanWrapper(false),
+  // PA-40 C Form 8271 / tax-shelter screener. Answered no when Schedule C is present; complete false without Sch C.
+  '/paHasScheduleCTaxShelter': createBooleanWrapper(false),
   // Interview answers that clear the remaining screening questions (all "no").
   '/someFilerHadNonW2HsaActivity': createBooleanWrapper(false),
   '/writablePrimaryFilerHadNonW2HsaActivity': createBooleanWrapper(false),

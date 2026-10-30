@@ -57,6 +57,7 @@ const build = (status: Record<string, unknown>, extra: Record<string, unknown>) 
     '/soldCapitalAssets': createBooleanWrapper(false),
     '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    '/paHasScheduleCTaxShelter': createBooleanWrapper(false),
     ...pa(),
     ...extra,
   }).factGraph;
@@ -286,9 +287,12 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       expect(val(g, `/paLine4`)).toBe(`0.00`);
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
-    it(`PA filer, same income: PA knockout false; line 4 is federal line 31; Form 8995 still stops`, ({ task }) => {
+    it(`PA filer, same income: unsupported-income false; line 4 is federal line 31; PA Schedule C + Form 8995 stop`, ({
+      task,
+    }) => {
       task.meta.testedFactPaths = [
         `/flowKnockoutPaUnsupportedIncome`,
+        `/flowKnockoutPaScheduleC`,
         `/paLine4`,
         `/flowKnockoutForm8995WithoutTy2026Template`,
         `/flowIsKnockedOut`,
@@ -297,6 +301,9 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
       expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
       expect(val(g, `/paLine4`)).toBe(`8000.00`);
+      // PA-40 IN (2025) p. 17: must use PA Schedule C; this slice has no PA Schedule C PDF.
+      expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
+      expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
       expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
@@ -404,7 +411,9 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     expect(val(g, `/paLine9`)).toBe(`70000.00`);
     expect(val(g, `/paLine12`)).toBe(`2149.00`);
     expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
-    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    // PA Schedule C is required and not produced (IN p. 17), so the state-return knockout is true.
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
   });
 
   it(`meals 400 at 50% federal → PA line 4 adds back 200`, ({ task }) => {
@@ -449,12 +458,30 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     expect(submissionBlockingFacts).toContain(`/flowKnockoutPaUnsupportedIncome`);
   });
 
-  it(`W-2 only, no Schedule C: line 4 is $0`, ({ task }) => {
-    task.meta.testedFactPaths = [`/paLine4`, `/paLine9`];
+  it(`tax-shelter screener yes: unsupported-income stop (PA-40 C Form 8271)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/paHasScheduleCTaxShelter`, `/flowIsKnockedOut`];
+    // Golden end-to-end scenario (synthetic data): same supported Schedule C path, but the PA Form 8271 / tax-shelter
+    // screener is yes. PA-40 C (EX) 03-26: "Do not report or deduct any transactions related to tax shelters."
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 1535),
+      ...schCBase(`20000`),
+      '/paHasScheduleCTaxShelter': createBooleanWrapper(true),
+    });
+    expect(val(g, `/paLine4`)).toBe(`20000.00`);
+    expect(get(g, `/paAskScheduleCTaxShelter`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaUnsupportedIncome`);
+  });
+
+  it(`W-2 only, no Schedule C: line 4 is $0; PA Schedule C knockout false`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine4`, `/paLine9`, `/flowKnockoutPaScheduleC`];
     const g = build(singleFilerData, w2(40000, 40000, 1228));
     expect(val(g, `/paLine4`)).toBe(`0.00`);
     expect(val(g, `/paLine9`)).toBe(`40000.00`);
     expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
   });
 });
 

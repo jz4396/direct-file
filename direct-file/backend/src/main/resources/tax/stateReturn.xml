@@ -159,6 +159,7 @@
               <Dependency module="paPit" path="/flowKnockoutPaPartYear" />
               <Dependency module="paPit" path="/flowKnockoutPaScheduleA" />
               <Dependency module="paPit" path="/flowKnockoutPaScheduleB" />
+              <Dependency module="paPit" path="/flowKnockoutPaScheduleC" />
               <Dependency module="paPit" path="/flowKnockoutPaScheduleD" />
               <Dependency module="paPit" path="/flowKnockoutPaNonresidentPaSourcePay" />
             </Any>

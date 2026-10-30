@@ -50,6 +50,7 @@ class PrintRefusingKnockoutsTest {
     static final String PA_PART_YEAR_KNOCKOUT = "/flowKnockoutPaPartYear";
     static final String PA_SCHEDULE_A_KNOCKOUT = "/flowKnockoutPaScheduleA";
     static final String PA_SCHEDULE_B_KNOCKOUT = "/flowKnockoutPaScheduleB";
+    static final String PA_SCHEDULE_C_KNOCKOUT = "/flowKnockoutPaScheduleC";
     static final String PA_SCHEDULE_D_KNOCKOUT = "/flowKnockoutPaScheduleD";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
     static final String FORM_8962_UNRESOLVED_KNOCKOUT = "/flowKnockoutForm8962NeededOrUnresolved";
@@ -119,12 +120,13 @@ class PrintRefusingKnockoutsTest {
 
     static final String DIVIDEND_ID = "13500000-0000-4000-8000-000000000502";
     /**
-     * #87: the knockout that waits only on Form 8995, which still has no TY2026 template. Schedule C and Schedule 3-A
-     * are pinned (#239), so they are no longer in this list. The field-map tests for a Schedule C return fill their
-     * forms with Form 8995 left out of the refusal check (see {@link #FIELD_MAP_CHECKS}); the public print path still
-     * refuses a return that must attach Form 8995.
+     * Knockouts the field-map tests may still see while filling forms the public path refuses. Form 8995 has no TY2026
+     * template (#87). PA Schedule C is required on a PA-40 with Schedule C (IN p. 17) and has no PA Schedule C PDF in
+     * this slice, so /flowKnockoutPaScheduleC refuses public print; PA-40 line 4 field maps still fill (see
+     * {@link #FIELD_MAP_CHECKS}). Schedule C and Schedule 3-A federal templates are pinned (#239), so they are not in
+     * this list.
      */
-    static final List<String> TEMPLATE_PENDING = List.of(FORM_8995_KNOCKOUT);
+    static final List<String> TEMPLATE_PENDING = List.of(FORM_8995_KNOCKOUT, PA_SCHEDULE_C_KNOCKOUT);
     /** {@link PrintRefusingKnockouts#FACT_PATHS} without {@link #TEMPLATE_PENDING}. */
     static final List<String> FIELD_MAP_CHECKS = PrintRefusingKnockouts.FACT_PATHS.stream()
             .filter(p -> !TEMPLATE_PENDING.contains(p))
@@ -164,11 +166,12 @@ class PrintRefusingKnockoutsTest {
                 PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
                 PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
                 PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14-16, 22, 23, 25
-                PA_UNSUPPORTED_INCOME_KNOCKOUT, // line 4 stops for part-year/inventory/MFJ loss; line 6 for K-1/part-year E
+                PA_UNSUPPORTED_INCOME_KNOCKOUT, // line 4 stops for part-year/MFJ loss/tax shelter; line 6 for K-1/part-year E
                 PA_SP_KNOCKOUT, // Schedule SP Tax Forgiveness
                 PA_PART_YEAR_KNOCKOUT, // PA/FL part-year cases not computed
                 PA_SCHEDULE_A_KNOCKOUT, // PA Schedule A
                 PA_SCHEDULE_B_KNOCKOUT, // PA Schedule B
+                PA_SCHEDULE_C_KNOCKOUT, // PA Schedule C required; no PA Sch C PDF in this slice
                 PA_SCHEDULE_D_KNOCKOUT, // PA Schedule D
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
@@ -209,7 +212,8 @@ class PrintRefusingKnockoutsTest {
         // /flowPrintRefuseScheduleBPartIII (one path). An unanswered Part III refuses the print and does not
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
-        assertEquals(47, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
+        assertEquals(48, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -1004,11 +1008,12 @@ class PrintRefusingKnockoutsTest {
     /**
      * A Schedule C return that is not a PA-40 is still refused only by Form 8995. The same business on a full-year
      * PA-40 reports federal Schedule C line 31 on PA-40 line 4 (72 P.S. §7303(a)(2); PA-40 IN (2025) p. 17, LINE 4;
-     * PA-40 C (EX) 03-26). The PA unsupported-income knockout is false on that supported path. Form 8995 still
-     * refuses the print (no TY2026 template). The UE and unsupported-items screeners are answered no; unanswered,
-     * those stops stay incomplete and refuse the print. This W-2 has no box 16, so PA taxable income is $0 and Tax
-     * Forgiveness is still possible (72 P.S. §7304). The Schedule SP nontaxable-income screener is answered no for the
-     * same reason. This slice does not add a PA Schedule C PDF; the federal Schedule C PDF is not the PA schedule.
+     * PA-40 C (EX) 03-26). The PA unsupported-income knockout is false on that supported path when the tax-shelter
+     * screener is no. PA Schedule C is required and not produced, so /flowKnockoutPaScheduleC refuses the print
+     * alongside Form 8995 (no TY2026 template). The UE, unsupported-items, and tax-shelter screeners are answered no;
+     * unanswered, those stops stay incomplete and refuse the print. This W-2 has no box 16, so PA taxable income is $0
+     * and Tax Forgiveness is still possible (72 P.S. §7304). The Schedule SP nontaxable-income screener is answered no
+     * for the same reason. The federal Schedule C PDF is not the PA schedule.
      */
     @Test
     void paScheduleCReportsLine4AndRefusesOnForm8995() throws Exception {
@@ -1016,6 +1021,7 @@ class PrintRefusingKnockoutsTest {
         Graph notPa = fgs.getGraph(scheduleCOnly());
         assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(notPa));
         assertCompleteFalse(notPa, PA_UNSUPPORTED_INCOME_KNOCKOUT);
+        assertCompleteFalse(notPa, PA_SCHEDULE_C_KNOCKOUT);
 
         ObjectMapper mapper = new ObjectMapper();
         Map<String, FactTypeWithItem> facts = scheduleCOnly();
@@ -1036,6 +1042,9 @@ class PrintRefusingKnockoutsTest {
                 "/paHasUnsupportedItems",
                 mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
         facts.put(
+                "/paHasScheduleCTaxShelter",
+                mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
+        facts.put(
                 "/paHasSpNontaxableIncome",
                 mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
         Graph pa = fgs.getGraph(facts);
@@ -1043,11 +1052,13 @@ class PrintRefusingKnockoutsTest {
         assertEquals(Boolean.TRUE, pa.get("/hasScheduleCBusinesses").get());
         assertEquals(Boolean.FALSE, pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).get());
         assertTrue(pa.get(PA_UNSUPPORTED_INCOME_KNOCKOUT).complete());
+        assertEquals(Boolean.TRUE, pa.get(PA_SCHEDULE_C_KNOCKOUT).get());
+        assertTrue(pa.get(PA_SCHEDULE_C_KNOCKOUT).complete());
         assertCompleteFalse(pa, PA_UE_KNOCKOUT);
         assertCompleteFalse(pa, PA_UNSUPPORTED_ITEMS_KNOCKOUT);
         assertCompleteFalse(pa, PA_SP_KNOCKOUT);
         assertEquals(Boolean.TRUE, pa.get(FORM_8995_KNOCKOUT).get());
-        assertEquals(List.of(FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(pa));
+        assertEquals(List.of(PA_SCHEDULE_C_KNOCKOUT, FORM_8995_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(pa));
         // scheduleCOnly: receipts $30,000, expenses $0 → federal line 31 and PA-40 line 4 are $30,000.
         assertEquals("30000.00", pa.get("/paLine4").get().toString());
     }

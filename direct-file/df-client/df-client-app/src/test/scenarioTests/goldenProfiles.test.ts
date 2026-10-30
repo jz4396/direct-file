@@ -1326,6 +1326,9 @@ describe(`golden end-to-end scenario (synthetic data): profile C negative rows (
 const PROFILE_F_STOPPED = [
   `/flowKnockoutForm8995WithoutTy2026Template`,
   `/flowKnockoutForm8960Unsupported`,
+  // PA-40 IN (2025) p. 17: must use PA Schedule C; this slice has no PA Schedule C PDF.
+  `/flowKnockoutPaScheduleC`,
+  `/flowKnockoutStateReturn`,
   `/flowIsKnockedOut`,
 ];
 
@@ -1518,11 +1521,12 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
     });
     expect(get(g, `/eitcQualified`).get).toBe(false);
   });
-  it(`PA-40 line 4 is federal Schedule C line 31; Form 8995 still stops; Schedule SP does not qualify`, () => {
+  it(`PA-40 line 4 is federal Schedule C line 31; PA Schedule C + Form 8995 stop; Schedule SP does not qualify`, () => {
     expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
     expect(get(g, `/paLine4`).get.toString()).toBe(`52858.00`);
     expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
-    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
     expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
     expect(get(g, `/paSpLine15`).get.toString()).toBe(`0/1`);
     expectDollars(g, {

@@ -419,6 +419,7 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         m.put("/address", paAddress());
         m.put("/paHasUnreimbursedEmployeeExpenses", bool(false));
         m.put("/paHasUnsupportedItems", bool(false));
+        m.put("/paHasScheduleCTaxShelter", bool(false));
         m.put("/paHasSpNontaxableIncome", bool(false));
         byte[] bytes = generate(m);
         try (PDDocument doc = Loader.loadPDF(bytes)) {
@@ -443,6 +444,7 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         m.put("/paPartYearHasNonresidentPaSourcePay", bool(false));
         m.put("/paHasUnreimbursedEmployeeExpenses", bool(false));
         m.put("/paHasUnsupportedItems", bool(false));
+        m.put("/paHasScheduleCTaxShelter", bool(false));
         m.put("/paHasSpNontaxableIncome", bool(false));
         refusesPa(m);
     }

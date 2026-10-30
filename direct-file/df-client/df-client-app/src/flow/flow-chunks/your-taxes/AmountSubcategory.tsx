@@ -111,13 +111,19 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-unsupported-items' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      <Screen route='pa-schedule-c-tax-shelter' condition='/paAskScheduleCTaxShelter'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-schedule-c-tax-shelter' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-schedule-c-tax-shelter' />
+        <Boolean path='/paHasScheduleCTaxShelter' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='pa-unsupported-income-knockout' condition='/flowKnockoutPaUnsupportedIncome' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-unsupported-income' />
         <DFAlert i18nKey='/info/knockout/pa-unsupported-income' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      {/* #123 PA Schedules A, B and D are not produced. */}
+      {/* #123 PA Schedules A, B, C and D are not produced. */}
       <Screen route='pa-schedule-a-knockout' condition='/flowKnockoutPaScheduleA' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-schedule-a' />
@@ -128,6 +134,12 @@ export const AmountSubcategory = (
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-schedule-b' />
         <DFAlert i18nKey='/info/knockout/pa-schedule-b' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='pa-schedule-c-knockout' condition='/flowKnockoutPaScheduleC' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-schedule-c' />
+        <DFAlert i18nKey='/info/knockout/pa-schedule-c' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
       <Screen route='pa-schedule-d-knockout' condition='/flowKnockoutPaScheduleD' isKnockout={true}>

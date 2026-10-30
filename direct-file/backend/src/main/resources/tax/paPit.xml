@@ -203,11 +203,13 @@
         C businesses, line 4 is the sum of federal Schedule C line 31 (/scheduleCBusinesses/*/netProfitOrLoss) plus the
         PA 100% meals add-back (/scheduleCBusinesses/*/paMealsAddBack: writableMeals − line24bDeductibleMeals when
         mealsAreStandardHalfLimit). A loss within the class is allowed (line 4 may be negative); line 9 already uses
-        GreaterOf 0. A PA/FL part-year resident with any Schedule C, inventory/COGS until #277 CLEARs, a joint return
-        with any Schedule C loss (IN p. 7: do not net spouses), farm/Schedule F, tax-shelter transactions, or anything
-        still out of scope on federal Schedule C leaves this line incomplete (/flowKnockoutPaUnsupportedIncome or the
-        federal Schedule C/SE stops). This slice does not produce a PA Schedule C PDF; the federal Schedule C PDF is not
-        the PA schedule. $0 when there is no Schedule C, and on a return that is not a PA-40.</Description>
+        GreaterOf 0. A PA/FL part-year resident with any Schedule C, a joint return with any Schedule C loss (IN p. 7:
+        do not net spouses), a yes to the PA tax-shelter screener (/paHasScheduleCTaxShelter; PA-40 C Form 8271 / "Do
+        not report or deduct any transactions related to tax shelters"), farm/Schedule F, or anything still out of
+        scope on federal Schedule C leaves this line incomplete (/flowKnockoutPaUnsupportedIncome or the federal
+        Schedule C/SE stops). Simple Part III inventory/COGS flows through federal line 31 after #277. This slice does
+        not produce a PA Schedule C PDF (/flowKnockoutPaScheduleC); the federal Schedule C PDF is not the PA schedule.
+        $0 when there is no Schedule C, and on a return that is not a PA-40.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -730,47 +732,27 @@
         </Switch>
       </Derived>
     </Fact>
-    <Fact path="/paHasScheduleCInventoryOrCogs">
-      <Name>PA-40: a Schedule C business has inventory or COGS</Name>
-      <Description>True when a line-item Schedule C business answers yes to inventory/COGS. Complete false with no
-        Schedule C businesses (so /flowKnockoutPaUnsupportedIncome stays complete on a PA return without Schedule C).
-        The itemizedStarted gate keeps the single-expense-total path complete false. An unanswered inventory question
-        on the line-item path stays incomplete. Inventory/COGS remains a PA stop until #277 CLEARs.</Description>
-      <Export downstreamFacts="true" />
+    <Fact path="/paAskScheduleCTaxShelter">
+      <Name>Ask about Schedule C tax-shelter transactions on the PA-40</Name>
+      <Description>PA-40 is filed and there is Schedule C income. PA-40 C (EX) 03-26 Form 8271 and instructions: "Do
+        not report or deduct any transactions related to tax shelters."</Description>
       <Derived>
-        <Switch>
-          <Case>
-            <When>
-              <Not>
-                <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
-              </Not>
-            </When>
-            <Then>
-              <False />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <True />
-            </When>
-            <Then>
-              <GreaterThan>
-                <Left>
-                  <Count>
-                    <All>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses/*/itemizedStarted" />
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses/*/hasInventoryOrCogs" />
-                    </All>
-                  </Count>
-                </Left>
-                <Right>
-                  <Int>0</Int>
-                </Right>
-              </GreaterThan>
-            </Then>
-          </Case>
-        </Switch>
+        <All>
+          <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+        </All>
       </Derived>
+    </Fact>
+    <Fact path="/paHasScheduleCTaxShelter">
+      <Name>Schedule C has tax-shelter transactions (PA-40 C Form 8271)</Name>
+      <Description>PA-40 C (EX) 03-26,
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/pa-40c.pdf:
+        "Do not report or deduct any transactions related to tax shelters." Form 8271 is the federal tax-shelter
+        registration statement PA Schedule C references. Yes stops /flowKnockoutPaUnsupportedIncome. An unanswered
+        question on a PA-40 with Schedule C stays incomplete.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
     </Fact>
     <Fact path="/paHasMfjScheduleCLoss">
       <Name>PA-40: joint return with any Schedule C loss</Name>
@@ -825,22 +807,23 @@
       <Description>#78: PA-40 IN (2025),
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
         p. 17 (LINE 4: full-year federally supported Schedule C is /paLine4; a PA/FL part-year resident with any
-        Schedule C still stops — p. 43 has no business allocation; inventory/COGS stays a PA stop until #277 CLEARs;
-        a joint return with any Schedule C loss stops — p. 7: "You may not offset the income of the taxpayer with a
-        loss from the spouse and vice versa"; farm/Schedule F, tax-shelter transactions, and federal Schedule C
-        out-of-scope lines stay stopped elsewhere), p. 18 (LINE 6: full-year federal Schedule E Part I is /paLine6; a
-        K-1 or a PA/FL part-year resident with Schedule E Part I still stops), pp. 13-14 (1099-R: PA taxability depends
-        on plan/age/code), 1099-MISC (must be classified), box 8 tax-exempt interest (PA taxes other states'
-        obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with property
-        sales (p. 7, not modeled). PA-only: gated on stateReturn /stateReturnPaFiled (full-year or PA/FL part-year
-        PA-40), so returns with no PA-40 are not stopped by it or shown its screen. 1099-INT box 2 early withdrawal
-        penalty (interest /earlyWithdrawalPenaltyTotal greater than $0): PA-40 IN (2025) p. 15, LINE 2, Forfeited
-        Interest Penalty: "You may offset the penalty for premature redemption or withdrawal of a time savings account
-        or certificate of deposit, only against the interest income you received in the same taxable year from that
-        account or certificate. You cannot offset this penalty against other interest income. If your total penalty
-        exceeds the related interest income, you may report the excess as a loss on PA Schedule D." The account-level
-        interest is not collected (one 1099-INT can cover several accounts) and PA Schedule D for the excess is not
-        modeled, so the PA-40 line 2 offset cannot be computed.</Description>
+        Schedule C still stops — p. 43 has no business allocation; a joint return with any Schedule C loss stops —
+        p. 7: "You may not offset the income of the taxpayer with a loss from the spouse and vice versa"; a yes to
+        /paHasScheduleCTaxShelter stops — PA-40 C Form 8271 / "Do not report or deduct any transactions related to tax
+        shelters"; farm/Schedule F and federal Schedule C out-of-scope lines stay stopped elsewhere; PA Schedule C is
+        required and not produced — /flowKnockoutPaScheduleC), p. 18 (LINE 6: full-year federal Schedule E Part I is
+        /paLine6; a K-1 or a PA/FL part-year resident with Schedule E Part I still stops), pp. 13-14 (1099-R: PA
+        taxability depends on plan/age/code), 1099-MISC (must be classified), box 8 tax-exempt interest (PA taxes other
+        states' obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with
+        property sales (p. 7, not modeled). PA-only: gated on stateReturn /stateReturnPaFiled (full-year or PA/FL
+        part-year PA-40), so returns with no PA-40 are not stopped by it or shown its screen. 1099-INT box 2 early
+        withdrawal penalty (interest /earlyWithdrawalPenaltyTotal greater than $0): PA-40 IN (2025) p. 15, LINE 2,
+        Forfeited Interest Penalty: "You may offset the penalty for premature redemption or withdrawal of a time
+        savings account or certificate of deposit, only against the interest income you received in the same taxable
+        year from that account or certificate. You cannot offset this penalty against other interest income. If your
+        total penalty exceeds the related interest income, you may report the excess as a loss on PA Schedule D." The
+        account-level interest is not collected (one 1099-INT can cover several accounts) and PA Schedule D for the
+        excess is not modeled, so the PA-40 line 2 offset cannot be computed.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -863,9 +846,13 @@
               <Dependency path="/paPartYearSupported" />
               <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
             </All>
-            <!-- Inventory/COGS stays a PA stop until #277 CLEARs and merges with its three BLOCK fixes; then simple
-                 Part III flows through federal line 31. PA-40 C (EX) 03-26 and federal Schedule C Part III. -->
-            <Dependency path="/paHasScheduleCInventoryOrCogs" />
+            <!-- PA-40 C (EX) 03-26 Form 8271 / "Do not report or deduct any transactions related to tax shelters."
+                 Asked only when Schedule C is present (/paAskScheduleCTaxShelter). An unanswered yes/no on a PA-40
+                 with Schedule C stays incomplete; a yes stops. -->
+            <All>
+              <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+              <Dependency path="/paHasScheduleCTaxShelter" />
+            </All>
             <!-- MFJ: do not net one spouse's business loss against the other's profit (PA-40 IN (2025) p. 7) until
                  spouse-level line 4 is modeled. -->
             <Dependency path="/paHasMfjScheduleCLoss" />
@@ -1152,6 +1139,25 @@
               </GreaterThan>
             </All>
           </Any>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutPaScheduleC">
+      <Name>Flow knockout: PA Schedule C (business) is required and not produced</Name>
+      <Description>PA-40 IN (2025),
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 17, LINE 4: "CAUTION: You must use PA Schedule C to report income and expenses from a business or
+        profession… Do not use federal Schedules C or F." This tool does not produce a PA Schedule C PDF; the federal
+        Schedule C PDF is not the PA schedule. Stops when a PA-40 is filed (/stateReturnPaFiled) and there is Schedule C
+        income (/hasScheduleCBusinesses). Wired into /flowIsKnockedOut via /flowKnockoutStateReturn and into
+        PrintRefusingKnockouts.FACT_PATHS so the PA Schedule C attachment print-refuses. Full-year federally supported
+        Schedule C still figures /paLine4. Tax Reform Code of 1971 §303(a)(2), 72 P.S. §7303(a)(2).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
         </All>
       </Derived>
     </Fact>
