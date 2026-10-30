@@ -2,8 +2,9 @@
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
 // older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
 // profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
-// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), and profile H
-// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends).
+// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), profile H
+// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), and profile I
+// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -173,6 +174,7 @@ import {
   profileGWithW2s,
   profileHDividendId,
   profileHPaRentalDividends,
+  profileIMfjAmtPhaseout,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -2076,5 +2078,116 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
     expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
     expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
     expectDollars(n, { '/ordinaryDividends': `2501.00`, '/paLine3': `2501.00`, '/paLine6': `12000.00` });
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile I, MFJ, Florida, AMTI in the exemption phaseout`, () => {
+  // Married filing jointly, Florida residents [FL]; both under 65 and not blind. Primary SSN 900-47-1010, spouse
+  //   SSN 900-48-1011 (900 area, groups 47 and 48, outside the ITIN ranges). Address 123 Example St, Miami, FL
+  //   33101. Spouse has no income forms. The filer does not itemize.
+  // W-2 (primary): box 1 and box 5 $1,100,000, box 2 $300,000, box 6 $24,050. Box 6 is 1.45% x 1,100,000 = 15,950
+  //   plus the employer's 0.9% on this employer's box 5 over $200,000, 0.9% x 900,000 = 8,100 [3101] [3102].
+  //   No box 16 or 17. No interest, dividends, or sales.
+  // Form 1040: line 1a 1,100,000; line 9 and line 11 (AGI) 1,100,000; line 12 standard deduction 32,200
+  //   [RP p. 18 §4.14(1): "Married Individuals Filing Joint Returns and Surviving Spouses $32,200"]; line 15
+  //   taxable income 1,067,800. Over $100,000, so the Tax Computation Worksheet [GI p. 36], [RP] p. 10 §4.01
+  //   Table 1 (joint): "Over $768,700 $206,583.50 plus 37% of the excess over $768,700": 206,583.50 + 37% x
+  //   299,100 = 206,583.50 + 110,667 = 317,250.50, entered 317,251 (half a dollar up).
+  // Form 6251 [6251] [55] [55d]: line 1a 32,200 (no Schedule 1-A line 43); line 1b 1,067,800; line 2a 32,200
+  //   (the standard deduction; IRC §56(b)(1)(E)). Line 4 AMTI 1,100,000, strictly between the joint threshold
+  //   $1,000,000 and the complete phaseout $1,280,400 [RP p. 17 §4.10]. Line 5 exemption 140,200 [RP p. 16
+  //   §4.10: "Joint Returns or Surviving Spouses $140,200"] less 50% x (1,100,000 - 1,000,000) = 50,000 [55d],
+  //   so 90,200. Line 6 1,009,800. Line 6 is over the $244,500 28% breakpoint [RP p. 16 §4.10; IRC
+  //   §55(b)(1)(A)], so line 7 is 28% x 1,009,800 - 4,890 = 282,744 - 4,890 = 277,854. The $4,890 offset is
+  //   2% x $244,500 [6251 line 7]. No capital gain and no qualified dividends, so Part III is not used. Line 8
+  //   is $0. Line 9 277,854. Line 10 regular tax 317,251. Line 11 AMT 0: the tentative minimum tax does not
+  //   exceed the regular tax [55(a)]. Schedule 2 line 2 is line 11.
+  // Form 8959 [3101]: line 1 Medicare wages 1,100,000; joint threshold 250,000 (§3101(b)(2)(A)); line 6 850,000;
+  //   line 7 0.9% = 7,650 (Schedule 2 line 17b). Part V: line 19 box 6 24,050; line 21 1.45% x 1,100,000 =
+  //   15,950; line 22 8,100; line 24 8,100 (1040 line 25c). No self-employment income.
+  // Form 8960 [1411]: no interest, dividends, or gain, so net investment income is $0 and line 17 is $0. The
+  //   filer does not itemize, so the Part II allocation stop does not apply.
+  // Form 1040: line 16 317,251; line 17 0; line 18 317,251; line 22 317,251 (no credits; the TINs are not SSNs
+  //   [EITC]); line 23 7,650; line 24 total tax 324,901; line 25a 300,000; line 25c 8,100; line 33 payments
+  //   308,100; amount owed 16,801. FL: no return [FL].
+  const g = graph(profileIMfjAmtPhaseout);
+
+  it(`Form 1040 income, the standard deduction, and line 16 tax`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`marriedFilingJointly`);
+    expect(get(g, `/itemizesDeductions`).get).toBe(false);
+    expectDollars(g, {
+      '/wages': `1100000.00`,
+      '/totalIncome': `1100000.00`,
+      '/agi': `1100000.00`,
+      '/standardOrItemizedDeductions': `32200.00`,
+      '/taxableIncome': `1067800.00`,
+      '/tentativeTaxFromTaxableIncome': `317251.00`,
+    });
+  });
+  it(`Form 6251 exemption inside the joint phaseout, lines 7 through 11, and Schedule 2 line 2`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtMfsAddBack`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtMfsAddBack`).get).toBe(false);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(false);
+    const amti = Number(get(g, `/form6251Line4`).get);
+    // Strictly inside the band [RP p. 17 §4.10]: threshold $1,000,000, complete phaseout $1,280,400.
+    expect(amti).toBeGreaterThan(1000000);
+    expect(amti).toBeLessThan(1280400);
+    // IRC §55(d)(1) exemption $140,200 [RP p. 16 §4.10], reduced under §55(d)(2) by 50% of the excess over the
+    // threshold. §55(d)(4)(A)(ii)(IV) substitutes 50 percent for 25 percent [55d].
+    const line5 = 140200 - 0.5 * (amti - 1000000);
+    expect(get(g, `/form6251Line5`).get.toString()).toBe(line5.toFixed(2));
+    expectDollars(g, {
+      '/form6251ExemptionAmount': `140200.00`,
+      '/form6251PhaseoutThreshold': `1000000.00`,
+      '/form6251Line1b': `1067800.00`,
+      '/form6251Line2a': `32200.00`,
+      '/form6251Line4': `1100000.00`,
+      '/form6251ExemptionReduction': `50000.00`,
+      '/form6251Line5': `90200.00`,
+      '/form6251Line6': `1009800.00`,
+      '/form6251Line7': `277854.00`,
+      '/form6251Line9': `277854.00`,
+      '/form6251Line10': `317251.00`,
+      '/amt': `0.00`,
+      '/schedule2Line2': `0.00`,
+    });
+    expect(get(g, `/form6251Required`).get).toBe(false);
+  });
+  it(`Form 8959 Additional Medicare Tax on joint wages over $250,000`, () => {
+    expect(get(g, `/requiresForm8959`).get).toBe(true);
+    expectDollars(g, {
+      '/form8959Line1': `1100000.00`,
+      '/form8959Threshold': `250000.00`,
+      '/form8959Line6': `850000.00`,
+      '/form8959Line7': `7650.00`,
+      '/line17bAdditionalMedicareTax': `7650.00`,
+      '/form8959Line19': `24050.00`,
+      '/form8959Line21': `15950.00`,
+      '/form8959Line22': `8100.00`,
+      '/form8959Line24': `8100.00`,
+      '/line21OfSchedule2': `7650.00`,
+    });
+  });
+  it(`Form 1040 total tax, payments, and amount owed`, () => {
+    expectDollars(g, {
+      '/totalAdditionalTaxesOwed': `0.00`,
+      '/totalTax': `324901.00`,
+      '/formW2Withholding': `300000.00`,
+      '/totalWithholding': `308100.00`,
+      '/totalPayments': `308100.00`,
+      '/balanceDue': `16801.00`,
+    });
+  });
+  it(`Florida files no state return, and nothing stops the return`, () => {
+    expect(get(g, `/livedInFl`).get).toBe(true);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/scheduleAWantsToItemize`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleAOverallLimit`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expectNotStopped(g);
   });
 });

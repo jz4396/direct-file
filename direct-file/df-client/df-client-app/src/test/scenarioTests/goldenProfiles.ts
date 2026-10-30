@@ -2,8 +2,9 @@
 // (Florida only), profile C (PA to FL part-year resident with AMT and NIIT), profile D (head of household, 65 or
 // older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
 // profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
-// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), and profile H
-// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends).
+// filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), profile H
+// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), and profile I
+// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -730,6 +731,44 @@ export const profileHPaRentalDividends = {
   '/scheduleEWritableExpenses': createDollarWrapper(`3000`),
 };
 
+/**
+ * Profile I: married filing jointly, Florida resident. W-2 wages of $1,100,000. The filer does not itemize.
+ * AMTI is $1,100,000, inside the joint exemption phaseout ($1,000,000 to $1,280,400). Rev. Proc. 2025-32 §4.10
+ * pp. 16–17; IRC §55(d)(2), §55(d)(4)(A)(ii)(IV).
+ */
+const logan: Person = { first: `Logan`, last: `Example`, ssn: [`900`, `47`, `1010`], dob: `1984-01-20` };
+const cameron: Person = { first: `Cameron`, last: `Example`, ssn: [`900`, `48`, `1011`], dob: `1986-07-09` };
+export const profileIMfjAmtPhaseout = {
+  ...single(logan, { street: `123 Example St`, city: `Miami`, zip: `33101`, state: `FL` }),
+  ...mfjFilerData,
+  ...spouse(cameron),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(logan.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`noForms`, `/primaryFilerW2And1099IntStateOptions`),
+  ...w2s(logan.ssn, {
+    id: `13500000-0000-4000-8000-000000001301`,
+    employer: `Example Lattice LLC`,
+    ein: [`00`, `0001301`],
+    box1: 1100000,
+    box2: 300000,
+    box5: 1100000,
+    // 1.45% x 1,100,000 = 15,950, plus the employer's 0.9% on wages over $200,000 (IRC §3102(f)(1)): 8,100.
+    box6: 24050,
+  }),
+  '/scheduleAWantsToItemize': createBooleanWrapper(false),
+  '/scheduleAWritableMedical': createDollarWrapper(`0`),
+  '/scheduleAWritableStateLocalIncomeOrSalesTax': createDollarWrapper(`0`),
+  '/scheduleAWritableRealEstateTaxes': createDollarWrapper(`50000`),
+  '/scheduleAWritablePersonalPropertyTaxes': createDollarWrapper(`0`),
+  '/scheduleAWritableMortgageInterest': createDollarWrapper(`0`),
+  '/scheduleAWritableCashGifts': createDollarWrapper(`0`),
+  '/scheduleAWritableElectsToItemize': createBooleanWrapper(false),
+  '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -745,4 +784,5 @@ export const goldenProfiles = {
   profileFPaAmtScheduleC,
   profileGMfjTwoChildren,
   profileHPaRentalDividends,
+  profileIMfjAmtPhaseout,
 };

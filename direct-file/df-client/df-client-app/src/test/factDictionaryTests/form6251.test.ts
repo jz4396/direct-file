@@ -164,6 +164,24 @@ describe(`Form 6251 — exemption phaseout (§55(d)(2), 50% per §55(d)(4)(A)(ii
       expect(val(g, `/form6251Line4`)).toBe(`${wages}.00`);
       expect(val(g, `/form6251Line5`)).toBe(ex);
     });
+
+  // Rev. Proc. 2025-32 §4.10 p. 17: joint complete phaseout $1,280,400 = $1,000,000 + 2 x $140,200.
+  // IRC §55(d)(2) and §55(d)(4)(A)(ii)(IV): 140,200 − 50% × (1,280,400 − 1,000,000) = 0.
+  it(`MFJ boundary: AMTI $1,280,400, exemption is 0`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form6251Line4`,
+      `/form6251ExemptionAmount`,
+      `/form6251PhaseoutThreshold`,
+      `/form6251ExemptionReduction`,
+      `/form6251Line5`,
+    ];
+    const g = fg(clean(mfjFilerData, 1280400));
+    expect(val(g, `/form6251Line4`)).toBe(`1280400.00`);
+    expect(val(g, `/form6251ExemptionAmount`)).toBe(`140200.00`);
+    expect(val(g, `/form6251PhaseoutThreshold`)).toBe(`1000000.00`);
+    expect(val(g, `/form6251ExemptionReduction`)).toBe(`140200.00`);
+    expect(val(g, `/form6251Line5`)).toBe(`0.00`);
+  });
 });
 
 describe(`Form 6251 — 26% / 28% (line 7)`, () => {
