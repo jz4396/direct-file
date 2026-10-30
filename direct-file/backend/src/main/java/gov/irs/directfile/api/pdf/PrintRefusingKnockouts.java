@@ -166,6 +166,14 @@ public final class PrintRefusingKnockouts {
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
             "/flowKnockoutScheduleCQbi",
+            // More than five Schedule C businesses. 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: "If you
+            // have more than five trades or businesses, attach a statement with the name and taxpayer identification
+            // number of the trade(s) or business(es) and include the income and loss from those trade(s) or
+            // business(es) in the total for line 2." This package does not attach that statement. Column (c) is split
+            // only across lines 1(i) through 1(v), so a sixth business would be omitted while line 2 still included
+            // it. Complete false when Form 8995 is not required, the business list is not finished, or the finished
+            // list has five or fewer.
+            "/flowKnockoutForm8995MoreThanFiveBusinesses",
             // Schedule C line this tool does not compute. Part III cost of goods sold is figured for cost or
             // lower of cost or market with line 34 no, line 42 at least zero, line 35 equal to last year's closing
             // inventory, a 3-prior-year average that does not exceed $32,000,000, and the filer not a tax shelter

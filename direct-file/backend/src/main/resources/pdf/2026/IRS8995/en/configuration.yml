@@ -16,8 +16,12 @@
 # Lines 1(i)-1(v) are the first five Schedule C businesses. Column (a) is the business name. Column (b) is the owner's
 # TIN: 2026 Instructions for Form 8995 draft, Specific Instructions, Line 1: "If you don't have an EIN, enter your
 # social security number (SSN) or individual taxpayer identification number (ITIN)." This return does not collect an
-# EIN. Column (c) is that business's net profit or loss less its share of the deductible part of self-employment tax,
-# and those amounts sum to line 2. A sixth business is not given the statement the instructions describe for line 2.
+# EIN. Column (c) is that business's net profit or loss less its owner's share of the deductible part of
+# self-employment tax (Treas. Reg. 1.199A-3(b)(1)(vi)), and those amounts sum to line 2. A sixth business refuses
+# the print (/flowKnockoutForm8995MoreThanFiveBusinesses). 2026 Instructions for Form 8995 draft, PDF p. 5, line 2:
+# "If you have more than five trades or businesses, attach a statement with the name and taxpayer identification
+# number of the trade(s) or business(es) and include the income and loss from those trade(s) or business(es) in the
+# total for line 2." This package does not attach that statement, and column (c) is split only across the five rows.
 # Lines 3 and 7 are $0 (a carryforward is a stop) and print blank inside the preprinted parentheses.
 # Lines 4, 8 and 13 say "enter -0-" and carry <ExportZero />. Line 16 does not, so $0 prints blank.
 # Lines 18 and 19 have preprinted parentheses. f1_34[0] is line 18. f1_35[0] sits on line 19 (below line 18); its /TU

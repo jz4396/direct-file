@@ -9,7 +9,7 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, primaryFilerId } from '../testData.js';
+import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, mfjFilerData, primaryFilerId, spouseId } from '../testData.js';
 
 /**
  * #87 Form 8995 (2026) draft, Created 5/1/26 (https://www.irs.gov/pub/irs-dft/f8995--dft.pdf), lines 1-17, and Form
@@ -19,6 +19,10 @@ import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, primaryFilerId } 
  */
 const biz1 = `f8995000-0000-4000-8000-000000000001`;
 const biz2 = `f8995000-0000-4000-8000-000000000002`;
+const biz3 = `f8995000-0000-4000-8000-000000000003`;
+const biz4 = `f8995000-0000-4000-8000-000000000004`;
+const biz5 = `f8995000-0000-4000-8000-000000000005`;
+const biz6 = `f8995000-0000-4000-8000-000000000006`;
 const div = `f8995000-0000-4000-8000-0000000000d1`;
 
 const noW2 = {
@@ -238,6 +242,49 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     expect(val(both, `/form8995Line1iiQbi`)).toBe(`18587.00`);
     expect(val(both, `/form8995Line17`)).toBe(`6073.00`);
     expectNoQbiKnockout(both);
+  });
+
+  it(`more than five Schedule C businesses stops the return; five do not`, ({ task }) => {
+    // 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: attach a statement. This package does not.
+    task.meta.testedFactPaths = [`/flowKnockoutForm8995MoreThanFiveBusinesses`, `/flowIsKnockedOut`];
+    const ids = [biz1, biz2, biz3, biz4, biz5, biz6];
+    const rows = Object.assign({}, ...ids.map((id, i) => business(id, 1000, 0)));
+    const six = fg({ ...noW2, ...scheduleC(rows, ids) });
+    expect(val(six, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`true`);
+    expect(val(six, `/flowIsKnockedOut`)).toBe(`true`);
+    const fiveIds = ids.slice(0, 5);
+    const fiveRows = Object.assign({}, ...fiveIds.map((id) => business(id, 1000, 0)));
+    const five = fg({ ...noW2, ...scheduleC(fiveRows, fiveIds) });
+    expect(val(five, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`false`);
+  });
+
+  it(`MFJ splits deductible self-employment tax per filer`, ({ task }) => {
+    // Treas. Reg. 1.199A-3(b)(1)(vi). Spouse net $350 is under the $400 net-earnings threshold
+    // (26 U.S.C. 1402(b)(2)), so that row's column (c) stays $350.
+    task.meta.testedFactPaths = [
+      `/primaryFilerDeductibleSelfEmploymentTax`,
+      `/secondaryFilerDeductibleSelfEmploymentTax`,
+      `/form8995Line1iQbi`,
+      `/form8995Line1iiQbi`,
+      `/form8995Line2`,
+    ];
+    const g = fg({
+      ...noW2,
+      ...mfjFilerData,
+      ...scheduleC(
+        {
+          ...business(biz1, 60000, 10000),
+          ...business(biz2, 350, 0),
+          [`/scheduleCBusinesses/#${biz2}/filer`]: createCollectionItemWrapper(spouseId),
+        },
+        [biz1, biz2]
+      ),
+    });
+    expect(val(g, `/primaryFilerDeductibleSelfEmploymentTax`)).toBe(`3533.00`);
+    expect(val(g, `/secondaryFilerDeductibleSelfEmploymentTax`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`46467.00`);
+    expect(val(g, `/form8995Line1iiQbi`)).toBe(`350.00`);
+    expect(val(g, `/form8995Line2`)).toBe(`46817.00`);
   });
 
   it(`unanswered carryforward or cooperative question never passes`, ({ task }) => {

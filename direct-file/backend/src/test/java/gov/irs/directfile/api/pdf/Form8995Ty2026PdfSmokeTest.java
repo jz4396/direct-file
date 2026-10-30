@@ -11,9 +11,14 @@ import org.junit.jupiter.api.Test;
 
 import gov.irs.factgraph.Graph;
 
+import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
+
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.collectionItem;
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.fieldsOnPages;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.day;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.tin;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrint;
@@ -26,6 +31,7 @@ import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.selfEmploy
 import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.value;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -78,6 +84,7 @@ class Form8995Ty2026PdfSmokeTest {
                 .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
         assertEquals("46467.00", dollars(graph, "/form8995Line2"));
         assertEquals("9293.00", dollars(graph, "/form8995Line5"));
+        assertEquals("9293.00", dollars(graph, "/form8995Line10"));
         assertEquals("30367.00", dollars(graph, "/form8995Line11"));
         assertEquals("6073.00", dollars(graph, "/form8995Line14"));
         assertEquals("6073.00", dollars(graph, "/form8995Line15"));
@@ -111,6 +118,7 @@ class Form8995Ty2026PdfSmokeTest {
             blank(f, "Page1[0].f1_23[0]", "7");
             amount(f, "Page1[0].f1_24[0]", 0, "8");
             blank(f, "Page1[0].f1_25[0]", "9");
+            amount(f, "Page1[0].f1_26[0]", 9293, "10");
             amount(f, "Page1[0].f1_27[0]", 30367, "11");
             blank(f, "Page1[0].f1_28[0]", "12");
             amount(f, "Page1[0].f1_29[0]", 30367, "13");
@@ -186,5 +194,103 @@ class Form8995Ty2026PdfSmokeTest {
             Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
             blank(f1040, "Page2[0].f2_05[0]", "Form 1040 line 13b");
         }
+    }
+
+    /**
+     * Lines 1(i) through 1(v) are the only rows. 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: a return
+     * with more than five trades or businesses must attach a statement. This package does not, so six businesses
+     * refuse the print. Five still print.
+     */
+    @Test
+    void moreThanFiveBusinessesRefusesThePrint() throws Exception {
+        Map<String, String> five = businesses(5);
+        Graph fiveGraph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(five));
+        assertEquals(Boolean.FALSE, fiveGraph.get("/flowKnockoutForm8995MoreThanFiveBusinesses").get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(fiveGraph), "five businesses still print");
+
+        Map<String, String> six = businesses(6);
+        Graph sixGraph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(six));
+        assertEquals(Boolean.TRUE, sixGraph.get("/flowKnockoutForm8995MoreThanFiveBusinesses").get());
+        assertEquals(Boolean.TRUE, sixGraph.get("/flowIsKnockedOut").get());
+        assertEquals(
+                List.of("/flowKnockoutForm8995MoreThanFiveBusinesses"),
+                PrintRefusingKnockouts.refusingPaths(sixGraph));
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(six));
+        assertEquals(
+                List.of("/flowKnockoutForm8995MoreThanFiveBusinesses"),
+                e.getBody().getProperties().get("blockingFacts"));
+    }
+
+    /**
+     * Treas. Reg. 1.199A-3(b)(1)(vi): each trade is reduced by the deductible part of self-employment tax
+     * attributable to that trade. The spouse's net profit is $350, under the $400 net-earnings threshold
+     * (26 U.S.C. 1402(b)(2)), so that filer's deductible self-employment tax is $0 and column (c) stays $350.
+     * Pooling both filers' deductible tax would reduce that row.
+     */
+    @Test
+    void marriedFilingJointlySplitsDeductibleSelfEmploymentTaxPerFiler() throws Exception {
+        Map<String, String> facts = florida("60000.00", "10000.00");
+        String spouse = "859c03d1-af4a-447f-96aa-d19397048a48";
+        String biz2 = "b0000000-5e00-4000-8000-000000000002";
+        facts.put("/filingStatus", enumValue("marriedFilingJointly", "/filingStatusOptions"));
+        facts.put("/maritalStatus", enumValue("married", "/maritalStatusOptions"));
+        String s = "/filers/#" + spouse + "/";
+        facts.put(s + "firstName", string("Blair"));
+        facts.put(s + "writableMiddleInitial", string("R"));
+        facts.put(s + "lastName", string("Exampleton"));
+        facts.put(s + "tin", tin("900", "00", "0002"));
+        facts.put(s + "dateOfBirth", day("1987-06-06"));
+        facts.put(s + "isUsCitizenFullYear", bool(true));
+        facts.put(s + "isBlind", bool(false));
+        facts.put(s + "isDisabled", bool(false));
+        facts.put(s + "isStudent", bool(false));
+        facts.put(s + "occupation", string("writer"));
+        facts.put(s + "canBeClaimed", bool(false));
+        facts.put("/MFJRequiredToFile", bool(true));
+        facts.put("/MFJDependentsFilingForCredits", bool(false));
+        facts.put("/scheduleCBusinesses", collection(BIZ, biz2));
+        facts.put("/scheduleCBusinesses/#" + biz2 + "/filer", collectionItem(spouse));
+        facts.put("/scheduleCBusinesses/#" + biz2 + "/businessName", string("Spouse Consulting"));
+        facts.put("/scheduleCBusinesses/#" + biz2 + "/writableGrossReceipts", dollar("350.00"));
+        facts.put("/scheduleCBusinesses/#" + biz2 + "/writableTotalExpenses", dollar("0.00"));
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(facts, biz2);
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals("3533.00", dollars(graph, "/primaryFilerDeductibleSelfEmploymentTax"));
+        assertEquals("0.00", dollars(graph, "/secondaryFilerDeductibleSelfEmploymentTax"));
+        assertEquals("46467.00", dollars(graph, "/form8995Line1iQbi"));
+        assertEquals("350.00", dollars(graph, "/form8995Line1iiQbi"));
+        assertEquals("46817.00", dollars(graph, "/form8995Line2"));
+        assertEquals(Boolean.TRUE, graph.get("/flowKnockoutScheduleCSpouseBusiness").get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph), "spouse Schedule C still prints");
+
+        try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {
+            Map<String, String> f = fieldsOnPages(doc, FOOTER);
+            amount(f, ROW_I + "f1_5[0]", 46467, "1(i)(c) primary");
+            amount(f, ROW_II + "f1_8[0]", 350, "1(ii)(c) spouse, no SE tax");
+            amount(f, "Page1[0].f1_18[0]", 46817, "2");
+        }
+    }
+
+    /** count simple primary-filer Schedule C businesses, each with $1,000 of gross receipts and no expenses. */
+    static Map<String, String> businesses(int count) {
+        Map<String, String> facts = florida("1000.00", "0.00");
+        String[] ids = new String[count];
+        for (int i = 0; i < count; i++) {
+            ids[i] = String.format("b0000000-5e00-4000-8000-00000000000%d", i + 1);
+        }
+        facts.put("/scheduleCBusinesses", collection(ids));
+        for (int i = 0; i < count; i++) {
+            String id = ids[i];
+            facts.put("/scheduleCBusinesses/#" + id + "/filer", collectionItem(W2));
+            facts.put("/scheduleCBusinesses/#" + id + "/businessName", string("Consulting " + (i + 1)));
+            facts.put("/scheduleCBusinesses/#" + id + "/writableGrossReceipts", dollar("1000.00"));
+            facts.put("/scheduleCBusinesses/#" + id + "/writableTotalExpenses", dollar("0.00"));
+            ScheduleSETy2026PdfSmokeTest.qbiAnswers(facts, id);
+        }
+        return facts;
     }
 }
