@@ -210,7 +210,10 @@
         self-employment health insurance deduction, and contributions to qualified retirement
         plans." Treas. Reg.
         1.199A-3(b)(1)(vi). The total is scheduleC /scheduleCNetProfitOrLoss minus scheduleSE
-        /deductibleSelfEmploymentTax (Schedule 1 line 15). Schedule 1 lines 16 and 17 are not part of this return.
+        /deductibleSelfEmploymentTax (Schedule 1 line 15). That subtraction is the whole deductible part.
+        When Schedule SE line 2 also includes Form 1065 box 14 code A, the deductible part has to be split
+        between the Schedule C trade and the partnership. That split is not computed, so the return stops
+        (/flowKnockoutScheduleCQbiAndK1Box14CodeA). Schedule 1 lines 16 and 17 are not part of this return.
       </Description>
       <Derived>
         <Switch>
@@ -599,6 +602,29 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Dependency path="/form8995HasQbi" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleCQbiAndK1Box14CodeA">
+      <Name>Knockout: Schedule C QBI and Form 1065 box 14 code A</Name>
+      <Description>
+        Treas. Reg. 1.199A-3(b)(1)(vi) (https://www.law.cornell.edu/cfr/text/26/1.199A-3): qualified
+        business income is reduced by the deductible part of self-employment tax "attributable to the
+        trade or business." Form 8995 line 2 subtracts the whole deductible part from Schedule C. A
+        nonzero Schedule K-1 (Form 1065) box 14 code A is also on Schedule SE line 2 (26 U.S.C. 1402(a);
+        2026 draft Schedule SE, line 2), so part of that deduction is attributable to the partnership.
+        The split is not computed. A K-1 with box 14 code A at zero does not change the self-employment
+        tax, and the whole deduction stays attributable to Schedule C. Complete false when there is no
+        Schedule C qualified business income or no nonzero box 14 code A.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/form8995HasQbi" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+          <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+        </All>
       </Derived>
     </Fact>
 

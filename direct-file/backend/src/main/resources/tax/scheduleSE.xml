@@ -47,30 +47,32 @@
     <Fact path="/primaryFilerSeNetProfit">
       <Name>Primary filer: Schedule SE line 3</Name>
       <Description>
-        Primary filer's Schedule C net profit or (loss) from all of their businesses, floored at $0 (no farm
-        or optional methods). 2026 draft Schedule SE
+        Primary filer's Schedule C net profit or (loss) plus nonfarm Schedule K-1 (Form 1065) box 14 code A.
+        The sum can be a loss. 2026 draft Schedule SE
         (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
         a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 2: "Net profit or
         (loss) from
         Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)";
         line 3: "Combine lines
         1a, 1b, and 2". Line 1a is farm profit, including farm partnerships' box 14
-        code A. This fact is Schedule C only.
-        Farm profit, the optional methods, church employee
+        code A. Farm profit, the optional methods, church employee
         income, ministry or a Form 4361 or 4029 exemption, notary
         fees, and Form 8919 wages
         stop the return (/flowKnockoutScheduleSEOutOfScope) instead of being entered as zero.
-        Box 14 code A is not added. A supported Schedule E Part II return has that box at zero. A nonzero
-        amount stops
-        the return (scheduleE /flowKnockoutScheduleEPartIIBox14CodeA; 26 U.S.C. 1402(a); 2026
-        draft Instructions for
-        Schedule SE, PDF p. 5, Partnership Income or Loss) instead of filing line 2
-        without it. An unanswered K-1
+        Box 14 code A is scheduleE /scheduleEK1Box14CodeANonfarmTotal. A reduction, farming, a
+        limited-partner amount that is not only guaranteed payments (26 U.S.C. 1402(a)(13)), a joint
+        return, or an S corporation amount stops the return (scheduleE
+        /flowKnockoutScheduleEPartIIBox14CodeA and the matching stops; 2026 draft Instructions for
+        Schedule SE, PDF p. 5, Partnership Income or Loss) instead of filing line 2 without the amount or
+        on the wrong spouse's Schedule SE. Schedule C qualified business income together with a nonzero
+        box 14 code A stops the return (form8995 /flowKnockoutScheduleCQbiAndK1Box14CodeA) because the
+        deductible part of self-employment tax is not split between the trades (Treas. Reg.
+        1.199A-3(b)(1)(vi)). An unanswered K-1
         question also stops the print (scheduleE /flowKnockoutScheduleEPartII).
         With lines 1a and 1b blank, line 3 equals
         line 2, so
         the same amount is
-        printed on both. Each spouse
+        printed on both. Line 4a is $0 when this amount is not more than zero. Each spouse
         files their own Schedule SE:
         2026 draft
         Instructions for
@@ -81,10 +83,10 @@
         businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
       </Description>
       <Derived>
-        <GreaterOf>
+        <Add>
           <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNetProfitOrLoss" />
-          <Dollar>0</Dollar>
-        </GreaterOf>
+          <Dependency module="scheduleE" path="/scheduleEK1Box14CodeANonfarmTotal" />
+        </Add>
       </Derived>
     </Fact>
 
@@ -93,18 +95,43 @@
       <Description>
         2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
         a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4a: "If line 3 is more than zero,
-        multiply line 3 by 92.35% (0.9235)". 26 U.S.C. 1402(a)(12)
+        multiply line 3 by 92.35% (0.9235)". Otherwise line 4a is $0, including when line 2 is a loss. 26 U.S.C.
+        1402(a)(12)
         (https://www.law.cornell.edu/uscode/text/26/1402#a_12): the deduction equals net earnings times one-half of the
         sum of the 1401(a) and (b) rates, so 1 - (12.4% + 2.9%) / 2 = 0.9235.
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
-        <Round>
-          <Multiply>
-            <Dependency path="/primaryFilerSeNetProfit" />
-            <Rational>9235/10000</Rational>
-          </Multiply>
-        </Round>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/primaryFilerSeNetProfit" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Round>
+                <Multiply>
+                  <Dependency path="/primaryFilerSeNetProfit" />
+                  <Rational>9235/10000</Rational>
+                </Multiply>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -769,9 +796,28 @@
     </Fact>
 
     <!--
-      Schedule SE lines this tool does not compute. Asked only after /hadSelfEmploymentIncome is yes, so a
-      return with no self-employment income stays complete false without these answers.
+      Schedule SE lines this tool does not compute. Asked when /scheduleSEOutOfScopeQuestionsApply is true:
+      Schedule C self-employment income, or a nonzero Schedule K-1 (Form 1065) box 14 code A. A return with
+      neither stays complete false without these answers.
     -->
+
+    <Fact path="/scheduleSEOutOfScopeQuestionsApply">
+      <Name>Schedule SE out-of-scope questions apply</Name>
+      <Description>
+        Farm profit (Schedule F, lines 1a and 1b), church employee income, an optional method, ministry or a
+        Form 4361 or Form 4029 exemption, notary fees, and Form 8919 wages are asked when the filer has
+        Schedule C self-employment income or a nonzero Schedule K-1 (Form 1065) box 14 code A. 26 U.S.C.
+        1402(a). A K-1-only return still has net earnings from that box. Complete false when neither applies,
+        including when /hadSelfEmploymentIncome is unanswered and box 14 code A is not nonzero.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+          <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+        </Any>
+      </Derived>
+    </Fact>
 
     <Fact path="/hadFarmSelfEmploymentIncome">
       <Name>Farm self-employment income</Name>
@@ -863,7 +909,7 @@
         are
         social-security wages for the wage-base limit. income /wagesFrom8919 is $0, so a yes stops
         the return instead of
-        leaving line 8c blank. Asked only when /hadSelfEmploymentIncome is yes.
+        leaving line 8c blank. Asked when /scheduleSEOutOfScopeQuestionsApply is true.
         Form 4137 tips already stop the return
         (unreportedTips /flowKnockoutUnreportedTips) and are
         Schedule SE line 8b.
@@ -877,20 +923,16 @@
     <Fact path="/flowKnockoutScheduleSEOutOfScope">
       <Name>Knockout: Schedule SE line this tool does not compute</Name>
       <Description>
-        Stops filing and printing when a filer who had self-employment income answers yes to farm
-        profit or
-        Conservation Reserve Program payments (Schedule SE lines 1a and 1b; 26 U.S.C. 1402(a)
-        and 1402(a)(1)), church
-        employee income (lines 5a and 5b; 1402(a)(14) and 1402(j)), an optional
-        method (line 4b and Part II; 1402(a) and
-        1402(l)), ministry or a Form 4361 or Form 4029
-        exemption (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees
-        excluded as a public office
-        (1402(c)(1)), or Form 8919 wages (line 8c). Complete and false when self-employment
-        income was
-        not asked or was answered no, and when every question is answered no. An unanswered question
-        while
-        self-employment income is yes stays incomplete, so those lines are not filed as zero.
+        Stops filing and printing when /scheduleSEOutOfScopeQuestionsApply is true and the filer answers
+        yes to farm profit or Conservation Reserve Program payments (Schedule SE lines 1a and 1b;
+        26 U.S.C. 1402(a) and 1402(a)(1)), church employee income (lines 5a and 5b; 1402(a)(14) and
+        1402(j)), an optional method (line 4b and Part II; 1402(a) and 1402(l)), ministry or a Form 4361
+        or Form 4029 exemption (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees excluded as a
+        public office (1402(c)(1)), or Form 8919 wages (line 8c). The gate is Schedule C
+        self-employment income or a nonzero Schedule K-1 (Form 1065) box 14 code A. Complete and false
+        when that gate is not true, including when /hadSelfEmploymentIncome is unanswered and box 14
+        code A is not nonzero, and when every question is answered no. An unanswered question while the
+        gate is true stays incomplete, so those lines are not filed as zero.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -900,7 +942,7 @@
             <When>
               <Not>
                 <IsComplete>
-                  <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+                  <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
                 </IsComplete>
               </Not>
             </When>
@@ -911,7 +953,7 @@
           <Case>
             <When>
               <Not>
-                <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+                <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
               </Not>
             </When>
             <Then>
@@ -1011,14 +1053,18 @@
 
     <Fact path="/scheduleCSectionIsComplete">
       <Name>Schedule C section complete</Name>
-      <Description>Interview complete for Schedule C MVP (or filer had no SE income).</Description>
+      <Description>
+        Interview complete when there is no Schedule C and no nonzero Form 1065 box 14 code A, or when
+        Schedule C is finished and the Schedule SE out-of-scope questions are answered no. A K-1-only
+        return still has to answer those questions. 26 U.S.C. 1402(a).
+      </Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
           <Case>
             <When>
               <Not>
-                <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+                <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
               </Not>
             </When>
             <Then>
@@ -1036,19 +1082,26 @@
                 <IsComplete>
                   <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
                 </IsComplete>
-                <IsComplete>
-                  <Dependency module="form8995" path="/qbiHasPriorYearLossCarryforward" />
-                </IsComplete>
-                <IsComplete>
-                  <Dependency module="form8995" path="/qbiIsCooperativePatron" />
-                </IsComplete>
-                <Dependency module="scheduleC" path="/scheduleCBusinessesIsDone" />
-                <Not>
-                  <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
-                </Not>
-                <Not>
-                  <Dependency module="scheduleC" path="/flowKnockoutScheduleCOutOfScope" />
-                </Not>
+                <Any>
+                  <Not>
+                    <Dependency module="scheduleC" path="/hadSelfEmploymentIncome" />
+                  </Not>
+                  <All>
+                    <IsComplete>
+                      <Dependency module="form8995" path="/qbiHasPriorYearLossCarryforward" />
+                    </IsComplete>
+                    <IsComplete>
+                      <Dependency module="form8995" path="/qbiIsCooperativePatron" />
+                    </IsComplete>
+                    <Dependency module="scheduleC" path="/scheduleCBusinessesIsDone" />
+                    <Not>
+                      <Dependency module="scheduleC" path="/flowKnockoutScheduleCQbi" />
+                    </Not>
+                    <Not>
+                      <Dependency module="scheduleC" path="/flowKnockoutScheduleCOutOfScope" />
+                    </Not>
+                  </All>
+                </Any>
                 <Not>
                   <Dependency path="/flowKnockoutScheduleSEOutOfScope" />
                 </Not>

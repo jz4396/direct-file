@@ -19,7 +19,8 @@ import type { ConditionString } from '../../Condition.js';
 /**
  * Schedule E Part I MVP: rental real estate and royalties (#38, spec PR #8; TY2026, filed in 2027).
  * Part I supported: net income with no depreciation and no personal use.
- * Part II supported: domestic partnership or S corporation, nonnegative box 1 only, material participation.
+ * Part II supported: domestic partnership or S corporation, nonnegative box 1, material participation.
+ * Nonfarm Form 1065 box 14 code A is Schedule SE line 2 (26 U.S.C. 1402(a)) except on a joint return.
  * Part III supported: domestic estate or trust, nonnegative box 6 only, material participation.
  * Box 8 is other rental income (26 U.S.C. 469(c)(2) and 469(c)(4)) and stops the return.
  * Part IV (REMIC, Schedule Q (Form 1066)) is asked of every filer and is an explicit stop.
@@ -195,6 +196,14 @@ export const ScheduleEIncomeSubcategory = (
             <Dollar path='/scheduleEK1s/*/box14CodeA' />
             <SaveAndOrContinueButton />
           </Screen>
+          <Screen route='schedule-e-k1-box14-scope' condition='/scheduleEK1s/*/isPartnership'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-box14-scope' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-box14-scope' />
+            <Boolean path='/scheduleEK1s/*/box14CodeAWasReduced' />
+            <Boolean path='/scheduleEK1s/*/box14CodeAIsFarm' />
+            <Boolean path='/scheduleEK1s/*/box14CodeANotLimitedPartnerAmount' />
+            <SaveAndOrContinueButton />
+          </Screen>
           <Screen route='schedule-e-k1-other'>
             <Heading i18nKey='/heading/income/schedule-e/k1-other' />
             <InfoDisplay i18nKey='/info/income/schedule-e/k1-other' />
@@ -212,6 +221,7 @@ export const ScheduleEIncomeSubcategory = (
         </SubSubcategory>
       </CollectionLoop>
       {knockout(`schedule-e-part-ii-knockout`, `/flowKnockoutScheduleEPartII`, `schedule-e-part-ii`)}
+      {knockout(`schedule-e-k1-qbi-knockout`, `/flowKnockoutScheduleCQbiAndK1Box14CodeA`, `schedule-c-k1-box14`)}
       <Screen route='schedule-e-substantial-services' condition='/hasScheduleEIncome'>
         <Heading i18nKey='/heading/income/schedule-e/substantial-services' />
         <InfoDisplay i18nKey='/info/income/schedule-e/substantial-services' />

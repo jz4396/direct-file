@@ -27,12 +27,15 @@
 #   A    Form 4361 / Form 4029 and ministry (26 U.S.C. 1402(a)(8), 1402(c)(4), 1402(e), 1402(g)):
 #        /hasMinisterOrSeExemption.
 #   1a, 1b  Schedule F farm profit and Conservation Reserve Program payments (/hadFarmSelfEmploymentIncome;
-#           26 U.S.C. 1402(a), 1402(a)(1)), and farm-partnership Schedule K-1 (Form 1065) box 14 code A.
-#           Box 14 code A is not entered as zero on a filed return. A supported Schedule E Part II K-1 has
-#           box 14 code A at zero (26 U.S.C. 1402(a)). A nonzero amount stops the return (scheduleE
-#           /flowKnockoutScheduleEPartIIBox14CodeA). An unanswered K-1 question also refuses the print
-#           (scheduleE /flowKnockoutScheduleEPartII). An answered no is complete false, so a Schedule C-only
-#           package still prints.
+#           26 U.S.C. 1402(a), 1402(a)(1)), and farm-partnership Schedule K-1 (Form 1065) box 14 code A
+#           (scheduleE /flowKnockoutScheduleEPartIIBox14CodeAFarm). Nonfarm box 14 code A is on line 2
+#           (/primaryFilerSeNetProfit includes scheduleE /scheduleEK1Box14CodeANonfarmTotal). A reduction,
+#           a limited-partner amount that is not only guaranteed payments (26 U.S.C. 1402(a)(13)), a joint
+#           return, or an S corporation amount stops the return (scheduleE
+#           /flowKnockoutScheduleEPartIIBox14CodeA). Schedule C QBI together with that amount stops the
+#           return (form8995 /flowKnockoutScheduleCQbiAndK1Box14CodeA; Treas. Reg. 1.199A-3(b)(1)(vi)).
+#           An unanswered K-1 question also refuses the print (scheduleE /flowKnockoutScheduleEPartII).
+#           An answered no is complete false, so a Schedule C-only package still prints.
 #   4b and Part II (lines 14-17), farm and nonfarm optional methods (/usesSeOptionalMethod; 26 U.S.C. 1402(a),
 #           1402(l)).
 #   5a, 5b  church employee income (/hadChurchEmployeeIncome; 26 U.S.C. 1402(a)(14), 1402(j)).
@@ -51,9 +54,7 @@ form:
     Page1[0]:
       f1_1[0]: /primaryFiler/fullName # "Name of person with self-employment income"
       f1_2[0]: /primaryFiler/tin # "Social security number of person with self-employment income"
-      # Line 2 also reads "and Schedule K-1 (Form 1065), box 14, code A (other than farming)". That amount is
-      # not in /primaryFilerSeNetProfit. A package that prints has box 14 code A at zero (supported Part II)
-      # or answered no to Schedule K-1 income, so line 2 is Schedule C only.
+      # Line 2 is Schedule C line 31 plus nonfarm Form 1065 box 14 code A (26 U.S.C. 1402(a)).
       f1_5[0]: /primaryFilerSeNetProfit # 2 "Net profit or (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)"
       f1_6[0]: /primaryFilerSeNetProfit # 3 "Combine lines 1a, 1b, and 2"
       f1_7[0]: /primaryFilerSeNetEarnings # 4a "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)"
