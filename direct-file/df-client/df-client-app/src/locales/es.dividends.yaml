@@ -22,6 +22,7 @@ headings:
   /heading/income/dividends/box-4: Ingrese la cantidad del <strong>encasillado 4</strong>, si la hay.
   /heading/income/dividends/box-5: Ingrese la cantidad del <strong>encasillado 5</strong>, si la hay.
   /heading/income/dividends/box-7: Ingrese la cantidad del <strong>encasillado 7</strong>, si la hay.
+  /heading/income/dividends/box-12: Ingrese la cantidad del <strong>encasillado 12</strong>, si la hay.
   /heading/income/dividends/unsupported-boxes: ¿Este Formulario 1099-DIV muestra algo en algún otro encasillado?
   /heading/income/dividends/nominee: ¿Recibió alguno de estos dividendos para otra persona (como nominatario)?
   /heading/knockout/dividends-holding-period:
@@ -101,11 +102,18 @@ info:
       de negocios.
   /info/income/dividends/box-7:
     body: El encasillado 7 es el impuesto extranjero pagado sobre estos dividendos.
+  /info/income/dividends/box-12:
+    body:
+      - p:
+          El encasillado 12 son dividendos de intereses exentos de un fondo mutuo u otra compañía de inversión
+          regulada. Se declaran en la línea 2a del Formulario 1040, junto con los intereses exentos de impuestos. No se
+          incluyen en los dividendos ordinarios. Deje el encasillado 12 en blanco si está vacío en su formulario.
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Responda sí si su formulario muestra una cantidad en el encasillado 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 12, 13, 14,
-          15 o 16, un país en el encasillado 8 o una marca en el encasillado 11 (requisito de declaración de FATCA)."
+          "Responda sí si su formulario muestra una cantidad en el encasillado 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 13, 14, 15
+          o 16, un país en el encasillado 8 o una marca en el encasillado 11 (requisito de declaración de FATCA). El
+          encasillado 12 se ingresa en su propia pantalla."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -156,8 +164,8 @@ info:
     alertText:
       body:
         - p:
-            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 3, 4, 5 y 7 del Formulario 1099-DIV. Necesitará
-            otra manera de presentar esta declaración.
+            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 3, 4, 5, 7 y 12 del Formulario 1099-DIV.
+            Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-nominee:
     alertText:
       body:
@@ -206,6 +214,8 @@ fields:
     name: <strong>Encasillado 5</strong> - Dividendos de la sección 199A
   /dividendReports/*/writableForeignTaxPaid:
     name: <strong>Encasillado 7</strong> - Impuesto extranjero pagado
+  /dividendReports/*/writableExemptInterestDividends:
+    name: <strong>Encasillado 12</strong> - Dividendos de intereses exentos
 checklist:
   /flow/income/dividends:
     heading: Dividendos (Formulario 1099-DIV)
@@ -227,6 +237,7 @@ dataviews:
     /dividendReports/*/writableSection199ADividends: Encasillado 5 - Dividendos de la sección 199A
     /dividendReports/*/writableForeignTaxPaid: Encasillado 7 - Impuesto extranjero pagado
     /dividendReports/*/foreignTaxElectionRequirementsMet: ¿Se cumplen todas las condiciones del impuesto extranjero?
+    /dividendReports/*/writableExemptInterestDividends: Encasillado 12 - Dividendos de intereses exentos
     /dividendReports/*/hasUnsupportedBoxes: ¿Este Formulario 1099-DIV muestra algo en otro encasillado?
     /dividendReports/*/receivedAsNominee: ¿Recibió alguno de estos dividendos como nominatario?
     primaryFiler: Sus dividendos

@@ -148,7 +148,8 @@
         Schedule B, "you must report your income on Line 3 of the PA-40, but you do not have to submit PA Schedule B."
         The adjustments that can arise from a supported 1099-DIV all stop the return instead: line 3 exempt U.S./PA
         obligation dividends and line 4 nonresident-period dividends (/flowKnockoutPaDividends), line 7 exempt-interest
-        dividends (box 12, dividends /flowKnockoutDividendUnsupportedBoxes) and line 10 capital gains distributions,
+        dividends (box 12 is Form 1040 line 2a, interest /taxExemptInterest, and stops a PA-40 on
+        /flowKnockoutPaUnsupportedIncome and /flowKnockoutPaScheduleA) and line 10 capital gains distributions,
         which p. 32 makes "taxable as dividend income on Line 3" (box 2a, /flowKnockoutPaDividends). Return-of-capital
         (box 3) is not in box 1a; p. 32: PA-taxable dividend income does not include "Distributions designated as return
         of capital ... that reduce the basis of your stock". #135 part-year: p. 43, a nonresident does not pay PA income
@@ -813,8 +814,8 @@
         shelters"; farm/Schedule F and federal Schedule C out-of-scope lines stay stopped elsewhere; PA Schedule C is
         required and not produced — /flowKnockoutPaScheduleC), p. 18 (LINE 6: full-year federal Schedule E Part I is
         /paLine6; a K-1 or a PA/FL part-year resident with Schedule E Part I still stops), pp. 13-14 (1099-R: PA
-        taxability depends on plan/age/code), 1099-MISC (must be classified), box 8 tax-exempt interest (PA taxes other
-        states' obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with
+        taxability depends on plan/age/code), 1099-MISC (must be classified), Form 1040 line 2a tax-exempt interest from 1099-INT box 8 and
+        1099-DIV box 12 exempt-interest dividends (PA taxes other states' obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with
         property sales (p. 7, not modeled). PA-only: gated on stateReturn /stateReturnPaFiled (full-year or PA/FL
         part-year PA-40), so returns with no PA-40 are not stopped by it or shown its screen. 1099-INT box 2 early
         withdrawal penalty (interest /earlyWithdrawalPenaltyTotal greater than $0): PA-40 IN (2025) p. 15, LINE 2,
@@ -1024,11 +1025,12 @@
         the booklet ties the
         requirement to the cases above, not to a dollar amount. Line 7 (PDF p. 4, LINE 7:
         "exempt-interest dividends
-        reported in Box 12 of federal Form 1099-DIV") and Lines 2, 8, 9 and 11 (Schedule K-1
+        reported in Box 12 of federal Form 1099-DIV") is Form 1040 line 2a (interest /taxExemptInterest) and stops a
+        PA-40 on /flowKnockoutPaUnsupportedIncome and /flowKnockoutPaScheduleA. Lines 2, 8, 9 and 11 (Schedule K-1
         and PA RK-1 dividends,
         Section 965 repatriation, other additions) come from 1099-DIV boxes or income that already
         stop the return
-        (dividends /flowKnockoutDividendUnsupportedBoxes covers box 12) or that this tool doesn't
+        (dividends /flowKnockoutDividendUnsupportedBoxes, which no longer includes box 12) or that this tool doesn't
         collect.
         /flowKnockoutPaDividends stops the same Line 3, Line 4 part-year and Line 10 cases with its own
         explanation;

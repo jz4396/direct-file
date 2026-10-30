@@ -1,4 +1,4 @@
-// #86 part a: Form 1099-DIV boxes 1a, 1b, 2a, 3, 4, 5 and 7.
+// #86: Form 1099-DIV boxes 1a, 1b, 2a, 3, 4, 5, 7 and 12. Box 12 is Form 1040 line 2a, not line 3b.
 // Form 1040 instr. (2025; the 2026 instructions are not yet posted) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
 // p. 26 line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
 // Form(s) 1099-DIV." p. 25 line 3a: "Enter your total qualified dividends on line 3a. Qualified dividends are also
@@ -49,6 +49,7 @@ type Div = {
   box4?: number;
   box5?: number;
   box7?: number;
+  box12?: number;
   holdingNotMet?: boolean;
   overBasis?: boolean;
   otherBoxes?: boolean;
@@ -69,6 +70,7 @@ const divItem = (f: Div) => {
     ...opt(id, `FederalTaxWithheld`, f.box4),
     ...opt(id, `Section199ADividends`, f.box5),
     ...opt(id, `ForeignTaxPaid`, f.box7),
+    ...opt(id, `ExemptInterestDividends`, f.box12),
     ...(f.box1b
       ? {
           [`/dividendReports/#${id}/qualifiedDividendsHoldingPeriodNotMet`]: createBooleanWrapper(
@@ -172,6 +174,17 @@ describe(`1099-DIV box mappings`, () => {
     const g = build(divs({ box1a: 300 }));
     expect(val(g, `/qualifiedDividends`)).toBe(`0.00`);
     expect(val(g, `/ordinaryDividends`)).toBe(`300.00`);
+  });
+  it(`box 12 is Form 1040 line 2a, not line 3b, and does not stop the return`, ({ task }) => {
+    // Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 2a: "Also include on line 2a
+    // any exempt-interest dividends from a mutual fund or other regulated investment company. This amount should be
+    // shown in box 12 of Form 1099-DIV." 26 U.S.C. 852(b)(5)(B).
+    task.meta.testedFactPaths = [`/totalExemptInterestDividends`, `/taxExemptInterest`, `/ordinaryDividends`];
+    const g = build(divs({ box1a: 500, box12: 80.4 }, { box1a: 100, box12: 19.6 }));
+    expect(val(g, `/totalExemptInterestDividends`)).toBe(`100.00`);
+    expect(val(g, `/taxExemptInterest`)).toBe(`100.00`);
+    expect(val(g, `/ordinaryDividends`)).toBe(`600.00`);
+    noKnockouts(g);
   });
   it(`box 4 backup withholding adds to Form 1040 line 25b`, ({ task }) => {
     task.meta.testedFactPaths = [

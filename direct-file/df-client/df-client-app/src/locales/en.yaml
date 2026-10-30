@@ -851,8 +851,6 @@ headings:
           In this section, we’ll ask about any <LinkModal1>interest income</LinkModal1> you received in {{/taxYear}}.
         LinkModal1:
           header: What’s interest income?
-          urls:
-            LinkFilingOptions: https://www.irs.gov/filing/individuals/how-to-file
           body:
             - p: >-
                 Interest includes income you receive from bank accounts, investments in certificates of deposit (CDs) or
@@ -874,9 +872,8 @@ headings:
                 - li: Toll road commissions
                 - li: Community redevelopment agencies issue bonds, the interest on which may be tax-exempt.
             - p: >-
-                See <strong>box 8</strong> of your copy of Form 1099-INT to see if the interest is tax-exempt. If you
-                received tax-exempt interest, Direct File doesn’t yet support reporting this type of interest income.
-                <LinkFilingOptions>Find other ways to file your federal taxes</LinkFilingOptions>.
+                See <strong>box 8</strong> of your copy of Form 1099-INT. Tax-exempt interest in box 8 is reported on
+                Form 1040, line 2a, and is not included in taxable income.
   /heading/income/interest/intro-mfj:
     helpText:
       modals:
@@ -885,8 +882,6 @@ headings:
           {{/secondaryFiler/firstName}} received in {{/taxYear}}.
         LinkModal1:
           header: What’s interest income?
-          urls:
-            LinkFilingOptions: https://www.irs.gov/filing/individuals/how-to-file
           body:
             - p: >-
                 Interest includes income you receive from bank accounts, investments in certificates of deposit (CDs) or
@@ -908,9 +903,8 @@ headings:
                 - li: Toll road commissions
                 - li: Community redevelopment agencies issue bonds, the interest on which may be tax-exempt.
             - p: >-
-                See <strong>box 8</strong> of your copy of Form 1099-INT to see if the interest is tax-exempt. If you
-                received tax-exempt interest, Direct File doesn’t yet support reporting this type of interest income.
-                <LinkFilingOptions>Find other ways to file your federal taxes</LinkFilingOptions>.
+                See <strong>box 8</strong> of your copy of Form 1099-INT. Tax-exempt interest in box 8 is reported on
+                Form 1040, line 2a, and is not included in taxable income.
   /heading/income/interest/data-import-breather:
     First, we’ll check if we can fill in some of your {{/taxYear}} Form 1099-INT information that IRS has on file.
   /heading/income/interest/data-import-breather-mfj:
@@ -2643,7 +2637,6 @@ headings:
   /heading/knockout/social-security-wages-secondary-filer:
     Direct File doesn’t yet support the amount of income {{/secondaryFiler/firstName}} received.
   /heading/knockout/forms-missing/1099-int-box-6-ko: Direct File doesn’t yet support reporting foreign tax paid.
-  /heading/knockout/forms-missing/1099-int-box-8-ko: Direct File doesn’t yet support reporting tax-exempt interest.
   /heading/knockout/forms-missing/1099-int-box-9-13-ko:
     Direct File doesn’t yet support reporting this type of interest income.
   /heading/knockout/forms-missing/1099-int-state-tax-withheld-ko:
@@ -6972,10 +6965,6 @@ info:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableForeignTaxPaid)
     body:
       - p: $t(headings./heading/knockout/forms-missing/1099-int-box-6-ko)
-  /info/knockout/forms-missing/1099-int-box-8-ko:
-    heading: $t(dataviews./flow/income/interest./interestReports/*/writableTaxExemptInterest)
-    body:
-      - p: $t(headings./heading/knockout/forms-missing/1099-int-box-8-ko)
   /info/knockout/forms-missing/1099-int-box-9-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableSpecifiedPrivateActivityBondInterest)
     body:
@@ -7407,7 +7396,7 @@ info:
           header: What interest income types aren’t yet supported in Direct File?
           body:
             - p: >-
-                Direct File doesn’t support items from <strong>boxes 6, 8–13, and 17</strong> on the 1099-INT, or
+                Direct File doesn’t support items from <strong>boxes 6, 9–13, and 17</strong> on the 1099-INT, or
                 interest income that appears on a different form like 1099-OID or 1099-B.
             - p: "You also can’t use Direct File to report the following situations:"
             - ul:
@@ -7430,7 +7419,6 @@ info:
                     You owned tax credit bonds and received a Form 1097-BTC or need to file Form 8912 to claim the tax
                     credits
                 - li: You’re reporting market discount as interest income
-                - li: You received a 1099-INT with tax-exempt interest
             - p: >-
                 If any of these unsupported situations apply to you, you’ll need to file using another tool.
                 <LinkFindOtherWaysToFile>Find other ways to file your taxes.</LinkFindOtherWaysToFile>
@@ -7445,7 +7433,7 @@ info:
           header: What interest income types aren’t yet supported in Direct File?
           body:
             - p: >-
-                Direct File doesn’t support items from <strong>boxes 6, 8–13, and 17</strong> on the 1099-INT, or
+                Direct File doesn’t support items from <strong>boxes 6, 9–13, and 17</strong> on the 1099-INT, or
                 interest income that appears on a different form like 1099-OID or 1099-B.
             - p: "You also can’t use Direct File to report the following situations:"
             - ul:
@@ -7468,7 +7456,6 @@ info:
                     You owned tax credit bonds and received a Form 1097-BTC or need to file Form 8912 to claim the tax
                     credits
                 - li: You’re reporting market discount as interest income
-                - li: You received a 1099-INT with tax-exempt interest
             - p: >-
                 If any of these unsupported situations apply to you, you’ll need to file using another tool.
                 <LinkFindOtherWaysToFile>Find other ways to file your taxes.</LinkFindOtherWaysToFile>
@@ -7577,7 +7564,10 @@ info:
                 We skip box 7, "Foreign country or U.S. territory," because we don’t need this information to calculate
                 your taxes.
   /info/income/interest/add-box-8-1099:
-    body: If box 8 is blank, leave it blank here, too.
+    body:
+      - p:
+          Box 8 is tax-exempt interest, such as interest on a municipal bond. It is reported on Form 1040, line 2a, and
+          is not included in taxable income. If box 8 is blank, leave it blank here, too.
   /info/income/interest/add-boxes-9-14-1099:
     body: If a box is blank on the 1099-INT, leave it blank here, too.
   /info/income/interest/add-boxes-15-17-1099:

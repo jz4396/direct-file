@@ -6,9 +6,11 @@ import {
   createCollectionWrapper,
   createDayWrapper,
   createDollarWrapper,
+  createEinWrapper,
   createEnumWrapper,
   createMultEnumWrapper,
   createStringWrapper,
+  createTinWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
@@ -239,6 +241,37 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       ...interest(100),
       [`/interestReports/#${intId}/writableTaxExemptInterest`]: createDollarWrapper(`500`),
     });
+    blocks(g, `/flowKnockoutPaUnsupportedIncome`);
+  });
+  it(`1099-DIV box 12 is Form 1040 line 2a and still stops a PA-40`, ({ task }) => {
+    // PA-40 Schedule B (2025) line 7: exempt-interest dividends reported in box 12. Those dividends are federal line
+    // 2a (26 U.S.C. 852(b)(5)(B)). A PA-40 still stops because line 2a is not split into PA and other-state
+    // obligations (/flowKnockoutPaUnsupportedIncome and /flowKnockoutPaScheduleA).
+    task.meta.testedFactPaths = [
+      `/taxExemptInterest`,
+      `/flowKnockoutPaUnsupportedIncome`,
+      `/flowKnockoutPaScheduleA`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+    ];
+    const divId = `86c00000-0000-4000-8000-000000000012`;
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 1535),
+      [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial: `2101` }),
+      [`/formW2s/#${w2Id}/ein`]: createEinWrapper(`99`, `9002102`),
+      '/paHasExemptObligationDividends': createBooleanWrapper(false),
+      '/dividendReports': createCollectionWrapper([divId]),
+      '/dividendReportsIsDone': createBooleanWrapper(true),
+      [`/dividendReports/#${divId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+      [`/dividendReports/#${divId}/payer`]: createStringWrapper(`Muni Fund`),
+      [`/dividendReports/#${divId}/ordinaryDividends`]: createDollarWrapper(`0`),
+      [`/dividendReports/#${divId}/writableExemptInterestDividends`]: createDollarWrapper(`400`),
+      [`/dividendReports/#${divId}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+      [`/dividendReports/#${divId}/receivedAsNominee`]: createBooleanWrapper(false),
+      [`/dividendReports/#${divId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+    });
+    expect(val(g, `/taxExemptInterest`)).toBe(`400.00`);
+    expect(get(g, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleA`).get).toBe(true);
     blocks(g, `/flowKnockoutPaUnsupportedIncome`);
   });
   describe(`Schedule C income: PA-only knockout stays off for full-year supported path`, () => {

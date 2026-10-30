@@ -801,7 +801,7 @@
         <Any>
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
           <Dependency module="interest" path="/flowKnockoutHasForeignTaxPaid" />
-          <Dependency module="interest" path="/flowKnockoutTaxExemptInterest" />
+          <!-- 1099-INT box 8 is Form 1040 line 2a (/taxExemptInterest), not an import stop. -->
           <Dependency module="interest" path="/flowKnockoutHasBonds" />
         </Any>
       </Derived>

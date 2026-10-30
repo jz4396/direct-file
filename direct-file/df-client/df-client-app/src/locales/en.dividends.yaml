@@ -20,6 +20,7 @@ headings:
   /heading/income/dividends/box-4: Enter the amount from <strong>box 4</strong>, if any.
   /heading/income/dividends/box-5: Enter the amount from <strong>box 5</strong>, if any.
   /heading/income/dividends/box-7: Enter the amount from <strong>box 7</strong>, if any.
+  /heading/income/dividends/box-12: Enter the amount from <strong>box 12</strong>, if any.
   /heading/income/dividends/unsupported-boxes: Does this 1099-DIV show anything in any other box?
   /heading/income/dividends/nominee: Did you receive any of these dividends for someone else (as a nominee)?
   /heading/knockout/dividends-holding-period: This tool doesn’t yet support box 1b dividends that aren’t qualified
@@ -88,11 +89,17 @@ info:
     body: Box 5 is section 199A dividends, which may qualify for the qualified business income deduction.
   /info/income/dividends/box-7:
     body: Box 7 is foreign tax paid on these dividends.
+  /info/income/dividends/box-12:
+    body:
+      - p:
+          Box 12 is exempt-interest dividends from a mutual fund or other regulated investment company. It is reported
+          on Form 1040, line 2a, with tax-exempt interest. It is not included in ordinary dividends. Leave box 12 blank
+          if it’s empty on your form.
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Answer yes if your form shows an amount in box 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 12, 13, 14, 15, or 16, a country
-          in box 8, or a check in box 11 (FATCA filing requirement)."
+          "Answer yes if your form shows an amount in box 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 13, 14, 15, or 16, a country in
+          box 8, or a check in box 11 (FATCA filing requirement). Box 12 is entered on its own screen."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -139,8 +146,8 @@ info:
     alertText:
       body:
         - p:
-            This tool supports only boxes 1a, 1b, 2a, 3, 4, 5, and 7 of Form 1099-DIV. You’ll need another way to file
-            this return.
+            This tool supports only boxes 1a, 1b, 2a, 3, 4, 5, 7, and 12 of Form 1099-DIV. You’ll need another way to
+            file this return.
   /info/knockout/dividends-nominee:
     alertText:
       body:
@@ -187,6 +194,8 @@ fields:
     name: <strong>Box 5</strong> - Section 199A dividends
   /dividendReports/*/writableForeignTaxPaid:
     name: <strong>Box 7</strong> - Foreign tax paid
+  /dividendReports/*/writableExemptInterestDividends:
+    name: <strong>Box 12</strong> - Exempt-interest dividends
 checklist:
   /flow/income/dividends:
     heading: Dividends (Form 1099-DIV)
@@ -207,6 +216,7 @@ dataviews:
     /dividendReports/*/writableSection199ADividends: Box 5 - Section 199A dividends
     /dividendReports/*/writableForeignTaxPaid: Box 7 - Foreign tax paid
     /dividendReports/*/foreignTaxElectionRequirementsMet: Do all of the foreign tax requirements apply?
+    /dividendReports/*/writableExemptInterestDividends: Box 12 - Exempt-interest dividends
     /dividendReports/*/hasUnsupportedBoxes: Does this 1099-DIV show anything in another box?
     /dividendReports/*/receivedAsNominee: Did you receive any of these dividends as a nominee?
     primaryFiler: Your dividends

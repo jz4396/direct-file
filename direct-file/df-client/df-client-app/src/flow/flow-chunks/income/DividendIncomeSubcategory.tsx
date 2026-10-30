@@ -20,9 +20,10 @@ import {
 import type { ConditionString } from '../../Condition.js';
 
 /**
- * Form 1099-DIV interview (#86 parts a and b): boxes 1a, 1b, 2a, 3, 4, 5 and 7.
- * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4. Every other box, and every case that can't
- * be computed yet, stops the return. Computations and cites live in backend/src/main/resources/tax/dividends.xml.
+ * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 3, 4, 5, 7 and 12.
+ * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4,
+ * line 2a includes box 12. Every other box, and every case that can't be computed yet, stops the return.
+ * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
   <Screen route={route} condition={condition} isKnockout={true}>
@@ -188,6 +189,12 @@ export const DividendIncomeSubcategory = (
           <SaveAndOrContinueButton />
         </Screen>
         {knockout(`1099-div-box-7-knockout`, `/flowKnockoutDividendForeignTaxPaid`, `dividends-foreign-tax`)}
+        <Screen route='1099-div-box-12'>
+          <Heading i18nKey='/heading/income/dividends/box-12' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-12' />
+          <Dollar path='/dividendReports/*/writableExemptInterestDividends' required={false} />
+          <SaveAndOrContinueButton />
+        </Screen>
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />
           <InfoDisplay i18nKey='/info/income/dividends/unsupported-boxes' />
