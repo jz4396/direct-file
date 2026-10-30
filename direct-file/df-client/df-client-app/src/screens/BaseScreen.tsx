@@ -8,6 +8,7 @@ import { useFactGraph } from '../factgraph/FactGraphContext.js';
 import { useCallback } from 'react';
 import { ConcretePath, FactGraph } from '@irs/js-factgraph-scala';
 import { ScreenConfig } from '../flow/ScreenConfig.js';
+import { gatedScreenRedirect } from './gatedScreenRedirect.js';
 
 /**
  * The component renders a screen within a flow of screens based on the current
@@ -64,6 +65,13 @@ function BaseScreen() {
   }
 
   if (!subcategory) throw new Error(`No subcategory found`);
+
+  // A gated screen has no single heading to render. Redirecting keeps the in-memory return;
+  // throwing would hit the site-wide error boundary and unmount it.
+  const redirectTo = gatedScreenRedirect(screenInfo, factGraph, collectionId, flow);
+  if (redirectTo) {
+    return <Navigate to={redirectTo} replace />;
+  }
 
   return (
     <Screen
