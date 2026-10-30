@@ -3,16 +3,23 @@ package gov.irs.directfile.api.pdf;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
@@ -32,12 +39,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * #89: 2026 draft Schedule R (https://www.irs.gov/pub/irs-dft/f1040sr--dft.pdf) through the real PdfService, fact
- * dictionary and application.yaml. Draft-based field map: re-verify when the final form is released.
+ * #89 / #124: 2026 Schedule R final (https://www.irs.gov/pub/irs-pdf/f1040sr.pdf, SHA-256 {@value #SCHEDULE_R_SHA},
+ * published Oct 29 2026 ET) through the real PdfService, fact dictionary and application.yaml. The final has the
+ * draft's 32 field names, no cover page, and no /TU tooltips, so the field map is checked by name and by page text.
  *
  * <p>Golden end-to-end scenario (synthetic data): single, under 65, retired on permanent and total disability, W-2
- * wages $17,000 that are taxable disability income, standard deduction. Worked figures (Schedule R (2026) draft;
- * 26 U.S.C. 22; Instructions for Schedule R (2026) draft, PDF p. 7, Table 1; Rev. Proc. 2025-32 §4.01 and §4.14):
+ * wages $17,000 that are taxable disability income, standard deduction. Worked figures (2026 Schedule R; 26 U.S.C.
+ * 22; Instructions for Schedule R (2026) draft, PDF p. 7, Table 1; Rev. Proc. 2025-32 §4.01 and §4.14):
  *
  * <pre>
  *   Part I box 2
@@ -63,7 +71,44 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * AGI $17,000 is under the Table 1 single ceiling of $17,500. Nontaxable pensions are under the $5,000 ceiling.
  */
 class ScheduleRTy2026PdfSmokeTest {
+    static final String SCHEDULE_R_SHA = "945275e6be3cc7353a3faf165ddd7ccb79e3c8a43abe6678d4c47f8207594cb5";
+    static final String SCHEDULE_R_PDF = "pdf/2026/SCHEDULE_R/en/f1040sr.pdf";
     static final String SCHEDULE_R_TITLE = "Credit for the Elderly or the Disabled";
+
+    /** Every AcroForm node on the final, in tree order. Same 32 names as the 2026 draft. */
+    static final List<String> FIELD_NAMES = List.of(
+            "topmostSubform[0]",
+            "topmostSubform[0].Page1[0]",
+            "topmostSubform[0].Page1[0].f1_1[0]",
+            "topmostSubform[0].Page1[0].f1_2[0]",
+            "topmostSubform[0].Page1[0].c1_1[0]",
+            "topmostSubform[0].Page1[0].c1_1[1]",
+            "topmostSubform[0].Page1[0].Married[0]",
+            "topmostSubform[0].Page1[0].Married[0].c1_1[0]",
+            "topmostSubform[0].Page1[0].Married[0].c1_1[1]",
+            "topmostSubform[0].Page1[0].Married[0].c1_1[2]",
+            "topmostSubform[0].Page1[0].Married[0].c1_1[3]",
+            "topmostSubform[0].Page1[0].Married[0].c1_1[4]",
+            "topmostSubform[0].Page1[0].MarriedSeparate[0]",
+            "topmostSubform[0].Page1[0].MarriedSeparate[0].c1_1[0]",
+            "topmostSubform[0].Page1[0].MarriedSeparate[0].c1_1[1]",
+            "topmostSubform[0].Page1[0].c1_2[0]",
+            "topmostSubform[0].Page2[0]",
+            "topmostSubform[0].Page2[0].f2_1[0]",
+            "topmostSubform[0].Page2[0].f2_2[0]",
+            "topmostSubform[0].Page2[0].f2_3[0]",
+            "topmostSubform[0].Page2[0].f2_4[0]",
+            "topmostSubform[0].Page2[0].f2_5[0]",
+            "topmostSubform[0].Page2[0].f2_6[0]",
+            "topmostSubform[0].Page2[0].f2_7[0]",
+            "topmostSubform[0].Page2[0].f2_8[0]",
+            "topmostSubform[0].Page2[0].f2_9[0]",
+            "topmostSubform[0].Page2[0].f2_10[0]",
+            "topmostSubform[0].Page2[0].f2_11[0]",
+            "topmostSubform[0].Page2[0].f2_12[0]",
+            "topmostSubform[0].Page2[0].f2_13[0]",
+            "topmostSubform[0].Page2[0].f2_14[0]",
+            "topmostSubform[0].Page2[0].f2_15[0]");
 
     /** Single filer under 65 with taxable disability income inside the Table 1 limits and with tax to offset. */
     static Map<String, String> disabledSingle() {
@@ -99,7 +144,8 @@ class ScheduleRTy2026PdfSmokeTest {
         }
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             String text = new PDFTextStripper().getText(doc);
-            assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "no draft cover sheet");
+            assertFalse(text.contains("DRAFT—NOT FOR FILING"), "final form");
             assertTrue(text.contains("by the end of 2026"), "2026 Schedule R, not the 2024 form");
 
             Map<String, String> scheduleR = fieldsOnPages(doc, SCHEDULE_R_TITLE, "Part III");
@@ -142,43 +188,51 @@ class ScheduleRTy2026PdfSmokeTest {
         }
     }
 
-    /** Each mapped field's tooltip on the 2026 draft names the line the field map fills. */
+    /**
+     * The final has no /TU tooltips. Each mapped field keeps the draft's name, and the page that holds its widget
+     * still prints the line the field map fills.
+     */
     @Test
-    void mappedFieldTooltipsNameTheIntendedLines() throws Exception {
+    void mappedFieldsKeepTheirNamesAndPageTextNamesTheLines() throws Exception {
         Map<String, String> expected = new LinkedHashMap<>();
         expected.put("Page1[0].f1_1[0]", "Name(s) shown on return");
         expected.put("Page1[0].f1_2[0]", "Your social security number");
-        expected.put("Page1[0].c1_1[0]", "1. You were 65 or older");
-        expected.put("Page1[0].c1_1[1]", "2. You were under 65");
-        expected.put("Married[0].c1_1[0]", "3. Both spouses were 65 or older");
-        expected.put("Married[0].c1_1[1]", "4. Both spouses were under 65, but only one spouse");
-        expected.put("Married[0].c1_1[2]", "5. Both spouses were under 65, and both retired");
-        expected.put("Married[0].c1_1[3]", "6. One spouse was 65 or older, and the other spouse was under 65 and retired");
-        expected.put("Married[0].c1_1[4]", "7. One spouse was 65 or older, and the other spouse was under 65 and not");
-        expected.put("MarriedSeparate[0].c1_1[0]", "8. You were 65 or older and you lived apart");
-        expected.put("MarriedSeparate[0].c1_1[1]", "9. You were under 65, you retired on permanent and total disability, and you lived apart");
-        expected.put("Page1[0].c1_2[0]", "you don't have to get another statement for 2026");
-        expected.put("Page2[0].f2_1[0]", "10. If you checked");
-        expected.put("Page2[0].f2_2[0]", "11. If you checked");
-        expected.put("Page2[0].f2_3[0]", "12. If you completed line 11");
-        expected.put("Page2[0].f2_4[0]", "13a.");
-        expected.put("Page2[0].f2_5[0]", "13b.");
-        expected.put("Page2[0].f2_6[0]", "13c.");
-        expected.put("Page2[0].f2_7[0]", "14. Enter the amount from Form 1040");
-        expected.put("Page2[0].f2_8[0]", "15. If you checked");
-        expected.put("Page2[0].f2_9[0]", "16. Subtract line 15 from line 14");
-        expected.put("Page2[0].f2_10[0]", "17. Enter one-half of line 16");
-        expected.put("Page2[0].f2_11[0]", "18. Add lines 13c and 17");
-        expected.put("Page2[0].f2_12[0]", "19. Subtract line 18 from line 12");
-        expected.put("Page2[0].f2_13[0]", "20. Multiply line 19 by 15%");
-        expected.put("Page2[0].f2_14[0]", "21. Tax liability limit");
-        expected.put("Page2[0].f2_15[0]", "22. Credit for the elderly or the disabled");
+        expected.put("Page1[0].c1_1[0]", "You were 65 or older");
+        expected.put("Page1[0].c1_1[1]", "You were under 65 and you retired on permanent and total disability");
+        expected.put("Married[0].c1_1[0]", "Both spouses were 65 or older");
+        expected.put("Married[0].c1_1[1]", "Both spouses were under 65, but only one spouse retired");
+        expected.put("Married[0].c1_1[2]", "Both spouses were under 65, and both retired");
+        expected.put(
+                "Married[0].c1_1[3]", "the other spouse was under 65 and retired on permanent and total disability");
+        expected.put("Married[0].c1_1[4]", "the other spouse was under 65 and not retired");
+        expected.put("MarriedSeparate[0].c1_1[0]", "You were 65 or older and you lived apart");
+        expected.put(
+                "MarriedSeparate[0].c1_1[1]",
+                "You were under 65, you retired on permanent and total disability, and you lived apart");
+        expected.put("Page1[0].c1_2[0]", "have to get another statement for 2026");
+        expected.put("Page2[0].f2_1[0]", "Box 1, 2, 4, or 7");
+        expected.put("Page2[0].f2_2[0]", "Box 6, add $5,000 to the taxable disability income");
+        expected.put("Page2[0].f2_3[0]", "If you completed line 11, enter the smaller of line 10 or line 11");
+        expected.put("Page2[0].f2_4[0]", "Nontaxable part of social security benefits");
+        expected.put("Page2[0].f2_5[0]", "Nontaxable veterans");
+        expected.put("Page2[0].f2_6[0]", "Add lines 13a and 13b");
+        expected.put("Page2[0].f2_7[0]", "Enter the amount from Form 1040 or 1040-SR");
+        expected.put("Page2[0].f2_8[0]", "Box 1 or 2");
+        expected.put("Page2[0].f2_9[0]", "Subtract line 15 from line 14");
+        expected.put("Page2[0].f2_10[0]", "Enter one-half of line 16");
+        expected.put("Page2[0].f2_11[0]", "Add lines 13c and 17");
+        expected.put("Page2[0].f2_12[0]", "Subtract line 18 from line 12");
+        expected.put("Page2[0].f2_13[0]", "Multiply line 19 by 15%");
+        expected.put("Page2[0].f2_14[0]", "Tax liability limit");
+        expected.put("Page2[0].f2_15[0]", "Credit for the elderly or the disabled");
         assertEquals(27, expected.size(), "every Part I box and Part III line");
 
         String config = new String(
                 new ClassPathResource("pdf/2026/SCHEDULE_R/en/configuration.yml").getContentAsByteArray(),
                 StandardCharsets.UTF_8);
-        assertTrue(config.toLowerCase().contains("draft"), "field map is flagged as draft-based");
+        assertTrue(config.contains("YEAR-BASED MAPPING"), "field map is flagged as year-based");
+        assertTrue(config.contains(SCHEDULE_R_SHA), "configuration pins the final SHA-256");
+        assertFalse(config.contains("skipLeadingPages"), "final has no cover page to drop");
         assertFalse(config.contains("pdf/2024/"), "field map does not point at the 2024 template");
         int mapped = 0;
         for (String line : config.split("\n")) {
@@ -188,8 +242,45 @@ class ScheduleRTy2026PdfSmokeTest {
         }
         assertEquals(expected.size(), mapped, "configuration maps each of these fields");
 
-        try (PDDocument doc = Loader.loadPDF(
-                new ClassPathResource("pdf/2026/SCHEDULE_R/en/f1040sr--dft.pdf").getContentAsByteArray())) {
+        byte[] pdf = new ClassPathResource(SCHEDULE_R_PDF).getContentAsByteArray();
+        assertEquals(
+                SCHEDULE_R_SHA,
+                HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(pdf)),
+                "committed final");
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            assertEquals(
+                    "2026 Schedule R (Form 1040)", doc.getDocumentInformation().getTitle());
+            Calendar created = doc.getDocumentInformation().getCreationDate();
+            assertEquals(2026, created.get(Calendar.YEAR));
+            assertEquals(Calendar.OCTOBER, created.get(Calendar.MONTH));
+            assertEquals(29, created.get(Calendar.DAY_OF_MONTH), "published Oct 29 2026");
+            assertEquals(2, doc.getNumberOfPages(), "no draft cover page");
+
+            List<String> names = new ArrayList<>();
+            for (PDField field : doc.getDocumentCatalog().getAcroForm().getFieldTree()) {
+                names.add(field.getFullyQualifiedName());
+                String tooltip = field.getAlternateFieldName();
+                assertTrue(tooltip == null || tooltip.isBlank(), field.getFullyQualifiedName() + " has no /TU tooltip");
+            }
+            assertEquals(FIELD_NAMES, names, "32 fields, same names as the draft");
+
+            List<String> pages = new ArrayList<>();
+            PDFTextStripper stripper = new PDFTextStripper();
+            for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                stripper.setStartPage(i + 1);
+                stripper.setEndPage(i + 1);
+                pages.add(stripper.getText(doc).replaceAll("\\s+", " "));
+            }
+            assertFalse(pages.get(0).contains("The draft you are looking for begins on the next page"));
+            assertFalse(String.join(" ", pages).contains("DRAFT—NOT FOR FILING"));
+            Map<COSDictionary, Integer> widgetPage = new HashMap<>();
+            int pageIndex = 0;
+            for (PDPage page : doc.getPages()) {
+                for (PDAnnotation annotation : page.getAnnotations()) {
+                    widgetPage.put(annotation.getCOSObject(), pageIndex);
+                }
+                pageIndex++;
+            }
             for (var e : expected.entrySet()) {
                 PDField field = null;
                 for (PDField candidate : doc.getDocumentCatalog().getAcroForm().getFieldTree()) {
@@ -198,14 +289,13 @@ class ScheduleRTy2026PdfSmokeTest {
                         field = candidate;
                     }
                 }
-                assertNotNull(field, e.getKey() + " exists on the draft");
-                String tooltip = field.getAlternateFieldName();
-                assertNotNull(tooltip, e.getKey() + " tooltip");
-                String normalized = tooltip.replaceAll("\\s+", " ");
+                assertNotNull(field, e.getKey() + " exists on the final");
+                assertEquals(1, field.getWidgets().size(), e.getKey());
+                Integer page = widgetPage.get(field.getWidgets().get(0).getCOSObject());
+                assertNotNull(page, e.getKey() + " widget page");
                 assertTrue(
-                        normalized.contains(e.getValue()),
-                        e.getKey() + " tooltip names the line: expected \"" + e.getValue() + "\" in \"" + normalized
-                                + "\"");
+                        pages.get(page).contains(e.getValue()),
+                        e.getKey() + " page text names the line: expected \"" + e.getValue() + "\"");
             }
         }
     }

@@ -49,4 +49,4 @@ c94550b7d4b735b11e9901c5dbff5dab0aa6dcbbefab04864c61cd5275cafec8  pdf/2026/IRS88
 5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35  pdf/2026/IRS8962/en/f8962--dft.pdf  pages=3  mapped=101  unmapped=40
 fcd7648601f3ce5a7a258be49c54aa1c604e1c61c1fe9175351451ac6087d8b3  pdf/2026/PA40/en/2025_pa-40.pdf  pages=2  mapped=48  unmapped=44
 cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b  pdf/2026/PA40SP/en/2025_pa-40sp.pdf  pages=8  mapped=55  unmapped=41
-0fcbd9fe296b470b2a0ceadc497380159f7d872f7aa11d86ae856bbd2234f5b6  pdf/2026/SCHEDULE_R/en/f1040sr--dft.pdf  pages=3  mapped=27  unmapped=0
+945275e6be3cc7353a3faf165ddd7ccb79e3c8a43abe6678d4c47f8207594cb5  pdf/2026/SCHEDULE_R/en/f1040sr.pdf  pages=2  mapped=27  unmapped=0
