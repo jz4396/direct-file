@@ -14,9 +14,9 @@
     https://www.federalregister.gov/d/2025-19763 (PDF: https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf)
   - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
     https://www.irs.gov/instructions/i1040sse
-  - Part III cost of goods sold: 2026 draft Schedule C, PDF p. 3, lines 33-42 and line 4
+  - Part III cost of goods sold: 2026 Schedule C, PDF p. 2, lines 33-42 and line 4
     ("Cost of goods sold (from line 42)"), SHA-256
-    287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224.
+    cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4.
     2026 draft Instructions for Schedule C, PDF p. 16 (Part III and the small-business taxpayer) and PDF p. 17
     (lines 33 and 35), SHA-256 27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9.
   - Inventories: 26 U.S.C. 471(a) (https://www.law.cornell.edu/uscode/text/26/471). Small-business methods:
@@ -806,8 +806,8 @@
     <Fact path="/scheduleCInventoryMethodOptions">
       <Name>Schedule C closing-inventory methods</Name>
       <Description>
-        2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf, SHA-256
-        287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224), PDF p. 3, line 33: "Method(s) used to value
+        2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf, SHA-256
+        cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4), PDF p. 2, line 33: "Method(s) used to value
         closing inventory: a Cost, b Lower of cost or market, c Other (attach explanation)." 2026 draft Instructions
         for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 33: "Your inventories can be
         valued at cost, the lower of cost or market, or any other method approved by the IRS." The fourth choice is the
@@ -852,7 +852,7 @@
 
     <Fact path="/scheduleCBusinesses/*/inventoryMethodIsCost">
       <Name>Line 33a, cost</Name>
-      <Description>Closing inventory is valued at cost. 2026 draft Schedule C, PDF p. 3, line 33a.</Description>
+      <Description>Closing inventory is valued at cost. 2026 Schedule C, PDF p. 2, line 33a.</Description>
       <Derived>
         <Equal>
           <Left>
@@ -867,7 +867,7 @@
 
     <Fact path="/scheduleCBusinesses/*/inventoryMethodIsLowerOfCostOrMarket">
       <Name>Line 33b, lower of cost or market</Name>
-      <Description>Closing inventory is valued at the lower of cost or market. 2026 draft Schedule C, PDF p. 3, line 33b.</Description>
+      <Description>Closing inventory is valued at the lower of cost or market. 2026 Schedule C, PDF p. 2, line 33b.</Description>
       <Derived>
         <Equal>
           <Left>
@@ -883,7 +883,7 @@
     <Fact path="/scheduleCBusinesses/*/inventoryMethodIsOther">
       <Name>Line 33c, other</Name>
       <Description>Line 33c, "Other (attach explanation)." Not cost or lower of cost or market. Stops the return. 2026
-        draft Schedule C, PDF p. 3. 2026 draft Instructions for Schedule C, PDF p. 17, Line 33.</Description>
+        Schedule C, PDF p. 2. 2026 draft Instructions for Schedule C, PDF p. 17, Line 33.</Description>
       <Derived>
         <Equal>
           <Left>
@@ -931,7 +931,7 @@
     <Fact path="/scheduleCBusinesses/*/inventoryValuationChanged">
       <Name>Change in inventory quantities, costs, or valuations</Name>
       <Description>
-        Schedule C line 34. 2026 draft Schedule C, PDF p. 3: "Was there any change in determining quantities, costs, or
+        Schedule C line 34. 2026 Schedule C, PDF p. 2: "Was there any change in determining quantities, costs, or
         valuations between opening and closing inventory? If "Yes," attach explanation." Yes stops the return. This
         tool does not compute a change in method or a section 481(a) adjustment. 2026 draft Instructions for Schedule
         C, PDF p. 17, Line 35, describes refiguring last year's closing inventory when the method changes.
@@ -1014,7 +1014,7 @@
     <Fact path="/scheduleCBusinesses/*/openingInventoryDiffersFromPriorClosing">
       <Name>Line 35 differs from last year's closing inventory</Name>
       <Description>
-        Screener for Schedule C line 35. 2026 draft Schedule C, PDF p. 3: "Inventory at beginning of year. If
+        Screener for Schedule C line 35. 2026 Schedule C, PDF p. 2: "Inventory at beginning of year. If
         different from last year's closing inventory, attach explanation." 2026 draft Instructions for Schedule C,
         PDF p. 17, Line 35: "If there is a difference between last year's closing inventory and the refigured amount,
         attach an explanation." This tool does not attach that explanation. Yes stops the return. No means line 35
@@ -1027,7 +1027,7 @@
 
     <Fact path="/scheduleCBusinesses/*/writableInventoryAtBeginning">
       <Name>Inventory at beginning of year</Name>
-      <Description>Schedule C line 35. 2026 draft Schedule C, PDF p. 3: "Inventory at beginning of year. If different
+      <Description>Schedule C line 35. 2026 Schedule C, PDF p. 2: "Inventory at beginning of year. If different
         from last year's closing inventory, attach explanation."</Description>
       <Writable>
         <Dollar />
@@ -1040,7 +1040,7 @@
     <Fact path="/scheduleCBusinesses/*/writablePurchases">
       <Name>Purchases</Name>
       <Description>Purchases included in Schedule C line 36 before subtracting items withdrawn for personal use. 2026
-        draft Schedule C, PDF p. 3, line 36: "Purchases less cost of items withdrawn for personal use."</Description>
+        Schedule C, PDF p. 2, line 36: "Purchases less cost of items withdrawn for personal use."</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1051,7 +1051,7 @@
 
     <Fact path="/scheduleCBusinesses/*/writablePersonalUseWithdrawals">
       <Name>Cost of items withdrawn for personal use</Name>
-      <Description>Subtracted from purchases to reach Schedule C line 36. 2026 draft Schedule C, PDF p. 3, line 36:
+      <Description>Subtracted from purchases to reach Schedule C line 36. 2026 Schedule C, PDF p. 2, line 36:
         "Purchases less cost of items withdrawn for personal use." Enter zero when nothing was withdrawn.</Description>
       <Writable>
         <Dollar />
@@ -1063,7 +1063,7 @@
 
     <Fact path="/scheduleCBusinesses/*/writableInventoryLabor">
       <Name>Cost of labor</Name>
-      <Description>Schedule C line 37. 2026 draft Schedule C, PDF p. 3: "Cost of labor. Do not include any amounts paid
+      <Description>Schedule C line 37. 2026 Schedule C, PDF p. 2: "Cost of labor. Do not include any amounts paid
         to yourself."</Description>
       <Writable>
         <Dollar />
@@ -1075,7 +1075,7 @@
 
     <Fact path="/scheduleCBusinesses/*/writableInventoryMaterials">
       <Name>Materials and supplies</Name>
-      <Description>Schedule C line 38. 2026 draft Schedule C, PDF p. 3: "Materials and supplies."</Description>
+      <Description>Schedule C line 38. 2026 Schedule C, PDF p. 2: "Materials and supplies."</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1086,7 +1086,7 @@
 
     <Fact path="/scheduleCBusinesses/*/writableInventoryOtherCosts">
       <Name>Other costs</Name>
-      <Description>Schedule C line 39. 2026 draft Schedule C, PDF p. 3: "Other costs." Uniform capitalization under
+      <Description>Schedule C line 39. 2026 Schedule C, PDF p. 2: "Other costs." Uniform capitalization under
         26 U.S.C. 263A (https://www.law.cornell.edu/uscode/text/26/263A) is not computed. 26 U.S.C. 263A(i)(1) turns
         section 263A off only for a taxpayer that meets the section 448(c) test and is not a tax shelter. A business
         that fails that test, or is a tax shelter, stops before these costs are used.</Description>
@@ -1100,7 +1100,7 @@
 
     <Fact path="/scheduleCBusinesses/*/writableInventoryAtEnd">
       <Name>Inventory at end of year</Name>
-      <Description>Schedule C line 41. 2026 draft Schedule C, PDF p. 3: "Inventory at end of year."</Description>
+      <Description>Schedule C line 41. 2026 Schedule C, PDF p. 2: "Inventory at end of year."</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -1111,7 +1111,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line35InventoryAtBeginning">
       <Name>Schedule C line 35</Name>
-      <Description>Inventory at beginning of year, carried to the line 40 total. 2026 draft Schedule C, PDF p. 3, line 35.</Description>
+      <Description>Inventory at beginning of year, carried to the line 40 total. 2026 Schedule C, PDF p. 2, line 35.</Description>
       <Derived>
         <Round>
           <Dependency path="../writableInventoryAtBeginning" />
@@ -1121,7 +1121,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line36PurchasesLessPersonalUse">
       <Name>Schedule C line 36</Name>
-      <Description>Purchases less cost of items withdrawn for personal use. 2026 draft Schedule C, PDF p. 3, line 36.
+      <Description>Purchases less cost of items withdrawn for personal use. 2026 Schedule C, PDF p. 2, line 36.
         Rounded half up to the nearest dollar, the same way the other Schedule C lines in this tool are rounded.</Description>
       <Derived>
         <Round>
@@ -1139,7 +1139,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line37InventoryLabor">
       <Name>Schedule C line 37</Name>
-      <Description>Cost of labor. 2026 draft Schedule C, PDF p. 3, line 37.</Description>
+      <Description>Cost of labor. 2026 Schedule C, PDF p. 2, line 37.</Description>
       <Derived>
         <Round>
           <Dependency path="../writableInventoryLabor" />
@@ -1149,7 +1149,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line38InventoryMaterials">
       <Name>Schedule C line 38</Name>
-      <Description>Materials and supplies. 2026 draft Schedule C, PDF p. 3, line 38.</Description>
+      <Description>Materials and supplies. 2026 Schedule C, PDF p. 2, line 38.</Description>
       <Derived>
         <Round>
           <Dependency path="../writableInventoryMaterials" />
@@ -1159,7 +1159,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line39InventoryOtherCosts">
       <Name>Schedule C line 39</Name>
-      <Description>Other costs. 2026 draft Schedule C, PDF p. 3, line 39.</Description>
+      <Description>Other costs. 2026 Schedule C, PDF p. 2, line 39.</Description>
       <Derived>
         <Round>
           <Dependency path="../writableInventoryOtherCosts" />
@@ -1169,7 +1169,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line40GoodsAvailable">
       <Name>Schedule C line 40</Name>
-      <Description>2026 draft Schedule C, PDF p. 3, line 40: "Add lines 35 through 39."</Description>
+      <Description>2026 Schedule C, PDF p. 2, line 40: "Add lines 35 through 39."</Description>
       <Derived>
         <Round>
           <Add>
@@ -1185,7 +1185,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line41InventoryAtEnd">
       <Name>Schedule C line 41</Name>
-      <Description>Inventory at end of year. 2026 draft Schedule C, PDF p. 3, line 41.</Description>
+      <Description>Inventory at end of year. 2026 Schedule C, PDF p. 2, line 41.</Description>
       <Derived>
         <Round>
           <Dependency path="../writableInventoryAtEnd" />
@@ -1195,7 +1195,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line42CostOfGoodsSold">
       <Name>Schedule C line 42</Name>
-      <Description>2026 draft Schedule C, PDF p. 3, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter
+      <Description>2026 Schedule C, PDF p. 2, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter
         the result here and on line 4."</Description>
       <Derived>
         <Round>
@@ -1351,7 +1351,7 @@
       <Description>
         True when Part III is otherwise the simple path: inventory, line 33a or 33b, line 34 no, the 3-prior-year
         average does not exceed $32,000,000, and the filer is not a tax shelter. The line 35 screener is asked then.
-        2026 draft Schedule C, PDF p. 3, line 35.
+        2026 Schedule C, PDF p. 2, line 35.
       </Description>
       <Derived>
         <All>
@@ -1373,7 +1373,7 @@
     <Fact path="/scheduleCBusinesses/*/line42IsNegative">
       <Name>Schedule C line 42 is below zero</Name>
       <Description>
-        2026 draft Schedule C, PDF p. 3, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter the result
+        2026 Schedule C, PDF p. 2, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter the result
         here and on line 4." True when that subtraction is below zero. The result is not replaced with zero. On the
         simple path that stops the return and leaves line 4 incomplete. Complete and false when this business has no
         inventory path.
@@ -1417,7 +1417,7 @@
     <Fact path="/scheduleCBusinesses/*/line35DiffersFromPriorYearClosing">
       <Name>Line 35 differs from last year's closing inventory</Name>
       <Description>
-        2026 draft Schedule C, PDF p. 3, line 35: "Inventory at beginning of year. If different from last year's
+        2026 Schedule C, PDF p. 2, line 35: "Inventory at beginning of year. If different from last year's
         closing inventory, attach explanation." 2026 draft Instructions for Schedule C, PDF p. 17, Line 35: "If there
         is a difference between last year's closing inventory and the refigured amount, attach an explanation." This
         tool does not attach that explanation. The screener answer is this fact on the simple path. Yes stops the
@@ -1728,7 +1728,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line1GrossReceipts">
       <Name>Schedule C line 1</Name>
-      <Description>Gross receipts or sales. 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf),
+      <Description>Gross receipts or sales. 2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf),
         line 1. 26 U.S.C. 61. The amount the filer entered, or, on a return that still uses the single expense total,
         the same derived gross receipts (unanswered treated as zero only on that older path). Unanswered on the
         line-item path stays incomplete.</Description>
@@ -1787,7 +1787,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line3">
       <Name>Schedule C line 3</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 3: subtract line 2
+      <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 3: subtract line 2
         from line 1.</Description>
       <Derived>
         <Round>
@@ -1806,7 +1806,7 @@
     <Fact path="/scheduleCBusinesses/*/line4CostOfGoodsSold">
       <Name>Schedule C line 4</Name>
       <Description>
-        Cost of goods sold. 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 4: "Cost of
+        Cost of goods sold. 2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 4: "Cost of
         goods sold (from line 42)." Zero on the single-total path, and zero when the filer says there is no inventory
         and Part III is not filled in. When simple Part III applies, line 42 is at least zero, and line 35 equals last
         year's closing inventory, line 4 is line 42 (line 40 minus line 41). A negative line 42 is not replaced with
@@ -1863,7 +1863,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line5GrossProfit">
       <Name>Schedule C line 5</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 5: gross profit,
+      <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 5: gross profit,
         subtract line 4 from line 3.</Description>
       <Derived>
         <Round>
@@ -1909,7 +1909,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line7GrossIncome">
       <Name>Schedule C line 7</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 7: gross income, add
+      <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 7: gross income, add
         lines 5 and 6. 26 U.S.C. 61.</Description>
       <Derived>
         <Round>
@@ -2128,8 +2128,8 @@
     <Fact path="/scheduleCBusinesses/*/writableAdvertising">
       <Name>Advertising</Name>
       <Description>Schedule C line 8, Advertising. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 8.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 8.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2189,8 +2189,8 @@
     <Fact path="/scheduleCBusinesses/*/writableCommissionsAndFees">
       <Name>Commissions and fees</Name>
       <Description>Schedule C line 10, Commissions and fees. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 10.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 10.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2250,8 +2250,8 @@
     <Fact path="/scheduleCBusinesses/*/writableContractLabor">
       <Name>Contract labor</Name>
       <Description>Schedule C line 11, Contract labor. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 11.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 11.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2311,8 +2311,8 @@
     <Fact path="/scheduleCBusinesses/*/writableEmployeeBenefitPrograms">
       <Name>Employee benefit programs</Name>
       <Description>Schedule C line 14, Employee benefit programs. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 14.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 14.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2372,8 +2372,8 @@
     <Fact path="/scheduleCBusinesses/*/writableInsurance">
       <Name>Insurance (other than health)</Name>
       <Description>Schedule C line 15, Insurance (other than health). Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 15.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 15.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2433,8 +2433,8 @@
     <Fact path="/scheduleCBusinesses/*/writableMortgageInterest">
       <Name>Mortgage interest</Name>
       <Description>Schedule C line 16a, Mortgage interest. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 16a.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 16a.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2494,8 +2494,8 @@
     <Fact path="/scheduleCBusinesses/*/writableOtherInterest">
       <Name>Other interest</Name>
       <Description>Schedule C line 16c, Other interest. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 16c.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 16c.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2555,8 +2555,8 @@
     <Fact path="/scheduleCBusinesses/*/writableLegalAndProfessional">
       <Name>Legal and professional services</Name>
       <Description>Schedule C line 17, Legal and professional services. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 17.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 17.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2616,8 +2616,8 @@
     <Fact path="/scheduleCBusinesses/*/writableOfficeExpense">
       <Name>Office expense</Name>
       <Description>Schedule C line 18, Office expense. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 18.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 18.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2677,8 +2677,8 @@
     <Fact path="/scheduleCBusinesses/*/writablePensionAndProfitSharing">
       <Name>Pension and profit-sharing plans</Name>
       <Description>Schedule C line 19, Pension and profit-sharing plans. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 19.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 19.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2738,8 +2738,8 @@
     <Fact path="/scheduleCBusinesses/*/writableRentOtherBusinessProperty">
       <Name>Rent of other business property</Name>
       <Description>Schedule C line 20b, Rent of other business property. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 20b.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 20b.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2799,8 +2799,8 @@
     <Fact path="/scheduleCBusinesses/*/writableRepairsAndMaintenance">
       <Name>Repairs and maintenance</Name>
       <Description>Schedule C line 21, Repairs and maintenance. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 21.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 21.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2860,8 +2860,8 @@
     <Fact path="/scheduleCBusinesses/*/writableSupplies">
       <Name>Supplies</Name>
       <Description>Schedule C line 22, Supplies. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 22.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 22.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2921,8 +2921,8 @@
     <Fact path="/scheduleCBusinesses/*/writableTaxesAndLicenses">
       <Name>Taxes and licenses</Name>
       <Description>Schedule C line 23, Taxes and licenses. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 23.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 23.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -2982,8 +2982,8 @@
     <Fact path="/scheduleCBusinesses/*/writableTravel">
       <Name>Travel</Name>
       <Description>Schedule C line 24a, Travel. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 24a.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 24a.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -3043,8 +3043,8 @@
     <Fact path="/scheduleCBusinesses/*/writableUtilities">
       <Name>Utilities</Name>
       <Description>Schedule C line 25, Utilities. Deductible under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). 2026 draft Schedule C
-        (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 25.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 25.</Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
@@ -3441,7 +3441,7 @@
     <Fact path="/scheduleCBusinesses/*/hasMorePartVExpenses">
       <Name>Has a fourth other expense</Name>
       <Description>The form has nine Part V lines. This tool supports three. A fourth stops the return. 2026 draft
-        Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), Part V.</Description>
+        Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), Part V.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -3582,7 +3582,7 @@
 
     <Fact path="/scheduleCBusinesses/*/line28">
       <Name>Schedule C line 28</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 28: total expenses
+      <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 28: total expenses
         before expenses for business use of home. Sum of the supported lines. Zero when the filer has no deductible
         expenses. Incomplete when expenses were claimed but no line was selected, or a selected amount is still blank.
         26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162).</Description>
@@ -3685,7 +3685,7 @@
 
     <Fact path="/scheduleCBusinesses/*/hasLoss">
       <Name>Schedule C line 31 is a loss</Name>
-      <Description>2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 32: complete line 32
+      <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 32: complete line 32
         only when there is a loss. 2026 draft Instructions for Schedule C
         (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16: you do not complete line 32 if line 7 is more
         than the total of lines 28 and 30. A profit is not an at-risk or passive stop.</Description>

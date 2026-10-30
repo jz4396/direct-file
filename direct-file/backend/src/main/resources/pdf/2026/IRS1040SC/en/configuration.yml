@@ -1,16 +1,16 @@
-# #239: 2026 Schedule C (Form 1040), Profit or Loss From Business. DRAFT-BASED MAPPING.
-# Source: https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf (early-release draft, "Created 5/15/26", 3 PDF pages),
+# #239: 2026 Schedule C (Form 1040), Profit or Loss From Business. FINAL form.
+# Source: https://www.irs.gov/pub/irs-pdf/f1040sc.pdf (2026 Schedule C, 2 PDF pages),
 # committed byte-identical to irs.gov; SHA-256
-# 287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224 (pinned in pdf/2026/draft-pdf-sha256.txt and
-# rechecked by DraftPdfHashManifestTest). Fields are keyed by their AcroForm tooltip, and each field's position was
-# checked against the printed line number beside it. Form page 1 = PDF p. 2, form page 2 = PDF p. 3. When the final
-# 2026 Schedule C is released (#124), re-download it, re-hash it and re-verify every field below before swapping it in.
-# Page 1 of the file is the "Caution: DRAFT—NOT FOR FILING" cover sheet; skipLeadingPages drops it after filling.
+# cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4 (pinned in pdf/2026/final-pdf-sha256.txt and
+# rechecked by FinalPdfHashManifestTest). The final has the same 116 AcroForm field names as the 2026 draft and no
+# /TU tooltips, so fields are keyed by field name. Each mapped field's rectangle matches that draft, and the printed
+# line caption beside it was checked on this file. Form page 1 = PDF p. 1, form page 2 = PDF p. 2. The final has no
+# draft cover sheet, so skipLeadingPages is 0.
 # No 2026 Spanish Schedule C exists, so Spanish returns print this English form.
 #
 # One Schedule C per business, per filer (includeForEach /scheduleCBusinesses). Instructions for Schedule C (2025),
 # PDF p. 2: "Use Schedule C (Form 1040) to report income or (loss) from a business you operated or a profession you
-# practiced as a sole proprietor." 2026 draft Schedule C, line 31: "If a profit, enter on both Schedule 1 (Form 1040),
+# practiced as a sole proprietor." 2026 Schedule C, line 31: "If a profit, enter on both Schedule 1 (Form 1040),
 # line 3, and on Schedule SE, line 2." Net earnings from self-employment: 26 U.S.C. 1402(a).
 #
 # Supported lines (26 U.S.C. 61, 162, and 274(n) for meals): 1-8, 10, 11, 14-16a, 16c, 17-19, 20b, 21-26, 27b, 28,
@@ -22,7 +22,7 @@
 #   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
 #   line 20a equipment rent, line 27a (Form 7205), line 30 (Form 8829 or the simplified method),
 #   Part IV, and Part V lines 4-9.
-# Part III (PDF p. 3) is mapped for cost or lower of cost or market: line 36 is purchases less personal-use
+# Part III (PDF p. 2) is mapped for cost or lower of cost or market: line 36 is purchases less personal-use
 # withdrawals, line 40 adds lines 35 through 39, and line 42 (line 40 minus line 41) is line 4.
 # Line 33c, line 34 yes, a 3-prior-year average over $32,000,000, a tax shelter, line 42 below zero, line 35
 # different from last year's closing inventory, and an inconsistent no-inventory method stop the return
@@ -31,7 +31,7 @@
 includeForEach: /scheduleCBusinesses
 customMaps:
   template:
-    skipLeadingPages: "1"
+    skipLeadingPages: "0"
 form:
   topmostSubform[0]:
     Page1[0]:

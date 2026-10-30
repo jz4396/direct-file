@@ -249,6 +249,7 @@ class Ty2026PdfPackageTest {
         pinnedSha256 = new HashMap<>();
         for (String manifest : List.of(
                 "pdf/2026/draft-pdf-sha256.txt",
+                "pdf/2026/final-pdf-sha256.txt",
                 "pdf/2026/state-interim-pdf-sha256.txt",
                 "pdf/2026/continuous-use-pdf-sha256.txt")) {
             try (BufferedReader r = new BufferedReader(
@@ -1094,8 +1095,8 @@ class Ty2026PdfPackageTest {
     }
 
     /**
-     * Every draft or state template under pdf/2026 that printed is pinned in its SHA-256 manifest, still matches it,
-     * and its field map is still marked draft-based or year-based.
+     * Every draft, final, or state template under pdf/2026 that printed is pinned in its SHA-256 manifest, still matches
+     * it, and its field map is still marked draft-based, final, or year-based.
      */
     static void assertTemplatePinned(String name, ConfiguredPdfProperties t) throws Exception {
         if (!t.getLocation().startsWith("pdf/2026/")) {
@@ -1110,8 +1111,8 @@ class Ty2026PdfPackageTest {
                 new ClassPathResource(t.getConfigurationLocation()).getContentAsByteArray(), StandardCharsets.UTF_8);
         if (t.getLocation().endsWith("--dft.pdf")) {
             assertTrue(config.toLowerCase().contains("draft"), name + " field map is still flagged as draft-based");
-        } else {
-            assertTrue(config.contains("YEAR-BASED MAPPING"), name + " field map is still flagged as year-based");
+        } else if (!config.contains("YEAR-BASED MAPPING")) {
+            assertTrue(config.contains("FINAL"), name + " field map is flagged as the final form");
         }
     }
 

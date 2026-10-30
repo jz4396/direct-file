@@ -6,12 +6,15 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
+
+import gov.irs.factgraph.Graph;
 
 import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.models.FactTypeWithItem;
-import gov.irs.factgraph.Graph;
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.fieldsOnPages;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
@@ -24,16 +27,17 @@ import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.selfEmploy
 import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.value;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * #239: 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf, created 5/15/26, SHA-256
- * 287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224) through the real PdfService. Draft-based field
- * map: re-verify when the final form is released (#124).
+ * #239: 2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf, SHA-256
+ * cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4) through the real PdfService. The final has no
+ * AcroForm /TU tooltips, so the field map is by field name.
  *
  * <p>Golden end-to-end scenario (synthetic data): single, one W-2 of $170,000 and one Schedule C business with
- * $30,000 of gross receipts and no expenses. 2026 draft Schedule C line 31: "If a profit, enter on both Schedule 1
+ * $30,000 of gross receipts and no expenses. 2026 Schedule C line 31: "If a profit, enter on both Schedule 1
  * (Form 1040), line 3, and on Schedule SE, line 2." Net earnings from self-employment: 26 U.S.C. 1402(a). Lines 2, 4,
  * 6 and 30 are blank, so lines 3, 5 and 7 equal line 1 and lines 29 and 31 equal line 7 minus line 28. No amount on
  * Form 1040 lines 27a, 28, 29 or 30, so Schedule 3-A is not printed.
@@ -138,7 +142,7 @@ class ScheduleCTy2026PdfSmokeTest {
     }
 
     /**
-     * Simple Part III. 2026 draft Schedule C, PDF p. 3: line 36 is purchases less personal use, line 40 adds lines 35
+     * Simple Part III. 2026 Schedule C, PDF p. 2: line 36 is purchases less personal use, line 40 adds lines 35
      * through 39, and line 42 (line 40 minus line 41) is line 4. Hand worksheet: 1,000 + (5,000 − 200) + 300 + 400 +
      * 50 = 6,550; 6,550 − 1,500 = 5,050. Line 7 and line 31 are 14,950. Rev. Proc. 2025-32 §4.30 does not stop line 1
      * of $20,000. Form 8995 still has no 2026 template, so the public package is refused for that path only.
@@ -151,8 +155,8 @@ class ScheduleCTy2026PdfSmokeTest {
                 List.of("/flowKnockoutForm8995WithoutTy2026Template"),
                 PrintRefusingKnockouts.refusingPaths(graph),
                 "supported Part III is not /flowKnockoutScheduleCOutOfScope");
-        SubmissionBlockingFactsResponseStatusException refused = assertThrows(
-                SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
+        SubmissionBlockingFactsResponseStatusException refused =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
         assertEquals(
                 List.of("/flowKnockoutForm8995WithoutTy2026Template"),
                 refused.getBody().getProperties().get("blockingFacts"));
@@ -223,8 +227,7 @@ class ScheduleCTy2026PdfSmokeTest {
         Map<String, String> unanswered = partIII("20000.00", "cost", false, false);
         unanswered.remove(biz() + "inventoryAccountingMethod");
         assertTrue(
-                PrintRefusingKnockouts.refusingPaths(graphOf(unanswered))
-                        .contains("/flowKnockoutScheduleCOutOfScope"),
+                PrintRefusingKnockouts.refusingPaths(graphOf(unanswered)).contains("/flowKnockoutScheduleCOutOfScope"),
                 "unanswered line 33 refuses the print");
     }
 
@@ -244,7 +247,8 @@ class ScheduleCTy2026PdfSmokeTest {
      * Cost or lower of cost or market, line 34 no, and the seven Part III amounts. {@code withWorksheet} uses the
      * hand-worksheet dollars; otherwise every Part III amount is zero.
      */
-    private static Map<String, String> partIII(String receipts, String method, boolean valuationChanged, boolean withWorksheet) {
+    private static Map<String, String> partIII(
+            String receipts, String method, boolean valuationChanged, boolean withWorksheet) {
         Map<String, String> facts = selfEmployed("20000.00", "20000.00", receipts);
         String b = biz();
         facts.put(b + "writableReturnsAndAllowances", dollar("0.00"));
@@ -283,12 +287,59 @@ class ScheduleCTy2026PdfSmokeTest {
     }
 
     private static Graph graphOf(Map<String, String> extra) throws Exception {
-        Map<String, FactTypeWithItem> facts = PrintRefusingKnockoutsTest.scheduleCReturn("20000.00", "20000.00", "0.00");
+        Map<String, FactTypeWithItem> facts =
+                PrintRefusingKnockoutsTest.scheduleCReturn("20000.00", "20000.00", "0.00");
         ObjectMapper mapper = new ObjectMapper();
         for (var e : extra.entrySet()) {
             facts.put(e.getKey(), mapper.readValue(e.getValue(), FactTypeWithItem.class));
         }
         return CreditFormsTy2026PdfSmokeTest.factGraphService().getGraph(facts);
+    }
+
+    /**
+     * The final has no /TU tooltips. Part III lines 33-42 are the field names in configuration.yml, and PDF page 2
+     * carries the printed captions those names fill.
+     */
+    @Test
+    void partIIIFieldsAreNamedOnTheFinalAndThePageTextNamesTheLines() throws Exception {
+        try (PDDocument doc =
+                Loader.loadPDF(new ClassPathResource("pdf/2026/IRS1040SC/en/f1040sc.pdf").getContentAsByteArray())) {
+            assertEquals(2, doc.getNumberOfPages(), "final has no draft cover sheet");
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "no draft cover");
+            assertFalse(text.contains("DRAFT—NOT FOR FILING"), "no draft watermark");
+            PDFTextStripper page2 = new PDFTextStripper();
+            page2.setStartPage(2);
+            page2.setEndPage(2);
+            String partIII = page2.getText(doc);
+            assertTrue(partIII.contains("Part III"), "PDF p. 2 is Part III");
+            assertTrue(partIII.contains("Cost of Goods Sold"), "Part III caption");
+            assertTrue(partIII.contains("Inventory at beginning of year"), "line 35 caption");
+            assertTrue(partIII.contains("Purchases less cost of items withdrawn for personal use"), "line 36 caption");
+            assertTrue(partIII.contains("Add lines 35 through 39"), "line 40 caption");
+            assertTrue(partIII.contains("Subtract line 41 from line 40"), "line 42 caption");
+            for (String name : List.of(
+                    "topmostSubform[0].Page2[0].c2_1[0]",
+                    "topmostSubform[0].Page2[0].c2_2[0]",
+                    "topmostSubform[0].Page2[0].c2_3[0]",
+                    "topmostSubform[0].Page2[0].c2_4[0]",
+                    "topmostSubform[0].Page2[0].c2_4[1]",
+                    "topmostSubform[0].Page2[0].f2_1[0]",
+                    "topmostSubform[0].Page2[0].f2_2[0]",
+                    "topmostSubform[0].Page2[0].f2_3[0]",
+                    "topmostSubform[0].Page2[0].f2_4[0]",
+                    "topmostSubform[0].Page2[0].f2_5[0]",
+                    "topmostSubform[0].Page2[0].f2_6[0]",
+                    "topmostSubform[0].Page2[0].f2_7[0]",
+                    "topmostSubform[0].Page2[0].f2_8[0]")) {
+                PDField field = doc.getDocumentCatalog().getAcroForm().getField(name);
+                assertNotNull(field, name);
+                assertTrue(
+                        field.getAlternateFieldName() == null
+                                || field.getAlternateFieldName().isBlank(),
+                        name + " has no /TU tooltip");
+            }
+        }
     }
 
     private static boolean checked(Map<String, String> fields, String suffix) {
