@@ -1,7 +1,7 @@
 // #239: Schedule C and Schedule 3-A are in the TY2026 package.
 // - Schedule C: Instructions for Schedule C (2025), PDF p. 2. 2026 draft Schedule C line 31, "If a profit, enter on
-//   both Schedule 1 (Form 1040), line 3, and on Schedule SE, line 2." 26 U.S.C. 1402(a). Form 8995 still stops a
-//   Schedule C return (Instructions for Form 1040 (2025) draft, PDF p. 35).
+//   both Schedule 1 (Form 1040), line 3, and on Schedule SE, line 2." 26 U.S.C. 1402(a). Form 8995 prints (#17).
+//   Submission still stops a Schedule C return (no MeF mapping; Instructions for Form 1040 (2025) draft, PDF p. 35).
 // - Schedule 3-A: 2026 draft Form 1040, lines 27a, 28, 29 and 30, "attach Sch. 3-A"; line 32b is the amount from
 //   Schedule 3-A. 26 U.S.C. 32, 24(d), 25A(i), 23. Part II line 8: 8 U.S.C. 1641(b). No Schedule 3-A instructions
 //   are posted yet.

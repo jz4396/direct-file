@@ -9,7 +9,7 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, primaryFilerId } from '../testData.js';
+import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, mfjFilerData, primaryFilerId, spouseId } from '../testData.js';
 
 /**
  * #87 Form 8995 (2026) draft, Created 5/1/26 (https://www.irs.gov/pub/irs-dft/f8995--dft.pdf), lines 1-17, and Form
@@ -19,6 +19,10 @@ import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, primaryFilerId } 
  */
 const biz1 = `f8995000-0000-4000-8000-000000000001`;
 const biz2 = `f8995000-0000-4000-8000-000000000002`;
+const biz3 = `f8995000-0000-4000-8000-000000000003`;
+const biz4 = `f8995000-0000-4000-8000-000000000004`;
+const biz5 = `f8995000-0000-4000-8000-000000000005`;
+const biz6 = `f8995000-0000-4000-8000-000000000006`;
 const div = `f8995000-0000-4000-8000-0000000000d1`;
 
 const noW2 = {
@@ -97,6 +101,9 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     expect(val(g, `/deductibleSelfEmploymentTax`)).toBe(`3533.00`);
     expect(val(g, `/agi`)).toBe(`46467.00`);
     expect(val(g, `/form8995Line2`)).toBe(`46467.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`46467.00`);
+    expect(val(g, `/form8995Line18Pdf`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line19Pdf`)).toBe(`0.00`);
     expect(val(g, `/form8995Line4`)).toBe(`46467.00`);
     expect(val(g, `/form8995Line5`)).toBe(`9293.00`); // round(9,293.40)
     expect(val(g, `/form8995Line10`)).toBe(`9293.00`);
@@ -153,17 +160,20 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     task.meta.testedFactPaths = [`/form8995Line4`, `/form8995Line17`, `/form8995Line18`];
     const g = fg({ ...noW2, ...scheduleC(business(biz1, 1000, 6000), [biz1]) });
     expect(val(g, `/form8995Line2`)).toBe(`-5000.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`-5000.00`);
     expect(val(g, `/form8995Line4`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line18Pdf`)).toBe(`5000.00`);
     expect(val(g, `/form8995Line17`)).toBe(`0.00`);
     expect(val(g, `/form8995Line18`)).toBe(`-5000.00`);
     expect(val(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`0.00`);
     expectNoQbiKnockout(g);
   });
 
-  it(`Form 8995 has no TY2026 template: knocked out at or below the threshold and in a loss year`, ({ task }) => {
+  it(`Form 8995 PDF prints; submission stays blocked at or below the threshold and in a loss year`, ({ task }) => {
     // Instructions for Form 1040 (2025) draft (no 2026 draft yet), PDF p. 35, QBI line (13b on the 2026 form):
-    // "Attach whichever form you use (Form 8995 or 8995-A) to your return." 2026 Instructions for Form 8995 draft,
-    // PDF p. 6, line 18: "This is the amount to be carried forward to the next year."
+    // "Attach whichever form you use (Form 8995 or 8995-A) to your return." The 2026 draft prints (#17). There is
+    // still no MeF mapping, so sign and submit stay blocked. 2026 Instructions for Form 8995 draft, PDF p. 6,
+    // line 18: "This is the amount to be carried forward to the next year."
     task.meta.testedFactPaths = [`/flowKnockoutForm8995WithoutTy2026Template`, `/flowIsKnockedOut`];
     const computed = fg({ ...noW2, ...scheduleC(business(biz1, 60000, 10000), [biz1]) });
     expect(val(computed, `/flowKnockoutQbiAboveThreshold`)).toBe(`false`);
@@ -226,8 +236,55 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
       ...scheduleC({ ...business(biz1, 30000, 0), ...business(biz2, 20000, 0) }, [biz1, biz2]),
     });
     expect(val(both, `/form8995Line2`)).toBe(`46467.00`);
+    // 30,000 and 20,000 positive nets. Plug is the larger row. Round(3,533 x 20,000 / 50,000) = 1,413.
+    // 30,000 - (3,533 - 1,413) = 27,880 and 20,000 - 1,413 = 18,587.
+    expect(val(both, `/form8995Line1iQbi`)).toBe(`27880.00`);
+    expect(val(both, `/form8995Line1iiQbi`)).toBe(`18587.00`);
     expect(val(both, `/form8995Line17`)).toBe(`6073.00`);
     expectNoQbiKnockout(both);
+  });
+
+  it(`more than five Schedule C businesses stops the return; five do not`, ({ task }) => {
+    // 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: attach a statement. This package does not.
+    task.meta.testedFactPaths = [`/flowKnockoutForm8995MoreThanFiveBusinesses`, `/flowIsKnockedOut`];
+    const ids = [biz1, biz2, biz3, biz4, biz5, biz6];
+    const rows = Object.assign({}, ...ids.map((id, i) => business(id, 1000, 0)));
+    const six = fg({ ...noW2, ...scheduleC(rows, ids) });
+    expect(val(six, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`true`);
+    expect(val(six, `/flowIsKnockedOut`)).toBe(`true`);
+    const fiveIds = ids.slice(0, 5);
+    const fiveRows = Object.assign({}, ...fiveIds.map((id) => business(id, 1000, 0)));
+    const five = fg({ ...noW2, ...scheduleC(fiveRows, fiveIds) });
+    expect(val(five, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`false`);
+  });
+
+  it(`MFJ splits deductible self-employment tax per filer`, ({ task }) => {
+    // Treas. Reg. 1.199A-3(b)(1)(vi). Spouse net $350 is under the $400 net-earnings threshold
+    // (26 U.S.C. 1402(b)(2)), so that row's column (c) stays $350.
+    task.meta.testedFactPaths = [
+      `/primaryFilerDeductibleSelfEmploymentTax`,
+      `/secondaryFilerDeductibleSelfEmploymentTax`,
+      `/form8995Line1iQbi`,
+      `/form8995Line1iiQbi`,
+      `/form8995Line2`,
+    ];
+    const g = fg({
+      ...noW2,
+      ...mfjFilerData,
+      ...scheduleC(
+        {
+          ...business(biz1, 60000, 10000),
+          ...business(biz2, 350, 0),
+          [`/scheduleCBusinesses/#${biz2}/filer`]: createCollectionItemWrapper(spouseId),
+        },
+        [biz1, biz2]
+      ),
+    });
+    expect(val(g, `/primaryFilerDeductibleSelfEmploymentTax`)).toBe(`3533.00`);
+    expect(val(g, `/secondaryFilerDeductibleSelfEmploymentTax`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`46467.00`);
+    expect(val(g, `/form8995Line1iiQbi`)).toBe(`350.00`);
+    expect(val(g, `/form8995Line2`)).toBe(`46817.00`);
   });
 
   it(`unanswered carryforward or cooperative question never passes`, ({ task }) => {

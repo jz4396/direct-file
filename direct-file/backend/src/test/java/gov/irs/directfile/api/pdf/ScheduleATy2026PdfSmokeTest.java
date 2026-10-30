@@ -85,7 +85,7 @@ class ScheduleATy2026PdfSmokeTest {
                 return in.readAllBytes();
             }
         }
-        // A Schedule C return (Schedule SE tests) is still refused by Form 8995; its other forms are still filled.
+        // Form 8995 prints (#17). A return another knockout still refuses is filled here for its field maps.
         return PrintRefusingKnockoutsTest.printForFieldMaps(pdfService, taxReturn, factGraphService.getGraph(facts));
     }
 

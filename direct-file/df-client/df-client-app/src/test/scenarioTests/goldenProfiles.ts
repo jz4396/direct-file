@@ -522,7 +522,8 @@ export const profileEPaToFlAmtDividends = {
  * Profile F: full-year Pennsylvania resident, head of household, one child. W-2 wages plus one Schedule C
  * (single expense total) sized so taxable income before the section 199A deduction is exactly the head-of-household
  * Form 8995 threshold, and the $40,400 SALT cap produces Form 6251 AMT. PA-40 line 4 stays $0: any Schedule C on a
- * PA-40 stops the return. Form 8995 is computed and the print stops because there is no TY2026 template.
+ * PA-40 stops the return. Form 8995 is computed and the PDF prints (#17). Submission still stops because there
+ * is no MeF mapping.
  */
 const skyler: Person = { first: `Skyler`, last: `Example`, ssn: [`444`, `00`, `1007`], dob: `1985-04-12` };
 export const profileFBusinessId = `13500000-0000-4000-8000-000000000f01`;

@@ -150,6 +150,7 @@
           <Dependency module="form8995" path="/flowKnockoutQbiCooperativePatron" />
           <Dependency module="form8995" path="/flowKnockoutQbiMixedParticipation" />
           <Dependency module="form8995" path="/flowKnockoutForm8995WithoutTy2026Template" />
+          <Dependency module="form8995" path="/flowKnockoutForm8995MoreThanFiveBusinesses" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleAUnsupported" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleACharitableLimit" />
           <Dependency module="scheduleA" path="/flowKnockoutScheduleAOverallLimit" />

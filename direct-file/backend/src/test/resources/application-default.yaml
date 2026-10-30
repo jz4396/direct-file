@@ -282,6 +282,14 @@ direct-file:
         configuration-location: "src/main/resources/pdf/2026/IRS8880/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
+      - name: IRS8995
+        year: 2026
+        language-code: en
+        location: "src/main/resources/pdf/2026/IRS8995/en/f8995--dft.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/IRS8995/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
       - name: IRS1040SSE
         year: 2026
         language-code: en

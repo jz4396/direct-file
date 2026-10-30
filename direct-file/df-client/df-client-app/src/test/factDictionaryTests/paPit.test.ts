@@ -310,7 +310,7 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       // #87: Form 8995 computes the QBI deduction, so the federal QBI knockout is off too.
       expect(get(g, `/flowKnockoutScheduleCQbi`).get).toBe(false);
       // Instructions for Form 1040 (2025) draft, PDF p. 35: "Attach whichever form you use (Form 8995 or 8995-A) to
-      // your return." There is no TY2026 Form 8995 template or MeF mapping, so a return that must attach it is stopped.
+      // your return." The PDF prints (#17). Submission still stops because there is no MeF mapping.
       expect(get(g, `/form8995Required`).get).toBe(true);
       expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
       // Schedule C prints (#239). Instructions for Schedule C (2025), PDF p. 2; 2026 draft Schedule C line 31

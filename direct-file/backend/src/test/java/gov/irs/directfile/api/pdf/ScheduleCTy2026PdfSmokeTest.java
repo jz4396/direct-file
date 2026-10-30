@@ -145,23 +145,20 @@ class ScheduleCTy2026PdfSmokeTest {
      * Simple Part III. 2026 Schedule C, PDF p. 2: line 36 is purchases less personal use, line 40 adds lines 35
      * through 39, and line 42 (line 40 minus line 41) is line 4. Hand worksheet: 1,000 + (5,000 − 200) + 300 + 400 +
      * 50 = 6,550; 6,550 − 1,500 = 5,050. Line 7 and line 31 are 14,950. Rev. Proc. 2025-32 §4.30 does not stop line 1
-     * of $20,000. Form 8995 still has no 2026 template, so the public package is refused for that path only.
+     * of $20,000. Form 8995 prints (#17). Submission stays blocked because there is no MeF mapping.
      */
     @Test
     void simplePartIIIPrintsLine4AndDoesNotUseTheInventoryStop() throws Exception {
         Map<String, String> facts = partIII("20000.00", "cost", false, true);
         Graph graph = graphOf(facts);
         assertEquals(
-                List.of("/flowKnockoutForm8995WithoutTy2026Template"),
+                List.of(),
                 PrintRefusingKnockouts.refusingPaths(graph),
                 "supported Part III is not /flowKnockoutScheduleCOutOfScope");
-        SubmissionBlockingFactsResponseStatusException refused =
-                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
-        assertEquals(
-                List.of("/flowKnockoutForm8995WithoutTy2026Template"),
-                refused.getBody().getProperties().get("blockingFacts"));
+        assertEquals(Boolean.TRUE, graph.get("/flowKnockoutForm8995WithoutTy2026Template").get());
+        assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get());
 
-        byte[] bytes = generate(facts);
+        byte[] bytes = generatePublicPrint(facts);
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
             amount(sc, "Page1[0].f1_13[0]", 20000, "1");

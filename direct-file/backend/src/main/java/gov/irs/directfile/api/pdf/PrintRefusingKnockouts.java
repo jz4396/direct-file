@@ -166,6 +166,14 @@ public final class PrintRefusingKnockouts {
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
             "/flowKnockoutScheduleCQbi",
+            // More than five Schedule C businesses. 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: "If you
+            // have more than five trades or businesses, attach a statement with the name and taxpayer identification
+            // number of the trade(s) or business(es) and include the income and loss from those trade(s) or
+            // business(es) in the total for line 2." This package does not attach that statement. Column (c) is split
+            // only across lines 1(i) through 1(v), so a sixth business would be omitted while line 2 still included
+            // it. Complete false when Form 8995 is not required, the business list is not finished, or the finished
+            // list has five or fewer.
+            "/flowKnockoutForm8995MoreThanFiveBusinesses",
             // Schedule C line this tool does not compute. Part III cost of goods sold is figured for cost or
             // lower of cost or market with line 34 no, line 42 at least zero, line 35 equal to last year's closing
             // inventory, a 3-prior-year average that does not exceed $32,000,000, and the filer not a tax shelter
@@ -192,12 +200,6 @@ public final class PrintRefusingKnockouts {
             // Form 1065 box 14 code A, or when every question is answered no. An unanswered question while
             // either applies refuses the print. 26 U.S.C. 1402(a).
             "/flowKnockoutScheduleSEOutOfScope",
-            // Form 8995 goes with every return that has Schedule C QBI or loss: Instructions for Form 1040 (2025)
-            // draft,
-            // PDF p. 35, QBI line (13b on the 2026 form), "Attach whichever form you use (Form 8995 or 8995-A) to your
-            // return."; 2026 Instructions for Form 8995 draft, PDF p. 6, line 18, "This is the amount to be carried
-            // forward to the next year." There is no TY2026 Form 8995 template or MeF mapping, so it would be left off.
-            "/flowKnockoutForm8995WithoutTy2026Template",
             // Form 6251 lines 2c-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4 would combine
             // lines 1b through 3 as if the adjustments were zero. Form 6251 (2026) draft,
             // https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, PDF p. 2 (form p. 1), line 2i: "Exercise of incentive
