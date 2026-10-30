@@ -40,12 +40,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * #124 template-swap harness. Covers every PDF template configured for tax year 2026 in application.yaml (the 2026
- * drafts and interim state forms under pdf/2026, plus the earlier-year templates still configured for 2026), so that
- * swapping a draft for the final form is one change:
+ * drafts, finals, and interim state forms under pdf/2026, plus the earlier-year templates still configured for 2026),
+ * so swapping a draft for the final form is one change:
  *
  * <ol>
- *   <li>replace the PDF (and its row in pdf/2026/draft-pdf-sha256.txt, state-interim-pdf-sha256.txt, or
- *       continuous-use-pdf-sha256.txt);
+ *   <li>replace the PDF (and its row in pdf/2026/draft-pdf-sha256.txt, final-pdf-sha256.txt,
+ *       state-interim-pdf-sha256.txt, or continuous-use-pdf-sha256.txt);
  *   <li>run {@code ./mvnw test -Dtest=Ty2026TemplateSwapHarnessTest -Dty2026.templates.write=true} to rewrite
  *       {@value #MANIFEST} and {@value #UNMAPPED} under src/test/resources;
  *   <li>fix every mapped field this test reports as missing or skipped, then review the diff of the two files: a changed
@@ -63,6 +63,7 @@ class Ty2026TemplateSwapHarnessTest {
     private static final Path GOLDEN_DIR = Path.of("src/test/resources/pdf/2026");
     private static final List<String> SOURCE_MANIFESTS = List.of(
             "pdf/2026/draft-pdf-sha256.txt",
+            "pdf/2026/final-pdf-sha256.txt",
             "pdf/2026/state-interim-pdf-sha256.txt",
             "pdf/2026/continuous-use-pdf-sha256.txt");
     private static final int TOOLTIP_CHARS = 72;

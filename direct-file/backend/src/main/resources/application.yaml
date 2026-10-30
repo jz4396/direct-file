@@ -335,7 +335,7 @@ direct-file:
       - name: IRS1040SC
         year: 2026
         language-code: en
-        location: pdf/2026/IRS1040SC/en/f1040sc--dft.pdf
+        location: pdf/2026/IRS1040SC/en/f1040sc.pdf
         location-type: classpath
         configuration-location: pdf/2026/IRS1040SC/en/configuration.yml
         configuration-location-type: classpath

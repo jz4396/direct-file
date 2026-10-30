@@ -1,0 +1,7 @@
+# SHA-256 of final IRS PDFs committed under pdf/2026, as downloaded from irs.gov/pub/irs-pdf.
+# Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the committed files by
+# FinalPdfHashManifestTest. A final has no draft cover sheet and no AcroForm /TU tooltips, so a field map
+# uses field names and the printed line captions.
+# #124 swap: then run Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true; it fails on any mapped field
+# missing from the new AcroForm and rewrites the hash/unmapped-field manifests under src/test/resources/pdf/2026.
+cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4  IRS1040SC/en/f1040sc.pdf  https://www.irs.gov/pub/irs-pdf/f1040sc.pdf

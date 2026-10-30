@@ -1,7 +1,7 @@
 # SHA-256 of IRS early-release draft PDFs committed under pdf/2026, as downloaded from irs.gov/pub/irs-dft.
 # Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the committed files by
 # DraftPdfHashManifestTest. Drafts are replaced by final forms later: re-download, re-hash and re-verify the
-# field map before updating a line here.
+# field map, delete the row here, and pin the final in final-pdf-sha256.txt.
 # #124 swap: then run Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true; it fails on any mapped field
 # missing from the new AcroForm and rewrites the hash/unmapped-field manifests under src/test/resources/pdf/2026.
 a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc  IRS6251/en/f6251--dft.pdf  https://www.irs.gov/pub/irs-dft/f6251--dft.pdf
@@ -25,5 +25,4 @@ aa6272f6b3b8a8c6a2aa6ef9d1069f1edb88fb9df4df60278d198da89cdfd93f  IRS1040SB/en/f
 0bee231f1ecb2470fb884b1f9cee7707eddee8994ce479fc563850b2dd3c5aed  IRS1040SE/en/f1040se--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040se--dft.pdf
 0fcbd9fe296b470b2a0ceadc497380159f7d872f7aa11d86ae856bbd2234f5b6  SCHEDULE_R/en/f1040sr--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040sr--dft.pdf
 fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3  IRS1040EIC/en/f1040sei--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf
-287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224  IRS1040SC/en/f1040sc--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf
 787e1ae1eaa3e23a184074d0f437f6b2a8fe3f01290f366201f14eeecc82b8db  IRS1040S3A/en/f1040s3a--dft.pdf  https://www.irs.gov/pub/irs-dft/f1040s3a--dft.pdf

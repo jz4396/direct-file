@@ -28,7 +28,7 @@ A return that only stored one expense total still uses that total, and lines 2, 
 
 Supported on that path: lines 1 through 8, 10, 11, 14, 15, 16a, 16c, 17 through 19, 20b, and 21 through 26. Line 24b is half of the meals entered, rounded half up (26 U.S.C. 274(n)). Part V accepts three other expenses; their total is lines 48 and 27b. Line 28 is the sum. Line 31 is line 7 minus line 28 (line 30 is blank because a home office stops the return). Two or more businesses still add into Schedule 1 line 3 and, for one filer, into Schedule SE line 2 before the 92.35 percent factor. A loss with material participation and every investment at risk (line 32a) flows. Anything else below stops the return, and an unanswered required amount stays incomplete rather than zero.
 
-Simple Part III is figured. 2026 draft Schedule C, PDF p. 3, line 4: "Cost of goods sold (from line 42)." Line 35 is inventory at the beginning of the year. Line 36 is "Purchases less cost of items withdrawn for personal use" (purchases and withdrawals are entered separately; the form has no separate personal-use line). Line 37 is cost of labor, not including amounts paid to yourself. Line 38 is materials and supplies. Line 39 is other costs. Line 40: "Add lines 35 through 39." Line 41 is inventory at the end of the year. Line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter the result here and on line 4." Each of those derived lines is rounded half up to the nearest dollar, the same way the other Schedule C lines in this tool are rounded. The result is Schedule C line 4, then line 5, line 7, line 31, Schedule 1 line 3, and Schedule SE line 2.
+Simple Part III is figured. 2026 Schedule C, PDF p. 2, line 4: "Cost of goods sold (from line 42)." Line 35 is inventory at the beginning of the year. Line 36 is "Purchases less cost of items withdrawn for personal use" (purchases and withdrawals are entered separately; the form has no separate personal-use line). Line 37 is cost of labor, not including amounts paid to yourself. Line 38 is materials and supplies. Line 39 is other costs. Line 40: "Add lines 35 through 39." Line 41 is inventory at the end of the year. Line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter the result here and on line 4." Each of those derived lines is rounded half up to the nearest dollar, the same way the other Schedule C lines in this tool are rounded. The result is Schedule C line 4, then line 5, line 7, line 31, Schedule 1 line 3, and Schedule SE line 2.
 
 That path applies only when the business has inventory, line 33 is cost (33a) or lower of cost or market (33b), line 34 is no, line 42 is at least zero, line 35 equals last year's closing inventory, the filer is not a tax shelter, and the average annual gross receipts for the 3 prior tax years do not exceed $32,000,000. Rev. Proc. 2025-32 §4.30, PDF p. 23: the § 448(c) test "does not exceed $32,000,000." The instructions, PDF p. 16, say a small business taxpayer has "average annual gross receipts of $32 million or less for the 3 prior tax years (indexed for inflation), and (b) are not a tax shelter (as defined in section 448(d)(3))." 26 U.S.C. 471(c)(1) and 263A(i)(1) use that test. The filer enters the 3-prior-year average. This year's line 1 is not the test. An average equal to $32,000,000 still uses simple Part III. An average greater than $32,000,000 stops it. A tax shelter stops it. Line 42 below zero is not replaced with zero; it stops the return. Line 35 different from last year's closing inventory stops the return because the form says to attach an explanation. Section 263A uniform capitalization is not computed, and neither is a LIFO or other method.
 
@@ -48,7 +48,7 @@ Stopped, and not printed as zero: Part III when it cannot be figured (line 33c, 
 - QBI § 199A computation (knocked out)
 - EITC / CDCC earned income from a Schedule C loss, and CDCC on a joint return with a Schedule C (knocked out, see above). A profit is included: Schedule SE line 3 minus Schedule 1 line 15 (Form 1040 instructions (2025) EIC Worksheet B, PDF p. 47; 2026 draft Form 2441 instructions, PDF p. 5)
 - MFJ spouse-owned business (per-spouse Schedule SE facts exist; the knockout stays until EITC/CDCC earned income is per spouse and a Schedule SE PDF prints for each spouse)
-- Public print of a Schedule C return is still refused because Form 8995 has no 2026 template. The Schedule C draft itself is mapped. No MeF for these lines yet. The Spanish Schedule C draft is not in the package.
+- Public print of a Schedule C return is still refused because Form 8995 has no 2026 template. The 2026 Schedule C final is mapped. No MeF for these lines yet. The Spanish Schedule C draft is not in the package.
 
 ## Primary sources
 
@@ -67,7 +67,7 @@ Stopped, and not printed as zero: Part III when it cannot be figured (line 33c, 
 | Gross receipts test | IRC § 448(c) | https://www.law.cornell.edu/uscode/text/26/448 |
 | Tax shelter | IRC § 448(d)(3) | https://www.law.cornell.edu/uscode/text/26/448 |
 | Gross receipts test amount, taxable years beginning in 2026 | Rev. Proc. 2025-32 §4.30, PDF p. 23 | https://www.irs.gov/pub/irs-drop/rp-25-32.pdf |
-| Schedule C lines 4 and 33–42 | 2026 draft Schedule C, PDF p. 3, SHA-256 287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224 | https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf |
+| Schedule C lines 4 and 33–42 | 2026 Schedule C, PDF p. 2, SHA-256 cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4 | https://www.irs.gov/pub/irs-pdf/f1040sc.pdf |
 | Part III and the small-business exception | 2026 draft Instructions for Schedule C, PDF pp. 16–17 | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf |
 | TY2026 wage base $184,500 | SSA Contribution and Benefit Base | https://www.ssa.gov/oact/cola/cbb.html |
 | Same (Federal Register) | 90 FR 49047, at 49047 and 49050 (Nov. 3, 2025), FR Doc. 2025-19763 | https://www.federalregister.gov/d/2025-19763 · PDF https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf |
@@ -83,9 +83,9 @@ Stopped, and not printed as zero: Part III when it cannot be figured (line 33c, 
 
 > § 164(f)(1): "there shall be allowed as a deduction for the taxable year an amount equal to one-half of the taxes imposed by section 1401 (other than the taxes imposed by section 1401(b)(2)) for such taxable year."
 
-> 2026 draft Schedule C, PDF p. 3, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter the result here and on line 4." Line 40: "Add lines 35 through 39." Line 36: "Purchases less cost of items withdrawn for personal use."
+> 2026 Schedule C, PDF p. 2, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter the result here and on line 4." Line 40: "Add lines 35 through 39." Line 36: "Purchases less cost of items withdrawn for personal use."
 
-> 2026 draft Schedule C, PDF p. 3, line 35: "Inventory at beginning of year. If different from last year's closing inventory, attach explanation."
+> 2026 Schedule C, PDF p. 2, line 35: "Inventory at beginning of year. If different from last year's closing inventory, attach explanation."
 
 > 2026 draft Instructions for Schedule C, PDF p. 16: "If, however, you choose to keep an inventory, you must generally value the inventory each year to determine your cost of goods sold in Part III of Schedule C." Small business taxpayer: "You qualify as a small business taxpayer if you (a) have average annual gross receipts of $32 million or less for the 3 prior tax years (indexed for inflation), and (b) are not a tax shelter (as defined in section 448(d)(3))."
 

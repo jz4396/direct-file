@@ -620,72 +620,59 @@ pdf/2026/IRS1040SB/en/f1040sb--dft.pdf	topmostSubform[0].Page1[0].c1_2[0]	Btn	7a
 pdf/2026/IRS1040SB/en/f1040sb--dft.pdf	topmostSubform[0].Page1[0].c1_2[1]	Btn	7a. No.
 pdf/2026/IRS1040SB/en/f1040sb--dft.pdf	topmostSubform[0].Page1[0].f1_65[0]	Tx	7b. If you are required to file F i n C E N Form 114, list the name(s) o...
 pdf/2026/IRS1040SB/en/f1040sb--dft.pdf	topmostSubform[0].Page1[0].f1_66[0]	Tx	7b. Line 2 of 2.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_3[0]	Tx	A. Principal business or profession, including product or service (see i...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_4[0]	Tx	B. Enter code from instructions.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].BoxD[0].f1_6[0]	Tx	D. Employer I D number (E I N), (see instr.).
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_7[0]	Tx	E. Business name. Number and street. If you have a post office box, see ...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_8[0]	Tx	E. Apt. no.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_9[0]	Tx	E. City, town, or post office.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_10[0]	Tx	E. State.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_11[0]	Tx	E. Z I P code.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_1[0]	Btn	F. Accounting method: (1). Cash.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_1[1]	Btn	F. (2). Accrual.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_1[2]	Btn	F. (3). Other.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_12[0]	Tx	F. (3). Other (specify).
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_3[0]	Btn	H. If you started or acquired this business during 2026, check here.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	I. Did you make any payments in 2026 that would require you to file Form...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_4[1]	Btn	I. No.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_5[0]	Btn	J. If "Yes," did you or will you file required Form(s) 1099? Yes.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].c1_5[1]	Btn	J. No.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].Line1_ReadOrder[0].c1_6[0]	Btn	Part I. Income. 1. Gross receipts or sales. See instructions for line 1 ...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_21[0]	Tx	9. Car and truck expenses (see instructions).
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_24[0]	Tx	12. Depletion.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_25[0]	Tx	13. Depreciation and section 179 expense deduction (not included in Part...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_29[0]	Tx	16b. Vehicle loan.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_35[0]	Tx	20. Rent or lease (see instructions): a. Vehicles, machinery, and equipm...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_44[0]	Tx	27a. Energy efficient commercial buildings deduction (attach Form 7205).
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_48[0]	Tx	30. Expenses for business use of your home. Do not report these expenses...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_49[0]	Tx	30. and (b) the part of your home used for business:
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page1[0].f1_50[0]	Tx	30. Use the Simplified Method Worksheet in the instructions to figure th...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_1[0]	Btn	Page 2. Part I I I. Cost of Goods Sold (see instructions). 33. Method(s)...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_2[0]	Btn	33b. Lower of cost or market.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_3[0]	Btn	33c. Other (attach explanation).
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_4[0]	Btn	34. Was there any change in determining quantities, costs, or valuations...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_4[1]	Btn	34. No.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_1[0]	Tx	35. Inventory at beginning of year. If different from last year's closin...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_2[0]	Tx	36. Purchases less cost of items withdrawn for personal use.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_3[0]	Tx	37. Cost of labor. Do not include any amounts paid to yourself.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_4[0]	Tx	38. Materials and supplies.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_5[0]	Tx	39. Other costs.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_6[0]	Tx	40. Add lines 35 through 39.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_7[0]	Tx	41. Inventory at end of year.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_8[0]	Tx	42. Cost of goods sold. Subtract line 41 from line 40. Enter the result ...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_9[0]	Tx	Part I V. Information on Your Vehicle. Complete this part only if you ar...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_10[0]	Tx	43. 2 digit day.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_11[0]	Tx	43. 4 digit year.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_12[0]	Tx	44. Of the total number of miles you drove your vehicle during 2026, ent...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_13[0]	Tx	44b. Commuting (see instructions).
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_14[0]	Tx	44c. Other.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_5[0]	Btn	45. Was your vehicle available for personal use during off-duty hours? Y...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_5[1]	Btn	45. No.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_6[0]	Btn	46. Do you (or your spouse) have another vehicle available for personal ...
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_6[1]	Btn	46. No.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_7[0]	Btn	47a. Do you have evidence to support your deduction? Yes.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_7[1]	Btn	47a. No.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_8[0]	Btn	47b. If "Yes," is the evidence written? Yes.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].c2_8[1]	Btn	47b. No.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_21[0]	Tx	Business expense. 4.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_22[0]	Tx	Amount. 4.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_23[0]	Tx	Business expense. 5.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_24[0]	Tx	Amount. 5.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_25[0]	Tx	Business expense. 6.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_26[0]	Tx	Amount. 6.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_27[0]	Tx	Business expense. 7.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_28[0]	Tx	Amount. 7.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_29[0]	Tx	Business expense. 8.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_30[0]	Tx	Amount. 8.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_31[0]	Tx	Business expense. 9.
-pdf/2026/IRS1040SC/en/f1040sc--dft.pdf	topmostSubform[0].Page2[0].f2_32[0]	Tx	Amount. 9.
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_3[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_4[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].BoxD[0].f1_6[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_7[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_8[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_9[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_10[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_11[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_1[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_1[1]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_1[2]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_12[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_3[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_4[1]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_5[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_5[1]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Line1_ReadOrder[0].c1_6[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_21[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_24[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_25[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_29[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_35[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_44[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_48[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_49[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_50[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_9[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_10[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_11[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_12[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_13[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_14[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_5[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_5[1]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_6[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_6[1]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_7[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_7[1]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_8[0]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_8[1]	Btn	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_21[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_22[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_23[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_24[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_25[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_26[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_27[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_28[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_29[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_30[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_31[0]	Tx	
+pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_32[0]	Tx	
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].c1_1[0]	Btn	Did you dispose of any investment(s) in a qualified opportunity fund dur...
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].c1_1[1]	Btn	No.
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_3[0]	Tx	Part I. Short-Term Capital Gains and Losses—Generally Assets Held One Ye...
