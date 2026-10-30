@@ -7,6 +7,7 @@ import {
   ContextHeading,
   Dollar,
   DFAlert,
+  Enum,
   GenericString,
   Heading,
   InfoDisplay,
@@ -158,6 +159,46 @@ export const ScheduleCIncomeSubcategory = (
           <Heading i18nKey='/heading/income/schedule-c/inventory' />
           <InfoDisplay i18nKey='/info/income/schedule-c/inventory' />
           <Boolean path='/scheduleCBusinesses/*/hasInventoryOrCogs' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-inventory-method' condition='/scheduleCBusinesses/*/hasInventoryOrCogs'>
+          <Heading i18nKey='/heading/income/schedule-c/inventory-method' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/inventory-method' />
+          <Enum path='/scheduleCBusinesses/*/inventoryAccountingMethod' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-inventory-change' condition='/scheduleCBusinesses/*/inventoryMethodIsSimple'>
+          <Heading i18nKey='/heading/income/schedule-c/inventory-change' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/inventory-change' />
+          <Boolean path='/scheduleCBusinesses/*/inventoryValuationChanged' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-small-business'
+          condition='/scheduleCBusinesses/*/asksSmallBusinessTaxpayerQuestions'
+        >
+          <Heading i18nKey='/heading/income/schedule-c/small-business' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/small-business' />
+          <Dollar path='/scheduleCBusinesses/*/writablePriorThreeYearAverageGrossReceipts' />
+          <Boolean path='/scheduleCBusinesses/*/isTaxShelter' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-line-35' condition='/scheduleCBusinesses/*/asksLine35Screener'>
+          <Heading i18nKey='/heading/income/schedule-c/line-35' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/line-35' />
+          <Boolean path='/scheduleCBusinesses/*/openingInventoryDiffersFromPriorClosing' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-inventory-amounts' condition='/scheduleCBusinesses/*/simplePartIIIApplies'>
+          <Heading i18nKey='/heading/income/schedule-c/inventory-amounts' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/inventory-amounts' />
+          <Dollar path='/scheduleCBusinesses/*/writableInventoryAtBeginning' />
+          <Dollar path='/scheduleCBusinesses/*/writablePurchases' />
+          <Dollar path='/scheduleCBusinesses/*/writablePersonalUseWithdrawals' />
+          <Dollar path='/scheduleCBusinesses/*/writableInventoryLabor' />
+          <Dollar path='/scheduleCBusinesses/*/writableInventoryMaterials' />
+          <Dollar path='/scheduleCBusinesses/*/writableInventoryOtherCosts' />
+          <Dollar path='/scheduleCBusinesses/*/writableInventoryAtEnd' />
           <SaveAndOrContinueButton />
         </Screen>
         <Screen route='schedule-c-vehicle'>

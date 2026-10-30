@@ -14,6 +14,16 @@
     https://www.federalregister.gov/d/2025-19763 (PDF: https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf)
   - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
     https://www.irs.gov/instructions/i1040sse
+  - Part III cost of goods sold: 2026 draft Schedule C, PDF p. 3, lines 33-42 and line 4
+    ("Cost of goods sold (from line 42)"), SHA-256
+    287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224.
+    2026 draft Instructions for Schedule C, PDF p. 16 (Part III and the small-business taxpayer) and PDF p. 17
+    (lines 33 and 35), SHA-256 27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9.
+  - Inventories: 26 U.S.C. 471(a) (https://www.law.cornell.edu/uscode/text/26/471). Small-business methods:
+    26 U.S.C. 471(c)(1) and 263A(i) (https://www.law.cornell.edu/uscode/text/26/263A) apply only to a taxpayer that
+    meets the section 448(c) gross receipts test and is not a tax shelter under section 448(d)(3)
+    (https://www.law.cornell.edu/uscode/text/26/448). Gross receipts test dollar amount: Rev. Proc. 2025-32 §4.30,
+    PDF p. 23 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): the § 448(c) test "does not exceed $32,000,000."
   - QBI § 199A: computed on Form 8995 (form8995.xml, #87); cases it can't compute are knocked out —
     https://www.law.cornell.edu/uscode/text/26/199A
 
@@ -768,14 +778,799 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleCSmallBusinessGrossReceiptsLimit">
+      <Name>Gross receipts test amount for a small business taxpayer</Name>
+      <Description>
+        Rev. Proc. 2025-32 §4.30, PDF p. 23 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): "For taxable years
+        beginning in 2026, a corporation or partnership meets the gross receipts test of § 448(c) for any taxable year
+        if the average annual gross receipts of such entity for the 3-taxable-year period ending with the taxable year
+        which precedes such taxable year does not exceed $32,000,000." 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16: "You qualify as a small business taxpayer if
+        you (a) have average annual gross receipts of $32 million or less for the 3 prior tax years (indexed for
+        inflation), and (b) are not a tax shelter (as defined in section 448(d)(3))." 26 U.S.C. 448(c)(1)
+        (https://www.law.cornell.edu/uscode/text/26/448) states the 3-taxable-year test. The $25,000,000 statutory
+        amount is adjusted by the revenue procedure. 26 U.S.C. 471(c)(1) and 263A(i)(1)
+        (https://www.law.cornell.edu/uscode/text/26/471, https://www.law.cornell.edu/uscode/text/26/263A) use that
+        test, and only for a taxpayer who is not a tax shelter prohibited from using the cash method under section
+        448(a)(3). 26 U.S.C. 471(c)(3) and 263A(i)(2) apply the test to an individual as if each trade or business
+        were a corporation or partnership. The filer enters the 3-prior-year average. This fact is the amount that
+        average is compared with. An average equal to $32,000,000 still meets the test ("does not exceed"). This
+        year's Schedule C line 1 is not the test.
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>32000000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCInventoryMethodOptions">
+      <Name>Schedule C closing-inventory methods</Name>
+      <Description>
+        2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf, SHA-256
+        287b4510dd847c11f6cbbcc98fee05ac5ff187cc18e1413f8759a4a7cd802224), PDF p. 3, line 33: "Method(s) used to value
+        closing inventory: a Cost, b Lower of cost or market, c Other (attach explanation)." 2026 draft Instructions
+        for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 17, Line 33: "Your inventories can be
+        valued at cost, the lower of cost or market, or any other method approved by the IRS." The fourth choice is the
+        26 U.S.C. 471(c)(1)(B)(i) method that does not keep an inventory (instructions, PDF p. 16).
+      </Description>
+      <Derived>
+        <EnumOptions>
+          <String>cost</String>
+          <String>lowerOfCostOrMarket</String>
+          <String>other</String>
+          <String>nonincidentalMaterialsAndSupplies</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCBusinesses/*/hasInventoryOrCogs">
       <Name>Inventory or cost of goods sold</Name>
-      <Description>Schedule C line 4 and Part III. 2026 draft Instructions for Schedule C
-        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Cost of Goods Sold. Yes stops the return: this
-        tool does not compute inventory. An explicit no makes line 4 zero.</Description>
+      <Description>Schedule C line 4 and Part III. 26 U.S.C. 471(a) (https://www.law.cornell.edu/uscode/text/26/471):
+        inventories are taken when necessary to clearly determine income. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16, Cost of Goods Sold. No means this business does
+        not complete Part III, and line 4 is zero. Yes asks for the line 33 method. Cost or lower of cost or market,
+        with line 34 no, line 42 not below zero, line 35 equal to last year's closing inventory, a 3-prior-year
+        average that does not exceed the Rev. Proc. 2025-32 §4.30 amount, and the filer not a tax shelter, is figured
+        in Part III. Any other answer stops the return.</Description>
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/inventoryAccountingMethod">
+      <Name>Method used to value closing inventory</Name>
+      <Description>
+        Schedule C line 33, asked only when this business has inventory or cost of goods sold. Cost and lower of cost
+        or market are the simple methods this tool figures. "Other" is line 33c and stops the return. Nonincidental
+        materials and supplies is the 26 U.S.C. 471(c)(1)(B)(i) method of not keeping an inventory; claiming it while
+        Part III is still required stops the return. 2026 draft Instructions for Schedule C, PDF p. 16 and PDF p. 17.
+      </Description>
+      <Writable>
+        <Enum optionsPath="/scheduleCInventoryMethodOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/inventoryMethodIsCost">
+      <Name>Line 33a, cost</Name>
+      <Description>Closing inventory is valued at cost. 2026 draft Schedule C, PDF p. 3, line 33a.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../inventoryAccountingMethod" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/scheduleCInventoryMethodOptions">cost</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/inventoryMethodIsLowerOfCostOrMarket">
+      <Name>Line 33b, lower of cost or market</Name>
+      <Description>Closing inventory is valued at the lower of cost or market. 2026 draft Schedule C, PDF p. 3, line 33b.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../inventoryAccountingMethod" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/scheduleCInventoryMethodOptions">lowerOfCostOrMarket</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/inventoryMethodIsOther">
+      <Name>Line 33c, other</Name>
+      <Description>Line 33c, "Other (attach explanation)." Not cost or lower of cost or market. Stops the return. 2026
+        draft Schedule C, PDF p. 3. 2026 draft Instructions for Schedule C, PDF p. 17, Line 33.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../inventoryAccountingMethod" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/scheduleCInventoryMethodOptions">other</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/inventoryMethodIsNonincidental">
+      <Name>No-inventory method under section 471(c)</Name>
+      <Description>
+        26 U.S.C. 471(c)(1)(B)(i): the method "treats inventory as non-incidental materials and supplies." 2026 draft
+        Instructions for Schedule C, PDF p. 16: "If you choose not to keep an inventory" and account for it as
+        nonincidental materials and supplies, Part III is not completed. Choosing that method while this business still
+        needs Part III is inconsistent and stops the return.
+      </Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../inventoryAccountingMethod" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/scheduleCInventoryMethodOptions">nonincidentalMaterialsAndSupplies</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/inventoryMethodIsSimple">
+      <Name>Closing inventory uses cost or lower of cost or market</Name>
+      <Description>Line 33a or line 33b. These are the Part III methods this tool figures. Line 33c and the section
+        471(c) no-inventory method are not.</Description>
+      <Derived>
+        <Any>
+          <Dependency path="../inventoryMethodIsCost" />
+          <Dependency path="../inventoryMethodIsLowerOfCostOrMarket" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/inventoryValuationChanged">
+      <Name>Change in inventory quantities, costs, or valuations</Name>
+      <Description>
+        Schedule C line 34. 2026 draft Schedule C, PDF p. 3: "Was there any change in determining quantities, costs, or
+        valuations between opening and closing inventory? If "Yes," attach explanation." Yes stops the return. This
+        tool does not compute a change in method or a section 481(a) adjustment. 2026 draft Instructions for Schedule
+        C, PDF p. 17, Line 35, describes refiguring last year's closing inventory when the method changes.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksSmallBusinessTaxpayerQuestions">
+      <Name>Ask the small-business taxpayer questions</Name>
+      <Description>True when Part III would otherwise be the simple path: inventory, line 33a or 33b, and line 34 no.
+        The 3-prior-year average and the tax-shelter question are asked then. 2026 draft Instructions for Schedule C,
+        PDF p. 16.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../inventoryMethodIsSimple" />
+          <Not>
+            <Dependency path="../inventoryValuationChanged" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writablePriorThreeYearAverageGrossReceipts">
+      <Name>Average annual gross receipts for the 3 prior tax years</Name>
+      <Description>
+        The section 448(c) average the filer has already figured: the 3-taxable-year period ending with the taxable
+        year which precedes this year, including a predecessor and with a short year annualized. 26 U.S.C. 448(c)(1)
+        (https://www.law.cornell.edu/uscode/text/26/448). 26 U.S.C. 448(c)(2) counts related persons treated as a
+        single employer as one person. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16: "If your business has not been in existence for
+        all of the 3-tax-year period used in figuring average gross receipts, base your average on the period it has
+        existed," and annualize a short year. Enter zero when the business did not exist in those years. This year's
+        Schedule C line 1 is not this average. Compared with /scheduleCSmallBusinessGrossReceiptsLimit. Rev. Proc.
+        2025-32 §4.30, PDF p. 23: the test "does not exceed $32,000,000."
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/failsSection448cGrossReceiptsTest">
+      <Name>3-prior-year average exceeds the gross receipts test amount</Name>
+      <Description>
+        True when the entered average is greater than $32,000,000. Rev. Proc. 2025-32 §4.30, PDF p. 23: the section
+        448(c) test "does not exceed $32,000,000." Equal to $32,000,000 still meets the test. 26 U.S.C. 471(c)(1) and
+        263A(i)(1) do not apply when the test is not met, so simple Part III stops.
+      </Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../writablePriorThreeYearAverageGrossReceipts" />
+          </Left>
+          <Right>
+            <Dependency path="/scheduleCSmallBusinessGrossReceiptsLimit" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/isTaxShelter">
+      <Name>Taxpayer is a tax shelter</Name>
+      <Description>
+        26 U.S.C. 448(d)(3) (https://www.law.cornell.edu/uscode/text/26/448): "The term 'tax shelter' has the meaning
+        given such term by section 461(i)(3) (determined after application of paragraph (4) thereof)." 26 U.S.C.
+        471(c)(1) and 263A(i)(1) do not apply to a tax shelter prohibited from using the cash method under section
+        448(a)(3). 2026 draft Instructions for Schedule C, PDF p. 16: a small business taxpayer "(b) are not a tax
+        shelter (as defined in section 448(d)(3))." Yes stops simple Part III.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/openingInventoryDiffersFromPriorClosing">
+      <Name>Line 35 differs from last year's closing inventory</Name>
+      <Description>
+        Screener for Schedule C line 35. 2026 draft Schedule C, PDF p. 3: "Inventory at beginning of year. If
+        different from last year's closing inventory, attach explanation." 2026 draft Instructions for Schedule C,
+        PDF p. 17, Line 35: "If there is a difference between last year's closing inventory and the refigured amount,
+        attach an explanation." This tool does not attach that explanation. Yes stops the return. No means line 35
+        matches last year's closing inventory and Part III can continue.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableInventoryAtBeginning">
+      <Name>Inventory at beginning of year</Name>
+      <Description>Schedule C line 35. 2026 draft Schedule C, PDF p. 3: "Inventory at beginning of year. If different
+        from last year's closing inventory, attach explanation."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writablePurchases">
+      <Name>Purchases</Name>
+      <Description>Purchases included in Schedule C line 36 before subtracting items withdrawn for personal use. 2026
+        draft Schedule C, PDF p. 3, line 36: "Purchases less cost of items withdrawn for personal use."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writablePersonalUseWithdrawals">
+      <Name>Cost of items withdrawn for personal use</Name>
+      <Description>Subtracted from purchases to reach Schedule C line 36. 2026 draft Schedule C, PDF p. 3, line 36:
+        "Purchases less cost of items withdrawn for personal use." Enter zero when nothing was withdrawn.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableInventoryLabor">
+      <Name>Cost of labor</Name>
+      <Description>Schedule C line 37. 2026 draft Schedule C, PDF p. 3: "Cost of labor. Do not include any amounts paid
+        to yourself."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableInventoryMaterials">
+      <Name>Materials and supplies</Name>
+      <Description>Schedule C line 38. 2026 draft Schedule C, PDF p. 3: "Materials and supplies."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableInventoryOtherCosts">
+      <Name>Other costs</Name>
+      <Description>Schedule C line 39. 2026 draft Schedule C, PDF p. 3: "Other costs." Uniform capitalization under
+        26 U.S.C. 263A (https://www.law.cornell.edu/uscode/text/26/263A) is not computed. 26 U.S.C. 263A(i)(1) turns
+        section 263A off only for a taxpayer that meets the section 448(c) test and is not a tax shelter. A business
+        that fails that test, or is a tax shelter, stops before these costs are used.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableInventoryAtEnd">
+      <Name>Inventory at end of year</Name>
+      <Description>Schedule C line 41. 2026 draft Schedule C, PDF p. 3: "Inventory at end of year."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line35InventoryAtBeginning">
+      <Name>Schedule C line 35</Name>
+      <Description>Inventory at beginning of year, carried to the line 40 total. 2026 draft Schedule C, PDF p. 3, line 35.</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../writableInventoryAtBeginning" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line36PurchasesLessPersonalUse">
+      <Name>Schedule C line 36</Name>
+      <Description>Purchases less cost of items withdrawn for personal use. 2026 draft Schedule C, PDF p. 3, line 36.
+        Rounded half up to the nearest dollar, the same way the other Schedule C lines in this tool are rounded.</Description>
+      <Derived>
+        <Round>
+          <Subtract>
+            <Minuend>
+              <Dependency path="../writablePurchases" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="../writablePersonalUseWithdrawals" />
+            </Subtrahends>
+          </Subtract>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line37InventoryLabor">
+      <Name>Schedule C line 37</Name>
+      <Description>Cost of labor. 2026 draft Schedule C, PDF p. 3, line 37.</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../writableInventoryLabor" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line38InventoryMaterials">
+      <Name>Schedule C line 38</Name>
+      <Description>Materials and supplies. 2026 draft Schedule C, PDF p. 3, line 38.</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../writableInventoryMaterials" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line39InventoryOtherCosts">
+      <Name>Schedule C line 39</Name>
+      <Description>Other costs. 2026 draft Schedule C, PDF p. 3, line 39.</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../writableInventoryOtherCosts" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line40GoodsAvailable">
+      <Name>Schedule C line 40</Name>
+      <Description>2026 draft Schedule C, PDF p. 3, line 40: "Add lines 35 through 39."</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="../line35InventoryAtBeginning" />
+            <Dependency path="../line36PurchasesLessPersonalUse" />
+            <Dependency path="../line37InventoryLabor" />
+            <Dependency path="../line38InventoryMaterials" />
+            <Dependency path="../line39InventoryOtherCosts" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line41InventoryAtEnd">
+      <Name>Schedule C line 41</Name>
+      <Description>Inventory at end of year. 2026 draft Schedule C, PDF p. 3, line 41.</Description>
+      <Derived>
+        <Round>
+          <Dependency path="../writableInventoryAtEnd" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line42CostOfGoodsSold">
+      <Name>Schedule C line 42</Name>
+      <Description>2026 draft Schedule C, PDF p. 3, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter
+        the result here and on line 4."</Description>
+      <Derived>
+        <Round>
+          <Subtract>
+            <Minuend>
+              <Dependency path="../line40GoodsAvailable" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="../line41InventoryAtEnd" />
+            </Subtrahends>
+          </Subtract>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/partIIIContradictsNoInventory">
+      <Name>Part III is filled in while the business says it has no inventory</Name>
+      <Description>
+        True when the filer says there is no inventory, but a Part III method (cost, lower of cost or market, or
+        other) is selected or any Part III amount is greater than zero. 2026 draft Instructions for Schedule C, PDF
+        p. 16: choosing not to keep an inventory means Part III is not completed. That contradiction stops the return.
+        The section 471(c) no-inventory method with every Part III amount blank or zero is not this contradiction.
+        An unanswered method or amount is not treated as a contradiction.
+      </Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency path="../inventoryAccountingMethod" />
+            </IsComplete>
+            <Any>
+              <Dependency path="../inventoryMethodIsCost" />
+              <Dependency path="../inventoryMethodIsLowerOfCostOrMarket" />
+              <Dependency path="../inventoryMethodIsOther" />
+            </Any>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../writableInventoryAtBeginning" />
+            </IsComplete>
+            <GreaterThan>
+              <Left>
+                <Dependency path="../writableInventoryAtBeginning" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../writablePurchases" />
+            </IsComplete>
+            <GreaterThan>
+              <Left>
+                <Dependency path="../writablePurchases" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../writablePersonalUseWithdrawals" />
+            </IsComplete>
+            <GreaterThan>
+              <Left>
+                <Dependency path="../writablePersonalUseWithdrawals" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../writableInventoryLabor" />
+            </IsComplete>
+            <GreaterThan>
+              <Left>
+                <Dependency path="../writableInventoryLabor" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../writableInventoryMaterials" />
+            </IsComplete>
+            <GreaterThan>
+              <Left>
+                <Dependency path="../writableInventoryMaterials" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../writableInventoryOtherCosts" />
+            </IsComplete>
+            <GreaterThan>
+              <Left>
+                <Dependency path="../writableInventoryOtherCosts" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../writableInventoryAtEnd" />
+            </IsComplete>
+            <GreaterThan>
+              <Left>
+                <Dependency path="../writableInventoryAtEnd" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/simplePartIIIApplies">
+      <Name>Simple Part III cost of goods sold is in scope</Name>
+      <Description>
+        True only when this business has inventory, values it at cost or lower of cost or market, reports no change in
+        quantities, costs, or valuations (line 34 no), the 3-prior-year average does not exceed $32,000,000, the filer
+        is not a tax shelter, and line 35 is not different from last year's closing inventory. Line 42 below zero is a
+        separate stop and is not part of this fact, so the amount screen can still be answered. Anything else leaves
+        line 4 incomplete. 26 U.S.C. 471(c)(1), 263A(i)(1). 2026 draft Instructions for Schedule C, PDF p. 16.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksLine35Screener" />
+          <Not>
+            <Dependency path="../line35DiffersFromPriorYearClosing" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksLine35Screener">
+      <Name>Ask whether line 35 differs from last year's closing inventory</Name>
+      <Description>
+        True when Part III is otherwise the simple path: inventory, line 33a or 33b, line 34 no, the 3-prior-year
+        average does not exceed $32,000,000, and the filer is not a tax shelter. The line 35 screener is asked then.
+        2026 draft Schedule C, PDF p. 3, line 35.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../inventoryMethodIsSimple" />
+          <Not>
+            <Dependency path="../inventoryValuationChanged" />
+          </Not>
+          <Not>
+            <Dependency path="../failsSection448cGrossReceiptsTest" />
+          </Not>
+          <Not>
+            <Dependency path="../isTaxShelter" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line42IsNegative">
+      <Name>Schedule C line 42 is below zero</Name>
+      <Description>
+        2026 draft Schedule C, PDF p. 3, line 42: "Cost of goods sold. Subtract line 41 from line 40. Enter the result
+        here and on line 4." True when that subtraction is below zero. The result is not replaced with zero. On the
+        simple path that stops the return and leaves line 4 incomplete. Complete and false when this business has no
+        inventory path.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../hasInventoryOrCogs" />
+                </IsComplete>
+                <Not>
+                  <Dependency path="../hasInventoryOrCogs" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../simplePartIIIApplies" />
+            </When>
+            <Then>
+              <LessThan>
+                <Left>
+                  <Dependency path="../line42CostOfGoodsSold" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </LessThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line35DiffersFromPriorYearClosing">
+      <Name>Line 35 differs from last year's closing inventory</Name>
+      <Description>
+        2026 draft Schedule C, PDF p. 3, line 35: "Inventory at beginning of year. If different from last year's
+        closing inventory, attach explanation." 2026 draft Instructions for Schedule C, PDF p. 17, Line 35: "If there
+        is a difference between last year's closing inventory and the refigured amount, attach an explanation." This
+        tool does not attach that explanation. The screener answer is this fact on the simple path. Yes stops the
+        return. Complete and false when this business has no inventory path.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../hasInventoryOrCogs" />
+                </IsComplete>
+                <Not>
+                  <Dependency path="../hasInventoryOrCogs" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../asksLine35Screener" />
+            </When>
+            <Then>
+              <Dependency path="../openingInventoryDiffersFromPriorClosing" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/partIIIStop">
+      <Name>Part III cannot be figured</Name>
+      <Description>
+        Stops the return, and leaves line 4 incomplete, when line 33c is Other, line 34 is yes, the 3-prior-year
+        average exceeds $32,000,000, the filer is a tax shelter, line 42 is below zero, line 35 differs from last
+        year's closing inventory, the section 471(c) no-inventory method is claimed while Part III is still required,
+        or the filer says there is no inventory but a Part III method or amount is still present. Cost or lower of
+        cost or market with line 34 no, a 3-prior-year average that does not exceed $32,000,000, the filer not a tax
+        shelter, line 42 at least zero, and line 35 equal to last year's closing inventory is not a stop.
+      </Description>
+      <Derived>
+        <Any>
+          <All>
+            <Dependency path="../hasInventoryOrCogs" />
+            <Dependency path="../inventoryMethodIsOther" />
+          </All>
+          <All>
+            <Dependency path="../hasInventoryOrCogs" />
+            <Dependency path="../inventoryMethodIsNonincidental" />
+          </All>
+          <All>
+            <Dependency path="../hasInventoryOrCogs" />
+            <Dependency path="../inventoryMethodIsSimple" />
+            <Dependency path="../inventoryValuationChanged" />
+          </All>
+          <All>
+            <Dependency path="../hasInventoryOrCogs" />
+            <Dependency path="../inventoryMethodIsSimple" />
+            <Not>
+              <Dependency path="../inventoryValuationChanged" />
+            </Not>
+            <Dependency path="../failsSection448cGrossReceiptsTest" />
+          </All>
+          <All>
+            <Dependency path="../hasInventoryOrCogs" />
+            <Dependency path="../inventoryMethodIsSimple" />
+            <Not>
+              <Dependency path="../inventoryValuationChanged" />
+            </Not>
+            <Dependency path="../isTaxShelter" />
+          </All>
+          <All>
+            <Dependency path="../simplePartIIIApplies" />
+            <Dependency path="../line42IsNegative" />
+          </All>
+          <All>
+            <Dependency path="../asksLine35Screener" />
+            <Dependency path="../line35DiffersFromPriorYearClosing" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="../hasInventoryOrCogs" />
+            </IsComplete>
+            <Not>
+              <Dependency path="../hasInventoryOrCogs" />
+            </Not>
+            <Dependency path="../partIIIContradictsNoInventory" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line33aCost">
+      <Name>Schedule C line 33a checkbox</Name>
+      <Description>Checked when closing inventory is valued at cost.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../inventoryMethodIsCost" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line33bLowerOfCostOrMarket">
+      <Name>Schedule C line 33b checkbox</Name>
+      <Description>Checked when closing inventory is valued at the lower of cost or market.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../inventoryMethodIsLowerOfCostOrMarket" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line33cOther">
+      <Name>Schedule C line 33c checkbox</Name>
+      <Description>Checked when line 33c applies. That return is stopped.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../inventoryMethodIsOther" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line34ChangeYes">
+      <Name>Schedule C line 34 Yes</Name>
+      <Description>Checked when quantities, costs, or valuations changed. That return is stopped.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../inventoryMethodIsSimple" />
+          <Dependency path="../inventoryValuationChanged" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line34ChangeNo">
+      <Name>Schedule C line 34 No</Name>
+      <Description>Checked when a simple method is used and quantities, costs, and valuations did not change.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../inventoryMethodIsSimple" />
+          <Not>
+            <Dependency path="../inventoryValuationChanged" />
+          </Not>
+        </All>
+      </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/hasCarTruckOrVehicleLoan">
@@ -855,6 +1650,42 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasInventoryOrCogs" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../inventoryAccountingMethod" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../inventoryValuationChanged" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writablePriorThreeYearAverageGrossReceipts" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../isTaxShelter" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../openingInventoryDiffersFromPriorClosing" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableInventoryAtBeginning" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writablePurchases" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writablePersonalUseWithdrawals" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableInventoryLabor" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableInventoryMaterials" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableInventoryOtherCosts" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableInventoryAtEnd" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasCarTruckOrVehicleLoan" />
@@ -974,9 +1805,14 @@
 
     <Fact path="/scheduleCBusinesses/*/line4CostOfGoodsSold">
       <Name>Schedule C line 4</Name>
-      <Description>Cost of goods sold. Zero only when the filer says there is no inventory, or on the single-total path.
-        Yes to inventory leaves line 4 incomplete. 2026 draft Instructions for Schedule C
-        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 16.</Description>
+      <Description>
+        Cost of goods sold. 2026 draft Schedule C (https://www.irs.gov/pub/irs-dft/f1040sc--dft.pdf), line 4: "Cost of
+        goods sold (from line 42)." Zero on the single-total path, and zero when the filer says there is no inventory
+        and Part III is not filled in. When simple Part III applies, line 42 is at least zero, and line 35 equals last
+        year's closing inventory, line 4 is line 42 (line 40 minus line 41). A negative line 42 is not replaced with
+        zero. A Part III stop leaves line 4 incomplete rather than zero. 2026 draft Instructions for Schedule C, PDF
+        p. 16.
+      </Description>
       <Derived>
         <Switch>
           <Case>
@@ -996,10 +1832,29 @@
                 <Not>
                   <Dependency path="../hasInventoryOrCogs" />
                 </Not>
+                <Not>
+                  <Dependency path="../partIIIContradictsNoInventory" />
+                </Not>
               </All>
             </When>
             <Then>
               <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../simplePartIIIApplies" />
+                <Not>
+                  <Dependency path="../line42IsNegative" />
+                </Not>
+                <Not>
+                  <Dependency path="../line35DiffersFromPriorYearClosing" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../line42CostOfGoodsSold" />
             </Then>
           </Case>
         </Switch>
@@ -2724,13 +3579,18 @@
 
     <Fact path="/scheduleCBusinesses/*/scheduleCFormStop">
       <Name>Schedule C business needs a form this tool does not compute</Name>
-      <Description>True when inventory, a vehicle, depreciation, depletion, equipment rent, a home office, the line 27a
+      <Description>True when Part III cannot be figured (line 33c, a line 34 change, a 3-prior-year average over
+        $32,000,000, a tax shelter, line 42 below zero, line 35 different from last year's closing inventory, the
+        section 471(c) no-inventory method claimed together with Part III, or Part III amounts while the filer says
+        there is no inventory), or a vehicle, depreciation, depletion, equipment rent, a home office, the line 27a
         deduction, a non-50-percent meal, wage credits, interest that must be allocated, new amortization, a fourth Part
-        V line, or line 6 income that belongs on another form applies. A yes on any stop boolean is enough; later blanks
-        do not turn it off.</Description>
+        V line, or line 6 income that belongs on another form applies. A yes on any stop is enough; later blanks do
+        not turn it off. Cost or lower of cost or market, line 34 no, a 3-prior-year average that does not exceed
+        $32,000,000, the filer not a tax shelter, line 42 at least zero, and line 35 equal to last year's closing
+        inventory is not a stop.</Description>
       <Derived>
         <Any>
-          <Dependency path="../hasInventoryOrCogs" />
+          <Dependency path="../partIIIStop" />
           <Dependency path="../hasCarTruckOrVehicleLoan" />
           <Dependency path="../hasDepreciationOrSection179" />
           <Dependency path="../hasDepletion" />
@@ -2876,7 +3736,12 @@
       <Name>Knockout: Schedule C line needs a form or loss limit not computed here</Name>
       <Description>
         Stops filing and printing when a Schedule C business, after the line-item questions are started, has
-        inventory (Part III), car or truck expenses or vehicle-loan interest (lines 9 and 16b, Form 4562),
+        Part III that this tool does not figure (line 33c Other, line 34 yes, a 3-prior-year average annual gross
+        receipts amount greater than $32,000,000 under Rev. Proc. 2025-32 §4.30 and 26 U.S.C. 448(c), a tax shelter
+        under 26 U.S.C. 448(d)(3), line 42 below zero, line 35 different from last year's closing inventory, the
+        section 471(c) no-inventory method claimed while Part III is still required, or Part III filled in after a no
+        to inventory), car or truck expenses or vehicle-loan interest
+        (lines 9 and 16b, Form 4562),
         depreciation
         or section 179 (line 13, Form 4562), depletion (line 12), rent of vehicles or equipment
         (line 20a), business use

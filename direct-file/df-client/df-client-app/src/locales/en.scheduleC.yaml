@@ -26,6 +26,13 @@ headings:
   /heading/income/schedule-c/part-i: "Enter income for this business"
   /heading/income/schedule-c/other-income-form: "Does this other income belong on another form?"
   /heading/income/schedule-c/inventory: "Did this business have inventory or cost of goods sold?"
+  /heading/income/schedule-c/inventory-method: "How did you value closing inventory?"
+  /heading/income/schedule-c/inventory-change:
+    "Did the way you count or value inventory change between the beginning and the end of the year?"
+  /heading/income/schedule-c/small-business: "Do you qualify as a small business taxpayer?"
+  /heading/income/schedule-c/line-35:
+    "Is inventory at the beginning of the year different from last year's closing inventory?"
+  /heading/income/schedule-c/inventory-amounts: "Enter cost of goods sold"
   /heading/income/schedule-c/vehicle: "Did this business have car, truck, or vehicle-loan expenses?"
   /heading/income/schedule-c/depreciation: "Did this business have depreciation or a section 179 deduction?"
   /heading/income/schedule-c/depletion: "Did this business have a depletion deduction?"
@@ -119,7 +126,36 @@ info:
   /info/income/schedule-c/other-income-form:
     body: "Answer yes if this amount is a fuel tax credit or a Form 4797 recapture. This tool cannot figure those."
   /info/income/schedule-c/inventory:
-    body: "Answer yes if you need Part III, cost of goods sold. This tool cannot figure inventory."
+    body:
+      "Answer yes if you need Schedule C line 4 and Part III. Cost and lower of cost or market can be figured here.
+      Any other method cannot."
+  /info/income/schedule-c/inventory-method:
+    body:
+      "Line 33a is cost. Line 33b is lower of cost or market. Line 33c, any other method, cannot be figured here.
+      Choose nonincidental materials and supplies only if you do not keep an inventory. That method does not use
+      Part III."
+  /info/income/schedule-c/inventory-change:
+    body:
+      "Line 34 asks whether quantities, costs, or valuations changed between opening and closing inventory. Answer
+      yes if they changed. This tool cannot figure that change."
+  /info/income/schedule-c/small-business:
+    body:
+      "You qualify as a small business taxpayer if your average annual gross receipts for the 3 prior tax years are
+      $32 million or less and you are not a tax shelter. Enter that average. Include a predecessor business, and
+      annualize a short year, before you enter it. Use 0 if the business did not exist in those years. This year's
+      receipts are not the average. Answer yes if you are a tax shelter. If the average is over $32,000,000, or you
+      are a tax shelter, this tool cannot figure Part III."
+  /info/income/schedule-c/line-35:
+    body:
+      "Line 35 is inventory at the beginning of the year. If it is different from last year's closing inventory, the
+      form says to attach an explanation. This tool cannot file that explanation. Answer yes if the amounts differ.
+      Answer no if line 35 is the same as last year's closing inventory, including zero when the business is new."
+  /info/income/schedule-c/inventory-amounts:
+    body:
+      "Line 35 is inventory at the beginning of the year. Line 36 is purchases minus items withdrawn for personal use.
+      Line 37 is labor, not including amounts paid to yourself. Line 38 is materials and supplies. Line 39 is other
+      costs. Line 41 is inventory at the end of the year. Line 42, which is also line 4, is line 35 plus line 36 plus
+      lines 37 through 39, minus line 41. If that result is below zero, this tool cannot complete the return."
   /info/income/schedule-c/vehicle:
     body:
       "Answer yes for car and truck expenses (line 9) or vehicle loan interest (line 16b). Those need Form 4562 or Part
@@ -171,9 +207,13 @@ info:
     alertText:
       body:
         - p:
-            "This business needs a form or a loss limit this tool does not figure. That includes inventory, vehicle
-            expenses, depreciation, depletion, equipment rent, a home office, Form 7205, meals that are not limited to
-            50 percent, employment credits, interest that must be allocated, new amortization, more than three other
+            "This business needs a form or a loss limit this tool does not figure. That includes an inventory method
+            other than cost or lower of cost or market, a change in how inventory was valued, average annual gross
+            receipts for the 3 prior tax years over $32,000,000, a tax shelter, cost of goods sold below zero,
+            beginning inventory different from last year's closing inventory, a claim that you do not keep
+            inventory while Part III is still filled in, vehicle expenses,
+            depreciation, depletion, equipment rent, a home office, Form 7205, meals that are not limited to 50
+            percent, employment credits, interest that must be allocated, new amortization, more than three other
             expenses, line 6 income from another form, a loss you did not materially participate in, or a loss that is
             not fully at risk. You will need another way to file this return."
 fields:
@@ -328,6 +368,41 @@ fields:
     boolean:
       "yes": "Yes"
       "no": "No"
+  /scheduleCInventoryMethodOptions:
+    cost: "Cost"
+    lowerOfCostOrMarket: "Lower of cost or market"
+    other: "Other"
+    nonincidentalMaterialsAndSupplies: "Nonincidental materials and supplies (no inventory kept)"
+  /scheduleCBusinesses/*/inventoryAccountingMethod:
+    name: "Line 33, method used to value closing inventory"
+  /scheduleCBusinesses/*/inventoryValuationChanged:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/writablePriorThreeYearAverageGrossReceipts:
+    name: "Average annual gross receipts for the 3 prior tax years"
+  /scheduleCBusinesses/*/isTaxShelter:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/openingInventoryDiffersFromPriorClosing:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/writableInventoryAtBeginning:
+    name: "Line 35, inventory at beginning of year"
+  /scheduleCBusinesses/*/writablePurchases:
+    name: "Purchases"
+  /scheduleCBusinesses/*/writablePersonalUseWithdrawals:
+    name: "Cost of items withdrawn for personal use"
+  /scheduleCBusinesses/*/writableInventoryLabor:
+    name: "Line 37, cost of labor"
+  /scheduleCBusinesses/*/writableInventoryMaterials:
+    name: "Line 38, materials and supplies"
+  /scheduleCBusinesses/*/writableInventoryOtherCosts:
+    name: "Line 39, other costs"
+  /scheduleCBusinesses/*/writableInventoryAtEnd:
+    name: "Line 41, inventory at end of year"
   /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan:
     boolean:
       "yes": "Yes"
@@ -408,6 +483,21 @@ dataviews:
     /scheduleCBusinesses/*/writableOtherIncome: "Other income"
     /scheduleCBusinesses/*/otherIncomeNeedsAnotherForm: "Does this other income belong on another form?"
     /scheduleCBusinesses/*/hasInventoryOrCogs: "Did this business have inventory or cost of goods sold?"
+    /scheduleCBusinesses/*/inventoryAccountingMethod: "How did you value closing inventory?"
+    /scheduleCBusinesses/*/inventoryValuationChanged:
+      "Did the way you count or value inventory change between the beginning and the end of the year?"
+    /scheduleCBusinesses/*/writablePriorThreeYearAverageGrossReceipts:
+      "Average annual gross receipts for the 3 prior tax years"
+    /scheduleCBusinesses/*/isTaxShelter: "Are you a tax shelter?"
+    /scheduleCBusinesses/*/openingInventoryDiffersFromPriorClosing:
+      "Is inventory at the beginning of the year different from last year's closing inventory?"
+    /scheduleCBusinesses/*/writableInventoryAtBeginning: "Inventory at beginning of year"
+    /scheduleCBusinesses/*/writablePurchases: "Purchases"
+    /scheduleCBusinesses/*/writablePersonalUseWithdrawals: "Cost of items withdrawn for personal use"
+    /scheduleCBusinesses/*/writableInventoryLabor: "Cost of labor"
+    /scheduleCBusinesses/*/writableInventoryMaterials: "Materials and supplies"
+    /scheduleCBusinesses/*/writableInventoryOtherCosts: "Other costs"
+    /scheduleCBusinesses/*/writableInventoryAtEnd: "Inventory at end of year"
     /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan: "Did this business have car, truck, or vehicle-loan expenses?"
     /scheduleCBusinesses/*/hasDepreciationOrSection179:
       "Did this business have depreciation or a section 179 deduction?"

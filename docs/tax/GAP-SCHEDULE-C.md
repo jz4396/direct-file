@@ -1,6 +1,6 @@
 # Gap: Schedule C + self-employment tax
 
-**Status:** Supported Part I and Part II lines, three Part V lines, and the out-of-scope stops are in this tree, on top of the single expense total, Schedule SE, Schedule 1 line 3, and the section 164(f) deduction. Schedule SE lines this tool does not compute (farm, optional methods, church employee income, ministry or Forms 4361 and 4029, notary fees, and Form 8919) stop the return. What is still open is listed in IMPLEMENTATION-SCHEDULE-C.md.
+**Status:** Supported Part I and Part II lines, simple Part III (lines 35–42 to line 4, cost or lower of cost or market, for a small business taxpayer who is not a tax shelter, with line 42 at least zero and line 35 equal to last year's closing inventory), three Part V lines, and the out-of-scope stops are in this tree, on top of the single expense total, Schedule SE, Schedule 1 line 3, and the section 164(f) deduction. Schedule SE lines this tool does not compute (farm, optional methods, church employee income, ministry or Forms 4361 and 4029, notary fees, and Form 8919) stop the return. What is still open is listed in IMPLEMENTATION-SCHEDULE-C.md.
 **Tax year target:** TY2026, filed in 2027
 
 ## Audit sources (required on every claim)

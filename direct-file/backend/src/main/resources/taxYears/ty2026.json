@@ -3512,6 +3512,21 @@
       ]
     },
     {
+      "fact": "/scheduleCSmallBusinessGrossReceiptsLimit",
+      "file": "scheduleC.xml",
+      "values": [
+        "Dollar:32000000"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.30",
+          "page": 23,
+          "quote": "For taxable years beginning in 2026, a corporation or partnership meets the gross receipts test of § 448(c) for any taxable year if the average annual gross receipts of such entity for the 3-taxable-year period ending with the taxable year which precedes such taxable year does not exceed $32,000,000."
+        }
+      ]
+    },
+    {
       "fact": "/scheduleCBusinesses/*/line24bDeductibleMeals",
       "file": "scheduleC.xml",
       "values": [
