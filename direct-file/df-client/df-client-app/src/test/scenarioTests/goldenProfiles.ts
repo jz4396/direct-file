@@ -78,6 +78,8 @@ const single = (p: Person, home: Home) => ({
   '/hasAmtPreferenceItems': createBooleanWrapper(false),
   '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
   '/paHasUnsupportedItems': createBooleanWrapper(false),
+  // PA-40 C Form 8271 / tax-shelter screener. Answered no when Schedule C is present; complete false without Sch C.
+  '/paHasScheduleCTaxShelter': createBooleanWrapper(false),
   // Interview answers that clear the remaining screening questions (all "no").
   '/someFilerHadNonW2HsaActivity': createBooleanWrapper(false),
   '/writablePrimaryFilerHadNonW2HsaActivity': createBooleanWrapper(false),
@@ -713,6 +715,11 @@ export const profileHPaRentalDividends = {
   ...w2s(hayden.ssn, profileHW2),
   ...qualifiedDividends(profileHDividendId, `Example Dividend Fund`, 1800, 1200),
   '/hadScheduleEIncome': createBooleanWrapper(true),
+  // #276: answer Part II–IV no so full-year federal Part I nets to PA-40 line 6. Leaving Part II unanswered
+  // left /flowKnockoutPaUnsupportedIncome incomplete/true and /paLine6 at $0.
+  '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
   '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
   '/scheduleEHasPersonalUse': createBooleanWrapper(false),
   '/scheduleEHasDepreciation': createBooleanWrapper(false),

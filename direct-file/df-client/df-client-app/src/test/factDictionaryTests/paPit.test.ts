@@ -2,10 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import {
   createBooleanWrapper,
+  createCollectionItemWrapper,
   createCollectionWrapper,
   createDayWrapper,
   createDollarWrapper,
   createEnumWrapper,
+  createMultEnumWrapper,
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -55,6 +57,7 @@ const build = (status: Record<string, unknown>, extra: Record<string, unknown>) 
     '/soldCapitalAssets': createBooleanWrapper(false),
     '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    '/paHasScheduleCTaxShelter': createBooleanWrapper(false),
     ...pa(),
     ...extra,
   }).factGraph;
@@ -238,7 +241,7 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
     });
     blocks(g, `/flowKnockoutPaUnsupportedIncome`);
   });
-  describe(`Schedule C income: PA-only knockout (gated on /stateReturnPaFiled)`, () => {
+  describe(`Schedule C income: PA-only knockout stays off for full-year supported path`, () => {
     const bizId = `a59c03d1-af4a-447f-96aa-d19397048a77`;
     // Synthetic Schedule C business, $10,000 receipts, $2,000 expenses; no W-2s.
     const schC = {
@@ -281,13 +284,28 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       // ties to Schedule 1 line 3 and Schedule SE line 2 (26 U.S.C. 1402(a)).
       expect(get(g, `/scheduleCNetProfitOrLoss`).get.toString()).toBe(`8000.00`);
       expect(get(g, `/schedule1Line3`).get.toString()).toBe(`8000.00`);
+      expect(val(g, `/paLine4`)).toBe(`0.00`);
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
-    it(`PA filer, same income: PA knockout true and /flowIsKnockedOut true`, ({ task }) => {
-      task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+    it(`PA filer, same income: unsupported-income false; line 4 is federal line 31; PA Schedule C + Form 8995 stop`, ({
+      task,
+    }) => {
+      task.meta.testedFactPaths = [
+        `/flowKnockoutPaUnsupportedIncome`,
+        `/flowKnockoutPaScheduleC`,
+        `/paLine4`,
+        `/flowKnockoutForm8995WithoutTy2026Template`,
+        `/flowIsKnockedOut`,
+      ];
       const g = build(singleFilerData, schC);
       expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
-      blocks(g, `/flowKnockoutPaUnsupportedIncome`);
+      expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+      expect(val(g, `/paLine4`)).toBe(`8000.00`);
+      // PA-40 IN (2025) p. 17: must use PA Schedule C; this slice has no PA Schedule C PDF.
+      expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
+      expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+      expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+      expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
   });
   describe(`1099-INT box 2 early withdrawal penalty (PA-40 IN (2025) p. 15, LINE 2, Forfeited Interest Penalty)`, () => {
@@ -328,6 +346,142 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       build(mfjFilerData, { ...w2(80000, 80000, 2456), ...sale(14000, 10000) }),
       `/flowKnockoutPaUnsupportedIncome`
     );
+  });
+});
+
+/**
+ * PA-40 line 4 from the supported federal Schedule C path. Tax Reform Code of 1971 §303(a)(2): "Net profits. The net
+ * income from the operation of a business, profession, or other activity…" PA-40 IN (2025) p. 17, LINE 4. PA-40 C (EX)
+ * 03-26: line 39; meals 100% by Pennsylvania. A PA/FL part-year resident with Schedule C stops (p. 43). No PA Schedule
+ * C PDF in this slice.
+ */
+const schCBizId = `a59c03d1-af4a-447f-96aa-d19397048a77`;
+const schCBase = (receipts: string, expenses = `0`) => ({
+  '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
+  '/scheduleCBusinesses': createCollectionWrapper([schCBizId]),
+  [`/scheduleCBusinesses/#${schCBizId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/scheduleCBusinesses/#${schCBizId}/businessName`]: createStringWrapper(`Synthetic Consulting`),
+  [`/scheduleCBusinesses/#${schCBizId}/writableGrossReceipts`]: createDollarWrapper(receipts),
+  [`/scheduleCBusinesses/#${schCBizId}/writableTotalExpenses`]: createDollarWrapper(expenses),
+  [`/scheduleCBusinesses/#${schCBizId}/materiallyParticipates`]: createBooleanWrapper(true),
+  '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+});
+const schCMeals = (meals: string) => {
+  const id = schCBizId;
+  const stops = [
+    `hasInventoryOrCogs`,
+    `hasCarTruckOrVehicleLoan`,
+    `hasDepreciationOrSection179`,
+    `hasDepletion`,
+    `hasVehicleMachineryEquipmentRent`,
+    `hasHomeOffice`,
+    `hasEnergyEfficientBuildingsDeduction`,
+  ];
+  return {
+    ...Object.fromEntries(stops.map((k) => [`/scheduleCBusinesses/#${id}/${k}`, createBooleanWrapper(false)])),
+    [`/scheduleCBusinesses/#${id}/writableReturnsAndAllowances`]: createDollarWrapper(`0`),
+    [`/scheduleCBusinesses/#${id}/writableOtherIncome`]: createDollarWrapper(`0`),
+    [`/scheduleCBusinesses/#${id}/hasDeductibleExpenses`]: createBooleanWrapper(true),
+    [`/scheduleCBusinesses/#${id}/expenseLinesChosen`]: createMultEnumWrapper(
+      [`meals`],
+      `/scheduleCExpenseLineOptions`
+    ),
+    [`/scheduleCBusinesses/#${id}/writableMeals`]: createDollarWrapper(meals),
+    [`/scheduleCBusinesses/#${id}/mealsAreStandardHalfLimit`]: createBooleanWrapper(true),
+  };
+};
+
+describe(`PA-40 line 4 net profits from Schedule C`, () => {
+  it(`full-year resident: receipts 20000, no expenses → line 4 = 20000; tax × 0.0307`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine4`, `/paLine9`, `/paLine12`, `/scheduleCNetProfitOrLoss`];
+    // Golden end-to-end scenario (synthetic data): W-2 box 16 $50,000; Schedule C receipts $20,000, expenses $0.
+    // Line 4 = 20,000. Line 9 = 70,000. 70,000 × 0.0307 = 2,149.00.
+    const g = build(singleFilerData, { ...w2(50000, 50000, 1535), ...schCBase(`20000`) });
+    expect(val(g, `/scheduleCNetProfitOrLoss`)).toBe(`20000.00`);
+    expect(val(g, `/paLine4`)).toBe(`20000.00`);
+    expect(val(g, `/paLine1a`)).toBe(`50000.00`);
+    expect(val(g, `/paLine9`)).toBe(`70000.00`);
+    expect(val(g, `/paLine12`)).toBe(`2149.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    // PA Schedule C is required and not produced (IN p. 17), so the state-return knockout is true.
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+  });
+
+  it(`meals 400 at 50% federal → PA line 4 adds back 200`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine4`, `/scheduleCBusinesses/*/paMealsAddBack`, `/scheduleCNetProfitOrLoss`];
+    // Receipts $20,000; meals $400; federal line 24b = $200; line 31 = 19,800. PA add-back $200 → line 4 = 20,000.
+    // Line-item path: omit writableTotalExpenses so usesLegacyExpenseBucket is false.
+    const { [`/scheduleCBusinesses/#${schCBizId}/writableTotalExpenses`]: _legacy, ...schCNoBucket } =
+      schCBase(`20000`);
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 1535),
+      ...schCNoBucket,
+      ...schCMeals(`400`),
+    });
+    expect(val(g, `/scheduleCBusinesses/#${schCBizId}/line24bDeductibleMeals`)).toBe(`200.00`);
+    expect(val(g, `/scheduleCBusinesses/#${schCBizId}/paMealsAddBack`)).toBe(`200.00`);
+    expect(val(g, `/scheduleCNetProfitOrLoss`)).toBe(`19800.00`);
+    expect(val(g, `/paLine4`)).toBe(`20000.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`PA/FL part-year resident with Schedule C: stop, no allocation`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/paLine4`, `/flowIsKnockedOut`];
+    // PA-40 IN (2025) p. 43: part-year/nonresident business income is not allocated here.
+    const g = build(singleFilerData, {
+      ...w2(30000, 30000, 921),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+      '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+      ...schCBase(`20000`),
+    });
+    expect(get(g, `/stateReturnIsPa`).get).toBe(false);
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(true);
+    expect(val(g, `/scheduleCNetProfitOrLoss`)).toBe(`20000.00`);
+    expect(get(g, `/paLine4`).complete).toBe(false);
+    expect(get(g, `/paLine9`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaUnsupportedIncome`);
+  });
+
+  it(`tax-shelter screener yes: unsupported-income stop (PA-40 C Form 8271)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/paHasScheduleCTaxShelter`, `/flowIsKnockedOut`];
+    // Golden end-to-end scenario (synthetic data): same supported Schedule C path, but the PA Form 8271 / tax-shelter
+    // screener is yes. PA-40 C (EX) 03-26: "Do not report or deduct any transactions related to tax shelters."
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 1535),
+      ...schCBase(`20000`),
+      '/paHasScheduleCTaxShelter': createBooleanWrapper(true),
+    });
+    expect(val(g, `/paLine4`)).toBe(`20000.00`);
+    expect(get(g, `/paAskScheduleCTaxShelter`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaUnsupportedIncome`);
+  });
+
+  it(`W-2 only, no Schedule C: line 4 is $0; PA Schedule C knockout false`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine4`, `/paLine9`, `/flowKnockoutPaScheduleC`];
+    const g = build(singleFilerData, w2(40000, 40000, 1228));
+    expect(val(g, `/paLine4`)).toBe(`0.00`);
+    expect(val(g, `/paLine9`)).toBe(`40000.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
   });
 });
 

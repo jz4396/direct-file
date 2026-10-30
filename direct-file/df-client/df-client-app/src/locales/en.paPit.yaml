@@ -29,6 +29,8 @@ dataviews:
       Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
     /paHasUnsupportedItems: Do any Pennsylvania items this tool doesn’t support apply to you?
     /paHasExemptObligationDividends: Do any of your dividends come from U.S. government or Pennsylvania obligations?
+    /paHasScheduleCTaxShelter:
+      Do any of your Schedule C businesses involve tax-shelter transactions (Form 8271)?
 headings:
   /heading/your-taxes/amount/pa-exempt-obligation-dividends:
     Do any of your dividends come from U.S. government or Pennsylvania obligations?
@@ -41,6 +43,8 @@ headings:
     "For your {{/taxYear}} Pennsylvania return, do any of these apply to you?"
   /heading/knockout/pa-unsupported-items: This tool doesn’t yet support these Pennsylvania tax items
   /heading/knockout/pa-unsupported-income: This tool doesn’t yet support some of your income on a Pennsylvania return
+  /heading/your-taxes/amount/pa-schedule-c-tax-shelter:
+    Do any of your Schedule C businesses involve tax-shelter transactions?
   /heading/knockout/pa-sp-unsupported: This tool doesn’t yet support Pennsylvania Tax Forgiveness for your situation
   /heading/your-taxes/amount/pa-sp-nontaxable-income:
     Do you have nontaxable income that counts for Pennsylvania Tax Forgiveness?
@@ -63,6 +67,7 @@ headings:
     "What is the code for the Pennsylvania school district you lived in on December 31, {{/taxYear}}?"
   /heading/knockout/pa-schedule-a: This tool doesn’t yet support PA Schedule A for your interest income
   /heading/knockout/pa-schedule-b: This tool doesn’t yet support PA Schedule B for your dividend income
+  /heading/knockout/pa-schedule-c: This tool doesn’t yet support PA Schedule C for your business income
   /heading/knockout/pa-schedule-d: This tool doesn’t yet support sales of property on a Pennsylvania return
 info:
   /info/your-taxes/amount/pa-exempt-obligation-dividends:
@@ -107,14 +112,19 @@ info:
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/your-taxes/amount/pa-schedule-c-tax-shelter:
+    body:
+      Pennsylvania Schedule C asks about tax-shelter transactions and Form 8271. Answer yes if any Schedule C business
+      had tax-shelter transactions. Pennsylvania does not allow those on PA Schedule C.
   /info/knockout/pa-unsupported-income:
     alertText:
       body:
         - p:
-            This includes business income, rental or royalty income from a Schedule K-1, rental or royalty income
-            while you were a part-year Pennsylvania resident, retirement distributions, Form 1099-MISC income,
-            tax-exempt interest, a Form W-2 without Pennsylvania wages in box 16, or sales of property on a joint
-            return.
+            This includes business income while you were a part-year Pennsylvania resident, tax-shelter transactions on
+            a Schedule C, a business loss on a joint return, rental or royalty income from a Schedule K-1, rental or
+            royalty income while you were a part-year Pennsylvania resident, retirement distributions, Form 1099-MISC
+            income, tax-exempt interest, a Form W-2 without Pennsylvania wages in box 16, or sales of property on a
+            joint return.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
@@ -210,6 +220,16 @@ info:
             "Your Pennsylvania return needs PA Schedule A, and this tool can’t fill it out yet. This includes interest
             from U.S. savings bonds or Treasury obligations, tax-exempt interest, interest when you lived in
             Pennsylvania for only part of the year, or more than $2,500 of interest."
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-schedule-c:
+    alertText:
+      body:
+        - p:
+            Your Pennsylvania return needs PA Schedule C for business income, and this tool can’t fill it out yet.
+            Pennsylvania does not accept the federal Schedule C in place of PA Schedule C.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:

@@ -1321,13 +1321,14 @@ describe(`golden end-to-end scenario (synthetic data): profile C negative rows (
   });
 });
 
-// Stops this profile asserts. Each one is <BlockSubmissionOnTrue />. The return does not add PA Schedule C, a PA-40
-// line 4 amount, or a Form 8995 template.
+// Stops this profile asserts. Each one is <BlockSubmissionOnTrue />. Full-year Schedule C is on PA-40 line 4; Form
+// 8995 still has no TY2026 template. No PA Schedule C PDF is produced.
 const PROFILE_F_STOPPED = [
-  `/flowKnockoutPaUnsupportedIncome`,
-  `/flowKnockoutStateReturn`,
   `/flowKnockoutForm8995WithoutTy2026Template`,
   `/flowKnockoutForm8960Unsupported`,
+  // PA-40 IN (2025) p. 17: must use PA Schedule C; this slice has no PA Schedule C PDF.
+  `/flowKnockoutPaScheduleC`,
+  `/flowKnockoutStateReturn`,
   `/flowIsKnockedOut`,
 ];
 
@@ -1391,18 +1392,17 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
   //   2,200 - 2,150 = 50. EIC is $0 [EITC].
   // Form 1040: line 18 36,704 + 117 = 36,821; line 19 50; line 22 36,771; line 23 3,367; line 24 total tax 40,138;
   //   line 25a 40,000; amount owed 138.
-  // PA-40 as modeled, not as a filed business return [PA] [TRC]. Line 4 is $0
-  //   (/flowKnockoutPaUnsupportedIncome): 72 P.S. §7303(a)(2)
-  //   (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/) and [PA] p. 17
-  //   LINE 4 (PA Schedule C). This scenario does not add that income. Line 1a = box 16 190,000. Lines 9 and 11
-  //   190,000. Line 12 3.07% x 190,000 = 5,833.00. Line 13 and line 24 6,000. Schedule SP: eligibility income is
-  //   line 9, $190,000, which is over the 10% column for an unmarried claimant with one dependent child
-  //   (base $6,500 + $9,500, plus $2,250 to the 10% column = $18,250). 72 P.S. §7304
+  // PA-40 as modeled [PA] [TRC]. Line 4 = federal Schedule C line 31 $52,858 (72 P.S. §7303(a)(2);
+  //   https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/; [PA] p. 17 LINE 4).
+  //   No PA Schedule C PDF is produced; the federal Schedule C PDF is not the PA schedule. Line 1a = box 16
+  //   190,000. Line 9 = 190,000 + 52,858 = 242,858. Line 12 3.07% x 242,858 = 7,455.74. Line 13 and line 24 6,000.
+  //   Schedule SP: eligibility income is line 9, $242,858, which is over the 10% column for an unmarried claimant
+  //   with one dependent child (base $6,500 + $9,500, plus $2,250 to the 10% column = $18,250). 72 P.S. §7304
   //   (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7304/). Line 21 is $0.
-  //   Line 29 overpayment 6,000 - 5,833 = 167.00. The PA-40 is not filed: /flowKnockoutStateReturn is true.
-  // Print: /flowKnockoutPaUnsupportedIncome, /flowKnockoutAmtPreferenceItems (answered no, so complete false here),
-  //   and /flowKnockoutAmtMfsAddBack (not married filing separately) are on the print-refusal list. This return is
-  //   refused by the PA stop and by /flowKnockoutForm8995WithoutTy2026Template. No Form 8995 template is added.
+  //   Line 26 tax due 7,455.74 - 6,000 = 1,455.74. The return still stops: /flowKnockoutForm8995WithoutTy2026Template
+  //   and /flowKnockoutForm8960Unsupported. /flowKnockoutPaUnsupportedIncome is false on this supported path.
+  // Print: Form 8995 and Form 8960 refuse the package. /flowKnockoutAmtPreferenceItems (answered no) and
+  //   /flowKnockoutAmtMfsAddBack stay complete false.
   const g = graph(profileFPaAmtScheduleC);
   const expectStoppedOnly = (fg: Fg) => {
     const stopped = new Set(PROFILE_F_STOPPED);
@@ -1521,25 +1521,27 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
     });
     expect(get(g, `/eitcQualified`).get).toBe(false);
   });
-  it(`PA-40 line 4 stays $0 and the return stops; Schedule SP does not qualify`, () => {
+  it(`PA-40 line 4 is federal Schedule C line 31; PA Schedule C + Form 8995 stop; Schedule SP does not qualify`, () => {
     expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
-    expect(get(g, `/paLine4`).get.toString()).toBe(`0.00`);
-    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(g, `/paLine4`).get.toString()).toBe(`52858.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
     expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
     expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
     expect(get(g, `/paSpLine15`).get.toString()).toBe(`0/1`);
     expectDollars(g, {
       '/paLine1a': `190000.00`,
       '/paLine1c': `190000.00`,
-      '/paLine9': `190000.00`,
-      '/paLine11': `190000.00`,
-      '/paLine12': `5833.00`,
+      '/paLine4': `52858.00`,
+      '/paLine9': `242858.00`,
+      '/paLine11': `242858.00`,
+      '/paLine12': `7455.74`,
       '/paLine13': `6000.00`,
-      '/paSpLine11': `190000.00`,
+      '/paSpLine11': `242858.00`,
       '/paLine21': `0.00`,
       '/paLine24': `6000.00`,
-      '/paLine26': `0.00`,
-      '/paLine29': `167.00`,
+      '/paLine26': `1455.74`,
+      '/paLine29': `0.00`,
     });
     for (const path of [
       `/flowKnockoutQbiPriorYearCarryforward`,
@@ -1547,6 +1549,7 @@ describe(`golden end-to-end scenario (synthetic data): profile F, full-year PA, 
       `/flowKnockoutQbiMixedParticipation`,
       `/flowKnockoutScheduleCSpouseBusiness`,
       `/flowKnockoutScheduleCEarnedIncomeCredits`,
+      `/flowKnockoutPaUnsupportedIncome`,
       `/flowKnockoutPaScheduleA`,
       `/flowKnockoutPaScheduleB`,
       `/flowKnockoutPaScheduleD`,
@@ -1592,7 +1595,7 @@ describe(`golden end-to-end scenario (synthetic data): profile F negative rows (
     );
     expectDollars(n, { '/form8995Line11': `201751.00`, '/agi': `242150.00` });
     expect(get(n, `/flowKnockoutScheduleCQbi`).get).toBe(true);
-    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
     expect(get(n, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
   });
   it(`AMT preference items stop the return and are not added into line 4`, () => {
@@ -1601,7 +1604,8 @@ describe(`golden end-to-end scenario (synthetic data): profile F negative rows (
       `/flowKnockoutAmtPreferenceItems`
     );
     expectDollars(n, { '/form6251Line4': `231720.00`, '/amt': `117.00` });
-    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(n, `/paLine4`).get.toString()).toBe(`52858.00`);
   });
 });
 
@@ -1821,9 +1825,9 @@ describe(`golden end-to-end scenario (synthetic data): profile G negative rows (
   });
 });
 
-// Stops this profile asserts. Each one is <BlockSubmissionOnTrue />. The return does not add a PA-40 line 6
-// amount. PA Schedule E is not produced.
-const PROFILE_H_STOPPED = [`/flowKnockoutPaUnsupportedIncome`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
+// Stops this profile asserts. Each one is <BlockSubmissionOnTrue />. Full-year Schedule E Part I is on PA-40 line 6
+// (#276) once Part II–IV are answered no; /flowKnockoutPaUnsupportedIncome is false.
+const PROFILE_H_STOPPED: string[] = [];
 
 describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, Schedule E rental, and dividends`, () => {
   // Single, full-year Pennsylvania resident [PA] [TRC]; born 1988-03-15 (under 65, not blind), SSN 900-46-1009
@@ -1870,21 +1874,14 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
   //   33,325 = 5,239  25) smaller = 5,095.
   // Total tax 5,095; withholding 5,200; overpayment 105. EITC is $0 [EITC]: the TIN is not an SSN, and AGI is
   //   over $19,540. No qualifying child, so the child tax credit is $0.
-  // PA-40 as modeled, not as a filed rental return [PA] [TRC]. Line 6 stays $0. [PA] p. 17-19, LINE 6: "LINE 6.
-  //   NET INCOME OR LOSS FROM RENTS, ROYALTIES, PATENTS, OR COPYRIGHTS" and "Rental income includes the amounts
-  //   you receive for the use of, or the right to use, your real or personal property" and "Report the total
-  //   income (loss) from all PA Schedules E". 72 P.S. §7303(a)(4)
-  //   (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/). This scenario
-  //   does not invent that amount: the engine leaves line 6 at $0 and /flowKnockoutPaUnsupportedIncome is true
-  //   because Schedule E Part I is present. The PA-40 is not filed: /flowKnockoutStateReturn is true.
-  //   What is computed uses the classes that are supported. Line 1a = box 16 48,000 [PA p. 10]. Line 1b $0
-  //   (no unreimbursed employee expenses). Line 1c 48,000. Line 2 $0. Line 3 = federal line 3b 1,800 [PA p. 15,
-  //   LINE 3: "Report all dividend income received or credited during 2025."; p. 32: with no Schedule B lines
-  //   2 through 10, "you must report your income on Line 3 of the PA-40, but you do not have to submit PA
-  //   Schedule B"]. $1,800 is not over the $2,500 tool limit. Lines 4, 5, 6, 7, and 8 are $0. Line 9 adds only
-  //   the positive amounts [PA p. 20]: 48,000 + 1,800 = 49,800. Line 10 $0. Line 11 49,800. Line 12 3.07% x
-  //   49,800 = 1,528.86 [TRC] [PA p. 21]. Line 13 and line 24 1,600. Line 21 $0 (eligibility income 49,800 is
-  //   over the tax-forgiveness table). Line 26 $0. Line 29 overpayment 1,600 - 1,528.86 = 71.14.
+  // PA-40 as modeled [PA] [TRC]. Line 6 = federal Schedule E Part I net $12,000 (#276). [PA] p. 18, LINE 6:
+  //   "You may use federal Schedule E, if using only Part I, and with the following adjustments". 72 P.S.
+  //   §7303(a)(4) (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).
+  //   /flowKnockoutPaUnsupportedIncome is false. Line 1a = box 16 48,000 [PA p. 10]. Line 1b $0. Line 1c
+  //   48,000. Line 2 $0. Line 3 = federal line 3b 1,800 [PA p. 15 / p. 32]. Lines 4, 5, 7, and 8 are $0. Line 9
+  //   adds only the positive amounts [PA p. 20]: 48,000 + 1,800 + 12,000 = 61,800. Line 10 $0. Line 11 61,800.
+  //   Line 12 3.07% x 61,800 = 1,897.26 [TRC] [PA p. 21]. Line 13 and line 24 1,600. Line 21 $0 (eligibility
+  //   income 61,800 is over the tax-forgiveness table). Line 26 tax due 1,897.26 - 1,600 = 297.26.
   const g = graph(profileHPaRentalDividends);
   const expectStoppedOnly = (fg: Fg) => {
     const stopped = new Set(PROFILE_H_STOPPED);
@@ -1976,13 +1973,13 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
       '/overpayment': `105.00`,
     });
   });
-  it(`PA-40 line 6 stays $0 and the return stops; wages and dividends are still computed`, () => {
+  it(`PA-40 line 6 is federal Schedule E Part I net; wages and dividends are still computed`, () => {
     expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
     expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(false);
     expect(get(g, `/paSchoolCode`).get.toString()).toBe(`22275`);
-    expect(get(g, `/paLine6`).get.toString()).toBe(`0.00`);
-    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
-    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(g, `/paLine6`).get.toString()).toBe(`12000.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
     expectDollars(g, {
       '/paLine1a': `48000.00`,
       '/paLine1b': `0.00`,
@@ -1991,17 +1988,18 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
       '/paLine3': `1800.00`,
       '/paLine4': `0.00`,
       '/paLine5': `0.00`,
-      '/paLine6': `0.00`,
-      '/paLine9': `49800.00`,
-      '/paLine11': `49800.00`,
-      '/paLine12': `1528.86`,
+      '/paLine6': `12000.00`,
+      '/paLine9': `61800.00`,
+      '/paLine11': `61800.00`,
+      '/paLine12': `1897.26`,
       '/paLine13': `1600.00`,
       '/paLine21': `0.00`,
       '/paLine24': `1600.00`,
-      '/paLine26': `0.00`,
-      '/paLine29': `71.14`,
+      '/paLine26': `297.26`,
+      '/paLine29': `0.00`,
     });
     for (const path of [
+      `/flowKnockoutPaUnsupportedIncome`,
       `/flowKnockoutPaScheduleA`,
       `/flowKnockoutPaScheduleB`,
       `/flowKnockoutPaScheduleD`,
@@ -2016,10 +2014,10 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
       expect(get(g, path).get, path).toBe(false);
     }
     expectStoppedOnly(g);
+    expectNotStopped(g);
   });
-  it(`answering the rental no leaves line 6 at $0 and clears the PA stop`, () => {
-    // The same wages and dividends, with Schedule E Part I answered no. Line 6 is still $0. Nothing in this
-    // scenario supplies a PA rental amount.
+  it(`answering the rental no leaves line 6 at $0`, () => {
+    // The same wages and dividends, with Schedule E Part I answered no. Line 6 is $0.
     const n = graph({ ...profileHPaRentalDividends, '/hadScheduleEIncome': createBooleanWrapper(false) });
     expect(get(n, `/hasScheduleEIncome`).get).toBe(false);
     expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
@@ -2053,8 +2051,8 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
       { ...profileHPaRentalDividends, '/scheduleEHasDepreciation': createBooleanWrapper(true) },
       `/flowKnockoutScheduleEDepreciation`
     );
-    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
-    expectDollars(n, { '/scheduleENetIncome': `12000.00`, '/paLine6': `0.00` });
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expectDollars(n, { '/scheduleENetIncome': `12000.00`, '/paLine6': `12000.00` });
   });
   it(`expenses above rents stop on the Schedule E loss knockout`, () => {
     // Rents 15,000 - expenses 20,000 = a 5,000 loss. 26 U.S.C. 469, 465, and 461(l) are not computed.
@@ -2062,7 +2060,7 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
       { ...profileHPaRentalDividends, '/scheduleEWritableExpenses': createDollarWrapper(`20000`) },
       `/flowKnockoutScheduleELoss`
     );
-    expectDollars(n, { '/scheduleENetIncome': `-5000.00`, '/paLine6': `0.00` });
+    expectDollars(n, { '/scheduleENetIncome': `-5000.00`, '/paLine6': `-5000.00` });
   });
   it(`ordinary dividends of $2,501 stop on the PA Schedule B knockout`, () => {
     // One dollar over the $2,500 tool limit. PA-40 Schedule B is not produced. The federal Schedule B
@@ -2076,7 +2074,7 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
       `/flowKnockoutPaScheduleB`
     );
     expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
-    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
-    expectDollars(n, { '/ordinaryDividends': `2501.00`, '/paLine3': `2501.00`, '/paLine6': `0.00` });
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expectDollars(n, { '/ordinaryDividends': `2501.00`, '/paLine3': `2501.00`, '/paLine6': `12000.00` });
   });
 });

@@ -47,10 +47,12 @@ public final class PrintRefusingKnockouts {
             // PA-40 lines 7, 8, 10, 14-16, 22 (Schedule G-L), 23 and 25. PA-40 IN (2025) pp. 19-24. Yes, or an
             // unanswered question on a PA-40, refuses the print.
             "/flowKnockoutPaUnsupportedItems",
-            // PA-40 line 4 (Schedule C) and income this return does not classify (1099-R, 1099-MISC, tax-exempt
-            // interest, a missing box 16, a joint sale, a forfeited-interest penalty). Full-year Schedule E Part I
-            // net is PA-40 line 6. A Schedule K-1, or Schedule E Part I income of a PA/FL part-year resident, still
-            // stops. PA-40 IN (2025) p. 18 and p. 43. Tax Reform Code of 1971 §303(a)(4). 72 P.S. §7303(a).
+            // Income this return does not classify (1099-R, 1099-MISC, tax-exempt interest, a missing box 16, a joint
+            // sale, a forfeited-interest penalty). Full-year federally supported Schedule C is PA-40 line 4; a PA/FL
+            // part-year resident with Schedule C, a joint Schedule C loss, or a yes to /paHasScheduleCTaxShelter
+            // (PA-40 C Form 8271 / tax shelters) still stops. Full-year Schedule E Part I net is PA-40 line 6. A
+            // Schedule K-1, or Schedule E Part I income of a PA/FL part-year resident, still stops. PA-40 IN (2025)
+            // p. 17, p. 18, and p. 43. Tax Reform Code of 1971 §303(a)(2), §303(a)(4). 72 P.S. §7303(a).
             "/flowKnockoutPaUnsupportedIncome",
             // Tax Forgiveness cases Schedule SP here does not compute. 72 P.S. §7304. PA-40 IN (2025) pp. 36-39.
             // When forgiveness is still possible, an unanswered nontaxable-income question stays incomplete.
@@ -63,6 +65,10 @@ public final class PrintRefusingKnockouts {
             // PA Schedule B is required and not produced. PA-40 Schedule B (2025), WHO MUST COMPLETE. 72 P.S.
             // §7303(a)(5). An unanswered exempt-obligation answer or part-year allocation stays incomplete.
             "/flowKnockoutPaScheduleB",
+            // PA Schedule C is required for business income and not produced. PA-40 IN (2025) p. 17, LINE 4: "You must
+            // use PA Schedule C… Do not use federal Schedules C or F." True when a PA-40 has Schedule C. The federal
+            // Schedule C PDF is not the PA schedule. 72 P.S. §7303(a)(2).
+            "/flowKnockoutPaScheduleC",
             // PA Schedule D is required for any sale, exchange or disposition, including a loss. PA-40 IN (2025) p. 17
             // and PA Schedule D (2025), WHO MUST COMPLETE. 72 P.S. §7303(a)(3).
             "/flowKnockoutPaScheduleD",

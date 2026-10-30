@@ -33,6 +33,8 @@ dataviews:
     /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
     /paHasExemptObligationDividends:
       ¿Alguno de sus dividendos proviene de obligaciones del gobierno de EE. UU. o de Pensilvania?
+    /paHasScheduleCTaxShelter:
+      ¿Alguno de sus negocios del Anexo C involucra transacciones de refugios fiscales (Formulario 8271)?
 headings:
   /heading/your-taxes/amount/pa-exempt-obligation-dividends:
     ¿Alguno de sus dividendos proviene de obligaciones del gobierno de EE. UU. o de Pensilvania?
@@ -47,6 +49,8 @@ headings:
   /heading/knockout/pa-unsupported-items: Esta herramienta aún no admite estas partidas de impuestos de Pensilvania
   /heading/knockout/pa-unsupported-income:
     Esta herramienta aún no admite parte de sus ingresos en una declaración de Pensilvania
+  /heading/your-taxes/amount/pa-schedule-c-tax-shelter:
+    ¿Alguno de sus negocios del Anexo C involucra transacciones de refugios fiscales?
   /heading/knockout/pa-sp-unsupported:
     Esta herramienta aún no admite la Condonación de Impuestos de Pensilvania para su situación
   /heading/your-taxes/amount/pa-sp-nontaxable-income:
@@ -72,6 +76,7 @@ headings:
     "¿Cuál es el código del distrito escolar de Pensilvania en el que vivía el 31 de diciembre de {{/taxYear}}?"
   /heading/knockout/pa-schedule-a: Esta herramienta aún no admite el Anexo A de PA para sus ingresos de intereses
   /heading/knockout/pa-schedule-b: Esta herramienta aún no admite el Anexo B de PA para sus ingresos de dividendos
+  /heading/knockout/pa-schedule-c: Esta herramienta aún no admite el Anexo C de PA para sus ingresos de negocio
   /heading/knockout/pa-schedule-d: Esta herramienta aún no admite ventas de bienes en una declaración de Pensilvania
 info:
   /info/your-taxes/amount/pa-exempt-obligation-dividends:
@@ -121,14 +126,19 @@ info:
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/your-taxes/amount/pa-schedule-c-tax-shelter:
+    body:
+      El Anexo C de Pensilvania pregunta sobre transacciones de refugios fiscales y el Formulario 8271. Responda sí si
+      algún negocio del Anexo C tuvo transacciones de refugios fiscales. Pensilvania no las permite en el Anexo C de PA.
   /info/knockout/pa-unsupported-income:
     alertText:
       body:
         - p:
-            Esto incluye ingresos de negocio, ingresos de alquiler o regalías de un Anexo K-1, ingresos de alquiler o
-            regalías como residente parte del año, distribuciones de jubilación, ingresos del Formulario 1099-MISC,
-            intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania en el encasillado 16 o ventas
-            de bienes en una declaración conjunta.
+            Esto incluye ingresos de negocio como residente parte del año, transacciones de refugios fiscales en un
+            Anexo C, una pérdida de negocio en una declaración conjunta, ingresos de alquiler o regalías de un Anexo
+            K-1, ingresos de alquiler o regalías como residente parte del año, distribuciones de jubilación, ingresos
+            del Formulario 1099-MISC, intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania
+            en el encasillado 16 o ventas de bienes en una declaración conjunta.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
@@ -231,6 +241,16 @@ info:
             Su declaración de Pensilvania necesita el Anexo A de PA, y esta herramienta aún no puede completarlo. Esto
             incluye intereses de bonos de ahorro de EE. UU. u obligaciones del Tesoro, intereses exentos de impuestos,
             intereses cuando vivió en Pensilvania solo parte del año o más de $2,500 de intereses.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-schedule-c:
+    alertText:
+      body:
+        - p:
+            Su declaración de Pensilvania necesita el Anexo C de PA para ingresos de negocio, y esta herramienta aún no
+            puede completarlo. Pensilvania no acepta el Anexo C federal en lugar del Anexo C de PA.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
