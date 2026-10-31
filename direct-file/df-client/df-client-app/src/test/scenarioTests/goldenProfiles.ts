@@ -4,8 +4,10 @@
 // profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
 // filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), profile H
 // (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), profile I
-// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout), and profile K
-// (Florida full-year single, one Schedule C, Form 8995 with the line 14 income limitation).
+// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout),
+// profile J (full-year Florida resident, single: W-2, Form 1099-DIV boxes 1a, 1b, and 2a, and Schedule E
+// Part I rental income), and profile K (Florida full-year single, one Schedule C, Form 8995 with the line 14
+// income limitation).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -170,12 +172,15 @@ const interest = (id: string, payer: string, box1: number) => ({
   [`/interestReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
 });
 
-const qualifiedDividends = (id: string, payer: string, box1a: number, box1b: number) => ({
+const qualifiedDividends = (id: string, payer: string, box1a: number, box1b: number, box2a?: number) => ({
   '/dividendReports': createCollectionWrapper([id]),
   [`/dividendReports/#${id}/filer`]: createCollectionItemWrapper(primaryFilerId),
   [`/dividendReports/#${id}/payer`]: createStringWrapper(payer),
   [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`${box1a}`),
   [`/dividendReports/#${id}/writableQualifiedDividends`]: createDollarWrapper(`${box1b}`),
+  ...(box2a === undefined
+    ? {}
+    : { [`/dividendReports/#${id}/writableCapitalGainDistributions`]: createDollarWrapper(`${box2a}`) }),
   [`/dividendReports/#${id}/qualifiedDividendsHoldingPeriodNotMet`]: createBooleanWrapper(false),
   [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
   [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(false),
@@ -774,6 +779,41 @@ export const profileIMfjAmtPhaseout = {
 };
 
 /**
+ * Profile J: full-year Florida resident, single, under 65. One W-2, one Form 1099-DIV (boxes 1a, 1b, and 2a only),
+ * and one Schedule E Part I residential rental. Box 2a is Form 1040 line 7a under line 7a Exception 1 (Schedule D
+ * is not required). Ordinary dividends are over $1,500, so Schedule B Part II is required. The rental is not a
+ * section 162 trade or business. Fixed identifiers: SSN 900-49-1012, W-2 id
+ * 13500000-0000-4000-8000-000000001401, 1099-DIV id 13500000-0000-4000-8000-000000001402.
+ */
+const rowan: Person = { first: `Rowan`, last: `Example`, ssn: [`900`, `49`, `1012`], dob: `1991-04-22` };
+export const profileJDividendId = `13500000-0000-4000-8000-000000001402`;
+export const profileJW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001401`,
+  employer: `Example Sunshine LLC`,
+  ein: [`00`, `0001401`],
+  box1: 70000,
+  box2: 11000,
+};
+export const profileJFlDividendsRental = {
+  ...single(rowan, { street: `123 Example St`, city: `Tampa`, zip: `33602`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  ...w2s(rowan.ssn, profileJW2),
+  ...qualifiedDividends(profileJDividendId, `Example Mutual Fund`, 4000, 3000, 1000),
+  '/hadScheduleEIncome': createBooleanWrapper(true),
+  '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIIIIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
+  '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
+  '/scheduleEHasPersonalUse': createBooleanWrapper(false),
+  '/scheduleEHasDepreciation': createBooleanWrapper(false),
+  '/scheduleEAnyPropertyLoss': createBooleanWrapper(false),
+  '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(false),
+  '/scheduleEWritableRents': createDollarWrapper(`18000`),
+  '/scheduleEWritableRoyalties': createDollarWrapper(`0`),
+  '/scheduleEWritableExpenses': createDollarWrapper(`6000`),
+};
+
+/**
  * Profile K: Florida full-year resident, single, under 65. One Schedule C (line-item expenses, no inventory) whose
  * net profit is $50,000. Form 8995 line 14 (20 percent of taxable income before the deduction) is smaller than
  * line 10, so the income limitation is the deduction. Estimated tax payments of $9,800 are Form 1040 line 26.
@@ -854,5 +894,6 @@ export const goldenProfiles = {
   profileGMfjTwoChildren,
   profileHPaRentalDividends,
   profileIMfjAmtPhaseout,
+  profileJFlDividendsRental,
   profileKFlSingleScheduleC,
 };
