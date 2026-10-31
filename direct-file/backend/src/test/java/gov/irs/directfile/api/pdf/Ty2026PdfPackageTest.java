@@ -168,6 +168,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS8889", 1),
             Map.entry("IRS8862", 3),
             Map.entry("PA40", 2),
+            Map.entry("PA40C", 2),
             Map.entry("PA40SP", 2),
             Map.entry("IRSW2", 1));
 
@@ -442,6 +443,7 @@ class Ty2026PdfPackageTest {
                 investor(),
                 itemizer(),
                 paTaxForgiveness(),
+                PaScheduleCTy2026PdfSmokeTest.lineItemPa("50000.00", "20000.00"),
                 selfEmployedFamily("4000.00"),
                 ScheduleBAndETy2026PdfSmokeTest.partI(),
                 ScheduleRTy2026PdfSmokeTest.disabledSingle(),
@@ -1136,7 +1138,8 @@ class Ty2026PdfPackageTest {
 
     /**
      * Renders the package. {@code refusedBy} is what the public print path refuses with: empty for a package that
-     * prints, or {@link PrintRefusingKnockoutsTest#TEMPLATE_PENDING} (PA Schedule C, which still has no PDF), or null
+     * prints, or {@link PrintRefusingKnockoutsTest#TEMPLATE_PENDING} (a PA-40 whose Schedule C is still the
+     * single-expense-total path, or is not full-year), or null
      * to skip that assertion. The package is then filled with only those left out of the refusal check, so the field
      * maps of the forms that do have templates stay tested; every other knockout still refuses.
      */

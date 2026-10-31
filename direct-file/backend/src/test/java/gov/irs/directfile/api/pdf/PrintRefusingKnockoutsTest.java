@@ -126,9 +126,9 @@ class PrintRefusingKnockoutsTest {
 
     static final String DIVIDEND_ID = "13500000-0000-4000-8000-000000000502";
     /**
-     * Knockouts the field-map tests may still see while filling forms the public path refuses. PA Schedule C is
-     * required on a PA-40 with Schedule C (IN p. 17) and has no PA Schedule C PDF in this slice, so
-     * /flowKnockoutPaScheduleC refuses public print; PA-40 line 4 field maps still fill (see
+     * Knockouts the field-map tests may still see while filling forms the public path refuses. A full-year line-item
+     * Schedule C prints PA-40 C. /flowKnockoutPaScheduleC still refuses public print when the business uses the
+     * single expense total or the return is not full-year; PA-40 line 4 field maps still fill (see
      * {@link #FIELD_MAP_CHECKS}). Form 8995 prints from the 2026 draft (#17). Schedule C and Schedule 3-A federal
      * templates are pinned (#239), so they are not in this list.
      */
@@ -1012,7 +1012,7 @@ class PrintRefusingKnockoutsTest {
      * A Schedule C return that is not a PA-40 prints, including Form 8995 (#17). The same business on a full-year
      * PA-40 reports federal Schedule C line 31 on PA-40 line 4 (72 P.S. §7303(a)(2); PA-40 IN (2025) p. 17, LINE 4;
      * PA-40 C (EX) 03-26). The PA unsupported-income knockout is false on that supported path when the tax-shelter
-     * screener is no. PA Schedule C is required and not produced, so /flowKnockoutPaScheduleC refuses the print
+     * screener is no. This business still uses the single expense total, so /flowKnockoutPaScheduleC refuses the print
      * Form 8995 prints and still blocks submission (no MeF mapping). The UE, unsupported-items, and tax-shelter screeners are answered no;
      * unanswered, those stops stay incomplete and refuse the print. This W-2 has no box 16, so PA taxable income is $0
      * and Tax Forgiveness is still possible (72 P.S. §7304). The Schedule SP nontaxable-income screener is answered no

@@ -68,8 +68,9 @@ public final class PrintRefusingKnockouts {
             // PA Schedule B is required and not produced. PA-40 Schedule B (2025), WHO MUST COMPLETE. 72 P.S.
             // §7303(a)(5). An unanswered exempt-obligation answer or part-year allocation stays incomplete.
             "/flowKnockoutPaScheduleB",
-            // PA Schedule C is required for business income and not produced. PA-40 IN (2025) p. 17, LINE 4: "You must
-            // use PA Schedule C… Do not use federal Schedules C or F." True when a PA-40 has Schedule C. The federal
+            // PA Schedule C is required for business income. PA-40 IN (2025) p. 17, LINE 4: "You must use PA Schedule
+            // C… Do not use federal Schedules C or F." False on the full-year line-item path, which prints PA-40 C.
+            // True when the return is not full-year or any business still uses the single expense total. The federal
             // Schedule C PDF is not the PA schedule. 72 P.S. §7303(a)(2).
             "/flowKnockoutPaScheduleC",
             // PA Schedule D is required for any sale, exchange or disposition, including a loss. PA-40 IN (2025) p. 17

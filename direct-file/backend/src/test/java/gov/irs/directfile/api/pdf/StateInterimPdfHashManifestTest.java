@@ -37,8 +37,17 @@ class StateInterimPdfHashManifestTest {
                 String[] cols = row.trim().split("\\s+");
                 assertTrue(cols.length >= 3, "manifest row has <sha256> <path> <url>: " + row);
                 assertTrue(cols[2].startsWith(PA_DOR), "source is the PA Department of Revenue: " + row);
-                String year = cols[1].replaceAll(".*/(\\d{4})_[^/]*$", "$1");
-                assertTrue(cols[2].contains("/" + year + "/" + year + "_"), "file name keeps the source year: " + row);
+                if (cols[1].matches(".*/\\d{4}_[^/]+")) {
+                    String year = cols[1].replaceAll(".*/(\\d{4})_[^/]*$", "$1");
+                    assertTrue(
+                            cols[2].contains("/" + year + "/" + year + "_"), "file name keeps the source year: " + row);
+                } else {
+                    assertEquals(
+                            "PA40C/en/pa-40c.pdf",
+                            cols[1],
+                            "only the undated PA-40 C (EX) 03-26 file omits a year stamp");
+                    assertTrue(cols[2].endsWith("/pa-40c.pdf"), "PA-40 C source URL: " + row);
+                }
                 MessageDigest sha = MessageDigest.getInstance("SHA-256");
                 try (InputStream in = new ClassPathResource("pdf/2026/" + cols[1]).getInputStream()) {
                     sha.update(in.readAllBytes());

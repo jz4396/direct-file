@@ -95,6 +95,50 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCHasLegacyExpenseBucket">
+      <Name>A Schedule C business still uses the single expense total</Name>
+      <Description>True when any Schedule C business still uses the pre-line-item expense total
+        (/scheduleCBusinesses/*/usesLegacyExpenseBucket). False when there is no Schedule C, and when every business
+        is
+        on the line-item path. A mixed return stays true: PA-40 line 4 is one sum, so a business that cannot be
+        mapped
+        onto PA Schedule C keeps /flowKnockoutPaScheduleC true. The count is not read when there is no
+        Schedule C, so a
+        W-2-only return stays complete.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleCBusinesses/*/usesLegacyExpenseBucket" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/hadSelfEmploymentIncome">
       <Name>Had self-employment / gig / freelance income</Name>
       <Description>
@@ -3207,10 +3251,11 @@
       <Name>PA-40 line 4 meals add-back (100% PA minus federal 50%)</Name>
       <Description>PA-40 C (EX) 03-26 instructions: federal/PA differences include "meals, travel, and entertainment
         expense deduction of 100 percent by Pennsylvania." Federal Schedule C line 24b takes 50 percent under 26 U.S.C.
-        274(n) when mealsAreStandardHalfLimit. The add-back is writableMeals minus line24bDeductibleMeals so PA-40
-        line 4 (/paLine4) allows the full meal cost. Zero on the single-expense-total path and when meals were not
-        chosen. Incomplete when a non-50-percent meal limit applies (that case is already
-        /flowKnockoutScheduleCOutOfScope).</Description>
+        274(n) when mealsAreStandardHalfLimit. The add-back is writableMeals minus line24bDeductibleMeals.
+        /scheduleCBusinesses/*/paNetProfitOrLoss subtracts it from federal line 31, and PA-40 line 4
+        (/paLine4) is the sum of those nets, so Pennsylvania deducts the full meal cost (PA-40 C (EX) 03-26
+        line 31). Zero on the single-expense-total path and when meals were not chosen. Incomplete when a
+        non-50-percent meal limit applies (that case is already /flowKnockoutScheduleCOutOfScope).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -3255,6 +3300,73 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/paInterest">
+      <Name>PA Schedule C line 18 interest</Name>
+      <Description>PA-40 C (EX) 03-26 line 18, interest on business indebtedness. Sum of federal Schedule C lines 16a
+        and 16c. Line 16b (vehicle interest) is a stop and is not included. 72 P.S. §7303(a)(2)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="../line16aMortgageInterest" />
+            <Dependency path="../line16cOtherInterest" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/paTravelAndEntertainment">
+      <Name>PA Schedule C line 31 travel and entertainment</Name>
+      <Description>PA-40 C (EX) 03-26,
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/pa-40c.pdf
+        line 31: Pennsylvania deducts meals, travel, and entertainment at 100 percent. Federal line 24a plus federal
+        line 24b plus /paMealsAddBack (the half of meals federal line 24b omits under 26 U.S.C. 274(n)).</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="../line24aTravel" />
+            <Dependency path="../line24bDeductibleMeals" />
+            <Dependency path="../paMealsAddBack" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/paTotalExpenses">
+      <Name>PA Schedule C line 38 total expenses</Name>
+      <Description>PA-40 C (EX) 03-26 line 38, the sum of lines 6 through 37. Federal Schedule C line 28
+        (/totalExpenses, which includes only the 50 percent federal meal deduction) plus /paMealsAddBack, so the
+        printed total deducts meals at 100 percent. Line 39 is line 5 minus this amount.</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="../totalExpenses" />
+            <Dependency path="../paMealsAddBack" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/paNetProfitOrLoss">
+      <Name>PA Schedule C line 39 net profit or loss</Name>
+      <Description>PA-40 C (EX) 03-26 line 39: line 5 minus line 38. Federal Schedule C line 31
+        (/netProfitOrLoss) minus /paMealsAddBack, which is the same net. PA-40 line 4 (/paLine4) sums this fact
+        for a full-year resident. 72 P.S. §7303(a)(2). A loss is allowed; the printed amount is the size of the
+        loss and the line 39 oval is filled.</Description>
+      <Derived>
+        <Round>
+          <Subtract>
+            <Minuend>
+              <Dependency path="../netProfitOrLoss" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="../paMealsAddBack" />
+            </Subtrahends>
+          </Subtract>
+        </Round>
       </Derived>
     </Fact>
 

@@ -201,16 +201,18 @@
         law does not have material participation rules"; federal/PA differences include "meals, travel, and
         entertainment expense deduction of 100 percent by Pennsylvania"; "Do not report or deduct any transactions
         related to tax shelters." For a full-year PA resident (/stateReturnIsPa) with only federally supported Schedule
-        C businesses, line 4 is the sum of federal Schedule C line 31 (/scheduleCBusinesses/*/netProfitOrLoss) plus the
-        PA 100% meals add-back (/scheduleCBusinesses/*/paMealsAddBack: writableMeals − line24bDeductibleMeals when
-        mealsAreStandardHalfLimit). A loss within the class is allowed (line 4 may be negative); line 9 already uses
-        GreaterOf 0. A PA/FL part-year resident with any Schedule C, a joint return with any Schedule C loss (IN p. 7:
-        do not net spouses), a yes to the PA tax-shelter screener (/paHasScheduleCTaxShelter; PA-40 C Form 8271 / "Do
-        not report or deduct any transactions related to tax shelters"), farm/Schedule F, or anything still out of
-        scope on federal Schedule C leaves this line incomplete (/flowKnockoutPaUnsupportedIncome or the federal
-        Schedule C/SE stops). Simple Part III inventory/COGS flows through federal line 31 after #277. This slice does
-        not produce a PA Schedule C PDF (/flowKnockoutPaScheduleC); the federal Schedule C PDF is not the PA schedule.
-        $0 when there is no Schedule C, and on a return that is not a PA-40.</Description>
+        C businesses, line 4 is the sum of /scheduleCBusinesses/*/paNetProfitOrLoss: federal Schedule C line 31 minus
+        the PA meals add-back (/scheduleCBusinesses/*/paMealsAddBack: writableMeals − line24bDeductibleMeals when
+        mealsAreStandardHalfLimit). That deducts meals at 100 percent, and printed PA Schedule C line 39 is the same
+        net. A loss within the class is allowed (line 4 may be negative); line 9 already uses GreaterOf 0. A PA/FL
+        part-year resident with any Schedule C, a joint return with any Schedule C loss (IN p. 7: do not net spouses),
+        a yes to the PA tax-shelter screener (/paHasScheduleCTaxShelter; PA-40 C Form 8271 / "Do not report or deduct
+        any transactions related to tax shelters"), farm/Schedule F, or anything still out of scope on federal
+        Schedule C leaves this line incomplete (/flowKnockoutPaUnsupportedIncome or the federal Schedule C/SE stops).
+        Simple Part III inventory/COGS flows through federal line 31 after #277. The full-year line-item path prints
+        PA-40 C. A single-expense-total business, or any business on a return that is not full-year, still stops
+        (/flowKnockoutPaScheduleC); the federal Schedule C PDF is not the PA schedule. $0 when there is no Schedule C,
+        and on a return that is not a PA-40.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -238,14 +240,9 @@
               <Dependency module="stateReturn" path="/stateReturnIsPa" />
             </When>
             <Then>
-              <Add>
-                <CollectionSum>
-                  <Dependency module="scheduleC" path="/scheduleCBusinesses/*/netProfitOrLoss" />
-                </CollectionSum>
-                <CollectionSum>
-                  <Dependency module="scheduleC" path="/scheduleCBusinesses/*/paMealsAddBack" />
-                </CollectionSum>
-              </Add>
+              <CollectionSum>
+                <Dependency module="scheduleC" path="/scheduleCBusinesses/*/paNetProfitOrLoss" />
+              </CollectionSum>
             </Then>
           </Case>
         </Switch>
@@ -922,8 +919,9 @@
         Schedule C still stops — p. 43 has no business allocation; a joint return with any Schedule C loss stops —
         p. 7: "You may not offset the income of the taxpayer with a loss from the spouse and vice versa"; a yes to
         /paHasScheduleCTaxShelter stops — PA-40 C Form 8271 / "Do not report or deduct any transactions related to tax
-        shelters"; farm/Schedule F and federal Schedule C out-of-scope lines stay stopped elsewhere; PA Schedule C is
-        required and not produced — /flowKnockoutPaScheduleC), p. 18 (LINE 6: full-year federal Schedule E Part I is
+        shelters"; farm/Schedule F and federal Schedule C out-of-scope lines stay stopped elsewhere; a
+        single-expense-total Schedule C, or Schedule C on a return that is not full-year, still stops —
+        /flowKnockoutPaScheduleC), p. 18 (LINE 6: full-year federal Schedule E Part I is
         /paLine6; a K-1 or a PA/FL part-year resident with Schedule E Part I still stops), pp. 13-14 (1099-R: PA
         taxability depends on plan/age/code), 1099-MISC (must be classified), Form 1040 line 2a tax-exempt interest from 1099-INT box 8 and
         1099-DIV box 12 exempt-interest dividends (PA taxes other states' obligations, exempts PA ones: p. 14), W-2 with wages but no box 16 PA wages, and joint returns with
@@ -1217,21 +1215,29 @@
       </Derived>
     </Fact>
     <Fact path="/flowKnockoutPaScheduleC">
-      <Name>Flow knockout: PA Schedule C (business) is required and not produced</Name>
+      <Name>Flow knockout: PA Schedule C is not printed for this Schedule C</Name>
       <Description>PA-40 IN (2025),
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
         p. 17, LINE 4: "CAUTION: You must use PA Schedule C to report income and expenses from a business or
-        profession… Do not use federal Schedules C or F." This tool does not produce a PA Schedule C PDF; the federal
-        Schedule C PDF is not the PA schedule. Stops when a PA-40 is filed (/stateReturnPaFiled) and there is Schedule C
-        income (/hasScheduleCBusinesses). Wired into /flowIsKnockedOut via /flowKnockoutStateReturn and into
-        PrintRefusingKnockouts.FACT_PATHS so the PA Schedule C attachment print-refuses. Full-year federally supported
-        Schedule C still figures /paLine4. Tax Reform Code of 1971 §303(a)(2), 72 P.S. §7303(a)(2).</Description>
+        profession… Do not use federal Schedules C or F." The full-year line-item path prints PA-40 C (EX) 03-26
+        (pdf/2026/PA40C). This stays true when a PA-40 is filed (/stateReturnPaFiled), there is Schedule C
+        (/hasScheduleCBusinesses), and either the return is not a full-year PA resident or any business still uses the
+        single expense total (/scheduleCHasLegacyExpenseBucket). One legacy business stops the whole return because
+        line 4 is a single sum. Wired into /flowIsKnockedOut via /flowKnockoutStateReturn and into
+        PrintRefusingKnockouts.FACT_PATHS. Full-year federally supported Schedule C still figures /paLine4. Tax Reform
+        Code of 1971 §303(a)(2), 72 P.S. §7303(a)(2).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
           <Dependency module="stateReturn" path="/stateReturnPaFiled" />
           <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Any>
+            <Not>
+              <Dependency module="stateReturn" path="/stateReturnIsPa" />
+            </Not>
+            <Dependency module="scheduleC" path="/scheduleCHasLegacyExpenseBucket" />
+          </Any>
         </All>
       </Derived>
     </Fact>

@@ -460,6 +460,14 @@ direct-file:
         configuration-location: pdf/2026/PA40/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: PA40C
+        year: 2026
+        language-code: en
+        location: pdf/2026/PA40C/en/pa-40c.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/PA40C/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: PA40SP
         year: 2026
         language-code: en
