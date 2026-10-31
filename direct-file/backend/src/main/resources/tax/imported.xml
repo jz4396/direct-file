@@ -801,8 +801,10 @@
         <Any>
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
           <Dependency module="interest" path="/flowKnockoutHasForeignTaxPaid" />
-          <!-- 1099-INT box 8 is Form 1040 line 2a (/taxExemptInterest), not an import stop. -->
+          <!-- 1099-INT box 8 is Form 1040 line 2a (/taxExemptInterest), not an import stop. Box 9 included in box 8
+               is Form 6251 line 2g, not an import stop. Box 9 larger than box 8 is. -->
           <Dependency module="interest" path="/flowKnockoutHasBonds" />
+          <Dependency module="interest" path="/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8" />
         </Any>
       </Derived>
     </Fact>

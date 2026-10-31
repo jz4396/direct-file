@@ -207,12 +207,12 @@ public final class PrintRefusingKnockouts {
             // Form 1065 box 14 code A, or when every question is answered no. An unanswered question while
             // either applies refuses the print. 26 U.S.C. 1402(a).
             "/flowKnockoutScheduleSEOutOfScope",
-            // Form 6251 lines 2c-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4 would combine
-            // lines 1b through 3 as if the adjustments were zero. Form 6251 (2026) draft,
-            // https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, PDF p. 2 (form p. 1), line 2i: "Exercise of incentive
-            // stock options (excess of AMT income over regular tax income)"; line 3: "Other adjustments, including
-            // income-based related adjustments"; line 4: "Alternative minimum taxable income. Combine lines 1b through
-            // 3." 26 U.S.C. 55(b)(2), 56, 57. Already BlockSubmissionOnTrue via /hasAmtPreferenceItems.
+            // Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4 would
+            // combine lines 1b through 3 as if those adjustments were zero. Line 2g is /form6251Line2g. Form 6251
+            // (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, PDF p. 2 (form p. 1), line 2i: "Exercise
+            // of incentive stock options (excess of AMT income over regular tax income)"; line 3: "Other adjustments,
+            // including income-based related adjustments"; line 4: "Alternative minimum taxable income. Combine lines
+            // 1b through 3." 26 U.S.C. 55(b)(2), 56, 57. Already BlockSubmissionOnTrue via /hasAmtPreferenceItems.
             "/flowKnockoutAmtPreferenceItems",
             // The same lines when the question is unanswered. /flowKnockoutAmtPreferenceItems is complete false
             // then, because IsComplete(/hasAmtPreferenceItems) is its first All operand, so a required Form 6251
@@ -230,7 +230,8 @@ public final class PrintRefusingKnockouts {
             // Rev. Proc. 2025-32 §4.10 complete phaseout amount for a married individual filing a separate return
             // (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 17). Printing line 4 without it understates AMTI.
             "/flowKnockoutAmtMfsAddBack",
-            // Form 1099-DIV boxes this return does not compute (2b-2f, 6, 8-16). Form 1040 instr. (2025)
+            // Form 1099-DIV boxes this return does not compute (2b-2f, 6, 8-11, 14-16). Box 12 is Form 1040 line 2a.
+            // Box 13 is Form 6251 line 2g. Form 1040 instr. (2025)
             // https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1, requires that none of the
             // forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or box
             // 2d (collectibles (28%) gain)". 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6), 1(h)(7). Printing only box 2a
@@ -259,7 +260,13 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutDividendNominee",
             // Box 1b or box 5 larger than box 1a. Each is "the portion of the amount in box 1a" (Form 1099-DIV
             // instructions for recipient). Lines 3a and 3b are not computed from that form.
-            "/flowKnockoutDividendAmountsInconsistent");
+            "/flowKnockoutDividendAmountsInconsistent",
+            // 1099-INT box 9 larger than box 8. Instructions for Form 1099-INT, box 9: "This amount is included in
+            // box 8." 26 U.S.C. 57(a)(5). Form 6251 line 2g is not filed from that form.
+            "/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8",
+            // 1099-DIV box 13 larger than box 12. Instructions for Form 1099-DIV, box 13: "This amount is included in
+            // box 12." 26 U.S.C. 57(a)(5). Form 6251 line 2g is not filed from that form.
+            "/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12");
 
     private PrintRefusingKnockouts() {}
 

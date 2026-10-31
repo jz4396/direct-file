@@ -17,9 +17,10 @@
         1099-DIV box 12. Cents are included in the addition and only the total is rounded (p. 23, Rounding Off to
         Whole Dollars: "If you have to add two or more amounts to figure the amount to enter on a line, include cents
         when adding the amounts and round off only the total."). 1099-OID tax-exempt OID is not collected. Amortized
-        bond premium on a tax-exempt bond (1099-INT box 13) is not netted: any amount in boxes 9-13 stops the return
-        (/flowKnockoutHasBonds). Specified private activity bond interest (1099-INT box 9 and 1099-DIV box 13) stops the
-        return (26 U.S.C. 57(a)(5), Form 6251 line 2g). Mapped to IRS1040 f1_58[0].</Description>
+        bond premium on a tax-exempt bond (1099-INT box 13) is not netted: any amount in boxes 10-13 stops the return
+        (/flowKnockoutHasBonds). Specified private activity bond interest (1099-INT box 9) is included in box 8 and is
+        Form 6251 line 2g (form6251 /form6251Line2g; 26 U.S.C. 57(a)(5)), not this stop. Mapped to IRS1040
+        f1_58[0].</Description>
       <Export downstreamFacts="true" mef="true" />
 
       <Derived>
@@ -757,9 +758,11 @@
 
     <Fact path="/interestReports/*/specifiedPrivateActivityBondInterest">
       <Name>1099 Specified Private Activity Bond Interest</Name>
-      <Description>
-        Box 9 on the 1099-INT.
-      </Description>
+      <Description>Form 1099-INT box 9. Instructions for Form 1099-INT, box 9: "Shows tax-exempt interest subject to
+        the alternative minimum tax. This amount is included in box 8." 26 U.S.C. 57(a)(5)
+        (https://www.law.cornell.edu/uscode/text/26/57). Reported on Form 6251 line 2g
+        (form6251 /form6251Line2g), not on Form 1040 line 2b. $0 when box 9 is blank. Cannot exceed box 8
+        (/privateActivityBondInterestExceedsTaxExemptInterest).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -778,6 +781,46 @@
             </When>
             <Then>
               <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/interestReports/*/privateActivityBondInterestExceedsTaxExemptInterest">
+      <Name>1099-INT box 9 is more than box 8</Name>
+      <Description>Instructions for Form 1099-INT, box 9: "This amount is included in box 8." Box 9 cannot be more than
+        box 8. Complete false when this report is not a 1099-INT or either box is blank ($0).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../specifiedPrivateActivityBondInterest" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../taxExemptInterest" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="../specifiedPrivateActivityBondInterest" />
+                </Left>
+                <Right>
+                  <Dependency path="../taxExemptInterest" />
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
             </Then>
           </Case>
         </Switch>
@@ -1157,15 +1200,16 @@
     </Fact>
 
     <Fact path="/flowKnockoutHasBonds">
-      <Name>Knockout: 1099-INT boxes 9-13</Name>
-      <Description>More than $0 in 1099-INT boxes 9-13. Box 8 is Form 1040 line 2a and is not part of this stop. Box 9
-        is specified private activity bond interest: 26 U.S.C. 57(a)(5) (https://www.law.cornell.edu/uscode/text/26/57)
-        makes that interest a tax preference, reported on Form 6251 line 2g, which is not computed. Box 13 is bond
-        premium on a tax-exempt bond. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25,
-        Line 2a: "if you acquired a tax-exempt bond at a premium, only report the net amount of tax-exempt interest on
-        line 2a (that is, the excess of the tax-exempt interest received during the year over the amortized bond premium
-        for the year)." That net is not computed, so any box 13 amount stops the return. Boxes 10-12 (market discount,
-        bond premium, and bond premium on Treasury obligations) stop with them.</Description>
+      <Name>Knockout: 1099-INT boxes 10-13</Name>
+      <Description>More than $0 in 1099-INT boxes 10-13. Box 8 is Form 1040 line 2a and is not part of this stop. Box 9
+        is specified private activity bond interest (26 U.S.C. 57(a)(5),
+        https://www.law.cornell.edu/uscode/text/26/57), reported on Form 6251 line 2g
+        (form6251 /form6251Line2g), and is not part of this stop. Box 13 is bond premium on a tax-exempt bond. Form
+        1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 2a: "if you acquired a tax-exempt
+        bond at a premium, only report the net amount of tax-exempt interest on line 2a (that is, the excess of the
+        tax-exempt interest received during the year over the amortized bond premium for the year)." That net is not
+        computed, so any box 13 amount stops the return. Boxes 10-12 (market discount, bond premium, and bond premium
+        on Treasury obligations) stop with it.</Description>
       <Export downstreamFacts="true" />
 
       <Derived>
@@ -1173,7 +1217,6 @@
           <Left>
             <CollectionSum>
               <Add>
-                <Dependency path="/interestReports/*/specifiedPrivateActivityBondInterest" />
                 <Dependency path="/interestReports/*/marketDiscount" />
                 <Dependency path="/interestReports/*/bondPremium" />
                 <Dependency path="/interestReports/*/bondPremiumOnTreasuryObligations" />
@@ -1185,6 +1228,46 @@
             <Dollar>0</Dollar>
           </Right>
         </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8">
+      <Name>Knockout: 1099-INT box 9 larger than box 8</Name>
+      <Description>Instructions for Form 1099-INT, box 9: "Shows tax-exempt interest subject to the alternative minimum
+        tax. This amount is included in box 8." A larger box 9 means the form was entered incorrectly. The return stops
+        so that amount is not filed on Form 6251 line 2g. 26 U.S.C. 57(a)(5).</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/interestReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/interestReports/*/privateActivityBondInterestExceedsTaxExemptInterest" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

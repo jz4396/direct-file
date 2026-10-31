@@ -24,11 +24,18 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import gov.irs.factgraph.Graph;
+
+import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.collectionItem;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.day;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.tin;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.cents;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -172,6 +179,7 @@ class Form6251Ty2026PdfSmokeTest {
 
             // Lines that stay blank (each nonzero case is a submission-blocking stop, or the form says to skip).
             assertEquals("", field(f, "Page1[0].f1_6[0]"), "2b blank");
+            assertEquals("", field(f, "Page1[0].f1_11[0]"), "2g $0 prints blank");
             assertEquals("", field(f, "Page1[0].f1_13[0]"), "2i blank");
             assertEquals("", field(f, "Page1[0].f1_25[0]"), "3 blank");
             assertEquals("", field(f, "Page1[0].f1_30[0]"), "8 blank");
@@ -323,7 +331,7 @@ class Form6251Ty2026PdfSmokeTest {
 
     /**
      * Each mapped amount field's tooltip on the 2026 draft names the line the field map fills. Lines that are a stop
-     * (2b-2t, 3, 8, 14, 35-37) stay unmapped, so they cannot print $0.
+     * (2b-2f, 2h-2t, 3, 8, 14, 35-37) stay unmapped, so they cannot print $0. Line 2g is mapped.
      */
     @Test
     void mappedFieldTooltipsNameTheComputedLinesAndUnsupportedLinesStayUnmapped() throws Exception {
@@ -333,6 +341,7 @@ class Form6251Ty2026PdfSmokeTest {
         expected.put("f1_3[0]", "1a. Subtract Schedule 1-A");
         expected.put("f1_4[0]", "1b. Subtract line 1a");
         expected.put("f1_5[0]", "2a. If filing Schedule A");
+        expected.put("f1_11[0]", "2g. Interest from specified private activity bonds");
         expected.put("f1_26[0]", "4. Alternative minimum taxable income");
         expected.put("f1_27[0]", "5. Exemption");
         expected.put("f1_28[0]", "6. Subtract line 5 from line 4");
@@ -372,7 +381,6 @@ class Form6251Ty2026PdfSmokeTest {
                 "f1_8[0]",
                 "f1_9[0]",
                 "f1_10[0]",
-                "f1_11[0]",
                 "f1_12[0]",
                 "f1_13[0]",
                 "f1_14[0]",
@@ -424,5 +432,111 @@ class Form6251Ty2026PdfSmokeTest {
                 assertFalse(config.contains(name + ":"), name + " is not a field-map key");
             }
         }
+    }
+
+    /**
+     * MFJ, $200,000 wages, standard deduction $32,200, no capital gain. 1099-INT box 8 $40,000 / box 9 $30,000 and
+     * 1099-DIV box 12 $20,000 / box 13 $20,000. Form 1040 line 2a is $60,000. Form 6251 line 2g is $50,000 (26 U.S.C.
+     * 57(a)(5)). Taxable income $167,800; regular tax $26,340. AMTI $250,000; line 6 $109,800; tentative minimum tax
+     * $28,548; AMT $2,208. Who Must File item 1 attaches Form 6251. The same wages with line 2g $10,000 leave AMT at $0
+     * and the form is not attached.
+     */
+    @Test
+    void line2gMovesAmtAboveZeroAndPrintsOnForm6251() throws Exception {
+        Map<String, String> facts = pabInterest("30000.00", "20000.00", "40000.00", "20000.00");
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals("60000.00", graph.get("/taxExemptInterest").get().toString(), "line 2a");
+        assertEquals("50000.00", graph.get("/form6251Line2g").get().toString(), "line 2g");
+        assertEquals("250000.00", graph.get("/form6251Line4").get().toString(), "line 4");
+        assertEquals("109800.00", graph.get("/form6251Line6").get().toString(), "line 6");
+        assertEquals("28548.00", graph.get("/form6251Line7").get().toString(), "line 7");
+        assertEquals("26340.00", graph.get("/form6251Line10").get().toString(), "line 10");
+        assertEquals("2208.00", graph.get("/amt").get().toString(), "line 11");
+        assertEquals(Boolean.TRUE, graph.get("/form6251Required").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutHasBonds").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutAmtPreferenceItems").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowIsKnockedOut").get());
+
+        try (PDDocument doc = Loader.loadPDF(generate(facts))) {
+            Map<String, String> f = form6251Fields(doc);
+            assertFalse(f.isEmpty(), "Form 6251 is attached when line 7 is greater than line 10");
+            assertEquals(5000000, line(f, "f1_11[0]"), "2g");
+            assertEquals(25000000, line(f, "f1_26[0]"), "4");
+            assertEquals(2854800, line(f, "f1_29[0]"), "7");
+            assertEquals(2634000, line(f, "f1_32[0]"), "10");
+            assertEquals(220800, line(f, "f1_33[0]"), "11");
+        }
+    }
+
+    @Test
+    void line2gWithNoAmtIsComputedAndForm6251IsNotAttached() throws Exception {
+        Map<String, String> facts = pabInterest("10000.00", "0.00", "10000.00", "0.00");
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals("10000.00", graph.get("/form6251Line2g").get().toString());
+        assertEquals("210000.00", graph.get("/form6251Line4").get().toString());
+        assertEquals("18148.00", graph.get("/form6251Line7").get().toString());
+        assertEquals("26340.00", graph.get("/form6251Line10").get().toString());
+        assertEquals("0.00", graph.get("/amt").get().toString());
+        assertEquals(Boolean.FALSE, graph.get("/form6251Required").get());
+        try (PDDocument doc = Loader.loadPDF(generate(facts))) {
+            assertTrue(form6251Fields(doc).isEmpty(), "Form 6251 is not attached when AMT is zero");
+        }
+    }
+
+    /**
+     * @param box9 1099-INT box 9
+     * @param box13 1099-DIV box 13
+     */
+    static Map<String, String> pabInterest(String box9, String box13, String box8, String box12) {
+        String primary = "959c03d1-af4a-447f-96aa-d19397048a44";
+        String spouse = "859c03d1-af4a-447f-96aa-d19397048a48";
+        String interest = "86c00000-0000-4000-8000-000000000021";
+        String dividend = "86c00000-0000-4000-8000-000000000022";
+        Map<String, String> m = new HashMap<>();
+        m.put("/formW2s/#" + primary + "/writableWages", dollar("200000.00"));
+        m.put("/filingStatus", enumValue("marriedFilingJointly", "/filingStatusOptions"));
+        m.put("/maritalStatus", enumValue("married", "/maritalStatusOptions"));
+        m.put("/livedTogetherAllYearWithSpouse", bool(true));
+        m.put("/hasAmtPreferenceItems", bool(false));
+        m.put("/scheduleAWantsToItemize", bool(false));
+        m.put("/soldCapitalAssets", bool(false));
+        // The shared fixture's Form 8949 rows are $9,000 of gain. Clear them so this return is wages only.
+        m.put(
+                "/form8949Transactions",
+                "{\"$type\":\"gov.irs.factgraph.persisters.CollectionWrapper\",\"item\":{\"items\":[]}}");
+        String s = "/filers/#" + spouse + "/";
+        m.put(s + "firstName", string("Blair"));
+        m.put(s + "writableMiddleInitial", string("R"));
+        m.put(s + "lastName", string("Exampleton"));
+        m.put(s + "tin", tin("900", "00", "0002"));
+        m.put(s + "dateOfBirth", day("1987-06-06"));
+        m.put(s + "isUsCitizenFullYear", bool(true));
+        m.put(s + "isBlind", bool(false));
+        m.put(s + "isDisabled", bool(false));
+        m.put(s + "isStudent", bool(false));
+        m.put(s + "occupation", string("writer"));
+        m.put(s + "canBeClaimed", bool(false));
+        m.put("/interestReports", collection(interest));
+        m.put("/interestReportsIsDone", bool(true));
+        m.put("/interestReports/#" + interest + "/has1099", bool(true));
+        m.put("/interestReports/#" + interest + "/filer", collectionItem(primary));
+        m.put("/interestReports/#" + interest + "/payer", string("City Water Authority"));
+        m.put("/interestReports/#" + interest + "/writable1099Amount", dollar("0.00"));
+        m.put("/interestReports/#" + interest + "/writableTaxExemptInterest", dollar(box8));
+        m.put("/interestReports/#" + interest + "/writableSpecifiedPrivateActivityBondInterest", dollar(box9));
+        m.put("/interestReports/#" + interest + "/hasSeenLastAvailableScreen", bool(true));
+        m.put("/dividendReports", collection(dividend));
+        m.put("/dividendReportsIsDone", bool(true));
+        m.put("/dividendReports/#" + dividend + "/filer", collectionItem(primary));
+        m.put("/dividendReports/#" + dividend + "/payer", string("National Muni Fund"));
+        m.put("/dividendReports/#" + dividend + "/ordinaryDividends", dollar("0.00"));
+        m.put("/dividendReports/#" + dividend + "/writableExemptInterestDividends", dollar(box12));
+        m.put("/dividendReports/#" + dividend + "/writableSpecifiedPrivateActivityBondInterestDividends", dollar(box13));
+        m.put("/dividendReports/#" + dividend + "/hasUnsupportedBoxes", bool(false));
+        m.put("/dividendReports/#" + dividend + "/receivedAsNominee", bool(false));
+        m.put("/dividendReports/#" + dividend + "/hasSeenLastAvailableScreen", bool(true));
+        return m;
     }
 }

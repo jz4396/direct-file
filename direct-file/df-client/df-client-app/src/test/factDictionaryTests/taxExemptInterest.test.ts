@@ -53,11 +53,12 @@ const interest = (id: string, box8: string, box1 = `0`, box9 = `0`, box13 = `0`)
   [`/interestReports/#${id}/writableBondPremiumOnTaxExemptBond`]: createDollarWrapper(box13),
   [`/interestReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
 });
-const dividend = (id: string, box12: string, box1a = `0`, otherBoxes = false) => ({
+const dividend = (id: string, box12: string, box1a = `0`, otherBoxes = false, box13 = `0`) => ({
   [`/dividendReports/#${id}/filer`]: createCollectionItemWrapper(primaryFilerId),
   [`/dividendReports/#${id}/payer`]: createStringWrapper(`National Muni Fund`),
   [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(box1a),
   [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(box12),
+  [`/dividendReports/#${id}/writableSpecifiedPrivateActivityBondInterestDividends`]: createDollarWrapper(box13),
   [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(otherBoxes),
   [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(false),
   [`/dividendReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
@@ -137,8 +138,16 @@ describe(`Form 1040 line 2a tax-exempt interest`, () => {
     expect(val(graph({}), `/taxExemptInterest`)).toBe(`0.00`);
   });
 
-  it(`box 8 and box 12 do not stop the return; 1099-INT boxes 9 and 13, and 1099-DIV box 13, still do`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutHasBonds`, `/flowKnockoutDividendUnsupportedBoxes`, `/flowIsKnockedOut`];
+  it(`box 8 and box 12 do not stop the return; box 9 and box 13 cannot exceed them; 1099-INT box 13 still stops`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutHasBonds`,
+      `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`,
+      `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+      `/flowIsKnockedOut`,
+    ];
     const supported = graph({
       ...withW2(40000),
       '/interestReports': createCollectionWrapper([int1]),
@@ -152,13 +161,21 @@ describe(`Form 1040 line 2a tax-exempt interest`, () => {
     expect(get(supported, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
     expect(get(supported, `/flowIsKnockedOut`).get).toBe(false);
 
-    // 26 U.S.C. 57(a)(5): specified private activity bond interest is an AMT preference (Form 6251 line 2g).
+    // 26 U.S.C. 57(a)(5); 1099-INT instructions, box 9: "This amount is included in box 8."
     const box9 = graph({
       '/interestReports': createCollectionWrapper([int1]),
-      ...interest(int1, `500`, `0`, `1`, `0`),
+      ...interest(int1, `500`, `0`, `500`, `0`),
     });
-    expect(get(box9, `/flowKnockoutHasBonds`).get).toBe(true);
-    expect(get(box9, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(box9, `/flowKnockoutHasBonds`).get).toBe(false);
+    expect(get(box9, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(false);
+    const box9Over = graph({
+      '/interestReports': createCollectionWrapper([int1]),
+      ...interest(int1, `500`, `0`, `501`, `0`),
+    });
+    expect(get(box9Over, `/flowKnockoutHasBonds`).get).toBe(false);
+    expect(get(box9Over, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(true);
+    expect(get(box9Over, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`);
 
     // i1040gi p. 25: line 2a is the net of tax-exempt interest over amortized bond premium. Box 13 is not netted.
     const box13 = graph({
@@ -167,14 +184,22 @@ describe(`Form 1040 line 2a tax-exempt interest`, () => {
     });
     expect(get(box13, `/flowKnockoutHasBonds`).get).toBe(true);
 
-    // 1099-DIV box 13 stays inside /dividendReports/*/hasUnsupportedBoxes.
+    // 1099-DIV instructions, box 13: "This amount is included in box 12." Equal amounts are allowed.
     const divBox13 = graph({
       '/dividendReports': createCollectionWrapper([div1]),
       '/dividendReportsIsDone': createBooleanWrapper(true),
-      ...dividend(div1, `0`, `0`, true),
+      ...dividend(div1, `20`, `0`, false, `20`),
     });
-    expect(get(divBox13, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(true);
-    expect(submissionBlockingFacts).toContain(`/flowKnockoutDividendUnsupportedBoxes`);
+    expect(get(divBox13, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    expect(get(divBox13, `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`).get).toBe(false);
+    const divBox13Over = graph({
+      '/dividendReports': createCollectionWrapper([div1]),
+      '/dividendReportsIsDone': createBooleanWrapper(true),
+      ...dividend(div1, `20`, `0`, false, `21`),
+    });
+    expect(get(divBox13Over, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    expect(get(divBox13Over, `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`);
   });
 
   it(`line 2a moves §86 combined income and taxable social security benefits`, ({ task }) => {

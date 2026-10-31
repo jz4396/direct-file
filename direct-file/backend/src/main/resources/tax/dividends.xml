@@ -8,13 +8,14 @@
     Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient (irs.gov/pub/irs-dft, file f1099div dft; sha256 eed4f9db...)
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
       (PA handling lives in paPit.xml /paLine3 and /flowKnockoutPaDividends).
-  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 3, 4, 5, 7 and 12 per form.
+  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 3, 4, 5, 7, 12 and 13 per form.
   Schedule B Part II line 5 rows: /dividendReports/*/payer and /dividendReports/*/roundedOrdinaryDividends;
     line 6 is income /ordinaryDividends (Form 1040 line 3b).
   Totals for other modules (Schedule B Part II, QDCG worksheet): /totalOrdinaryDividends (box 1a),
     /totalQualifiedDividends (box 1b), /totalCapitalGainDistributions (box 2a), /totalNondividendDistributions
     (box 3), /totalDividendFederalTaxWithheld (box 4), /totalSection199ADividends (box 5),
-    /totalDividendForeignTaxPaid (box 7), /totalExemptInterestDividends (box 12, Form 1040 line 2a).
+    /totalDividendForeignTaxPaid (box 7), /totalExemptInterestDividends (box 12, Form 1040 line 2a),
+    /totalSpecifiedPrivateActivityBondInterestDividends (box 13, Form 6251 line 2g).
   Computed: Form 1040 line 3b = total box 1a (income /ordinaryDividends), line 3a = total box 1b
     (income /qualifiedDividends; taxed through the existing QDCG worksheet, scheduleD3.xml), line 25b
     includes total box 4 (taxCalculations /form1099Withholding), Schedule 3 line 1 = box 7 under the
@@ -23,8 +24,11 @@
     income /capitalGainsOrLosses), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13); either way it reaches
     QDCG worksheet line 3 (scheduleD3 /qdcgLine3). PA-40 stops on box 2a (paPit /flowKnockoutPaDividends).
   Box 12 exempt-interest dividends are interest /taxExemptInterest (Form 1040 line 2a), not a stop.
+  Box 13 specified private activity bond interest dividends are Form 6251 line 2g
+  (form6251 /form6251Line2g). Box 13 cannot exceed box 12.
   Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut, and PrintRefusingKnockouts), never zeroed:
-    boxes 2b-2f, 6, 8-11, 13-16                  -> /flowKnockoutDividendUnsupportedBoxes
+    boxes 2b-2f, 6, 8-11, 14-16                  -> /flowKnockoutDividendUnsupportedBoxes
+    box 13 larger than box 12                    -> /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12
     box 3 above the stock's basis                -> /flowKnockoutNondividendDistributionsOverBasis
     box 1b not meeting the holding period        -> /flowKnockoutQualifiedDividendsHoldingPeriod
     box 5 that is not a qualified REIT dividend  -> /flowKnockoutSection199ADividendsHoldingPeriod
@@ -510,16 +514,77 @@
       </Derived>
     </Fact>
 
+    <Fact path="/dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends">
+      <Name>1099-DIV box 13: specified private activity bond interest dividends (as entered)</Name>
+      <Description>Box 13 on the 1099-DIV. Optional; left blank means $0. Use
+        /dividendReports/*/specifiedPrivateActivityBondInterestDividends downstream.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/specifiedPrivateActivityBondInterestDividends">
+      <Name>1099-DIV box 13: specified private activity bond interest dividends</Name>
+      <Description>Form 1099-DIV instructions, box 13: "Shows exempt-interest dividends subject to the alternative
+        minimum tax. This amount is included in box 12." 26 U.S.C. 57(a)(5)
+        (https://www.law.cornell.edu/uscode/text/26/57). Summed in
+        /totalSpecifiedPrivateActivityBondInterestDividends and reported on Form 6251 line 2g
+        (form6251 /form6251Line2g). Not an ordinary dividend. $0 when box 13 is blank. Cannot exceed box 12
+        (/privateActivityBondDividendsExceedExemptInterestDividends).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableSpecifiedPrivateActivityBondInterestDividends" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableSpecifiedPrivateActivityBondInterestDividends" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/privateActivityBondDividendsExceedExemptInterestDividends">
+      <Name>1099-DIV box 13 is more than box 12</Name>
+      <Description>Form 1099-DIV instructions, box 13: "This amount is included in box 12." Box 13 cannot be more than
+        box 12.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../specifiedPrivateActivityBondInterestDividends" />
+          </Left>
+          <Right>
+            <Dependency path="../exemptInterestDividends" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
     <Fact path="/dividendReports/*/hasUnsupportedBoxes">
       <Name>1099-DIV has an amount in an unsupported box</Name>
-      <Description>Yes if the form has an amount in box 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 13, 14, 15 or 16, a country in
-        box 8, or box 11 (FATCA) checked. Box 12 is exempt-interest dividends and is entered separately
-        (/dividendReports/*/exemptInterestDividends); it is not one of these boxes. Form 1099-DIV (Rev. December 2027)
-        draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured
-        section 1250 gain", 2c "Section 1202 gain", 2d "Collectibles (28%) gain", 2e/2f section 897, box 6 "your share
-        of expenses of a nonpublicly offered RIC ... This amount is included in box 1a", boxes 9-10 liquidation
-        distributions, box 11 FATCA, box 13 specified private activity bond interest dividends, boxes 14-16 state tax
-        withheld.</Description>
+      <Description>Yes if the form has an amount in box 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 14, 15 or 16, a country in
+        box 8, or box 11 (FATCA) checked. Box 12 is exempt-interest dividends
+        (/dividendReports/*/exemptInterestDividends) and box 13 is specified private activity bond interest dividends
+        (/dividendReports/*/specifiedPrivateActivityBondInterestDividends); neither is one of these boxes. Form
+        1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured section 1250 gain", 2c "Section 1202
+        gain", 2d "Collectibles (28%) gain", 2e/2f section 897, box 6 "your share of expenses of a nonpublicly offered
+        RIC ... This amount is included in box 1a", boxes 9-10 liquidation distributions, box 11 FATCA, boxes 14-16
+        state tax withheld. Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -1065,6 +1130,39 @@
       </Derived>
     </Fact>
 
+    <Fact path="/totalSpecifiedPrivateActivityBondInterestDividends">
+      <Name>Total specified private activity bond interest dividends (1099-DIV box 13)</Name>
+      <Description>Form 1099-DIV instructions, box 13: "Shows exempt-interest dividends subject to the alternative
+        minimum tax. This amount is included in box 12." 26 U.S.C. 57(a)(5)
+        (https://www.law.cornell.edu/uscode/text/26/57). Added, with cents, into form6251 /form6251Line2g; only that
+        line is rounded. Not included in /ordinaryDividends (line 3b) or in /taxExemptInterest except through box 12.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/dividendReports/*/specifiedPrivateActivityBondInterestDividends" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/hasDividendIncome">
       <Name>Has ordinary dividends</Name>
       <Export downstreamFacts="true" />
@@ -1089,9 +1187,10 @@
         requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202
         gain), or box 2d (collectibles (28%) gain)"), 2e/2f are section 897 amounts, box 6 needs the nonpublicly offered
         RIC expense treatment, boxes 9-10 are liquidation distributions (basis recovery), box 11 FATCA may require Form
-        8938, box 13 specified private activity bond interest dividends belong on Form 6251 line 2g (26 U.S.C. 57(a)(5)),
-        and boxes 14-16 are state withholding. Box 12 exempt-interest dividends are Form 1040 line 2a
-        (/totalExemptInterestDividends) and are not this stop. None of the boxes in this stop is modeled.</Description>
+        8938, and boxes 14-16 are state withholding. Box 12 exempt-interest dividends are Form 1040 line 2a
+        (/totalExemptInterestDividends). Box 13 specified private activity bond interest dividends are Form 6251 line
+        2g (26 U.S.C. 57(a)(5), /totalSpecifiedPrivateActivityBondInterestDividends). Neither is this stop. None of the
+        boxes in this stop is modeled.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1559,6 +1658,45 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12">
+      <Name>Knockout: 1099-DIV box 13 larger than box 12</Name>
+      <Description>Form 1099-DIV instructions, box 13: "Shows exempt-interest dividends subject to the alternative
+        minimum tax. This amount is included in box 12." A larger box 13 means the form was entered incorrectly. The
+        return stops so that amount is not filed on Form 6251 line 2g. 26 U.S.C. 57(a)(5).</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/dividendReports/*/privateActivityBondDividendsExceedExemptInterestDividends" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
 
   </Facts>
 </FactDictionaryModule>

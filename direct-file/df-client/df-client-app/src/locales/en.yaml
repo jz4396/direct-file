@@ -2655,7 +2655,8 @@ headings:
     Direct File doesn’t yet support the amount of income {{/secondaryFiler/firstName}} received.
   /heading/knockout/forms-missing/1099-int-box-6-ko: Direct File doesn’t yet support reporting foreign tax paid.
   /heading/knockout/forms-missing/1099-int-box-9-13-ko:
-    Direct File doesn’t yet support reporting this type of interest income.
+    Direct File doesn’t yet support boxes 10 through 13 of Form 1099-INT (market discount and bond premium).
+  /heading/knockout/forms-missing/1099-int-box-9-exceeds-box-8: Box 9 cannot be more than box 8
   /heading/knockout/forms-missing/1099-int-state-tax-withheld-ko:
     Direct File doesn’t yet support state withholding on interest income.
   /heading/knockout/forms-missing/1099-int-other-state-ko:
@@ -7009,7 +7010,15 @@ info:
   /info/knockout/forms-missing/1099-int-box-9-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableSpecifiedPrivateActivityBondInterest)
     body:
-      - p: $t(headings./heading/knockout/forms-missing/1099-int-box-9-13-ko)
+      - p:
+          Box 9 is included in box 8. Box 9 cannot be more than box 8. Go back and check the amounts. If they match your
+          form, you’ll need another way to file this return.
+  /info/knockout/forms-missing/1099-int-box-9-exceeds-box-8:
+    alertText:
+      body:
+        - p:
+            Box 9 is included in box 8, so it cannot be more than box 8. Go back and check the amounts you entered. If
+            they match your form, you’ll need another way to file this return.
   /info/knockout/forms-missing/1099-int-box-10-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableMarketDiscount)
     body:

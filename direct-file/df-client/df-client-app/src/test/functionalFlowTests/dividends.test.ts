@@ -126,12 +126,25 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
     });
     expect(at(elected, `1099-div-box-7-election`, task)).toRouteNextTo(`${path}/1099-div-box-12`);
     expect(at(base(`single`, ord), `1099-div-box-7`, task)).toRouteNextTo(`${path}/1099-div-box-12`);
-    expect(at(base(`single`, ord), `1099-div-box-12`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    expect(at(base(`single`, ord), `1099-div-box-12`, task)).toRouteNextTo(`${path}/1099-div-box-13`);
     const box12 = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(`80`),
     });
-    expect(at(box12, `1099-div-box-12`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    expect(at(box12, `1099-div-box-12`, task)).toRouteNextTo(`${path}/1099-div-box-13`);
+    expect(at(box12, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    const box13 = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(`80`),
+      [`/dividendReports/#${id}/writableSpecifiedPrivateActivityBondInterestDividends`]: createDollarWrapper(`80`),
+    });
+    expect(at(box13, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    const box13Over = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(`80`),
+      [`/dividendReports/#${id}/writableSpecifiedPrivateActivityBondInterestDividends`]: createDollarWrapper(`81`),
+    });
+    expect(at(box13Over, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-box-13-knockout`);
   });
   it(`other boxes and nominee answers route to their knockouts`, ({ task }) => {
     const ord = { [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`) };

@@ -192,11 +192,42 @@
         </Switch>
       </Derived>
     </Fact>
+    <Fact path="/form6251Line2g">
+      <Name>Form 6251 line 2g</Name>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 2g: "Interest from
+        specified private activity bonds exempt from the regular tax." 26 U.S.C. 57(a)(5)(A)
+        (https://www.law.cornell.edu/uscode/text/26/57): the tax preference is "interest on specified private activity
+        bonds reduced by any deduction (not allowable in computing the regular tax) which would have been allowable if
+        such interest were includible in gross income." Instructions for Form 6251 (2025),
+        https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 3, Line 2g: "Enter on line 2g interest income from 'specified
+        private activity bonds' reduced (but not below zero) by any deduction that would have been allowable if the
+        interest were includible in gross income for the regular tax. Each payer of this type of interest should send
+        you a Form 1099-INT showing the amount of this interest in box 9." No such deduction is collected, so the line
+        is not reduced. Instructions for Form 1099-INT, box 9: "Shows tax-exempt interest subject to the alternative
+        minimum tax. This amount is included in box 8." Instructions for Form 1099-DIV, box 13: "Shows exempt-interest
+        dividends subject to the alternative minimum tax. This amount is included in box 12." The line is the sum of
+        every 1099-INT box 9 and every 1099-DIV box 13. Cents stay in the addition and only this total is rounded (Form
+        1040 instr. (2025) p. 23). Added on line 4. A box 9 larger than box 8, or a box 13 larger than box 12, stops the
+        return (interest /flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8, dividends
+        /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12). $0 when there is no such interest.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Add>
+            <CollectionSum>
+              <Dependency module="interest" path="/interestReports/*/specifiedPrivateActivityBondInterest" />
+            </CollectionSum>
+            <Dependency module="dividends" path="/totalSpecifiedPrivateActivityBondInterestDividends" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
     <Fact path="/form6251Line4">
       <Name>Form 6251 line 4 AMTI</Name>
       <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 4:
-        "Alternative minimum taxable income. Combine lines 1b through 3." Lines 2b-3 are $0 in scope: Schedule 1 line
-        1/8z refunds and NOLs are not supported; other adjustments and preferences (2c-2t, 3) block via
+        "Alternative minimum taxable income. Combine lines 1b through 3." Line 2g
+        (/form6251Line2g, 26 U.S.C. 57(a)(5)) is included. Lines 2b-2f and 2h-3 are $0 in scope: Schedule 1 line
+        1/8z refunds and NOLs are not supported; other adjustments and preferences (2c-2f, 2h-2t, 3) block via
         /flowKnockoutAmtPreferenceItems. IRC §55(b)(2).</Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -204,6 +235,7 @@
           <Add>
             <Dependency path="/form6251Line1b" />
             <Dependency path="/form6251Line2a" />
+            <Dependency path="/form6251Line2g" />
           </Add>
         </Round>
       </Derived>
@@ -827,7 +859,8 @@
         File": "Attach Form 6251 to your return if any of the following statements are true. 1. Form 6251, line 7, is
         greater than line 10." Line 8 is $0 (foreign tax paid is a stop), so line 9 = line 7 and this is /amt (line 11)
         greater than $0. Items 2-4 (general business credit on Form 3800; Forms 8834, 8911, 8801; negative lines 2c-3)
-        cannot apply in scope: those credits are not supported and lines 2c-3 block via /flowKnockoutAmtPreferenceItems.
+        cannot apply in scope: those credits are not supported and lines 2c-2f and 2h-3 block via
+        /flowKnockoutAmtPreferenceItems. Line 2g is /form6251Line2g.
         Used to include the 2026 draft Form 6251 (https://www.irs.gov/pub/irs-dft/f6251--dft.pdf) in the PDF.</Description>
       <Derived>
         <GreaterThan>
@@ -841,18 +874,19 @@
       </Derived>
     </Fact>
     <Fact path="/hasAmtPreferenceItems">
-      <Name>Has unsupported AMT adjustments or preference items</Name>
-      <Description>#77: Form 6251 (2026) draft lines 2c-2t and 3 (e.g., line 2i "Exercise of incentive stock options",
-        line 2g "Interest from specified private activity bonds exempt from the regular tax", line 2l depreciation, line
-        2e/2f NOLs) and line 8 AMT foreign tax credit. IRC §56, §57, §58.</Description>
+      <Name>Has unsupported AMT adjustments or preference items other than line 2g</Name>
+      <Description>#77: Form 6251 (2026) draft lines 2c-2f, 2h-2t and 3 (e.g., line 2i "Exercise of incentive stock
+        options", line 2l depreciation, line 2e/2f NOLs) and line 8 AMT foreign tax credit, other than line 2g. Line 2g
+        "Interest from specified private activity bonds exempt from the regular tax" is /form6251Line2g (26 U.S.C.
+        57(a)(5)), from 1099-INT box 9 and 1099-DIV box 13, and is not this question. IRC §56, §57, §58.</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
     <Fact path="/flowKnockoutAmtPreferenceItems">
       <Name>Flow knockout: unsupported AMT items</Name>
-      <Description>#77: yes to /hasAmtPreferenceItems. Form 6251 lines 2c-2t / 3 / 8 are not computed, so a yes blocks
-        submission instead of under-reporting AMT.</Description>
+      <Description>#77: yes to /hasAmtPreferenceItems. Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed, so a yes
+        blocks submission instead of under-reporting AMT. Line 2g is /form6251Line2g and is not this stop.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -869,7 +903,8 @@
       <Description>#89: Form 6251 is attached when /form6251Required. Instructions for Form 6251 (2025),
         https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1, "Who Must File", item 1: "Form 6251, line 7, is greater than
         line 10." Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf PDF p. 2 (form p. 1), line 4:
-        "Alternative minimum taxable income. Combine lines 1b through 3." Lines 2c through 3 are not computed.
+        "Alternative minimum taxable income. Combine lines 1b through 3." Lines 2c through 2f and 2h through 3 are not
+        computed. Line 2g is /form6251Line2g.
         /flowKnockoutAmtPreferenceItems starts with IsComplete(/hasAmtPreferenceItems), so an unanswered question is
         complete false there and must not be treated as "no". This stop is true only when Form 6251 is required and
         that
