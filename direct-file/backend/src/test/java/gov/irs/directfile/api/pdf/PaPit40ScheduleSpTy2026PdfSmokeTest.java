@@ -32,6 +32,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrint;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrintOf;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -507,6 +508,38 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p1, "6. Loss", "Off", "line 6 loss oval");
             is(p1, "6. Net Income or Loss from Rents, etc", "8,000.00", "line 6 = 12,000 − 4,000");
             is(p1, "9. Total PA Taxable Income", "58,000.00", "line 9 includes line 6");
+        }
+    }
+
+    /**
+     * Golden H (#135), public print path only. The facts are {@code golden-profileH-complete.json}, the persisted
+     * client profile {@code profileHPaRentalDividends}: Hayden Example, W-2 box 16 $48,000, Form 1099-DIV box 1a
+     * $1,800, Schedule E Part I rents $15,000 minus expenses $3,000. No new profile, and not the smoke-harness filer.
+     *
+     * <p>[PA] PA-40 IN (2025) p. 10, LINE 1a (W-2 box 16). p. 15, LINE 3 and p. 32: federal ordinary dividends when PA
+     * Schedule B lines 2–10 are $0. p. 18, LINE 6: "You may use federal Schedule E, if using only Part I, and with the
+     * following adjustments". p. 20, LINE 9: "Add only the positive income amounts from Lines 1c through 8." p. 21,
+     * LINE 13 (W-2 box 17). [TRC] Tax Reform Code of 1971 §303(a)(4) and §303(a)(5), 72 P.S. §7303(a)(4),
+     * §7303(a)(5). Line 12 is line 11 times 3.07 percent: 61,800 × 0.0307 = 1,897.26. [PA] p. 21, LINE 12. [TRC]
+     * §302(a), 72 P.S. §7302(a). [PA] p. 4, "Rounding Numbers": whole dollars, half-up, so 1,897.26 prints as 1,897.00.
+     */
+    @Test
+    void goldenHPa40PrintsOnThePublicPath() throws Exception {
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileH-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PA40_PAGE1);
+            is(p1, "1a. Gross Compensation", "48,000.00", "L1a 48,000");
+            is(p1, "3. Dividend  and Capital Gains Distributions Income", "1,800.00", "L3 1,800");
+            is(p1, "6. Loss", "Off", "line 6 is income, not a loss");
+            is(p1, "6. Net Income or Loss from Rents, etc", "12,000.00", "L6 12,000");
+            is(p1, "9. Total PA Taxable Income", "61,800.00", "L9 61,800");
+            Map<String, String> p2 = fieldsOnPages(doc, PA40_PAGE2);
+            is(
+                    p2,
+                    "12. PA Tax Liability. Multiply Line 11 by 3.07%",
+                    "1,897.00",
+                    "L12 prints 1,897.26 rounded half-up (p. 4)");
+            is(p2, "13. Total PA Tax Withheld", "1,600.00", "L13 1,600 (W-2 box 17)");
         }
     }
 

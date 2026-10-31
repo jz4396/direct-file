@@ -697,7 +697,8 @@ export const profileGWithW2s = (...forms: W2[]) => ({
  * not a section 162 trade or business), and one Form 1099-DIV. Ordinary dividends are over $1,500, so federal
  * Schedule B Part II is required. PA Schedule B is not: no amount on its lines 2 through 11. Fixed identifiers: SSN
  * 900-46-1009, W-2 id 13500000-0000-4000-8000-000000001101, 1099-DIV id
- * 13500000-0000-4000-8000-000000001102. PA-40 line 6 stays $0: Schedule E income stops the return.
+ * 13500000-0000-4000-8000-000000001102. PA-40 line 6 is the Schedule E Part I net. That income does not stop the
+ * return once Part II through Part IV are answered no.
  */
 const hayden: Person = { first: `Hayden`, last: `Example`, ssn: [`900`, `46`, `1009`], dob: `1988-03-15` };
 export const profileHDividendId = `13500000-0000-4000-8000-000000001102`;

@@ -1839,7 +1839,24 @@ describe(`golden end-to-end scenario (synthetic data): profile G negative rows (
 // (#276) once Part II–IV are answered no; /flowKnockoutPaUnsupportedIncome is false.
 const PROFILE_H_STOPPED: string[] = [];
 
+const GOLDEN_PROFILE_H = path.join(
+  `..`,
+  `..`,
+  `backend`,
+  `src`,
+  `test`,
+  `resources`,
+  `submission-blocking`,
+  `golden-profileH-complete.json`
+);
+
 describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, Schedule E rental, and dividends`, () => {
+  it(`golden-profileH-complete.json is the persisted profileHPaRentalDividends return`, () => {
+    const exported = JSON.parse(fs.readFileSync(GOLDEN_PROFILE_H, `utf8`)).facts;
+    const persisted = JSON.parse(graph(profileHPaRentalDividends).toJSON());
+    expect(exported).toEqual(persisted);
+  });
+
   // Single, full-year Pennsylvania resident [PA] [TRC]; born 1988-03-15 (under 65, not blind), SSN 900-46-1009
   //   (900 area, group 46, outside the ITIN ranges). Address 123 Example St, Harrisburg, PA 17101. School code
   //   22275 (Harrisburg). Fixed identifiers. Standard deduction, the same choice as profile 7.

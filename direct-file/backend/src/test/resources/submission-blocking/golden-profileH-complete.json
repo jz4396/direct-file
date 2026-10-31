@@ -1,0 +1,621 @@
+{
+  "facts": {
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableFederalWithholding": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "5200.00"
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/nonstandardOrCorrectedChoice": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "neither"
+        ],
+        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+      }
+    },
+    "/madeIraContributions": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableMedicareWages": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "48000.00"
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/ein": {
+      "$type": "gov.irs.factgraph.persisters.EinWrapper",
+      "item": {
+        "prefix": "00",
+        "serial": "0001101"
+      }
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/hasRRTACodes": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/statutoryEmployee": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/cdccCareProviders": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/scheduleEAnyPropertyLoss": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/scheduleEHasPartIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/filer": {
+      "$type": "gov.irs.factgraph.persisters.CollectionItemWrapper",
+      "item": {
+        "id": "959c03d1-af4a-447f-96aa-d19397048a44"
+      }
+    },
+    "/hasForeignAccounts": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasUnsupportedItems": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/isDisabled": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/firstName": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "Hayden"
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/addressMatchesReturn": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/incomeSourcesSupported": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableState": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "sameState"
+        ],
+        "enumOptionsPath": "/incomeFormStateOptions"
+      }
+    },
+    "/hadSelfEmploymentIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/scheduleEEstates": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/payer": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "Example Dividend Fund"
+    },
+    "/wasK12Educators": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "neither"
+        ],
+        "enumOptionsPath": "/k12EducatorOptions"
+      }
+    },
+    "/selfSelectPin": {
+      "$type": "gov.irs.factgraph.persisters.PinWrapper",
+      "item": {
+        "pin": "12349"
+      }
+    },
+    "/1095As": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/dividendReports": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": [
+          "13500000-0000-4000-8000-000000001102"
+        ]
+      }
+    },
+    "/maritalStatus": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "single"
+        ],
+        "enumOptionsPath": "/maritalStatusOptions"
+      }
+    },
+    "/interestReports": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/canBeClaimed": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form1099Miscs": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/writableHasPtcQualifyingPlan": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/isForeignTrustsGrantor": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/hasMadeQualifiedHsaFundingDistribution": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/lastName": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "Example"
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/occupation": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "Analyst"
+    },
+    "/scheduleEHasPartIIIIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/hasAmtPreferenceItems": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/socialSecurityReports": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/receivedAlaskaPfd": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/thirdPartySickPay": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/hasUnsupportedBoxes": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": [
+          "13500000-0000-4000-8000-000000001101"
+        ]
+      }
+    },
+    "/filers/#859c03d1-af4a-447f-96aa-d19397048a48/canBeClaimed": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filerResidenceAndIncomeState": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "pa"
+        ],
+        "enumOptionsPath": "/scopedStateOptions"
+      }
+    },
+    "/scheduleEHasPersonalUse": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/filer": {
+      "$type": "gov.irs.factgraph.persisters.CollectionItemWrapper",
+      "item": {
+        "id": "959c03d1-af4a-447f-96aa-d19397048a44"
+      }
+    },
+    "/writablePrimaryFilerHadNonW2HsaActivity": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/hasCdccCarryoverAmountFromPriorTaxYear": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/ordinaryDividends": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "1800.00"
+    },
+    "/hadScheduleEIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/writableMiddleInitial": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": ""
+    },
+    "/phone": {
+      "$type": "gov.irs.factgraph.persisters.E164Wrapper",
+      "item": {
+        "$type": "gov.irs.factgraph.types.UsPhoneNumber",
+        "areaCode": "444",
+        "officeCode": "555",
+        "lineNumber": "0100"
+      }
+    },
+    "/offeredInterestReports": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/scheduleEProperties": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/scheduleEProvidesSubstantialServices": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/familyAndHousehold": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/paHasSpNontaxableIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasUnreimbursedEmployeeExpenses": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/hasUnreportedTips": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableOasdiWages": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "48000.00"
+    },
+    "/filers/#859c03d1-af4a-447f-96aa-d19397048a48/isPrimaryFiler": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/writableQualifiedDividends": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "1200.00"
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/hasSeenLastAvailableScreen": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/paHasScheduleCTaxShelter": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/dateOfBirth": {
+      "$type": "gov.irs.factgraph.persisters.DayWrapper",
+      "item": {
+        "date": "1988-03-15"
+      }
+    },
+    "/disposedDigitalAssets": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/tin": {
+      "$type": "gov.irs.factgraph.persisters.TinWrapper",
+      "item": {
+        "area": "900",
+        "group": "46",
+        "serial": "1009"
+      }
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableMedicareWithholding": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "696.00"
+    },
+    "/flowKnockoutHouseholdEmployee": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/writableHasHsaWithdrawnExcessContributionsYesNo": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableStateWithholding": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "1600.00"
+    },
+    "/soldCapitalAssets": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/receivedAsNominee": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/offeredFormW2s": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/scheduleEK1s": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableDependentCareBenefits": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "0.00"
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableWages": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "48000.00"
+    },
+    "/receivedDigitalAssets": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/isPrimaryFiler": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/form1099Gs": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/writableHasAdvancedPtc": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/isStudent": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/isBlind": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/scheduleERentalIsTradeOrBusiness": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/writableHasHsaExcessContributionsPreviousYear": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/employerAddress": {
+      "$type": "gov.irs.factgraph.persisters.AddressWrapper",
+      "item": {
+        "streetAddress": "500 Sample Ave",
+        "city": "Harrisburg",
+        "postalCode": "17101",
+        "stateOrProvence": "PA",
+        "country": ""
+      }
+    },
+    "/hsaDistributions": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableStateWages": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "48000.00"
+    },
+    "/scheduleAWantsToItemize": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasEstimatedInstallmentPayments": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasExemptObligationDividends": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/primaryFilerSsnEmploymentValidity": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "neither"
+        ],
+        "enumOptionsPath": "/primaryFilerSsnEmploymentValidityOptions"
+      }
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableCombatPay": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "0.00"
+    },
+    "/email": {
+      "$type": "gov.irs.factgraph.persisters.EmailAddressWrapper",
+      "item": {
+        "email": "filer@example.com"
+      }
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/employerName": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "Example Payroll LLC"
+    },
+    "/scheduleEWritableExpenses": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "3000.00"
+    },
+    "/overtimeNotOnW2CodeTT": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/someFilerHadNonW2HsaActivity": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/scheduleEHasPartIVIncome": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/dividendReportsIsDone": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/isUsCitizenFullYear": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/carLoans": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/meta/migrationsApplied": {
+      "$type": "gov.irs.factgraph.persisters.IntWrapper",
+      "item": 2
+    },
+    "/address": {
+      "$type": "gov.irs.factgraph.persisters.AddressWrapper",
+      "item": {
+        "streetAddress": "123 Example St",
+        "city": "Harrisburg",
+        "postalCode": "17101",
+        "stateOrProvence": "PA",
+        "country": ""
+      }
+    },
+    "/filingStatus": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "single"
+        ],
+        "enumOptionsPath": "/filingStatusOptions"
+      }
+    },
+    "/filers": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": [
+          "959c03d1-af4a-447f-96aa-d19397048a44",
+          "859c03d1-af4a-447f-96aa-d19397048a48"
+        ]
+      }
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/qualifiedDividendsHoldingPeriodNotMet": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/scheduleCBusinesses": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/hasHouseholdEmployeeScheduleH": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/hasForeignTrustsTransactions": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form1099Rs": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/paSchoolDistrictCode": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "22275"
+    },
+    "/formW2s/#13500000-0000-4000-8000-000000001101/writableOasdiWithholding": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "2976.00"
+    },
+    "/livedTogetherAllYearWithSpouse": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/dividendReports/#13500000-0000-4000-8000-000000001102/hasSeenLastAvailableScreen": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/scheduleEWritableRoyalties": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "0.00"
+    },
+    "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/tin": {
+      "$type": "gov.irs.factgraph.persisters.TinWrapper",
+      "item": {
+        "area": "900",
+        "group": "46",
+        "serial": "1009"
+      }
+    },
+    "/scheduleEHasDepreciation": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/hadStudentLoanInterestPayments": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/primaryFilerW2And1099IntInScopedState": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "value": [
+          "onlySame"
+        ],
+        "enumOptionsPath": "/primaryFilerW2And1099IntStateOptions"
+      }
+    },
+    "/paidEstimatedTaxesOrFromLastYear": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/form8949Transactions": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
+    "/hasHsaMedicalSavingsAccountType": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/scheduleEWritableRents": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "15000.00"
+    }
+  }
+}
