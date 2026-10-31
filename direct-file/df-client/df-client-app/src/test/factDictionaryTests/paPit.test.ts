@@ -120,9 +120,9 @@ describe(`PA-40 core (#78)`, () => {
   });
   it(`line 15 estimated payments increase line 18 and line 24; federal estimates do not`, ({ task }) => {
     task.meta.testedFactPaths = [`/paLine15`, `/paLine18`, `/paLine24`, `/paLine26`, `/estimatedAndFromLastYear`];
-    // PA-40 IN (2025) p. 21, LINE 15: "Enter your total 2025 estimated payments." LINE 18: "Add only Lines 14, 15,
-    // 16, and 17." 45,000 × 3.07% = 1,381.50. Withheld 1,000 + PA estimates 200 → due 181.50. Federal estimates $800
-    // stay on Form 1040 and are not Form 2210 and not line 15.
+    // PA-40 IN (2025) p. 21, LINE 15: "Enter your total 2025 estimated payments." 72 P.S. §7325. p. 22, LINE 18:
+    // "Add only Lines 14, 15, 16, and 17." 45,000 × 3.07% = 1,381.50. Withheld 1,000 + PA estimates 200 → due 181.50.
+    // Federal estimates $800 stay on Form 1040 and are not Form 2210 and not line 15.
     const g = build(singleFilerData, {
       ...w2(45000, 45000, 1000),
       '/paHasEstimatedInstallmentPayments': createBooleanWrapper(true),
@@ -136,6 +136,27 @@ describe(`PA-40 core (#78)`, () => {
     expect(val(g, `/paLine24`)).toBe(`1200.00`);
     expect(val(g, `/paLine26`)).toBe(`181.50`);
     expect(val(g, `/paLine29`)).toBe(`0.00`);
+  });
+  it(`MFJ line 15 is the joint Pennsylvania total, including the spouse, and line 18 equals it`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paLine15`, `/paLine18`, `/paLine24`, `/isFilingStatusMFJ`];
+    // PA-40 IN (2025) p. 21, LINE 15: "Include your spouse’s 2025 estimated payments if filing jointly." 72 P.S.
+    // §7325. p. 22, LINE 18: "Add only Lines 14, 15, 16, and 17." The joint amount is one total. 80,000 × 3.07% =
+    // 2,456. Withheld 2,000 + line 18 400 → line 24 2,400; due 56. Federal estimates $800 stay off line 15.
+    const g = build(mfjFilerData, {
+      ...w2(80000, 80000, 2000),
+      '/paHasEstimatedInstallmentPayments': createBooleanWrapper(true),
+      '/paEstimatedInstallmentPayments': createDollarWrapper(`400`),
+      '/paidEstimatedTaxesOrFromLastYear': createBooleanWrapper(true),
+      '/estimatedTaxPaymentWritable': createDollarWrapper(`800`),
+    });
+    expect(get(g, `/isFilingStatusMFJ`).get).toBe(true);
+    expect(val(g, `/estimatedAndFromLastYear`)).toBe(`800.00`);
+    expect(val(g, `/paLine15`)).toBe(`400.00`);
+    expect(val(g, `/paLine18`)).toBe(`400.00`);
+    expect(val(g, `/paLine24`)).toBe(`2400.00`);
+    expect(val(g, `/paLine26`)).toBe(`56.00`);
+    expect(val(g, `/paLine29`)).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutPaUnsupportedItems`).get).toBe(false);
   });
   it(`line 15 left unanswered stays incomplete and refuses print`, ({ task }) => {
     task.meta.testedFactPaths = [`/paLine15`, `/paLine18`, `/flowKnockoutPaUnsupportedItems`];

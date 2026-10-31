@@ -406,8 +406,9 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
     }
 
     /**
-     * PA-40 IN (2025) p. 21, LINE 15 and LINE 18. Estimated installment payments are Pennsylvania payments, not Form
-     * 2210 and not federal estimated tax. Lines 14, 16, 17 and the REV-459B oval stay blank.
+     * PA-40 IN (2025) p. 21, LINE 15, and p. 22, LINE 18. 72 P.S. §7325. Estimated installment payments are
+     * Pennsylvania payments, not Form 2210 and not federal estimated tax. Lines 14, 16, 17 and the REV-459B oval
+     * stay blank.
      */
     @Test
     void pa40Line15And18PrintEstimatedInstallmentPayments() throws Exception {

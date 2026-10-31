@@ -147,11 +147,11 @@ class Pa40PdfForm extends PaPdfForm {
                         ? dollars(facts, "/paSpLine11").map(PaPdfForm::paAmount).orElse("")
                         : "");
 
-        // Line 15, p. 21, LINE 15: "Enter your total 2025 estimated payments." Pennsylvania estimated installment
-        // payments only (/paLine15). Not Form 2210 and not federal estimated tax. $0 prints blank. The line 15 oval
-        // is Form REV-459B; that form stays stopped, so the oval is left blank.
+        // Line 15, p. 21, LINE 15: "Enter your total 2025 estimated payments." 72 P.S. §7325. Pennsylvania estimated
+        // installment payments only (/paLine15). Not Form 2210 and not federal estimated tax. $0 prints blank. The
+        // line 15 oval is Form REV-459B; that form stays stopped, so the oval is left blank.
         facts.put(PREFIX + "Line15", paAmountOrBlank(dollars(facts, "/paLine15")));
-        // Line 18, p. 21, LINE 18: "Add only Lines 14, 15, 16, and 17." Lines 14, 16, and 17 stay stopped, so a
+        // Line 18, p. 22, LINE 18: "Add only Lines 14, 15, 16, and 17." Lines 14, 16, and 17 stay stopped, so a
         // printed return's line 18 equals line 15. $0 prints blank.
         facts.put(PREFIX + "Line18", paAmountOrBlank(dollars(facts, "/paLine18")));
         return true;

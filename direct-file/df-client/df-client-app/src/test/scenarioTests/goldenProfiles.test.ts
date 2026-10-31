@@ -2018,6 +2018,29 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
     expectStoppedOnly(g);
     expectNotStopped(g);
   });
+  it(`PA estimated installment payments of $400 are line 18`, () => {
+    // PA-40 IN (2025) p. 21, LINE 15: "Enter your total 2025 estimated payments." 72 P.S. §7325
+    // (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7325/) Declarations of
+    // Estimated Tax. p. 22, LINE 18: "Add only Lines 14, 15, 16, and 17." Lines 14, 16, and 17 stay stopped, so
+    // line 18 equals the $400 on line 15. Line 12 stays 1,897.26 and line 13 stays 1,600, so line 24 is 2,000,
+    // line 26 is $0, and line 29 is 102.74.
+    const n = graph({
+      ...profileHPaRentalDividends,
+      '/paHasEstimatedInstallmentPayments': createBooleanWrapper(true),
+      '/paEstimatedInstallmentPayments': createDollarWrapper(`400`),
+    });
+    expect(get(n, `/flowKnockoutPaUnsupportedItems`).get).toBe(false);
+    expectDollars(n, {
+      '/paLine12': `1897.26`,
+      '/paLine13': `1600.00`,
+      '/paLine15': `400.00`,
+      '/paLine18': `400.00`,
+      '/paLine24': `2000.00`,
+      '/paLine26': `0.00`,
+      '/paLine29': `102.74`,
+    });
+    expectNotStopped(n);
+  });
   it(`answering the rental no leaves line 6 at $0`, () => {
     // The same wages and dividends, with Schedule E Part I answered no. Line 6 is $0.
     const n = graph({ ...profileHPaRentalDividends, '/hadScheduleEIncome': createBooleanWrapper(false) });
@@ -2075,6 +2098,23 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
       `/flowKnockoutScheduleELoss`
     );
     expectDollars(n, { '/scheduleENetIncome': `-5000.00`, '/paLine6': `-5000.00` });
+  });
+  it(`Form REV-459B stops the return`, () => {
+    // PA-40 IN (2025) p. 21: "If you are including Form REV-459B, Consent to Transfer, Adjust or Correct PA
+    // Estimated Personal Income Tax Account, fill in the oval on Line 15 of the PA-40." The oval stays unmapped.
+    // A yes on /paHasUnsupportedItems is that stop. Entering line 15 payments does not clear it.
+    const n = stops(
+      {
+        ...profileHPaRentalDividends,
+        '/paHasUnsupportedItems': createBooleanWrapper(true),
+        '/paHasEstimatedInstallmentPayments': createBooleanWrapper(true),
+        '/paEstimatedInstallmentPayments': createDollarWrapper(`400`),
+      },
+      `/flowKnockoutPaUnsupportedItems`
+    );
+    expect(get(n, `/paLine15`).complete).toBe(true);
+    expect(get(n, `/paLine15`).get.toString()).toBe(`400.00`);
+    expect(get(n, `/paLine18`).get.toString()).toBe(`400.00`);
   });
   it(`box 2a capital gain distributions stop on the PA Schedule B knockout`, () => {
     // PA-40 Schedule B line 10. PA Schedule B (2025) instructions, PDF p. 3, WHO MUST COMPLETE, and PDF p. 4, LINE 10.

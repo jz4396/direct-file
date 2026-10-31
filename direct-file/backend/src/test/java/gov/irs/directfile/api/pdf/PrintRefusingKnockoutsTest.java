@@ -171,7 +171,8 @@ class PrintRefusingKnockoutsTest {
                 PA_NRH_KNOCKOUT, // PA Schedule NRH
                 PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
                 PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
-                PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14, 16, REV-459B, 22, 23, 25
+                PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14, 16, REV-459B, 22, 23, 25.
+                // Line 15 is computed (p. 21, LINE 15; 72 P.S. §7325). Line 18 is p. 22.
                 PA_UNSUPPORTED_INCOME_KNOCKOUT, // line 4 stops for part-year/MFJ loss/tax shelter; line 6 for
                 // K-1/part-year E
                 PA_SP_KNOCKOUT, // Schedule SP Tax Forgiveness
