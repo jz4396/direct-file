@@ -27,12 +27,12 @@ import org.springframework.http.HttpStatus;
 
 import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 
-import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.collectionItem;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrint;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrintOf;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -512,20 +512,20 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
     }
 
     /**
-     * Golden H (#135), public print path only. Full-year Pennsylvania resident, the existing profile's income: W-2 box
-     * 16 $48,000, Form 1099-DIV box 1a $1,800, Schedule E Part I rents $15,000 minus expenses $3,000. No new profile.
-     * The shared smoke filer is the harness; these facts are profile H's amounts.
+     * Golden H (#135), public print path only. The facts are {@code golden-profileH-complete.json}, the persisted
+     * client profile {@code profileHPaRentalDividends}: Hayden Example, W-2 box 16 $48,000, Form 1099-DIV box 1a
+     * $1,800, Schedule E Part I rents $15,000 minus expenses $3,000. No new profile, and not the smoke-harness filer.
      *
      * <p>[PA] PA-40 IN (2025) p. 10, LINE 1a (W-2 box 16). p. 15, LINE 3 and p. 32: federal ordinary dividends when PA
      * Schedule B lines 2–10 are $0. p. 18, LINE 6: "You may use federal Schedule E, if using only Part I, and with the
-     * following adjustments". p. 20, LINE 9: "Add only the positive income amounts from Lines 1c through 8." [TRC] Tax
-     * Reform Code of 1971 §303(a)(4) and §303(a)(5), 72 P.S. §7303(a)(4), §7303(a)(5). Line 12 is line 11 times 3.07
-     * percent: 61,800 × 0.0307 = 1,897.26. [PA] p. 21, LINE 12. [TRC] §302(a), 72 P.S. §7302(a). [PA] p. 4, "Rounding
-     * Numbers": whole dollars, half-up, so 1,897.26 prints as 1,897.00.
+     * following adjustments". p. 20, LINE 9: "Add only the positive income amounts from Lines 1c through 8." p. 21,
+     * LINE 13 (W-2 box 17). [TRC] Tax Reform Code of 1971 §303(a)(4) and §303(a)(5), 72 P.S. §7303(a)(4),
+     * §7303(a)(5). Line 12 is line 11 times 3.07 percent: 61,800 × 0.0307 = 1,897.26. [PA] p. 21, LINE 12. [TRC]
+     * §302(a), 72 P.S. §7302(a). [PA] p. 4, "Rounding Numbers": whole dollars, half-up, so 1,897.26 prints as 1,897.00.
      */
     @Test
     void goldenHPa40PrintsOnThePublicPath() throws Exception {
-        byte[] bytes = generatePublicPrint(goldenH());
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileH-complete.json");
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             Map<String, String> p1 = fieldsOnPages(doc, PA40_PAGE1);
             is(p1, "1a. Gross Compensation", "48,000.00", "L1a 48,000");
@@ -539,46 +539,8 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
                     "12. PA Tax Liability. Multiply Line 11 by 3.07%",
                     "1,897.00",
                     "L12 prints 1,897.26 rounded half-up (p. 4)");
+            is(p2, "13. Total PA Tax Withheld", "1,600.00", "L13 1,600 (W-2 box 17)");
         }
-    }
-
-    /**
-     * Profile H income on the PA-40 harness: one W-2, one 1099-DIV (id {@code 13500000-0000-4000-8000-000000001102}),
-     * Schedule E Part I only. The smoke fixture's capital-gain sales are cleared so PA Schedule D does not refuse the
-     * print.
-     */
-    static Map<String, String> goldenH() {
-        Map<String, String> m = paResident();
-        String w2 = "/formW2s/#" + W2;
-        m.put(w2 + "/writableWages", dollar("48000.00"));
-        m.put(w2 + "/writableFederalWithholding", dollar("5200.00"));
-        m.put(w2 + "/writableOasdiWages", dollar("48000.00"));
-        m.put(w2 + "/writableOasdiWithholding", dollar("2976.00"));
-        m.put(w2 + "/writableMedicareWages", dollar("48000.00"));
-        m.put(w2 + "/writableMedicareWithholding", dollar("696.00"));
-        m.put(w2 + "/writableStateWages", dollar("48000.00"));
-        m.put(w2 + "/writableStateWithholding", dollar("1600.00"));
-        m.put("/form8949Transactions", EMPTY_COLLECTION);
-        m.put("/soldCapitalAssets", bool(false));
-        m.put("/paSchoolDistrictCode", string("22275"));
-        m.put("/paHasExemptObligationDividends", bool(false));
-        Schedules123Ty2026PdfSmokeTest.standardDeduction(m);
-        ScheduleBAndETy2026PdfSmokeTest.partIScreeners(m, "15000.00", "0.00", "3000.00");
-        m.put("/scheduleEHasPartIIIncome", bool(false));
-        m.put("/scheduleEHasPartIIIIncome", bool(false));
-        m.put("/scheduleEHasPartIVIncome", bool(false));
-        String div = "13500000-0000-4000-8000-000000001102";
-        m.put("/dividendReports", collection(div));
-        m.put("/dividendReports/#" + div + "/filer", collectionItem(W2));
-        m.put("/dividendReports/#" + div + "/payer", string("Example Dividend Fund"));
-        m.put("/dividendReports/#" + div + "/ordinaryDividends", dollar("1800.00"));
-        m.put("/dividendReports/#" + div + "/writableQualifiedDividends", dollar("1200.00"));
-        m.put("/dividendReports/#" + div + "/qualifiedDividendsHoldingPeriodNotMet", bool(false));
-        m.put("/dividendReports/#" + div + "/hasUnsupportedBoxes", bool(false));
-        m.put("/dividendReports/#" + div + "/receivedAsNominee", bool(false));
-        m.put("/dividendReports/#" + div + "/hasSeenLastAvailableScreen", bool(true));
-        m.put("/dividendReportsIsDone", bool(true));
-        return m;
     }
 
     @Test

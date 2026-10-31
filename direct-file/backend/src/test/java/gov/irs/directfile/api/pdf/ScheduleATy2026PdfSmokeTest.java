@@ -49,7 +49,31 @@ class ScheduleATy2026PdfSmokeTest {
         return generate(extraFactsJson, true);
     }
 
+    /**
+     * Public print of a complete return on the classpath ({@code {"facts": ...}}), with no Schedule D smoke overlay.
+     * Refused returns throw.
+     */
+    static byte[] generatePublicPrintOf(String classpathJson) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(new ClassPathResource(classpathJson).getInputStream());
+        Map<String, FactTypeWithItem> facts =
+                mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
+        return printFacts(facts, true);
+    }
+
     private static byte[] generate(Map<String, String> extraFactsJson, boolean publicPrintOnly) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root =
+                mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
+        Map<String, FactTypeWithItem> facts =
+                mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
+        for (var e : extraFactsJson.entrySet()) {
+            facts.put(e.getKey(), mapper.readValue(e.getValue(), FactTypeWithItem.class));
+        }
+        return printFacts(facts, publicPrintOnly);
+    }
+
+    private static byte[] printFacts(Map<String, FactTypeWithItem> facts, boolean publicPrintOnly) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         GenericApplicationContext ctx = new GenericApplicationContext();
         ctx.refresh();
@@ -70,13 +94,6 @@ class ScheduleATy2026PdfSmokeTest {
                 .get();
         PdfService pdfService = new PdfService(props, new IOLocationService(null), factGraphService);
 
-        JsonNode root =
-                mapper.readTree(new ClassPathResource("pdf-smoke/schedule-d-8949-synthetic.json").getInputStream());
-        Map<String, FactTypeWithItem> facts =
-                mapper.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
-        for (var e : extraFactsJson.entrySet()) {
-            facts.put(e.getKey(), mapper.readValue(e.getValue(), FactTypeWithItem.class));
-        }
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026); // configured-pdfs bucket; the IRS1040 en template itself is the 2026 draft
         taxReturn.setFactsWithoutDirtyingEntity(facts);

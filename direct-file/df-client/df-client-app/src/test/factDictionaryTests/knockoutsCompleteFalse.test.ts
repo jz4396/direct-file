@@ -33,16 +33,9 @@ import {
 
 const FLOW_XML = `./src/fact-dictionary/generate-src/xml-src/flow.xml`;
 const SCENARIOS = `./src/test/factDictionaryTests/backend-scenarios`;
-const BACKEND_GOLDEN = path.join(
-  `..`,
-  `..`,
-  `backend`,
-  `src`,
-  `test`,
-  `resources`,
-  `submission-blocking`,
-  `golden-profile5-complete.json`
-);
+const SUBMISSION_BLOCKING = path.join(`..`, `..`, `backend`, `src`, `test`, `resources`, `submission-blocking`);
+const BACKEND_GOLDEN = path.join(SUBMISSION_BLOCKING, `golden-profile5-complete.json`);
+const BACKEND_GOLDEN_H = path.join(SUBMISSION_BLOCKING, `golden-profileH-complete.json`);
 
 /** The operands of /flowIsKnockedOut's Any: [path, negated]. */
 function knockoutOperands(): [string, boolean][] {
@@ -65,6 +58,7 @@ const withoutMeta = (facts: Record<string, unknown>) =>
 const returns: [string, Record<string, unknown>][] = [
   ...Object.entries(goldenProfiles).map(([k, v]) => [`golden profile ${k}`, v] as [string, Record<string, unknown>]),
   [`backend golden-profile5-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN, `utf-8`)).facts],
+  [`backend golden-profileH-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_H, `utf-8`)).facts],
   ...fs
     .readdirSync(SCENARIOS)
     .filter((f) => f.endsWith(`.json`))
