@@ -245,11 +245,11 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
     expect(get(openList, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
   });
 
-  it(`church, minister, optional method, and Form 8919 stops still apply`, ({ task }) => {
+  it(`church, minister, farm, notary, and Form 8919 stops still apply`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutScheduleSEOutOfScope`];
     // 26 U.S.C. 1402(a)(8), 1402(a)(14), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l).
     const rows = partII([partnershipId], k1(partnershipId, `8000`));
-    for (const path of seQuestions) {
+    for (const path of seQuestions.filter((q) => q !== `/usesSeOptionalMethod`)) {
       const g = fg({
         ...rows,
         '/hadSelfEmploymentIncome': createBooleanWrapper(true),
@@ -257,8 +257,28 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
       });
       expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete, path).toBe(true);
       expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get, path).toBe(true);
+      expect(get(g, `/flowKnockoutScheduleSENonfarmOptionalMethod`).get, path).toBe(false);
       expect(get(g, `/flowIsKnockedOut`).get, path).toBe(true);
     }
+  });
+
+  it(`electing the nonfarm optional method with box 14 code A stops`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleSENonfarmOptionalMethod`,
+      `/flowKnockoutScheduleSEOutOfScope`,
+      `/primaryFilerNonfarmOptionalMethodApplies`,
+    ];
+    // Code C is not collected. A nonzero box 14 code A together with the election stops. 26 U.S.C. 1402(a).
+    const rows = partII([partnershipId], k1(partnershipId, `8000`));
+    const g = fg({
+      ...rows,
+      ...Object.fromEntries(seQuestions.map((q) => [q, createBooleanWrapper(q === `/usesSeOptionalMethod`)])),
+    });
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expect(get(g, `/primaryFilerNonfarmOptionalMethodApplies`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleSENonfarmOptionalMethod`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleSENonfarmOptionalMethod`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
   });
 
   it(`a K-1-only filer is asked the Schedule SE stops and each yes stops the return`, ({ task }) => {
@@ -276,6 +296,7 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
     expect(get(answeredNo, `/hadSelfEmploymentIncome`).get).toBe(false);
     expect(get(answeredNo, `/scheduleSEOutOfScopeQuestionsApply`).get).toBe(true);
     expect(get(answeredNo, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expect(get(answeredNo, `/flowKnockoutScheduleSENonfarmOptionalMethod`).get).toBe(false);
     expect(get(answeredNo, `/primaryFilerSeNetProfit`).get.toString()).toBe(`8000.00`);
     expect(get(answeredNo, `/selfEmploymentTax`).get.toString()).toBe(`1130.00`);
     const screens = createFlowConfig(flowNodes);
@@ -291,7 +312,7 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
         `/scheduleSEOutOfScopeQuestionsApply`,
       ]);
     }
-    for (const path of seQuestions) {
+    for (const path of seQuestions.filter((q) => q !== `/usesSeOptionalMethod`)) {
       const g = fg({
         ...rows,
         ...Object.fromEntries(seQuestions.map((q) => [q, createBooleanWrapper(q === path)])),
@@ -301,6 +322,13 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
       expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get, path).toBe(true);
       expect(get(g, `/flowIsKnockedOut`).get, path).toBe(true);
     }
+    const elected = fg({
+      ...rows,
+      ...Object.fromEntries(seQuestions.map((q) => [q, createBooleanWrapper(q === `/usesSeOptionalMethod`)])),
+    });
+    expect(get(elected, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expect(get(elected, `/flowKnockoutScheduleSENonfarmOptionalMethod`).get).toBe(true);
+    expect(get(elected, `/flowIsKnockedOut`).get).toBe(true);
     const open = fg(rows);
     expect(get(open, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(false);
     const zero = fg(partII([partnershipId], k1(partnershipId, `0`)));

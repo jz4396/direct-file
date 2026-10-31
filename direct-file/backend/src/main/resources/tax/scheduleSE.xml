@@ -40,6 +40,72 @@
       </Derived>
     </Fact>
 
+    <Fact path="/seOptionalMethodMaximumIncome">
+      <Name>Schedule SE optional-method maximum income</Name>
+      <Description>
+        TY2026 Schedule SE Part II line 14, "Maximum income for optional methods," $7,560.
+        26 U.S.C. 1402(l)(1) (https://www.law.cornell.edu/uscode/text/26/1402#l_1): the lower
+        limit is the sum of the Social Security Act section 213(d) quarter-of-coverage amounts
+        for each calendar quarter ending with or within the taxable year. SSA, "Cost-of-Living
+        Increase and Other Determinations for 2026," 90 FR 49047 (Nov. 3, 2025), p. 49051:
+        "The earnings required for a quarter of coverage in 2026 is $1,890." Four quarters
+        times $1,890 is $7,560. 26 U.S.C. 1402(l)(2) sets the upper limit at 150 percent of
+        that lower limit ($11,340), the farm gross-income threshold, not line 14. 2026 draft
+        Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 3, line 14.
+        Line 15 (the farm optional method) stays blank because farm self-employment stops the
+        return, so line 16 equals this amount.
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>7560</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/seNonfarmOptionalMethodNetProfitLimit">
+      <Name>Nonfarm optional method net-profit limit</Name>
+      <Description>
+        Net nonfarm profits must be less than $8,186. 2026 draft Schedule SE, PDF p. 3, Part II:
+        "your net nonfarm profits were less than $8,186 and also less than 72.189% of your gross
+        nonfarm income." 2026 draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 7, same test.
+        Net nonfarm profits here are Schedule C line 31. A nonzero Schedule K-1 (Form 1065) box 14
+        code A together with the election stops the return instead of being included.
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>8186</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/seNonfarmOptionalMethodGrossIncomeRatio">
+      <Name>Nonfarm optional method gross-income percentage</Name>
+      <Description>
+        72.189% of gross nonfarm income. 2026 draft Schedule SE, PDF p. 3, and 2026 draft
+        Instructions for Schedule SE, PDF p. 7: net nonfarm profits must be "less than 72.189% of
+        your gross nonfarm income." Gross nonfarm income here is Schedule C line 7. Schedule K-1
+        (Form 1065) box 14 code C is not collected.
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Rational>72189/100000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/seNonfarmOptionalMethodTwoThirds">
+      <Name>Nonfarm optional method two-thirds of gross nonfarm income</Name>
+      <Description>
+        Part II line 17 is two-thirds of gross nonfarm income, not below zero, and not more than
+        line 16. 2026 draft Schedule SE, PDF p. 3, line 17: "Enter the smaller of: two-thirds (2/3)
+        of gross nonfarm income ... (not less than zero) or the amount on line 16."
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Rational>2/3</Rational>
+      </Derived>
+    </Fact>
+
     <!-- ========== Schedule SE computation, one per filer with SE income (#118) ========== -->
 
     <!-- ========== Schedule SE for the primary filer (#118) ========== -->
@@ -55,10 +121,13 @@
         Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)";
         line 3: "Combine lines
         1a, 1b, and 2". Line 1a is farm profit, including farm partnerships' box 14
-        code A. Farm profit, the optional methods, church employee
+        code A. Farm profit, the farm optional method, church employee
         income, ministry or a Form 4361 or 4029 exemption, notary
         fees, and Form 8919 wages
         stop the return (/flowKnockoutScheduleSEOutOfScope) instead of being entered as zero.
+        The nonfarm optional method skips line 2 when /primaryFilerNonfarmOptionalMethodApplies
+        is true. An election that is not allowed stops the return
+        (/flowKnockoutScheduleSENonfarmOptionalMethod).
         Box 14 code A is scheduleE /scheduleEK1Box14CodeANonfarmTotal. A reduction, farming, a
         limited-partner amount that is not only guaranteed payments (26 U.S.C. 1402(a)(13)), a joint
         return, or an S corporation amount stops the return (scheduleE
@@ -135,6 +204,411 @@
       </Derived>
     </Fact>
 
+    <Fact path="/primaryFilerHasNonfarmSelfEmploymentActivity">
+      <Name>Primary filer has Schedule C nonfarm activity</Name>
+      <Description>
+        True when this filer's Schedule C line 31 is not zero or Schedule C line 7 is not zero.
+        A filer with neither is not tested for the nonfarm optional method. 2026 draft Schedule SE,
+        PDF p. 3, Part II footnotes: net nonfarm profits from Schedule C line 31, and gross nonfarm
+        income from Schedule C line 7.
+      </Description>
+      <Derived>
+        <Any>
+          <NotEqual>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNetProfitOrLoss" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </NotEqual>
+          <NotEqual>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCPrimaryFilerGrossNonfarmIncome" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </NotEqual>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerNonfarmOptionalMethodEligible">
+      <Name>Primary filer meets the nonfarm optional method dollar tests</Name>
+      <Description>
+        Schedule C line 31 is less than $8,186 (/seNonfarmOptionalMethodNetProfitLimit) and less than
+        72.189% of Schedule C line 7 (/seNonfarmOptionalMethodGrossIncomeRatio). 2026 draft Schedule
+        SE, PDF p. 3, and 2026 draft Instructions for Schedule SE, PDF p. 7.
+      </Description>
+      <Derived>
+        <All>
+          <LessThan>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNetProfitOrLoss" />
+            </Left>
+            <Right>
+              <Dependency path="/seNonfarmOptionalMethodNetProfitLimit" />
+            </Right>
+          </LessThan>
+          <LessThan>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNetProfitOrLoss" />
+            </Left>
+            <Right>
+              <Multiply>
+                <Dependency module="scheduleC" path="/scheduleCPrimaryFilerGrossNonfarmIncome" />
+                <Dependency path="/seNonfarmOptionalMethodGrossIncomeRatio" />
+              </Multiply>
+            </Right>
+          </LessThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerNonfarmOptionalMethodLine17">
+      <Name>Primary filer: two-thirds of gross nonfarm income, limited by line 16</Name>
+      <Description>
+        Smaller of two-thirds of Schedule C line 7, not below zero, and Part II line 16. Line 15 is
+        zero because the farm optional method stops the return, so line 16 is
+        /seOptionalMethodMaximumIncome ($7,560). 2026 draft Schedule SE, PDF p. 3, lines 16 and 17.
+        Rounded to whole dollars the same way line 4a is rounded.
+      </Description>
+      <Derived>
+        <LesserOf>
+          <GreaterOf>
+            <Round>
+              <Multiply>
+                <Dependency module="scheduleC" path="/scheduleCPrimaryFilerGrossNonfarmIncome" />
+                <Dependency path="/seNonfarmOptionalMethodTwoThirds" />
+              </Multiply>
+            </Round>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+          <Dependency path="/seOptionalMethodMaximumIncome" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerNonfarmOptionalMethodAllowed">
+      <Name>Primary filer may use the nonfarm optional method on the dollar tests</Name>
+      <Description>
+        The dollar tests are met, and the line 17 amount is at least actual net earnings from the
+        regular method (/primaryFilerSeNetEarnings). 2026 draft Instructions for Schedule SE, PDF
+        p. 7: "you can't report less than your actual net earnings from nonfarm self-employment."
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="/primaryFilerNonfarmOptionalMethodEligible" />
+          <GreaterThanOrEqual>
+            <Left>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodLine17" />
+            </Left>
+            <Right>
+              <Dependency path="/primaryFilerSeNetEarnings" />
+            </Right>
+          </GreaterThanOrEqual>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerNonfarmOptionalMethodApplies">
+      <Name>Primary filer uses the nonfarm optional method</Name>
+      <Description>
+        True when the filer elects the nonfarm optional method, Schedule K-1 (Form 1065) box 14 code A
+        is not nonzero, this filer has Schedule C activity, the dollar tests are met, line 17 is at
+        least actual net earnings, net earnings from self-employment were at least $400 in 2 of the
+        prior 3 years, and the method has been used fewer than five prior years. 26 U.S.C. 1402(a)
+        (the nonfarm optional-method sentences) and 1402(l). False when the election is unanswered or
+        no, so the regular method still computes. An election that is not allowed stops the return
+        (/flowKnockoutScheduleSENonfarmOptionalMethod).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/usesSeOptionalMethod" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/usesSeOptionalMethod" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/primaryFilerNonfarmOptionalMethodAllowed" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodAllowed" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/primaryFilerNonfarmOptionalMethodAllowed" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeReportedNetProfit">
+      <Name>Primary filer: Schedule SE lines 2 and 3</Name>
+      <Description>
+        2026 draft Schedule SE, line 2: "Skip line 2 if you use the nonfarm optional method." With
+        lines 1a and 1b blank, line 3 equals line 2. When /primaryFilerNonfarmOptionalMethodApplies
+        is true, both are $0. Otherwise this is /primaryFilerSeNetProfit.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerSeNetProfit" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeReportedLine4a">
+      <Name>Primary filer: Schedule SE line 4a as reported</Name>
+      <Description>
+        2026 draft Schedule SE, line 4a: if line 3 is more than zero, multiply by 92.35%; otherwise
+        enter line 3. Skipping line 2 makes line 3 and line 4a $0 when the nonfarm optional method
+        applies. Otherwise this is the regular-method amount /primaryFilerSeNetEarnings.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerSeNetEarnings" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeLine4b">
+      <Name>Primary filer: Schedule SE line 4b</Name>
+      <Description>
+        2026 draft Schedule SE, line 4b: "If you elect one or both of the optional methods, enter the
+        total of lines 15 and 17 here." Line 15 is $0, so line 4b equals line 17 when the nonfarm
+        optional method applies, and $0 otherwise.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodLine17" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeLine16">
+      <Name>Primary filer: Schedule SE Part II line 16</Name>
+      <Description>
+        2026 draft Schedule SE, PDF p. 3, line 16: "Subtract line 15 from line 14." Line 15 is $0 and
+        line 14 is /seOptionalMethodMaximumIncome ($7,560) when the nonfarm optional method applies.
+        Otherwise $0, printed blank.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dependency path="/seOptionalMethodMaximumIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeLine17">
+      <Name>Primary filer: Schedule SE Part II line 17</Name>
+      <Description>
+        Line 17 when the nonfarm optional method applies; otherwise $0. The same amount is line 4b.
+        2026 draft Schedule SE, PDF p. 3, line 17: "Also, include this amount on line 4b above."
+      </Description>
+      <Derived>
+        <Dependency path="/primaryFilerSeLine4b" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeLine4c">
+      <Name>Primary filer: Schedule SE line 4c</Name>
+      <Description>
+        2026 draft Schedule SE, line 4c: "Combine lines 4a and 4b." When the nonfarm optional method
+        applies, line 4a is $0 and line 4c equals line 4b. Otherwise line 4b is $0 and line 4c equals
+        the regular-method line 4a. Later lines use this amount.
+      </Description>
+      <Derived>
+        <Add>
+          <Dependency path="/primaryFilerSeReportedLine4a" />
+          <Dependency path="/primaryFilerSeLine4b" />
+        </Add>
+      </Derived>
+    </Fact>
+
     <Fact path="/primaryFilerSeTaxApplies">
       <Name>Primary filer: SE tax applies</Name>
       <Description>
@@ -143,12 +617,13 @@
         owe self-employment tax." 26 U.S.C. 1402(b)(2)
         (https://www.law.cornell.edu/uscode/text/26/1402#b_2): no
         self-employment income when net earnings are "less
-        than $400". The test is per individual.
+        than $400". The test is line 4c, per individual, so an optional-method line 4b of $400 or
+        more is self-employment income even when line 4a is zero.
       </Description>
       <Derived>
         <GreaterThanOrEqual>
           <Left>
-            <Dependency path="/primaryFilerSeNetEarnings" />
+            <Dependency path="/primaryFilerSeLine4c" />
           </Left>
           <Right>
             <Dependency path="/seNetEarningsThreshold" />
@@ -310,7 +785,7 @@
             </When>
             <Then>
               <LesserOf>
-                <Dependency path="/primaryFilerSeNetEarnings" />
+                <Dependency path="/primaryFilerSeLine4c" />
                 <Dependency path="/primaryFilerSeRemainingSocialSecurityWageBase" />
               </LesserOf>
             </Then>
@@ -355,7 +830,7 @@
         a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
         income stops the return when /hadChurchEmployeeIncome is yes), and $0 when line 4c is under $400
         ("stop; you
-        don’t owe self-employment tax"). Feeds line
+        don’t owe self-employment tax"). Line 4c already includes line 4b. Feeds line
         11 and Form 8959 line 13.
       </Description>
       <Derived>
@@ -365,7 +840,7 @@
               <Dependency path="/primaryFilerSeTaxApplies" />
             </When>
             <Then>
-              <Dependency path="/primaryFilerSeNetEarnings" />
+              <Dependency path="/primaryFilerSeLine4c" />
             </Then>
           </Case>
           <Case>
@@ -450,7 +925,9 @@
         SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
         a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
         1a, 1b, and 2"),
-        floored at $0 for SE tax (no farm or optional methods). Each spouse files their own Schedule SE:
+        floored at $0 for the regular method. The nonfarm optional method, when
+        /secondaryFilerNonfarmOptionalMethodApplies is true, skips this amount and uses Part II
+        line 17. The farm optional method stops the return. Each spouse files their own Schedule SE:
         2026 draft
         Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
         8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
@@ -485,6 +962,332 @@
       </Derived>
     </Fact>
 
+    <Fact path="/secondaryFilerHasNonfarmSelfEmploymentActivity">
+      <Name>Secondary filer has Schedule C nonfarm activity</Name>
+      <Description>
+        True when this filer's Schedule C line 31 is not zero or Schedule C line 7 is not zero.
+        On a return that is not a joint return both amounts are $0, so the optional method is not
+        applied to the secondary filer. 2026 draft Schedule SE, PDF p. 3, Part II footnotes.
+      </Description>
+      <Derived>
+        <Any>
+          <NotEqual>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </NotEqual>
+          <NotEqual>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerGrossNonfarmIncome" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </NotEqual>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerNonfarmOptionalMethodEligible">
+      <Name>Secondary filer meets the nonfarm optional method dollar tests</Name>
+      <Description>
+        Schedule C line 31 is less than $8,186 and less than 72.189% of Schedule C line 7. 2026 draft
+        Schedule SE, PDF p. 3, and 2026 draft Instructions for Schedule SE, PDF p. 7. The comparison
+        uses the unfloored Schedule C result, not the regular-method floor at zero.
+      </Description>
+      <Derived>
+        <All>
+          <LessThan>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+            </Left>
+            <Right>
+              <Dependency path="/seNonfarmOptionalMethodNetProfitLimit" />
+            </Right>
+          </LessThan>
+          <LessThan>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+            </Left>
+            <Right>
+              <Multiply>
+                <Dependency module="scheduleC" path="/scheduleCSecondaryFilerGrossNonfarmIncome" />
+                <Dependency path="/seNonfarmOptionalMethodGrossIncomeRatio" />
+              </Multiply>
+            </Right>
+          </LessThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerNonfarmOptionalMethodLine17">
+      <Name>Secondary filer: two-thirds of gross nonfarm income, limited by line 16</Name>
+      <Description>
+        Smaller of two-thirds of this filer's Schedule C line 7, not below zero, and $7,560. 2026
+        draft Schedule SE, PDF p. 3, lines 16 and 17. Line 15 is zero because the farm optional
+        method stops the return.
+      </Description>
+      <Derived>
+        <LesserOf>
+          <GreaterOf>
+            <Round>
+              <Multiply>
+                <Dependency module="scheduleC" path="/scheduleCSecondaryFilerGrossNonfarmIncome" />
+                <Dependency path="/seNonfarmOptionalMethodTwoThirds" />
+              </Multiply>
+            </Round>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+          <Dependency path="/seOptionalMethodMaximumIncome" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerNonfarmOptionalMethodAllowed">
+      <Name>Secondary filer may use the nonfarm optional method on the dollar tests</Name>
+      <Description>
+        The dollar tests are met, and the line 17 amount is at least actual net earnings from the
+        regular method (/secondaryFilerSeNetEarnings). 2026 draft Instructions for Schedule SE, PDF
+        p. 7: "you can't report less than your actual net earnings from nonfarm self-employment."
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="/secondaryFilerNonfarmOptionalMethodEligible" />
+          <GreaterThanOrEqual>
+            <Left>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodLine17" />
+            </Left>
+            <Right>
+              <Dependency path="/secondaryFilerSeNetEarnings" />
+            </Right>
+          </GreaterThanOrEqual>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerNonfarmOptionalMethodApplies">
+      <Name>Secondary filer uses the nonfarm optional method</Name>
+      <Description>
+        Same election and prior-year tests as the primary filer, applied to this filer's Schedule C.
+        26 U.S.C. 1402(a) and 1402(l). False when the election is unanswered or no.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/usesSeOptionalMethod" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/usesSeOptionalMethod" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/secondaryFilerNonfarmOptionalMethodAllowed" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodAllowed" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/secondaryFilerNonfarmOptionalMethodAllowed" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerSeReportedLine4a">
+      <Name>Secondary filer: Schedule SE line 4a as reported</Name>
+      <Description>
+        $0 when the nonfarm optional method applies, because line 2 is skipped. Otherwise the
+        regular-method amount /secondaryFilerSeNetEarnings. 2026 draft Schedule SE, line 4a.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/secondaryFilerSeNetEarnings" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerSeLine4b">
+      <Name>Secondary filer: Schedule SE line 4b</Name>
+      <Description>
+        Line 17 when the nonfarm optional method applies, because line 15 is $0. Otherwise $0.
+        2026 draft Schedule SE, line 4b.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodLine17" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerSeLine4c">
+      <Name>Secondary filer: Schedule SE line 4c</Name>
+      <Description>
+        Line 4a plus line 4b. 2026 draft Schedule SE, line 4c. Later lines of this filer's Schedule
+        SE use this amount.
+      </Description>
+      <Derived>
+        <Add>
+          <Dependency path="/secondaryFilerSeReportedLine4a" />
+          <Dependency path="/secondaryFilerSeLine4b" />
+        </Add>
+      </Derived>
+    </Fact>
+
     <Fact path="/secondaryFilerSeTaxApplies">
       <Name>Secondary filer: SE tax applies</Name>
       <Description>
@@ -493,12 +1296,12 @@
         owe self-employment tax." 26 U.S.C. 1402(b)(2)
         (https://www.law.cornell.edu/uscode/text/26/1402#b_2): no
         self-employment income when net earnings are "less
-        than $400". The test is per individual.
+        than $400". The test is line 4c, per individual.
       </Description>
       <Derived>
         <GreaterThanOrEqual>
           <Left>
-            <Dependency path="/secondaryFilerSeNetEarnings" />
+            <Dependency path="/secondaryFilerSeLine4c" />
           </Left>
           <Right>
             <Dependency path="/seNetEarningsThreshold" />
@@ -590,7 +1393,7 @@
             </When>
             <Then>
               <LesserOf>
-                <Dependency path="/secondaryFilerSeNetEarnings" />
+                <Dependency path="/secondaryFilerSeLine4c" />
                 <Dependency path="/secondaryFilerSeRemainingSocialSecurityWageBase" />
               </LesserOf>
             </Then>
@@ -635,7 +1438,7 @@
         a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
         income stops the return when /hadChurchEmployeeIncome is yes), and $0 when line 4c is under $400
         ("stop; you
-        don’t owe self-employment tax"). Feeds line
+        don’t owe self-employment tax"). Line 4c already includes line 4b. Feeds line
         11 and Form 8959 line 13.
       </Description>
       <Derived>
@@ -645,7 +1448,7 @@
               <Dependency path="/secondaryFilerSeTaxApplies" />
             </When>
             <Then>
-              <Dependency path="/secondaryFilerSeNetEarnings" />
+              <Dependency path="/secondaryFilerSeLine4c" />
             </Then>
           </Case>
           <Case>
@@ -824,12 +1627,13 @@
       <Description>
         Yes when Schedule F farm profit or Conservation Reserve Program payments belong on Schedule SE
         lines
-        1a or 1b. 26 U.S.C. 1402(a) and 1402(a)(1)
+        1a or 1b, or when the filer wants the farm optional method (Part II line 15). 26 U.S.C. 1402(a)
+        and 1402(a)(1)
         (https://www.law.cornell.edu/uscode/text/26/1402#a_1): net earnings
         include farm income, and
         certain CRP payments to a person receiving Social Security or disability benefits are
-        excluded.
-        This tool does not compute either line.
+        excluded. The farm optional method is the flush language of 1402(a) and the limits in 1402(l).
+        This tool does not compute lines 1a, 1b, or 15.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -852,13 +1656,43 @@
     </Fact>
 
     <Fact path="/usesSeOptionalMethod">
-      <Name>Uses a Schedule SE optional method</Name>
+      <Name>Elects the nonfarm optional method</Name>
       <Description>
-        Yes when the filer uses a farm or nonfarm optional method (Schedule SE line 4b and Part II).
-        26 U.S.C.
-        1402(a) (https://www.law.cornell.edu/uscode/text/26/1402#a), the optional-method
-        sentences at the end of
-        subsection (a), and 1402(l), which defines the lower and upper limits.
+        Yes when the filer elects the nonfarm optional method (Schedule SE line 4b and Part II
+        lines 16 and 17). 26 U.S.C. 1402(a) (https://www.law.cornell.edu/uscode/text/26/1402#a), the
+        nonfarm optional-method sentences at the end of subsection (a), and 1402(l). The farm
+        optional method is /hadFarmSelfEmploymentIncome and still stops the return. The election
+        is used only when /primaryFilerNonfarmOptionalMethodApplies or
+        /secondaryFilerNonfarmOptionalMethodApplies is true.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears">
+      <Name>Net earnings of at least $400 in two of the prior three years</Name>
+      <Description>
+        Yes when actual net earnings from self-employment were $400 or more in 2 of the 3 consecutive
+        tax years immediately preceding the year the nonfarm optional method is used. 2026 draft
+        Schedule SE, PDF p. 3, and 2026 draft Instructions for Schedule SE, PDF p. 7. 26 U.S.C.
+        1402(a). Asked only after /usesSeOptionalMethod is yes.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears">
+      <Name>Nonfarm optional method used fewer than five prior years</Name>
+      <Description>
+        Yes when the filer has used the nonfarm optional method in fewer than five earlier years, so
+        this year is not the sixth or later use. The five years do not have to be consecutive. 2026
+        draft Schedule SE, PDF p. 3: "You may use this method no more than five times." 2026 draft
+        Instructions for Schedule SE, PDF p. 7. A no stops the return. Asked only after
+        /usesSeOptionalMethod is yes.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -924,11 +1758,12 @@
       <Name>Knockout: Schedule SE line this tool does not compute</Name>
       <Description>
         Stops filing and printing when /scheduleSEOutOfScopeQuestionsApply is true and the filer answers
-        yes to farm profit or Conservation Reserve Program payments (Schedule SE lines 1a and 1b;
-        26 U.S.C. 1402(a) and 1402(a)(1)), church employee income (lines 5a and 5b; 1402(a)(14) and
-        1402(j)), an optional method (line 4b and Part II; 1402(a) and 1402(l)), ministry or a Form 4361
+        yes to farm profit, Conservation Reserve Program payments, or the farm optional method
+        (Schedule SE lines 1a, 1b, and Part II line 15; 26 U.S.C. 1402(a), 1402(a)(1), and 1402(l)),
+        church employee income (lines 5a and 5b; 1402(a)(14) and 1402(j)), ministry or a Form 4361
         or Form 4029 exemption (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees excluded as a
-        public office (1402(c)(1)), or Form 8919 wages (line 8c). The gate is Schedule C
+        public office (1402(c)(1)), or Form 8919 wages (line 8c). The nonfarm optional method is
+        /flowKnockoutScheduleSENonfarmOptionalMethod, not this fact. The gate is Schedule C
         self-employment income or a nonzero Schedule K-1 (Form 1065) box 14 code A. Complete and false
         when that gate is not true, including when /hadSelfEmploymentIncome is unanswered and box 14
         code A is not nonzero, and when every question is answered no. An unanswered question while the
@@ -988,18 +1823,6 @@
             <When>
               <Not>
                 <IsComplete>
-                  <Dependency path="/usesSeOptionalMethod" />
-                </IsComplete>
-              </Not>
-            </When>
-            <Then>
-              <Dependency path="/usesSeOptionalMethod" />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Not>
-                <IsComplete>
                   <Dependency path="/hasMinisterOrSeExemption" />
                 </IsComplete>
               </Not>
@@ -1040,7 +1863,6 @@
               <Any>
                 <Dependency path="/hadFarmSelfEmploymentIncome" />
                 <Dependency path="/hadChurchEmployeeIncome" />
-                <Dependency path="/usesSeOptionalMethod" />
                 <Dependency path="/hasMinisterOrSeExemption" />
                 <Dependency path="/hasNotarySeExclusion" />
                 <Dependency path="/hadForm8919Wages" />
@@ -1051,12 +1873,286 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleSENonfarmOptionalMethod">
+      <Name>Knockout: nonfarm optional method is not allowed on this return</Name>
+      <Description>
+        Stops filing and printing when the filer elects the nonfarm optional method and the election
+        cannot be used. 26 U.S.C. 1402(a) and 1402(l). 2026 draft Schedule SE, PDF p. 3, and 2026 draft
+        Instructions for Schedule SE, PDF p. 7. The election stops when Schedule K-1 (Form 1065) box 14
+        code A is nonzero (code C is not collected), when a filer with Schedule C activity fails the
+        dollar tests or line 17 would be less than actual net earnings, when neither filer has Schedule
+        C activity, when net earnings were not at least $400 in 2 of the prior 3 years, when this would
+        be the sixth or later use, or when the earned income credit or the additional child tax credit
+        is claimed. Line 4b is not included in earned income. Complete false when the election is
+        unanswered or no, so the regular method still files. An unanswered election while the Schedule
+        SE questions apply stays incomplete.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/usesSeOptionalMethod" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/usesSeOptionalMethod" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/usesSeOptionalMethod" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+                <Not>
+                  <IsComplete>
+                    <Dependency path="/primaryFilerNonfarmOptionalMethodAllowed" />
+                  </IsComplete>
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodAllowed" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+                <Not>
+                  <Dependency path="/primaryFilerNonfarmOptionalMethodAllowed" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+                <Not>
+                  <IsComplete>
+                    <Dependency path="/secondaryFilerNonfarmOptionalMethodAllowed" />
+                  </IsComplete>
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodAllowed" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+                <Not>
+                  <Dependency path="/secondaryFilerNonfarmOptionalMethodAllowed" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Not>
+                  <Dependency path="/primaryFilerHasNonfarmSelfEmploymentActivity" />
+                </Not>
+                <Not>
+                  <Dependency path="/secondaryFilerHasNonfarmSelfEmploymentActivity" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadAtLeast400NetEarningsInTwoOfPriorThreeYears" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/nonfarmOptionalMethodUsedFewerThanFivePriorYears" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="eitc" path="/isReceivingEitc" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="eitc" path="/isReceivingEitc" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="eitc" path="/isReceivingEitc" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="ctcOdc" path="/isReceivingActc" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="ctcOdc" path="/isReceivingActc" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="ctcOdc" path="/isReceivingActc" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCSectionIsComplete">
       <Name>Schedule C section complete</Name>
       <Description>
         Interview complete when there is no Schedule C and no nonzero Form 1065 box 14 code A, or when
-        Schedule C is finished and the Schedule SE out-of-scope questions are answered no. A K-1-only
-        return still has to answer those questions. 26 U.S.C. 1402(a).
+        Schedule C is finished, the Schedule SE out-of-scope questions are answered no, and the nonfarm
+        optional method is not stopped. A K-1-only return still has to answer those questions.
+        26 U.S.C. 1402(a).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -1104,6 +2200,9 @@
                 </Any>
                 <Not>
                   <Dependency path="/flowKnockoutScheduleSEOutOfScope" />
+                </Not>
+                <Not>
+                  <Dependency path="/flowKnockoutScheduleSENonfarmOptionalMethod" />
                 </Not>
               </All>
             </Then>

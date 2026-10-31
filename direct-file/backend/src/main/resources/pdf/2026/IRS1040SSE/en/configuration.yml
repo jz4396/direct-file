@@ -16,10 +16,13 @@
 # SE." Only this form prints for now: a Schedule C business owned by the spouse stops the return (scheduleC
 # /flowKnockoutScheduleCSpouseBusiness), so the person with self-employment income is the primary filer.
 #
-# Line arithmetic (scheduleSE.xml, primary chain): 4a = line 3 x 92.35% (26 U.S.C. 1402(a)(12)); 10 = smaller of line 6 or line 9 x
-# 12.4% (26 U.S.C. 1401(a)); 11 = line 6 x 2.9% (26 U.S.C. 1401(b)(1)); 12 = 10 + 11 (26 U.S.C. 1401), also on
-# Schedule 2 line 4 (/schedule2Line4, the sum of each filer's line 12); 13 = line 12 x 50% (26 U.S.C. 164(f)(1)),
-# also on Schedule 1 line 15 (/schedule1Line15, the sum of each filer's line 13). Line 7 ($184,500, 90 FR 49047 p. 49050) is preprinted on the form (f1_13 is a 1-point field).
+# Line arithmetic (scheduleSE.xml, primary chain): when the nonfarm optional method applies, line 2 is skipped, so
+# lines 2, 3, and 4a are $0 and line 4c equals line 4b (26 U.S.C. 1402(a), 1402(l)). Otherwise 4a = line 3 x 92.35%
+# (26 U.S.C. 1402(a)(12)) and line 4b is $0. 10 = smaller of line 6 or line 9 x 12.4% (26 U.S.C. 1401(a)); 11 = line 6
+# x 2.9% (26 U.S.C. 1401(b)(1)); 12 = 10 + 11 (26 U.S.C. 1401), also on Schedule 2 line 4 (/schedule2Line4, the sum of
+# each filer's line 12); 13 = line 12 x 50% (26 U.S.C. 164(f)(1)), also on Schedule 1 line 15 (/schedule1Line15, the
+# sum of each filer's line 13). Line 7 ($184,500, 90 FR 49047 p. 49050) is preprinted on the form (f1_13 is a 1-point
+# field). Part II line 14 ($7,560) is preprinted. Line 16 is line 14 minus line 15. Line 15 stays blank.
 #
 # Not mapped, left blank. A yes on scheduleSE /flowKnockoutScheduleSEOutOfScope refuses the print. An
 # answered no is why the line stays blank. An unanswered question, when /hadSelfEmploymentIncome is yes, also
@@ -36,8 +39,11 @@
 #           return (form8995 /flowKnockoutScheduleCQbiAndK1Box14CodeA; Treas. Reg. 1.199A-3(b)(1)(vi)).
 #           An unanswered K-1 question also refuses the print (scheduleE /flowKnockoutScheduleEPartII).
 #           An answered no is complete false, so a Schedule C-only package still prints.
-#   4b and Part II (lines 14-17), farm and nonfarm optional methods (/usesSeOptionalMethod; 26 U.S.C. 1402(a),
-#           1402(l)).
+#   4b, 16, 17  Nonfarm optional method. Mapped when /primaryFilerNonfarmOptionalMethodApplies is true
+#           (26 U.S.C. 1402(a), 1402(l)). $0 prints blank when the method is not used. An election that is
+#           not allowed refuses the print (/flowKnockoutScheduleSENonfarmOptionalMethod). Line 14 is the
+#           preprinted maximum ($7,560). Line 15 stays blank: the farm optional method is
+#           /hadFarmSelfEmploymentIncome and still refuses the print.
 #   5a, 5b  church employee income (/hadChurchEmployeeIncome; 26 U.S.C. 1402(a)(14), 1402(j)).
 #   8b   Form 4137 unreported tips: stops the return (unreportedTips /flowKnockoutUnreportedTips).
 #   8c   Form 8919 wages (/hadForm8919Wages). income /wagesFrom8919 is $0. Notary fees excluded under
@@ -55,10 +61,11 @@ form:
       f1_1[0]: /primaryFiler/fullName # "Name of person with self-employment income"
       f1_2[0]: /primaryFiler/tin # "Social security number of person with self-employment income"
       # Line 2 is Schedule C line 31 plus nonfarm Form 1065 box 14 code A (26 U.S.C. 1402(a)).
-      f1_5[0]: /primaryFilerSeNetProfit # 2 "Net profit or (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)"
-      f1_6[0]: /primaryFilerSeNetProfit # 3 "Combine lines 1a, 1b, and 2"
-      f1_7[0]: /primaryFilerSeNetEarnings # 4a "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)"
-      f1_9[0]: /primaryFilerSeNetEarnings # 4c "Combine lines 4a and 4b"
+      f1_5[0]: /primaryFilerSeReportedNetProfit # 2 "Net profit or (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming). Skip line 2 if you use the nonfarm optional method"
+      f1_6[0]: /primaryFilerSeReportedNetProfit # 3 "Combine lines 1a, 1b, and 2"
+      f1_7[0]: /primaryFilerSeReportedLine4a # 4a "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)"
+      f1_8[0]: /primaryFilerSeLine4b # 4b "If you elect one or both of the optional methods, enter the total of lines 15 and 17 here"
+      f1_9[0]: /primaryFilerSeLine4c # 4c "Combine lines 4a and 4b"
       f1_12[0]: /primaryFilerSeIncome # 6 "Add lines 4c and 5b"
       f1_14[0]: /scheduleSELine8a # 8a "Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2)"
       f1_17[0]: /scheduleSELine8d # 8d "Add lines 8a, 8b, and 8c"
@@ -67,3 +74,7 @@ form:
       f1_20[0]: /primaryFilerSeMedicareTax # 11 "Multiply line 6 by 2.9% (0.029)"
       f1_21[0]: /primaryFilerSelfEmploymentTax # 12 "Self-employment tax. Add lines 10 and 11. Enter here and on Schedule 2 (Form 1040), line 4"
       f1_22[0]: /primaryFilerDeductibleSelfEmploymentTax # 13 "Deduction for one-half of self-employment tax ... on Schedule 1 (Form 1040), line 15"
+    Page2[0]:
+      # Line 14 is preprinted $7,560. Line 15 (farm optional method) stays blank.
+      f2_3[0]: /primaryFilerSeLine16 # 16 "Subtract line 15 from line 14"
+      f2_4[0]: /primaryFilerSeLine17 # 17 "Enter the smaller of: two-thirds (2/3) of gross nonfarm income ... or the amount on line 16"

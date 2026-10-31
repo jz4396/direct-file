@@ -298,6 +298,155 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCGrossNonfarmIncome">
+      <Name>Schedule C gross nonfarm income</Name>
+      <Description>
+        Sum of Schedule C line 7 for every business. 2026 draft Schedule SE Part II uses this as gross
+        nonfarm income for the nonfarm optional method. Schedule K-1 (Form 1065) box 14 code C is not
+        collected. On the single expense-total path, lines 2, 4, and 6 are zero, so line 7 equals gross
+        receipts. Complete the same way as /scheduleCNetProfitOrLoss.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleCBusinesses/*/line7GrossIncome" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadSelfEmploymentIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/hadSelfEmploymentIncome" />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleCBusinesses/*/line7GrossIncome" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSecondaryFilerGrossNonfarmIncome">
+      <Name>Secondary filer's Schedule C gross nonfarm income</Name>
+      <Description>
+        Sum of Schedule C line 7 for businesses the secondary filer owns. $0 when the return is not a
+        joint return. Used for that spouse's Schedule SE Part II nonfarm optional method.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleCSecondaryFilerBusinesses/*/line7GrossIncome" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadSelfEmploymentIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/hadSelfEmploymentIncome" />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleCSecondaryFilerBusinesses/*/line7GrossIncome" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCPrimaryFilerGrossNonfarmIncome">
+      <Name>Primary filer's Schedule C gross nonfarm income</Name>
+      <Description>
+        Schedule C line 7 for the primary filer: /scheduleCGrossNonfarmIncome minus
+        /scheduleCSecondaryFilerGrossNonfarmIncome. The two add up to every business's line 7.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/scheduleCGrossNonfarmIncome" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/scheduleCSecondaryFilerGrossNonfarmIncome" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleCSpouseBusiness">
       <Name>Knockout: spouse-owned Schedule C business</Name>
       <Description>
@@ -376,10 +525,14 @@
         (/flowKnockoutScheduleCSpouseBusiness),
         statutory employees
         (formW2s /flowKnockoutStatutoryEmployee), and
-        farm income, church employee income, the
-        optional methods, ministry or Forms 4361
+        farm income, the farm optional method, church employee income,
+        ministry or Forms 4361
         and 4029, notary fees, and Form 8919 wages (scheduleSE
-        /flowKnockoutScheduleSEOutOfScope). Complete and false when
+        /flowKnockoutScheduleSEOutOfScope). The nonfarm optional method is figured on Schedule SE
+        unless that election stops the return (scheduleSE
+        /flowKnockoutScheduleSENonfarmOptionalMethod), including when the earned income credit or
+        the additional child tax credit is claimed. Line 4b is not added to this earned-income
+        amount. Complete and false when
         there is no Schedule C or the Schedule C
         result is a
         profit on a
@@ -4074,7 +4227,11 @@
         Instructions for
         Form 2441, PDF p. 5, lines 4 and 5: "2. The amount shown on Schedule SE (Form 1040), line 3,
         minus any deduction
-        you claim on Schedule 1 (Form 1040), line 15." #117: floored at $0 because a loss is not
+        you claim on Schedule 1 (Form 1040), line 15." The nonfarm optional method skips line 3 and
+        puts the elected amount on line 4b. That line 4b amount is not added here. This stays Schedule
+        C net profit minus the deductible part of self-employment tax. An election together with the
+        earned income credit or the additional child tax credit stops the return (scheduleSE
+        /flowKnockoutScheduleSENonfarmOptionalMethod). #117: floored at $0 because a loss is not
         modeled; a loss stops
         the return wherever it would change a credit (/flowKnockoutScheduleCEarnedIncomeCredits).
       </Description>

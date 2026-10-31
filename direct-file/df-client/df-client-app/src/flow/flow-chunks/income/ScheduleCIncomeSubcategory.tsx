@@ -97,6 +97,18 @@ export const ScheduleCIncomeSubcategory = (
         <Boolean path='/usesSeOptionalMethod' />
         <SaveAndOrContinueButton />
       </Screen>
+      <Screen route='schedule-c-nonfarm-prior-years' condition='/usesSeOptionalMethod'>
+        <Heading i18nKey='/heading/income/schedule-c/nonfarm-prior-years' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/nonfarm-prior-years' />
+        <Boolean path='/hadAtLeast400NetEarningsInTwoOfPriorThreeYears' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='schedule-c-nonfarm-prior-uses' condition='/usesSeOptionalMethod'>
+        <Heading i18nKey='/heading/income/schedule-c/nonfarm-prior-uses' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/nonfarm-prior-uses' />
+        <Boolean path='/nonfarmOptionalMethodUsedFewerThanFivePriorYears' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='schedule-c-minister' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/minister' />
         <InfoDisplay i18nKey='/info/income/schedule-c/minister' />
@@ -389,6 +401,17 @@ export const ScheduleCIncomeSubcategory = (
         </Screen>
       </SubSubcategory>
     </CollectionLoop>
+
+    <Screen
+      route='schedule-c-nonfarm-optional-method-knockout'
+      condition='/flowKnockoutScheduleSENonfarmOptionalMethod'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-se-nonfarm-optional-method' />
+      <DFAlert i18nKey='/info/knockout/schedule-se-nonfarm-optional-method' headingLevel='h2' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
 
     <Screen route='schedule-c-out-of-scope-knockout' condition='/flowKnockoutScheduleCOutOfScope' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />
