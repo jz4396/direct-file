@@ -3,8 +3,9 @@
 // older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
 // profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
 // filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), profile H
-// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), and profile I
-// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout).
+// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), profile I
+// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout), and profile K
+// (Florida full-year single, one Schedule C, Form 8995 with the line 14 income limitation).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -175,6 +176,8 @@ import {
   profileHDividendId,
   profileHPaRentalDividends,
   profileIMfjAmtPhaseout,
+  profileKBusinessId,
+  profileKFlSingleScheduleC,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -2239,5 +2242,155 @@ describe(`golden end-to-end scenario (synthetic data): profile I, MFJ, Florida, 
     expect(get(g, `/flowKnockoutScheduleAOverallLimit`).get).toBe(false);
     expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
     expectNotStopped(g);
+  });
+});
+
+// The only submission-blocking facts this return sets true. Form 8995 prints (#17). Submission still stops because
+// there is no MeF mapping (/flowKnockoutForm8995WithoutTy2026Template).
+const PROFILE_K_STOPPED = [`/flowKnockoutForm8995WithoutTy2026Template`, `/flowIsKnockedOut`];
+
+describe(`golden end-to-end scenario (synthetic data): profile K, Florida single, Schedule C, Form 8995 line 14 income limitation`, () => {
+  // Single, Florida full-year resident [FL]; filer born 1983-09-04 (under 65), SSN 900-44-1013 (900 area, group 44,
+  //   outside the ITIN ranges). No W-2, no interest, no dividends, no sales. Standard deduction.
+  // Schedule C (line-item expenses; the single expense total is not stored): Example Consulting, line 1 gross
+  //   receipts $60,000, no returns, no inventory (line 4 $0), no other income, line 7 $60,000, line 8 advertising
+  //   $10,000, line 28 $10,000, line 31 net profit $50,000. 26 U.S.C. 61, 162
+  //   (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C, line 31: "If a profit, enter on both
+  //   Schedule 1 (Form 1040), line 3, and on Schedule SE, line 2."
+  // Schedule SE, whole dollars, rounded half up at each line. Cents before that rounding, in parentheses.
+  //   Line 4a = round(50,000 x 92.35%) = 46,175 (46,175.00). 26 U.S.C. 1402(a)(12). Wage base $184,500 is unused
+  //   (no W-2 box 3), so line 9 is 184,500 and line 10 uses all of line 6. 2026 draft Instructions for Schedule SE,
+  //   PDF p. 2, line 7 "$184,500" (90 FR 49047, p. 49050).
+  //   Line 10 = round(46,175 x 12.4%) = round(5,725.70) = 5,726 (26 U.S.C. 1401(a)).
+  //   Line 11 = round(46,175 x 2.9%) = round(1,339.075) = 1,339 (26 U.S.C. 1401(b)(1)).
+  //   Line 12 = 5,726 + 1,339 = 7,065 (cents: 7,064.78). Schedule 2 line 4.
+  //   Line 13 = round(7,065 x 50%) = round(3,532.50) = 3,533 (cents: 3,532.39). 26 U.S.C. 164(f). Schedule 1 line 15.
+  //   The questions for lines 1a, 1b, 4b, Part II, 5a, 5b, checkbox A, and 8c are answered no, so
+  //   /flowKnockoutScheduleSEOutOfScope is complete false.
+  // Form 1040: Schedule 1 line 3 50,000; line 8 and line 9 50,000; line 10 3,533; line 11 AGI 46,467
+  //   (cents: 50,000 - 3,532.39 = 46,467.61). Line 12e standard deduction 16,100. Rev. Proc. 2025-32 §4.14(1),
+  //   PDF p. 18: "Unmarried Individuals (other than Surviving Spouses and Heads of Households) ... $16,100"
+  //   (SHA-256 e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b). Born after January 1, 1962, so
+  //   no additional amount for age and no Schedule 1-A enhanced senior deduction. Line 13a (Schedule 1-A line 44)
+  //   is $0. Taxable income before the section 199A deduction = 46,467 - 16,100 = 30,367 (cents: 30,367.61).
+  // Form 8995 (the PDF prints; submission still stops because there is no MeF mapping):
+  //   Line 1(i)(c) and line 2 = 50,000 - 3,533 = 46,467 (cents: QBI 46,467.61). Treas. Reg. 1.199A-3(b)(1)(vi).
+  //   Line 5 = round(20% x 46,467) = round(9,293.40) = 9,293 (cents: 9,293.52). 26 U.S.C. 199A(b)(2)(A).
+  //   Lines 6 and 7 are $0 (no qualified REIT dividends, no carryforward). Line 8 and line 9 are $0. Line 10 = 9,293.
+  //   Line 11 = 30,367. Line 12 net capital gain $0. Line 13 = 30,367.
+  //   Line 14 = round(20% x 30,367) = round(6,073.40) = 6,073 (cents: 6,073.52). 26 U.S.C. 199A(a)(2).
+  //   Line 15 = the smaller of line 10 and line 14 = 6,073. The income limitation binds.
+  //   Line 16 minimum deduction $400 (26 U.S.C. 199A(i); active QBI is at least $1,000) is less than 6,073, so
+  //   line 17 = 6,073. That is Form 1040 line 13b.
+  //   Line 15 taxable income = 30,367 - 6,073 = 24,294 (cents: 24,294.09).
+  // Line 16, under $100,000, so the Tax Table [GI p. 36]. The 24,250-24,300 row uses the midpoint $24,275.
+  //   [RP] p. 11 §4.01 Table 3 (unmarried): "Over $12,400 but not over $50,400 $1,240 plus 12% of the excess over
+  //   $12,400": 1,240 + 12% x (24,275 - 12,400) = 1,240 + 1,425 = 2,665.
+  // Schedule 2 line 21 = line 4 self-employment tax 7,065. No AMT (AMTI is under the $90,100 exemption [RP p. 16
+  //   §4.10]), no NIIT (AGI under $200,000 [1411]), no additional Medicare tax.
+  // Form 1040 line 24 total tax = 2,665 + 7,065 = 9,730. Line 26 estimated tax payments 9,800. Line 33 9,800.
+  //   Line 34 overpayment 70. 2026 draft Form 2210, p. 1, line 6: "Withholding taxes. Don't include estimated tax
+  //   payments." Line 6 is $0, so line 4 and line 7 are 9,730. That is not under $1,000 (26 U.S.C. 6654(e)(1)), so
+  //   Part II is asked. Every Part II box is no, so /flowKnockoutForm2210 is complete false. Instructions for Form
+  //   2210 (2025) p. 1: the IRS figures any penalty and sends a bill.
+  const g = graph(profileKFlSingleScheduleC);
+  const expectStoppedOnly = (fg: Fg) => {
+    const stopped = new Set(PROFILE_K_STOPPED);
+    for (const path of submissionBlockingFacts.filter((p) => !p.includes(`*`) && p !== `/flowIncomplete`)) {
+      const r = get(fg, path);
+      if (stopped.has(path)) {
+        expect(r.complete, path).toBe(true);
+        expect(r.get, path).toBe(true);
+      } else {
+        expect(r.complete && r.get === true, path).toBe(false);
+      }
+    }
+  };
+
+  it(`Schedule C line items, Schedule SE, Schedule 1, and Schedule 2`, () => {
+    const biz = `/scheduleCBusinesses/#${profileKBusinessId}`;
+    expect(get(g, `${biz}/businessName`).get).toBe(`Example Consulting`);
+    expect(get(g, `${biz}/usesLegacyExpenseBucket`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expectDollars(g, {
+      [`${biz}/line1GrossReceipts`]: `60000.00`,
+      [`${biz}/line4CostOfGoodsSold`]: `0.00`,
+      [`${biz}/line7GrossIncome`]: `60000.00`,
+      [`${biz}/line8Advertising`]: `10000.00`,
+      [`${biz}/line28`]: `10000.00`,
+      [`${biz}/netProfitOrLoss`]: `50000.00`,
+      '/scheduleCNetProfitOrLoss': `50000.00`,
+      '/schedule1Line3': `50000.00`,
+      '/primaryFilerSeNetEarnings': `46175.00`,
+      '/primaryFilerSeSocialSecurityTax': `5726.00`,
+      '/primaryFilerSeMedicareTax': `1339.00`,
+      '/selfEmploymentTax': `7065.00`,
+      '/deductibleSelfEmploymentTax': `3533.00`,
+      '/schedule1Line15': `3533.00`,
+      '/schedule2Line4': `7065.00`,
+    });
+  });
+
+  it(`Form 8995 lines 1 through 17, with line 14 smaller than line 10, and Form 1040 lines 13a and 13b`, () => {
+    expect(get(g, `/form8995Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8995MoreThanFiveBusinesses`).get).toBe(false);
+    expect(get(g, `/form8995Line1iName`).get).toBe(`Example Consulting`);
+    expect(get(g, `/form8995Line1iiName`).complete).toBe(false);
+    expectDollars(g, {
+      '/agi': `46467.00`,
+      '/standardDeduction': `16100.00`,
+      '/schedule1ALine44': `0.00`,
+      '/form8995Line1iQbi': `46467.00`,
+      '/form8995Line2': `46467.00`,
+      '/form8995Line3': `0.00`,
+      '/form8995Line4': `46467.00`,
+      '/form8995Line5': `9293.00`,
+      '/form8995Line6': `0.00`,
+      '/form8995Line7': `0.00`,
+      '/form8995Line8': `0.00`,
+      '/form8995Line9': `0.00`,
+      '/form8995Line10': `9293.00`,
+      '/form8995Line11': `30367.00`,
+      '/form8995Line12': `0.00`,
+      '/form8995Line13': `30367.00`,
+      '/form8995Line14': `6073.00`,
+      '/form8995Line15': `6073.00`,
+      '/form8995Line16': `400.00`,
+      '/form8995Line17': `6073.00`,
+      '/qualifiedBusinessIncomeDeduction': `6073.00`,
+      '/taxableIncome': `24294.00`,
+      '/tentativeTaxFromTaxableIncome': `2665.00`,
+    });
+    expect(Number(get(g, `/form8995Line14`).get.toString())).toBeLessThan(
+      Number(get(g, `/form8995Line10`).get.toString())
+    );
+  });
+
+  it(`total tax, estimated payments, and the Form 2210 stop stays false`, () => {
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/form2210ShowIrsWillBillNote`).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(false);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expectDollars(g, {
+      '/totalTax': `9730.00`,
+      '/estimatedAndFromLastYear': `9800.00`,
+      '/totalPayments': `9800.00`,
+      '/overpayment': `70.00`,
+      '/balanceDue': `0.00`,
+      '/form2210Line4': `9730.00`,
+      '/form2210Line6': `0.00`,
+      '/form2210Line7': `9730.00`,
+      '/amt': `0.00`,
+    });
+    expectStoppedOnly(g);
   });
 });

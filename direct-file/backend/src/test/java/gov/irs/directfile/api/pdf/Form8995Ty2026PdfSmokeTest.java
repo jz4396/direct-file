@@ -137,6 +137,104 @@ class Form8995Ty2026PdfSmokeTest {
     }
 
     /**
+     * The same line 14 income limitation, on the line-item Schedule C path (advertising $10,000; the single expense
+     * total is not stored; no inventory) with $9,800 of estimated tax payments on Form 1040 line 26. Whole dollars,
+     * rounded half up: line 31 $50,000; Schedule SE line 4a $46,175; line 12 $7,065; line 13 $3,533; Form 8995 line 2
+     * $46,467; line 5 $9,293; line 11 $30,367; line 14 $6,073; line 17 $6,073; Form 1040 line 13b $6,073; line 13a
+     * $0. The public print is not refused. 26 U.S.C. 162, 1402(a)(12), 1401, 164(f), 199A(a). Rev. Proc. 2025-32
+     * §4.01 Table 3 and §4.14.
+     */
+    @Test
+    void lineItemScheduleCPrintsForm8995WhenLine14LimitsTheDeduction() throws Exception {
+        Map<String, String> facts = florida("60000.00", "0.00");
+        String b = "/scheduleCBusinesses/#" + BIZ + "/";
+        facts.remove(b + "writableTotalExpenses");
+        facts.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+        facts.put(b + "writableOtherIncome", dollar("0.00"));
+        facts.put(b + "hasDeductibleExpenses", bool(true));
+        facts.put(
+                b + "expenseLinesChosen",
+                "{\"$type\":\"gov.irs.factgraph.persisters.MultEnumWrapper\",\"item\":{\"enumOptionsPath\":\"/scheduleCExpenseLineOptions\",\"values\":[\"advertising\"]}}");
+        facts.put(b + "writableAdvertising", dollar("10000.00"));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasCarTruckOrVehicleLoan",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasVehicleMachineryEquipmentRent",
+            "hasHomeOffice",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            facts.put(b + stop, bool(false));
+        }
+        facts.put("/paidEstimatedTaxesOrFromLastYear", bool(true));
+        facts.put("/paidEstimatedTaxesOrFromLastYearUnderDifferentName", bool(false));
+        facts.put(
+                "/paidEstimatedTaxesWithFormerSpouse",
+                enumValue("neither", "/paidEstimatedTaxesWithFormerSpouseOptions"));
+        facts.put("/estimatedTaxPaymentWritable", dollar("9800.00"));
+        facts.put("/form2210WaiverRequested", bool(false));
+        facts.put("/form2210AnnualizedIncome", bool(false));
+        facts.put("/form2210WithholdingOnActualDates", bool(false));
+        facts.put("/form2210FiledJointReturnPriorYear", bool(false));
+
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals(
+                Boolean.FALSE, graph.get(b + "usesLegacyExpenseBucket").get(), "line items, not the expense total");
+        assertEquals("10000.00", dollars(graph, b + "line28"));
+        assertEquals("50000.00", dollars(graph, "/scheduleCNetProfitOrLoss"));
+        assertEquals("46175.00", dollars(graph, "/primaryFilerSeNetEarnings"));
+        assertEquals("7065.00", dollars(graph, "/selfEmploymentTax"));
+        assertEquals("3533.00", dollars(graph, "/deductibleSelfEmploymentTax"));
+        assertEquals("50000.00", dollars(graph, "/schedule1Line3"));
+        assertEquals("3533.00", dollars(graph, "/schedule1Line15"));
+        assertEquals("7065.00", dollars(graph, "/schedule2Line4"));
+        assertEquals("46467.00", dollars(graph, "/form8995Line1iQbi"));
+        assertEquals("46467.00", dollars(graph, "/form8995Line2"));
+        assertEquals("9293.00", dollars(graph, "/form8995Line5"));
+        assertEquals("9293.00", dollars(graph, "/form8995Line10"));
+        assertEquals("30367.00", dollars(graph, "/form8995Line11"));
+        assertEquals("6073.00", dollars(graph, "/form8995Line14"));
+        assertEquals("6073.00", dollars(graph, "/form8995Line15"));
+        assertEquals("400.00", dollars(graph, "/form8995Line16"));
+        assertEquals("6073.00", dollars(graph, "/form8995Line17"));
+        assertEquals("0.00", dollars(graph, "/schedule1ALine44"));
+        assertEquals("6073.00", dollars(graph, "/qualifiedBusinessIncomeDeduction"));
+        assertEquals("24294.00", dollars(graph, "/taxableIncome"));
+        assertEquals("2665.00", dollars(graph, "/tentativeTaxFromTaxableIncome"));
+        assertEquals("9800.00", dollars(graph, "/estimatedAndFromLastYear"));
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutForm2210").get());
+        submissionStillBlocked(graph);
+
+        try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {
+            Map<String, String> f = fieldsOnPages(doc, FOOTER);
+            assertFalse(f.isEmpty(), "Form 8995 printed");
+            amount(f, ROW_I + "f1_5[0]", 46467, "1(i)(c)");
+            amount(f, "Page1[0].f1_18[0]", 46467, "2");
+            amount(f, "Page1[0].f1_21[0]", 9293, "5");
+            amount(f, "Page1[0].f1_27[0]", 30367, "11");
+            amount(f, "Page1[0].f1_30[0]", 6073, "14");
+            amount(f, "Page1[0].f1_31[0]", 6073, "15");
+            amount(f, "Page1[0].f1_32[0]", 400, "16");
+            amount(f, "Page1[0].f1_33[0]", 6073, "17");
+            Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
+            blank(f1040, "Page2[0].f2_04[0]", "Form 1040 line 13a");
+            amount(f1040, "Page2[0].f2_05[0]", 6073, "Form 1040 line 13b");
+            Map<String, String> se = fieldsOnPages(doc, ScheduleSETy2026PdfSmokeTest.SE_FOOTER);
+            amount(se, "Page1[0].f1_7[0]", 46175, "Schedule SE line 4a");
+            amount(se, "Page1[0].f1_21[0]", 7065, "Schedule SE line 12");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "Page1[0].f1_07[0]", 50000, "Schedule 1 line 3");
+            amount(s1, "Page2[0].f2_05[0]", 3533, "Schedule 1 line 15");
+            Map<String, String> s2 = fieldsOnPages(doc, "Schedule 2 (Form 1040) 2026");
+            amount(s2, "Page1[0].f1_15[0]", 7065, "Schedule 2 line 4");
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
+        }
+    }
+
+    /**
      * Two positive businesses. The larger net is the plug. Round(3,533 x 20,000 / 50,000) = 1,413, so column (c) is
      * 30,000 − 2,120 = 27,880 and 20,000 − 1,413 = 18,587, which sum to line 2. 26 U.S.C. 6102(a).
      */
