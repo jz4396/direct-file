@@ -1,3 +1,6 @@
+# REPO-BUILT STATEMENT. Not an IRS download: the SHA-256 pin is the ty2026-template-manifest.txt
+# row, not draft-pdf-sha256.txt, final-pdf-sha256.txt, state-interim-pdf-sha256.txt, or
+# continuous-use-pdf-sha256.txt.
 # #89: Form 1040 additional dependents statement. There is no IRS form for this attachment. Instructions for
 # Form 1040 (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf SHA-256
 # 482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a are still the published instructions.
@@ -37,3 +40,8 @@ table:
       fieldName: ChildTaxCreditRow
     - factExpression: ../isClaimedForODC
       fieldName: CreditForOtherDependentsRow
+  oncePerPage:
+    - factExpression: /primaryFiler/fullName
+      fieldName: FilerName
+    - factExpression: /primaryFiler/tin
+      fieldName: FilerTin
