@@ -42,8 +42,8 @@
 #                       only the Residency Status oval and the from/to dates below.
 #   25                  use tax: /flowKnockoutPaUnsupportedItems.
 #   PA Schedules A, B, D are not produced. A return that needs one stops: /flowKnockoutPaScheduleA (p. 31: any amount
-#                       on Schedule A lines 2-15, e.g. 1099-INT box 3 or box 8 interest, part-year interest; or over
-#                       $2,500), /flowKnockoutPaScheduleB (p. 32: any amount on Schedule B lines 2-10; or over $2,500)
+#                       on Schedule A lines 2-15, e.g. 1099-INT box 3 or box 8 interest, or part-year interest),
+#                       /flowKnockoutPaScheduleB (p. 32: any amount on Schedule B lines 2-10)
 #                       and /flowKnockoutPaScheduleD (any sale, gain or loss; Schedule D instructions: "even if the only
 #                       transaction is to report a loss"). So line 5 and its loss oval stay mapped but are blank on any
 #                       return that reaches print.

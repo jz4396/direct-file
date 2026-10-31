@@ -70,11 +70,11 @@ describe(`PA-40 core (#78) flow`, () => {
   });
 });
 
-// #154: PA Schedule B is required (PA-40 Schedule B (2025) instructions, PDF p. 3, WHO MUST COMPLETE); over $2,500 of
-// PA-taxable dividends is a limit this tool sets. The dividend screens before it don't stop these cases.
+// #154: PA Schedule B is required (PA-40 Schedule B (2025) instructions, PDF p. 3, WHO MUST COMPLETE) when lines 2-11
+// have an amount. Ordinary dividends alone do not. The dividend screens before it don't stop the booklet cases.
 describe(`PA Schedule B dividend knockout (#154) flow`, () => {
   const divId = `15400000-0000-4000-8000-000000000001`;
-  const withDividends = (box1a: number) => {
+  const withDividends = (box1a: number, box2a?: number) => {
     const { factGraph } = setupFactGraph({
       ...baseFilerData,
       ...makeW2Data(50000),
@@ -90,20 +90,26 @@ describe(`PA Schedule B dividend knockout (#154) flow`, () => {
       [`/dividendReports/#${divId}/filer`]: createCollectionItemWrapper(primaryFilerId),
       [`/dividendReports/#${divId}/payer`]: createStringWrapper(`Index Fund Co`),
       [`/dividendReports/#${divId}/ordinaryDividends`]: createDollarWrapper(`${box1a}`),
+      ...(box2a === undefined
+        ? {}
+        : { [`/dividendReports/#${divId}/writableCapitalGainDistributions`]: createDollarWrapper(`${box2a}`) }),
       [`/dividendReports/#${divId}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
       [`/dividendReports/#${divId}/receivedAsNominee`]: createBooleanWrapper(false),
       [`/dividendReports/#${divId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
     });
     return factGraph;
   };
-  it(`$3,000 of dividends routes from the PA items question to the Schedule B knockout`, ({ task }) => {
+  it(`ordinary dividends, including over $2,500, continue to the tax amount`, ({ task }) => {
     expect(givenFacts(withDividends(3000)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
-      `${path}/pa-schedule-b-knockout`
+      `${path}/tax-amount-intro`
     );
-  });
-  it(`$2,500 of dividends continues to the tax amount`, ({ task }) => {
     expect(givenFacts(withDividends(2500)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
       `${path}/tax-amount-intro`
+    );
+  });
+  it(`box 2a capital gain distributions route to the Schedule B knockout`, ({ task }) => {
+    expect(givenFacts(withDividends(100, 10)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
+      `${path}/pa-schedule-b-knockout`
     );
   });
 });

@@ -1048,7 +1048,7 @@ describe(`golden end-to-end scenario (synthetic data): profile E, PA to FL part-
   //   123,480; line 33 payments 50,000; amount owed 73,480.
   // PA-40 [PA] [TRC]: oval (P). Line 1a 150,000 [PA p. 10]. Line 3 2,000: all ordinary dividends were received while a
   //   PA resident, so Schedule B line 4 is $0 and Schedule B is not required (2025 PA-40 Schedule B, WHO MUST COMPLETE,
-  //   only when lines 2-11 have an amount). The $2,000 is under the $2,500 tool limit. Line 5 0: the sale is in the FL
+  //   only when lines 2-11 have an amount). Line 5 0: the sale is in the FL
   //   period [PA p. 43]. Lines 9 and 11 152,000. Line 12 3.07% x 152,000 = 4,666.40. Line 13 and line 24 4,700.
   //   Line 29 overpayment 33.60. School code 99999 (did not live in PA on Dec. 31). FL: no return [FL].
   const g = graph(profileEPaToFlAmtDividends);
@@ -1858,7 +1858,7 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
   //   No box 2a, box 5, nominee, or other unsupported box. Holding period met. Ordinary dividends are over
   //   $1,500, so Schedule B is required. Instructions for Schedule B (Form 1040) (2025),
   //   https://www.irs.gov/pub/irs-pdf/i1040sb.pdf, p. 1: "You had over $1,500 of taxable interest or ordinary
-  //   dividends." Part III is answered no (no foreign account, no foreign trust). $1,800 is not over $2,500.
+  //   dividends." Part III is answered no (no foreign account, no foreign trust). No PA Schedule B line has an amount.
   // Form 1040: line 1a 48,000; line 2b 0; line 3a 1,200; line 3b 1,800; Schedule 1 line 5 and line 8 12,000;
   //   line 9 and line 11 (AGI) 61,800. No adjustments. Line 12 standard deduction 16,100 [RP p. 18 §4.14(1):
   //   "Unmarried Individuals (other than Surviving Spouses and Heads of Households) ... $16,100"]. Line 15
@@ -2035,6 +2035,18 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
     });
     expectNotStopped(n);
   });
+  it(`ordinary dividends of $2,501 do not require PA Schedule B`, () => {
+    // PA-40 Schedule B (2025) instructions, PDF p. 3, WHO MUST COMPLETE: only when lines 2 through 11 have an amount.
+    const n = graph({
+      ...profileHPaRentalDividends,
+      [`/dividendReports/#${profileHDividendId}/ordinaryDividends`]: createDollarWrapper(`2501`),
+      [`/dividendReports/#${profileHDividendId}/writableQualifiedDividends`]: createDollarWrapper(`1200`),
+    });
+    expect(get(n, `/flowKnockoutPaScheduleB`).get).toBe(false);
+    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
+    expectDollars(n, { '/ordinaryDividends': `2501.00`, '/paLine3': `2501.00` });
+    expectNotStopped(n);
+  });
 });
 
 describe(`golden end-to-end scenario (synthetic data): profile H negative rows (each stops the return)`, () => {
@@ -2064,20 +2076,18 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
     );
     expectDollars(n, { '/scheduleENetIncome': `-5000.00`, '/paLine6': `-5000.00` });
   });
-  it(`ordinary dividends of $2,501 stop on the PA Schedule B knockout`, () => {
-    // One dollar over the $2,500 tool limit. PA-40 Schedule B is not produced. The federal Schedule B
-    // threshold is $1,500 ("over $1,500"); $2,501 is still only box 1a and box 1b.
+  it(`box 2a capital gain distributions stop on the PA Schedule B knockout`, () => {
+    // PA-40 Schedule B line 10. PA Schedule B (2025) instructions, PDF p. 3, WHO MUST COMPLETE, and PDF p. 4, LINE 10.
     const n = stops(
       {
         ...profileHPaRentalDividends,
-        [`/dividendReports/#${profileHDividendId}/ordinaryDividends`]: createDollarWrapper(`2501`),
-        [`/dividendReports/#${profileHDividendId}/writableQualifiedDividends`]: createDollarWrapper(`1200`),
+        [`/dividendReports/#${profileHDividendId}/writableCapitalGainDistributions`]: createDollarWrapper(`10`),
       },
       `/flowKnockoutPaScheduleB`
     );
-    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(true);
     expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
-    expectDollars(n, { '/ordinaryDividends': `2501.00`, '/paLine3': `2501.00`, '/paLine6': `12000.00` });
+    expectDollars(n, { '/ordinaryDividends': `1800.00`, '/paLine3': `1800.00`, '/paLine6': `12000.00` });
   });
 });
 

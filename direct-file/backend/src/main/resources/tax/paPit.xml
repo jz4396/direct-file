@@ -911,17 +911,9 @@
       #123 PA schedules this tool doesn't produce (PA Schedules A, B and D), and the school district code.
       PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
     -->
-    <Fact path="/paScheduleAThreshold">
-      <Name>PA-taxable interest above which this tool stops (PA Schedule A)</Name>
-      <Description>#123: $2,500, a limit this tool sets on top of the booklet's PA Schedule A triggers
-        (/flowKnockoutPaScheduleA).</Description>
-      <Derived>
-        <Dollar>2500</Dollar>
-      </Derived>
-    </Fact>
     <Fact path="/flowKnockoutPaScheduleA">
       <Name>Flow knockout: PA Schedule A (interest) is required and not produced</Name>
-      <Description>#123: PA Schedule A is required and this tool doesn't produce it. PA-40 IN (2025)
+      <Description>#123, #125: PA Schedule A is required and this tool doesn't produce it. PA-40 IN (2025)
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
         p. 14, LINE 2: "See the instructions beginning on Page 31 for when to complete and submit PA Schedule A." p. 31,
         PA SCHEDULE A (LINE 2): "If your total PA-taxable interest income (taxpayer, spouse, and/or joint) is equal to
@@ -936,8 +928,8 @@
         government"); (2) 1099-INT box 8 tax-exempt interest, Schedule A line 2 ("Tax-exempt interest income included in
         Line 2a of your federal return"; also /flowKnockoutPaUnsupportedIncome); (3) a PA/FL part-year resident with
         PA-taxable interest, whose PA interest (PA residency period only, /paLine2) is not "equal to the amount reported
-        on your federal return"; (4) PA-taxable interest (/paLine2) over /paScheduleAThreshold ($2,500), a limit this
-        tool sets; the booklet ties the requirement to the cases above, not to a dollar amount. Other Schedule A lines
+        on your federal return". The booklet ties the requirement to those cases, not to a dollar amount, so ordinary
+        interest that matches the federal amount does not require PA Schedule A. Other Schedule A lines
         (K-1 interest, annuities and life insurance, charitable gift annuities, 529 and MSA/HSA distributions, PA S
         corporation and partnership interest) come from income that already stops the PA return or that this tool
         doesn't collect. The box 2 early withdrawal penalty is /flowKnockoutPaUnsupportedIncome. PA-only: gated on
@@ -968,29 +960,13 @@
               </Right>
             </GreaterThan>
             <Dependency path="/paPartYearHasInterest" />
-            <GreaterThan>
-              <Left>
-                <Dependency path="/paLine2" />
-              </Left>
-              <Right>
-                <Dependency path="/paScheduleAThreshold" />
-              </Right>
-            </GreaterThan>
           </Any>
         </All>
       </Derived>
     </Fact>
-    <Fact path="/paScheduleBThreshold">
-      <Name>PA-taxable dividends above which this tool stops (PA Schedule B)</Name>
-      <Description>#123: $2,500, a limit this tool sets on top of the booklet's PA Schedule B triggers
-        (/flowKnockoutPaScheduleB).</Description>
-      <Derived>
-        <Dollar>2500</Dollar>
-      </Derived>
-    </Fact>
     <Fact path="/flowKnockoutPaScheduleB">
       <Name>Flow knockout: PA Schedule B (dividends) is required and not produced</Name>
-      <Description>#123, #154: PA Schedule B is required and this tool doesn't produce it. PA-40 Schedule B (2025) form
+      <Description>#123, #154, #125: PA Schedule B is required and this tool doesn't produce it. PA-40 Schedule B (2025) form
         and instructions
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
         (SHA-256 c6d8f5cdd63045e1e40b6deeced2c80b23006b7700befe3b8f0c430f2b40a0d4), PDF p. 3, WHO MUST COMPLETE: "PA
@@ -1020,10 +996,8 @@
         reported
         directly on the federal return."): any Form 1099-DIV box 2a amount (/totalCapitalGainDistributions
         greater than
-        $0). (4) PA-taxable dividends (/paLine3: federal Form 1040 line 3b for a full-year resident, or the
-        PA-residency-period part for a part-year resident) over /paScheduleBThreshold ($2,500), a limit this tool sets;
-        the booklet ties the
-        requirement to the cases above, not to a dollar amount. Line 7 (PDF p. 4, LINE 7:
+        $0). The booklet ties the requirement to those cases, not to a dollar amount, so ordinary dividends with no
+        amount on those lines do not require PA Schedule B. Line 7 (PDF p. 4, LINE 7:
         "exempt-interest dividends
         reported in Box 12 of federal Form 1099-DIV") is Form 1040 line 2a (interest /taxExemptInterest) and stops a
         PA-40 on /flowKnockoutPaUnsupportedIncome and /flowKnockoutPaScheduleA. Lines 2, 8, 9 and 11 (Schedule K-1
@@ -1067,19 +1041,6 @@
                 <Dollar>0</Dollar>
               </Right>
             </GreaterThan>
-            <All>
-              <IsComplete>
-                <Dependency path="/paLine3" />
-              </IsComplete>
-              <GreaterThan>
-                <Left>
-                  <Dependency path="/paLine3" />
-                </Left>
-                <Right>
-                  <Dependency path="/paScheduleBThreshold" />
-                </Right>
-              </GreaterThan>
-            </All>
           </Any>
         </All>
       </Derived>

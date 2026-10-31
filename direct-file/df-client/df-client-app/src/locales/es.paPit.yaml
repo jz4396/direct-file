@@ -239,8 +239,8 @@ info:
       body:
         - p:
             Su declaración de Pensilvania necesita el Anexo A de PA, y esta herramienta aún no puede completarlo. Esto
-            incluye intereses de bonos de ahorro de EE. UU. u obligaciones del Tesoro, intereses exentos de impuestos,
-            intereses cuando vivió en Pensilvania solo parte del año o más de $2,500 de intereses.
+            incluye intereses de bonos de ahorro de EE. UU. u obligaciones del Tesoro, intereses exentos de impuestos, o
+            intereses cuando vivió en Pensilvania solo parte del año.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
@@ -260,9 +260,9 @@ info:
       body:
         - p:
             Su declaración de Pensilvania necesita el Anexo B de PA, y esta herramienta aún no puede completarlo. Esto
-            incluye más de $2,500 de dividendos, distribuciones de ganancias de capital (casilla 2a del Formulario
-            1099-DIV), dividendos de fondos provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que
-            recibió como nominatario, o dividendos ordinarios que recibió mientras vivía fuera de Pensilvania.
+            incluye distribuciones de ganancias de capital (casilla 2a del Formulario 1099-DIV), dividendos de fondos
+            provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que recibió como nominatario, o
+            dividendos ordinarios que recibió mientras vivía fuera de Pensilvania.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
