@@ -4,8 +4,10 @@
 // profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
 // filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), profile H
 // (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), profile I
-// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout), and profile K
-// (Florida full-year single, one Schedule C, Form 8995 with the line 14 income limitation).
+// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout),
+// profile J (full-year Florida resident, single: W-2, Form 1099-DIV boxes 1a, 1b, and 2a, and Schedule E
+// Part I rental income), and profile K (Florida full-year single, one Schedule C, Form 8995 with the line 14
+// income limitation).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -116,7 +118,8 @@
 //      number means a social security number issued to an individual by the Social Security Administration". The
 //      fixture SSNs other than profiles C, D, F, and G are in the 900 area, which SSA never issues; the app reads them
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
-//      900-46-1009 (group 46, outside the ITIN ranges). Profiles C and D use
+//      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
+//      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
 //      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
@@ -176,6 +179,8 @@ import {
   profileHDividendId,
   profileHPaRentalDividends,
   profileIMfjAmtPhaseout,
+  profileJDividendId,
+  profileJFlDividendsRental,
   profileKBusinessId,
   profileKFlSingleScheduleC,
   form8949Sale,
@@ -2392,5 +2397,223 @@ describe(`golden end-to-end scenario (synthetic data): profile K, Florida single
       '/amt': `0.00`,
     });
     expectStoppedOnly(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile J, Florida, dividends, and Schedule E rental`, () => {
+  // Single, full-year Florida resident [FL]; born 1991-04-22 (under 65, not blind), SSN 900-49-1012 (900 area,
+  //   group 49, outside the ITIN ranges [EITC]). Address 123 Example St, Tampa, FL 33602. Standard deduction.
+  // W-2: box 1 $70,000, box 2 $11,000. No box 16 or 17.
+  // Form 1099-DIV, one payer (Example Mutual Fund): box 1a $4,000, box 1b $3,000, box 2a $1,000. Nothing else.
+  //   Box 1b is not larger than box 1a. Holding period met. No box 2b, 2c, 2d, 5, nominee, or other unsupported
+  //   box. No Form 8949 sale and no capital loss carryover, so Schedule D is not required.
+  //   Form 1040 instr. (2025) [GI] p. 31, Line 7a, Exception 1: "You don't have to file Form 8949 or Schedule D if
+  //   ... 1. You have no capital losses, and your only capital gains are capital gain distributions from Form(s)
+  //   1099-DIV, box 2a ...; and 2. None of the Form(s) 1099-DIV ... have an amount in box 2b ... box 2c ... or
+  //   box 2d." p. 33: "If Exception 1 applies, enter your total capital gain distributions (from box 2a of Form(s)
+  //   1099-DIV) on line 7a and check the box on line 7b."
+  // Schedule E Part I, one residential rental, the supported totals (no per-property address or fair-rental-day
+  //   count is collected). The property was a residence rented all year: 365 fair-rental days, personal use no
+  //   (26 U.S.C. 280A), depreciation no (Form 4562), substantial services no. Instructions for Schedule E (2026)
+  //   draft, https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf, printed p. 2 (PDF p. 3). Line 3 rents $18,000;
+  //   line 4 royalties $0; expenses $6,000; line 18 depreciation $0. 26 U.S.C. 61(a)(5); 26 U.S.C. 212.
+  //   Line 21 = 18,000 - 6,000 = 12,000. Net income, so lines 22 and 25 are $0 and Form 8582 does not apply
+  //   (26 U.S.C. 469). Line 26 = 12,000. Parts II, III, and IV are answered no, so lines 32, 37, and 39 are $0.
+  //   Line 41 = 12,000, Schedule 1 line 5. Not a section 162 trade or business (26 U.S.C. 199A(c), (d)(1)), so
+  //   there is no qualified business income and Form 8995 is not filed.
+  // Schedule B: ordinary dividends $4,000 are over $1,500, so Part II is required, with this one payer.
+  //   Instructions for Schedule B (Form 1040) (2025), https://www.irs.gov/pub/irs-pdf/i1040sb.pdf, p. 1: "You had
+  //   over $1,500 of taxable interest or ordinary dividends." Interest is $0, so Part I is not required on its
+  //   own. Line 7a question 1 is No (no foreign account). Line 8 is No (no foreign trust).
+  // Form 1040: line 1a 70,000; line 2b 0; line 3a 3,000; line 3b 4,000; line 7a 1,000 (line 7b checked);
+  //   Schedule 1 line 5 12,000; line 8 12,000; line 9 and line 11 (AGI) 87,000. No adjustments. Line 12 standard
+  //   deduction 16,100 [RP p. 18 §4.14(1): "Unmarried Individuals (other than Surviving Spouses and Heads of
+  //   Households) ... $16,100"]. Line 13b qualified business income deduction $0. Line 15 taxable income 70,900.
+  // Line 16, QDCG worksheet [GI p. 38]: 1) 70,900  2) 3,000  3) 1,000 (line 7a; Schedule D is not filed)
+  //   4) 4,000  5) 66,900  6) 49,450 [RP p. 13 §4.03: "All Other Individuals $49,450 $545,500"]  7) 49,450
+  //   8) 49,450  9) 0  10) 4,000  11) 0  12) 4,000  13) 545,500  14) 70,900  15) 66,900  16) 4,000  17) 4,000
+  //   18) 15% = 600  19) 4,000  20) 0  21) 0
+  //   22) tax on 66,900 by the Tax Table [GI p. 36]: row 66,900-66,950, midpoint 66,925. [RP p. 11 §4.01
+  //   Table 3] "Over $50,400 but not over $105,700 $5,800 plus 22% of the excess over $50,400":
+  //   5,800 + 22% × (66,925 − 50,400) = 5,800 + 22% × 16,525 = 5,800 + 3,635.50 = 9,435.50, half a dollar up,
+  //   9,436  23) 9,436 + 600 = 10,036
+  //   24) tax on 70,900: row 70,900-70,950, midpoint 70,925: 5,800 + 22% × (70,925 − 50,400) = 5,800 + 22% ×
+  //   20,525 = 5,800 + 4,515.50 = 10,315.50, half a dollar up, 10,316  25) smaller = 10,036.
+  // Form 6251 [6251] [RP p. 16 §4.10]: line 4 AMTI 87,000, under the unmarried exemption $90,100, so line 6 is
+  //   $0 and line 11 AMT is $0. "Who Must File" item 1 (line 7 greater than line 10) is not met, so Form 6251
+  //   is not attached. No preference items.
+  // Form 8960 [1411 (b)(3)]: AGI 87,000 is under the $200,000 single threshold, so line 17 is $0 and Form 8960
+  //   is not attached. The Schedule E rents are net investment income, but the threshold is not met.
+  // Form 2210: line 4 is the $10,036 tax (at least $1,000) and line 6 is withholding $11,000, so line 7 is
+  //   10,036 − 11,000 = −964, which is less than $1,000. Form 2210 (2026) draft p. 1, lines 4 and 7: "If less
+  //   than $1,000, stop; you don't owe a penalty. Don't file Form 2210." 26 U.S.C. 6654(e)(1).
+  // Total tax 10,036; withholding 11,000; refund 964. EITC is $0 [EITC]: the TIN is not an SSN, and AGI is over
+  //   $19,540. No qualifying child, so the child tax credit is $0. No Florida return [FL].
+  const g = graph(profileJFlDividendsRental);
+  const pdfRoot = path.resolve(__dirname, `../../../../../backend/src/main/resources/pdf/2026`);
+
+  it(`Schedule E Part I net rental income on Schedule 1 line 5, with no QBI and no Form 8582`, () => {
+    expect(get(g, `/hasScheduleEIncome`).get).toBe(true);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+    expect(get(g, `/requiresSchedule1`).get).toBe(true);
+    expect(get(g, `/scheduleERentalIsTradeOrBusiness`).get).toBe(false);
+    expect(get(g, `/form8995HasQbi`).get).toBe(false);
+    expect(get(g, `/form8995Required`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS8995`) as string).get).toBe(false);
+    for (const p of [
+      `/flowKnockoutScheduleELoss`,
+      `/flowKnockoutScheduleEDepreciation`,
+      `/flowKnockoutScheduleEPersonalUse`,
+      `/flowKnockoutScheduleESubstantialServices`,
+      `/flowKnockoutScheduleETradeOrBusinessQbi`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowKnockoutScheduleEPartIV`,
+    ]) {
+      expect(get(g, p).complete, p).toBe(true);
+      expect(get(g, p).get, p).toBe(false);
+    }
+    // Form 8582 is the passive-loss form. Net income does not file it, and the package has no Form 8582.
+    expect(fs.readdirSync(pdfRoot).some((name) => name.includes(`8582`))).toBe(false);
+    expectDollars(g, {
+      '/scheduleERents': `18000.00`,
+      '/scheduleERoyalties': `0.00`,
+      '/scheduleEExpenses': `6000.00`,
+      '/scheduleENetIncome': `12000.00`,
+      '/scheduleEPartIILine32': `0.00`,
+      '/scheduleEPartIIILine37': `0.00`,
+      '/scheduleELine41': `12000.00`,
+      '/schedule1Line5': `12000.00`,
+      '/qualifiedBusinessIncomeDeduction': `0.00`,
+    });
+    expect(get(g, pdfIncludeWhen(`IRS1040SE`) as string).get).toBe(true);
+  });
+
+  it(`Form 1040 lines 3a, 3b, and 7a, and the QDCG worksheet in the 15% band`, () => {
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, `/capitalGainDistributionsWithoutScheduleD`).get).toBe(true);
+    expect(get(g, `/capitalGainsScheduleDNotRequired`).get).toBe(true);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS1040SD`) as string).get).toBe(false);
+    expectDollars(g, {
+      '/wages': `70000.00`,
+      '/interestIncome': `0.00`,
+      '/qualifiedDividends': `3000.00`,
+      '/ordinaryDividends': `4000.00`,
+      '/totalCapitalGainDistributions': `1000.00`,
+      '/capitalGainsOrLosses': `1000.00`,
+      '/otherIncome': `12000.00`,
+      '/totalIncome': `87000.00`,
+      '/adjustmentsToIncome': `0.00`,
+      '/agi': `87000.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/taxableIncome': `70900.00`,
+      '/qdcgLine1': `70900.00`,
+      '/qdcgLine2': `3000.00`,
+      '/qdcgLine3': `1000.00`,
+      '/qdcgLine4': `4000.00`,
+      '/qdcgLine5': `66900.00`,
+      '/qdcgLine6': `49450.00`,
+      '/qdcgLine9': `0.00`,
+      '/qdcgLine11': `0.00`,
+      '/qdcgLine13': `545500.00`,
+      '/qdcgLine17': `4000.00`,
+      '/qdcgLine18': `600.00`,
+      '/qdcgLine21': `0.00`,
+      '/qdcgRoundedLine5': `66925.00`,
+      '/qdcgLine22': `9436.00`,
+      '/qdcgLine23': `10036.00`,
+      '/roundedTaxableIncome': `70925.00`,
+      '/qdcgLine24': `10316.00`,
+      '/qdcgLine25': `10036.00`,
+      '/tentativeTaxFromTaxableIncome': `10036.00`,
+    });
+    // Tax Table row midpoint, then Round (half a dollar up). [RP p. 11 §4.01 Table 3] on 66,925:
+    // 5,800 + 22% × 16,525 = 9,435.50. On 70,925: 5,800 + 22% × 20,525 = 10,315.50.
+    const line5Midpoint = Number(get(g, `/qdcgRoundedLine5`).get);
+    const line5Cents = 5800 * 100 + (line5Midpoint - 50400) * 22;
+    expect(line5Cents).toBe(943550);
+    expect(line5Cents % 100).toBe(50);
+    const line1Midpoint = Number(get(g, `/roundedTaxableIncome`).get);
+    const line1Cents = 5800 * 100 + (line1Midpoint - 50400) * 22;
+    expect(line1Cents).toBe(1031550);
+    expect(line1Cents % 100).toBe(50);
+  });
+
+  it(`Schedule B Part II is required for one payer, and line 7a is No`, () => {
+    const dividendIds = (profileJFlDividendsRental[`/dividendReports`] as { item: { items: string[] } }).item.items;
+    const interestIds = (profileJFlDividendsRental[`/interestReports`] as { item: { items: string[] } }).item.items;
+    expect(dividendIds).toEqual([profileJDividendId]);
+    expect(interestIds).toEqual([]);
+    expect(get(g, `/requiresScheduleBForOrdinaryDividends`).get).toBe(true);
+    expect(get(g, `/requiresScheduleBForInterest`).get).toBe(false);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/hasForeignAccounts`).get).toBe(false);
+    expect(get(g, `/doesNotHaveForeignAccounts`).get).toBe(true);
+    expect(get(g, `/scheduleBLine7aQuestion2Yes`).get).toBe(false);
+    expect(get(g, `/scheduleBLine7aQuestion2No`).get).toBe(false);
+    expect(get(g, `/isForeignTrustsGrantor`).get).toBe(false);
+    expect(get(g, `/hasForeignTrustsTransactions`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).get).toBe(false);
+    expect(get(g, `/dividendReports/#${profileJDividendId}/payer`).get.toString()).toBe(`Example Mutual Fund`);
+    expectDollars(g, {
+      [`/dividendReports/#${profileJDividendId}/roundedOrdinaryDividends`]: `4000.00`,
+      [`/dividendReports/#${profileJDividendId}/capitalGainDistributions`]: `1000.00`,
+    });
+    expect(get(g, pdfIncludeWhen(`IRS1040SB`) as string).get).toBe(true);
+  });
+
+  it(`Form 6251 AMT is $0 and the form is not attached; no NIIT and no Form 2210`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/form2210AskPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/requiresSchedule2`).get).toBe(false);
+    expect(fs.readdirSync(pdfRoot).some((name) => name.includes(`2210`))).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS8960`) as string).get).toBe(false);
+    const amti = Number(get(g, `/form6251Line4`).get);
+    const exemption = Number(get(g, `/form6251ExemptionAmount`).get);
+    expect(amti).toBe(87000);
+    expect(exemption).toBe(90100);
+    expect(amti).toBeLessThan(exemption);
+    expectDollars(g, {
+      '/form6251Line4': `87000.00`,
+      '/form6251ExemptionAmount': `90100.00`,
+      '/form6251Line5': `90100.00`,
+      '/form6251Line6': `0.00`,
+      '/amt': `0.00`,
+      '/form8960Line13': `87000.00`,
+      '/form8960Line14': `200000.00`,
+      '/form8960Line17': `0.00`,
+      '/form8959Line7': `0.00`,
+      '/form2210Line4': `10036.00`,
+      '/form2210Line6': `11000.00`,
+      '/form2210Line7': `-964.00`,
+      '/totalTax': `10036.00`,
+      '/formW2Withholding': `11000.00`,
+      '/totalPayments': `11000.00`,
+      '/overpayment': `964.00`,
+    });
+  });
+
+  it(`Florida files no state return, and nothing stops the return`, () => {
+    expect(get(g, `/livedInFl`).get).toBe(true);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    for (const p of [`/stateTaxLiability`, `/stateRefund`, `/stateAmountOwed`]) {
+      expect(get(g, p).complete, p).toBe(false);
+    }
+    for (const form of [`PA40`, `PA40SP`]) {
+      expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(false);
+    }
+    expectNotStopped(g);
   });
 });
