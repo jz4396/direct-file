@@ -30,8 +30,9 @@ headings:
   /heading/income/schedule-e/estate-name: ¿Cuál es el nombre del caudal hereditario o fideicomiso?
   /heading/income/schedule-e/estate-scope:
     ¿Es un beneficiario extranjero, un fideicomiso extranjero o un tratamiento distinto?
+  /heading/income/schedule-e/estate-interest-dividends: Anote los intereses y dividendos del Anexo K-1 (Formulario 1041)
   /heading/income/schedule-e/estate-boxes: Anote el ingreso del Anexo K-1 (Formulario 1041)
-  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 5, 6, 7 y 8?
+  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 1, 2a, 2b, 5, 6, 7 y 8?
   /heading/income/schedule-e/estate-limits: ¿Se aplica algún límite de pérdida a este caudal hereditario o fideicomiso?
   /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC (Anexo Q, Formulario 1066)?
   /heading/income/schedule-e/k1-intro: Agregue cada sociedad colectiva y sociedad anónima de tipo S
@@ -91,8 +92,9 @@ info:
   /info/income/schedule-e/part-iii:
     body: >-
       Conteste que sí si es beneficiario de un caudal hereditario o fideicomiso, aunque no haya recibido el ingreso.
-      Debe tener un Anexo K-1 (Formulario 1041). Se puede declarar el ingreso ordinario del negocio si usted participó
-      de forma importante. Otro ingreso de alquiler detiene esta declaración.
+      Debe tener un Anexo K-1 (Formulario 1041). Se pueden declarar los intereses y dividendos de las casillas 1, 2a y
+      2b. Se puede declarar el ingreso ordinario del negocio si usted participó de forma importante. Otro ingreso de
+      alquiler detiene esta declaración.
   /info/income/schedule-e/estate-intro:
     body: >-
       Agregue una entrada por cada caudal hereditario o fideicomiso. Use el nombre y las cantidades del Anexo K-1
@@ -104,6 +106,12 @@ info:
       Conteste que sí a beneficiario extranjero si el punto H del Anexo K-1 (Formulario 1041) dice beneficiario
       extranjero. Conteste que sí si el fideicomiso es extranjero, o si trata una partida de forma distinta al caudal o
       fideicomiso.
+  /info/income/schedule-e/estate-interest-dividends:
+    body: >-
+      Anote la casilla 1 (intereses), la casilla 2a (dividendos ordinarios) y la casilla 2b (dividendos calificados).
+      Anote 0 si una casilla está en blanco. La casilla 2b no puede ser mayor que la casilla 2a. Estas cantidades van
+      en el Formulario 1040, no en la línea 33 del Anexo E. Los intereses van en la línea 2b. Los dividendos ordinarios
+      van en la línea 3b. Los dividendos calificados van en la línea 3a.
   /info/income/schedule-e/estate-boxes:
     body: >-
       Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Conteste que sí a la participación
@@ -111,8 +119,8 @@ info:
       de forma importante. Las casillas 7 y 8 son ingreso de alquiler y detienen esta declaración.
   /info/income/schedule-e/estate-other:
     body: >-
-      Conteste que sí si alguna casilla distinta de las casillas 5, 6, 7 y 8 tiene una cantidad, incluso intereses,
-      dividendos, ganancia de capital, deducciones, créditos o la casilla 14.
+      Conteste que sí si alguna casilla distinta de las casillas 1, 2a, 2b, 5, 6, 7 y 8 tiene una cantidad, incluso
+      ganancia de capital, deducciones, créditos o la casilla 14.
   /info/income/schedule-e/estate-limits:
     body: >-
       Conteste que sí a la primera pregunta si se aplica un límite de base. Conteste que sí a la segunda si alguna
@@ -422,6 +430,12 @@ fields:
     boolean:
       "yes": Sí, estoy tratando una partida de forma distinta
       "no": "No"
+  /scheduleEEstates/*/box1:
+    name: Casilla 1, ingreso por intereses
+  /scheduleEEstates/*/box2a:
+    name: Casilla 2a, dividendos ordinarios
+  /scheduleEEstates/*/box2b:
+    name: Casilla 2b, dividendos calificados
   /scheduleEEstates/*/box5:
     name: Casilla 5, otro ingreso de cartera y no comercial
   /scheduleEEstates/*/box6:
@@ -602,12 +616,15 @@ dataviews:
     /scheduleEEstates/*/isForeignBeneficiary: ¿Es un beneficiario extranjero?
     /scheduleEEstates/*/isForeignTrust: ¿Es un fideicomiso extranjero?
     /scheduleEEstates/*/inconsistentTreatment: ¿Trata una partida de forma distinta al caudal o fideicomiso?
+    /scheduleEEstates/*/box1: Casilla 1, ingreso por intereses
+    /scheduleEEstates/*/box2a: Casilla 2a, dividendos ordinarios
+    /scheduleEEstates/*/box2b: Casilla 2b, dividendos calificados
     /scheduleEEstates/*/box5: Casilla 5, otro ingreso de cartera y no comercial
     /scheduleEEstates/*/box6: Casilla 6, ingreso ordinario del negocio
     /scheduleEEstates/*/box7: Casilla 7, ingreso neto de alquiler de bienes raíces
     /scheduleEEstates/*/box8: Casilla 8, otro ingreso de alquiler
     /scheduleEEstates/*/materiallyParticipates: ¿Participó de forma importante?
-    /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 5, 6, 7 y 8 tiene una cantidad?
+    /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 5, 6, 7 y 8 tiene una cantidad?
     /scheduleEEstates/*/basisLimitApplies: ¿Se aplica un límite de base?
     /scheduleEEstates/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/passiveDeductionOrLoss: ¿Hay una deducción o pérdida pasiva?

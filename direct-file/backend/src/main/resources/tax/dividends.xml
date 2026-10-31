@@ -9,14 +9,17 @@
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
       (PA handling lives in paPit.xml /paLine3 and /flowKnockoutPaDividends).
   Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 3, 4, 5, 7, 12 and 13 per form.
-  Schedule B Part II line 5 rows: /dividendReports/*/payer and /dividendReports/*/roundedOrdinaryDividends;
-    line 6 is income /ordinaryDividends (Form 1040 line 3b).
+  Schedule B Part II line 5 rows: 1099-DIV payers first (/dividendReports/*/payer and
+    /dividendReports/*/roundedOrdinaryDividends), then Schedule K-1 (Form 1041) box 2a
+    (interest /scheduleBPartIIRow* Payer and Amount). Line 6 is income /ordinaryDividends (Form 1040 line 3b),
+    which adds box 2a.
   Totals for other modules (Schedule B Part II, QDCG worksheet): /totalOrdinaryDividends (box 1a),
     /totalQualifiedDividends (box 1b), /totalCapitalGainDistributions (box 2a), /totalNondividendDistributions
     (box 3), /totalDividendFederalTaxWithheld (box 4), /totalSection199ADividends (box 5),
     /totalDividendForeignTaxPaid (box 7), /totalExemptInterestDividends (box 12, Form 1040 line 2a),
     /totalSpecifiedPrivateActivityBondInterestDividends (box 13, Form 6251 line 2g).
-  Computed: Form 1040 line 3b = total box 1a (income /ordinaryDividends), line 3a = total box 1b
+  Computed: Form 1040 line 3b = total box 1a plus Schedule K-1 (Form 1041) box 2a (income /ordinaryDividends),
+    line 3a = total box 1b plus Schedule K-1 (Form 1041) box 2b
     (income /qualifiedDividends; taxed through the existing QDCG worksheet, scheduleD3.xml), line 25b
     includes total box 4 (taxCalculations /form1099Withholding), Schedule 3 line 1 = box 7 under the
     904(j) election (/dividendForeignTaxCredit, schedule3 /sched3Line1). Box 2a (#86b): Form 1040 line 7a

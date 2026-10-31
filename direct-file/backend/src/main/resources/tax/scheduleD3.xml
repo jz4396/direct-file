@@ -22,7 +22,8 @@
     <Fact path="/qdcgLine2">
       <Name>QDCG line 2</Name>
       <Description>QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line 2: "Enter the amount from Form 1040 or
-        1040-SR, line 3a" (income /qualifiedDividends, total Form 1099-DIV box 1b in whole dollars).</Description>
+        1040-SR, line 3a" (income /qualifiedDividends: Form 1099-DIV box 1b plus Schedule K-1 (Form 1041) box 2b,
+        in whole dollars). Schedule K-1 (Form 1041) (2025) page 2 reports box 2b on line 3a. 26 U.S.C. 1(h)(11).</Description>
       <Derived>
         <Dependency module="income" path="/qualifiedDividends" />
       </Derived>

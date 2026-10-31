@@ -122,6 +122,14 @@ export const ScheduleEIncomeSubcategory = (
             <Boolean path='/scheduleEEstates/*/inconsistentTreatment' />
             <SaveAndOrContinueButton />
           </Screen>
+          <Screen route='schedule-e-estate-interest-dividends'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-interest-dividends' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-interest-dividends' />
+            <Dollar path='/scheduleEEstates/*/box1' />
+            <Dollar path='/scheduleEEstates/*/box2a' />
+            <Dollar path='/scheduleEEstates/*/box2b' />
+            <SaveAndOrContinueButton />
+          </Screen>
           <Screen route='schedule-e-estate-boxes'>
             <Heading i18nKey='/heading/income/schedule-e/estate-boxes' />
             <InfoDisplay i18nKey='/info/income/schedule-e/estate-boxes' />

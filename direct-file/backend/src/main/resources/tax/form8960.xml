@@ -21,8 +21,9 @@
       Schedule E line 37 nonpassive box 6. Box 8 is other rental income, a rental activity under
       26 U.S.C. 469(c)(2) and 469(c)(4) without regard to material participation, and is not
       469(c)(7) rental real estate professional income. It stops the return and is not on line 4a.
-      Passive income, a trading business, a PTP, any other K-1 box, box 5, box 7, box 8, and Part IV
-      stop the return
+      Schedule K-1 (Form 1041) box 1 and box 2a are on lines 1 and 2 (Form 1040 lines 2b and 3b;
+      26 U.S.C. 1411(c)(1)(A)(i)). Passive income, a trading business, a PTP, boxes 3, 4a, 4b, 4c, 5, 7, 8,
+      and 9 through 14 (including box 14 code I and code H), and Part IV stop the return
       (scheduleE /flowKnockoutScheduleEPartII).
     line 3 nonqualified annuities (1099-R code D) -> form1099Rs /knockoutForForm1099RDistributionCode (pre-existing)
     line 13 Form 2555 / CFC / PFIC MAGI adjustments: not collected anywhere in the app (no inputs exist)
@@ -40,7 +41,9 @@
         and rents". i8960 (2026 draft) p. 7 (PDF p. 8), Line 1: "Enter your taxable interest. Include the
         applicable amount from your return: Form 1040 or 1040-SR, line 2b." interest /interestIncome is Form
         1040 line
-        2b. Interest earned in the ordinary course of a non-section 1411 trade or business (line 7
+        2b, including Schedule K-1 (Form 1041) box 1. 26 U.S.C. 1411(c)(1)(A)(i) ("interest"). Schedule K-1
+        (Form 1041) (2025) page 2 reports box 1 on Form 1040 line 2b. Interest earned in the ordinary course
+        of a non-section 1411 trade or business (line 7
         adjustment) can only
         arise with a Schedule C, which /flowKnockoutForm8960Unsupported stops.
       </Description>
@@ -56,9 +59,9 @@
         26 U.S.C. 1411(c)(1)(A)(i) ("dividends"). i8960 (2026 draft) p. 7 (PDF p. 8), Line 2: "Enter your
         ordinary dividends. Include the applicable amount from your return: Form 1040 or 1040-SR, line 3b."
         Wired to
-        income /ordinaryDividends (Form 1040 line 3b; $0 until the dividends epic lands), so the line
-        follows
-        automatically when 1099-DIV is supported.
+        income /ordinaryDividends (Form 1040 line 3b), which is Form 1099-DIV box 1a plus Schedule K-1 (Form
+        1041) box 2a. 26 U.S.C. 1411(c)(1)(A)(i) ("dividends"). Schedule K-1 (Form 1041) (2025) page 2
+        reports box 2a on Form 1040 line 3b.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -468,8 +471,9 @@
         without regard to material participation. It is not 469(c)(7) rental real
         estate professional income, it is not
         on line 4a, and it stops the return. Passive K-1 income, a
-        trading business, a PTP, any other box, box 5, box 7,
-        box 8, and Part IV stop the return: scheduleE
+        trading business, a PTP, boxes 3, 4a, 4b, 4c, 5, 7,
+        box 8, and 9 through 14 (including box 14 code I and code H), and Part IV stop the return. Schedule
+        K-1 (Form 1041) box 1 and box 2a are lines 1 and 2. scheduleE
         /flowKnockoutScheduleEPartII.)
         (3) itemized
         deductions (scheduleA

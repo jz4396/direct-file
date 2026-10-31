@@ -147,6 +147,9 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "isForeignBeneficiary", bool(false));
         m.put(p + "isForeignTrust", bool(false));
         m.put(p + "inconsistentTreatment", bool(false));
+        m.put(p + "box1", dollar("0.00"));
+        m.put(p + "box2a", dollar("0.00"));
+        m.put(p + "box2b", dollar("0.00"));
         m.put(p + "box5", dollar("0.00"));
         m.put(p + "box6", dollar(box6));
         m.put(p + "box7", dollar("0.00"));
@@ -218,6 +221,30 @@ class ScheduleBAndETy2026PdfSmokeTest {
             assertTrue(text.contains(SB_FOOTER), "2026 Schedule B");
             assertFalse(text.contains("Schedule B (Form 1040) 2024"), "TY2026 does not print the 2024 Schedule B");
             assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
+        }
+    }
+
+    @Test
+    void scheduleBPrintsK1Form1041InterestAndOrdinaryDividends() throws Exception {
+        // Schedule K-1 (Form 1041) (2025) page 2: box 1 is Form 1040 line 2b; box 2a is line 3b.
+        // Beneficiary's Instructions (2025) PDF p. 2: box 1 on Schedule B Part I line 1, box 2a on Part II line 5,
+        // if applicable. Box 2a $1,600 is over the $1,500 threshold. Instructions for Schedule B (2025) p. 1.
+        Map<String, String> m = partIAndPartIII();
+        estate(m, ESTATE, "Harbor Trust", "0.00");
+        m.put("/scheduleEEstates/#" + ESTATE + "/box1", dollar("900.00"));
+        m.put("/scheduleEEstates/#" + ESTATE + "/box2a", dollar("1600.00"));
+        m.put("/scheduleEEstates/#" + ESTATE + "/box2b", dollar("800.00"));
+        byte[] bytes = generate(m);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sb = fieldsOnPages(doc, SB_FOOTER);
+            assertFalse(sb.isEmpty(), "Schedule B printed");
+            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(sb, "f1_03[0]").trim());
+            amount(sb, "f1_04[0]", 900, "Part I box 1");
+            amount(sb, "f1_31[0]", 900, "line 2");
+            amount(sb, "f1_33[0]", 900, "line 4");
+            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(sb, "f1_34[0]").trim());
+            amount(sb, "f1_35[0]", 1600, "Part II box 2a");
+            amount(sb, "f1_64[0]", 1600, "line 6");
         }
     }
 

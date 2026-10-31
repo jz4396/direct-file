@@ -12,6 +12,9 @@
 # Included when /requiresScheduleB. Instructions for Schedule B (Form 1040) (2025) p. 1: "You had over $1,500 of
 # taxable interest or ordinary dividends" or a foreign account or foreign trust. Schedule B (2026) draft Part III
 # says the same. Line 4 is Form 1040 line 2b. Line 6 is Form 1040 line 3b. 26 U.S.C. 61(a)(4).
+# Part I line 1 lists Form 1099-INT payers, then Schedule K-1 (Form 1041) box 1 (estate or trust name).
+# Part II line 5 lists Form 1099-DIV payers, then Schedule K-1 (Form 1041) box 2a.
+# Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) PDF p. 2, Box 1 and Box 2a.
 #
 # Not mapped, left blank. A supported return never has an amount for these lines. A yes refuses the print
 # (interest /flowKnockoutInterestScheduleBSubtraction):
@@ -34,68 +37,68 @@ form:
       f1_01[0]: /primaryFiler/fullName space space /pdfSecondaryFiler/fullName # "Page 1. Name(s) shown on return."
       f1_02[0]: /primaryFiler/tin # "Your social security number."
       Line1_ReadOrder[0]:
-        f1_03[0]: /interestReports/[0]/payer space space /interestReports/[0]/payerNameLine2
-      f1_04[0]: /interestReports/[0]/roundedTaxableInterest # "1. Amount. Line 1 of 14."
-      f1_05[0]: /interestReports/[1]/payer space space /interestReports/[1]/payerNameLine2
-      f1_06[0]: /interestReports/[1]/roundedTaxableInterest
-      f1_07[0]: /interestReports/[2]/payer space space /interestReports/[2]/payerNameLine2
-      f1_08[0]: /interestReports/[2]/roundedTaxableInterest
-      f1_09[0]: /interestReports/[3]/payer space space /interestReports/[3]/payerNameLine2
-      f1_10[0]: /interestReports/[3]/roundedTaxableInterest
-      f1_11[0]: /interestReports/[4]/payer space space /interestReports/[4]/payerNameLine2
-      f1_12[0]: /interestReports/[4]/roundedTaxableInterest
-      f1_13[0]: /interestReports/[5]/payer space space /interestReports/[5]/payerNameLine2
-      f1_14[0]: /interestReports/[5]/roundedTaxableInterest
-      f1_15[0]: /interestReports/[6]/payer space space /interestReports/[6]/payerNameLine2
-      f1_16[0]: /interestReports/[6]/roundedTaxableInterest
-      f1_17[0]: /interestReports/[7]/payer space space /interestReports/[7]/payerNameLine2
-      f1_18[0]: /interestReports/[7]/roundedTaxableInterest
-      f1_19[0]: /interestReports/[8]/payer space space /interestReports/[8]/payerNameLine2
-      f1_20[0]: /interestReports/[8]/roundedTaxableInterest
-      f1_21[0]: /interestReports/[9]/payer space space /interestReports/[9]/payerNameLine2
-      f1_22[0]: /interestReports/[9]/roundedTaxableInterest
-      f1_23[0]: /interestReports/[10]/payer space space /interestReports/[10]/payerNameLine2
-      f1_24[0]: /interestReports/[10]/roundedTaxableInterest
-      f1_25[0]: /interestReports/[11]/payer space space /interestReports/[11]/payerNameLine2
-      f1_26[0]: /interestReports/[11]/roundedTaxableInterest
-      f1_27[0]: /interestReports/[12]/payer space space /interestReports/[12]/payerNameLine2
-      f1_28[0]: /interestReports/[12]/roundedTaxableInterest
-      f1_29[0]: /interestReports/[13]/payer space space /interestReports/[13]/payerNameLine2
-      f1_30[0]: /interestReports/[13]/roundedTaxableInterest
+        f1_03[0]: /scheduleBPartIRow0Payer
+      f1_04[0]: /scheduleBPartIRow0Amount # "1. Amount. Line 1 of 14."
+      f1_05[0]: /scheduleBPartIRow1Payer
+      f1_06[0]: /scheduleBPartIRow1Amount
+      f1_07[0]: /scheduleBPartIRow2Payer
+      f1_08[0]: /scheduleBPartIRow2Amount
+      f1_09[0]: /scheduleBPartIRow3Payer
+      f1_10[0]: /scheduleBPartIRow3Amount
+      f1_11[0]: /scheduleBPartIRow4Payer
+      f1_12[0]: /scheduleBPartIRow4Amount
+      f1_13[0]: /scheduleBPartIRow5Payer
+      f1_14[0]: /scheduleBPartIRow5Amount
+      f1_15[0]: /scheduleBPartIRow6Payer
+      f1_16[0]: /scheduleBPartIRow6Amount
+      f1_17[0]: /scheduleBPartIRow7Payer
+      f1_18[0]: /scheduleBPartIRow7Amount
+      f1_19[0]: /scheduleBPartIRow8Payer
+      f1_20[0]: /scheduleBPartIRow8Amount
+      f1_21[0]: /scheduleBPartIRow9Payer
+      f1_22[0]: /scheduleBPartIRow9Amount
+      f1_23[0]: /scheduleBPartIRow10Payer
+      f1_24[0]: /scheduleBPartIRow10Amount
+      f1_25[0]: /scheduleBPartIRow11Payer
+      f1_26[0]: /scheduleBPartIRow11Amount
+      f1_27[0]: /scheduleBPartIRow12Payer
+      f1_28[0]: /scheduleBPartIRow12Amount
+      f1_29[0]: /scheduleBPartIRow13Payer
+      f1_30[0]: /scheduleBPartIRow13Amount
       f1_31[0]: /interestIncome # "2. Add the amounts on line 1."
       # f1_32[0]: line 3, Form 8815. Not mapped.
       f1_33[0]: /interestIncome # "4. Subtract line 3 from line 2. Enter the result here and on Form 1040 or 1040-SR, line 2b."
       ReadOrderControl[0]:
-        f1_34[0]: /dividendReports/[0]/payer
-      f1_35[0]: /dividendReports/[0]/roundedOrdinaryDividends # "5. Amount. Line 1 of 15."
-      f1_36[0]: /dividendReports/[1]/payer
-      f1_37[0]: /dividendReports/[1]/roundedOrdinaryDividends
-      f1_38[0]: /dividendReports/[2]/payer
-      f1_39[0]: /dividendReports/[2]/roundedOrdinaryDividends
-      f1_40[0]: /dividendReports/[3]/payer
-      f1_41[0]: /dividendReports/[3]/roundedOrdinaryDividends
-      f1_42[0]: /dividendReports/[4]/payer
-      f1_43[0]: /dividendReports/[4]/roundedOrdinaryDividends
-      f1_44[0]: /dividendReports/[5]/payer
-      f1_45[0]: /dividendReports/[5]/roundedOrdinaryDividends
-      f1_46[0]: /dividendReports/[6]/payer
-      f1_47[0]: /dividendReports/[6]/roundedOrdinaryDividends
-      f1_48[0]: /dividendReports/[7]/payer
-      f1_49[0]: /dividendReports/[7]/roundedOrdinaryDividends
-      f1_50[0]: /dividendReports/[8]/payer
-      f1_51[0]: /dividendReports/[8]/roundedOrdinaryDividends
-      f1_52[0]: /dividendReports/[9]/payer
-      f1_53[0]: /dividendReports/[9]/roundedOrdinaryDividends
-      f1_54[0]: /dividendReports/[10]/payer
-      f1_55[0]: /dividendReports/[10]/roundedOrdinaryDividends
-      f1_56[0]: /dividendReports/[11]/payer
-      f1_57[0]: /dividendReports/[11]/roundedOrdinaryDividends
-      f1_58[0]: /dividendReports/[12]/payer
-      f1_59[0]: /dividendReports/[12]/roundedOrdinaryDividends
-      f1_60[0]: /dividendReports/[13]/payer
-      f1_61[0]: /dividendReports/[13]/roundedOrdinaryDividends
-      f1_62[0]: /dividendReports/[14]/payer
-      f1_63[0]: /dividendReports/[14]/roundedOrdinaryDividends
+        f1_34[0]: /scheduleBPartIIRow0Payer
+      f1_35[0]: /scheduleBPartIIRow0Amount # "5. Amount. Line 1 of 15."
+      f1_36[0]: /scheduleBPartIIRow1Payer
+      f1_37[0]: /scheduleBPartIIRow1Amount
+      f1_38[0]: /scheduleBPartIIRow2Payer
+      f1_39[0]: /scheduleBPartIIRow2Amount
+      f1_40[0]: /scheduleBPartIIRow3Payer
+      f1_41[0]: /scheduleBPartIIRow3Amount
+      f1_42[0]: /scheduleBPartIIRow4Payer
+      f1_43[0]: /scheduleBPartIIRow4Amount
+      f1_44[0]: /scheduleBPartIIRow5Payer
+      f1_45[0]: /scheduleBPartIIRow5Amount
+      f1_46[0]: /scheduleBPartIIRow6Payer
+      f1_47[0]: /scheduleBPartIIRow6Amount
+      f1_48[0]: /scheduleBPartIIRow7Payer
+      f1_49[0]: /scheduleBPartIIRow7Amount
+      f1_50[0]: /scheduleBPartIIRow8Payer
+      f1_51[0]: /scheduleBPartIIRow8Amount
+      f1_52[0]: /scheduleBPartIIRow9Payer
+      f1_53[0]: /scheduleBPartIIRow9Amount
+      f1_54[0]: /scheduleBPartIIRow10Payer
+      f1_55[0]: /scheduleBPartIIRow10Amount
+      f1_56[0]: /scheduleBPartIIRow11Payer
+      f1_57[0]: /scheduleBPartIIRow11Amount
+      f1_58[0]: /scheduleBPartIIRow12Payer
+      f1_59[0]: /scheduleBPartIIRow12Amount
+      f1_60[0]: /scheduleBPartIIRow13Payer
+      f1_61[0]: /scheduleBPartIIRow13Amount
+      f1_62[0]: /scheduleBPartIIRow14Payer
+      f1_63[0]: /scheduleBPartIIRow14Amount
       f1_64[0]: /ordinaryDividends # "6. Add the amounts on line 5. Enter the total here and on Form 1040 or 1040-SR, line 3b."
       TagcorrectingSubform[0]:
         c1_1[0]: /hasForeignAccounts # 7a Yes
