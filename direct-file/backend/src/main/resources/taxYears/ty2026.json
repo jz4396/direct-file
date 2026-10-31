@@ -154,6 +154,12 @@
       "kind": "pdf",
       "sha256": "a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c"
     },
+    "i1040sse-dft": {
+      "title": "Instructions for Schedule SE (Form 1040) (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf",
+      "kind": "pdf",
+      "sha256": "8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3"
+    },
     "pa-trc": {
       "title": "Tax Reform Code of 1971, section 302 (72 P.S. § 7302)",
       "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/1971/0/0002..HTM",
@@ -2233,6 +2239,90 @@
           "section": "§ 1402(b)(2)",
           "url": "https://www.law.cornell.edu/uscode/text/26/1402",
           "quote": "the net earnings from self-employment, if such net earnings for the taxable year are less than $400."
+        }
+      ]
+    },
+    {
+      "fact": "/seOptionalMethodMaximumIncome",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Dollar:7560"
+      ],
+      "cite": [
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 14",
+          "page": 3,
+          "quote": "Maximum income for optional methods $7,560"
+        },
+        {
+          "source": "irc",
+          "section": "§ 1402(l)(1)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1402",
+          "quote": "The lower limit for any taxable year is the sum of the amounts required under section 213(d) of the Social Security Act for a quarter of coverage in effect with respect to each calendar quarter ending with or within such taxable year."
+        },
+        {
+          "source": "fr-2025-19763",
+          "page": 49051,
+          "quote": "The earnings required for a quarter of coverage in 2026 is $1,890."
+        }
+      ],
+      "note": "Four 2026 quarters of coverage at $1,890. 1402(l)(2) is 150 percent of that lower limit ($11,340), the farm gross-income threshold, not line 14."
+    },
+    {
+      "fact": "/seNonfarmOptionalMethodNetProfitLimit",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Dollar:8186"
+      ],
+      "cite": [
+        {
+          "source": "f1040sse-dft",
+          "section": "Part II",
+          "page": 3,
+          "quote": "your net nonfarm profits were less than $8,186 and also less than 72.189% of your gross nonfarm income"
+        },
+        {
+          "source": "i1040sse-dft",
+          "section": "Nonfarm Optional Method",
+          "page": 7,
+          "quote": "your net nonfarm profits were less than $8,186 and also less than 72.189% of your gross nonfarm income"
+        }
+      ]
+    },
+    {
+      "fact": "/seNonfarmOptionalMethodGrossIncomeRatio",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Rational:72189/100000"
+      ],
+      "cite": [
+        {
+          "source": "f1040sse-dft",
+          "section": "Part II",
+          "page": 3,
+          "quote": "your net nonfarm profits were less than $8,186 and also less than 72.189% of your gross nonfarm income"
+        },
+        {
+          "source": "i1040sse-dft",
+          "section": "Nonfarm Optional Method",
+          "page": 7,
+          "quote": "your net nonfarm profits were less than $8,186 and also less than 72.189% of your gross nonfarm income"
+        }
+      ]
+    },
+    {
+      "fact": "/seNonfarmOptionalMethodTwoThirds",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Rational:2/3"
+      ],
+      "cite": [
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 17",
+          "page": 3,
+          "quote": "Enter the smaller of: two-thirds (2/3) of gross nonfarm income (not less than zero) or the amount on line 16."
         }
       ]
     },

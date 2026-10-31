@@ -168,6 +168,42 @@ class ScheduleSETy2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Gross receipts $9,000 and expenses $3,500. Line 31 is $5,500, under $8,186 and under 72.189% of line 7.
+     * Line 17 is two-thirds of $9,000, $6,000, which is under line 16 ($7,560) and at least actual net earnings of
+     * $5,079. Line 2 is skipped, so lines 2, 3, and 4a are blank and line 4c is line 4b. 2026 draft Schedule SE, PDF
+     * p. 3. 26 U.S.C. 1402(a), 1402(l)(1). Wages of $170,000 keep the earned income credit and the additional child
+     * tax credit off this return, so the election prints. Line 10 is still 12.4% of $6,000 because that amount is
+     * under the remaining wage base.
+     */
+    @Test
+    void nonfarmOptionalMethodPrintsLines16And17OnLine4b() throws Exception {
+        Map<String, String> facts = selfEmployed("170000.00", "170000.00", "9000.00");
+        facts.put("/scheduleCBusinesses/#" + BIZ + "/writableTotalExpenses", dollar("3500.00"));
+        facts.put("/usesSeOptionalMethod", bool(true));
+        facts.put("/hadAtLeast400NetEarningsInTwoOfPriorThreeYears", bool(true));
+        facts.put("/nonfarmOptionalMethodUsedFewerThanFivePriorYears", bool(true));
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertFalse(se.isEmpty(), "Schedule SE printed");
+            blank(se, "Page1[0].f1_5[0]", "2 skipped");
+            blank(se, "Page1[0].f1_6[0]", "3 skipped");
+            blank(se, "Page1[0].f1_7[0]", "4a skipped");
+            amount(se, "Page1[0].f1_8[0]", 6000, "4b = line 17");
+            amount(se, "Page1[0].f1_9[0]", 6000, "4c = 4b");
+            amount(se, "Page1[0].f1_12[0]", 6000, "6");
+            amount(se, "Page1[0].f1_19[0]", 744, "10 = 6,000 x 12.4%");
+            amount(se, "Page1[0].f1_20[0]", 174, "11 = 6,000 x 2.9%");
+            amount(se, "Page1[0].f1_21[0]", 918, "12");
+            amount(se, "Page1[0].f1_22[0]", 459, "13 = 918 x 50%");
+            blank(se, "Page2[0].f2_1[0]", "14 preprinted");
+            blank(se, "Page2[0].f2_2[0]", "15 farm optional method");
+            amount(se, "Page2[0].f2_3[0]", 7560, "16");
+            amount(se, "Page2[0].f2_4[0]", 6000, "17");
+        }
+    }
+
     @Test
     void scheduleSESkipsLines8dTo10AtTheWageBase() throws Exception {
         byte[] bytes = generate(selfEmployed("190000.00", "184500.00", "20000.00"));
@@ -205,7 +241,11 @@ class ScheduleSETy2026PdfSmokeTest {
         expected.put("f1_5[0]", "2. Net profit or (loss) from Schedule C, line 31");
         expected.put("f1_6[0]", "3. Combine lines 1a, 1b, and 2");
         expected.put("f1_7[0]", "4a. If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)");
+        expected.put(
+                "f1_8[0]", "4b. If you elect one or both of the optional methods, enter the total of lines 15 and 17");
         expected.put("f1_9[0]", "4c. Combine lines 4a and 4b");
+        expected.put("f2_3[0]", "16. Subtract line 15 from line 14");
+        expected.put("f2_4[0]", "17. Enter the smaller of: two-thirds (2/3) of gross nonfarm income");
         expected.put("f1_12[0]", "6. Add lines 4c and 5b");
         expected.put("f1_14[0]", "8a. Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2)");
         expected.put("f1_17[0]", "8d. Add lines 8a, 8b, and 8c");
@@ -226,13 +266,14 @@ class ScheduleSETy2026PdfSmokeTest {
             var form = doc.getDocumentCatalog().getAcroForm();
             int mapped = 0;
             for (String line : config.split("\n")) {
-                var m = java.util.regex.Pattern.compile("^\\s+(f1_\\d+\\[0\\]):\\s*/")
+                var m = java.util.regex.Pattern.compile("^\\s+(f[12]_\\d+\\[0\\]):\\s*/")
                         .matcher(line);
                 if (m.find()) {
                     mapped++;
                     String name = m.group(1);
                     assertTrue(expected.containsKey(name), "tooltip expectation for mapped field " + name);
-                    PDField field = form.getField("topmostSubform[0].Page1[0]." + name);
+                    String page = name.startsWith("f2_") ? "Page2[0]." : "Page1[0].";
+                    PDField field = form.getField("topmostSubform[0]." + page + name);
                     assertNotNull(field, name + " exists in the draft");
                     String tooltip = field.getAlternateFieldName().replaceAll("\\s+", " ");
                     assertTrue(

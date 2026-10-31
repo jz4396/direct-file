@@ -17,10 +17,17 @@ headings:
   /heading/income/schedule-c/business-basics: Infórmenos sobre este negocio
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
-  /heading/income/schedule-c/farm: ¿Tuvo ingresos de agricultura o pagos del Programa de Reservas para la Conservación?
+  /heading/income/schedule-c/farm:
+    ¿Tuvo ingresos de agricultura, pagos del Programa de Reservas para la Conservación, o quiere usar el método opcional
+    de agricultura?
   /heading/income/schedule-c/church-employee: ¿Tuvo ingresos como empleado de una iglesia?
   /heading/income/schedule-c/optional-method:
-    ¿Quiere usar un método opcional para calcular el impuesto sobre el trabajo por cuenta propia?
+    ¿Quiere usar el método opcional que no es de agricultura para calcular el impuesto sobre el trabajo por cuenta
+    propia?
+  /heading/income/schedule-c/nonfarm-prior-years:
+    ¿Sus ganancias netas del trabajo por cuenta propia fueron de al menos $400 en 2 de los 3 años anteriores a este año?
+  /heading/income/schedule-c/nonfarm-prior-uses:
+    ¿Ha usado el método opcional que no es de agricultura en menos de 5 años anteriores?
   /heading/income/schedule-c/minister:
     ¿Es usted ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o tiene una exención del
     Formulario 4361 o 4029?
@@ -29,6 +36,8 @@ headings:
   /heading/income/schedule-c/form-8919: ¿Tuvo salarios declarados en el Formulario 8919?
   /heading/knockout/schedule-se-out-of-scope:
     Esta herramienta no puede calcular este impuesto sobre el trabajo por cuenta propia
+  /heading/knockout/schedule-se-nonfarm-optional-method:
+    Esta herramienta no puede usar el método opcional que no es de agricultura en esta declaración
   /heading/income/schedule-c/part-i: "Ingrese los ingresos de este negocio"
   /heading/income/schedule-c/other-income-form: "¿Estos otros ingresos corresponden a otro formulario?"
   /heading/income/schedule-c/inventory: "¿Este negocio tuvo inventario o costo de mercancías vendidas?"
@@ -93,15 +102,29 @@ info:
   /info/income/schedule-c/farm:
     body: >-
       Las líneas 1a y 1b del Anexo SE son la ganancia de agricultura y los pagos del Programa de Reservas para la
-      Conservación. Conteste que sí si alguna corresponde. Esta herramienta no puede calcular esas líneas.
+      Conservación. La línea 15 de la Parte II es el método opcional de agricultura. Conteste que sí si alguno
+      corresponde. Esta herramienta no puede calcular esas líneas.
   /info/income/schedule-c/church-employee:
     body: >-
       Los ingresos como empleado de una iglesia van en las líneas 5a y 5b del Anexo SE. Se calculan por separado de los
       otros ingresos del trabajo por cuenta propia. Conteste que sí si los tiene.
   /info/income/schedule-c/optional-method:
     body: >-
-      Los métodos opcionales son la línea 4b y la Parte II del Anexo SE. Conteste que sí si quiere usar un método
-      opcional de agricultura o que no es de agricultura. Esta herramienta calcula solo el método regular.
+      El método opcional que no es de agricultura es la línea 4b y las líneas 16 y 17 de la Parte II del Anexo SE. Puede
+      usarlo solo cuando sus ganancias netas que no son de agricultura son menores de $8,186 y menores del 72.189% de
+      sus ingresos brutos que no son de agricultura, sus ganancias netas del trabajo por cuenta propia fueron de al
+      menos $400 en 2 de los 3 años anteriores y ha usado este método en menos de 5 años anteriores. El monto no puede
+      ser menor que sus ganancias netas reales ni mayor de $7,560. Conteste que sí si quiere usarlo. El método opcional
+      de agricultura es una pregunta aparte.
+  /info/income/schedule-c/nonfarm-prior-years:
+    body: >-
+      El método opcional que no es de agricultura requiere ganancias netas reales de $400 o más en 2 de los 3 años
+      inmediatamente anteriores a este año. Conteste que no si eso no es cierto.
+  /info/income/schedule-c/nonfarm-prior-uses:
+    body: >-
+      Puede usar el método opcional que no es de agricultura no más de cinco veces. Los años no tienen que ser
+      consecutivos. Conteste que sí si lo ha usado en menos de cinco años anteriores. Conteste que no si este año sería
+      el sexto uso o uno posterior.
   /info/income/schedule-c/minister:
     body: >-
       Conteste que sí si es ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o si tiene
@@ -119,9 +142,29 @@ info:
       body:
         - p: >-
             Esta declaración necesita una línea del Anexo SE que esta herramienta no calcula. Eso incluye ingresos de
-            agricultura, pagos del Programa de Reservas para la Conservación, ingresos como empleado de una iglesia, un
-            método opcional, el ministerio o una exención del Formulario 4361 o 4029, honorarios de notario o salarios
-            del Formulario 8919. Tendrá que usar otra manera de presentar esta declaración.
+            agricultura, pagos del Programa de Reservas para la Conservación, el método opcional de agricultura,
+            ingresos como empleado de una iglesia, el ministerio o una exención del Formulario 4361 o 4029, honorarios
+            de notario o salarios del Formulario 8919. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-se-nonfarm-optional-method:
+    alertText:
+      body:
+        - p: >-
+            El método opcional que no es de agricultura no se puede usar en esta declaración. Puede ser porque no se
+            cumplen las pruebas de montos, el monto de la línea 17 sería menor que sus ganancias netas reales, las
+            ganancias netas no fueron de al menos $400 en 2 de los 3 años anteriores, este sería el sexto uso o uno
+            posterior, o el recuadro 14 código A del Anexo K-1 (Formulario 1065) es mayor que cero. Tendrá que usar
+            otra manera de presentar esta declaración.
+  /heading/knockout/schedule-se-nonfarm-optional-method-credits:
+    Esta herramienta no puede calcular esos créditos con el método opcional que no es de agricultura
+  /info/knockout/schedule-se-nonfarm-optional-method-credits:
+    alertText:
+      body:
+        - p: >-
+            Se eligió el método opcional que no es de agricultura y esta declaración también reclama el crédito por
+            ingreso del trabajo, el crédito tributario adicional por hijos o el crédito por cuidado de hijos y
+            dependientes. El Formulario 2441 usa las líneas 3 y 4b del Anexo SE, menos la deducción de la línea 15 del
+            Anexo 1. La línea 4b no se incluye aquí en el ingreso del trabajo, así que esos créditos no se pueden
+            calcular con la elección. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-c-qbi:
     alertText:
       body:
@@ -255,6 +298,14 @@ fields:
       "yes": Sí
       "no": "No"
   /usesSeOptionalMethod:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /hadAtLeast400NetEarningsInTwoOfPriorThreeYears:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /nonfarmOptionalMethodUsedFewerThanFivePriorYears:
     boolean:
       "yes": Sí
       "no": "No"

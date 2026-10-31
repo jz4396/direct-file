@@ -37,7 +37,7 @@ aa6272f6b3b8a8c6a2aa6ef9d1069f1edb88fb9df4df60278d198da89cdfd93f  pdf/2026/IRS10
 cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4  pdf/2026/IRS1040SC/en/f1040sc.pdf  pages=2  mapped=56  unmapped=53
 0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1  pdf/2026/IRS1040SD/en/f1040sd--dft.pdf  pages=3  mapped=38  unmapped=15
 0bee231f1ecb2470fb884b1f9cee7707eddee8994ce479fc563850b2dd3c5aed  pdf/2026/IRS1040SE/en/f1040se--dft.pdf  pages=4  mapped=40  unmapped=153
-a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c  pdf/2026/IRS1040SSE/en/f1040sse--dft.pdf  pages=3  mapped=14  unmapped=11
+a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c  pdf/2026/IRS1040SSE/en/f1040sse--dft.pdf  pages=3  mapped=17  unmapped=8
 67eca7567ce5ff06e72d40a07db487f406da33139e664c0c0d9c67a4e31e9385  pdf/2026/IRS2441/en/f2441--dft.pdf  pages=3  mapped=71  unmapped=1
 a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc  pdf/2026/IRS6251/en/f6251--dft.pdf  pages=3  mapped=38  unmapped=24
 fd783d1f46f1f286cd1d7a2cca8812fc2ec05760478359873e22ba9d05d5f3b5  pdf/2026/IRS8862/en/f8862.pdf  pages=3  mapped=68  unmapped=41
