@@ -20,6 +20,7 @@
           <Dependency module="filers" path="/knockoutSubjectToCommunityPropertyLaws" />
           <Dependency module="interest" path="/interestReports/hasRequiredFactaFilings" />
           <Dependency module="interest" path="/flowKnockoutHasBonds" />
+          <Dependency module="interest" path="/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8" />
           <Dependency module="interest" path="/flowKnockoutInterestScheduleBSubtraction" />
           <!-- Unanswered Part III, including an unanswered line 7a question 2, is
                /flowPrintRefuseScheduleBPartIII (print only), not this operand. A Yes on line 7a question 1
@@ -33,6 +34,7 @@
           <Dependency module="dividends" path="/flowKnockoutDividendForeignTaxPaid" />
           <Dependency module="dividends" path="/flowKnockoutDividendNominee" />
           <Dependency module="dividends" path="/flowKnockoutDividendAmountsInconsistent" />
+          <Dependency module="dividends" path="/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12" />
           <Dependency module="interest" path="/flowKnockoutHasForeignTaxPaid" />
           <Dependency module="interest" path="/flowKnockoutWithholdingUnsupportedState" />
           <Dependency module="interest" path="/flowKnockoutStateTaxWithheld" />
@@ -81,8 +83,10 @@
           <Dependency module="interest" path="/hasInterestIncomeAndAgiAboveThresholdForSingleOrHoh" />
           <Dependency module="form8960" path="/flowKnockoutForm8960Unsupported" />
           <!-- Form 1040 line 2a (1099-INT box 8 and 1099-DIV box 12) is interest /taxExemptInterest. It is reported.
-               1099-INT boxes 9-13 stay on /flowKnockoutHasBonds. 1099-DIV box 13 stays on
-               /flowKnockoutDividendUnsupportedBoxes. -->
+               1099-INT boxes 10-13 stay on /flowKnockoutHasBonds. Box 9 is Form 6251 line 2g; a box 9
+               larger than box 8 is /flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8. 1099-DIV box 13
+               is Form 6251 line 2g; a box 13 larger than box 12 is
+               /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12. -->
           <Dependency module="estimatedPayments" path="/knockoutPaidEstimatedTaxesUnderDifferentLastName" />
           <Dependency module="familyAndHousehold" path="/knockoutHohQpHasNoTin" />
           <Dependency module="ctcOdc" path="/flowKnockoutCtcFilerSsnUnresolved" />

@@ -100,7 +100,7 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleCOutOfScope";
     static final String SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleSEOutOfScope";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
-    /** Form 6251 lines 2c-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). */
+    /** Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). Line 2g is computed. */
     static final String AMT_PREFERENCE_KNOCKOUT = "/flowKnockoutAmtPreferenceItems";
     /**
      * Same lines when Form 6251 is required and /hasAmtPreferenceItems is not a complete answer. The yes knockout is
@@ -109,7 +109,7 @@ class PrintRefusingKnockoutsTest {
     static final String AMT_PREFERENCE_UNANSWERED_KNOCKOUT = "/flowKnockoutAmtPreferenceItemsUnanswered";
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
-    /** Form 1099-DIV boxes 2b-2f, 6 and 8-16, including section 1202 and collectibles. */
+    /** Form 1099-DIV boxes 2b-2f, 6, 8-11 and 14-16, including section 1202 and collectibles. Box 13 is line 2g. */
     static final String DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT = "/flowKnockoutDividendUnsupportedBoxes";
     /** 26 U.S.C. 301(c)(3)(A): box 3 above basis, reported on Form 8949. */
     static final String DIVIDEND_OVER_BASIS_KNOCKOUT = "/flowKnockoutNondividendDistributionsOverBasis";
@@ -123,6 +123,10 @@ class PrintRefusingKnockoutsTest {
     static final String DIVIDEND_NOMINEE_KNOCKOUT = "/flowKnockoutDividendNominee";
     /** Box 1b or box 5 larger than box 1a. */
     static final String DIVIDEND_INCONSISTENT_KNOCKOUT = "/flowKnockoutDividendAmountsInconsistent";
+    /** 1099-INT box 9 larger than box 8. 26 U.S.C. 57(a)(5). */
+    static final String PAB_INTEREST_EXCEEDS_BOX_8 = "/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8";
+    /** 1099-DIV box 13 larger than box 12. 26 U.S.C. 57(a)(5). */
+    static final String PAB_DIVIDENDS_EXCEED_BOX_12 = "/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12";
 
     static final String DIVIDEND_ID = "13500000-0000-4000-8000-000000000502";
     /**
@@ -203,16 +207,18 @@ class PrintRefusingKnockoutsTest {
                 FORM_8995_MORE_THAN_FIVE_KNOCKOUT, // more than five Schedule C businesses; no statement
                 SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
                 SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT, // Schedule SE line this tool does not compute
-                AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2t, 3 and 8
+                AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2t, 3 and 8 (not line 2g)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
-                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2f, 6, 8-16
+                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2f, 6, 8-11, 14-16
                 DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
                 DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
                 DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT, // box 5 that is not a qualified REIT dividend
                 DIVIDEND_FOREIGN_TAX_KNOCKOUT, // box 7 that needs Form 1116
                 DIVIDEND_NOMINEE_KNOCKOUT, // nominee dividends
-                DIVIDEND_INCONSISTENT_KNOCKOUT)); // box 1b or 5 larger than box 1a
+                DIVIDEND_INCONSISTENT_KNOCKOUT, // box 1b or 5 larger than box 1a
+                PAB_INTEREST_EXCEEDS_BOX_8, // 1099-INT box 9 larger than box 8
+                PAB_DIVIDENDS_EXCEED_BOX_12)); // 1099-DIV box 13 larger than box 12
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
@@ -225,7 +231,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(49, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(51, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -1079,6 +1085,7 @@ class PrintRefusingKnockoutsTest {
             DIVIDEND_FOREIGN_TAX_KNOCKOUT,
             DIVIDEND_NOMINEE_KNOCKOUT,
             DIVIDEND_INCONSISTENT_KNOCKOUT,
+            PAB_DIVIDENDS_EXCEED_BOX_12,
             SCHEDULE_B_PART_III_PRINT_REFUSE);
 
     static void putJson(Map<String, FactTypeWithItem> facts, ObjectMapper mapper, String path, String json)

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import {
   createBooleanWrapper,
+  createCollectionItemWrapper,
   createCollectionWrapper,
   createDayWrapper,
   createDollarWrapper,
@@ -308,7 +309,7 @@ describe(`#122 Form 6251 attached to the PDF — i6251 (2025) p. 1 "Who Must Fil
 });
 
 describe(`Form 6251 knockouts (BlockSubmissionOnTrue, wired into /flowIsKnockedOut)`, () => {
-  it(`unsupported AMT items (ISOs, PAB interest, depreciation, NOL, AMTFTC) = yes knocks out`, ({ task }) => {
+  it(`unsupported AMT items other than line 2g (ISOs, depreciation, NOL, AMTFTC) = yes knocks out`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutAmtPreferenceItems`, `/flowIsKnockedOut`];
     const g = fg({ ...clean(singleFilerData, 50000), '/hasAmtPreferenceItems': createBooleanWrapper(true) });
     expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(true);
@@ -383,5 +384,106 @@ describe(`Form 6251 knockouts (BlockSubmissionOnTrue, wired into /flowIsKnockedO
       expect(get(g, `/flowKnockoutForm8615`).get).toBe(true);
       expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     });
+  });
+});
+
+/**
+ * Form 6251 line 2g. 26 U.S.C. 57(a)(5). Instructions for Form 6251 (2025) p. 3, Line 2g. 1099-INT box 9 is included
+ * in box 8. 1099-DIV box 13 is included in box 12. No deduction that would have been allowable if the interest were
+ * includible in gross income is collected, so the line is not reduced. MFJ standard deduction $32,200 and exemption
+ * $140,200 (Rev. Proc. 2025-32 §4.01 and §4.10). Regular tax on taxable income $167,800 is $11,600 + 22% of $67,000
+ * = $26,340.
+ */
+describe(`Form 6251 line 2g — specified private activity bond interest`, () => {
+  const intId = `b7777777-7777-4777-8777-777777777771`;
+  const divId = `b7777777-7777-4777-8777-777777777772`;
+  const pab = (box8: string, box9: string, box12: string, box13: string) => ({
+    '/interestReports': createCollectionWrapper([intId]),
+    '/interestReportsIsDone': createBooleanWrapper(true),
+    [`/interestReports/#${intId}/has1099`]: createBooleanWrapper(true),
+    [`/interestReports/#${intId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+    [`/interestReports/#${intId}/payer`]: createStringWrapper(`City Water Authority`),
+    [`/interestReports/#${intId}/writable1099Amount`]: createDollarWrapper(`0`),
+    [`/interestReports/#${intId}/writableTaxExemptInterest`]: createDollarWrapper(box8),
+    [`/interestReports/#${intId}/writableSpecifiedPrivateActivityBondInterest`]: createDollarWrapper(box9),
+    [`/interestReports/#${intId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+    '/dividendReports': createCollectionWrapper([divId]),
+    '/dividendReportsIsDone': createBooleanWrapper(true),
+    [`/dividendReports/#${divId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+    [`/dividendReports/#${divId}/payer`]: createStringWrapper(`National Muni Fund`),
+    [`/dividendReports/#${divId}/ordinaryDividends`]: createDollarWrapper(`0`),
+    [`/dividendReports/#${divId}/writableExemptInterestDividends`]: createDollarWrapper(box12),
+    [`/dividendReports/#${divId}/writableSpecifiedPrivateActivityBondInterestDividends`]: createDollarWrapper(box13),
+    [`/dividendReports/#${divId}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+    [`/dividendReports/#${divId}/receivedAsNominee`]: createBooleanWrapper(false),
+    [`/dividendReports/#${divId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+  });
+
+  it(`MFJ $200,000 wages and no line 2g: AMT $0 and Form 6251 is not required`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form6251Line2g`, `/form6251Line4`, `/amt`, `/form6251Required`];
+    const g = fg(clean(mfjFilerData, 200000));
+    expect(val(g, `/form6251Line2g`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line4`)).toBe(`200000.00`);
+    expect(val(g, `/form6251Line6`)).toBe(`59800.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`15548.00`);
+    expect(val(g, `/form6251Line10`)).toBe(`26340.00`);
+    expect(val(g, `/amt`)).toBe(`0.00`);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+  });
+
+  it(`line 2g $50,000 moves AMT from $0 to $2,208 and Form 6251 is required`, ({ task }) => {
+    // Line 2a is box 8 $40,000 + box 12 $20,000 = $60,000. Line 2g is box 9 $30,000 + box 13 $20,000 = $50,000.
+    // AMTI $250,000. Line 6 $109,800. Tentative minimum tax 26% × $109,800 = $28,548. AMT $2,208.
+    task.meta.testedFactPaths = [
+      `/form6251Line2g`,
+      `/taxExemptInterest`,
+      `/form6251Line4`,
+      `/amt`,
+      `/form6251Required`,
+      `/flowKnockoutHasBonds`,
+      `/flowIsKnockedOut`,
+    ];
+    const g = fg({ ...clean(mfjFilerData, 200000), ...pab(`40000`, `30000`, `20000`, `20000`) });
+    expect(val(g, `/taxExemptInterest`)).toBe(`60000.00`);
+    expect(val(g, `/form6251Line2g`)).toBe(`50000.00`);
+    expect(val(g, `/form6251Line4`)).toBe(`250000.00`);
+    expect(val(g, `/form6251Line6`)).toBe(`109800.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`28548.00`);
+    expect(val(g, `/form6251Line10`)).toBe(`26340.00`);
+    expect(val(g, `/amt`)).toBe(`2208.00`);
+    expect(get(g, `/form6251Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutHasBonds`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(false);
+    expect(get(g, `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`line 2g $10,000 is computed and AMT stays $0, so Form 6251 is not required`, ({ task }) => {
+    // AMTI $210,000. Line 6 $69,800. Tentative minimum tax $18,148, which is less than regular tax $26,340.
+    task.meta.testedFactPaths = [`/form6251Line2g`, `/amt`, `/form6251Required`];
+    const g = fg({ ...clean(mfjFilerData, 200000), ...pab(`10000`, `10000`, `0`, `0`) });
+    expect(val(g, `/form6251Line2g`)).toBe(`10000.00`);
+    expect(val(g, `/form6251Line4`)).toBe(`210000.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`18148.00`);
+    expect(val(g, `/form6251Line10`)).toBe(`26340.00`);
+    expect(val(g, `/amt`)).toBe(`0.00`);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+  });
+
+  it(`cents stay in the addition and only line 2g is rounded`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form6251Line2g`, `/taxExemptInterest`];
+    const g = fg({ ...clean(mfjFilerData, 200000), ...pab(`10.40`, `10.40`, `10.40`, `10.40`) });
+    expect(val(g, `/taxExemptInterest`)).toBe(`21.00`);
+    expect(val(g, `/form6251Line2g`)).toBe(`21.00`);
+  });
+
+  it(`box 9 larger than box 8 stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`, `/flowIsKnockedOut`];
+    const g = fg({ ...clean(mfjFilerData, 200000), ...pab(`8`, `9`, `0`, `0`) });
+    expect(get(g, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(true);
+    expect(get(g, `/flowKnockoutHasBonds`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`);
   });
 });

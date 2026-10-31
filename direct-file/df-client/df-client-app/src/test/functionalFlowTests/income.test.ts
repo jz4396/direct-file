@@ -1015,7 +1015,7 @@ describe(`The \`income\` subcategory`, () => {
                 });
                 expect(
                   givenFacts(factGraph).atPath(`${path}/1099-int-add-boxes-9-14`, interestReportId, task)
-                ).toRouteNextTo(`${path}/1099-int-boxes-9-13-knockout`);
+                ).toRouteNextTo(`${path}/1099-int-box-9-exceeds-box-8`);
               });
 
               it(`Box 10 - Market discount`, ({ task }) => {

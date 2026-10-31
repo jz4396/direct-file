@@ -20,10 +20,12 @@ import {
 import type { ConditionString } from '../../Condition.js';
 
 /**
- * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 3, 4, 5, 7 and 12.
+ * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 3, 4, 5, 7, 12 and 13.
  * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4,
- * line 2a includes box 12. Qualified REIT dividends in box 5 are Form 8995 line 6. A no to the 45-day
- * holding period stops the return. Every other box, and every case that can't be computed yet, stops the return.
+ * line 2a includes box 12. Qualified REIT dividends in box 5 are Form 8995 line 6 (26 U.S.C. 199A(b)(1)(B)). A no
+ * to the 45-day holding period stops the return (26 CFR 1.199A-3(c)(2)(ii)). Box 13 is Form 6251 line 2g
+ * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Every other box, and every case that can't be computed yet,
+ * stops the return.
  * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
@@ -217,6 +219,17 @@ export const DividendIncomeSubcategory = (
           <Dollar path='/dividendReports/*/writableExemptInterestDividends' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
+        <Screen route='1099-div-box-13'>
+          <Heading i18nKey='/heading/income/dividends/box-13' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-13' />
+          <Dollar path='/dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends' required={false} />
+          <SaveAndOrContinueButton />
+        </Screen>
+        {knockout(
+          `1099-div-box-13-knockout`,
+          `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`,
+          `dividends-box-13-exceeds-box-12`
+        )}
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />
           <InfoDisplay i18nKey='/info/income/dividends/unsupported-boxes' />

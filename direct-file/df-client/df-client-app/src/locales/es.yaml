@@ -8191,7 +8191,17 @@ info:
   /info/knockout/forms-missing/1099-int-box-9-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableSpecifiedPrivateActivityBondInterest)
     body:
-      - p: $t(headings./heading/knockout/forms-missing/1099-int-box-9-13-ko)
+      - p:
+          La casilla 9 está incluida en la casilla 8. La casilla 9 no puede ser mayor que la casilla 8. Regrese y
+          verifique las cantidades. Si coinciden con su formulario, necesitará otra manera de presentar esta
+          declaración.
+  /info/knockout/forms-missing/1099-int-box-9-exceeds-box-8:
+    alertText:
+      body:
+        - p:
+            La casilla 9 está incluida en la casilla 8, así que no puede ser mayor que la casilla 8. Regrese y verifique
+            las cantidades que ingresó. Si coinciden con su formulario, necesitará otra manera de presentar esta
+            declaración.
   /info/knockout/forms-missing/1099-int-box-10-ko:
     heading: $t(dataviews./flow/income/interest./interestReports/*/writableMarketDiscount)
     body:
@@ -20803,7 +20813,8 @@ headings:
     Direct File aún no permite la retención de impuestos estatales de todos los estados y territorios de los Estados
     Unidos.
   /heading/knockout/forms-missing/1099-int-box-9-13-ko: >-
-    Direct File no permite los formularios requeridos para declarar este tipo de ingresos por intereses.
+    Direct File aún no admite las casillas 10 a 13 del Formulario 1099-INT (descuento de mercado y prima de bonos).
+  /heading/knockout/forms-missing/1099-int-box-9-exceeds-box-8: La casilla 9 no puede ser mayor que la casilla 8
   /heading/knockout/forms-missing/1099-int-box-6-ko: >-
     Direct File no permite los formularios requeridos para declarar los impuestos pagados en el extranjero.
   /heading/knockout/digital-assets: >-

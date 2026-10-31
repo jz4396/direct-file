@@ -1,4 +1,5 @@
-// #86: Form 1099-DIV boxes 1a, 1b, 2a, 3, 4, 5, 7 and 12. Box 12 is Form 1040 line 2a, not line 3b.
+// #86: Form 1099-DIV boxes 1a, 1b, 2a, 3, 4, 5, 7, 12 and 13. Box 12 is Form 1040 line 2a, not line 3b.
+// Box 13 is Form 6251 line 2g and cannot exceed box 12.
 // Form 1040 instr. (2025; the 2026 instructions are not yet posted) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
 // p. 26 line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
 // Form(s) 1099-DIV." p. 25 line 3a: "Enter your total qualified dividends on line 3a. Qualified dividends are also
@@ -50,6 +51,7 @@ type Div = {
   box5?: number;
   box7?: number;
   box12?: number;
+  box13?: number;
   holdingNotMet?: boolean;
   overBasis?: boolean;
   otherBoxes?: boolean;
@@ -80,6 +82,7 @@ const divItem = (f: Div) => {
       : {}),
     ...opt(id, `ForeignTaxPaid`, f.box7),
     ...opt(id, `ExemptInterestDividends`, f.box12),
+    ...opt(id, `SpecifiedPrivateActivityBondInterestDividends`, f.box13),
     ...(f.box1b
       ? {
           [`/dividendReports/#${id}/qualifiedDividendsHoldingPeriodNotMet`]: createBooleanWrapper(
@@ -146,6 +149,7 @@ const FEDERAL_KOS = [
   `/flowKnockoutDividendForeignTaxPaid`,
   `/flowKnockoutDividendNominee`,
   `/flowKnockoutDividendAmountsInconsistent`,
+  `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`,
 ];
 const noKnockouts = (g: Fg) => {
   FEDERAL_KOS.forEach((k) => expect(get(g, k).get, k).toBe(false));
@@ -334,7 +338,27 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     blocks(build(divs({ box1a: 100, box1b: 150 })), `/flowKnockoutDividendAmountsInconsistent`);
     blocks(build(divs({ box1a: 100, box5: 150 })), `/flowKnockoutDividendAmountsInconsistent`);
   });
-  it(`any other box (2b-2f, 6, 8-16)`, ({ task }) => {
+  it(`box 13 is Form 6251 line 2g and does not stop when it does not exceed box 12`, ({ task }) => {
+    // Form 1099-DIV instructions, box 13: "Shows exempt-interest dividends subject to the alternative minimum tax.
+    // This amount is included in box 12." 26 U.S.C. 57(a)(5).
+    task.meta.testedFactPaths = [
+      `/totalSpecifiedPrivateActivityBondInterestDividends`,
+      `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`,
+    ];
+    const g = build(divs({ box1a: 0, box12: 20, box13: 20 }));
+    expect(val(g, `/totalSpecifiedPrivateActivityBondInterestDividends`)).toBe(`20.00`);
+    expect(val(g, `/taxExemptInterest`)).toBe(`20.00`);
+    expect(val(g, `/ordinaryDividends`)).toBe(`0.00`);
+    noKnockouts(g);
+  });
+  it(`box 13 larger than box 12`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`];
+    blocks(
+      build(divs({ box1a: 0, box12: 10, box13: 11 })),
+      `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`
+    );
+  });
+  it(`any other box (2b-2f, 6, 8-11, 14-16)`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`];
     blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
   });
