@@ -24,7 +24,7 @@ b0fe2d6f071f55b8a8d532331bf2d4a7448a3770820ce5dcfbc8d5dd4668a545  pdf/2024/IRS88
 bc23aa51f00e0e15846427555f2281a3eb26bbcf09e3d26a35265155c5cc64e7  pdf/2024/ODC_DEPENDENTS_STATEMENT/es/SPANISH_Additional_statement_for_Form_8862_-_Credit_for_other_dependents.pdf  pages=1  mapped=60  unmapped=0
 26f474ae7c6caa4042bbb17177e2021ac971fbdf4a6754bac379e11713818142  pdf/2024/SCHEDULE_LEP/en/f1040lep-p.pdf  pages=1  mapped=23  unmapped=0
 68759fbaeb811546c88ff6f42c3b8b3bf59da048d80229d741e40ec6588a5822  pdf/2024/SCHEDULE_LEP/es/f1040les-p.pdf  pages=1  mapped=23  unmapped=0
-e044e765ace334c76bda7910bd3193fc813c7789d06340124359b885c98d58d0  pdf/2026/IRS1040/en/f1040--dft.pdf  pages=3  mapped=131  unmapped=76
+e044e765ace334c76bda7910bd3193fc813c7789d06340124359b885c98d58d0  pdf/2026/IRS1040/en/f1040--dft.pdf  pages=3  mapped=147  unmapped=60
 fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3  pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf  pages=3  mapped=35  unmapped=3
 a017a1b717d1c70ff8d831ef8b73c730e5b24f147c394c37f792035a9df22fad  pdf/2026/IRS1040S1/en/f1040s1--dft.pdf  pages=3  mapped=16  unmapped=56
 e22aec7feb2f5b734e16ee74d70acfdfdc0d66a5292f69cf0ced3b87543d95ac  pdf/2026/IRS1040S1A/en/f1040s1a--dft.pdf  pages=4  mapped=47  unmapped=138
@@ -33,7 +33,7 @@ e22aec7feb2f5b734e16ee74d70acfdfdc0d66a5292f69cf0ced3b87543d95ac  pdf/2026/IRS10
 787e1ae1eaa3e23a184074d0f437f6b2a8fe3f01290f366201f14eeecc82b8db  pdf/2026/IRS1040S3A/en/f1040s3a--dft.pdf  pages=2  mapped=16  unmapped=0
 0638b2863bdaeadfd3fccee12a9145bf92a442d8de156584c5602cc7e3881422  pdf/2026/IRS1040S8812/en/f1040s8--dft.pdf  pages=2  mapped=36  unmapped=4
 d49acff9afc2faa178b7bf1f70d826d03c2c6def43700880f8ae5bb8bb5a0ffa  pdf/2026/IRS1040SA/en/f1040sa--dft.pdf  pages=3  mapped=21  unmapped=26
-aa6272f6b3b8a8c6a2aa6ef9d1069f1edb88fb9df4df60278d198da89cdfd93f  pdf/2026/IRS1040SB/en/f1040sb--dft.pdf  pages=2  mapped=67  unmapped=5
+aa6272f6b3b8a8c6a2aa6ef9d1069f1edb88fb9df4df60278d198da89cdfd93f  pdf/2026/IRS1040SB/en/f1040sb--dft.pdf  pages=2  mapped=71  unmapped=1
 cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4  pdf/2026/IRS1040SC/en/f1040sc.pdf  pages=2  mapped=56  unmapped=53
 0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1  pdf/2026/IRS1040SD/en/f1040sd--dft.pdf  pages=3  mapped=38  unmapped=15
 0bee231f1ecb2470fb884b1f9cee7707eddee8994ce479fc563850b2dd3c5aed  pdf/2026/IRS1040SE/en/f1040se--dft.pdf  pages=4  mapped=40  unmapped=153

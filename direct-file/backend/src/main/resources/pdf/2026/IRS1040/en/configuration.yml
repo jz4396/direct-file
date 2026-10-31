@@ -54,6 +54,54 @@ form:
           f1_44[0]: /claimedDependentsCollection/[1]/relationship
           f1_45[0]: /claimedDependentsCollection/[2]/relationship
           f1_46[0]: /claimedDependentsCollection/[3]/relationship
+        # #89 rows (5) and (6). 2026 draft tooltips (this file): row (5) "Check if lived with you more than half of
+        # 2026" (a) Yes and (b) And in the U.S.; row (6) "Full-time student" and "Permanently and totally disabled".
+        # Published instructions are still the 2025 revision, Instructions for Form 1040 (2025)
+        # https://www.irs.gov/pub/irs-pdf/i1040gi.pdf SHA-256
+        # 482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a. The quotes below say "2025"; the draft
+        # form asks the same questions for 2026. PDF p. 17: "If the child lived with you for more than half of 2025,
+        # check the "Yes" box (box (a)) on row (5)"; "If the child is a full-time student, check the "Full-time
+        # student" box on row (6)"; "If the child is permanently and totally disabled, check the "Permanently and
+        # totally disabled" box on row (6)". PDF p. 41 (EIC qualifying child): "If the child lived with you in the
+        # United States for more than half of 2025, check both boxes (box (a) and box (b)) on row (5)". p. 18 tells
+        # the filer to complete (5)(a) and (6) when claiming the child, and does not mention (5)(b); (b) is the U.S.
+        # abode test. 26 U.S.C. 152(c)(1)(B): same principal place of abode for more than one-half of the year.
+        # 26 U.S.C. 32(c)(3)(C): that abode counts for the EIC only if it is in the United States. 26 U.S.C.
+        # 152(c)(3): student who has not attained age 24, or permanently and totally disabled (22(e)(3)).
+        # (5)(a) is /residencyTest (not lessThanSixMonths). (5)(b) is /livedWithTpInUsMostOfYear, which already
+        # requires (5)(a), so (b) is never checked alone. Row (6) full-time student is /isAStudentUnder24, the student
+        # predicate Schedule EIC line 4a Yes uses (/scheduleEicLine4aYes is that fact and not under 19):
+        # /fullTimeStudent, age 19 through 23 (/studentStatusMayAffectBenefits), and younger than the filer. A stored
+        # fullTimeStudent answer for a child under 19 stays blank. Disability stays the filer's
+        # /permanentTotalDisability. PDF p. 19 Step 4: qualifying relatives fill columns (5) and (6) too, so these
+        # boxes follow the claimed collection. Dependents past the four on-form columns stay on the c1_13 "more than
+        # four" checkbox; the additional-dependents statement is not this map.
+        Row5[0]:
+          Dependent1[0]:
+            c1_14[0]: /claimedDependentsCollection/[0]/residencyTest # (5)(a) Yes
+            c1_15[0]: /claimedDependentsCollection/[0]/livedWithTpInUsMostOfYear # (5)(b) And in the U.S.
+          Dependent2[0]:
+            c1_16[0]: /claimedDependentsCollection/[1]/residencyTest
+            c1_17[0]: /claimedDependentsCollection/[1]/livedWithTpInUsMostOfYear
+          Dependent3[0]:
+            c1_18[0]: /claimedDependentsCollection/[2]/residencyTest
+            c1_19[0]: /claimedDependentsCollection/[2]/livedWithTpInUsMostOfYear
+          Dependent4[0]:
+            c1_20[0]: /claimedDependentsCollection/[3]/residencyTest
+            c1_21[0]: /claimedDependentsCollection/[3]/livedWithTpInUsMostOfYear
+        Row6[0]:
+          Dependent1[0]:
+            c1_22[0]: /claimedDependentsCollection/[0]/isAStudentUnder24 # (6) Full-time student
+            c1_23[0]: /claimedDependentsCollection/[0]/permanentTotalDisability # (6) Permanently and totally disabled
+          Dependent2[0]:
+            c1_24[0]: /claimedDependentsCollection/[1]/isAStudentUnder24
+            c1_25[0]: /claimedDependentsCollection/[1]/permanentTotalDisability
+          Dependent3[0]:
+            c1_26[0]: /claimedDependentsCollection/[2]/isAStudentUnder24
+            c1_27[0]: /claimedDependentsCollection/[2]/permanentTotalDisability
+          Dependent4[0]:
+            c1_28[0]: /claimedDependentsCollection/[3]/isAStudentUnder24
+            c1_29[0]: /claimedDependentsCollection/[3]/permanentTotalDisability
         Row7[0]:
           Dependent1[0]:
             c1_30[0]: /claimedDependentsCollection/[0]/isClaimedForCTC
