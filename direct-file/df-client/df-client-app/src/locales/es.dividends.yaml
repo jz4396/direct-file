@@ -21,6 +21,9 @@ headings:
   /heading/income/dividends/box-3-basis: ¿La cantidad del encasillado 3 es mayor que su costo (base) en las acciones?
   /heading/income/dividends/box-4: Ingrese la cantidad del <strong>encasillado 4</strong>, si la hay.
   /heading/income/dividends/box-5: Ingrese la cantidad del <strong>encasillado 5</strong>, si la hay.
+  /heading/income/dividends/box-5-holding:
+    ¿Tuvo cada acción de REIT más de 45 días alrededor de la fecha del dividendo y no tuvo que pagar el dividendo a otra
+    persona?
   /heading/income/dividends/box-7: Ingrese la cantidad del <strong>encasillado 7</strong>, si la hay.
   /heading/income/dividends/box-12: Ingrese la cantidad del <strong>encasillado 12</strong>, si la hay.
   /heading/income/dividends/unsupported-boxes: ¿Este Formulario 1099-DIV muestra algo en algún otro encasillado?
@@ -29,7 +32,8 @@ headings:
     Esta herramienta aún no admite dividendos del encasillado 1b que no son calificados
   /heading/knockout/dividends-nondividend-over-basis:
     Esta herramienta aún no admite distribuciones que no son dividendos mayores que su base
-  /heading/knockout/dividends-section-199a: Esta herramienta aún no admite dividendos de la sección 199A
+  /heading/knockout/dividends-section-199a:
+    Esta herramienta no puede separar dividendos de la sección 199A que no son dividendos calificados de un REIT
   /heading/knockout/dividends-amounts-inconsistent: Verifique las cantidades que ingresó de este Formulario 1099-DIV
   /heading/knockout/dividends-foreign-tax:
     Esta herramienta aún no admite impuestos extranjeros que requieren el Formulario 1116
@@ -98,16 +102,23 @@ info:
     body: El encasillado 4 es el impuesto federal sobre el ingreso retenido (retención adicional).
   /info/income/dividends/box-5:
     body:
-      El encasillado 5 es dividendos de la sección 199A, que pueden calificar para la deducción por ingreso calificado
-      de negocios.
+      - p:
+          El encasillado 5 es dividendos de la sección 199A. La parte que es un dividendo calificado de un REIT se
+          declara en la línea 6 del Formulario 8995. Ya está incluida en el encasillado 1a.
+  /info/income/dividends/box-5-holding:
+    body:
+      - p:
+          Responda sí si tuvo cada acción de REIT más de 45 días durante el período de 91 días que comenzó 45 días antes
+          de la fecha ex dividendo, y no tuvo que pagar el dividendo a otra persona. Responda no si tuvo una acción 45
+          días o menos, o si tuvo que hacer un pago relacionado, como por una venta en corto.
   /info/income/dividends/box-7:
     body: El encasillado 7 es el impuesto extranjero pagado sobre estos dividendos.
   /info/income/dividends/box-12:
     body:
       - p:
-          El encasillado 12 son dividendos de intereses exentos de un fondo mutuo u otra compañía de inversión
-          regulada. Se declaran en la línea 2a del Formulario 1040, junto con los intereses exentos de impuestos. No se
-          incluyen en los dividendos ordinarios. Deje el encasillado 12 en blanco si está vacío en su formulario.
+          El encasillado 12 son dividendos de intereses exentos de un fondo mutuo u otra compañía de inversión regulada.
+          Se declaran en la línea 2a del Formulario 1040, junto con los intereses exentos de impuestos. No se incluyen
+          en los dividendos ordinarios. Deje el encasillado 12 en blanco si está vacío en su formulario.
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
@@ -145,8 +156,10 @@ info:
     alertText:
       body:
         - p:
-            Los dividendos de la sección 199A se declaran en el Formulario 8995 para la deducción por ingreso calificado
-            de negocios, que esta herramienta aún no admite. Necesitará otra manera de presentar esta declaración.
+            Un dividendo de la sección 199A no es un dividendo calificado de un REIT si tuvo la acción 45 días o menos
+            durante el período de 91 días que comenzó 45 días antes de la fecha ex dividendo, o si tuvo que pagar el
+            dividendo a otra persona. Esta herramienta no separa esa cantidad del encasillado 5. Necesitará otra manera
+            de presentar esta declaración.
   /info/knockout/dividends-amounts-inconsistent:
     alertText:
       body:
@@ -235,6 +248,8 @@ dataviews:
     /dividendReports/*/nondividendDistributionsExceedBasis: ¿El encasillado 3 es mayor que su base?
     /dividendReports/*/writableFederalTaxWithheld: Encasillado 4 - Impuesto federal sobre el ingreso retenido
     /dividendReports/*/writableSection199ADividends: Encasillado 5 - Dividendos de la sección 199A
+    /dividendReports/*/section199ADividendsHoldingPeriodMet:
+      ¿Tuvo cada acción de REIT más de 45 días y no tuvo que pagar el dividendo a otra persona?
     /dividendReports/*/writableForeignTaxPaid: Encasillado 7 - Impuesto extranjero pagado
     /dividendReports/*/foreignTaxElectionRequirementsMet: ¿Se cumplen todas las condiciones del impuesto extranjero?
     /dividendReports/*/writableExemptInterestDividends: Encasillado 12 - Dividendos de intereses exentos

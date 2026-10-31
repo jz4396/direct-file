@@ -19,6 +19,9 @@ headings:
   /heading/income/dividends/box-3-basis: Is the amount in box 3 more than your cost (basis) in the shares?
   /heading/income/dividends/box-4: Enter the amount from <strong>box 4</strong>, if any.
   /heading/income/dividends/box-5: Enter the amount from <strong>box 5</strong>, if any.
+  /heading/income/dividends/box-5-holding:
+    Did you hold each REIT share more than 45 days around the dividend date and not have to pay the dividend to someone
+    else?
   /heading/income/dividends/box-7: Enter the amount from <strong>box 7</strong>, if any.
   /heading/income/dividends/box-12: Enter the amount from <strong>box 12</strong>, if any.
   /heading/income/dividends/unsupported-boxes: Does this 1099-DIV show anything in any other box?
@@ -26,7 +29,8 @@ headings:
   /heading/knockout/dividends-holding-period: This tool doesn’t yet support box 1b dividends that aren’t qualified
   /heading/knockout/dividends-nondividend-over-basis:
     This tool doesn’t yet support nondividend distributions above your basis
-  /heading/knockout/dividends-section-199a: This tool doesn’t yet support section 199A dividends
+  /heading/knockout/dividends-section-199a:
+    This tool can’t split section 199A dividends that aren’t qualified REIT dividends
   /heading/knockout/dividends-amounts-inconsistent: Check the amounts you entered from this 1099-DIV
   /heading/knockout/dividends-foreign-tax: This tool doesn’t yet support foreign tax that needs Form 1116
   /heading/knockout/dividends-unsupported-boxes: This tool doesn’t yet support some boxes on your 1099-DIV
@@ -86,7 +90,16 @@ info:
   /info/income/dividends/box-4:
     body: Box 4 is federal income tax withheld (backup withholding).
   /info/income/dividends/box-5:
-    body: Box 5 is section 199A dividends, which may qualify for the qualified business income deduction.
+    body:
+      - p:
+          Box 5 is section 199A dividends. The part that is a qualified REIT dividend is reported on Form 8995, line 6.
+          It is already included in box 1a.
+  /info/income/dividends/box-5-holding:
+    body:
+      - p:
+          Answer yes if you held each REIT share for more than 45 days during the 91-day period that began 45 days
+          before the ex-dividend date, and you did not have to pay the dividend to someone else. Answer no if you held a
+          share for 45 days or less, or if you had to make a related payment, such as for a short sale.
   /info/income/dividends/box-7:
     body: Box 7 is foreign tax paid on these dividends.
   /info/income/dividends/box-12:
@@ -128,8 +141,9 @@ info:
     alertText:
       body:
         - p:
-            Section 199A dividends go on Form 8995 for the qualified business income deduction, which this tool doesn’t
-            support yet. You’ll need another way to file this return.
+            A section 199A dividend isn’t a qualified REIT dividend if you held the share for 45 days or less during the
+            91-day period that began 45 days before the ex-dividend date, or if you had to pay the dividend to someone
+            else. This tool doesn’t split that amount out of box 5. You’ll need another way to file this return.
   /info/knockout/dividends-amounts-inconsistent:
     alertText:
       body:
@@ -214,6 +228,8 @@ dataviews:
     /dividendReports/*/nondividendDistributionsExceedBasis: Is box 3 more than your basis?
     /dividendReports/*/writableFederalTaxWithheld: Box 4 - Federal income tax withheld
     /dividendReports/*/writableSection199ADividends: Box 5 - Section 199A dividends
+    /dividendReports/*/section199ADividendsHoldingPeriodMet:
+      Did you hold each REIT share more than 45 days and not have to pay the dividend to someone else?
     /dividendReports/*/writableForeignTaxPaid: Box 7 - Foreign tax paid
     /dividendReports/*/foreignTaxElectionRequirementsMet: Do all of the foreign tax requirements apply?
     /dividendReports/*/writableExemptInterestDividends: Box 12 - Exempt-interest dividends

@@ -244,9 +244,11 @@ public final class PrintRefusingKnockouts {
             // 3a, Exception. 26 U.S.C. 1(h)(11)(B)(iii). Line 3a is not reduced by a split this return does not
             // collect.
             "/flowKnockoutQualifiedDividendsHoldingPeriod",
-            // Box 5 section 199A dividends. 26 U.S.C. 199A(b)(1)(B). Form 1040 line 13b is not that deduction, so
-            // box 5 is not left off the return as $0. Full QBI from dividends is later.
-            "/flowKnockoutSection199ADividends",
+            // Box 5 that is not a qualified REIT dividend. 26 CFR 1.199A-3(c)(2)(ii): stock held for 45 days or
+            // less during the 91-day period beginning 45 days before the ex-dividend date, or a related-payment
+            // obligation. 26 U.S.C. 199A(b)(1)(B). A qualified amount is Form 8995 line 6. The per-share split is
+            // not collected, so a "no" is not left on line 6.
+            "/flowKnockoutSection199ADividendsHoldingPeriod",
             // Box 7 foreign tax that does not meet the 26 U.S.C. 904(j) election. Form 1040 instr. (2025) p. 115,
             // Schedule 3 Line 1: "No. See Form 1116 to find out if you can take the credit". Form 1116 is not
             // computed. The election itself (at or under $300, or $600 on a joint return) still prints.

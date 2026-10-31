@@ -156,21 +156,22 @@
         (form8995 /form8995Line17:
         "Qualified business income deduction. Enter the greater of line 15 or line 16. Also
         enter this amount on the
-        applicable line of your return.") when the return has Schedule C qualified business
-        income or a section 162 Schedule E rental; $0 otherwise. A supported section 162 rental is on
-        Form 8995 line 1. Safe harbor, aggregation, and a suspended passive loss remain stops
-        (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). Every
-        other source of 199A income that Form 8995 here does not compute stays a stop with
-        BlockSubmissionOnTrue: 1099-DIV box
-        5 (dividends /flowKnockoutSection199ADividends), a K-1 section 199A statement (scheduleE
+        applicable line of your return.") when Form 8995 is filed (form8995 /form8995Required: Schedule C
+        qualified business income, a section 162 Schedule E rental, or 1099-DIV box 5 greater than $0); $0
+        otherwise. A supported section 162 rental is on Form 8995 line 1. 26 U.S.C. 199A(b)(1)(B): the REIT
+        and PTP component is part of the combined qualified business income amount. Safe harbor, aggregation,
+        and a suspended passive loss remain stops (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). Every
+        other source of 199A income that Form 8995 here does not compute stays a stop with BlockSubmissionOnTrue:
+        a REIT dividend that fails the holding period (dividends
+        /flowKnockoutSection199ADividendsHoldingPeriod), a K-1 section 199A statement (scheduleE
         /flowKnockoutScheduleEPartIIQbiCode), PTP income (scheduleE
-        /flowKnockoutScheduleEPartIIForeignOrPtp), and the
-        Form 8995-A and carryforward cases (form8995 /flowKnockoutQbi*).</Description>
+        /flowKnockoutScheduleEPartIIForeignOrPtp), and the Form 8995-A and carryforward cases (form8995
+        /flowKnockoutQbi*).</Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <Dependency module="form8995" path="/form8995HasQbi" />
+              <Dependency module="form8995" path="/form8995Required" />
             </When>
             <Then>
               <Dependency module="form8995" path="/form8995Line17" />

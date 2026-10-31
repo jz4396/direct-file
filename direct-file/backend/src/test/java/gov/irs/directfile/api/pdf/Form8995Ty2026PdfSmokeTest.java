@@ -15,6 +15,7 @@ import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusExcept
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.collectionItem;
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.fieldsOnPages;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.EMPTY_COLLECTION;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.day;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.tin;
@@ -273,6 +274,88 @@ class Form8995Ty2026PdfSmokeTest {
             amount(f, ROW_II + "f1_8[0]", 350, "1(ii)(c) spouse, no SE tax");
             amount(f, "Page1[0].f1_18[0]", 46817, "2");
         }
+    }
+
+    /**
+     * Box 5 only, no Schedule C. Ordinary dividends $2,000 are also the qualified REIT amount. Line 9 is $400
+     * (26 U.S.C. 199A(b)(1)(B)). The single standard deduction $16,100 exceeds AGI $2,000, so line 11 is $0 and
+     * line 17 is $0 (26 U.S.C. 199A(a)). 2026 Instructions for Form 8995 draft, PDF p. 5.
+     */
+    @Test
+    void qualifiedReitDividendsPrintOnLines6And9AndTheIncomeLimitIsZero() throws Exception {
+        Map<String, String> facts = florida("0.00", "0.00");
+        facts.put("/hadSelfEmploymentIncome", bool(false));
+        facts.put("/scheduleCBusinesses", EMPTY_COLLECTION);
+        facts.put("/scheduleCBusinessesIsDone", bool(true));
+        reitDividend(facts, "2000.00");
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals(Boolean.FALSE, graph.get("/form8995HasQbi").get());
+        assertEquals("2000.00", dollars(graph, "/ordinaryDividends"));
+        assertEquals("2000.00", dollars(graph, "/agi"));
+        assertEquals("2000.00", dollars(graph, "/form8995Line6"));
+        assertEquals("2000.00", dollars(graph, "/form8995Line8"));
+        assertEquals("400.00", dollars(graph, "/form8995Line9"));
+        assertEquals("0.00", dollars(graph, "/form8995Line11"));
+        assertEquals("0.00", dollars(graph, "/form8995Line14"));
+        assertEquals("0.00", dollars(graph, "/form8995Line17"));
+        submissionStillBlocked(graph);
+
+        try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {
+            Map<String, String> f = fieldsOnPages(doc, FOOTER);
+            amount(f, "Page1[0].f1_22[0]", 2000, "6");
+            blank(f, "Page1[0].f1_23[0]", "7");
+            amount(f, "Page1[0].f1_24[0]", 2000, "8");
+            amount(f, "Page1[0].f1_25[0]", 400, "9");
+            blank(f, "Page1[0].f1_33[0]", "17");
+            Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
+            blank(f1040, "Page2[0].f2_05[0]", "Form 1040 line 13b");
+        }
+    }
+
+    /**
+     * Schedule C gross receipts $60,000 and expenses $10,000, plus box 5 $2,000. Line 9 is $400. Line 11 is $32,367
+     * and line 14 is round(20% × 32,367) = $6,473, which caps line 17 (26 U.S.C. 199A(a), (b)(1)(B)).
+     */
+    @Test
+    void scheduleCPlusQualifiedReitDividendsPrintsTheReitComponent() throws Exception {
+        Map<String, String> facts = florida("60000.00", "10000.00");
+        reitDividend(facts, "2000.00");
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals("46467.00", dollars(graph, "/form8995Line2"));
+        assertEquals("9293.00", dollars(graph, "/form8995Line5"));
+        assertEquals("2000.00", dollars(graph, "/form8995Line6"));
+        assertEquals("400.00", dollars(graph, "/form8995Line9"));
+        assertEquals("9693.00", dollars(graph, "/form8995Line10"));
+        assertEquals("32367.00", dollars(graph, "/form8995Line11"));
+        assertEquals("6473.00", dollars(graph, "/form8995Line14"));
+        assertEquals("6473.00", dollars(graph, "/form8995Line17"));
+        submissionStillBlocked(graph);
+
+        try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {
+            Map<String, String> f = fieldsOnPages(doc, FOOTER);
+            amount(f, "Page1[0].f1_22[0]", 2000, "6");
+            amount(f, "Page1[0].f1_24[0]", 2000, "8");
+            amount(f, "Page1[0].f1_25[0]", 400, "9");
+            amount(f, "Page1[0].f1_33[0]", 6473, "17");
+        }
+    }
+
+    /** One 1099-DIV whose box 1a and box 5 are the same qualified REIT amount. The 45-day answer is yes. */
+    static void reitDividend(Map<String, String> facts, String amount) {
+        String div = "d8995000-0000-4000-8000-000000000001";
+        facts.put("/dividendReports", collection(div));
+        facts.put("/dividendReports/#" + div + "/filer", collectionItem(W2));
+        facts.put("/dividendReports/#" + div + "/payer", string("Synthetic REIT Fund"));
+        facts.put("/dividendReports/#" + div + "/ordinaryDividends", dollar(amount));
+        facts.put("/dividendReports/#" + div + "/writableSection199ADividends", dollar(amount));
+        facts.put("/dividendReports/#" + div + "/section199ADividendsHoldingPeriodMet", bool(true));
+        facts.put("/dividendReports/#" + div + "/hasUnsupportedBoxes", bool(false));
+        facts.put("/dividendReports/#" + div + "/receivedAsNominee", bool(false));
+        facts.put("/dividendReports/#" + div + "/hasSeenLastAvailableScreen", bool(true));
+        facts.put("/dividendReportsIsDone", bool(true));
+        facts.put("/qbiHasPriorYearLossCarryforward", bool(false));
     }
 
     /** count simple primary-filer Schedule C businesses, each with $1,000 of gross receipts and no expenses. */

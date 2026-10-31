@@ -9,9 +9,10 @@
 # Page 1 of the file is the "Caution: DRAFT-NOT FOR FILING" cover sheet; skipLeadingPages drops it. The form is the
 # second page. Attachment Sequence No. 55.
 #
-# Included when /form8995Required (Schedule C qualified business income or loss, or a section 162 Schedule E
-# property, including a loss year that carries line 18 forward). Instructions for Form 1040 (2025) draft, PDF p. 35,
-# the QBI line (13b on the 2026 form): "Attach whichever form you use (Form 8995 or 8995-A) to your return."
+# Included when /form8995Required (Schedule C qualified business income or loss, a section 162 Schedule E
+# property, or 1099-DIV box 5 greater than $0, including a loss year that carries line 18 forward). Instructions
+# for Form 1040 (2025) draft, PDF p. 35, the QBI line (13b on the 2026 form): "Attach whichever form you use
+# (Form 8995 or 8995-A) to your return."
 #
 # Lines 1(i)-1(v) are Schedule C businesses first, then section 162 Schedule E properties. Column (a) is the name.
 # Column (b) is the owner's TIN for a Schedule C row: 2026 Instructions for Form 8995 draft, Specific Instructions,
@@ -66,7 +67,7 @@ form:
       f1_19[0]: /form8995Line3 # 3 carryforward, inside preprinted parentheses; $0 here
       f1_20[0]: /form8995Line4 # 4 "If zero or less, enter -0-"
       f1_21[0]: /form8995Line5 # 5 "Multiply line 4 by 20% (0.20)"
-      f1_22[0]: /form8995Line6 # 6 REIT and PTP income or (loss); $0 here
+      f1_22[0]: /form8995Line6 # 6 qualified REIT dividends (sum of 1099-DIV box 5); $0 prints blank
       f1_23[0]: /form8995Line7 # 7 REIT/PTP carryforward, inside preprinted parentheses; $0 here
       f1_24[0]: /form8995Line8 # 8 "If zero or less, enter -0-"
       f1_25[0]: /form8995Line9 # 9 "Multiply line 8 by 20% (0.20)"

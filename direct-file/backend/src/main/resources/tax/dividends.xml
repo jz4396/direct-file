@@ -27,7 +27,8 @@
     boxes 2b-2f, 6, 8-11, 13-16                  -> /flowKnockoutDividendUnsupportedBoxes
     box 3 above the stock's basis                -> /flowKnockoutNondividendDistributionsOverBasis
     box 1b not meeting the holding period        -> /flowKnockoutQualifiedDividendsHoldingPeriod
-    box 5 section 199A dividends                 -> /flowKnockoutSection199ADividends
+    box 5 that is not a qualified REIT dividend  -> /flowKnockoutSection199ADividendsHoldingPeriod
+    (box 5 that is a qualified REIT dividend is Form 8995 line 6; /flowKnockoutSection199ADividends is no longer a stop)
     box 7 foreign tax not meeting 904(j)         -> /flowKnockoutDividendForeignTaxPaid
     dividends received as a nominee              -> /flowKnockoutDividendNominee
     box 1b or box 5 larger than box 1a           -> /flowKnockoutDividendAmountsInconsistent
@@ -257,8 +258,10 @@
       <Name>1099-DIV box 2a: total capital gain distributions</Name>
       <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 2a. Shows total capital gain distributions from a
-        regulated investment company (RIC) or real estate investment trust (REIT)." Not computed in this module: any
-        amount stops the return (/flowKnockoutCapitalGainDistributions).</Description>
+        regulated investment company (RIC) or real estate investment trust (REIT)." Reported on Form 1040 line 7a when
+        Schedule D is not required (/capitalGainDistributionsWithoutScheduleD), otherwise on Schedule D line 13
+        (scheduleD2 /scheduleDLine13). Either way it reaches the qualified dividends and capital gain tax worksheet
+        line 3 (scheduleD3 /qdcgLine3).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -390,9 +393,10 @@
       <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 5. Shows the portion of the amount in box 1a that may be
         eligible for the 20% qualified business income deduction under section 199A. See the instructions for Form 8995
-        and Form 8995-A." 26 U.S.C. 199A(b)(1)(B) and (e)(3) (https://www.law.cornell.edu/uscode/text/26/199A). The QBI
-        deduction (Form 1040 line 13b, taxCalculations /qualifiedBusinessIncomeDeduction) is not modeled ($0), so any
-        amount stops the return (/flowKnockoutSection199ADividends).</Description>
+        and Form 8995-A." 26 U.S.C. 199A(b)(1)(B) and (e)(3) (https://www.law.cornell.edu/uscode/text/26/199A). The
+        amount is Form 8995 line 6 (form8995 /form8995Line6) when it is a qualified REIT dividend. A no to the
+        holding-period question stops the return (/flowKnockoutSection199ADividendsHoldingPeriod). Dividends received
+        as a nominee still stop (/flowKnockoutDividendNominee).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -557,6 +561,24 @@
       </Writable>
     </Fact>
 
+    <Fact path="/dividendReports/*/section199ADividendsHoldingPeriodMet">
+      <Name>Box 5 dividends are qualified REIT dividends</Name>
+      <Description>Asked when box 5 is more than $0. Yes means each REIT share was held for more than 45 days during
+        the 91-day period beginning 45 days before the ex-dividend date, and the shareholder was not under an
+        obligation to make related payments. 26 CFR 1.199A-3(c)(2)(ii)
+        (https://www.law.cornell.edu/cfr/text/26/1.199A-3): a qualified REIT dividend does not include a dividend on
+        stock "held by the shareholder for 45 days or less ... during the 91-day period beginning on the date which is
+        45 days before the date on which such share becomes ex-dividend", or "to the extent that the shareholder is
+        under an obligation (whether pursuant to a short sale or otherwise) to make related payments". 2026
+        Instructions for Form 8995 draft, https://www.irs.gov/pub/irs-dft/i8995--dft.pdf, PDF p. 5: "Qualified REIT
+        dividends include any dividends you received from a REIT held for more than 45 days and for which the payment
+        isn't obligated to someone else". No stops the return
+        (/flowKnockoutSection199ADividendsHoldingPeriod).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
     <Fact path="/dividendReports/*/hasQualifiedDividends">
       <Name>Box 1b is more than $0</Name>
       <Derived>
@@ -568,6 +590,39 @@
             <Dollar>0</Dollar>
           </Right>
         </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/hasSection199ADividends">
+      <Name>Box 5 is more than $0</Name>
+      <Description>1099-DIV box 5 is more than $0, so the qualified REIT dividend question is asked.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../section199ADividends" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/section199ADividendsHoldingPeriodNotMet">
+      <Name>Box 5 is not a qualified REIT dividend</Name>
+      <Description>Box 5 is more than $0 and the filer answered no to the 45-day holding period and related-payment
+        question. 26 CFR 1.199A-3(c)(2)(ii). Complete false when box 5 is $0 or the answer is yes or not yet
+        given.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasSection199ADividends" />
+          <IsComplete>
+            <Dependency path="../section199ADividendsHoldingPeriodMet" />
+          </IsComplete>
+          <Not>
+            <Dependency path="../section199ADividendsHoldingPeriodMet" />
+          </Not>
+        </All>
       </Derived>
     </Fact>
 
@@ -676,6 +731,14 @@
             </Not>
             <IsComplete>
               <Dependency path="../qualifiedDividendsHoldingPeriodNotMet" />
+            </IsComplete>
+          </Any>
+          <Any>
+            <Not>
+              <Dependency path="../hasSection199ADividends" />
+            </Not>
+            <IsComplete>
+              <Dependency path="../section199ADividendsHoldingPeriodMet" />
             </IsComplete>
           </Any>
           <Any>
@@ -908,7 +971,9 @@
 
     <Fact path="/totalSection199ADividends">
       <Name>Total section 199A dividends (1099-DIV box 5)</Name>
-      <Description>See /flowKnockoutSection199ADividends.</Description>
+      <Description>Sum of 1099-DIV box 5. Form 8995 line 6 (form8995 /form8995Line6) is this amount in whole dollars.
+        26 U.S.C. 199A(b)(1)(B) (https://www.law.cornell.edu/uscode/text/26/199A). No publicly traded partnership
+        income is included; a PTP stops the return (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp).</Description>
       <Derived>
         <!-- No collection yet (section not started): 0 / false; /flowIncomplete still requires /dividendReportsIsDone. -->
         <Switch>
@@ -1195,22 +1260,67 @@
     </Fact>
 
     <Fact path="/flowKnockoutSection199ADividends">
-      <Name>Knockout: 1099-DIV box 5 section 199A dividends</Name>
-      <Description>Qualified REIT dividends are part of the 26 U.S.C. 199A(b)(1)(B) combined QBI amount
-        (https://www.law.cornell.edu/uscode/text/26/199A), claimed on Form 8995 or 8995-A and Form 1040 line 13b. QBI is
-        not modeled (taxCalculations /qualifiedBusinessIncomeDeduction is $0), so any amount stops the return rather
-        than dropping the deduction.</Description>
+      <Name>Former knockout: any 1099-DIV box 5</Name>
+      <Description>Qualified REIT dividends from Form 1099-DIV box 5 are Form 8995 line 6 (form8995 /form8995Line6).
+        26 U.S.C. 199A(b)(1)(B) and (e)(3) (https://www.law.cornell.edu/uscode/text/26/199A). 2026 Instructions for
+        Form 8995 draft, https://www.irs.gov/pub/irs-dft/i8995--dft.pdf, PDF p. 5: "This amount is reported to you on
+        Form 1099-DIV, line 5." Form 8995 is computed, so an amount in box 5 is not itself a stop. A no to the
+        holding-period question stops at /flowKnockoutSection199ADividendsHoldingPeriod. PTP income (scheduleE
+        /flowKnockoutScheduleEPartIIForeignOrPtp), a REIT or PTP loss carryforward (form8995
+        /flowKnockoutQbiPriorYearCarryforward), taxable income above the Form 8995 threshold (form8995
+        /flowKnockoutQbiAboveThreshold), and dividends received as a nominee (/flowKnockoutDividendNominee) still
+        stop. Always false.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <False />
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutSection199ADividendsHoldingPeriod">
+      <Name>Knockout: 1099-DIV box 5 is not a qualified REIT dividend</Name>
+      <Description>Yes to /dividendReports/*/section199ADividendsHoldingPeriodNotMet. 26 CFR 1.199A-3(c)(2)(ii)
+        (https://www.law.cornell.edu/cfr/text/26/1.199A-3): stock held for 45 days or less during the 91-day period, or
+        a related-payment obligation, is not a qualified REIT dividend. 2026 Instructions for Form 8995 draft, PDF p.
+        5. The per-share split is not collected, so the return stops instead of putting the nonqualified part on line
+        6. Complete false when no Form 1099-DIV has box 5, or every box 5 is answered yes, or the question is not yet
+        answered.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Dependency path="/totalSection199ADividends" />
-          </Left>
-          <Right>
-            <Dollar>0</Dollar>
-          </Right>
-        </GreaterThan>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <All>
+                      <IsComplete>
+                        <Dependency path="/dividendReports/*/section199ADividendsHoldingPeriodNotMet" />
+                      </IsComplete>
+                      <Dependency path="/dividendReports/*/section199ADividendsHoldingPeriodNotMet" />
+                    </All>
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

@@ -71,14 +71,42 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
     });
     expect(at(over, `1099-div-box-3-basis`, task)).toRouteNextTo(`${path}/1099-div-box-3-knockout`);
   });
-  it(`box 4 to box 5; box 5 > 0 routes to its knockout; box 7 asks about the 904(j) requirements`, ({ task }) => {
+  it(`box 4 to box 5; box 5 asks the REIT holding period; a no stops; box 7 asks about the 904(j) requirements`, ({
+    task,
+  }) => {
     const ord = { [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`) };
     expect(at(base(`single`, ord), `1099-div-box-4`, task)).toRouteNextTo(`${path}/1099-div-box-5`);
     const box5 = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/writableSection199ADividends`]: createDollarWrapper(`5`),
     });
-    expect(at(box5, `1099-div-box-5`, task)).toRouteNextTo(`${path}/1099-div-box-5-knockout`);
+    expect(at(box5, `1099-div-box-5`, task)).toRouteNextTo(`${path}/1099-div-box-5-holding`);
+    const held = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableSection199ADividends`]: createDollarWrapper(`5`),
+      [`/dividendReports/#${id}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(true),
+    });
+    expect(at(held, `1099-div-box-5-holding`, task)).toRouteNextTo(`${path}/1099-div-box-5-carryforward`);
+    const noCarry = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableSection199ADividends`]: createDollarWrapper(`5`),
+      [`/dividendReports/#${id}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(true),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+    });
+    expect(at(noCarry, `1099-div-box-5-carryforward`, task)).toRouteNextTo(`${path}/1099-div-box-7`);
+    const carry = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableSection199ADividends`]: createDollarWrapper(`5`),
+      [`/dividendReports/#${id}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(true),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(true),
+    });
+    expect(at(carry, `1099-div-box-5-carryforward`, task)).toRouteNextTo(`${path}/1099-div-box-5-qbi-knockout`);
+    const notQualified = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableSection199ADividends`]: createDollarWrapper(`5`),
+      [`/dividendReports/#${id}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(false),
+    });
+    expect(at(notQualified, `1099-div-box-5-holding`, task)).toRouteNextTo(`${path}/1099-div-box-5-knockout`);
     expect(at(base(`single`, ord), `1099-div-box-5`, task)).toRouteNextTo(`${path}/1099-div-box-7`);
     const box7 = base(`single`, {
       ...ord,

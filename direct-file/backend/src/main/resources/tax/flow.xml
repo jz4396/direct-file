@@ -29,7 +29,7 @@
           <Dependency module="dividends" path="/flowKnockoutDividendUnsupportedBoxes" />
           <Dependency module="dividends" path="/flowKnockoutNondividendDistributionsOverBasis" />
           <Dependency module="dividends" path="/flowKnockoutQualifiedDividendsHoldingPeriod" />
-          <Dependency module="dividends" path="/flowKnockoutSection199ADividends" />
+          <Dependency module="dividends" path="/flowKnockoutSection199ADividendsHoldingPeriod" />
           <Dependency module="dividends" path="/flowKnockoutDividendForeignTaxPaid" />
           <Dependency module="dividends" path="/flowKnockoutDividendNominee" />
           <Dependency module="dividends" path="/flowKnockoutDividendAmountsInconsistent" />
