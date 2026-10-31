@@ -3,8 +3,9 @@
 // older, itemizing, with a qualifying child), profile E (PA to FL part-year resident with AMT and dividends),
 // profile F (full-year Pennsylvania resident, head of household, with AMT and Schedule C), profile G (married
 // filing jointly, Florida, two qualifying children: Schedule 8812, Form 2441 and the EITC), profile H
-// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), and profile I
-// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout).
+// (full-year Pennsylvania resident, Schedule E Part I residential rental, and dividends), profile I
+// (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout), and profile K
+// (Florida full-year single, one Schedule C, Form 8995 with the line 14 income limitation).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -18,6 +19,7 @@ import {
   createDollarWrapper,
   createEinWrapper,
   createEnumWrapper,
+  createMultEnumWrapper,
   createStringWrapper,
   createTinWrapper,
 } from '../persistenceWrappers.js';
@@ -771,6 +773,71 @@ export const profileIMfjAmtPhaseout = {
   '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
 };
 
+/**
+ * Profile K: Florida full-year resident, single, under 65. One Schedule C (line-item expenses, no inventory) whose
+ * net profit is $50,000. Form 8995 line 14 (20 percent of taxable income before the deduction) is smaller than
+ * line 10, so the income limitation is the deduction. Estimated tax payments of $9,800 are Form 1040 line 26.
+ * Form 8995 prints. Submission still stops because there is no MeF mapping.
+ */
+const blake: Person = { first: `Blake`, last: `Example`, ssn: [`900`, `44`, `1013`], dob: `1983-09-04` };
+export const profileKBusinessId = `13500000-0000-4000-8000-000000001501`;
+const profileKScheduleCStops = [
+  `hasInventoryOrCogs`,
+  `hasCarTruckOrVehicleLoan`,
+  `hasDepreciationOrSection179`,
+  `hasDepletion`,
+  `hasVehicleMachineryEquipmentRent`,
+  `hasHomeOffice`,
+  `hasEnergyEfficientBuildingsDeduction`,
+];
+export const profileKFlSingleScheduleC = {
+  ...single(blake, { street: `123 Example St`, city: `Tallahassee`, zip: `32301`, state: `FL` }),
+  [`/filers/#${primaryFilerId}/occupation`]: createStringWrapper(`Consultant`),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  '/formW2s': createCollectionWrapper([]),
+  '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  // Answered no. Unanswered, /flowKnockoutScheduleSEOutOfScope stays incomplete and refuses the print.
+  // 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8), 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l).
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
+  '/scheduleCBusinesses': createCollectionWrapper([profileKBusinessId]),
+  '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/businessName`]: createStringWrapper(`Example Consulting`),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/writableGrossReceipts`]: createDollarWrapper(`60000`),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/writableReturnsAndAllowances`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/writableOtherIncome`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/hasDeductibleExpenses`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/expenseLinesChosen`]: createMultEnumWrapper(
+    [`advertising`],
+    `/scheduleCExpenseLineOptions`
+  ),
+  [`/scheduleCBusinesses/#${profileKBusinessId}/writableAdvertising`]: createDollarWrapper(`10000`),
+  ...Object.fromEntries(
+    profileKScheduleCStops.map((key) => [
+      `/scheduleCBusinesses/#${profileKBusinessId}/${key}`,
+      createBooleanWrapper(false),
+    ])
+  ),
+  // Form 1040 line 26. 2026 draft Form 1040, line 26: "2026 estimated tax payments and amount applied from 2025 return".
+  '/paidEstimatedTaxesOrFromLastYear': createBooleanWrapper(true),
+  '/paidEstimatedTaxesOrFromLastYearUnderDifferentName': createBooleanWrapper(false),
+  '/paidEstimatedTaxesWithFormerSpouse': createEnumWrapper(`neither`, `/paidEstimatedTaxesWithFormerSpouseOptions`),
+  '/estimatedTaxPaymentWritable': createDollarWrapper(`9800`),
+  // Form 2210 Part II, every box no. Line 6 is withholding only, so these payments do not reduce line 7.
+  '/form2210WaiverRequested': createBooleanWrapper(false),
+  '/form2210AnnualizedIncome': createBooleanWrapper(false),
+  '/form2210WithholdingOnActualDates': createBooleanWrapper(false),
+  '/form2210FiledJointReturnPriorYear': createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -787,4 +854,5 @@ export const goldenProfiles = {
   profileGMfjTwoChildren,
   profileHPaRentalDividends,
   profileIMfjAmtPhaseout,
+  profileKFlSingleScheduleC,
 };
