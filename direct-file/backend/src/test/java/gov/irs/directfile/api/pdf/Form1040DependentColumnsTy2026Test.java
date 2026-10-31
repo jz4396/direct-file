@@ -39,8 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a are still the published instructions. PDF p. 17:
  * check (5)(a) when the child lived with you for more than half of 2025, and check row (6) when the child is a
  * full-time student or is permanently and totally disabled. PDF p. 41: check both (5)(a) and (5)(b) when the child
- * lived with you in the United States for more than half of 2025. The quoted year is 2025; the draft form asks the
- * same questions for 2026. 26 U.S.C. 152(c)(1)(B), 152(c)(3), 32(c)(3)(C).
+ * lived with you in the United States for more than half of 2025. PDF p. 19 Step 4: a claimed qualifying relative
+ * fills columns (5) and (6) too. The quoted year is 2025; the draft form asks the same questions for 2026. 26 U.S.C.
+ * 152(c)(1)(B), 152(c)(3), 32(c)(3)(C). Row (6) full-time student is /isAStudentUnder24, the student predicate
+ * Schedule EIC line 4a Yes uses.
  */
 class Form1040DependentColumnsTy2026Test {
 
@@ -64,8 +66,9 @@ class Form1040DependentColumnsTy2026Test {
     }
 
     /**
-     * Uno lived in the U.S. all year and is a full-time student. Duo lived with the filer, not recorded as in the
-     * U.S., and is permanently and totally disabled.
+     * Uno lived in the U.S. all year. The stored full-time-student answer is stale: Uno was born in 2016 (age 10), so
+     * row (6) stays blank. Duo lived with the filer, not recorded as in the U.S., and is permanently and totally
+     * disabled.
      */
     @Test
     void rowsFiveAndSixPrintLivedWithStudentAndDisabled() throws Exception {
@@ -81,6 +84,7 @@ class Form1040DependentColumnsTy2026Test {
         assertBool(graph, UNO + "residencyTest", true);
         assertBool(graph, UNO + "livedWithTpInUsMostOfYear", true);
         assertBool(graph, UNO + "fullTimeStudent", true);
+        assertNotTrue(graph, UNO + "isAStudentUnder24");
         assertBool(graph, UNO + "permanentTotalDisability", false);
         assertBool(graph, DUO + "residencyTest", true);
         assertNotTrue(graph, DUO + "livedWithTpInUsMostOfYear");
@@ -95,7 +99,7 @@ class Form1040DependentColumnsTy2026Test {
 
         assertChecked(v, "Row5[0].Dependent1[0].c1_14[0]", true); // (5)(a)
         assertChecked(v, "Row5[0].Dependent1[0].c1_15[0]", true); // (5)(b)
-        assertChecked(v, "Row6[0].Dependent1[0].c1_22[0]", true); // full-time student
+        assertChecked(v, "Row6[0].Dependent1[0].c1_22[0]", false); // under 19; stale fullTimeStudent stays blank
         assertChecked(v, "Row6[0].Dependent1[0].c1_23[0]", false);
 
         assertChecked(v, "Row5[0].Dependent2[0].c1_16[0]", true); // lived with you, (5)(a)
@@ -117,6 +121,36 @@ class Form1040DependentColumnsTy2026Test {
         // Row (7) is unchanged: Uno (born 2016) is the child tax credit; Duo is not under 17.
         assertChecked(v, "Row7[0].Dependent1[0].c1_30[0]", true);
         assertChecked(v, "Row7[0].Dependent1[0].c1_30[1]", false);
+    }
+
+    /**
+     * Age 20 and a full-time student checks row (6). A child under 19 with a stored fullTimeStudent answer does not.
+     * /isAStudentUnder24 is fullTimeStudent, age 19 through 23, and younger than the filer. Schedule EIC line 4a Yes
+     * (/scheduleEicLine4aYes) is that fact and not under 19. 26 U.S.C. 152(c)(3).
+     */
+    @Test
+    void fullTimeStudentBoxFollowsTheUnder24AgeTest() throws Exception {
+        Map<String, FactTypeWithItem> facts = PdfKnockoutRefusalTest.familyWithSsns();
+        facts.put(UNO + "dateOfBirth", ScheduleEicTy2026PdfSmokeTest.day("2006-11-11"));
+        facts.put(UNO + "fullTimeStudent", ScheduleEicTy2026PdfSmokeTest.bool(true));
+        facts.put(UNO + "permanentTotalDisability", ScheduleEicTy2026PdfSmokeTest.bool(false));
+        facts.put(DUO + "fullTimeStudent", ScheduleEicTy2026PdfSmokeTest.bool(true));
+        facts.put(DUO + "permanentTotalDisability", ScheduleEicTy2026PdfSmokeTest.bool(false));
+
+        var graph = CreditFormsTy2026PdfSmokeTest.factGraphService().getGraph(facts);
+        assertBool(graph, UNO + "isAStudentUnder24", true);
+        assertBool(graph, UNO + "isClaimedDependent", true);
+        assertBool(graph, DUO + "fullTimeStudent", true);
+        assertNotTrue(graph, DUO + "isAStudentUnder24");
+        assertBool(graph, DUO + "isClaimedDependent", true);
+
+        Map<String, String> v = fill(facts);
+        assertEquals("Uno", text(v, "Row1[0].f1_31[0]"));
+        assertEquals("Duo", text(v, "Row1[0].f1_32[0]"));
+        assertChecked(v, "Row6[0].Dependent1[0].c1_22[0]", true);
+        assertChecked(v, "Row6[0].Dependent1[0].c1_23[0]", false);
+        assertChecked(v, "Row6[0].Dependent2[0].c1_24[0]", false);
+        assertChecked(v, "Row6[0].Dependent2[0].c1_25[0]", false);
     }
 
     /**

@@ -69,10 +69,13 @@ form:
         # 26 U.S.C. 32(c)(3)(C): that abode counts for the EIC only if it is in the United States. 26 U.S.C.
         # 152(c)(3): student who has not attained age 24, or permanently and totally disabled (22(e)(3)).
         # (5)(a) is /residencyTest (not lessThanSixMonths). (5)(b) is /livedWithTpInUsMostOfYear, which already
-        # requires (5)(a), so (b) is never checked alone. Row (6) prints the filer's answers /fullTimeStudent and
-        # /permanentTotalDisability. The interview asks the student question only at ages 19-23
-        # (/studentStatusMayAffectBenefits); an unanswered box stays blank. Dependents past the four on-form columns
-        # stay on the c1_13 "more than four" checkbox; the additional-dependents statement is not this map.
+        # requires (5)(a), so (b) is never checked alone. Row (6) full-time student is /isAStudentUnder24, the student
+        # predicate Schedule EIC line 4a Yes uses (/scheduleEicLine4aYes is that fact and not under 19):
+        # /fullTimeStudent, age 19 through 23 (/studentStatusMayAffectBenefits), and younger than the filer. A stored
+        # fullTimeStudent answer for a child under 19 stays blank. Disability stays the filer's
+        # /permanentTotalDisability. PDF p. 19 Step 4: qualifying relatives fill columns (5) and (6) too, so these
+        # boxes follow the claimed collection. Dependents past the four on-form columns stay on the c1_13 "more than
+        # four" checkbox; the additional-dependents statement is not this map.
         Row5[0]:
           Dependent1[0]:
             c1_14[0]: /claimedDependentsCollection/[0]/residencyTest # (5)(a) Yes
@@ -88,16 +91,16 @@ form:
             c1_21[0]: /claimedDependentsCollection/[3]/livedWithTpInUsMostOfYear
         Row6[0]:
           Dependent1[0]:
-            c1_22[0]: /claimedDependentsCollection/[0]/fullTimeStudent # (6) Full-time student
+            c1_22[0]: /claimedDependentsCollection/[0]/isAStudentUnder24 # (6) Full-time student
             c1_23[0]: /claimedDependentsCollection/[0]/permanentTotalDisability # (6) Permanently and totally disabled
           Dependent2[0]:
-            c1_24[0]: /claimedDependentsCollection/[1]/fullTimeStudent
+            c1_24[0]: /claimedDependentsCollection/[1]/isAStudentUnder24
             c1_25[0]: /claimedDependentsCollection/[1]/permanentTotalDisability
           Dependent3[0]:
-            c1_26[0]: /claimedDependentsCollection/[2]/fullTimeStudent
+            c1_26[0]: /claimedDependentsCollection/[2]/isAStudentUnder24
             c1_27[0]: /claimedDependentsCollection/[2]/permanentTotalDisability
           Dependent4[0]:
-            c1_28[0]: /claimedDependentsCollection/[3]/fullTimeStudent
+            c1_28[0]: /claimedDependentsCollection/[3]/isAStudentUnder24
             c1_29[0]: /claimedDependentsCollection/[3]/permanentTotalDisability
         Row7[0]:
           Dependent1[0]:
