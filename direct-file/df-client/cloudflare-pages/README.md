@@ -142,6 +142,12 @@ does not claim that the server build keeps no return data.
   installed package that is not 1.64.0 or that declares `preinstall`, `install`, `postinstall` or `prepare`.
   Install that revision with `npx playwright install chromium` (CI uses `--with-deps`). The test makes no request
   off 127.0.0.1.
+- `src/saveState/encryptedExportImport.e2e.ts` (same command): load a synthetic return, download it as an encrypted
+  save file, clear all data on this device, reload, and import that file with the passphrase. The return comes
+  back. The same file with a wrong passphrase shows the decrypt-failed message and leaves the open return unchanged.
+  An encrypted file for another tax year shows the wrong-tax-year message and leaves the open return unchanged. The
+  download is an AES-GCM envelope at the production PBKDF2 iteration count; the marker and the passphrase are not in
+  the file and not in any request.
 - `src/staticClient/staticBranding.test.tsx`: in static mode the layout shows the notice (English and Spanish), with
   no close control, no government banner, no IRS logo and no agency footer. The regular build still shows them.
 - `src/staticClient/pagesConfig.test.ts`: the `_headers` CSP matches the CSP builder, including `base-uri 'none'`;
