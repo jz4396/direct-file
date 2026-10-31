@@ -125,8 +125,9 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutScheduleESubstantialServices",
             // Schedule E section 162 rental. A supported property is Form 8995 line 1 and may print. This path
             // still refuses the print for a Rev. Proc. 2019-38 safe harbor (the required statement is not
-            // attached), an aggregation (Schedule B (Form 8995-A) is not attached), or a loss suspended this
-            // year (2026 Instructions for Form 8995 draft, PDF p. 4 and line 1(c)). A yes with no finished
+            // attached), an aggregation (Schedule B (Form 8995-A) is not attached), a loss suspended this
+            // year (2026 Instructions for Form 8995 draft, PDF p. 4 and line 1(c)), or property amounts that
+            // exceed the Schedule E Part I totals (26 U.S.C. 199A(c)(3)(A)(ii)). A yes with no finished
             // property stays incomplete and refuses the print. An answer of no, or no Part I income, prints.
             "/flowKnockoutScheduleETradeOrBusinessQbi",
             // Schedule E Part II. 2026 draft Instructions for Schedule E, PDF p. 11: "use Part II to report your

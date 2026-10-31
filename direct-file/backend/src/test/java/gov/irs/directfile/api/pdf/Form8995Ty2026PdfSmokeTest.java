@@ -326,7 +326,7 @@ class Form8995Ty2026PdfSmokeTest {
                 .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
         assertEquals("12000.00", dollars(graph, "/form8995Line2"));
         assertEquals("12000.00", dollars(graph, "/form8995Line1iQbi"));
-        assertFalse(graph.get("/form8995Line1iTin").complete(), "column (b) blank");
+        assertTrue(graph.get("/form8995Line1iTin").complete(), "column (b) is the filer's SSN");
         assertEquals("2400.00", dollars(graph, "/form8995Line5"));
         assertEquals("45900.00", dollars(graph, "/form8995Line11"));
         assertEquals("9180.00", dollars(graph, "/form8995Line14"));
@@ -343,12 +343,22 @@ class Form8995Ty2026PdfSmokeTest {
             Graph stoppedGraph = CreditFormsTy2026PdfSmokeTest.factGraphService()
                     .getGraph(PrintRefusingKnockoutsTest.smoke(stopped));
             assertEquals(Boolean.TRUE, stoppedGraph.get("/flowKnockoutScheduleETradeOrBusinessQbi").get(), stop);
+            if (stop.equals("isAggregated")) {
+                assertFalse(stoppedGraph.get("/form8995Line1iTin").complete(), "aggregated line 1(b) blank");
+            } else {
+                assertTrue(stoppedGraph.get("/form8995Line1iTin").complete(), stop);
+            }
         }
+        Map<String, String> rentsOver = new java.util.HashMap<>(facts);
+        rentsOver.put("/scheduleEWritableRents", dollar("10000.00"));
+        Graph rentsOverGraph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(rentsOver));
+        assertEquals(Boolean.TRUE, rentsOverGraph.get("/flowKnockoutScheduleETradeOrBusinessQbi").get(), "rents");
 
         try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {
             Map<String, String> f = fieldsOnPages(doc, FOOTER);
             assertTrue(value(f, ROW_I + "f1_3[0]").contains("Oak Street Rental"), "1(i)(a)");
-            blank(f, ROW_I + "f1_4[0]", "1(i)(b)");
+            assertEquals("900000001", value(f, ROW_I + "f1_4[0]").replaceAll("\\D", ""), "1(i)(b)");
             amount(f, ROW_I + "f1_5[0]", 12000, "1(i)(c)");
             amount(f, "Page1[0].f1_18[0]", 12000, "2");
             amount(f, "Page1[0].f1_33[0]", 2400, "17");

@@ -374,7 +374,7 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     expect(val(g, `/agi`)).toBe(`50000.00`);
     expect(val(g, `/form8995Line2`)).toBe(`50000.00`);
     expect(val(g, `/form8995Line1iQbi`)).toBe(`50000.00`);
-    expect(g.get(`/form8995Line1iTin` as ConcretePath).complete).toBe(false);
+    expect(val(g, `/form8995Line1iTin`)).toBe(val(g, `/primaryFiler/tin`));
     expect(val(g, `/form8995Line5`)).toBe(`10000.00`);
     expect(val(g, `/form8995Line11`)).toBe(`33900.00`);
     expect(val(g, `/form8995Line14`)).toBe(`6780.00`);
@@ -446,7 +446,7 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     expect(val(g, `/form8995Line1iQbi`)).toBe(`46467.00`);
     expect(g.get(`/form8995Line1iTin` as ConcretePath).complete).toBe(true);
     expect(val(g, `/form8995Line1iiQbi`)).toBe(`12000.00`);
-    expect(g.get(`/form8995Line1iiTin` as ConcretePath).complete).toBe(false);
+    expect(val(g, `/form8995Line1iiTin`)).toBe(val(g, `/primaryFiler/tin`));
     expect(val(g, `/form8995Line2`)).toBe(`58467.00`);
     expect(val(g, `/form8995Line5`)).toBe(`11693.00`);
     expect(val(g, `/form8995Line11`)).toBe(`42367.00`);

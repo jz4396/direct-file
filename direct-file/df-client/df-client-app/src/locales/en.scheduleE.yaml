@@ -240,17 +240,21 @@ info:
     body: >-
       Answer yes if a rental is a section 162 trade or business, including property you rent to a trade or business
       that you commonly control. You will enter each property. The qualified business income deduction is figured on
-      Form 8995. A Rev. Proc. 2019-38 safe harbor, an aggregation, or a loss suspended this year stops the return.
+      Form 8995. A Rev. Proc. 2019-38 safe harbor, an aggregation, a loss suspended this year, or property
+      amounts above the Schedule E totals stop the return.
   /info/income/schedule-e/properties:
     body: >-
       Add one entry for each rental you treat as a section 162 trade or business. The name and the net income or loss
       go on Form 8995, line 1. The Schedule E totals are entered on a later screen.
   /info/income/schedule-e/property-name:
-    body: This name is Form 8995, line 1, column (a). The taxpayer identification number on column (b) is left blank.
+    body: >-
+      This name is Form 8995, line 1, column (a). Column (b) is your SSN or ITIN. It is left blank only if this
+      rental is aggregated.
   /info/income/schedule-e/property-amounts:
     body: >-
       Rents, royalties, and expenses for this property only. Net income or loss is Form 8995, line 1, column (c). It
-      is not reduced by self-employment tax.
+      is not reduced by self-employment tax. The return stops if these amounts, added across properties, are more
+      than the Schedule E totals, or if column (c) is more than Schedule E line 26.
   /info/income/schedule-e/property-participation:
     body: >-
       Material participation matters for the $400 minimum deduction on Form 8995, line 16. It is not required for the
@@ -281,7 +285,9 @@ info:
         - p: >-
             Rev. Proc. 2019-38 requires a statement this tool does not attach. An aggregation has to be reported on
             Schedule B (Form 8995-A). A loss suspended under section 469 or another limitation is not qualified
-            business income this year. You’ll need another way to file this return.
+            business income this year. The return also stops if the section 162 rents, royalties, or expenses are
+            more than the Schedule E totals, or if Form 8995, line 1, column (c) is more than Schedule E line 26.
+            You’ll need another way to file this return.
   /info/knockout/schedule-e-qbi-limit:
     alertText:
       body:

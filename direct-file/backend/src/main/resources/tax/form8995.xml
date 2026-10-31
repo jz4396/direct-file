@@ -17,7 +17,8 @@
   marks as a section 162 trade or business (scheduleE /scheduleEProperties). Schedule C column (c) reduces each
   business by its owner's share of deductible self-employment tax (Treas. Reg. 1.199A-3(b)(1)(vi)). A rental row
   is not reduced: 26 U.S.C. 1402(a)(1) excludes real-estate rentals from net earnings from self-employment.
-  Column (b) on a rental row stays blank. A secondary-filer business still stops
+  Column (b) on a rental row is the filer's SSN or ITIN, and is blank only when the rental is aggregated.
+  A secondary-filer business still stops
   submission (scheduleC /flowKnockoutScheduleCSpouseBusiness). More than five trades or businesses, counting
   Schedule C and these rentals together, stops the print
   (/flowKnockoutForm8995MoreThanFiveBusinesses): the instructions require a statement this package does not attach.
@@ -25,8 +26,8 @@
   the threshold, no prior-year loss carryforward, not a cooperative patron. Every other source of 199A income stays a
   stop with BlockSubmissionOnTrue: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends), a PTP
   (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp) and a K-1 section 199A statement
-  (scheduleE /flowKnockoutScheduleEPartIIQbiCode). A Rev. Proc. 2019-38 safe harbor, an aggregation, or a
-  suspended passive loss on a section 162 rental stays a stop
+  (scheduleE /flowKnockoutScheduleEPartIIQbiCode). A Rev. Proc. 2019-38 safe harbor, an aggregation, a
+  suspended passive loss, or section 162 amounts above the Schedule E Part I totals stay a stop
   (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). So lines 6-9 are $0 here.
 
   Each line is rounded to whole dollars as it is computed (26 U.S.C. 6102(a); #202).
@@ -3813,8 +3814,11 @@
         Form 8995 (2026) draft line 1(i) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental row leaves column
-        (b) blank: an EIN is not collected, and the filer's SSN is not substituted.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -3831,6 +3835,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business0/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow0/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -3942,8 +3969,11 @@
         Form 8995 (2026) draft line 1(ii) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental row leaves column
-        (b) blank: an EIN is not collected, and the filer's SSN is not substituted.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -3951,9 +3981,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>1</Int>
@@ -3962,6 +3990,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business1/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>1</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow1/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -4071,8 +4122,11 @@
         Form 8995 (2026) draft line 1(iii) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental row leaves column
-        (b) blank: an EIN is not collected, and the filer's SSN is not substituted.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -4080,9 +4134,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>2</Int>
@@ -4091,6 +4143,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business2/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>2</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow2/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -4200,8 +4275,11 @@
         Form 8995 (2026) draft line 1(iv) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental row leaves column
-        (b) blank: an EIN is not collected, and the filer's SSN is not substituted.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -4209,9 +4287,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>3</Int>
@@ -4220,6 +4296,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business3/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>3</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow3/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -4329,8 +4428,11 @@
         Form 8995 (2026) draft line 1(v) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental row leaves column
-        (b) blank: an EIN is not collected, and the filer's SSN is not substituted.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -4338,9 +4440,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>4</Int>
@@ -4349,6 +4449,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business4/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>4</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow4/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>

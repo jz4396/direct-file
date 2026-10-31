@@ -16,7 +16,8 @@
 # Lines 1(i)-1(v) are Schedule C businesses first, then section 162 Schedule E properties. Column (a) is the name.
 # Column (b) is the owner's TIN for a Schedule C row: 2026 Instructions for Form 8995 draft, Specific Instructions,
 # Line 1: "If you don't have an EIN, enter your social security number (SSN) or individual taxpayer identification
-# number (ITIN)." This return does not collect an EIN. A section 162 rental leaves column (b) blank. Column (c) for
+# number (ITIN)." This return does not collect an EIN. A section 162 rental that is not aggregated prints the
+# filer's SSN or ITIN in column (b). Column (b) stays blank only when the rental is aggregated. Column (c) for
 # Schedule C is net profit or loss less that owner's share of the deductible part of self-employment tax
 # (Treas. Reg. 1.199A-3(b)(1)(vi)). A rental row is the property's net income or loss and is not reduced by
 # self-employment tax (26 U.S.C. 1402(a)(1)). Those amounts sum to line 2. A sixth trade or business, counting

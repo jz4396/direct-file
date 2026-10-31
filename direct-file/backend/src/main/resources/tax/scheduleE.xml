@@ -348,8 +348,8 @@
         or more hours of rental services a year.
         A yes is not itself a stop. Each property is entered on /scheduleEProperties and becomes a Form 8995
         line 1 row (26 U.S.C. 199A(c)(1)). Relying on the Rev. Proc. 2019-38 safe harbor, aggregating the
-        property, or having a loss suspended this year still stops the return
-        (/flowKnockoutScheduleETradeOrBusinessQbi).
+        property, having a loss suspended this year, or entering property amounts above the Part I totals
+        still stops the return (/flowKnockoutScheduleETradeOrBusinessQbi).
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -365,7 +365,11 @@
         p. 3: "The ownership and rental of real property may constitute a trade or business if it meets the
         standard described above." PDF p. 5, Line 1: each trade or business is a line 1 row. The aggregate
         Part I totals (/scheduleEWritableRents, /scheduleEWritableRoyalties, /scheduleEWritableExpenses) stay
-        the Schedule E lines 3, 4, and 20 amounts. This collection is only the qualified-business-income rows.
+        the Schedule E lines 3, 4, and 20 amounts. This collection is the qualified-business-income rows.
+        26 U.S.C. 199A(c)(3)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/199A): a qualified item has to
+        be included or allowed in determining taxable income. The sums of these rents, royalties, and expenses
+        cannot exceed those Part I totals, and the sum of line 1(c) cannot exceed Schedule E line 26
+        (/scheduleENetIncome). Exceeding either stops the return.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -4559,16 +4563,153 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleETradeOrBusinessAmountsExceedPartI">
+      <Name>Section 162 property amounts exceed Schedule E Part I</Name>
+      <Description>
+        26 U.S.C. 199A(c)(1) and (c)(3)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/199A): qualified
+        items are included or allowed in determining taxable income for the year. Form 8995 line 1(c) is
+        this property's net qualified business income. The sums of /scheduleEProperties rents, royalties,
+        and expenses cannot exceed Schedule E lines 3, 4, and 20 (/scheduleEWritableRents,
+        /scheduleEWritableRoyalties, /scheduleEWritableExpenses). The sum of line 1(c)
+        (/scheduleETradeOrBusinessQbi) cannot exceed Schedule E line 26 (/scheduleENetIncome). Complete
+        false when the list is not ready or nothing exceeds. Incomplete while a Part I total is still open,
+        so the return is not filed as if the excess were included in taxable income.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleETradeOrBusinessReady" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleETradeOrBusinessCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRents" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRoyalties" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableExpenses" />
+                </IsComplete>
+                <Any>
+                  <GreaterThan>
+                    <Left>
+                      <Round>
+                        <CollectionSum>
+                          <Dependency path="/scheduleEProperties/*/writableRents" />
+                        </CollectionSum>
+                      </Round>
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleEWritableRents" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Round>
+                        <CollectionSum>
+                          <Dependency path="/scheduleEProperties/*/writableRoyalties" />
+                        </CollectionSum>
+                      </Round>
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleEWritableRoyalties" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Round>
+                        <CollectionSum>
+                          <Dependency path="/scheduleEProperties/*/writableExpenses" />
+                        </CollectionSum>
+                      </Round>
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleEWritableExpenses" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="/scheduleETradeOrBusinessQbi" />
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleENetIncome" />
+                    </Right>
+                  </GreaterThan>
+                </Any>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRents" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRoyalties" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableExpenses" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleETradeOrBusinessQbi" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleENetIncome" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleETradeOrBusinessQbi">
-      <Name>Knockout: section 162 rental needs a statement or has a suspended loss</Name>
+      <Name>Knockout: section 162 rental is not a supported Form 8995 row</Name>
       <Description>
         A section 162 rental is Form 8995 line 1 (26 U.S.C. 199A(c)(1)) and Form 1040 (2026) draft line 13b.
         This stays true when the filer relies on the Rev. Proc. 2019-38 safe harbor (the required statement
-        is not attached), aggregates the rental (Schedule B (Form 8995-A) is not attached), or has a loss
-        suspended this year (2026 Instructions for Form 8995 draft, PDF p. 4 and line 1(c)). Cites on
-        /scheduleEAnyRp201938SafeHarbor, /scheduleEAggregatesQbi, and /scheduleEHasSuspendedPassiveLoss.
+        is not attached), aggregates the rental (Schedule B (Form 8995-A) is not attached), has a loss
+        suspended this year (2026 Instructions for Form 8995 draft, PDF p. 4 and line 1(c)), or the property
+        sums exceed the Schedule E Part I totals (26 U.S.C. 199A(c)(3)(A)(ii)). Cites on
+        /scheduleEAnyRp201938SafeHarbor, /scheduleEAggregatesQbi, /scheduleEHasSuspendedPassiveLoss, and
+        /scheduleETradeOrBusinessAmountsExceedPartI.
         Complete false when there is no Part I income or the answer is no. Incomplete while the question
-        is unanswered, while a yes has no finished property, or while a stop answer is open.
+        is unanswered, while a yes has no finished property, while a stop answer is open, or while a Part I
+        total is still open.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4618,7 +4759,10 @@
                     <Int>0</Int>
                   </Right>
                 </GreaterThan>
-                <Dependency path="/scheduleETradeOrBusinessStops" />
+                <Any>
+                  <Dependency path="/scheduleETradeOrBusinessStops" />
+                  <Dependency path="/scheduleETradeOrBusinessAmountsExceedPartI" />
+                </Any>
               </All>
             </When>
             <Then>
@@ -4639,6 +4783,9 @@
                 </GreaterThan>
                 <Not>
                   <Dependency path="/scheduleETradeOrBusinessStops" />
+                </Not>
+                <Not>
+                  <Dependency path="/scheduleETradeOrBusinessAmountsExceedPartI" />
                 </Not>
               </All>
             </When>

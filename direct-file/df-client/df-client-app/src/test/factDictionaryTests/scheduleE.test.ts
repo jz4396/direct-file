@@ -179,6 +179,7 @@ describe(`Schedule E Part I MVP (#38)`, () => {
   const section162 = (extra: Record<string, unknown> = {}) => ({
     ...supported,
     '/scheduleEWritableRoyalties': createDollarWrapper(`0`),
+    '/scheduleEWritableExpenses': createDollarWrapper(`0`),
     '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(true),
     '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
     '/qbiIsCooperativePatron': createBooleanWrapper(false),
@@ -208,7 +209,8 @@ describe(`Schedule E Part I MVP (#38)`, () => {
     expect(get(ok, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(false);
     expect(get(ok, `/form8995Required`).get).toBe(true);
     expect(get(ok, `/form8995Line1iName`).get).toBe(`Oak Street Rental`);
-    expect(get(ok, `/form8995Line1iTin`).complete).toBe(false);
+    expect(get(ok, `/form8995Line1iTin`).complete).toBe(true);
+    expect(get(ok, `/form8995Line1iTin`).get.toString()).toBe(get(ok, `/primaryFiler/tin`).get.toString());
     expect(get(ok, `/form8995Line1iQbi`).get.toString()).toBe(`12000.00`);
     expect(get(ok, `/scheduleESectionIsComplete`).get).toBe(true);
     for (const [path, key] of [
@@ -219,7 +221,21 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       const stopped = fg(section162({ [path]: createBooleanWrapper(true) }));
       expect(get(stopped, `/flowKnockoutScheduleETradeOrBusinessQbi`).get, key).toBe(true);
       expect(get(stopped, `/flowIsKnockedOut`).get, key).toBe(true);
+      expect(get(stopped, `/form8995Line1iTin`).complete, key).toBe(key !== `aggregation`);
     }
+    // 26 U.S.C. 199A(c)(3)(A)(ii): line 1(c) cannot exceed the Part I net included in taxable income.
+    const rentsOver = fg(section162({ '/scheduleEWritableRents': createDollarWrapper(`11000`) }));
+    expect(get(rentsOver, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(true);
+    const line1cOver = fg(
+      section162({
+        '/scheduleEWritableRents': createDollarWrapper(`12000`),
+        '/scheduleEWritableExpenses': createDollarWrapper(`4000`),
+      })
+    );
+    expect(get(line1cOver, `/scheduleENetIncome`).get.toString()).toBe(`8000.00`);
+    expect(get(line1cOver, `/form8995Line1iQbi`).get.toString()).toBe(`12000.00`);
+    expect(get(line1cOver, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(true);
+    expect(get(line1cOver, `/flowIsKnockedOut`).get).toBe(true);
   });
 
   it(`K-1 yes without details stays incomplete and is not filed as zero (#85)`, ({ task }) => {

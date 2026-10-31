@@ -192,19 +192,23 @@ info:
     body: >-
       Conteste que sí si un alquiler es una ocupación o negocio de la sección 162, incluida una propiedad que alquila a
       una ocupación o negocio que usted controla en común. Anotará cada propiedad. La deducción se calcula en el
-      Formulario 8995. El puerto seguro del Rev. Proc. 2019-38, una agregación o una pérdida suspendida este año
-      detienen la declaración.
+      Formulario 8995. El puerto seguro del Rev. Proc. 2019-38, una agregación, una pérdida suspendida este año o
+      cantidades mayores que los totales del Anexo E detienen la declaración.
   /info/income/schedule-e/properties:
     body: >-
       Agregue una entrada por cada alquiler que trate como una ocupación o negocio de la sección 162. El nombre y el
       ingreso o la pérdida neta van en la línea 1 del Formulario 8995. Los totales del Anexo E se anotan en una
       pantalla posterior.
   /info/income/schedule-e/property-name:
-    body: Este nombre es la columna (a) de la línea 1 del Formulario 8995. La columna (b) queda en blanco.
+    body: >-
+      Este nombre es la columna (a) de la línea 1 del Formulario 8995. La columna (b) es su SSN o ITIN. Queda en
+      blanco solo si este alquiler está agregado.
   /info/income/schedule-e/property-amounts:
     body: >-
       Alquileres, regalías y gastos solo de esta propiedad. El ingreso o la pérdida neta es la columna (c) de la línea
-      1 del Formulario 8995. No se reduce por el impuesto del trabajo por cuenta propia.
+      1 del Formulario 8995. No se reduce por el impuesto del trabajo por cuenta propia. La declaración se detiene si
+      estas cantidades, sumadas entre propiedades, superan los totales del Anexo E, o si la columna (c) supera la
+      línea 26 del Anexo E.
   /info/income/schedule-e/property-participation:
     body: >-
       La participación importante importa para la deducción mínima de $400 en la línea 16 del Formulario 8995. No se
@@ -235,7 +239,9 @@ info:
         - p: >-
             El Rev. Proc. 2019-38 exige una declaración que esta herramienta no adjunta. Una agregación se declara en
             el Anexo B (Formulario 8995-A). Una pérdida suspendida conforme a la sección 469 u otra limitación no es
-            ingreso calificado de negocios este año. Tendrá que usar otra manera de presentar esta declaración.
+            ingreso calificado de negocios este año. La declaración también se detiene si los alquileres, las regalías
+            o los gastos de la sección 162 superan los totales del Anexo E, o si la columna (c) de la línea 1 del
+            Formulario 8995 supera la línea 26 del Anexo E. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-qbi-limit:
     alertText:
       body:

@@ -39,8 +39,9 @@
 #
 # Not mapped, left blank: line 27 Yes, line 31, line 33 columns (c) and (e), lines 34b, 38, 40, 42, and 43.
 # An unanswered K-1 or REMIC question, a loss, depreciation (Form 4562), personal use (26 U.S.C. 280A),
-# substantial services, a section 162 rental that relies on Rev. Proc. 2019-38, is aggregated, or has a
-# suspended passive loss (26 U.S.C. 199A; /flowKnockoutScheduleETradeOrBusinessQbi), or an out-of-scope
+# substantial services, a section 162 rental that relies on Rev. Proc. 2019-38, is aggregated, has a
+# suspended passive loss, or whose amounts exceed the Part I totals (26 U.S.C. 199A;
+# /flowKnockoutScheduleETradeOrBusinessQbi), or an out-of-scope
 # estate or trust refuses the print. A supported section 162 rental prints on Form 8995 line 1. $0 amounts print blank unless the fact is marked ExportZero (/scheduleENetIncome prints 0 when
 # Part I is no and Part II is yes, so line 26 still foots into line 41).
 includeWhen: /pdfIncludeScheduleE
