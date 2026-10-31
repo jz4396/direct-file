@@ -1881,9 +1881,11 @@
         Instructions for Schedule SE, PDF p. 7. The election stops when Schedule K-1 (Form 1065) box 14
         code A is nonzero (code C is not collected), when a filer with Schedule C activity fails the
         dollar tests or line 17 would be less than actual net earnings, when neither filer has Schedule
-        C activity, when net earnings were not at least $400 in 2 of the prior 3 years, when this would
-        be the sixth or later use, or when the earned income credit or the additional child tax credit
-        is claimed. Line 4b is not included in earned income. Complete false when the election is
+        C activity, when net earnings were not at least $400 in 2 of the prior 3 years, or when this
+        would be the sixth or later use. A claim of the earned income credit, the additional child tax
+        credit, or the child and dependent care credit is
+        /flowKnockoutScheduleSENonfarmOptionalMethodCredits and is not part of this fact, so this
+        section can be complete before those credits are answered. Complete false when the election is
         unanswered or no, so the regular method still files. An unanswered election while the Schedule
         SE questions apply stays incomplete.
       </Description>
@@ -2096,50 +2098,78 @@
           </Case>
           <Case>
             <When>
-              <Not>
-                <IsComplete>
-                  <Dependency module="eitc" path="/isReceivingEitc" />
-                </IsComplete>
-              </Not>
-            </When>
-            <Then>
-              <Dependency module="eitc" path="/isReceivingEitc" />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Dependency module="eitc" path="/isReceivingEitc" />
-            </When>
-            <Then>
-              <True />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Not>
-                <IsComplete>
-                  <Dependency module="ctcOdc" path="/isReceivingActc" />
-                </IsComplete>
-              </Not>
-            </When>
-            <Then>
-              <Dependency module="ctcOdc" path="/isReceivingActc" />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Dependency module="ctcOdc" path="/isReceivingActc" />
-            </When>
-            <Then>
-              <True />
-            </Then>
-          </Case>
-          <Case>
-            <When>
               <True />
             </When>
             <Then>
               <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleSENonfarmOptionalMethodCredits">
+      <Name>Knockout: nonfarm optional method together with the EITC, ACTC, or CDCC</Name>
+      <Description>
+        Stops filing and printing when the nonfarm optional method applies and the return claims the
+        earned income credit, the additional child tax credit, or the child and dependent care credit.
+        Line 4b is not added to earned income. 26 U.S.C. 32(c)(2)(A)(ii) measures net earnings with the
+        section 164(f) deduction. Instructions for Form 1040 (2025), PDF p. 47, EIC Worksheet B, uses
+        Schedule SE line 3 minus line 13, not line 4b. 2026 draft Instructions for Form 2441, PDF p. 5,
+        lines 4 and 5: "If you use either optional method to figure net earnings, subtract any deduction
+        you claim on Schedule 1 (Form 1040), line 15, from the total of the amounts shown on Schedule SE
+        (Form 1040), lines 3 and 4b." /scheduleCNetProfitForEarnedIncome stays Schedule C line 31 minus
+        the deductible part of self-employment tax, so an election that applies cannot be filed with
+        /isReceivingEitc, /isReceivingActc, or /cdccQualified. Not part of /scheduleCSectionIsComplete:
+        those credits are asked later, and an unanswered credit must not leave the Schedule C section
+        incomplete. Complete false when neither filer's method applies, including when the election is
+        unanswered or no, without reading the credits.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Any>
+                    <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+                    <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+                  </Any>
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Any>
+                <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+                <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+              </Any>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Any>
+                  <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+                  <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+                </Any>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Any>
+                <Dependency module="eitc" path="/isReceivingEitc" />
+                <Dependency module="ctcOdc" path="/isReceivingActc" />
+                <Dependency module="cdcc" path="/cdccQualified" />
+              </Any>
             </Then>
           </Case>
         </Switch>
@@ -2151,8 +2181,9 @@
       <Description>
         Interview complete when there is no Schedule C and no nonzero Form 1065 box 14 code A, or when
         Schedule C is finished, the Schedule SE out-of-scope questions are answered no, and the nonfarm
-        optional method is not stopped. A K-1-only return still has to answer those questions.
-        26 U.S.C. 1402(a).
+        optional method is not stopped for eligibility. The credit conflict
+        (/flowKnockoutScheduleSENonfarmOptionalMethodCredits) is not part of this fact. A K-1-only
+        return still has to answer those questions. 26 U.S.C. 1402(a).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>

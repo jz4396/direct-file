@@ -133,9 +133,18 @@ info:
         - p: >-
             The nonfarm optional method cannot be used on this return. That can be because the dollar tests are not met,
             the amount on line 17 would be less than your actual net earnings, net earnings were not at least $400 in 2
-            of the prior 3 years, this would be the sixth or later use, Schedule K-1 (Form 1065) box 14 code A is more
-            than zero, or you are claiming the earned income credit or the additional child tax credit. Line 4b is not
-            included in earned income for those credits. You will need another way to file this return.
+            of the prior 3 years, this would be the sixth or later use, or Schedule K-1 (Form 1065) box 14 code A is
+            more than zero. You will need another way to file this return.
+  /heading/knockout/schedule-se-nonfarm-optional-method-credits:
+    This tool can’t figure those credits with the nonfarm optional method
+  /info/knockout/schedule-se-nonfarm-optional-method-credits:
+    alertText:
+      body:
+        - p: >-
+            The nonfarm optional method was elected, and this return also claims the earned income credit, the
+            additional child tax credit, or the child and dependent care credit. Form 2441 uses Schedule SE lines 3
+            and 4b, minus the deduction on Schedule 1 line 15. Line 4b is not included in earned income here, so those
+            credits cannot be figured with the election. You will need another way to file this return.
   /info/knockout/schedule-c-qbi:
     alertText:
       body:

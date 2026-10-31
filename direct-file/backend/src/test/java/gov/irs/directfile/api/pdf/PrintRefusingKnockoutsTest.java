@@ -100,6 +100,8 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleCOutOfScope";
     static final String SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT = "/flowKnockoutScheduleSEOutOfScope";
     static final String SCHEDULE_SE_NONFARM_OPTIONAL_KNOCKOUT = "/flowKnockoutScheduleSENonfarmOptionalMethod";
+    static final String SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT =
+            "/flowKnockoutScheduleSENonfarmOptionalMethodCredits";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     /** Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). Line 2g is computed. */
     static final String AMT_PREFERENCE_KNOCKOUT = "/flowKnockoutAmtPreferenceItems";
@@ -209,6 +211,7 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_C_OUT_OF_SCOPE_KNOCKOUT, // Schedule C line that needs a form or loss limit not computed here
                 SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT, // Schedule SE line this tool does not compute
                 SCHEDULE_SE_NONFARM_OPTIONAL_KNOCKOUT, // nonfarm optional method not allowed on this return
+                SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT, // election with the EITC, ACTC, or CDCC
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2t, 3 and 8 (not line 2g)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
@@ -233,7 +236,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(52, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(53, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

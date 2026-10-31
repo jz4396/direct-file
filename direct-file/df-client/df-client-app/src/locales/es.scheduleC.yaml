@@ -152,9 +152,19 @@ info:
             El método opcional que no es de agricultura no se puede usar en esta declaración. Puede ser porque no se
             cumplen las pruebas de montos, el monto de la línea 17 sería menor que sus ganancias netas reales, las
             ganancias netas no fueron de al menos $400 en 2 de los 3 años anteriores, este sería el sexto uso o uno
-            posterior, el recuadro 14 código A del Anexo K-1 (Formulario 1065) es mayor que cero, o está reclamando el
-            crédito por ingreso del trabajo o el crédito tributario adicional por hijos. La línea 4b no se incluye en
-            el ingreso del trabajo para esos créditos. Tendrá que usar otra manera de presentar esta declaración.
+            posterior, o el recuadro 14 código A del Anexo K-1 (Formulario 1065) es mayor que cero. Tendrá que usar
+            otra manera de presentar esta declaración.
+  /heading/knockout/schedule-se-nonfarm-optional-method-credits:
+    Esta herramienta no puede calcular esos créditos con el método opcional que no es de agricultura
+  /info/knockout/schedule-se-nonfarm-optional-method-credits:
+    alertText:
+      body:
+        - p: >-
+            Se eligió el método opcional que no es de agricultura y esta declaración también reclama el crédito por
+            ingreso del trabajo, el crédito tributario adicional por hijos o el crédito por cuidado de hijos y
+            dependientes. El Formulario 2441 usa las líneas 3 y 4b del Anexo SE, menos la deducción de la línea 15 del
+            Anexo 1. La línea 4b no se incluye aquí en el ingreso del trabajo, así que esos créditos no se pueden
+            calcular con la elección. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-c-qbi:
     alertText:
       body:

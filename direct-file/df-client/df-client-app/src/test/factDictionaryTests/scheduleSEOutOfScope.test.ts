@@ -9,7 +9,13 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithW2NoDeductionsNoCreditsBaseData, primaryFilerId } from '../testData.js';
+import {
+  filerWithW2NoDeductionsNoCreditsBaseData,
+  makeCareProviderData,
+  makeChildData,
+  makeInterestReportData,
+  primaryFilerId,
+} from '../testData.js';
 
 /**
  * Schedule SE lines this tool does not compute. 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8), 1402(a)(12),
@@ -19,6 +25,7 @@ import { filerWithW2NoDeductionsNoCreditsBaseData, primaryFilerId } from '../tes
  */
 const KO = `/flowKnockoutScheduleSEOutOfScope`;
 const NONFARM_KO = `/flowKnockoutScheduleSENonfarmOptionalMethod`;
+const CREDIT_KO = `/flowKnockoutScheduleSENonfarmOptionalMethodCredits`;
 const QUESTIONS = [
   `/hadFarmSelfEmploymentIncome`,
   `/hadChurchEmployeeIncome`,
@@ -186,8 +193,116 @@ describe(`Schedule SE out-of-scope lines`, () => {
     expect(read(g, `/isReceivingEitc`).get).toBe(true);
     // EIC table row for $5,000–$5,049: midpoint $5,025 × 7.65% rounds to $384. 26 U.S.C. 32(b).
     expect(read(g, `/earnedIncomeCredit`).get.toString()).toBe(`384.00`);
-    expect(read(g, NONFARM_KO).get).toBe(true);
+    // The dollar tests pass, so the eligibility stop is false. The credit stop is separate and is not part of
+    // section completeness. 26 U.S.C. 32(c)(2)(A).
+    expect(read(g, NONFARM_KO).complete).toBe(true);
+    expect(read(g, NONFARM_KO).get).toBe(false);
+    expect(read(g, CREDIT_KO).complete).toBe(true);
+    expect(read(g, CREDIT_KO).get).toBe(true);
+    expect(read(g, `/scheduleCSectionIsComplete`).complete).toBe(true);
+    expect(read(g, `/scheduleCSectionIsComplete`).get).toBe(true);
+    expect(read(g, `/flowIsKnockedOut`).get).toBe(true);
     expect(read(g, KO).get).toBe(false);
+  });
+
+  it(`an elected return is not stopped by the optional method when no credit uses line 4b`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/primaryFilerNonfarmOptionalMethodApplies`,
+      NONFARM_KO,
+      CREDIT_KO,
+      `/scheduleCSectionIsComplete`,
+      `/flowKnockoutForm8995WithoutTy2026Template`,
+      `/flowIsKnockedOut`,
+    ];
+    // Wages of $200,000 are above the earned income credit phaseout, there is no qualifying child, and there
+    // are no dependent-care expenses. The method applies. Instructions for Form 1040 (2025) draft, PDF p. 35:
+    // "Attach whichever form you use (Form 8995 or 8995-A) to your return." There is still no MeF mapping, so
+    // /flowIsKnockedOut stays true for that reason only.
+    const g = fg({
+      ...filerWithW2NoDeductionsNoCreditsBaseData,
+      [`/formW2s/#${primaryFilerId}/writableWages`]: createDollarWrapper(`200000`),
+      [`/formW2s/#${primaryFilerId}/writableFederalWithholding`]: createDollarWrapper(`40000`),
+      ...scheduleC(eligibleElection),
+      '/maritalStatus': createEnumWrapper(`single`, `/maritalStatusOptions`),
+      '/eitcQcOfAnother': createBooleanWrapper(false),
+      '/eitcHadImproperClaims': createBooleanWrapper(false),
+      '/primaryFilerSsnEmploymentValidity': createEnumWrapper(`neither`, `/primaryFilerSsnEmploymentValidityOptions`),
+      [`/filers/#${primaryFilerId}/isUsCitizenFullYear`]: createBooleanWrapper(true),
+    });
+    expect(read(g, `/primaryFilerNonfarmOptionalMethodApplies`).get).toBe(true);
+    expect(read(g, `/primaryFilerSeLine4b`).get.toString()).toBe(`6000.00`);
+    expect(read(g, NONFARM_KO).complete).toBe(true);
+    expect(read(g, NONFARM_KO).get).toBe(false);
+    expect(read(g, CREDIT_KO).complete).toBe(true);
+    expect(read(g, CREDIT_KO).get).toBe(false);
+    expect(read(g, `/scheduleCSectionIsComplete`).complete).toBe(true);
+    expect(read(g, `/scheduleCSectionIsComplete`).get).toBe(true);
+    expect(read(g, `/isReceivingEitc`).get).toBe(false);
+    expect(read(g, `/isReceivingActc`).get).toBe(false);
+    expect(read(g, `/cdccQualified`).get).toBe(false);
+    expect(read(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(read(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`the child and dependent care credit stops an election that applies`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      CREDIT_KO,
+      `/cdccQualified`,
+      `/scheduleCNetProfitForEarnedIncome`,
+      `/primaryFilerEarnedIncomeForCdccBase`,
+      `/scheduleCSectionIsComplete`,
+    ];
+    const childId = `85501abd-9f7c-4746-b4e9-f765565ca923`;
+    const careProviderId = `4a939366-ee7c-4717-9794-5019a93b29dc`;
+    const interestId = `693d539c-6679-4264-b6b5-d7411e318395`;
+    // Gross $4,800 and expenses $1,500. Line 31 is $3,300. Two-thirds of $4,800 is $3,200, which is line 4b.
+    // Half of the tax on $3,200 is $245. Schedule C line 31 minus that half is $3,055. 2026 draft Instructions
+    // for Form 2441, PDF p. 5: lines 3 and 4b minus Schedule 1 line 15 are $2,955. This fact stays $3,055.
+    // Form 2441 line 10 is Form 1040 line 18 (Credit Limit Worksheet). Line 18 is $0 on the self-employment
+    // net alone: Rev. Proc. 2025-32 §4.14(1) sets the single standard deduction at $16,100. Taxable interest
+    // of $30,000 (26 U.S.C. 61(a)(4)) is not earned income, so the care-credit earned-income amount stays
+    // $3,055, and line 18 is high enough for /cdccQualified. Interest above $12,200 is over the earned income
+    // credit investment-income limit (Rev. Proc. 2025-32 §4.06(2)).
+    const g = fg({
+      ...noW2,
+      ...makeInterestReportData(30000, interestId, primaryFilerId),
+      '/interestReportsIsDone': createBooleanWrapper(true),
+      ...scheduleC({
+        ...eligibleElection,
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`4800`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`1500`),
+      }),
+      ...makeChildData(childId, `2018-01-01`),
+      '/familyAndHousehold': createCollectionWrapper([childId]),
+      [`/familyAndHousehold/#${childId}/ownSupport`]: createBooleanWrapper(false),
+      [`/familyAndHousehold/#${childId}/unableToCareForSelf`]: createBooleanWrapper(false),
+      '/cdccHasCreditForPriorYearExpenses': createBooleanWrapper(false),
+      '/writableCdccHasQualifyingExpenses': createBooleanWrapper(true),
+      [`/familyAndHousehold/#${childId}/cdccHasDependentCareExpenses`]: createBooleanWrapper(true),
+      [`/familyAndHousehold/#${childId}/cdccHadExpensesPaidToQualifyingProvider`]: createBooleanWrapper(true),
+      [`/familyAndHousehold/#${childId}/writableCdccQualifyingExpenseAmount`]: createDollarWrapper(`1300`),
+      ...makeCareProviderData(careProviderId),
+      '/cdccCareProviders': createCollectionWrapper([careProviderId]),
+      '/cdccCareProvidersIsDone': createBooleanWrapper(true),
+      '/maritalStatus': createEnumWrapper(`single`, `/maritalStatusOptions`),
+      '/eitcQcOfAnother': createBooleanWrapper(false),
+      '/eitcHadImproperClaims': createBooleanWrapper(false),
+      '/primaryFilerSsnEmploymentValidity': createEnumWrapper(`neither`, `/primaryFilerSsnEmploymentValidityOptions`),
+      [`/filers/#${primaryFilerId}/isUsCitizenFullYear`]: createBooleanWrapper(true),
+    });
+    expect(read(g, `/scheduleCNetProfitOrLoss`).get.toString()).toBe(`3300.00`);
+    expect(read(g, `/primaryFilerSeLine4b`).get.toString()).toBe(`3200.00`);
+    expect(read(g, `/deductibleSelfEmploymentTax`).get.toString()).toBe(`245.00`);
+    expect(read(g, `/scheduleCNetProfitForEarnedIncome`).get.toString()).toBe(`3055.00`);
+    expect(read(g, `/primaryFilerEarnedIncomeForCdccBase`).get.toString()).toBe(`3055.00`);
+    expect(read(g, `/cdccQualified`).complete).toBe(true);
+    expect(read(g, `/cdccQualified`).get).toBe(true);
+    expect(read(g, `/primaryFilerNonfarmOptionalMethodApplies`).get).toBe(true);
+    expect(read(g, NONFARM_KO).get).toBe(false);
+    expect(read(g, CREDIT_KO).complete).toBe(true);
+    expect(read(g, CREDIT_KO).get).toBe(true);
+    expect(read(g, `/scheduleCSectionIsComplete`).get).toBe(true);
+    expect(read(g, `/flowIsKnockedOut`).get).toBe(true);
   });
 
   it(`a sixth use of the nonfarm optional method stops`, ({ task }) => {

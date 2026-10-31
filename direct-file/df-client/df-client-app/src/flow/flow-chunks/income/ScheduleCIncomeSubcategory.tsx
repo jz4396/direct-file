@@ -413,6 +413,17 @@ export const ScheduleCIncomeSubcategory = (
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
 
+    <Screen
+      route='schedule-c-nonfarm-optional-method-credits-knockout'
+      condition='/flowKnockoutScheduleSENonfarmOptionalMethodCredits'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-se-nonfarm-optional-method-credits' />
+      <DFAlert i18nKey='/info/knockout/schedule-se-nonfarm-optional-method-credits' headingLevel='h2' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
+
     <Screen route='schedule-c-out-of-scope-knockout' condition='/flowKnockoutScheduleCOutOfScope' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />
       <Heading i18nKey='/heading/knockout/schedule-c-out-of-scope' />

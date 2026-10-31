@@ -173,6 +173,7 @@
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCOutOfScope" />
           <Dependency module="scheduleSE" path="/flowKnockoutScheduleSEOutOfScope" />
           <Dependency module="scheduleSE" path="/flowKnockoutScheduleSENonfarmOptionalMethod" />
+          <Dependency module="scheduleSE" path="/flowKnockoutScheduleSENonfarmOptionalMethodCredits" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleELoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />

@@ -210,12 +210,16 @@ public final class PrintRefusingKnockouts {
             // Nonfarm optional method (line 4b and Part II lines 16 and 17). Stops when the filer elects it and
             // Schedule K-1 (Form 1065) box 14 code A is nonzero, a filer with Schedule C activity fails the dollar
             // tests or line 17 would be less than actual net earnings, neither filer has Schedule C activity, net
-            // earnings were not at least $400 in 2 of the prior 3 years, this would be the sixth or later use, or
-            // the earned income credit or the additional child tax credit is claimed. Line 4b is not included in
-            // earned income. 26 U.S.C. 1402(a), 1402(l). Complete false when the election is unanswered or no, so
-            // the regular method still files. An unanswered election while the Schedule SE questions apply refuses
-            // the print.
+            // earnings were not at least $400 in 2 of the prior 3 years, or this would be the sixth or later use.
+            // 26 U.S.C. 1402(a), 1402(l). Complete false when the election is unanswered or no, so the regular
+            // method still files. An unanswered election while the Schedule SE questions apply refuses the print.
             "/flowKnockoutScheduleSENonfarmOptionalMethod",
+            // The same election when the method applies and the return claims the earned income credit, the
+            // additional child tax credit, or the child and dependent care credit. Line 4b is not earned income.
+            // 2026 draft Instructions for Form 2441, PDF p. 5, lines 4 and 5: subtract Schedule 1 line 15 from the
+            // total of Schedule SE lines 3 and 4b. Not part of /scheduleCSectionIsComplete. Complete false when the
+            // method does not apply, without reading the credits.
+            "/flowKnockoutScheduleSENonfarmOptionalMethodCredits",
             // Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4 would
             // combine lines 1b through 3 as if those adjustments were zero. Line 2g is /form6251Line2g. Form 6251
             // (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, PDF p. 2 (form p. 1), line 2i: "Exercise

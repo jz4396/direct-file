@@ -529,10 +529,12 @@
         ministry or Forms 4361
         and 4029, notary fees, and Form 8919 wages (scheduleSE
         /flowKnockoutScheduleSEOutOfScope). The nonfarm optional method is figured on Schedule SE
-        unless that election stops the return (scheduleSE
-        /flowKnockoutScheduleSENonfarmOptionalMethod), including when the earned income credit or
-        the additional child tax credit is claimed. Line 4b is not added to this earned-income
-        amount. Complete and false when
+        unless the election fails the dollar or prior-year tests (scheduleSE
+        /flowKnockoutScheduleSENonfarmOptionalMethod). An election that applies together with the
+        earned income credit, the additional child tax credit, or the child and dependent care
+        credit stops on /flowKnockoutScheduleSENonfarmOptionalMethodCredits, which is not part of
+        /scheduleCSectionIsComplete. Line 4b is not added to this earned-income amount. Complete
+        and false when
         there is no Schedule C or the Schedule C
         result is a
         profit on a
@@ -4227,11 +4229,15 @@
         Instructions for
         Form 2441, PDF p. 5, lines 4 and 5: "2. The amount shown on Schedule SE (Form 1040), line 3,
         minus any deduction
-        you claim on Schedule 1 (Form 1040), line 15." The nonfarm optional method skips line 3 and
-        puts the elected amount on line 4b. That line 4b amount is not added here. This stays Schedule
-        C net profit minus the deductible part of self-employment tax. An election together with the
-        earned income credit or the additional child tax credit stops the return (scheduleSE
-        /flowKnockoutScheduleSENonfarmOptionalMethod). #117: floored at $0 because a loss is not
+        you claim on Schedule 1 (Form 1040), line 15." The same page: "If you use either optional
+        method to figure net earnings, subtract any deduction you claim on Schedule 1 (Form 1040),
+        line 15, from the total of the amounts shown on Schedule SE (Form 1040), lines 3 and 4b."
+        The nonfarm optional method skips line 3 and puts the elected amount on line 4b. That line
+        4b amount is not added here. This stays Schedule C net profit minus the deductible part of
+        self-employment tax. An election that applies together with the earned income credit, the
+        additional child tax credit, or the child and dependent care credit stops the return
+        (scheduleSE /flowKnockoutScheduleSENonfarmOptionalMethodCredits). #117: floored at $0
+        because a loss is not
         modeled; a loss stops
         the return wherever it would change a credit (/flowKnockoutScheduleCEarnedIncomeCredits).
       </Description>
