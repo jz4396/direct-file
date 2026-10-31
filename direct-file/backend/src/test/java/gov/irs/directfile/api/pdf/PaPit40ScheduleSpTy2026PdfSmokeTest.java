@@ -437,9 +437,9 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
     }
 
     /**
-     * Full-year resident, Schedule C receipts $20,000 and expenses $0. PA-40 IN (2025) p. 17, LINE 4 / Tax Reform Code
-     * of 1971 §303(a)(2). Line 4 is $20,000 and line 9 is wages $50,000 plus that net. No PA Schedule C PDF is in the
-     * package; the federal Schedule C PDF is not the PA schedule.
+     * Full-year resident, Schedule C receipts $20,000 and the single expense total $0 (the legacy path). PA-40 IN
+     * (2025) p. 17, LINE 4 / Tax Reform Code of 1971 §303(a)(2). Line 4 is $20,000 and line 9 is wages $50,000 plus
+     * that net. That path still does not print PA-40 C; the federal Schedule C PDF is not the PA schedule.
      */
     @Test
     void pa40Line4PrintsFederalScheduleCNetProfit() throws Exception {
@@ -462,6 +462,9 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p1, "4. Loss", "Off", "line 4 loss oval");
             is(p1, "4. Net Income or Loss from the Operation of a Business, etc", "20,000.00", "line 4 = 20,000");
             is(p1, "9. Total PA Taxable Income", "70,000.00", "line 9 includes line 4");
+            assertFalse(
+                    new PDFTextStripper().getText(doc).contains("2503110054"),
+                    "single expense total does not print PA-40 C");
         }
     }
 

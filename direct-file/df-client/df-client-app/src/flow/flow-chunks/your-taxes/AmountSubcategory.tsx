@@ -123,7 +123,7 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-unsupported-income' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      {/* #123 PA Schedules A, B, C and D are not produced. */}
+      {/* #123 PA Schedules A, B, and D are not produced. PA Schedule C prints for a full-year line-item business. */}
       <Screen route='pa-schedule-a-knockout' condition='/flowKnockoutPaScheduleA' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-schedule-a' />

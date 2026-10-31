@@ -401,6 +401,14 @@ direct-file:
         configuration-location: "src/main/resources/pdf/2026/PA40/en/configuration.yml"
         configuration-location-type: directory
         cache-in-memory: true
+      - name: PA40C
+        year: 2026
+        language-code: en
+        location: "src/main/resources/pdf/2026/PA40C/en/pa-40c.pdf"
+        location-type: directory
+        configuration-location: "src/main/resources/pdf/2026/PA40C/en/configuration.yml"
+        configuration-location-type: directory
+        cache-in-memory: true
       - name: PA40SP
         year: 2026
         language-code: en

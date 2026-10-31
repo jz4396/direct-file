@@ -1,0 +1,107 @@
+# PA-40 Schedule C, Profit or Loss from Business or Profession. FINAL form: PA-40 C (EX) 03-26 (FI).
+# Source: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/pa-40c.pdf
+# committed byte-identical as pa-40c.pdf; SHA-256 520555065fec4b85f757fa5cd2f3564c507464954553e376d1922bc7a75b8098
+# (pinned in pdf/2026/state-interim-pdf-sha256.txt). The Department publishes this file without a year in the name.
+# Page 1 control number 2503110054, page 2 control number 2503210052. The file is the two-page schedule followed by
+# six pages of instructions; skipTrailingPages drops the instructions. No Spanish PA-40 C is published; English only.
+#
+# Field names are the PDF's own fully qualified AcroForm names (PDFBox getField). Each mapped box was checked against
+# the printed line caption beside it. Map only terminal fields. "4. Other Income" and "38. Total Expenses" are
+# parents; the amount fields are the longer names below. Accounting-method oval F is not mapped: its export values
+# do not follow the printed (1)(2)(3) order, and the accounting method is not collected.
+# PaScheduleCPdfForm fills the ~paC* pseudo-facts (upper case, year, inventory ovals, line 39 loss).
+# Amounts: whole dollars rounded half-up (PA-40 IN (2025) p. 4), written as the form shows them (1,234.00); $0 prints
+# blank.
+#
+# One schedule per business (includeForEach /scheduleCBusinesses). Included only for a full-year PA resident
+# (/stateReturnIsPa) whose business is on the line-item path. A single-expense-total business, a part-year return, and
+# a non-PA return produce no page (PaScheduleCPdfForm). /flowKnockoutPaScheduleC stays true for those PA-40 cases.
+#
+# Cites: 72 P.S. §7303(a)(2). PA-40 IN (2025) p. 17, LINE 4: "You must use PA Schedule C to report income and expenses
+# from a business or profession… Do not use federal Schedules C or F." PA-40 C (EX) 03-26 line 31 (meals, travel, and
+# entertainment at 100 percent), line 32 (utilities), line 39 (line 5 minus line 38). Federal line 25 (utilities) maps
+# to PA line 32 only. PA line 30 (telephone) stays blank. Federal line 32a/32b (at risk) are not PA line 32.
+#
+# Mapped from the federal line-item facts, by caption rather than by equal line numbers:
+#   1a-1c, 2, 3, 4, 5 from federal lines 1-7.
+#   6 advertising, 11 commissions, 15 employee benefits, 17 insurance, 18 interest (16a + 16c),
+#   20 legal, 22 office supplies (federal line 18), 23 pension, 25 rent (federal 20b), 26 repairs,
+#   27 subcontractor fees (federal line 11), 28 supplies (federal line 22), 29 taxes,
+#   31 travel and entertainment (federal 24a + 24b + the meals add-back), 32 utilities (federal line 25 only),
+#   33 wages, 37a-37c and the line 37 total, 38 total expenses (federal line 28 + the meals add-back),
+#   39 net (federal line 31 minus the meals add-back).
+#   Schedule C-1 from federal Part III.
+# Not mapped, left blank (uncollected, or already a stop, so a supported return does not print $0 there):
+#   telephone 30, amortization 7, bad debts 8, bank charges 9 (a Part V "Bank fees" line stays on line 37),
+#   car and truck 10, depletion 12, depreciation and section 179 13, dues 14, freight 16, laundry 19,
+#   management fees 21, postage 24, IDC 34-36, start-up 36, Schedule C-2, EIN, address, NAICS, sales-tax license,
+#   product, accounting method, out of business, and the federal at-risk checkboxes.
+includeForEach: /scheduleCBusinesses
+customMaps:
+  template:
+    skipTrailingPages: "6"
+otherRequiredFacts:
+  - /stateReturnIsPa
+  - /taxYear
+  - /scheduleCBusinesses/*/usesLegacyExpenseBucket
+  - /scheduleCBusinesses/*/filer/fullName
+  - /scheduleCBusinesses/*/businessName
+  - /scheduleCBusinesses/*/line33aCost
+  - /scheduleCBusinesses/*/line33bLowerOfCostOrMarket
+  - /scheduleCBusinesses/*/line34ChangeNo
+  - /scheduleCBusinesses/*/hasHomeOffice
+  - /scheduleCBusinesses/*/paNetProfitOrLoss
+  - /scheduleCBusinesses/*/partV1Description
+  - /scheduleCBusinesses/*/partV2Description
+  - /scheduleCBusinesses/*/partV3Description
+form:
+  "Year": ~paCYear
+  "Name of Owner as shown PA tax return": ~paCOwnerName
+  "Owner's Social Security Number": /scheduleCBusinesses/*/filer/tin
+  "Business Name": ~paCBusinessName
+  "E. Method(s)": ~paCInventoryMethod
+  "C1. Yes/No": ~paCInventoryChange
+  "C2. Yes/No": ~paCHomeOffice
+  "1. a Gross receipts or sales": /scheduleCBusinesses/*/line1GrossReceipts
+  "1. b. Returns & allowances": /scheduleCBusinesses/*/line2ReturnsAndAllowances
+  "1. c. Balance": /scheduleCBusinesses/*/line3
+  "2. Cost": /scheduleCBusinesses/*/line4CostOfGoodsSold
+  "3. Gross profit": /scheduleCBusinesses/*/line5GrossProfit
+  "4. Other Income. Include interest": /scheduleCBusinesses/*/line6OtherIncome
+  "5. Total Income": /scheduleCBusinesses/*/line7GrossIncome
+  "6. Advertising": /scheduleCBusinesses/*/line8Advertising
+  "11. Commissions": /scheduleCBusinesses/*/line10CommissionsAndFees
+  "15. Employee benefit programs other than on Line 23": /scheduleCBusinesses/*/line14EmployeeBenefitPrograms
+  "17. Insurance": /scheduleCBusinesses/*/line15Insurance
+  "18. Interest on business indebtedness": /scheduleCBusinesses/*/paInterest
+  "20. Legal & professional services": /scheduleCBusinesses/*/line17LegalAndProfessional
+  "22. Office supplies": /scheduleCBusinesses/*/line18OfficeExpense
+  "23. Pension & profit-sharing plans": /scheduleCBusinesses/*/line19PensionAndProfitSharing
+  "25. Rent on business property": /scheduleCBusinesses/*/line20bRentOtherProperty
+  "26. Repairs": /scheduleCBusinesses/*/line21RepairsAndMaintenance
+  "27. Subcontractor fees": /scheduleCBusinesses/*/line11ContractLabor
+  "28. Supplies": /scheduleCBusinesses/*/line22Supplies
+  "29. Taxes": /scheduleCBusinesses/*/line23TaxesAndLicenses
+  "31. Travel and entertainment": /scheduleCBusinesses/*/paTravelAndEntertainment
+  "32. Utilities": /scheduleCBusinesses/*/line25Utilities
+  "33. Wages": /scheduleCBusinesses/*/line26Wages
+  "37a. Other expenses (specify)": ~paCPartV1
+  "37a-2. Other expenses/amount": /scheduleCBusinesses/*/partV1Amount
+  "37b. Other expenses (specify)": ~paCPartV2
+  "37b-2. Other expenses/amount": /scheduleCBusinesses/*/partV2Amount
+  "37c. Other expenses (specify)": ~paCPartV3
+  "37c-2. Other expenses/amount": /scheduleCBusinesses/*/partV3Amount
+  "37. Total other expenses": /scheduleCBusinesses/*/line27bOtherExpenses
+  "38. Total Expenses. Add Lines 6 through 37": /scheduleCBusinesses/*/paTotalExpenses
+  "39. Net Profit of Loss": ~paCLine39
+  "41. Loss": ~paCLine39Loss
+  "Schedule C-1 1. Inventory": /scheduleCBusinesses/*/line35InventoryAtBeginning
+  "2a. Purchases": /scheduleCBusinesses/*/writablePurchases
+  "2b. Cost of items withdrawn for personal use": /scheduleCBusinesses/*/writablePersonalUseWithdrawals
+  "2c. Balance": /scheduleCBusinesses/*/line36PurchasesLessPersonalUse
+  "3. Cost of labor": /scheduleCBusinesses/*/line37InventoryLabor
+  "4. Materials & supplies": /scheduleCBusinesses/*/line38InventoryMaterials
+  "5. Other costs": /scheduleCBusinesses/*/line39InventoryOtherCosts
+  "6. Add Lines 1, 2c, 3, 4, &  5": /scheduleCBusinesses/*/line40GoodsAvailable
+  "7. Inventory at end of year": /scheduleCBusinesses/*/line41InventoryAtEnd
+  "8. Cost of goods sold and or operations": /scheduleCBusinesses/*/line42CostOfGoodsSold

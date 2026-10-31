@@ -36,7 +36,12 @@ abstract class PaPdfForm extends PdfForm {
             final FactEvaluationResult facts,
             final PdfLanguages language,
             final UUID collectionItemId) {
-        final String path = token.trim();
+        String path = token.trim();
+        // includeForEach paths still contain "*" here. Substitute the business id before the dollar lookup so a
+        // collection amount is formatted the same way a return-level PA amount is (1,234.00).
+        if (collectionItemId != null) {
+            path = path.replace("*", "#" + collectionItemId);
+        }
         if (factPathRegEx.matcher(path).matches()) {
             final Optional<Object> opt = facts.getOptional(path);
             if (opt.isPresent() && opt.get() instanceof scala.math.BigDecimal amount) {

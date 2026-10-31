@@ -1018,6 +1018,167 @@ pdf/2026/PA40/en/2025_pa-40.pdf	36. Refund	Tx	36. – Enter the appropriate code
 pdf/2026/PA40/en/2025_pa-40.pdf	36. Refund donation line	Tx	36. – Enter the amount of Line 29 to be donated to a donation organizati...
 pdf/2026/PA40/en/2025_pa-40.pdf	Deceased	Btn	Click on the oval if the taxpayer and/or spouse died during the tax year...
 pdf/2026/PA40/en/2025_pa-40.pdf	Use all caps to enter two character Country Code	Tx	Enter the two-character country code if a foreign country address
+pdf/2026/PA40C/en/pa-40c.pdf	Main business activity	Tx	Main business activity
+pdf/2026/PA40C/en/pa-40c.pdf	product or service	Tx	product or service
+pdf/2026/PA40C/en/pa-40c.pdf	Employer Identification Number	Tx	Employer Identification Number
+pdf/2026/PA40C/en/pa-40c.pdf	Business address (number & street)	Tx	Business address (number & street)
+pdf/2026/PA40C/en/pa-40c.pdf	City, State and Zip Code	Tx	City, State and Zip Code
+pdf/2026/PA40C/en/pa-40c.pdf	Sales Tax License Number (if applicable)	Tx	Sales Tax License Number (if applicable)
+pdf/2026/PA40C/en/pa-40c.pdf	F.  Accounting Method(s)	Btn	F. Accounting Method(s)
+pdf/2026/PA40C/en/pa-40c.pdf	Federal NAICS Code	Tx	Federal NAICS Code
+pdf/2026/PA40C/en/pa-40c.pdf	I.  Out of Business	Btn	I. Out of Business
+pdf/2026/PA40C/en/pa-40c.pdf	1. Total Section 179 depreciation	Tx	Total Section 179 depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. Less: Section 179 depreciation included in Schedule C-1	Tx	Less: Section 179 depreciation included in Schedule C-1.
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b1) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c1)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d1)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e1)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f1)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b2) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c2)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d2)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e2)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f2)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b3) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c3)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d3)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e3)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f3)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b4) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c4)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d4)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e4)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f4)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b5) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c5)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d5)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e5)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f5)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b6) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c6)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d6)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e6)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f6)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b7) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c7)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d7)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e7)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f7)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b8) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c8)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d8)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e8)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f8)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b9) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c9)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d9)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e9)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f9)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b10) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c10)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d10)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e10)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f10)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b11) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c11)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d11)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e11)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f11)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b12) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c12)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d12)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e12)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f12)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b13) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c13)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d13)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e13)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f13)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b14) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c14)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d14)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e14)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f14)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b15) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c15)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d15)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e15)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f15)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b16) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c16)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d16)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e16)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f16)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	2. (b17) Date acuired	Tx	Date acquired
+pdf/2026/PA40C/en/pa-40c.pdf	2. (c17)  Cost or other basis	Tx	Cost or other basis
+pdf/2026/PA40C/en/pa-40c.pdf	2. (d17)  Depreciation allowed or allowable in prior years	Tx	Depreciation allowed or allowable in prior years
+pdf/2026/PA40C/en/pa-40c.pdf	2. (e17)  Method of computing depreciation	Tx	Method of calculating depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	2. (f17)  Life or rate	Tx	Life or rate
+pdf/2026/PA40C/en/pa-40c.pdf	3. Balance (Subtract Line 2 from Line 1)	Tx	Balance (Subtract Line 2 from Line 1)
+pdf/2026/PA40C/en/pa-40c.pdf	3. (c) Totals	Tx	Totals
+pdf/2026/PA40C/en/pa-40c.pdf	7. Amortization	Tx	Amortization
+pdf/2026/PA40C/en/pa-40c.pdf	8. Bad Debts from sales or services	Tx	Bad Debts from sales or services
+pdf/2026/PA40C/en/pa-40c.pdf	9. Bank charges	Tx	Bank charges
+pdf/2026/PA40C/en/pa-40c.pdf	10. Car & truck expenses	Tx	Car & truck expenses
+pdf/2026/PA40C/en/pa-40c.pdf	12. Cost Depletion	Tx	Cost Depletion but not percentage depletion
+pdf/2026/PA40C/en/pa-40c.pdf	13a. Regular Depreciation	Tx	Regular Depreciation
+pdf/2026/PA40C/en/pa-40c.pdf	13b. Section 179 expense	Tx	Section 179 expense
+pdf/2026/PA40C/en/pa-40c.pdf	14. Dues & publications	Tx	Dues & publications
+pdf/2026/PA40C/en/pa-40c.pdf	16. Freight	Tx	Freight
+pdf/2026/PA40C/en/pa-40c.pdf	19.  Laundry & cleaning	Tx	Laundry & cleaning
+pdf/2026/PA40C/en/pa-40c.pdf	21. Management fees	Tx	Management fees
+pdf/2026/PA40C/en/pa-40c.pdf	24. Postage	Tx	Postage
+pdf/2026/PA40C/en/pa-40c.pdf	30. Telephone	Tx	Telephone
+pdf/2026/PA40C/en/pa-40c.pdf	34. IDCs (1/3 current expensing)	Tx	IDCs (1/3 current expensing)
+pdf/2026/PA40C/en/pa-40c.pdf	36. Start-up costs (direct expense)	Tx	Start-up costs (direct expense)
+pdf/2026/PA40C/en/pa-40c.pdf	2a. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2b. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2c. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g1. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2 g2. ODepreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2 g3. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2 g4. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2 g5. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2 g6. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2 g7. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2d. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g8. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2e. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g9. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2f. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g10. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2g. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g11. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2h. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g12. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2i. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g13. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2j. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g14. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2k. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g15. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2L. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g16. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	2m. Other Depreciation:	Tx	Other Depreciation:
+pdf/2026/PA40C/en/pa-40c.pdf	2 g17. Depreciation for this year	Tx	Depreciation for this year
+pdf/2026/PA40C/en/pa-40c.pdf	5 g. Totals	Tx	Totals
+pdf/2026/PA40C/en/pa-40c.pdf	6 g. Any depreciation included in Schedule C-1	Tx	Any depreciation included in Schedule C-1
+pdf/2026/PA40C/en/pa-40c.pdf	7 g. Balance	Tx	Balance
+pdf/2026/PA40C/en/pa-40c.pdf	35. IDCs (amortization)	Tx	IDCs (amortization)
+pdf/2026/PA40C/en/pa-40c.pdf	37d. Other expenses (specify)	Tx	Other expenses (specify)
+pdf/2026/PA40C/en/pa-40c.pdf	37d-2. Other expenses/amount	Tx	Other expenses/amount
+pdf/2026/PA40C/en/pa-40c.pdf	37e. Other expenses (specify)	Tx	Other expenses (specify)
+pdf/2026/PA40C/en/pa-40c.pdf	37e-2. Other expenses/amount	Tx	Other expenses/amount
+pdf/2026/PA40C/en/pa-40c.pdf	37f. Other expenses (specify)	Tx	Other expenses (specify)
+pdf/2026/PA40C/en/pa-40c.pdf	37f-2. Other expenses/amount	Tx	Other expenses/amount
+pdf/2026/PA40C/en/pa-40c.pdf	37g. Other expenses (specify)	Tx	Other expenses (specify)
+pdf/2026/PA40C/en/pa-40c.pdf	37g-2. Other expenses/amount	Tx	Other expenses/amount
+pdf/2026/PA40C/en/pa-40c.pdf	37h. Other expenses (specify)	Tx	Other expenses (specify)
+pdf/2026/PA40C/en/pa-40c.pdf	37h-2. Other expenses/amount	Tx	Other expenses/amount
+pdf/2026/PA40C/en/pa-40c.pdf	37i. Other expenses (specify)	Tx	Other expenses (specify)
+pdf/2026/PA40C/en/pa-40c.pdf	37j. Other expenses (specify)	Tx	Other expenses (specify)
+pdf/2026/PA40C/en/pa-40c.pdf	37i-2. Other expenses/amount	Tx	Other expenses/amount
+pdf/2026/PA40C/en/pa-40c.pdf	37j-2. Other expenses/amount	Tx	Other expenses/amount
 pdf/2026/PA40SP/en/2025_pa-40sp.pdf	1. – Enter the taxpayer’s total taxable income from Line 9 of the PA-40 when completing the ovals for Lines 3b, 3c or 3d in Section I	Tx	1. – Enter the taxpayer’s total taxable income from Line 9 of the PA-40 ...
 pdf/2026/PA40SP/en/2025_pa-40sp.pdf	1. – Enter the spouse’s total taxable income from Line 9 of the spouse’s PA-40 when completing the ovals for Lines 3b, 3c or 3d in Section I	Tx	1. – Enter the spouse’s total taxable income from Line 9 of the spouse’s...
 pdf/2026/PA40SP/en/2025_pa-40sp.pdf	2. – Enter: Yes, if the taxpayer for Question 1 qualifies for Tax Forgiveness; or, No, if the taxpayer does not qualify for Tax Forgiveness	Btn	2. – Enter: Yes, if the taxpayer for Question 1 qualifies for Tax Forgiv...

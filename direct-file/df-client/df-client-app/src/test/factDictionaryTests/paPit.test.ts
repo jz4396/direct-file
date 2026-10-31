@@ -405,7 +405,7 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
       expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
       expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
       expect(val(g, `/paLine4`)).toBe(`8000.00`);
-      // PA-40 IN (2025) p. 17: must use PA Schedule C; this slice has no PA Schedule C PDF.
+      // Single expense total: PA-40 IN (2025) p. 17 still requires PA Schedule C, and this path does not print it.
       expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
       expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
       expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
@@ -456,8 +456,8 @@ describe(`PA-40 knockouts (BlockSubmissionOnTrue, /flowKnockoutStateReturn in /f
 /**
  * PA-40 line 4 from the supported federal Schedule C path. Tax Reform Code of 1971 §303(a)(2): "Net profits. The net
  * income from the operation of a business, profession, or other activity…" PA-40 IN (2025) p. 17, LINE 4. PA-40 C (EX)
- * 03-26: line 39; meals 100% by Pennsylvania. A PA/FL part-year resident with Schedule C stops (p. 43). No PA Schedule
- * C PDF in this slice.
+ * 03-26: line 39; meals deducted at 100%. A full-year line-item business prints PA Schedule C. A single expense
+ * total still stops. A PA/FL part-year resident with Schedule C stops (p. 43).
  */
 const schCBizId = `a59c03d1-af4a-447f-96aa-d19397048a77`;
 const schCBase = (receipts: string, expenses = `0`) => ({
@@ -554,10 +554,17 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
   });
 
-  it(`meals 400 at 50% federal → PA line 4 adds back 200`, ({ task }) => {
-    task.meta.testedFactPaths = [`/paLine4`, `/scheduleCBusinesses/*/paMealsAddBack`, `/scheduleCNetProfitOrLoss`];
-    // Receipts $20,000; meals $400; federal line 24b = $200; line 31 = 19,800. PA add-back $200 → line 4 = 20,000.
-    // Line-item path: omit writableTotalExpenses so usesLegacyExpenseBucket is false.
+  it(`meals 400 at 50% federal → PA line 4 deducts the full 400`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/paLine4`,
+      `/scheduleCBusinesses/*/paMealsAddBack`,
+      `/scheduleCBusinesses/*/paNetProfitOrLoss`,
+      `/scheduleCBusinesses/*/paTravelAndEntertainment`,
+      `/scheduleCNetProfitOrLoss`,
+      `/flowKnockoutPaScheduleC`,
+    ];
+    // Receipts $20,000; meals $400; federal line 24b = $200; line 31 = 19,800. PA add-back $200 is subtracted, so
+    // line 4 and PA Schedule C line 39 are $19,600 (meals at 100%). Line-item path: omit writableTotalExpenses.
     const { [`/scheduleCBusinesses/#${schCBizId}/writableTotalExpenses`]: _legacy, ...schCNoBucket } =
       schCBase(`20000`);
     const g = build(singleFilerData, {
@@ -567,8 +574,11 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     });
     expect(val(g, `/scheduleCBusinesses/#${schCBizId}/line24bDeductibleMeals`)).toBe(`200.00`);
     expect(val(g, `/scheduleCBusinesses/#${schCBizId}/paMealsAddBack`)).toBe(`200.00`);
+    expect(val(g, `/scheduleCBusinesses/#${schCBizId}/paTravelAndEntertainment`)).toBe(`400.00`);
+    expect(val(g, `/scheduleCBusinesses/#${schCBizId}/paNetProfitOrLoss`)).toBe(`19600.00`);
     expect(val(g, `/scheduleCNetProfitOrLoss`)).toBe(`19800.00`);
-    expect(val(g, `/paLine4`)).toBe(`20000.00`);
+    expect(val(g, `/paLine4`)).toBe(`19600.00`);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(false);
     expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
     expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
   });
@@ -592,8 +602,29 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     expect(get(g, `/paLine9`).complete).toBe(false);
     expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
     expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutPaUnsupportedIncome`);
+  });
+
+  it(`part-year line-item Schedule C still knocks out`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleC`, `/scheduleCHasLegacyExpenseBucket`];
+    // The line-item path prints PA Schedule C only for a full-year resident. PA-40 IN (2025) p. 43.
+    const { [`/scheduleCBusinesses/#${schCBizId}/writableTotalExpenses`]: _legacy, ...schCNoBucket } =
+      schCBase(`20000`);
+    const g = build(singleFilerData, {
+      ...w2(30000, 30000, 921),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+      '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+      ...schCNoBucket,
+      ...schCMeals(`400`),
+    });
+    expect(get(g, `/scheduleCHasLegacyExpenseBucket`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
   });
 
   it(`tax-shelter screener yes: unsupported-income stop (PA-40 C Form 8271)`, ({ task }) => {
@@ -655,6 +686,7 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     expect(val(g, `/scheduleCBusinesses/#${schCBizId}/line42CostOfGoodsSold`)).toBe(`5050.00`);
     expect(val(g, `/scheduleCNetProfitOrLoss`)).toBe(`14950.00`);
     expect(val(g, `/paLine4`)).toBe(`14950.00`);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(false);
     expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
     expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
   });

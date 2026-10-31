@@ -102,9 +102,9 @@ class Pa40PdfForm extends PaPdfForm {
         facts.put(PREFIX + "FilingStatus", married ? (joint ? "2" : "3") : "1");
 
         // Line 4, p. 17, LINE 4 / Tax Reform Code of 1971 §303(a)(2): "Net profits. The net income from the operation
-        // of a business, profession, or other activity…" /paLine4 is federal Schedule C line 31 plus the PA 100% meals
-        // add-back for a full-year resident. $0 prints blank. A loss fills the oval and the amount box shows the size
-        // (p. 15). This slice does not produce a PA Schedule C PDF; the federal Schedule C PDF is not the PA schedule.
+        // of a business, profession, or other activity…" /paLine4 is the sum of PA Schedule C line 39
+        // (federal line 31 minus the meals add-back, so meals are deducted at 100%). $0 prints blank. A loss fills
+        // the oval and the amount box shows the size (p. 15). The full-year line-item path also prints PA-40 C.
         final Optional<BigDecimal> line4 = dollars(facts, "/paLine4");
         facts.put(
                 PREFIX + "Line4",
