@@ -293,4 +293,67 @@ class Form8995Ty2026PdfSmokeTest {
         }
         return facts;
     }
+
+    /**
+     * Section 162 rental on Form 8995 line 1. Wages $50,000 plus rents $18,000 and expenses $6,000. Column (b) stays
+     * blank. 26 U.S.C. 199A(c)(1), 1402(a)(1). Rev. Proc. 2025-32 §4.14 standard deduction $16,100. Line 11 is
+     * $45,900. Line 5 is $2,400. Line 14 is $9,180. Line 17 is $2,400.
+     */
+    @Test
+    void scheduleESection162RentalPrintsOnLine1WithTinBlank() throws Exception {
+        String prop = "e0000000-5e00-4000-8000-000000000001";
+        Map<String, String> facts = ScheduleBAndETy2026PdfSmokeTest.partI();
+        facts.put("/filerResidenceAndIncomeState", enumValue("fl", "/scopedStateOptions"));
+        facts.put("/scheduleERentalIsTradeOrBusiness", bool(true));
+        facts.put("/scheduleEWritableRents", dollar("18000.00"));
+        facts.put("/scheduleEWritableRoyalties", dollar("0.00"));
+        facts.put("/scheduleEWritableExpenses", dollar("6000.00"));
+        facts.put("/qbiHasPriorYearLossCarryforward", bool(false));
+        facts.put("/qbiIsCooperativePatron", bool(false));
+        facts.put("/scheduleEProperties", collection(prop));
+        facts.put("/scheduleEPropertiesIsDone", bool(true));
+        String p = "/scheduleEProperties/#" + prop + "/";
+        facts.put(p + "propertyName", string("Oak Street Rental"));
+        facts.put(p + "writableRents", dollar("18000.00"));
+        facts.put(p + "writableRoyalties", dollar("0.00"));
+        facts.put(p + "writableExpenses", dollar("6000.00"));
+        facts.put(p + "materiallyParticipates", bool(true));
+        facts.put(p + "reliesOnRp201938SafeHarbor", bool(false));
+        facts.put(p + "isAggregated", bool(false));
+        facts.put(p + "hasSuspendedPassiveLoss", bool(false));
+
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals("12000.00", dollars(graph, "/form8995Line2"));
+        assertEquals("12000.00", dollars(graph, "/form8995Line1iQbi"));
+        assertFalse(graph.get("/form8995Line1iTin").complete(), "column (b) blank");
+        assertEquals("2400.00", dollars(graph, "/form8995Line5"));
+        assertEquals("45900.00", dollars(graph, "/form8995Line11"));
+        assertEquals("9180.00", dollars(graph, "/form8995Line14"));
+        assertEquals("2400.00", dollars(graph, "/form8995Line15"));
+        assertEquals("400.00", dollars(graph, "/form8995Line16"));
+        assertEquals("2400.00", dollars(graph, "/form8995Line17"));
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutScheduleETradeOrBusinessQbi").get());
+        submissionStillBlocked(graph);
+        for (String stop : new String[] {
+            "reliesOnRp201938SafeHarbor", "isAggregated", "hasSuspendedPassiveLoss"
+        }) {
+            Map<String, String> stopped = new java.util.HashMap<>(facts);
+            stopped.put(p + stop, bool(true));
+            Graph stoppedGraph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                    .getGraph(PrintRefusingKnockoutsTest.smoke(stopped));
+            assertEquals(Boolean.TRUE, stoppedGraph.get("/flowKnockoutScheduleETradeOrBusinessQbi").get(), stop);
+        }
+
+        try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {
+            Map<String, String> f = fieldsOnPages(doc, FOOTER);
+            assertTrue(value(f, ROW_I + "f1_3[0]").contains("Oak Street Rental"), "1(i)(a)");
+            blank(f, ROW_I + "f1_4[0]", "1(i)(b)");
+            amount(f, ROW_I + "f1_5[0]", 12000, "1(i)(c)");
+            amount(f, "Page1[0].f1_18[0]", 12000, "2");
+            amount(f, "Page1[0].f1_33[0]", 2400, "17");
+            Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
+            amount(f1040, "Page2[0].f2_05[0]", 2400, "Form 1040 line 13b");
+        }
+    }
 }

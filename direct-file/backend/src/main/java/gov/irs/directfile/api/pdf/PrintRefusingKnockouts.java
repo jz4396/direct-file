@@ -123,9 +123,11 @@ public final class PrintRefusingKnockouts {
             // Substantial services to renters belong on Schedule C and can be subject to self-employment tax
             // (26 U.S.C. 1402(a)(1)). Printing the profit on Schedule E would leave that tax off.
             "/flowKnockoutScheduleESubstantialServices",
-            // Schedule E rental treated as a trade or business: Form 1040 (2026) draft, PDF p. 3, line 13b, "Qualified
-            // business income deduction from Form 8995 or Form 8995-A" (26 U.S.C. 199A(a), not elective). Line 13b is
-            // not computed yet, so the package would print it as $0.
+            // Schedule E section 162 rental. A supported property is Form 8995 line 1 and may print. This path
+            // still refuses the print for a Rev. Proc. 2019-38 safe harbor (the required statement is not
+            // attached), an aggregation (Schedule B (Form 8995-A) is not attached), or a loss suspended this
+            // year (2026 Instructions for Form 8995 draft, PDF p. 4 and line 1(c)). A yes with no finished
+            // property stays incomplete and refuses the print. An answer of no, or no Part I income, prints.
             "/flowKnockoutScheduleETradeOrBusinessQbi",
             // Schedule E Part II. 2026 draft Instructions for Schedule E, PDF p. 11: "use Part II to report your
             // share of the partnership or S corporation income (even if not received) or loss." 2026 draft
@@ -170,7 +172,7 @@ public final class PrintRefusingKnockouts {
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
             "/flowKnockoutScheduleCQbi",
-            // More than five Schedule C businesses. 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: "If you
+            // More than five trades or businesses, counting Schedule C and section 162 rentals together. 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: "If you
             // have more than five trades or businesses, attach a statement with the name and taxpayer identification
             // number of the trade(s) or business(es) and include the income and loss from those trade(s) or
             // business(es) in the total for line 2." This package does not attach that statement. Column (c) is split

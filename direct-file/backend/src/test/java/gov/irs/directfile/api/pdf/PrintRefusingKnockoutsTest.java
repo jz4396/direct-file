@@ -462,11 +462,12 @@ class PrintRefusingKnockoutsTest {
 
     /**
      * Form 1040 (2026) draft, PDF p. 3, line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A".
-     * A Schedule E rental treated as a trade or business (26 CFR 1.199A-1(b)(14)) has qualified business income, and
-     * line 13b is not computed yet, so a yes refuses the print; a no, or no Part I income, prints.
+     * A supported section 162 rental (26 CFR 1.199A-1(b)(14)) is Form 8995 line 1 and does not refuse the print. A
+     * yes with no finished property stays incomplete and refuses. A no, or no Part I income, prints. An unanswered
+     * question refuses.
      */
     @Test
-    void scheduleERentalTradeOrBusinessYesRefusesThePrint() throws Exception {
+    void scheduleERentalTradeOrBusinessYesWithoutPropertiesRefusesThePrint() throws Exception {
         FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
         Map<String, FactTypeWithItem> facts = CreditFormsTy2026PdfSmokeTest.scenarioFacts(FORM_2210_SCENARIO);
         assertFalse(
@@ -490,7 +491,7 @@ class PrintRefusingKnockoutsTest {
         Map<String, FactTypeWithItem> answeredYes = new HashMap<>(withPartI);
         answeredYes.put("/scheduleERentalIsTradeOrBusiness", yes);
         Graph graph = fgs.getGraph(answeredYes);
-        assertEquals(Boolean.TRUE, graph.get(SCHEDULE_E_QBI_KNOCKOUT).get());
+        assertFalse(graph.get(SCHEDULE_E_QBI_KNOCKOUT).complete(), "yes without a property stays incomplete");
         assertTrue(PrintRefusingKnockouts.refusingPaths(graph).contains(SCHEDULE_E_QBI_KNOCKOUT), "trade or business");
     }
 

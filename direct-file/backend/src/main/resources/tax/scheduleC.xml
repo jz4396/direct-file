@@ -169,24 +169,28 @@
       <Name>Knockout: Schedule C QBI deduction case Form 8995 here can't compute</Name>
       <Description>
         #87: Schedule C qualified business income is computed on Form 8995 (form8995.xml). This is true when
-        any Form 8995
+        the return has Schedule C qualified business income and any Form 8995
         stop applies: a prior-year loss carryforward, a cooperative patron, active and non-active
-        businesses together,
-        or taxable income before the deduction above the threshold (Form 8995-A). Each part is its
+        trades together,
+        or taxable income before the deduction above the threshold (Form 8995-A). A section 162 rental
+        with no Schedule C does not make this true. Each part is its
         own
-        BlockSubmissionOnTrue fact in /flowIsKnockedOut and is complete false without Schedule C income (#186). Used
+        BlockSubmissionOnTrue fact in /flowIsKnockedOut (#186). Used
         for
         the Schedule C knockout screen.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <Any>
-          <Dependency module="form8995" path="/flowKnockoutQbiPriorYearCarryforward" />
-          <Dependency module="form8995" path="/flowKnockoutQbiCooperativePatron" />
-          <Dependency module="form8995" path="/flowKnockoutQbiMixedParticipation" />
-          <Dependency module="form8995" path="/flowKnockoutQbiAboveThreshold" />
-        </Any>
+        <All>
+          <Dependency module="form8995" path="/form8995HasScheduleCQbi" />
+          <Any>
+            <Dependency module="form8995" path="/flowKnockoutQbiPriorYearCarryforward" />
+            <Dependency module="form8995" path="/flowKnockoutQbiCooperativePatron" />
+            <Dependency module="form8995" path="/flowKnockoutQbiMixedParticipation" />
+            <Dependency module="form8995" path="/flowKnockoutQbiAboveThreshold" />
+          </Any>
+        </All>
       </Derived>
     </Fact>
 

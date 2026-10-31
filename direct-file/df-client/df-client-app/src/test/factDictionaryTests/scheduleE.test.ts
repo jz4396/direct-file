@@ -141,11 +141,6 @@ describe(`Schedule E Part I MVP (#38)`, () => {
       `/flowKnockoutScheduleESubstantialServices`,
       { '/scheduleEProvidesSubstantialServices': createBooleanWrapper(true) },
     ],
-    [
-      `rental treated as a trade or business (199A QBI not computed, #185)`,
-      `/flowKnockoutScheduleETradeOrBusinessQbi`,
-      { '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(true) },
-    ],
   ];
   for (const [label, ko, extra] of cases) {
     it(`knocks out ${label} on an otherwise clean return`, ({ task }) => {
@@ -174,6 +169,57 @@ describe(`Schedule E Part I MVP (#38)`, () => {
     const answeredNo = fg(supported);
     expect(get(answeredNo, `/flowKnockoutScheduleETradeOrBusinessQbi`).complete).toBe(true);
     expect(get(answeredNo, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(false);
+    // A yes with no finished property fails closed: the knockout stays incomplete.
+    const yesOnly = fg({ ...supported, '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(true) });
+    expect(get(yesOnly, `/flowKnockoutScheduleETradeOrBusinessQbi`).complete).toBe(false);
+    expect(get(yesOnly, `/scheduleESectionIsComplete`).get).toBe(false);
+  });
+
+  const prop = `e1850000-0000-4000-8000-000000000001`;
+  const section162 = (extra: Record<string, unknown> = {}) => ({
+    ...supported,
+    '/scheduleEWritableRoyalties': createDollarWrapper(`0`),
+    '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(true),
+    '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+    '/qbiIsCooperativePatron': createBooleanWrapper(false),
+    '/scheduleEProperties': createCollectionWrapper([prop]),
+    '/scheduleEPropertiesIsDone': createBooleanWrapper(true),
+    [`/scheduleEProperties/#${prop}/propertyName`]: createStringWrapper(`Oak Street Rental`),
+    [`/scheduleEProperties/#${prop}/writableRents`]: createDollarWrapper(`12000`),
+    [`/scheduleEProperties/#${prop}/writableRoyalties`]: createDollarWrapper(`0`),
+    [`/scheduleEProperties/#${prop}/writableExpenses`]: createDollarWrapper(`0`),
+    [`/scheduleEProperties/#${prop}/materiallyParticipates`]: createBooleanWrapper(true),
+    [`/scheduleEProperties/#${prop}/reliesOnRp201938SafeHarbor`]: createBooleanWrapper(false),
+    [`/scheduleEProperties/#${prop}/isAggregated`]: createBooleanWrapper(false),
+    [`/scheduleEProperties/#${prop}/hasSuspendedPassiveLoss`]: createBooleanWrapper(false),
+    ...extra,
+  });
+
+  it(`section 162 rental is Form 8995 line 1 and the safe-harbor stops still refuse`, ({ task }) => {
+    // 26 U.S.C. 199A(c)(1). 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1.
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleETradeOrBusinessQbi`,
+      `/form8995Required`,
+      `/form8995Line1iQbi`,
+      `/scheduleESectionIsComplete`,
+    ];
+    const ok = fg(section162());
+    expect(get(ok, `/flowKnockoutScheduleETradeOrBusinessQbi`).complete).toBe(true);
+    expect(get(ok, `/flowKnockoutScheduleETradeOrBusinessQbi`).get).toBe(false);
+    expect(get(ok, `/form8995Required`).get).toBe(true);
+    expect(get(ok, `/form8995Line1iName`).get).toBe(`Oak Street Rental`);
+    expect(get(ok, `/form8995Line1iTin`).complete).toBe(false);
+    expect(get(ok, `/form8995Line1iQbi`).get.toString()).toBe(`12000.00`);
+    expect(get(ok, `/scheduleESectionIsComplete`).get).toBe(true);
+    for (const [path, key] of [
+      [`/scheduleEProperties/#${prop}/reliesOnRp201938SafeHarbor`, `safe harbor`],
+      [`/scheduleEProperties/#${prop}/isAggregated`, `aggregation`],
+      [`/scheduleEProperties/#${prop}/hasSuspendedPassiveLoss`, `suspended loss`],
+    ] as const) {
+      const stopped = fg(section162({ [path]: createBooleanWrapper(true) }));
+      expect(get(stopped, `/flowKnockoutScheduleETradeOrBusinessQbi`).get, key).toBe(true);
+      expect(get(stopped, `/flowIsKnockedOut`).get, key).toBe(true);
+    }
   });
 
   it(`K-1 yes without details stays incomplete and is not filed as zero (#85)`, ({ task }) => {

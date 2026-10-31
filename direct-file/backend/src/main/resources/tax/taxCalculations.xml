@@ -157,12 +157,12 @@
         "Qualified business income deduction. Enter the greater of line 15 or line 16. Also
         enter this amount on the
         applicable line of your return.") when the return has Schedule C qualified business
-        income; $0 otherwise. Every
-        source of 199A income that Form 8995 here does not compute stays a stop with
+        income or a section 162 Schedule E rental; $0 otherwise. A supported section 162 rental is on
+        Form 8995 line 1. Safe harbor, aggregation, and a suspended passive loss remain stops
+        (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). Every
+        other source of 199A income that Form 8995 here does not compute stays a stop with
         BlockSubmissionOnTrue: 1099-DIV box
-        5 (dividends /flowKnockoutSection199ADividends), a Schedule E
-        trade-or-business rental (scheduleE
-        /flowKnockoutScheduleETradeOrBusinessQbi), a K-1 section 199A statement (scheduleE
+        5 (dividends /flowKnockoutSection199ADividends), a K-1 section 199A statement (scheduleE
         /flowKnockoutScheduleEPartIIQbiCode), PTP income (scheduleE
         /flowKnockoutScheduleEPartIIForeignOrPtp), and the
         Form 8995-A and carryforward cases (form8995 /flowKnockoutQbi*).</Description>
