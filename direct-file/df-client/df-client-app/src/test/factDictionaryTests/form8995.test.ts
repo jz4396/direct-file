@@ -9,7 +9,13 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, mfjFilerData, primaryFilerId, spouseId } from '../testData.js';
+import {
+  filerWithW2NoDeductionsNoCreditsBaseData,
+  makeW2Data,
+  mfjFilerData,
+  primaryFilerId,
+  spouseId,
+} from '../testData.js';
 
 /**
  * #87 Form 8995 (2026) draft, Created 5/1/26 (https://www.irs.gov/pub/irs-dft/f8995--dft.pdf), lines 1-17, and Form
@@ -56,6 +62,19 @@ const scheduleC = (biz: Record<string, unknown>, ids: string[], extra: Record<st
   ...biz,
   '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
   ...extra,
+});
+const section199ADividends = (amount: number, holdingMet = true) => ({
+  '/dividendReports': createCollectionWrapper([div]),
+  [`/dividendReports/#${div}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/dividendReports/#${div}/payer`]: createStringWrapper(`Synthetic REIT Fund`),
+  [`/dividendReports/#${div}/ordinaryDividends`]: createDollarWrapper(`${amount}`),
+  [`/dividendReports/#${div}/writableSection199ADividends`]: createDollarWrapper(`${amount}`),
+  [`/dividendReports/#${div}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(holdingMet),
+  [`/dividendReports/#${div}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+  [`/dividendReports/#${div}/receivedAsNominee`]: createBooleanWrapper(false),
+  [`/dividendReports/#${div}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+  '/dividendReportsIsDone': createBooleanWrapper(true),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
 });
 const qualifiedDividends = (amount: number) => ({
   '/dividendReports': createCollectionWrapper([div]),
@@ -484,5 +503,129 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
     );
     const sixE = fg({ ...noW2, ...scheduleE(sixRentals, props, 6000, 0, 0) });
     expect(val(sixE, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`true`);
+  });
+
+  it(`box 5 $2,000 only: line 9 is 400 and line 17 is 0 because taxable income before the deduction is 0`, ({
+    task,
+  }) => {
+    // Single, no Schedule C. Box 1a = box 5 = $2,000, so ordinary dividends are $2,000 and the REIT amount is not
+    // added again. 26 U.S.C. 199A(b)(1)(B): line 9 is 20% of line 8. 2026 Instructions for Form 8995 draft, PDF p. 5.
+    // 26 U.S.C. 199A(a): the deduction is also limited to 20% of taxable income minus net capital gain. The standard
+    // deduction is $16,100 (Rev. Proc. 2025-32), which is more than AGI $2,000, so line 11 is $0 and line 17 is $0.
+    task.meta.testedFactPaths = [
+      `/form8995Line6`,
+      `/form8995Line8`,
+      `/form8995Line9`,
+      `/form8995Line11`,
+      `/form8995Line14`,
+      `/form8995Line17`,
+      `/form8995Required`,
+      `/qualifiedBusinessIncomeDeduction`,
+    ];
+    const g = fg({ ...noW2, ...section199ADividends(2000) });
+    expect(val(g, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(g, `/agi`)).toBe(`2000.00`);
+    expect(val(g, `/form8995HasQbi`)).toBe(`false`);
+    expect(val(g, `/form8995Required`)).toBe(`true`);
+    expect(val(g, `/form8995Line6`)).toBe(`2000.00`);
+    expect(val(g, `/form8995Line7`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line8`)).toBe(`2000.00`);
+    expect(val(g, `/form8995Line9`)).toBe(`400.00`);
+    expect(val(g, `/form8995Line10`)).toBe(`400.00`);
+    expect(val(g, `/form8995Line11`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line12`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line14`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line15`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line16`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line17`)).toBe(`0.00`);
+    expect(val(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`0.00`);
+    expect(val(g, `/flowKnockoutSection199ADividendsHoldingPeriod`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutQbiAboveThreshold`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutForm8995WithoutTy2026Template`)).toBe(`true`);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
+  });
+
+  it(`MFJ Schedule C QBI plus box 5 $2,000: line 9 is 400 and line 17 is 9,693`, ({ task }) => {
+    // Schedule C gross receipts $60,000 and expenses $10,000, plus W-2 wages $80,000 and box 1a = box 5 = $2,000
+    // (not qualified dividends). Deductible self-employment tax $3,533; line 2 $46,467; line 5 round(20% × 46,467)
+    // = $9,293. AGI $128,467. Married filing jointly standard deduction $32,200 (Rev. Proc. 2025-32 §4.14). Line 11
+    // $96,267; line 14 round(20% × 96,267) = $19,253. Line 6 $2,000; line 9 $400; line 10 $9,693. The line 14 cap
+    // does not bind. 26 U.S.C. 199A(a), (b)(1)(B), (b)(2)(A). Both filers were born in 1987.
+    task.meta.testedFactPaths = [
+      `/form8995Line5`,
+      `/form8995Line6`,
+      `/form8995Line9`,
+      `/form8995Line11`,
+      `/form8995Line14`,
+      `/form8995Line17`,
+    ];
+    const g = fg({
+      ...noW2,
+      ...mfjFilerData,
+      [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+      '/MFJRequiredToFile': createBooleanWrapper(true),
+      '/MFJDependentsFilingForCredits': createBooleanWrapper(false),
+      ...makeW2Data(80000),
+      ...scheduleC(business(biz1, 60000, 10000), [biz1]),
+      ...section199ADividends(2000),
+    });
+    expect(val(g, `/deductibleSelfEmploymentTax`)).toBe(`3533.00`);
+    expect(val(g, `/form8995Line2`)).toBe(`46467.00`);
+    expect(val(g, `/form8995Line5`)).toBe(`9293.00`);
+    expect(val(g, `/agi`)).toBe(`128467.00`);
+    expect(val(g, `/form8995Line6`)).toBe(`2000.00`);
+    expect(val(g, `/form8995Line8`)).toBe(`2000.00`);
+    expect(val(g, `/form8995Line9`)).toBe(`400.00`);
+    expect(val(g, `/form8995Line10`)).toBe(`9693.00`);
+    expect(val(g, `/form8995Line11`)).toBe(`96267.00`);
+    expect(val(g, `/form8995Line12`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line14`)).toBe(`19253.00`);
+    expect(val(g, `/form8995Line15`)).toBe(`9693.00`);
+    expect(val(g, `/form8995Line16`)).toBe(`400.00`);
+    expect(val(g, `/form8995Line17`)).toBe(`9693.00`);
+    expect(val(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`9693.00`);
+    expect(val(g, `/flowKnockoutQbiAboveThreshold`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutSection199ADividendsHoldingPeriod`)).toBe(`false`);
+  });
+
+  it(`a no to the REIT holding period stops; a REIT carryforward stops even with no Schedule C`, ({ task }) => {
+    // 26 CFR 1.199A-3(c)(2)(ii). Form 8995 (2026) draft line 7 stays $0; a yes is a stop.
+    task.meta.testedFactPaths = [
+      `/flowKnockoutSection199ADividendsHoldingPeriod`,
+      `/flowKnockoutQbiPriorYearCarryforward`,
+    ];
+    const heldNo = fg({ ...noW2, ...section199ADividends(2000, false) });
+    expect(val(heldNo, `/flowKnockoutSection199ADividendsHoldingPeriod`)).toBe(`true`);
+    expect(val(heldNo, `/flowKnockoutSection199ADividends`)).toBe(`false`);
+    expect(val(heldNo, `/flowIsKnockedOut`)).toBe(`true`);
+    const carry = fg({
+      ...noW2,
+      ...section199ADividends(2000),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(true),
+    });
+    expect(val(carry, `/form8995HasQbi`)).toBe(`false`);
+    expect(val(carry, `/form8995Line7`)).toBe(`0.00`);
+    expect(val(carry, `/flowKnockoutQbiPriorYearCarryforward`)).toBe(`true`);
+    // /flowKnockoutScheduleCQbi stays false without Schedule C (#303). The carryforward stop is the Form 8995 fact.
+    expect(val(carry, `/flowKnockoutScheduleCQbi`)).toBe(`false`);
+    expect(val(carry, `/flowIsKnockedOut`)).toBe(`true`);
+  });
+
+  it(`box 5 above the Form 8995 threshold stops even with no Schedule C`, ({ task }) => {
+    // Rev. Proc. 2025-32 §3.26: $201,750 for a single return. Form 8995-A is not computed.
+    task.meta.testedFactPaths = [`/flowKnockoutQbiAboveThreshold`, `/form8995Required`];
+    const g = fg({
+      ...noW2,
+      ...makeW2Data(250000),
+      '/filingStatus': createEnumWrapper(`single`, `/filingStatusOptions`),
+      ...section199ADividends(100),
+    });
+    expect(val(g, `/form8995HasQbi`)).toBe(`false`);
+    expect(val(g, `/form8995Required`)).toBe(`true`);
+    expect(Number(val(g, `/form8995Line11`))).toBeGreaterThan(201750);
+    expect(val(g, `/flowKnockoutQbiAboveThreshold`)).toBe(`true`);
+    // The Schedule C screen stays false without Schedule C (#303). The above-threshold Form 8995 fact still stops.
+    expect(val(g, `/flowKnockoutScheduleCQbi`)).toBe(`false`);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
   });
 });

@@ -55,6 +55,8 @@ type Div = {
   otherBoxes?: boolean;
   nominee?: boolean;
   ftcOk?: boolean;
+  reitHoldingMet?: boolean;
+  reitCarryforward?: boolean;
 };
 const opt = (id: string, name: string, v: number | undefined) =>
   v === undefined ? {} : { [`/dividendReports/#${id}/writable${name}`]: createDollarWrapper(`${v}`) };
@@ -69,6 +71,13 @@ const divItem = (f: Div) => {
     ...opt(id, `NondividendDistributions`, f.box3),
     ...opt(id, `FederalTaxWithheld`, f.box4),
     ...opt(id, `Section199ADividends`, f.box5),
+    ...(f.box5
+      ? {
+          [`/dividendReports/#${id}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(
+            f.reitHoldingMet ?? true
+          ),
+        }
+      : {}),
     ...opt(id, `ForeignTaxPaid`, f.box7),
     ...opt(id, `ExemptInterestDividends`, f.box12),
     ...(f.box1b
@@ -96,6 +105,11 @@ const divs = (...forms: Div[]) => {
     ...out,
     '/dividendReports': createCollectionWrapper(forms.map((_, i) => [d1, d2][i])),
     '/dividendReportsIsDone': createBooleanWrapper(true),
+    ...(forms.some((f) => (f.box5 ?? 0) > 0)
+      ? {
+          '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(forms.some((f) => f.reitCarryforward === true)),
+        }
+      : {}),
   };
 };
 const state = (s: string) => ({ '/filerResidenceAndIncomeState': createEnumWrapper(s, `/scopedStateOptions`) });
@@ -128,7 +142,7 @@ const FEDERAL_KOS = [
   `/flowKnockoutDividendUnsupportedBoxes`,
   `/flowKnockoutNondividendDistributionsOverBasis`,
   `/flowKnockoutQualifiedDividendsHoldingPeriod`,
-  `/flowKnockoutSection199ADividends`,
+  `/flowKnockoutSection199ADividendsHoldingPeriod`,
   `/flowKnockoutDividendForeignTaxPaid`,
   `/flowKnockoutDividendNominee`,
   `/flowKnockoutDividendAmountsInconsistent`,
@@ -240,11 +254,37 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
       `/flowKnockoutQualifiedDividendsHoldingPeriod`
     );
   });
-  it(`box 5 section 199A dividends > 0`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutSection199ADividends`, `/totalSection199ADividends`];
-    blocks(build(divs({ box1a: 500, box5: 50 })), `/flowKnockoutSection199ADividends`);
-    // #185: Rev. synthetic case, box 5 $100 also stops the return (QBI line 13b not computed).
-    blocks(build(divs({ box1a: 100, box5: 100 })), `/flowKnockoutSection199ADividends`);
+  it(`qualified REIT dividends in box 5 are Form 8995 line 6 and are not themselves a stop`, ({ task }) => {
+    // 26 U.S.C. 199A(b)(1)(B). 2026 Instructions for Form 8995 draft, PDF p. 5: box 5 is the qualified REIT
+    // dividend amount. Box 5 is a portion of box 1a, so it is not added to ordinary dividends again.
+    task.meta.testedFactPaths = [
+      `/totalSection199ADividends`,
+      `/form8995Line6`,
+      `/form8995Required`,
+      `/flowKnockoutSection199ADividends`,
+      `/flowKnockoutSection199ADividendsHoldingPeriod`,
+    ];
+    const g = build(divs({ box1a: 500, box5: 50 }));
+    expect(val(g, `/totalSection199ADividends`)).toBe(`50.00`);
+    expect(val(g, `/form8995Line6`)).toBe(`50.00`);
+    expect(val(g, `/ordinaryDividends`)).toBe(`500.00`);
+    expect(get(g, `/flowKnockoutSection199ADividends`).get).toBe(false);
+    expect(get(g, `/flowKnockoutSection199ADividendsHoldingPeriod`).get).toBe(false);
+    expect(get(g, `/form8995Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    FEDERAL_KOS.forEach((k) => expect(get(g, k).get, k).toBe(false));
+    const held = build(divs({ box1a: 100, box5: 100 }));
+    expect(val(held, `/form8995Line6`)).toBe(`100.00`);
+    expect(get(held, `/flowKnockoutSection199ADividendsHoldingPeriod`).get).toBe(false);
+  });
+  it(`box 5 that fails the 45-day holding period stops the return`, ({ task }) => {
+    // 26 CFR 1.199A-3(c)(2)(ii).
+    task.meta.testedFactPaths = [`/flowKnockoutSection199ADividendsHoldingPeriod`];
+    blocks(
+      build(divs({ box1a: 500, box5: 50, reitHoldingMet: false })),
+      `/flowKnockoutSection199ADividendsHoldingPeriod`
+    );
   });
   it(`box 7 within the 26 U.S.C. 904(j) election goes to Schedule 3 line 1 (i1040 (2025) p. 115)`, ({ task }) => {
     task.meta.testedFactPaths = [
@@ -292,6 +332,7 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
   it(`box 1b or box 5 larger than box 1a`, ({ task }) => {
     task.meta.testedFactPaths = [`/dividendReports/*/amountsInconsistent`, `/flowKnockoutDividendAmountsInconsistent`];
     blocks(build(divs({ box1a: 100, box1b: 150 })), `/flowKnockoutDividendAmountsInconsistent`);
+    blocks(build(divs({ box1a: 100, box5: 150 })), `/flowKnockoutDividendAmountsInconsistent`);
   });
   it(`any other box (2b-2f, 6, 8-16)`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`];
@@ -300,6 +341,9 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
   it(`received as nominee`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`];
     blocks(build(divs({ box1a: 100, nominee: true })), `/flowKnockoutDividendNominee`);
+    const withBox5 = build(divs({ box1a: 500, box5: 50, nominee: true }));
+    expect(get(withBox5, `/flowKnockoutSection199ADividendsHoldingPeriod`).get).toBe(false);
+    blocks(withBox5, `/flowKnockoutDividendNominee`);
   });
   it(`ordinary dividends over $1,500 do not stop the return (Schedule B Part II lines 5-6)`, ({ task }) => {
     task.meta.testedFactPaths = [`/dividendReports/*/roundedOrdinaryDividends`, `/dividendReports/*/payer`];

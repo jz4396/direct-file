@@ -173,11 +173,10 @@
         stop applies: a prior-year loss carryforward, a cooperative patron, active and non-active
         trades together,
         or taxable income before the deduction above the threshold (Form 8995-A). A section 162 rental
-        with no Schedule C does not make this true. Each part is its
-        own
-        BlockSubmissionOnTrue fact in /flowIsKnockedOut (#186). Used
-        for
-        the Schedule C knockout screen.
+        with no Schedule C does not make this true. A 1099-DIV box 5 return with no Schedule C income does not
+        make this true either; that return stops on the Form 8995 facts (/flowKnockoutQbiAboveThreshold,
+        /flowKnockoutQbiPriorYearCarryforward) (#186). Each part is its own BlockSubmissionOnTrue fact in
+        /flowIsKnockedOut. Used for the Schedule C knockout screen.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />

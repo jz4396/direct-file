@@ -22,7 +22,8 @@ import type { ConditionString } from '../../Condition.js';
 /**
  * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 3, 4, 5, 7 and 12.
  * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4,
- * line 2a includes box 12. Every other box, and every case that can't be computed yet, stops the return.
+ * line 2a includes box 12. Qualified REIT dividends in box 5 are Form 8995 line 6. A no to the 45-day
+ * holding period stops the return. Every other box, and every case that can't be computed yet, stops the return.
  * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
@@ -170,7 +171,28 @@ export const DividendIncomeSubcategory = (
           <Dollar path='/dividendReports/*/writableSection199ADividends' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
-        {knockout(`1099-div-box-5-knockout`, `/flowKnockoutSection199ADividends`, `dividends-section-199a`)}
+        <Screen route='1099-div-box-5-holding' condition='/dividendReports/*/hasSection199ADividends'>
+          <Heading i18nKey='/heading/income/dividends/box-5-holding' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-5-holding' />
+          <Boolean path='/dividendReports/*/section199ADividendsHoldingPeriodMet' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        {knockout(
+          `1099-div-box-5-knockout`,
+          `/flowKnockoutSection199ADividendsHoldingPeriod`,
+          `dividends-section-199a`
+        )}
+        <Screen route='1099-div-box-5-carryforward' condition='/dividendReports/*/hasSection199ADividends'>
+          <Heading i18nKey='/heading/income/schedule-c/qbi-carryforward' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/qbi-carryforward' />
+          <Boolean path='/qbiHasPriorYearLossCarryforward' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        {knockout(
+          `1099-div-box-5-qbi-knockout`,
+          `/section199ADividendsShowsQbiLimitKnockout`,
+          `schedule-c-qbi`
+        )}
         {knockout(
           `1099-div-amounts-knockout`,
           `/flowKnockoutDividendAmountsInconsistent`,

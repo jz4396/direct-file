@@ -13,22 +13,21 @@
   - Form 1040 (2026) draft, Created 8/19/26, (irs.gov/pub/irs-dft, file f1040 draft; full URL in /form8995Line17) (e044e765ace334c7), PDF p. 3,
     line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A".
 
-  Supported slice: qualified business income from Schedule C, and from a Schedule E Part I property the filer
-  marks as a section 162 trade or business (scheduleE /scheduleEProperties). Schedule C column (c) reduces each
-  business by its owner's share of deductible self-employment tax (Treas. Reg. 1.199A-3(b)(1)(vi)). A rental row
-  is not reduced: 26 U.S.C. 1402(a)(1) excludes real-estate rentals from net earnings from self-employment.
-  Column (b) on a rental row is the filer's SSN or ITIN, and is blank only when the rental is aggregated.
-  A secondary-filer business still stops
-  submission (scheduleC /flowKnockoutScheduleCSpouseBusiness). More than five trades or businesses, counting
-  Schedule C and these rentals together, stops the print
-  (/flowKnockoutForm8995MoreThanFiveBusinesses): the instructions require a statement this package does not attach.
-  Taxable income before the deduction at or below
-  the threshold, no prior-year loss carryforward, not a cooperative patron. Every other source of 199A income stays a
-  stop with BlockSubmissionOnTrue: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends), a PTP
-  (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp) and a K-1 section 199A statement
-  (scheduleE /flowKnockoutScheduleEPartIIQbiCode). A Rev. Proc. 2019-38 safe harbor, an aggregation, a
-  suspended passive loss, or section 162 amounts above the Schedule E Part I totals stay a stop
-  (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). So lines 6-9 are $0 here.
+  Supported slice: qualified business income from Schedule C, a Schedule E Part I property the filer marks as a
+  section 162 trade or business (scheduleE /scheduleEProperties), and qualified REIT dividends from Form 1099-DIV
+  box 5. Schedule C column (c) reduces each business by its owner's share of deductible self-employment tax
+  (Treas. Reg. 1.199A-3(b)(1)(vi)). A rental row is not reduced: 26 U.S.C. 1402(a)(1) excludes real-estate rentals
+  from net earnings from self-employment. Column (b) on a rental row is the filer's SSN or ITIN, and is blank only
+  when the rental is aggregated. A secondary-filer business still stops submission (scheduleC
+  /flowKnockoutScheduleCSpouseBusiness). More than five trades or businesses, counting Schedule C and these rentals
+  together, stops the print (/flowKnockoutForm8995MoreThanFiveBusinesses): the instructions require a statement this
+  package does not attach. Taxable income before the deduction at or below the threshold, no prior-year loss
+  carryforward, not a cooperative patron. Line 6 is the sum of box 5 (no PTP income). A REIT dividend that fails the
+  45-day holding period stops (dividends /flowKnockoutSection199ADividendsHoldingPeriod). Every other source of 199A
+  income stays a stop with BlockSubmissionOnTrue: a PTP (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp) and a
+  K-1 section 199A statement (scheduleE /flowKnockoutScheduleEPartIIQbiCode). A Rev. Proc. 2019-38 safe harbor, an
+  aggregation, a suspended passive loss, or section 162 amounts above the Schedule E Part I totals stay a stop
+  (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). Line 7 stays $0.
 
   Each line is rounded to whole dollars as it is computed (26 U.S.C. 6102(a); #202).
 -->
@@ -336,13 +335,22 @@
 
     <Fact path="/form8995Line6">
       <Name>Form 8995 line 6</Name>
-      <Description>Line 6: "Qualified REIT dividends and publicly traded partnership (PTP) income or (loss)". $0:
-        1099-DIV box 5 (dividends /flowKnockoutSection199ADividends) and PTP income (scheduleE
-        /flowKnockoutScheduleEPartIIForeignOrPtp) are stops. A supported Part II K-1 has no box 20 code Z or
-        box 17 code
-        V, so it adds nothing here.</Description>
+      <Description>
+        Form 8995 (2026) draft line 6: "Qualified REIT dividends and publicly traded partnership (PTP) income or
+        (loss)". 2026 Instructions for Form 8995 draft, PDF p. 5, Line 6: "Enter income as a positive number and
+        losses as a negative number." Determining Your Qualified REIT Dividends, same page: "This amount is reported
+        to you on Form 1099-DIV, line 5." 26 U.S.C. 199A(b)(1)(B)
+        (https://www.law.cornell.edu/uscode/text/26/199A): 20 percent of "the aggregate amount of the qualified REIT
+        dividends and qualified publicly traded partnership income". This line is the sum of 1099-DIV box 5
+        (dividends /totalSection199ADividends), rounded to whole dollars (26 U.S.C. 6102(a)). No PTP income is
+        included: a PTP stops the return (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp). A supported Part II
+        K-1 has no box 20 code Z or box 17 code V, so it adds nothing here. A box 5 amount that is not a qualified
+        REIT dividend stops (dividends /flowKnockoutSection199ADividendsHoldingPeriod) rather than being omitted.
+      </Description>
       <Derived>
-        <Dollar>0</Dollar>
+        <Round>
+          <Dependency module="dividends" path="/totalSection199ADividends" />
+        </Round>
       </Derived>
     </Fact>
 
@@ -4582,11 +4590,26 @@
 
     <Fact path="/form8995Required">
       <Name>Form 8995 is filed</Name>
-      <Description>The return has Schedule C qualified business income or loss, or a section 162 Schedule E
-        rental (a loss still files Form 8995 to report the line 18 carryforward).</Description>
+      <Description>
+        The return has Schedule C qualified business income or loss, a section 162 Schedule E rental (a loss still
+        files Form 8995 to report the line 18 carryforward), or 1099-DIV box 5 is more than $0. 2026 Instructions
+        for Form 8995 draft, PDF p. 5, Line 4: there is no deduction for a qualified business net loss "unless you
+        have qualified REIT dividends or qualified PTP income". 26 U.S.C. 199A(b)(1)(B). Box 5 with no Schedule C
+        business and no section 162 rental still files the form.
+      </Description>
       <Export downstreamFacts="true" />
       <Derived>
-        <Dependency path="/form8995HasQbi" />
+        <Any>
+          <Dependency path="/form8995HasQbi" />
+          <GreaterThan>
+            <Left>
+              <Dependency module="dividends" path="/totalSection199ADividends" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </Any>
       </Derived>
     </Fact>
 
@@ -4625,8 +4648,8 @@
         to the next year." The 2026 draft Form 8995 is the print template (pdf/2026/IRS8995, #17), so the package can
         include it, including in a loss year (26 U.S.C. 199A(c)(2)). There is still no MeF mapping, so submitting
         line 13b would leave Form 8995 off the electronic return. True whenever /form8995Required is true; complete
-        false when it is not required (no Schedule C income and no section 162 rental, or those questions
-        answered no or not yet answered).
+        false when it is not required (no Schedule C qualified business income, no section 162 rental, and no
+        1099-DIV box 5, including when those questions are answered no or not yet answered).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4700,13 +4723,15 @@
         the
         specified service rules of 26 U.S.C. 199A(b)(2)(B), (b)(3) and (d)(3) apply on Form 8995-A, which is not
         supported.
-        Complete false without qualified business income from Schedule C or a section 162 rental (#186).
+        Complete false when Form 8995 is not filed (no Schedule C qualified business income, no section 162 rental,
+        and no 1099-DIV box 5). A box 5 return above the threshold stops even with no Schedule C business and no
+        section 162 rental (#186).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
         <All>
-          <Dependency path="/form8995HasQbi" />
+          <Dependency path="/form8995Required" />
           <GreaterThan>
             <Left>
               <Dependency path="/form8995Line11" />
@@ -4721,14 +4746,25 @@
 
     <Fact path="/flowKnockoutQbiPriorYearCarryforward">
       <Name>Knockout: prior-year QBI or REIT/PTP loss carryforward</Name>
-      <Description>Cites on /qbiHasPriorYearLossCarryforward. Complete false without qualified business
-        income or on "no"; incomplete while a filer with Schedule C income or a section 162 rental hasn't
-        answered (#186).</Description>
+      <Description>Cites on /qbiHasPriorYearLossCarryforward. Form 8995 (2026) draft line 7: "Qualified REIT dividends
+        and qualified PTP (loss) carryforward from the prior year". Complete false when Form 8995 is not filed, or
+        on "no". Incomplete while a filer with Schedule C income, a section 162 rental, or 1099-DIV box 5 has not
+        answered (#186). Line 7 stays $0 on a supported return.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
         <All>
-          <Dependency path="/form8995HasQbi" />
+          <Any>
+            <Dependency path="/form8995HasQbi" />
+            <GreaterThan>
+              <Left>
+                <Dependency module="dividends" path="/totalSection199ADividends" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </Any>
           <Dependency path="/qbiHasPriorYearLossCarryforward" />
         </All>
       </Derived>
@@ -4777,6 +4813,38 @@
               <Int>0</Int>
             </Right>
           </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/section199ADividendsShowsQbiLimitKnockout">
+      <Name>Show the Form 8995 limit screen for 1099-DIV box 5</Name>
+      <Description>
+        Screen condition only. Not BlockSubmissionOnTrue: the stops themselves are already in
+        /flowIsKnockedOut. True when box 5 is more than $0 and taxable income is above the Form 8995
+        threshold, a prior-year loss carryforward applies, the filer is a cooperative patron, material
+        participation is mixed, or Schedule C businesses plus section 162 rentals exceed five.
+        /flowKnockoutScheduleCQbi stays false without Schedule C, so this screen is what a box 5 return
+        uses. A section 162 rental with no box 5 does not make this true.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="dividends" path="/totalSection199ADividends" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Any>
+            <Dependency path="/flowKnockoutQbiAboveThreshold" />
+            <Dependency path="/flowKnockoutQbiPriorYearCarryforward" />
+            <Dependency path="/flowKnockoutQbiCooperativePatron" />
+            <Dependency path="/flowKnockoutQbiMixedParticipation" />
+            <Dependency path="/flowKnockoutForm8995MoreThanFiveBusinesses" />
+          </Any>
         </All>
       </Derived>
     </Fact>

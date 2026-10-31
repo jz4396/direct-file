@@ -115,8 +115,8 @@ class PrintRefusingKnockoutsTest {
     static final String DIVIDEND_OVER_BASIS_KNOCKOUT = "/flowKnockoutNondividendDistributionsOverBasis";
     /** 26 U.S.C. 1(h)(11)(B)(iii): box 1b that is not a qualified dividend. */
     static final String DIVIDEND_HOLDING_PERIOD_KNOCKOUT = "/flowKnockoutQualifiedDividendsHoldingPeriod";
-    /** 26 U.S.C. 199A(b)(1)(B): box 5. The dividend QBI deduction is not computed. */
-    static final String DIVIDEND_SECTION_199A_KNOCKOUT = "/flowKnockoutSection199ADividends";
+    /** 26 CFR 1.199A-3(c)(2)(ii): box 5 that is not a qualified REIT dividend. */
+    static final String DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT = "/flowKnockoutSection199ADividendsHoldingPeriod";
     /** 26 U.S.C. 904(j): box 7 that needs Form 1116. */
     static final String DIVIDEND_FOREIGN_TAX_KNOCKOUT = "/flowKnockoutDividendForeignTaxPaid";
     /** Nominee ordinary dividends. The Schedule B Part II subtraction is not computed. */
@@ -209,7 +209,7 @@ class PrintRefusingKnockoutsTest {
                 DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2f, 6, 8-16
                 DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
                 DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
-                DIVIDEND_SECTION_199A_KNOCKOUT, // box 5
+                DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT, // box 5 that is not a qualified REIT dividend
                 DIVIDEND_FOREIGN_TAX_KNOCKOUT, // box 7 that needs Form 1116
                 DIVIDEND_NOMINEE_KNOCKOUT, // nominee dividends
                 DIVIDEND_INCONSISTENT_KNOCKOUT)); // box 1b or 5 larger than box 1a
@@ -1075,7 +1075,7 @@ class PrintRefusingKnockoutsTest {
             DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT,
             DIVIDEND_OVER_BASIS_KNOCKOUT,
             DIVIDEND_HOLDING_PERIOD_KNOCKOUT,
-            DIVIDEND_SECTION_199A_KNOCKOUT,
+            DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT,
             DIVIDEND_FOREIGN_TAX_KNOCKOUT,
             DIVIDEND_NOMINEE_KNOCKOUT,
             DIVIDEND_INCONSISTENT_KNOCKOUT,
@@ -1166,9 +1166,30 @@ class PrintRefusingKnockoutsTest {
                 mapper,
                 div + "/writableSection199ADividends",
                 ScheduleATy2026PdfSmokeTest.dollar("100.00"));
+        putJson(
+                section199a,
+                mapper,
+                div + "/section199ADividendsHoldingPeriodMet",
+                ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(section199a, mapper, "/qbiHasPriorYearLossCarryforward", ScheduleATy2026PdfSmokeTest.bool(false));
+        // Golden wages and ordinary dividends are above the Form 8995 threshold. A qualified box 5 still files
+        // Form 8995, so the above-threshold stop refuses the print. /flowKnockoutScheduleCQbi stays false without
+        // Schedule C. 26 U.S.C. 199A(b)(1)(B); Rev. Proc. 2025-32 §3.26.
         assertEquals(
-                List.of(DIVIDEND_SECTION_199A_KNOCKOUT),
+                List.of(QBI_ABOVE_THRESHOLD_KNOCKOUT),
                 PrintRefusingKnockouts.refusingPaths(fgs.getGraph(section199a)));
+
+        Map<String, FactTypeWithItem> holdingNo = commonDividendReturn(mapper);
+        putJson(holdingNo, mapper, div + "/writableSection199ADividends", ScheduleATy2026PdfSmokeTest.dollar("100.00"));
+        putJson(
+                holdingNo,
+                mapper,
+                div + "/section199ADividendsHoldingPeriodMet",
+                ScheduleATy2026PdfSmokeTest.bool(false));
+        putJson(holdingNo, mapper, "/qbiHasPriorYearLossCarryforward", ScheduleATy2026PdfSmokeTest.bool(false));
+        assertEquals(
+                List.of(QBI_ABOVE_THRESHOLD_KNOCKOUT, DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(holdingNo)));
 
         Map<String, FactTypeWithItem> foreignTax = commonDividendReturn(mapper);
         putJson(foreignTax, mapper, div + "/writableForeignTaxPaid", ScheduleATy2026PdfSmokeTest.dollar("301.00"));
