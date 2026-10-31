@@ -115,6 +115,7 @@ const build = (extra: Record<string, unknown>, status: Record<string, unknown> =
     '/soldCapitalAssets': createBooleanWrapper(false),
     '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    '/paHasEstimatedInstallmentPayments': createBooleanWrapper(false),
     '/paHasExemptObligationDividends': createBooleanWrapper(false),
     '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
     '/paHasSpNontaxableIncome': createBooleanWrapper(false),

@@ -29,6 +29,7 @@ const graph = (paWages: number, unsupported: boolean, spIncome?: boolean, ue = f
     '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
     '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(ue),
     '/paHasUnsupportedItems': createBooleanWrapper(unsupported),
+    '/paHasEstimatedInstallmentPayments': createBooleanWrapper(false),
     ...(spIncome === undefined ? {} : { '/paHasSpNontaxableIncome': createBooleanWrapper(spIncome) }),
   }).factGraph;
 
@@ -48,10 +49,13 @@ describe(`PA-40 core (#78) flow`, () => {
       `${path}/pa-unsupported-items-knockout`
     );
   });
-  it(`possibly eligible for Tax Forgiveness asks the Schedule SP income question (#79)`, ({ task }) => {
+  it(`possibly eligible for Tax Forgiveness asks estimated payments, then Schedule SP (#79)`, ({ task }) => {
     expect(givenFacts(graph(5000, false)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
-      `${path}/pa-sp-nontaxable-income`
+      `${path}/pa-estimated-installment-payments`
     );
+    expect(
+      givenFacts(graph(5000, false)).atPath(`${path}/pa-estimated-installment-payments`, null, task)
+    ).toRouteNextTo(`${path}/pa-sp-nontaxable-income`);
   });
   it(`yes to Schedule SP nontaxable income routes to the SP knockout`, ({ task }) => {
     expect(givenFacts(graph(5000, false, true)).atPath(`${path}/pa-sp-nontaxable-income`, null, task)).toRouteNextTo(
@@ -63,9 +67,28 @@ describe(`PA-40 core (#78) flow`, () => {
       `${path}/tax-amount-intro`
     );
   });
-  it(`above the Schedule SP tables skips the SP question and to the tax amount`, ({ task }) => {
+  it(`above the Schedule SP tables asks estimated payments, then the tax amount`, ({ task }) => {
     expect(givenFacts(graph(50000, false)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
-      `${path}/tax-amount-intro`
+      `${path}/pa-estimated-installment-payments`
+    );
+    expect(
+      givenFacts(graph(50000, false)).atPath(`${path}/pa-estimated-installment-payments`, null, task)
+    ).toRouteNextTo(`${path}/tax-amount-intro`);
+  });
+  it(`yes to PA estimated payments asks for the amount`, ({ task }) => {
+    const paid = setupFactGraph({
+      ...baseFilerData,
+      ...makeW2Data(50000),
+      [`/formW2s/#${w2Id}/writableState`]: createEnumWrapper(`sameState`, `/incomeFormStateOptions`),
+      [`/formW2s/#${w2Id}/writableStateWages`]: createDollarWrapper(`50000`),
+      [`/formW2s/#${w2Id}/writableStateWithholding`]: createDollarWrapper(`0`),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+      '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
+      '/paHasUnsupportedItems': createBooleanWrapper(false),
+      '/paHasEstimatedInstallmentPayments': createBooleanWrapper(true),
+    }).factGraph;
+    expect(givenFacts(paid).atPath(`${path}/pa-estimated-installment-payments`, null, task)).toRouteNextTo(
+      `${path}/pa-estimated-installment-payments-amount`
     );
   });
 });
@@ -84,6 +107,7 @@ describe(`PA Schedule B dividend knockout (#154) flow`, () => {
       '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
       '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
       '/paHasUnsupportedItems': createBooleanWrapper(false),
+      '/paHasEstimatedInstallmentPayments': createBooleanWrapper(false),
       '/paHasExemptObligationDividends': createBooleanWrapper(false),
       '/dividendReports': createCollectionWrapper([divId]),
       '/dividendReportsIsDone': createBooleanWrapper(true),
@@ -99,13 +123,13 @@ describe(`PA Schedule B dividend knockout (#154) flow`, () => {
     });
     return factGraph;
   };
-  it(`ordinary dividends, including over $2,500, continue to the tax amount`, ({ task }) => {
+  it(`ordinary dividends, including over $2,500, ask estimated payments, then the tax amount`, ({ task }) => {
     expect(givenFacts(withDividends(3000)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
-      `${path}/tax-amount-intro`
+      `${path}/pa-estimated-installment-payments`
     );
-    expect(givenFacts(withDividends(2500)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
-      `${path}/tax-amount-intro`
-    );
+    expect(
+      givenFacts(withDividends(2500)).atPath(`${path}/pa-estimated-installment-payments`, null, task)
+    ).toRouteNextTo(`${path}/tax-amount-intro`);
   });
   it(`box 2a capital gain distributions route to the Schedule B knockout`, ({ task }) => {
     expect(givenFacts(withDividends(100, 10)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(

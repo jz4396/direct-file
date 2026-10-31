@@ -171,7 +171,7 @@ class PrintRefusingKnockoutsTest {
                 PA_NRH_KNOCKOUT, // PA Schedule NRH
                 PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
                 PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
-                PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14-16, 22, 23, 25
+                PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14, 16, REV-459B, 22, 23, 25
                 PA_UNSUPPORTED_INCOME_KNOCKOUT, // line 4 stops for part-year/MFJ loss/tax shelter; line 6 for
                 // K-1/part-year E
                 PA_SP_KNOCKOUT, // Schedule SP Tax Forgiveness
@@ -1043,6 +1043,9 @@ class PrintRefusingKnockoutsTest {
                 mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
         facts.put(
                 "/paHasUnsupportedItems",
+                mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
+        facts.put(
+                "/paHasEstimatedInstallmentPayments",
                 mapper.readValue(ScheduleATy2026PdfSmokeTest.bool(false), FactTypeWithItem.class));
         facts.put(
                 "/paHasScheduleCTaxShelter",

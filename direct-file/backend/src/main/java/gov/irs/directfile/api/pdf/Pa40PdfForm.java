@@ -1,6 +1,7 @@
 package gov.irs.directfile.api.pdf;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -145,7 +146,22 @@ class Pa40PdfForm extends PaPdfForm {
                 forgiveness
                         ? dollars(facts, "/paSpLine11").map(PaPdfForm::paAmount).orElse("")
                         : "");
+
+        // Line 15, p. 21, LINE 15: "Enter your total 2025 estimated payments." Pennsylvania estimated installment
+        // payments only (/paLine15). Not Form 2210 and not federal estimated tax. $0 prints blank. The line 15 oval
+        // is Form REV-459B; that form stays stopped, so the oval is left blank.
+        facts.put(PREFIX + "Line15", paAmountOrBlank(dollars(facts, "/paLine15")));
+        // Line 18, p. 21, LINE 18: "Add only Lines 14, 15, 16, and 17." Lines 14, 16, and 17 stay stopped, so a
+        // printed return's line 18 equals line 15. $0 prints blank.
+        facts.put(PREFIX + "Line18", paAmountOrBlank(dollars(facts, "/paLine18")));
         return true;
+    }
+
+    /** Whole dollars, half-up (p. 4). $0 prints blank. */
+    static String paAmountOrBlank(final Optional<BigDecimal> amount) {
+        return amount.filter(v -> v.setScale(0, RoundingMode.HALF_UP).signum() != 0)
+                .map(PaPdfForm::paAmount)
+                .orElse("");
     }
 
     /** The MI box holds one letter (MaxLen 1). */

@@ -148,6 +148,19 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-schedule-d' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* PA-40 line 15. Lines 14, 16, 17 and Form REV-459B stay stopped. */}
+      <Screen route='pa-estimated-installment-payments' condition='/stateReturnPaFiled'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-estimated-installment-payments' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-estimated-installment-payments' />
+        <Boolean path='/paHasEstimatedInstallmentPayments' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='pa-estimated-installment-payments-amount' condition='/paHasEstimatedInstallmentPayments'>
+        <Heading i18nKey='/heading/your-taxes/amount/pa-estimated-installment-payments-amount' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/pa-estimated-installment-payments-amount' />
+        <Dollar path='/paEstimatedInstallmentPayments' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='pa-sp-nontaxable-income' condition='/flowShowPaSpQuestion'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-sp-nontaxable-income' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-sp-nontaxable-income' />

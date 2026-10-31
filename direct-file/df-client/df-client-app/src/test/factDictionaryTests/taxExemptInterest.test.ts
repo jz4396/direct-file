@@ -22,13 +22,7 @@ import {
   createTinWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import {
-  baseFilerData,
-  makeChildData,
-  makeW2Data,
-  primaryFilerId,
-  singleFilerData,
-} from '../testData.js';
+import { baseFilerData, makeChildData, makeW2Data, primaryFilerId, singleFilerData } from '../testData.js';
 import { submissionBlockingFacts } from '../../fact-dictionary/generated/submissionBlockingFacts.js';
 
 const int1 = `86c00000-0000-4000-8000-000000000001`;
@@ -80,6 +74,7 @@ const graph = (extra: Record<string, unknown>) =>
     '/soldCapitalAssets': createBooleanWrapper(false),
     '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    '/paHasEstimatedInstallmentPayments': createBooleanWrapper(false),
     '/paHasExemptObligationDividends': createBooleanWrapper(false),
     '/paHasSpNontaxableIncome': createBooleanWrapper(false),
     ...extra,
@@ -143,11 +138,7 @@ describe(`Form 1040 line 2a tax-exempt interest`, () => {
   });
 
   it(`box 8 and box 12 do not stop the return; 1099-INT boxes 9 and 13, and 1099-DIV box 13, still do`, ({ task }) => {
-    task.meta.testedFactPaths = [
-      `/flowKnockoutHasBonds`,
-      `/flowKnockoutDividendUnsupportedBoxes`,
-      `/flowIsKnockedOut`,
-    ];
+    task.meta.testedFactPaths = [`/flowKnockoutHasBonds`, `/flowKnockoutDividendUnsupportedBoxes`, `/flowIsKnockedOut`];
     const supported = graph({
       ...withW2(40000),
       '/interestReports': createCollectionWrapper([int1]),

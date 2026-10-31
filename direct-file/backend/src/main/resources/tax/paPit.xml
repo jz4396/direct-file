@@ -448,6 +448,90 @@
         </CollectionSum>
       </Derived>
     </Fact>
+    <Fact path="/paHasEstimatedInstallmentPayments">
+      <Name>Made PA-40 line 15 estimated installment payments</Name>
+      <Description>PA-40 IN (2025),
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 21, LINE 15. 2025 ESTIMATED INSTALLMENT PAYMENTS: "Enter your total 2025 estimated payments." This is the
+        Pennsylvania personal income tax paid to the department during the year. It is not Form 2210 and it is not
+        federal Form 1040 estimated tax (/estimatedAndFromLastYear). An unanswered answer on a PA-40 leaves /paLine15
+        incomplete. Lines 14 and 16, and Form REV-459B, stay on /paHasUnsupportedItems.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+    <Fact path="/paEstimatedInstallmentPayments">
+      <Name>PA estimated installment payments</Name>
+      <Description>PA-40 IN (2025),
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 21, LINE 15: "Enter your total 2025 estimated payments. Include your spouse’s 2025 estimated payments if
+        filing jointly. Do not include any payment of tax due made with a PA tax return." Not a prior-year credit
+        (line 14), an extension payment (line 16), nonresident withholding (line 17), or Form REV-459B.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+    <Fact path="/paLine15">
+      <Name>PA-40 line 15 estimated installment payments</Name>
+      <Description>PA-40 IN (2025),
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 21, LINE 15. 2025 ESTIMATED INSTALLMENT PAYMENTS: "Enter your total 2025 estimated payments. Include your
+        spouse’s 2025 estimated payments if filing jointly. Do not include any payment of tax due made with a PA tax
+        return." The 2026 PA-40 is not published; this is the 2025 booklet standing in for the tax year of the return.
+        $0 when the filer made none. Not Form 2210 (that penalty is REV-1630, not computed) and not federal estimated
+        tax. A non-PA return is $0. Unanswered on a PA-40, this stays incomplete so the return is not printed with
+        line 15 blank.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/paHasEstimatedInstallmentPayments" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/paHasEstimatedInstallmentPayments" />
+            </When>
+            <Then>
+              <GreaterOf>
+                <Dollar>0</Dollar>
+                <Dependency path="/paEstimatedInstallmentPayments" />
+              </GreaterOf>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/paLine18">
+      <Name>PA-40 line 18 total estimated payments and credits</Name>
+      <Description>PA-40 IN (2025),
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 21, LINE 18. TOTAL ESTIMATED PAYMENTS AND CREDITS: "Add only Lines 14, 15, 16, and 17." Line 14 (credit from
+        last year’s PA return), line 16 (extension payment), line 17 (nonresident tax withheld on PA Schedule NRK-1),
+        and Form REV-459B are not computed. A return that claims one is stopped (/flowKnockoutPaUnsupportedItems, or
+        the partnership, S corporation, or estate/trust stops for line 17) and does not print. On a return that reaches
+        print those lines are not claimed, so line 18 equals line 15.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/paLine15" />
+      </Derived>
+    </Fact>
     <Fact path="/paLine21">
       <Name>PA-40 line 21 Tax Forgiveness credit</Name>
       <Description>#79: PA-40 IN (2025, latest booklet; 2026 not yet published)
@@ -464,12 +548,13 @@
       <Name>PA-40 line 24 total payments and credits</Name>
       <Description>#78/#79: PA-40 IN (2025),
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
-        p. 23, LINE 24: "Add Lines 13, 18, 21, 22, and 23." Lines 18, 22 and 23 are not modeled ($0, knockouts); line 21
-        is Schedule SP.</Description>
+        p. 23, LINE 24: "Add Lines 13, 18, 21, 22, and 23." Line 18 is /paLine18. Lines 22 and 23 are not modeled ($0,
+        knockouts); line 21 is Schedule SP.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Add>
           <Dependency path="/paLine13" />
+          <Dependency path="/paLine18" />
           <Dependency path="/paLine21" />
         </Add>
       </Derived>
@@ -675,9 +760,11 @@
     <Fact path="/paHasUnsupportedItems">
       <Name>Has PA-40 items this tool doesn't support</Name>
       <Description>#78: PA-40 (2025) line 7 (estate/trust, Schedule J), line 8 (gambling/lottery, Schedule T), line 10
-        (MSA/HSA/529/ABLE/Schedule O deductions), lines 14-16 (prior-year credit, estimated and extension payments),
-        line 22 (Schedule G-L credit for taxes paid to another state), line 23 (Schedules OC/DC credits), line 25 (use
-        tax).</Description>
+        (MSA/HSA/529/ABLE/Schedule O deductions), line 14 (credit from last year’s PA return), line 16 (extension
+        payment), Form REV-459B (consent to transfer, adjust, or correct a PA estimated account), line 22 (Schedule
+        G-L credit for taxes paid to another state), line 23 (Schedules OC/DC credits), line 25 (use tax). Line 15
+        estimated installment payments are /paLine15, not this question. Line 17 nonresident withholding stays stopped
+        with the partnership, S corporation, and estate/trust income this tool does not compute.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -685,9 +772,9 @@
     <Fact path="/flowKnockoutPaUnsupportedItems">
       <Name>Flow knockout: unsupported PA-40 items</Name>
       <Description>#78: yes to /paHasUnsupportedItems. An unanswered question on a PA-40 stays incomplete, so
-        PrintRefusingKnockouts refuses the PDF instead of printing lines 7, 8, 10, 14-16, 22, 23 and 25 blank. A
-        non-PA
-        return is complete and false.</Description>
+        PrintRefusingKnockouts refuses the PDF instead of printing lines 7, 8, 10, 14, 16, 22, 23 and 25 blank, or
+        filling the Form REV-459B oval. Line 15 is computed (/paLine15). An unanswered line 15 question keeps this
+        fact incomplete so the PDF is not printed with line 15 blank. A non-PA return is complete and false.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -720,6 +807,25 @@
             </When>
             <Then>
               <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/paLine15" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/paEstimatedInstallmentPayments" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThanOrEqual>
             </Then>
           </Case>
           <Case>
