@@ -25,8 +25,11 @@
   materially participates, so that amount is line 33 column (f). Box 5, box 7, and box 8 are zero. Box 8
   is other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity,
   and 469(c)(4) applies that rule without regard to material participation. It is not 469(c)(7) rental
-  real estate professional income. A nonzero box 8 is column (d) and stops the return. Every other box is
-  blank or zero. No basis limit, no amount not at risk, and no passive deduction or loss. Part IV (REMIC,
+  real estate professional income. A nonzero box 8 is column (d) and stops the return. Box 1 interest,
+  box 2a ordinary dividends, and box 2b qualified dividends (box 2b not larger than box 2a) are Form 1040
+  lines 2b, 3b, and 3a, and Schedule B when required. They are not line 33. Boxes 3, 4a, 4b, 4c, and 9
+  through 14, including box 14 code I (section 199A) and code H (Form 8960), are blank or zero. No basis
+  limit, no amount not at risk, and no passive deduction or loss. Part IV (REMIC,
   Schedule Q (Form 1066)) is asked of every filer, including a filer who answered the K-1 question no.
   A yes is an explicit stop and is not computed.
 
@@ -2898,6 +2901,105 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleEEstates/*/box1">
+      <Name>Schedule K-1 (Form 1041) box 1 interest income</Name>
+      <Description>
+        Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/f1041sk1.pdf, SHA-256
+        d8d7b6eacabdf145) page 2, "Report on" table: "1. Interest income — Form 1040 or 1040-SR, line 2b".
+        Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13) PDF p. 2, Box 1: "This
+        amount is reported on line 2b of Form 1040 or 1040-SR and Schedule B (Form 1040), Part I, line 1, if
+        applicable." 26 U.S.C. 61(a)(4) (https://www.law.cornell.edu/uscode/text/26/61). 26 U.S.C. 662(a)
+        and 652(a) include the distribution; 662(b) and 652(b) keep its character as interest. Added to
+        interest /interestIncome. Not Schedule E line 33. Not a loss: minimum zero.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box2a">
+      <Name>Schedule K-1 (Form 1041) box 2a ordinary dividends</Name>
+      <Description>
+        Schedule K-1 (Form 1041) (2025) page 2: "2a. Ordinary dividends — Form 1040 or 1040-SR, line 3b".
+        Beneficiary's Instructions (2025) PDF p. 2, Box 2a: reported on line 3b and on Schedule B (Form
+        1040), Part II, line 5, if applicable. 26 U.S.C. 61(a)(7). 26 U.S.C. 662(b) and 652(b). Added to
+        income /ordinaryDividends. Not Schedule E line 33. Not a loss: minimum zero.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box2b">
+      <Name>Schedule K-1 (Form 1041) box 2b qualified dividends</Name>
+      <Description>
+        Schedule K-1 (Form 1041) (2025) page 2: "2b. Qualified dividends — Form 1040 or 1040-SR, line 3a".
+        Beneficiary's Instructions (2025) PDF p. 2, Box 2b: the portion of box 2a that is qualified
+        dividends, reported on line 3a. 26 U.S.C. 1(h)(11) (https://www.law.cornell.edu/uscode/text/26/1).
+        Added to income /qualifiedDividends and to the QDCG worksheet line 2 (scheduleD3 /qdcgLine2). A
+        box 2b larger than box 2a stops the return. Not a loss: minimum zero.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/roundedBox1">
+      <Name>Schedule K-1 (Form 1041) box 1 in whole dollars</Name>
+      <Description>
+        Whole-dollar box 1 for one Schedule B Part I line 1 row. Schedule B line 2 adds those rounded
+        amounts. 26 U.S.C. 6102(a): "the fractional part of a dollar shall be disregarded unless it amounts
+        to one-half dollar or more, in which case it shall be increased to one dollar."
+      </Description>
+      <Derived>
+        <Round>
+          <Dependency path="../box1" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/roundedBox2a">
+      <Name>Schedule K-1 (Form 1041) box 2a in whole dollars</Name>
+      <Description>
+        Whole-dollar box 2a for one Schedule B Part II line 5 row. Line 6 is the rounded total of ordinary
+        dividends, not the sum of these rows. 26 U.S.C. 6102(a).
+      </Description>
+      <Derived>
+        <Round>
+          <Dependency path="../box2a" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box2bExceedsBox2a">
+      <Name>Schedule K-1 (Form 1041) box 2b is larger than box 2a</Name>
+      <Description>
+        Beneficiary's Instructions (2025) PDF p. 2, Box 2b: qualified dividends are the portion of the
+        ordinary dividends in box 2a. Box 2b cannot be larger than box 2a. The same relationship as Form
+        1099-DIV box 1b and box 1a (dividends /flowKnockoutDividendAmountsInconsistent).
+      </Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../box2b" />
+          </Left>
+          <Right>
+            <Dependency path="../box2a" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleEEstates/*/box5">
       <Name>Schedule K-1 (Form 1041) box 5 other portfolio and nonbusiness income</Name>
       <Description>
@@ -2984,16 +3086,14 @@
     </Fact>
 
     <Fact path="/scheduleEEstates/*/hasOtherK1Amount">
-      <Name>Any Schedule K-1 (Form 1041) amount other than boxes 5, 6, 7, and 8</Name>
+      <Name>Any Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, and 8</Name>
       <Description>
-        Schedule K-1 (Form 1041) (2025) page 2 sends box 1 to Form 1040 line 2b, box 2a to line 3b, box 2b to
-        line 3a, boxes 3 and 4a to Schedule D, box 9 to Form 8582 or Schedule E columns (c) or (e), box 10 to
-        Schedule A,
-        box 11 to Schedule 1, Schedule A, Schedule D, or Form 6251, box 12 to Form 6251, box 13 to
-        a credit line, and box
-        14 to other forms, including code I (section 199A) and code H (Form 8960).
-        Those amounts are not entered from
-        this slice. Answer no only when every such box is blank or zero.
+        Boxes 1, 2a, and 2b are entered above and reported on Form 1040 lines 2b, 3b, and 3a. Schedule K-1
+        (Form 1041) (2025) page 2 sends boxes 3, 4a, 4b, and 4c to Schedule D, box 9 to Form 8582 or
+        Schedule E columns (c) or (e), box 10 to Schedule A, box 11 to Schedule 1, Schedule A, Schedule D,
+        or Form 6251, box 12 to Form 6251, box 13 to a credit line, and box 14 to other forms, including
+        code I (section 199A) and code H (Form 8960). Those amounts are not entered. Answer no only when
+        every such box is blank or zero.
       </Description>
       <Writable>
         <Boolean />
@@ -3351,15 +3451,17 @@
       <Description>
         Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 7,
         and
-        box 8 zero, box 6 at least zero, no other K-1 amount, no basis limit, no amount not at risk, and no
-        passive
-        deduction or loss. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is
-        not on the supported
-        path.
+        box 8 zero, box 6 at least zero, box 2b not larger than box 2a, no K-1 amount other than boxes 1,
+        2a, 2b, 5, 6, 7, and 8, no basis limit, no amount not at risk, and no passive deduction or loss.
+        Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is not on the supported
+        path. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a, not line 33.
       </Description>
       <Derived>
         <All>
           <Dependency path="../materiallyParticipates" />
+          <Not>
+            <Dependency path="../box2bExceedsBox2a" />
+          </Not>
           <Not>
             <Dependency path="../isForeignBeneficiary" />
           </Not>
@@ -3436,6 +3538,15 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../inconsistentTreatment" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box1" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box2a" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box2b" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../box5" />
@@ -3905,10 +4016,36 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleEPartIIIBox2b">
+      <Name>Knockout: Schedule K-1 (Form 1041) box 2b larger than box 2a</Name>
+      <Description>Qualified dividends are the portion of ordinary dividends. Beneficiary's Instructions for Schedule
+        K-1 (Form 1041) (2025) PDF p. 2, Box 2b. A larger box 2b stops the return rather than reporting line 3a above
+        line 3b. Complete false when Part III is no.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <Dependency path="/scheduleEHasPartIIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEEstates/*/box2bExceedsBox2a" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleEPartIIIOtherK1Amount">
-      <Name>Knockout: Schedule K-1 (Form 1041) amount other than boxes 5 through 8</Name>
-      <Description>Interest, dividends, capital gain, deductions, credits, AMT items, or box 14, including section 199A
-        code I. Cites on /scheduleEEstates/*/hasOtherK1Amount. Complete false when Part III is no.</Description>
+      <Name>Knockout: Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, and 8</Name>
+      <Description>Capital gain (boxes 3, 4a, 4b, and 4c), deductions, credits, AMT items, or box 14, including
+        section 199A code I and Form 8960 code H. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a. Cites on
+        /scheduleEEstates/*/hasOtherK1Amount. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -4061,6 +4198,7 @@
           <Dependency path="/flowKnockoutScheduleEPartIIIBox5" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox7" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox8" />
+          <Dependency path="/flowKnockoutScheduleEPartIIIBox2b" />
           <Dependency path="/flowKnockoutScheduleEPartIIIOtherK1Amount" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBasis" />
           <Dependency path="/flowKnockoutScheduleEPartIIIAtRisk" />
@@ -4157,6 +4295,10 @@
         26 U.S.C. 1402(a). Not qualified
         business income. Box 14 code I stops the return. Box 6 is not
         treated as qualified business income on Form 8995.
+
+        Boxes 1, 2a, and 2b are not line 33. Schedule K-1 (Form 1041) (2025) page 2 reports them on Form 1040
+        lines 2b, 3b, and 3a. 26 U.S.C. 1411(c)(1)(A)(i) includes that interest and those ordinary dividends
+        in net investment income (form8960 lines 1 and 2).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -5234,5 +5376,803 @@
         </Switch>
       </Derived>
     </Fact>
+
+    <Fact path="/scheduleEPartIIIPortfolioComplete">
+      <Name>Schedule E Part III estate collection is complete</Name>
+      <Description>
+        True only when the filer answered yes to an estate or trust and /scheduleEEstates is complete.
+        While the question is unanswered or no, or the collection is not started, K-1 boxes 1, 2a, and 2b
+        contribute $0 to Form 1040 lines 2b, 3b, and 3a. A blank box on a listed estate leaves the sum
+        incomplete so the line is not filed short.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/scheduleEHasPartIIIIncome" />
+          </IsComplete>
+          <Dependency path="/scheduleEHasPartIIIIncome" />
+          <IsComplete>
+            <Dependency path="/scheduleEEstates" />
+          </IsComplete>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1Interest">
+      <Name>Schedule K-1 (Form 1041) box 1 total, unrounded</Name>
+      <Description>
+        Sum of box 1 before rounding. Schedule K-1 (Form 1041) (2025) page 2 reports box 1 on Form 1040
+        line 2b. Used by interest /requiresScheduleBForInterest and, when Schedule B is not required, by
+        interest /interestIncome. 26 U.S.C. 61(a)(4); 662(a); 652(a); 662(b); 652(b). $0 when Part III is
+        unanswered or no, or the estate collection is not complete.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/box1" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1InterestRounded">
+      <Name>Schedule K-1 (Form 1041) box 1 total of whole-dollar amounts</Name>
+      <Description>
+        Sum of each rounded box 1. When Schedule B is required, Form 1040 line 2b is the sum of the
+        Schedule B Part I line 1 amounts, including these. Instructions for Schedule B (Form 1040) (2025)
+        p. 1, Line 2. $0 on the same gate as /scheduleEEstateK1Interest. Does not depend on
+        /requiresScheduleB.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/roundedBox1" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1OrdinaryDividends">
+      <Name>Schedule K-1 (Form 1041) box 2a total, unrounded</Name>
+      <Description>
+        Sum of box 2a before rounding. Schedule K-1 (Form 1041) (2025) page 2 reports box 2a on Form 1040
+        line 3b. Added in income /ordinaryDividends. 26 U.S.C. 61(a)(7); 662(b); 652(b). $0 on the same
+        gate as /scheduleEEstateK1Interest.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/box2a" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1QualifiedDividends">
+      <Name>Schedule K-1 (Form 1041) box 2b total, unrounded</Name>
+      <Description>
+        Sum of box 2b before rounding. Schedule K-1 (Form 1041) (2025) page 2 reports box 2b on Form 1040
+        line 3a. Added in income /qualifiedDividends and scheduleD3 /qdcgLine2. 26 U.S.C. 1(h)(11). $0 on
+        the same gate as /scheduleEEstateK1Interest.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/box2b" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstatesWithBox1">
+      <Name>Estates and trusts with Schedule K-1 (Form 1041) box 1</Name>
+      <Description>
+        Estates and trusts whose box 1 is greater than zero, and only when Part III is yes and the
+        collection is complete. A zero box 1 is not a Schedule B Part I row. Beneficiary's Instructions
+        (2025) PDF p. 2, Box 1.
+      </Description>
+      <Derived>
+        <Filter path="/scheduleEEstates">
+          <All>
+            <Dependency path="/scheduleEPartIIIPortfolioComplete" />
+            <GreaterThan>
+              <Left>
+                <Dependency path="box1" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstatesWithBox2a">
+      <Name>Estates and trusts with Schedule K-1 (Form 1041) box 2a</Name>
+      <Description>
+        Estates and trusts whose box 2a is greater than zero, and only when Part III is yes and the
+        collection is complete. A zero box 2a is not a Schedule B Part II row. Beneficiary's Instructions
+        (2025) PDF p. 2, Box 2a.
+      </Description>
+      <Derived>
+        <Filter path="/scheduleEEstates">
+          <All>
+            <Dependency path="/scheduleEPartIIIPortfolioComplete" />
+            <GreaterThan>
+              <Left>
+                <Dependency path="box2a" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBEstateBox1Count">
+      <Name>Count of estates and trusts with box 1</Name>
+      <Description>Zero while that filter is incomplete, so 1099-INT rows still print.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleEEstatesWithBox1" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency path="/scheduleEEstatesWithBox1" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBEstateBox2aCount">
+      <Name>Count of estates and trusts with box 2a</Name>
+      <Description>Zero while that filter is incomplete, so 1099-DIV rows still print.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleEEstatesWithBox2a" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency path="/scheduleEEstatesWithBox2a" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item0">
+      <Name>Schedule B Part I estate or trust 0</Name>
+      <Description>Item 0 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>0</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item1">
+      <Name>Schedule B Part I estate or trust 1</Name>
+      <Description>Item 1 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>1</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item2">
+      <Name>Schedule B Part I estate or trust 2</Name>
+      <Description>Item 2 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>2</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item3">
+      <Name>Schedule B Part I estate or trust 3</Name>
+      <Description>Item 3 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>3</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item4">
+      <Name>Schedule B Part I estate or trust 4</Name>
+      <Description>Item 4 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>4</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item5">
+      <Name>Schedule B Part I estate or trust 5</Name>
+      <Description>Item 5 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>5</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item6">
+      <Name>Schedule B Part I estate or trust 6</Name>
+      <Description>Item 6 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>6</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item7">
+      <Name>Schedule B Part I estate or trust 7</Name>
+      <Description>Item 7 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>7</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item8">
+      <Name>Schedule B Part I estate or trust 8</Name>
+      <Description>Item 8 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>8</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item9">
+      <Name>Schedule B Part I estate or trust 9</Name>
+      <Description>Item 9 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>9</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item10">
+      <Name>Schedule B Part I estate or trust 10</Name>
+      <Description>Item 10 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>10</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item11">
+      <Name>Schedule B Part I estate or trust 11</Name>
+      <Description>Item 11 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>11</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item12">
+      <Name>Schedule B Part I estate or trust 12</Name>
+      <Description>Item 12 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>12</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox1Item13">
+      <Name>Schedule B Part I estate or trust 13</Name>
+      <Description>Item 13 of /scheduleEEstatesWithBox1. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox1" />
+          </Collection>
+          <Index>
+            <Int>13</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem0">
+      <Name>Schedule B Part II estate or trust 0</Name>
+      <Description>Item 0 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>0</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem1">
+      <Name>Schedule B Part II estate or trust 1</Name>
+      <Description>Item 1 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>1</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem2">
+      <Name>Schedule B Part II estate or trust 2</Name>
+      <Description>Item 2 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>2</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem3">
+      <Name>Schedule B Part II estate or trust 3</Name>
+      <Description>Item 3 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>3</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem4">
+      <Name>Schedule B Part II estate or trust 4</Name>
+      <Description>Item 4 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>4</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem5">
+      <Name>Schedule B Part II estate or trust 5</Name>
+      <Description>Item 5 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>5</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem6">
+      <Name>Schedule B Part II estate or trust 6</Name>
+      <Description>Item 6 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>6</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem7">
+      <Name>Schedule B Part II estate or trust 7</Name>
+      <Description>Item 7 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>7</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem8">
+      <Name>Schedule B Part II estate or trust 8</Name>
+      <Description>Item 8 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>8</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem9">
+      <Name>Schedule B Part II estate or trust 9</Name>
+      <Description>Item 9 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>9</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem10">
+      <Name>Schedule B Part II estate or trust 10</Name>
+      <Description>Item 10 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>10</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem11">
+      <Name>Schedule B Part II estate or trust 11</Name>
+      <Description>Item 11 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>11</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem12">
+      <Name>Schedule B Part II estate or trust 12</Name>
+      <Description>Item 12 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>12</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem13">
+      <Name>Schedule B Part II estate or trust 13</Name>
+      <Description>Item 13 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>13</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateBox2aItem14">
+      <Name>Schedule B Part II estate or trust 14</Name>
+      <Description>Item 14 of /scheduleEEstatesWithBox2a. Out of range is incomplete and is not printed.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEEstatesWithBox2a" />
+          </Collection>
+          <Index>
+            <Int>14</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
   </Facts>
 </FactDictionaryModule>

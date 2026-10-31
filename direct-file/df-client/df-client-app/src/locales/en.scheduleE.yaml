@@ -26,8 +26,9 @@ headings:
   /heading/income/schedule-e/estate-intro: Add each estate or trust
   /heading/income/schedule-e/estate-name: What is the name of the estate or trust?
   /heading/income/schedule-e/estate-scope: Is this a foreign beneficiary, a foreign trust, or an inconsistent treatment?
+  /heading/income/schedule-e/estate-interest-dividends: Enter interest and dividends from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-boxes: Enter the income from Schedule K-1 (Form 1041)
-  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 5, 6, 7, and 8?
+  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 5, 6, 7, and 8?
   /heading/income/schedule-e/estate-limits: Do any loss limits apply to this estate or trust?
   /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC (Schedule Q, Form 1066)?
   /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
@@ -85,8 +86,8 @@ info:
   /info/income/schedule-e/part-iii:
     body: >-
       Answer yes if you are a beneficiary of an estate or trust, even if you did not receive the income. You should have
-      a Schedule K-1 (Form 1041). Ordinary business income can be reported when you materially participated. Other
-      rental income stops this return.
+      a Schedule K-1 (Form 1041). Interest and dividends from boxes 1, 2a, and 2b can be reported. Ordinary business
+      income can be reported when you materially participated. Other rental income stops this return.
   /info/income/schedule-e/estate-intro:
     body: >-
       Add one entry for each estate or trust. Use the name and the amounts from Schedule K-1 (Form 1041). If you have
@@ -97,6 +98,11 @@ info:
     body: >-
       Answer yes to foreign beneficiary if Schedule K-1 (Form 1041) item H says foreign beneficiary. Answer yes if the
       trust is a foreign trust, or if you are treating an item differently from the estate or trust.
+  /info/income/schedule-e/estate-interest-dividends:
+    body: >-
+      Enter box 1 (interest), box 2a (ordinary dividends), and box 2b (qualified dividends). Enter 0 if a box is blank.
+      Box 2b cannot be larger than box 2a. These amounts go on Form 1040, not on Schedule E line 33. Interest goes on
+      line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a.
   /info/income/schedule-e/estate-boxes:
     body: >-
       Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. Answer yes to material participation if you were involved
@@ -104,7 +110,7 @@ info:
       and box 8 are rental income and stop this return.
   /info/income/schedule-e/estate-other:
     body: >-
-      Answer yes if any box other than boxes 5, 6, 7, and 8 has an amount, including interest, dividends, capital gain,
+      Answer yes if any box other than boxes 1, 2a, 2b, 5, 6, 7, and 8 has an amount, including capital gain,
       deductions, credits, or box 14.
   /info/income/schedule-e/estate-limits:
     body: >-
@@ -400,6 +406,12 @@ fields:
     boolean:
       "yes": Yes, I am treating an item differently
       "no": "No"
+  /scheduleEEstates/*/box1:
+    name: Box 1, interest income
+  /scheduleEEstates/*/box2a:
+    name: Box 2a, ordinary dividends
+  /scheduleEEstates/*/box2b:
+    name: Box 2b, qualified dividends
   /scheduleEEstates/*/box5:
     name: Box 5, other portfolio and nonbusiness income
   /scheduleEEstates/*/box6:
@@ -577,12 +589,15 @@ dataviews:
     /scheduleEEstates/*/isForeignBeneficiary: Are you a foreign beneficiary?
     /scheduleEEstates/*/isForeignTrust: Is it a foreign trust?
     /scheduleEEstates/*/inconsistentTreatment: Are you treating an item differently from the estate or trust?
+    /scheduleEEstates/*/box1: Box 1, interest income
+    /scheduleEEstates/*/box2a: Box 2a, ordinary dividends
+    /scheduleEEstates/*/box2b: Box 2b, qualified dividends
     /scheduleEEstates/*/box5: Box 5, other portfolio and nonbusiness income
     /scheduleEEstates/*/box6: Box 6, ordinary business income
     /scheduleEEstates/*/box7: Box 7, net rental real estate income
     /scheduleEEstates/*/box8: Box 8, other rental income
     /scheduleEEstates/*/materiallyParticipates: Did you materially participate?
-    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 5, 6, 7, and 8 have an amount?
+    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 1, 2a, 2b, 5, 6, 7, and 8 have an amount?
     /scheduleEEstates/*/basisLimitApplies: Does a basis limit apply?
     /scheduleEEstates/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/passiveDeductionOrLoss: Is there a passive deduction or loss?

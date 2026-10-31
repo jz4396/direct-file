@@ -370,6 +370,7 @@ const partIIKnockouts = [
   `/flowKnockoutScheduleEPartIIIBox5`,
   `/flowKnockoutScheduleEPartIIIBox7`,
   `/flowKnockoutScheduleEPartIIIBox8`,
+  `/flowKnockoutScheduleEPartIIIBox2b`,
   `/flowKnockoutScheduleEPartIIIOtherK1Amount`,
   `/flowKnockoutScheduleEPartIIIBasis`,
   `/flowKnockoutScheduleEPartIIIAtRisk`,
@@ -534,6 +535,9 @@ const estate = (id: string, box6: string, extra: Record<string, unknown> = {}) =
   [`/scheduleEEstates/#${id}/isForeignBeneficiary`]: createBooleanWrapper(false),
   [`/scheduleEEstates/#${id}/isForeignTrust`]: createBooleanWrapper(false),
   [`/scheduleEEstates/#${id}/inconsistentTreatment`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${id}/box1`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${id}/box2a`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${id}/box2b`]: createDollarWrapper(`0`),
   [`/scheduleEEstates/#${id}/box5`]: createDollarWrapper(`0`),
   [`/scheduleEEstates/#${id}/box6`]: createDollarWrapper(box6),
   [`/scheduleEEstates/#${id}/box7`]: createDollarWrapper(`0`),
@@ -844,5 +848,155 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
     expect(get(g, `/scheduleEPartIILine32`).get.toString()).toBe(`0.00`);
     expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`0.00`);
     expect(get(g, `/scheduleENetIncome`).get.toString()).toBe(`0.00`);
+  });
+});
+
+const interestId = `a1b2c3d4-1111-4222-8333-444455556601`;
+
+describe(`Schedule K-1 (Form 1041) boxes 1, 2a, and 2b`, () => {
+  const portfolio = (extra: Record<string, unknown> = {}) =>
+    oneEstate(`0`, {
+      [`/scheduleEEstates/#${estateId}/entityName`]: createStringWrapper(`Harbor Trust`),
+      [`/scheduleEEstates/#${estateId}/box1`]: createDollarWrapper(`900`),
+      [`/scheduleEEstates/#${estateId}/box2a`]: createDollarWrapper(`1200`),
+      [`/scheduleEEstates/#${estateId}/box2b`]: createDollarWrapper(`800`),
+      ...extra,
+    });
+
+  it(`reports box 1, 2a, and 2b on Form 1040 lines 2b, 3b, and 3a`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box1`,
+      `/scheduleEEstates/*/box2a`,
+      `/scheduleEEstates/*/box2b`,
+      `/interestIncome`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/qdcgLine2`,
+      `/qdcgLine4`,
+      `/requiresScheduleB`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowKnockoutScheduleEPartIIIBox2b`,
+    ];
+    // Schedule K-1 (Form 1041) (2025) page 2: box 1 is Form 1040 line 2b, box 2a is line 3b, box 2b is line 3a.
+    // Beneficiary's Instructions (2025) PDF p. 2. 26 U.S.C. 61(a)(4), 61(a)(7), 1(h)(11), 662(b), 652(b).
+    // $900 and $1,200 are not over the Schedule B $1,500 threshold. Instructions for Schedule B (2025) p. 1.
+    const g = fg(portfolio());
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/qdcgLine2`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/qdcgLine4`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox2b`).get).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+  });
+
+  it(`requires Schedule B when box 2a is over $1,500 and prints the estate on Part I and Part II`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/requiresScheduleB`,
+      `/requiresScheduleBForOrdinaryDividends`,
+      `/scheduleBPartIRow0Payer`,
+      `/scheduleBPartIRow0Amount`,
+      `/scheduleBPartIIRow0Payer`,
+      `/scheduleBPartIIRow0Amount`,
+      `/interestIncome`,
+      `/ordinaryDividends`,
+    ];
+    // Instructions for Schedule B (2025) p. 1: over $1,500 of ordinary dividends. Exactly $1,500 does not.
+    // Beneficiary's Instructions (2025) PDF p. 2: box 1 on Part I line 1 and box 2a on Part II line 5, if applicable.
+    const under = fg(
+      portfolio({
+        [`/scheduleEEstates/#${estateId}/box2a`]: createDollarWrapper(`1500`),
+        [`/scheduleEEstates/#${estateId}/box2b`]: createDollarWrapper(`800`),
+      })
+    );
+    expect(get(under, `/ordinaryDividends`).get.toString()).toBe(`1500.00`);
+    expect(get(under, `/requiresScheduleB`).get).toBe(false);
+    const g = fg(
+      portfolio({
+        [`/scheduleEEstates/#${estateId}/box2a`]: createDollarWrapper(`1600`),
+        [`/scheduleEEstates/#${estateId}/box2b`]: createDollarWrapper(`800`),
+      })
+    );
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/requiresScheduleBForOrdinaryDividends`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIRow0Payer`).get).toBe(`Harbor Trust`);
+    expect(get(g, `/scheduleBPartIRow0Amount`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/scheduleBPartIIRow0Payer`).get).toBe(`Harbor Trust`);
+    expect(get(g, `/scheduleBPartIIRow0Amount`).get.toString()).toBe(`1600.00`);
+  });
+
+  it(`lists a 1099-INT before the estate on Schedule B Part I`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/interestIncome`,
+      `/requiresScheduleBForInterest`,
+      `/scheduleBPartIRow0Payer`,
+      `/scheduleBPartIRow0Amount`,
+      `/scheduleBPartIRow1Payer`,
+      `/scheduleBPartIRow1Amount`,
+    ];
+    // Form 1040 instr. (2025) p. 23: round only the total when Schedule B is not required, and sum the rounded
+    // line 1 amounts when it is. $800 + $800 = $1,600, which is over $1,500.
+    const g = fg({
+      ...portfolio({
+        [`/scheduleEEstates/#${estateId}/box1`]: createDollarWrapper(`800`),
+        [`/scheduleEEstates/#${estateId}/box2a`]: createDollarWrapper(`0`),
+        [`/scheduleEEstates/#${estateId}/box2b`]: createDollarWrapper(`0`),
+      }),
+      '/interestReports': createCollectionWrapper([interestId]),
+      [`/interestReports/#${interestId}/has1099`]: createBooleanWrapper(false),
+      [`/interestReports/#${interestId}/no1099Amount`]: createDollarWrapper(`800`),
+      [`/interestReports/#${interestId}/payer`]: createStringWrapper(`First National`),
+    });
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/requiresScheduleBForInterest`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIRow0Payer`).get).toBe(`First National`);
+    expect(get(g, `/scheduleBPartIRow0Amount`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/scheduleBPartIRow1Payer`).get).toBe(`Harbor Trust`);
+    expect(get(g, `/scheduleBPartIRow1Amount`).get.toString()).toBe(`800.00`);
+  });
+
+  it(`includes box 1 and box 2a on Form 8960 lines 1 and 2 above $200,000`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8960Line1`,
+      `/form8960Line2`,
+      `/form8960Line17`,
+      `/flowKnockoutForm8960Unsupported`,
+      `/agi`,
+    ];
+    // 26 U.S.C. 1411(c)(1)(A)(i). Wages $200,000 plus box 1 $900 and box 2a $1,200. MAGI $202,100.
+    // Line 15 is $2,100. Line 17 is 3.8% of $2,100 = $79.80, rounded to $80. 26 U.S.C. 1411(a)(1), 6102(a).
+    // hadScheduleEIncome is false, so the Part I Form 8960 stop does not apply.
+    const g = fg(portfolio());
+    expect(get(g, `/agi`).get.toString()).toBe(`202100.00`);
+    expect(get(g, `/form8960Line1`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/form8960Line2`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/form8960Line17`).get.toString()).toBe(`80.00`);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+  });
+
+  it(`stops the return when box 2b is larger than box 2a`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box2bExceedsBox2a`,
+      `/flowKnockoutScheduleEPartIIIBox2b`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Beneficiary's Instructions (2025) PDF p. 2, Box 2b: qualified dividends are a portion of box 2a.
+    const g = fg(
+      portfolio({
+        [`/scheduleEEstates/#${estateId}/box2a`]: createDollarWrapper(`800`),
+        [`/scheduleEEstates/#${estateId}/box2b`]: createDollarWrapper(`900`),
+      })
+    );
+    expect(get(g, `/scheduleEEstates/#${estateId}/box2bExceedsBox2a`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox2b`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
   });
 });

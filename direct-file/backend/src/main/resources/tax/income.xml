@@ -918,15 +918,21 @@
     <Fact path="/qualifiedDividends">
       <Name>Qualified Dividends</Name>
       <Description>Qualified dividend income to report on line 3a of Form 1040. #86: total of Form 1099-DIV box 1b
-        (dividends /totalQualifiedDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        (dividends /totalQualifiedDividends), plus Schedule K-1 (Form 1041) box 2b (scheduleE
+        /scheduleEEstateK1QualifiedDividends). Schedule K-1 (Form 1041) (2025) page 2: "2b. Qualified dividends
+        — Form 1040 or 1040-SR, line 3a". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
         p. 25,
         Line 3a: "Enter your total qualified dividends on line 3a. ... Generally, these dividends are shown in
         box 1b of
-        Form(s) 1099-DIV." Taxed through the QDCG Tax Worksheet (scheduleD3 /qdcgLine2).</Description>
+        Form(s) 1099-DIV." 26 U.S.C. 1(h)(11). Taxed through the QDCG Tax Worksheet (scheduleD3 /qdcgLine2).
+        Cents are included in the addition and only the total is rounded (p. 23).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Round>
-          <Dependency module="dividends" path="/totalQualifiedDividends" />
+          <Add>
+            <Dependency module="dividends" path="/totalQualifiedDividends" />
+            <Dependency module="scheduleE" path="/scheduleEEstateK1QualifiedDividends" />
+          </Add>
         </Round>
       </Derived>
     </Fact>
@@ -934,15 +940,21 @@
     <Fact path="/ordinaryDividends">
       <Name>Ordinary dividends</Name>
       <Description>Ordinary dividend income to report on line 3b of Form 1040. #86: total of Form 1099-DIV box 1a
-        (dividends /totalOrdinaryDividends). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        (dividends /totalOrdinaryDividends), plus Schedule K-1 (Form 1041) box 2a (scheduleE
+        /scheduleEEstateK1OrdinaryDividends). Schedule K-1 (Form 1041) (2025) page 2: "2a. Ordinary dividends
+        — Form 1040 or 1040-SR, line 3b". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
         p. 26,
         Line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
         Form(s)
-        1099-DIV." 26 U.S.C. 61(a)(7) (https://www.law.cornell.edu/uscode/text/26/61).</Description>
+        1099-DIV." 26 U.S.C. 61(a)(7) (https://www.law.cornell.edu/uscode/text/26/61). 26 U.S.C. 662(b) and
+        652(b). Cents are included in the addition and only the total is rounded (p. 23).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Round>
-          <Dependency module="dividends" path="/totalOrdinaryDividends" />
+          <Add>
+            <Dependency module="dividends" path="/totalOrdinaryDividends" />
+            <Dependency module="scheduleE" path="/scheduleEEstateK1OrdinaryDividends" />
+          </Add>
         </Round>
       </Derived>
     </Fact>
