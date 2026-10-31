@@ -81,6 +81,18 @@ Subcategory: /flow/income/schedule-c
 Subcategory: /flow/income/schedule-e
 /flow/income/schedule-e/schedule-e-intro
 /flow/income/schedule-e/schedule-e-part-ii
+/flow/income/schedule-e/schedule-e-estate-name
+/flow/income/schedule-e/schedule-e-estate-scope
+/flow/income/schedule-e/schedule-e-estate-boxes
+/flow/income/schedule-e/schedule-e-estate-other
+/flow/income/schedule-e/schedule-e-estate-limits
+/flow/income/schedule-e/schedule-e-part-iv
+/flow/income/schedule-e/schedule-e-k1-name
+/flow/income/schedule-e/schedule-e-k1-scope
+/flow/income/schedule-e/schedule-e-k1-box1
+/flow/income/schedule-e/schedule-e-k1-box14
+/flow/income/schedule-e/schedule-e-k1-other
+/flow/income/schedule-e/schedule-e-k1-columns
 Subcategory: /flow/income/interest
 Subcategory: /flow/income/dividends
 Subcategory: /flow/income/dependent-care
@@ -122,6 +134,7 @@ Subcategory: /flow/your-taxes/amount
 /flow/your-taxes/amount/pa-school-district
 /flow/your-taxes/amount/pa-unreimbursed-employee-expenses
 /flow/your-taxes/amount/pa-unsupported-items
+/flow/your-taxes/amount/pa-estimated-installment-payments
 /flow/your-taxes/amount/tax-amount-intro
 /flow/your-taxes/amount/tax-amount-number
 /flow/your-taxes/amount/tax-amount-explanation

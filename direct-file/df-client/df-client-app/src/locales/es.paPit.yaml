@@ -31,6 +31,8 @@ dataviews:
     /paHasUnreimbursedEmployeeExpenses:
       ¿Desea deducir gastos de negocio no reembolsados como empleado en su declaración de Pensilvania?
     /paHasUnsupportedItems: ¿Le corresponde alguna partida de Pensilvania que esta herramienta no admite?
+    /paHasEstimatedInstallmentPayments: ¿Hizo pagos estimados a plazos de Pensilvania?
+    /paEstimatedInstallmentPayments: Pagos estimados a plazos de Pensilvania
     /paHasExemptObligationDividends:
       ¿Alguno de sus dividendos proviene de obligaciones del gobierno de EE. UU. o de Pensilvania?
     /paHasScheduleCTaxShelter:
@@ -46,6 +48,10 @@ headings:
     Esta herramienta aún no admite gastos de negocio no reembolsados como empleado en una declaración de Pensilvania
   /heading/your-taxes/amount/pa-unsupported-items:
     "Para su declaración de Pensilvania de {{/taxYear}}, ¿le corresponde alguno de estos casos?"
+  /heading/your-taxes/amount/pa-estimated-installment-payments:
+    "¿Hizo pagos estimados a plazos de Pensilvania para {{/taxYear}}?"
+  /heading/your-taxes/amount/pa-estimated-installment-payments-amount:
+    ¿Cuánto pagó en pagos estimados a plazos de Pensilvania?
   /heading/knockout/pa-unsupported-items: Esta herramienta aún no admite estas partidas de impuestos de Pensilvania
   /heading/knockout/pa-unsupported-income:
     Esta herramienta aún no admite parte de sus ingresos en una declaración de Pensilvania
@@ -113,12 +119,25 @@ info:
       - p:
           "Aportaciones a una cuenta de ahorros médicos, cuenta de ahorros para la salud, plan 529 o ABLE, o intereses
           de préstamos estudiantiles que desea deducir; ingresos de un caudal hereditario o fideicomiso; ganancias de
-          juegos de azar o lotería; pagos estimados o de prórroga de Pensilvania, o un reembolso del año pasado aplicado
-          a este año; crédito por impuestos pagados a otro estado; otros créditos de Pensilvania (Anexos OC o DC); o
-          impuesto sobre el uso que adeuda."
+          juegos de azar o lotería; un pago de prórroga de Pensilvania; un crédito de la declaración de Pensilvania del
+          año pasado; el Formulario REV-459B para trasladar pagos estimados entre cuentas; crédito por impuestos pagados
+          a otro estado; otros créditos de Pensilvania (Anexos OC o DC); o impuesto sobre el uso que adeuda."
       - p:
           Esta herramienta no calcula el impuesto local sobre ingresos del trabajo. Preséntelo ante su recaudador de
           impuestos local.
+  /info/your-taxes/amount/pa-estimated-installment-payments:
+    body:
+      - p:
+          Son pagos del impuesto sobre la renta de Pensilvania que envió al Departamento de Ingresos de Pensilvania
+          durante el año para el impuesto de este año. Incluya los pagos de su cónyuge si presenta una declaración
+          conjunta.
+      - p:
+          No incluya pagos estimados federales, un pago que hizo con una declaración de Pensilvania, un pago de prórroga
+          ni un crédito de la declaración de Pensilvania del año pasado. Si necesita el Formulario REV-459B porque los
+          pagos están en una cuenta conjunta o de un fideicomiso y esta declaración se presenta de otra manera, responda
+          sí en la pregunta sobre partidas de Pensilvania.
+  /info/your-taxes/amount/pa-estimated-installment-payments-amount:
+    body: Escriba el total del año. No incluya un pago de prórroga ni un crédito de la declaración del año pasado.
   /info/knockout/pa-unsupported-items:
     alertText:
       body:
@@ -137,8 +156,8 @@ info:
             Esto incluye ingresos de negocio como residente parte del año, transacciones de refugios fiscales en un
             Anexo C, una pérdida de negocio en una declaración conjunta, ingresos de alquiler o regalías de un Anexo
             K-1, ingresos de alquiler o regalías como residente parte del año, distribuciones de jubilación, ingresos
-            del Formulario 1099-MISC, intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania
-            en el encasillado 16 o ventas de bienes en una declaración conjunta.
+            del Formulario 1099-MISC, intereses exentos de impuestos, un Formulario W-2 sin salarios de Pensilvania en
+            el encasillado 16 o ventas de bienes en una declaración conjunta.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html

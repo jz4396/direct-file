@@ -28,9 +28,10 @@ dataviews:
     /paHasUnreimbursedEmployeeExpenses:
       Do you want to deduct unreimbursed employee business expenses on your Pennsylvania return?
     /paHasUnsupportedItems: Do any Pennsylvania items this tool doesn’t support apply to you?
+    /paHasEstimatedInstallmentPayments: Did you make Pennsylvania estimated installment payments?
+    /paEstimatedInstallmentPayments: Pennsylvania estimated installment payments
     /paHasExemptObligationDividends: Do any of your dividends come from U.S. government or Pennsylvania obligations?
-    /paHasScheduleCTaxShelter:
-      Do any of your Schedule C businesses involve tax-shelter transactions (Form 8271)?
+    /paHasScheduleCTaxShelter: Do any of your Schedule C businesses involve tax-shelter transactions (Form 8271)?
 headings:
   /heading/your-taxes/amount/pa-exempt-obligation-dividends:
     Do any of your dividends come from U.S. government or Pennsylvania obligations?
@@ -41,6 +42,10 @@ headings:
     This tool doesn’t yet support unreimbursed employee business expenses on a Pennsylvania return
   /heading/your-taxes/amount/pa-unsupported-items:
     "For your {{/taxYear}} Pennsylvania return, do any of these apply to you?"
+  /heading/your-taxes/amount/pa-estimated-installment-payments:
+    "Did you make {{/taxYear}} Pennsylvania estimated installment payments?"
+  /heading/your-taxes/amount/pa-estimated-installment-payments-amount:
+    How much did you pay in Pennsylvania estimated installment payments?
   /heading/knockout/pa-unsupported-items: This tool doesn’t yet support these Pennsylvania tax items
   /heading/knockout/pa-unsupported-income: This tool doesn’t yet support some of your income on a Pennsylvania return
   /heading/your-taxes/amount/pa-schedule-c-tax-shelter:
@@ -101,10 +106,22 @@ info:
     body:
       - p:
           "Medical savings account, health savings account, 529 or ABLE contributions, or student loan interest you want
-          to deduct; income from an estate or trust; gambling or lottery winnings; Pennsylvania estimated or extension
-          payments, or a refund from last year applied to this year; credit for tax paid to another state; other
-          Pennsylvania credits (Schedules OC or DC); or use tax you owe."
+          to deduct; income from an estate or trust; gambling or lottery winnings; a Pennsylvania extension payment; a
+          credit from last year’s Pennsylvania return; Form REV-459B to move estimated payments between accounts; credit
+          for tax paid to another state; other Pennsylvania credits (Schedules OC or DC); or use tax you owe."
       - p: This tool doesn’t figure local earned income tax. File that with your local tax collector.
+  /info/your-taxes/amount/pa-estimated-installment-payments:
+    body:
+      - p:
+          These are payments of Pennsylvania income tax you sent to the Pennsylvania Department of Revenue during the
+          year for this year’s tax. Include your spouse’s payments if you are filing a joint return.
+      - p:
+          Don’t include federal estimated tax payments, a payment you made with a Pennsylvania return, an extension
+          payment, or a credit from last year’s Pennsylvania return. If you need Form REV-459B because the payments are
+          in a joint or trust account and this return is filed differently, answer yes on the Pennsylvania items
+          question.
+  /info/your-taxes/amount/pa-estimated-installment-payments-amount:
+    body: Enter the total for the year. Don’t include an extension payment or a credit from last year’s return.
   /info/knockout/pa-unsupported-items:
     alertText:
       body:

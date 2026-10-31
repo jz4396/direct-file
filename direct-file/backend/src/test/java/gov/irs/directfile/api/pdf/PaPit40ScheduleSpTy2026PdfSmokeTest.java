@@ -126,6 +126,7 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
         // Answered no. An unanswered screener stays incomplete and PrintRefusingKnockouts refuses the PDF.
         m.put("/paHasUnreimbursedEmployeeExpenses", bool(false));
         m.put("/paHasUnsupportedItems", bool(false));
+        m.put("/paHasEstimatedInstallmentPayments", bool(false));
         m.put("/paHasSpNontaxableIncome", bool(false));
         m.put("/paPartYearHasNonresidentPaSourcePay", bool(false));
         return m;
@@ -387,6 +388,8 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             assertTrue(field(p2, "Name(s)").contains("MCTESTFACE"), "Name(s)");
             is(p2, "12. PA Tax Liability. Multiply Line 11 by 3.07%", "461.00", "line 12, 460.50 rounded half-up");
             is(p2, "13. Total PA Tax Withheld", "500.00", "line 13 (p. 21)");
+            blank(p2, "15. Estimated Installment Payments", "line 15 ($0)");
+            is(p2, "Form REV-459B", "Off", "REV-459B oval stays off");
             blank(p2, "18.Total Estimated Payments and Credits", "line 18");
             is(p2, "Tax Forgiveness", "1", "line 19a Unmarried (p. 22)");
             is(p2, "Dependents", "2", "line 19b");
@@ -399,6 +402,37 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             is(p2, "29. OVERPAYMENT", "500.00", "line 29 (p. 24)");
             is(p2, "30. Refund", "500.00", "line 30 = line 29");
             blank(p2, "31. Credit", "line 31");
+        }
+    }
+
+    /**
+     * PA-40 IN (2025) p. 21, LINE 15, and p. 22, LINE 18. 72 P.S. §7325. Estimated installment payments are
+     * Pennsylvania payments, not Form 2210 and not federal estimated tax. Lines 14, 16, 17 and the REV-459B oval
+     * stay blank.
+     */
+    @Test
+    void pa40Line15And18PrintEstimatedInstallmentPayments() throws Exception {
+        Map<String, String> m = paResident();
+        m.put("/form8949Transactions", EMPTY_COLLECTION);
+        m.put("/paSchoolDistrictCode", string("22275"));
+        m.put("/paHasEstimatedInstallmentPayments", bool(true));
+        m.put("/paEstimatedInstallmentPayments", dollar("400.00"));
+        // Federal estimated tax (Form 1040) is a different payment. It must not change PA-40 line 15.
+        m.put("/paidEstimatedTaxesOrFromLastYear", bool(true));
+        m.put("/estimatedTaxPaymentWritable", dollar("800.00"));
+        byte[] bytes = generate(m);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p2 = fieldsOnPages(doc, PA40_PAGE2);
+            is(p2, "13. Total PA Tax Withheld", "1,535.00", "line 13");
+            is(p2, "15. Estimated Installment Payments", "400.00", "line 15, not the federal $800");
+            blank(p2, "14. Credit from your PA Income Tax Return", "line 14 stopped");
+            blank(p2, "16. Extension Payment", "line 16 stopped");
+            blank(p2, "17. Nonredsident Tax Withheld", "line 17 stopped");
+            is(p2, "Form REV-459B", "Off", "REV-459B oval stays off");
+            is(p2, "18.Total Estimated Payments and Credits", "400.00", "line 18 = line 15");
+            is(p2, "24. Total Payments and Credits", "1,935.00", "line 24 includes line 18");
+            blank(p2, "26. TAX DUE", "line 26");
+            is(p2, "29. OVERPAYMENT", "400.00", "line 29 = 1,935 − 1,535");
         }
     }
 

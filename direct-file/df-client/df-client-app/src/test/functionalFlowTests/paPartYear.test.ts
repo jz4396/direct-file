@@ -30,6 +30,7 @@ const graph = (move: `paToFl` | `flToPa` | `other`, w2State: `pa` | `other` = `p
     '/paPartYearMove': createEnumWrapper(move, `/paPartYearMoveOptions`),
     '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
     '/paHasUnsupportedItems': createBooleanWrapper(false),
+    '/paHasEstimatedInstallmentPayments': createBooleanWrapper(false),
     ...(nonresidentPaPay === undefined
       ? {}
       : { '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(nonresidentPaPay) }),
@@ -61,9 +62,12 @@ describe(`PA part-year residency (#80) flow`, () => {
       `${amount}/pa-part-year-nonresident-pa-pay`
     );
   });
-  it(`no PA-source pay in the nonresident period continues to the tax amount`, ({ task }) => {
+  it(`no PA-source pay in the nonresident period asks estimated payments, then the tax amount`, ({ task }) => {
     expect(
       givenFacts(graph(`paToFl`, `pa`, false)).atPath(`${amount}/pa-part-year-nonresident-pa-pay`, null, task)
+    ).toRouteNextTo(`${amount}/pa-estimated-installment-payments`);
+    expect(
+      givenFacts(graph(`paToFl`, `pa`, false)).atPath(`${amount}/pa-estimated-installment-payments`, null, task)
     ).toRouteNextTo(`${amount}/tax-amount-intro`);
   });
   it(`PA-source pay in the nonresident period routes to the PA Schedule NRH knockout`, ({ task }) => {

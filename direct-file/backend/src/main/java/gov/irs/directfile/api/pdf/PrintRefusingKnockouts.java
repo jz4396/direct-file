@@ -44,8 +44,11 @@ public final class PrintRefusingKnockouts {
             // p. 32 and p. 43. Exempt-obligation dividends, a positive nonresident-period allocation, or an unanswered
             // allocation or exempt-obligation question refuses the print (72 P.S. §7303(a)(5)).
             "/flowKnockoutPaDividends",
-            // PA-40 lines 7, 8, 10, 14-16, 22 (Schedule G-L), 23 and 25. PA-40 IN (2025) pp. 19-24. Yes, or an
-            // unanswered question on a PA-40, refuses the print.
+            // PA-40 lines 7, 8, 10, 14, 16, 22 (Schedule G-L), 23 and 25, and Form REV-459B. PA-40 IN (2025)
+            // pp. 19-24. Line 15 estimated installment payments are computed (p. 21, LINE 15; 72 P.S. §7325).
+            // Line 18 is p. 22. Yes, an unanswered unsupported-items question, or an unanswered line 15 question
+            // on a PA-40, refuses the print. Line 17 (NRK-1) stays stopped
+            // with the partnership, S corporation, and estate/trust income this tool does not compute.
             "/flowKnockoutPaUnsupportedItems",
             // Income this return does not classify (1099-R, 1099-MISC, tax-exempt interest, a missing box 16, a joint
             // sale, a forfeited-interest penalty). Full-year federally supported Schedule C is PA-40 line 4; a PA/FL
