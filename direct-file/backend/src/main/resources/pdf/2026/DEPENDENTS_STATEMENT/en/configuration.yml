@@ -1,0 +1,39 @@
+# #89: Form 1040 additional dependents statement. There is no IRS form for this attachment. Instructions for
+# Form 1040 (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf SHA-256
+# 482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a are still the published instructions.
+# PDF p. 17: "If you have more than four dependents, check the box under Dependents on page 1 of Form 1040 or
+# 1040-SR and include a statement showing the information requested in the Dependents section." PDF p. 18
+# Step 2 and PDF p. 19 Step 4: "Complete rows (1) through (4), (5)(a), and (6) of the Dependents section".
+# PDF p. 17 also checks row (6) when the child is a full-time student or is permanently and totally disabled, and
+# checks (5)(a) when the child lived with you more than half of 2025. PDF p. 41: check both (5)(a) and (5)(b)
+# when the child lived with you in the United States more than half of 2025. PDF p. 18: check row (7) for the
+# child tax credit or the credit for other dependents. The quotes say 2025; the 2026 draft asks the same questions.
+# The first four claimed dependents stay on Form 1040. This statement is the rest, in the same order, with the
+# same facts as rows (5), (6), and (7) on pdf/2026/IRS1040/en/configuration.yml. (5)(a) is /residencyTest.
+# (5)(b) is /livedWithTpInUsMostOfYear, which already requires (5)(a). (6) full-time student is /isAStudentUnder24
+# (not a stored /fullTimeStudent answer for a child under 19). (6) disabled is /permanentTotalDisability.
+# A complete boolean prints yes or no. An incomplete fact stays blank. 26 U.S.C. 152(c)(1)(B), 152(c)(3), 32(c)(3)(C).
+includeWhen: /claimingMoreThan4Dependents
+table:
+  rowsCollectionPath: /claimedDependentsCollection
+  itemsToSkip: 4
+  rowsPerPage: 23
+  columns:
+    - factExpression: ../fullName
+      fieldName: NameRow
+    - factExpression: ../tin
+      fieldName: SocialSecurityNumberRow
+    - factExpression: ../relationship
+      fieldName: RelationshipToYouRow
+    - factExpression: ../residencyTest
+      fieldName: LivedWithYouYesRow
+    - factExpression: ../livedWithTpInUsMostOfYear
+      fieldName: AndInTheUsRow
+    - factExpression: ../isAStudentUnder24
+      fieldName: FullTimeStudentRow
+    - factExpression: ../permanentTotalDisability
+      fieldName: PermanentlyAndTotallyDisabledRow
+    - factExpression: ../isClaimedForCTC
+      fieldName: ChildTaxCreditRow
+    - factExpression: ../isClaimedForODC
+      fieldName: CreditForOtherDependentsRow

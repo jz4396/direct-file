@@ -259,12 +259,16 @@ direct-file:
         cache-in-memory: true
       # #89: no IRS1040SR for 2026. Form 1040 prints for every filer, 65 or older too: Instructions for Form 1040
       # (2025), p. 12, "Everyone can file Form 1040." There is no 2026 Form 1040-SR template.
+      # #89: more than four dependents. Instructions for Form 1040 (2025), PDF p. 17: check the box and include a
+      # statement showing the information requested in the Dependents section. English is that statement. No 2026
+      # Spanish statement is posted; es stays on the 2024 template and a TY2026 Spanish print is refused
+      # (26 U.S.C. 6011(a)) because this English template is under pdf/2026/.
       - name: DEPENDENTS_STATEMENT
         year: 2026
         language-code: en
-        location: pdf/2024/DEPENDENTS_STATEMENT/en/1040_AdditionalDependents.pdf
+        location: pdf/2026/DEPENDENTS_STATEMENT/en/1040-additional-dependents.pdf
         location-type: classpath
-        configuration-location: pdf/2024/DEPENDENTS_STATEMENT/en/configuration.yml
+        configuration-location: pdf/2026/DEPENDENTS_STATEMENT/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: DEPENDENTS_STATEMENT

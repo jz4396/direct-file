@@ -177,7 +177,10 @@ class Ty2026PdfPackageTest {
      * printed by a scenario below or listed here, so a new template fails this test until it is covered.
      */
     static final Map<String, String> EXCLUDED = Map.ofEntries(
-            Map.entry("DEPENDENTS_STATEMENT", "2024 statement template only (more than 4 dependents)"),
+            Map.entry(
+                    "DEPENDENTS_STATEMENT",
+                    "2026 statement; the scenarios here have four or fewer dependents"
+                            + " (Form1040AdditionalDependentsStatementTy2026Test)"),
             // Form 2441 attachments (more than three qualifying persons or care providers; Part I line 1c due
             // diligence) are not IRS forms, so there is no 2026 draft: they still print the pdf/2024 statement
             // templates, two of which print "2024" in a column heading.

@@ -5,7 +5,6 @@ bf1f0a76a39b12dfabd3fd1b721dc6f1f270c10dc1d575487037a1ffe1b28bef  pdf/2024/CDCC_
 bafe2435bcbf7acb95abe5be9349889b61754af63f578e84560eabd4466d3c6f  pdf/2024/CDCC_QUALIFYING_PERSON_STATEMENT/en/irs2441_qualifying_persons_statement.pdf  pages=1  mapped=77  unmapped=0
 33ac3b8f3865671a1598ae9bf4359f06bc55369a6ad3886082785d8b16052b3f  pdf/2024/CTC_DEPENDENTS_STATEMENT/en/Additional_statement_for_Form_8862_-_Additional_Child_Tax_Credit.pdf  pages=1  mapped=100  unmapped=0
 d18851127e686ea3827dac97e0813211c8a3e4444d93bc5000588bedf3f3720e  pdf/2024/CTC_DEPENDENTS_STATEMENT/es/SPANISH_Additional_statement_for_Form_8862_-_Additional_Child_Tax_Credit.pdf  pages=1  mapped=100  unmapped=0
-c4ecde673ab5edb522a0f00187d6dfff431c220e8e2a1801d9f7c311a4f954e0  pdf/2024/DEPENDENTS_STATEMENT/en/1040_AdditionalDependents.pdf  pages=1  mapped=115  unmapped=0
 fdedb9b0be88ee7f2b06b0f727ac9fdc537849446953194f894827271385de27  pdf/2024/DEPENDENTS_STATEMENT/es/1040_Dependientes_Adicionales.pdf  pages=1  mapped=115  unmapped=0
 f5cf56bb264a7c1e5c08b6e0898beb21a3ceb125930a0aab98045d9c4e78cf6a  pdf/2024/DF1099R/en/DF1099Ren.pdf  pages=1  mapped=28  unmapped=3
 d0d519e75b3f35e085fd37f1eca756216152784928eade469f78de352433068b  pdf/2024/DF1099R/es/DF1099Res.pdf  pages=1  mapped=28  unmapped=3
@@ -24,6 +23,7 @@ b0fe2d6f071f55b8a8d532331bf2d4a7448a3770820ce5dcfbc8d5dd4668a545  pdf/2024/IRS88
 bc23aa51f00e0e15846427555f2281a3eb26bbcf09e3d26a35265155c5cc64e7  pdf/2024/ODC_DEPENDENTS_STATEMENT/es/SPANISH_Additional_statement_for_Form_8862_-_Credit_for_other_dependents.pdf  pages=1  mapped=60  unmapped=0
 26f474ae7c6caa4042bbb17177e2021ac971fbdf4a6754bac379e11713818142  pdf/2024/SCHEDULE_LEP/en/f1040lep-p.pdf  pages=1  mapped=23  unmapped=0
 68759fbaeb811546c88ff6f42c3b8b3bf59da048d80229d741e40ec6588a5822  pdf/2024/SCHEDULE_LEP/es/f1040les-p.pdf  pages=1  mapped=23  unmapped=0
+7dcd0990f0522deadb524cffddfa95430ceb56157c6dc26746e3a46c7b2323b7  pdf/2026/DEPENDENTS_STATEMENT/en/1040-additional-dependents.pdf  pages=1  mapped=207  unmapped=0
 e044e765ace334c76bda7910bd3193fc813c7789d06340124359b885c98d58d0  pdf/2026/IRS1040/en/f1040--dft.pdf  pages=3  mapped=147  unmapped=60
 fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3  pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf  pages=3  mapped=35  unmapped=3
 a017a1b717d1c70ff8d831ef8b73c730e5b24f147c394c37f792035a9df22fad  pdf/2026/IRS1040S1/en/f1040s1--dft.pdf  pages=3  mapped=16  unmapped=56
