@@ -269,6 +269,12 @@
         "items": []
       }
     },
+    "/scheduleEProperties": {
+      "$type": "gov.irs.factgraph.persisters.CollectionWrapper",
+      "item": {
+        "items": []
+      }
+    },
     "/scheduleEProvidesSubstantialServices": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
@@ -428,6 +434,10 @@
       "item": "48000.00"
     },
     "/scheduleAWantsToItemize": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/paHasEstimatedInstallmentPayments": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },
