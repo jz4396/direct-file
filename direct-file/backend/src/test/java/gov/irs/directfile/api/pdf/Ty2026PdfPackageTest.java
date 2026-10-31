@@ -113,6 +113,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Scenario 8, elderly or disabled credit (#89): single, under 65, retired on permanent and total disability;
  *   W-2 $17,000 of taxable disability income. Prints Form 1040, Schedule 3, Schedule R and the W-2.
  *   Schedule R line 22 equals Schedule 3 line 6d (26 U.S.C. 22; 2026 Schedule R line 22).
+ * Scenario 9, more than four dependents (#89): the family scenario with four more claimed children and wages
+ *   of $180,000 (above the earned income credit). Dependents five and six print on the additional-dependents
+ *   statement. Instructions for Form 1040 (2025), PDF p. 17.
  * </pre>
  */
 class Ty2026PdfPackageTest {
@@ -144,6 +147,7 @@ class Ty2026PdfPackageTest {
     /** Pages printed per form instance, from the face of each form (draft cover sheets excluded). */
     static final Map<String, Integer> PAGES = Map.ofEntries(
             Map.entry("IRS1040", 2),
+            Map.entry("DEPENDENTS_STATEMENT", 1),
             Map.entry("IRS1040S1", 2),
             Map.entry("IRS1040S1A", 3),
             Map.entry("IRS1040S2", 2),
@@ -177,7 +181,6 @@ class Ty2026PdfPackageTest {
      * printed by a scenario below or listed here, so a new template fails this test until it is covered.
      */
     static final Map<String, String> EXCLUDED = Map.ofEntries(
-            Map.entry("DEPENDENTS_STATEMENT", "2024 statement template only (more than 4 dependents)"),
             // Form 2441 attachments (more than three qualifying persons or care providers; Part I line 1c due
             // diligence) are not IRS forms, so there is no 2026 draft: they still print the pdf/2024 statement
             // templates, two of which print "2024" in a column heading.
@@ -205,6 +208,8 @@ class Ty2026PdfPackageTest {
     static Map<String, ConfiguredPdfProperties> templates;
     static Map<String, List<String>> blankPageText;
     static Map<String, String> pinnedSha256;
+    /** SHA-256 of every configured template, including repo-built statements that are not IRS downloads. */
+    static Map<String, String> repoBuiltSha256;
 
     @BeforeAll
     static void init() throws Exception {
@@ -260,6 +265,23 @@ class Ty2026PdfPackageTest {
                 }
             }
         }
+        repoBuiltSha256 = shaByLocation("pdf/2026/ty2026-template-manifest.txt");
+    }
+
+    /** {@code <sha256> <classpath location> ...} rows from ty2026-template-manifest.txt. */
+    static Map<String, String> shaByLocation(String manifest) throws Exception {
+        Map<String, String> out = new HashMap<>();
+        try (BufferedReader r = new BufferedReader(
+                new InputStreamReader(new ClassPathResource(manifest).getInputStream(), StandardCharsets.UTF_8))) {
+            String row;
+            while ((row = r.readLine()) != null) {
+                if (!row.isBlank() && !row.startsWith("#")) {
+                    String[] cols = row.trim().split("\\s+");
+                    out.put(cols[1], cols[0]);
+                }
+            }
+        }
+        return out;
     }
 
     // ---------------------------------------------------------------- scenarios
@@ -434,6 +456,31 @@ class Ty2026PdfPackageTest {
         return facts;
     }
 
+    /**
+     * Family scenario plus four claimed children, with wages above the earned income credit so Schedule EIC does not
+     * refuse the print. The fourth added child's generated serial matches the filer's, so that child gets another
+     * group-00 test SSN.
+     */
+    static Map<String, FactTypeWithItem> moreThanFourDependents() throws Exception {
+        Map<String, FactTypeWithItem> facts = scenarioFile(FAMILY, CTC_FILER_SSN, true);
+        Form1040AdditionalDependentsStatementTy2026Test.addCopies(facts, 4);
+        facts.put(
+                "/familyAndHousehold/#" + Form1040AdditionalDependentsStatementTy2026Test.QUATRO_ID + "/tin",
+                ScheduleEicTy2026PdfSmokeTest.fact(tin("444", "00", "7777")));
+        // Clones of the under-13 child would be Form 2441 qualifying persons. Four of them would attach the
+        // pdf/2024 qualifying-persons statement, which this package does not print. Age 14 is still under 19, so a
+        // stored full-time-student answer does not check row (6), and is past the Form 2441 age.
+        for (String id : List.of(
+                Form1040AdditionalDependentsStatementTy2026Test.TRES_ID,
+                Form1040AdditionalDependentsStatementTy2026Test.QUATRO_ID,
+                Form1040AdditionalDependentsStatementTy2026Test.SEXTO_ID)) {
+            facts.put(
+                    "/familyAndHousehold/#" + id + "/dateOfBirth",
+                    ScheduleEicTy2026PdfSmokeTest.day("2012-06-15"));
+        }
+        return Form1040AdditionalDependentsStatementTy2026Test.highWage(facts);
+    }
+
     // ---------------------------------------------------------------- tests
 
     @Test
@@ -458,6 +505,8 @@ class Ty2026PdfPackageTest {
         Map<String, FactTypeWithItem> ptc = scenarioFile(PrintRefusingKnockoutsTest.PTC_SCENARIO);
         ptc.put(PrintRefusingKnockoutsTest.SEP_ANSWER, MAPPER.readValue(bool(false), FactTypeWithItem.class));
         printed.addAll(renderFacts(ptc, null, null).forms.keySet());
+        // #89: more than four dependents. Instructions for Form 1040 (2025), PDF p. 17.
+        printed.addAll(renderFacts(moreThanFourDependents(), null, null).forms.keySet());
         assertEquals(PAGES.keySet(), printed, "forms printed across the scenarios");
         Set<String> notPrinted = new TreeSet<>(templates.keySet());
         notPrinted.removeAll(printed);
@@ -850,6 +899,34 @@ class Ty2026PdfPackageTest {
     }
 
     /**
+     * #89: six claimed dependents. The first four stay on Form 1040. Dependents five and six print on the repo-built
+     * statement, with the filer's name and SSN. Instructions for Form 1040 (2025), PDF p. 17.
+     */
+    @Test
+    void additionalDependentsStatementPackage() throws Exception {
+        Map<String, FactTypeWithItem> facts = moreThanFourDependents();
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(factGraphService.getGraph(facts)));
+        Pkg pkg = renderFacts(facts, "e2e-ty2026-additional-dependents.pdf", List.of())
+                .filerSsn(CTC_FILER_SSN_DASHED);
+        Map<String, Integer> forms = new TreeMap<>();
+        pkg.forms.forEach((name, instances) -> forms.put(name, instances.size()));
+        pkg.assertForms(forms);
+        assertEquals(1, forms.get("DEPENDENTS_STATEMENT"));
+        Map<String, String> statement = pkg.fields("DEPENDENTS_STATEMENT", 0);
+        assertTrue(text(statement, "NameRow1").contains("Cinco"), "dependent five is statement row 1");
+        assertTrue(text(statement, "NameRow2").contains("Sexto"), "dependent six is statement row 2");
+        assertEquals("yes", text(statement, "FullTimeStudentRow1"));
+        assertEquals("no", text(statement, "FullTimeStudentRow2"));
+        assertEquals("yes", text(statement, "AndInTheUsRow1"));
+        assertTrue(text(statement, "FilerName").contains(LAST_NAME));
+        assertEquals(CTC_FILER_SSN_DASHED, text(statement, "FilerTin"));
+        Map<String, String> f1040 = pkg.fields("IRS1040", 0);
+        assertTrue(checked(f1040, "Dependents_ReadOrder[0].c1_13[0]"));
+        assertEquals("Uno", text(f1040, "Table_Dependents[0].Row1[0].f1_31[0]"));
+        assertEquals("Quatro", text(f1040, "Table_Dependents[0].Row1[0].f1_34[0]"));
+    }
+
+    /**
      * #179 review: Schedule 8812 (2026 draft) page 2, Part II-B. Line 22 "Enter the total of the amounts from Schedule 1
      * (Form 1040), line 15; Schedule 2 (Form 1040), line 16c; and Schedule 2 (Form 1040), line 17c"; line 23 "Add lines
      * 21 and 22"; line 25 "Subtract line 24 from line 23"; line 26 "Enter the larger of line 20 or line 25"; line 27 the
@@ -1095,20 +1172,28 @@ class Ty2026PdfPackageTest {
     }
 
     /**
-     * Every draft, final, or state template under pdf/2026 that printed is pinned in its SHA-256 manifest, still matches
-     * it, and its field map is still marked draft-based, final, or year-based.
+     * Every pdf/2026 template that printed is pinned. An IRS download is pinned in the draft, final, state-interim, or
+     * continuous-use manifest and its field map is still marked draft-based, final, or year-based. A repo-built
+     * statement (marker {@code REPO-BUILT STATEMENT}) is pinned by its row in ty2026-template-manifest.txt instead.
      */
     static void assertTemplatePinned(String name, ConfiguredPdfProperties t) throws Exception {
         if (!t.getLocation().startsWith("pdf/2026/")) {
             return; // 2024 templates (W-2) have no 2026 manifest
         }
-        String pinned = pinnedSha256.get(t.getLocation());
-        assertTrue(pinned != null, name + " template is pinned in a pdf/2026 SHA-256 manifest");
-        MessageDigest sha = MessageDigest.getInstance("SHA-256");
-        sha.update(new ClassPathResource(t.getLocation()).getContentAsByteArray());
-        assertEquals(pinned, HexFormat.of().formatHex(sha.digest()), name + " template SHA-256");
         String config = new String(
                 new ClassPathResource(t.getConfigurationLocation()).getContentAsByteArray(), StandardCharsets.UTF_8);
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        sha.update(new ClassPathResource(t.getLocation()).getContentAsByteArray());
+        String actual = HexFormat.of().formatHex(sha.digest());
+        if (config.contains("REPO-BUILT STATEMENT")) {
+            String pinned = repoBuiltSha256.get(t.getLocation());
+            assertTrue(pinned != null, name + " template is pinned in ty2026-template-manifest.txt");
+            assertEquals(pinned, actual, name + " template SHA-256");
+            return;
+        }
+        String pinned = pinnedSha256.get(t.getLocation());
+        assertTrue(pinned != null, name + " template is pinned in a pdf/2026 SHA-256 manifest");
+        assertEquals(pinned, actual, name + " template SHA-256");
         if (t.getLocation().endsWith("--dft.pdf")) {
             assertTrue(config.toLowerCase().contains("draft"), name + " field map is still flagged as draft-based");
         } else if (!config.contains("YEAR-BASED MAPPING")) {
