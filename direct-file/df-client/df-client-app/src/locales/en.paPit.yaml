@@ -218,8 +218,8 @@ info:
       body:
         - p:
             "Your Pennsylvania return needs PA Schedule A, and this tool can’t fill it out yet. This includes interest
-            from U.S. savings bonds or Treasury obligations, tax-exempt interest, interest when you lived in
-            Pennsylvania for only part of the year, or more than $2,500 of interest."
+            from U.S. savings bonds or Treasury obligations, tax-exempt interest, or interest when you lived in
+            Pennsylvania for only part of the year."
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
@@ -238,10 +238,9 @@ info:
     alertText:
       body:
         - p:
-            Your Pennsylvania return needs PA Schedule B, and this tool can’t fill it out yet. This includes more than
-            $2,500 of dividends, capital gain distributions (Form 1099-DIV box 2a), fund dividends from U.S. or
-            Pennsylvania obligations,             dividends you received as a nominee, or ordinary dividends you
-            received while you lived outside Pennsylvania.
+            Your Pennsylvania return needs PA Schedule B, and this tool can’t fill it out yet. This includes capital
+            gain distributions (Form 1099-DIV box 2a), fund dividends from U.S. or Pennsylvania obligations, dividends
+            you received as a nominee, or ordinary dividends you received while you lived outside Pennsylvania.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:

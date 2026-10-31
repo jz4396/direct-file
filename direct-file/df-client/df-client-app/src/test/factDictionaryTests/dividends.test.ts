@@ -651,24 +651,24 @@ describe(`#86b Form 6251 Part III with dividends (line 7 recomputed by hand)`, (
  * B with an originally filed PA-40, Personal Income Tax Return, if there are any amounts on Lines 2 through 11 (not
  * including subtotal Line 6)." PDF p. 4: Line 3 (U.S./PA obligation fund dividends), Line 4 ("dividend income for a
  * part-year resident taxpayer during the period the taxpayer was a nonresident; nominee capital gains distributions"),
- * Line 10 (capital gains distributions). Over $2,500 of PA-taxable dividends is a limit this tool sets.
+ * Line 10 (capital gains distributions). Ordinary dividends alone do not require PA Schedule B.
  */
 describe(`#154 PA Schedule B dividend knockout`, () => {
   const paBuild = (extra: Record<string, unknown>) =>
     build({ ...state(`pa`), '/paHasExemptObligationDividends': createBooleanWrapper(false), ...extra });
   const scheduleB = (g: Fg) => get(g, `/flowKnockoutPaScheduleB`).get;
-  it(`full-year PA, $2,501 of ordinary dividends (over the $2,500 limit) stops the PA return`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleB`, `/paScheduleBThreshold`, `/paLine3`];
+  it(`full-year PA, ordinary dividends with no Schedule B line do not stop the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleB`, `/paLine3`];
     const g = paBuild(divs({ box1a: 2501 }));
     expect(val(g, `/paLine3`)).toBe(`2501.00`);
-    expect(scheduleB(g)).toBe(true);
+    expect(scheduleB(g)).toBe(false);
     expect(get(g, `/flowKnockoutPaDividends`).get).toBe(false);
-    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(true);
-    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutPaScheduleB`);
   });
-  it(`two forms that add to $2,501 count together (the limit is on the PA-40 line 3 total)`, () => {
-    expect(scheduleB(paBuild(divs({ box1a: 1500 }, { box1a: 1001 })))).toBe(true);
+  it(`two forms of ordinary dividends still have no Schedule B line`, () => {
+    expect(scheduleB(paBuild(divs({ box1a: 1500 }, { box1a: 1001 })))).toBe(false);
   });
   it(`full-year PA, exactly $2,500 of ordinary dividends with no Schedule B line: no knockout`, () => {
     const g = paBuild(divs({ box1a: 2500, box1b: 2000 }));
@@ -677,9 +677,9 @@ describe(`#154 PA Schedule B dividend knockout`, () => {
     expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
-  it(`the limit uses the rounded line 3b total: $2,500.49 stays, $2,500.50 stops`, () => {
+  it(`cents on ordinary dividends do not require PA Schedule B`, () => {
     expect(scheduleB(paBuild(divs({ box1a: 2500.49 })))).toBe(false);
-    expect(scheduleB(paBuild(divs({ box1a: 2500.5 })))).toBe(true);
+    expect(scheduleB(paBuild(divs({ box1a: 2500.5 })))).toBe(false);
   });
   it(`Line 3: fund dividends from U.S. or PA obligations stop it at any amount`, () => {
     const g = paBuild({ ...divs({ box1a: 100 }), '/paHasExemptObligationDividends': createBooleanWrapper(true) });
@@ -695,7 +695,7 @@ describe(`#154 PA Schedule B dividend knockout`, () => {
     expect(scheduleB(g)).toBe(true);
     expect(get(g, `/flowKnockoutDividendNominee`).get).toBe(true);
   });
-  it(`Line 4: dividends received while not a PA resident stop it, even under $2,500`, () => {
+  it(`Line 4: dividends received while not a PA resident stop it`, () => {
     const partYear = (box1a: number, resident: string) =>
       build({
         ...divs({ box1a }),
@@ -710,12 +710,12 @@ describe(`#154 PA Schedule B dividend knockout`, () => {
     const g = partYear(50, `0`);
     expect(scheduleB(g)).toBe(true);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
-    // All $2,000 received while a PA resident: under the $2,500 limit and line 4 is $0, so no Schedule B.
+    // All $2,000 received while a PA resident: line 4 is $0, so no Schedule B.
     const supported = partYear(2000, `2000`);
     expect(val(supported, `/paLine3`)).toBe(`2000.00`);
     expect(scheduleB(supported)).toBe(false);
     expect(get(supported, `/flowIsKnockedOut`).get).toBe(false);
-    // $2,000 of $2,500 received while a PA resident: line 3 is under $2,500, but line 4 is $500.
+    // $2,000 of $2,500 received while a PA resident: line 4 is $500.
     expect(scheduleB(partYear(2500, `2000`))).toBe(true);
   });
   it(`no 1099-DIV: no Schedule B line has an amount`, () => {

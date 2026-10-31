@@ -949,24 +949,21 @@ describe(`PA Schedules A, B and D knockouts (#123)`, () => {
     task.meta.testedFactPaths = [`/flowKnockoutPaScheduleA`, `/flowKnockoutStateReturn`, `/flowIsKnockedOut`];
     blocks(build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(100, 50) }), `/flowKnockoutPaScheduleA`);
   });
-  it(`Schedule A: PA-taxable interest over $2,500`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleA`, `/paScheduleAThreshold`];
-    const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(2501) });
-    expect(val(g, `/paLine2`)).toBe(`2501.00`);
-    blocks(g, `/flowKnockoutPaScheduleA`);
-  });
-  it(`Schedule A: $2,500 of ordinary interest, equal to federal, needs no schedule`, () => {
-    const g = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(2500) });
-    expect(val(g, `/paLine2`)).toBe(`2500.00`);
-    clear(g);
+  it(`Schedule A: ordinary interest equal to federal needs no schedule, including over $2,500`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleA`, `/paLine2`];
+    const over = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(2501) });
+    expect(val(over, `/paLine2`)).toBe(`2501.00`);
+    clear(over);
+    const at = build(singleFilerData, { ...w2(40000, 40000, 1228), ...interest(2500) });
+    expect(val(at, `/paLine2`)).toBe(`2500.00`);
+    clear(at);
   });
   it(`Schedule B: wages only, no Form 1099-DIV, so no Schedule B line has an amount (#154 cases: dividends.test.ts)`, ({
     task,
   }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleB`, `/paScheduleBThreshold`];
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleB`, `/paLine3`];
     const g = build(singleFilerData, w2(40000, 40000, 1228));
     expect(val(g, `/paLine3`)).toBe(`0.00`);
-    expect(val(g, `/paScheduleBThreshold`)).toBe(`2500.00`);
     expect(get(g, `/flowKnockoutPaScheduleB`).get).toBe(false);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutPaScheduleB`);
   });

@@ -86,14 +86,6 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `unused $600 constant; Form W-2 furnishing is § 6051(a), not the § 6041(a) information-return threshold`,
   },
-  '/paScheduleAThreshold': {
-    kind: `remaining`,
-    reason: `tool limit of $2,500 on top of PA Schedule A triggers; 2026 PA-40 instructions are not published`,
-  },
-  '/paScheduleBThreshold': {
-    kind: `remaining`,
-    reason: `tool limit of $2,500 on top of PA Schedule B triggers; 2026 PA-40 instructions are not published`,
-  },
   '/paSpTableBase': {
     kind: `remaining`,
     reason: `standing PA Tax Forgiveness table ($6,500 / $13,000 / $9,500); 2026 PA-40 instructions are not published`,

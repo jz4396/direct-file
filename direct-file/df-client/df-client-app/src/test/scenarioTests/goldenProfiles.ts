@@ -473,8 +473,8 @@ export const profileDHohItemizerChild = {
 
 /**
  * Profile E: single, moved from Pennsylvania to Florida on July 1, 2026. Same wages and FL-period long-term gain as
- * profile C, plus $2,000 of qualified dividends received entirely while a PA resident (under the $2,500 PA Schedule B
- * tool limit, and PA Schedule B line 4 is $0 because none were received while a nonresident). Form 6251 AMT inside the
+ * profile C, plus $2,000 of qualified dividends received entirely while a PA resident (PA Schedule B line 4 is $0
+ * because none were received while a nonresident). Form 6251 AMT inside the
  * exemption phaseout, Form 8960 on the dividends and the gain, and a PA-40 that taxes the dividends and the PA wages.
  */
 const parker: Person = { first: `Parker`, last: `Example`, ssn: [`900`, `45`, `1006`], dob: `1982-06-18` };
@@ -687,7 +687,7 @@ export const profileGWithW2s = (...forms: W2[]) => ({
  * Profile H: full-year Pennsylvania resident, single, standard deduction. One W-2, one Schedule E Part I
  * residential rental (net income; no depreciation, personal use, substantial services, or per-property loss;
  * not a section 162 trade or business), and one Form 1099-DIV. Ordinary dividends are over $1,500, so federal
- * Schedule B Part II is required, and at or under $2,500, so PA Schedule B is not. Fixed identifiers: SSN
+ * Schedule B Part II is required. PA Schedule B is not: no amount on its lines 2 through 11. Fixed identifiers: SSN
  * 900-46-1009, W-2 id 13500000-0000-4000-8000-000000001101, 1099-DIV id
  * 13500000-0000-4000-8000-000000001102. PA-40 line 6 stays $0: Schedule E income stops the return.
  */
