@@ -283,6 +283,7 @@ function markerSaveFile(): string {
     `/scheduleCBusinesses`,
     `/scheduleEEstates`,
     `/scheduleEK1s`,
+    `/scheduleEProperties`,
     `/cdccCareProviders`,
     `/hsaDistributions`,
   ]) {

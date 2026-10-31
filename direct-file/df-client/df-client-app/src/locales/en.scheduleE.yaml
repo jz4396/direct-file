@@ -6,6 +6,7 @@ subsubcategories:
     schedule-e-k1: Partnership or S corporation
     schedule-e-estate: Estate or trust
     schedule-e-amounts: Rental and royalty amounts
+    schedule-e-property: Section 162 rental property
 headings:
   /heading/income/schedule-e: Rental and royalty income
   /heading/income/schedule-e/intro: Did you have rental real estate or royalty income in {{/taxYear}}?
@@ -49,9 +50,20 @@ headings:
   /heading/knockout/schedule-e-depreciation: This tool doesn’t yet support depreciation or vehicle expenses
   /heading/knockout/schedule-e-loss: This tool doesn’t yet support rental or royalty losses
   /heading/income/schedule-e/trade-or-business:
-    Is any of your rentals a trade or business for the qualified business income deduction?
+    Is any of your rentals a section 162 trade or business for the qualified business income deduction?
+  /heading/income/schedule-e/properties: Add each rental that is a section 162 trade or business
+  /heading/income/schedule-e/property-name: What is the name of this rental?
+  /heading/income/schedule-e/property-amounts: Enter this rental’s rents, royalties, and expenses
+  /heading/income/schedule-e/property-participation: Did you materially participate in this rental?
+  /heading/income/schedule-e/property-safe-harbor: Are you relying on the rental real estate safe harbor for this property?
+  /heading/income/schedule-e/property-aggregation: Is this rental part of an aggregated trade or business?
+  /heading/income/schedule-e/property-suspended: Does this rental have a loss that is suspended this year?
+  /heading/income/schedule-e/qbi-carryforward: Do you have a qualified business loss carryforward from a prior year?
+  /heading/income/schedule-e/qbi-cooperative: Are you a patron of an agricultural or horticultural cooperative?
   /heading/knockout/schedule-e-trade-or-business:
-    This tool doesn’t yet support the qualified business income deduction for rentals
+    This tool doesn’t support a safe harbor statement, an aggregation, or a suspended loss for this rental
+  /heading/knockout/schedule-e-qbi-limit:
+    This tool can’t figure this qualified business income deduction
   /heading/knockout/schedule-e-eitc:
     This tool can’t yet check the Earned Income Tax Credit with rental or royalty income
 info:
@@ -226,15 +238,64 @@ info:
             tool doesn’t include it in that test yet. You’ll need another way to file this return.
   /info/income/schedule-e/trade-or-business:
     body: >-
-      Answer yes if you treat a rental as a trade or business, for example because you or others performed 250 or more
-      hours of rental services during the year, or because you rent property to a business you or your family commonly
-      control.
+      Answer yes if a rental is a section 162 trade or business, including property you rent to a trade or business
+      that you commonly control. You will enter each property. The qualified business income deduction is figured on
+      Form 8995. A Rev. Proc. 2019-38 safe harbor, an aggregation, a loss suspended this year, or property
+      amounts above the Schedule E totals stop the return.
+  /info/income/schedule-e/properties:
+    body: >-
+      Add one entry for each rental you treat as a section 162 trade or business. The name and the net income or loss
+      go on Form 8995, line 1. The Schedule E totals are entered on a later screen.
+  /info/income/schedule-e/property-name:
+    body: >-
+      This name is Form 8995, line 1, column (a). Column (b) is your SSN or ITIN. It is left blank only if this
+      rental is aggregated.
+  /info/income/schedule-e/property-amounts:
+    body: >-
+      Rents, royalties, and expenses for this property only. Net income or loss is Form 8995, line 1, column (c). It
+      is not reduced by self-employment tax. The return stops if these amounts, added across properties, are more
+      than the Schedule E totals, or if column (c) is more than Schedule E line 26.
+  /info/income/schedule-e/property-participation:
+    body: >-
+      Material participation matters for the $400 minimum deduction on Form 8995, line 16. It is not required for the
+      rest of the qualified business income deduction.
+  /info/income/schedule-e/property-safe-harbor:
+    body: >-
+      Answer yes if you are relying on the safe harbor in Rev. Proc. 2019-38. That safe harbor needs a statement this
+      tool does not attach.
+  /info/income/schedule-e/property-aggregation:
+    body: >-
+      Answer yes if this rental is part of an aggregated trade or business. An aggregation has to be reported on
+      Schedule B (Form 8995-A), which this tool does not attach.
+  /info/income/schedule-e/property-suspended:
+    body: >-
+      Answer yes if a loss or deduction from this rental is suspended this year, including under the passive activity
+      rules. A suspended loss is not qualified business income this year.
+  /info/income/schedule-e/qbi-carryforward:
+    body: >-
+      Answer yes if you have a qualified business net loss carryforward from a prior year. Form 8995, line 3, is not
+      figured here.
+  /info/income/schedule-e/qbi-cooperative:
+    body: >-
+      Answer yes if you are a patron of an agricultural or horticultural cooperative. A patron uses Form 8995-A, which
+      this tool does not figure.
   /info/knockout/schedule-e-trade-or-business:
     alertText:
       body:
         - p: >-
-            A rental that is a trade or business can qualify for the qualified business income deduction (Form 8995).
-            This tool doesn’t calculate that deduction yet. You’ll need another way to file this return.
+            Rev. Proc. 2019-38 requires a statement this tool does not attach. An aggregation has to be reported on
+            Schedule B (Form 8995-A). A loss suspended under section 469 or another limitation is not qualified
+            business income this year. The return also stops if the section 162 rents, royalties, or expenses are
+            more than the Schedule E totals, or if Form 8995, line 1, column (c) is more than Schedule E line 26.
+            You’ll need another way to file this return.
+  /info/knockout/schedule-e-qbi-limit:
+    alertText:
+      body:
+        - p: >-
+            This tool figures the qualified business income deduction only with the simplified Form 8995. It can’t
+            handle a prior-year loss carryforward, cooperative payments, taxable income above the Form 8995 limit, a
+            mix of trades you materially participate in and trades you don’t, or more than five trades or businesses.
+            You’ll need another way to file this return.
 fields:
   /hadScheduleEIncome:
     boolean:
@@ -262,8 +323,51 @@ fields:
       "no": No, every property had a profit or broke even
   /scheduleERentalIsTradeOrBusiness:
     boolean:
-      "yes": Yes, at least one rental is a trade or business
+      "yes": Yes, at least one rental is a section 162 trade or business
       "no": "No"
+  /scheduleEProperties/*/propertyName:
+    name: Property name
+  /scheduleEProperties/*/writableRents:
+    name: Rents received for this property
+  /scheduleEProperties/*/writableRoyalties:
+    name: Royalties received for this property
+  /scheduleEProperties/*/writableExpenses:
+    name: Expenses for this property (not including depreciation)
+  /scheduleEProperties/*/materiallyParticipates:
+    boolean:
+      "yes": Yes, I materially participated
+      "no": No, I did not materially participate
+  /scheduleEProperties/*/reliesOnRp201938SafeHarbor:
+    boolean:
+      "yes": Yes, I am relying on the safe harbor
+      "no": "No"
+  /scheduleEProperties/*/isAggregated:
+    boolean:
+      "yes": Yes, this rental is aggregated
+      "no": "No"
+  /scheduleEProperties/*/hasSuspendedPassiveLoss:
+    boolean:
+      "yes": Yes, a loss is suspended this year
+      "no": "No"
+  /scheduleEProperties:
+    controls:
+      add: Add another rental
+      complete_zero: I don’t have one to add
+      complete: I’m done adding rentals
+      back: Go to the list
+    collectionListing:
+      itemHeading1: "{{/scheduleEProperties/*/propertyName}}"
+      itemHeading2: Incomplete rental
+      label2: Rental
+    deleteControl:
+      text: <LinkModal1>Remove this rental</LinkModal1>
+      LinkModal1:
+        header: Are you sure you want to remove this rental?
+        body:
+          - p: This can’t be undone.
+        controls:
+          confirm: Remove this rental
+          cancel: Cancel
   /scheduleEWritableRents:
     name: Total rents received
   /scheduleEWritableRoyalties:
@@ -439,7 +543,17 @@ dataviews:
     /scheduleEAnyPropertyLoss: Did any single property have a loss?
     /scheduleEProvidesSubstantialServices:
       Did you provide substantial services, such as cleaning, linens, or maid service?
-    /scheduleERentalIsTradeOrBusiness: Is any rental a trade or business for the qualified business income deduction?
+    /scheduleERentalIsTradeOrBusiness: Is any rental a section 162 trade or business for the qualified business income deduction?
+    /scheduleEProperties/*/propertyName: Rental name
+    /scheduleEProperties/*/writableRents: Rents received for this property
+    /scheduleEProperties/*/writableRoyalties: Royalties received for this property
+    /scheduleEProperties/*/writableExpenses: Expenses for this property
+    /scheduleEProperties/*/materiallyParticipates: Did you materially participate in this rental?
+    /scheduleEProperties/*/reliesOnRp201938SafeHarbor: Are you relying on the Rev. Proc. 2019-38 safe harbor?
+    /scheduleEProperties/*/isAggregated: Is this rental aggregated?
+    /scheduleEProperties/*/hasSuspendedPassiveLoss: Does this rental have a suspended loss this year?
+    /qbiHasPriorYearLossCarryforward: Do you have a qualified business loss carryforward from a prior year?
+    /qbiIsCooperativePatron: Are you a patron of an agricultural or horticultural cooperative?
     /scheduleEPartIILine27: Are you reporting a prior-year unallowed loss or unreimbursed partnership expenses?
     /scheduleEHasPartIIIIncome: Did you receive a Schedule K-1 from an estate or trust?
     /scheduleEHasPartIVIncome: Do you have a residual interest in a REMIC (Schedule Q)?

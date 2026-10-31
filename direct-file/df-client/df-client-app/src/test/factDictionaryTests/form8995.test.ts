@@ -317,4 +317,172 @@ describe(`Form 8995 simplified QBI deduction (TY2026)`, () => {
       expect(val(g, `/flowKnockoutForm8995WithoutTy2026Template`)).toBe(`false`);
     }
   });
+
+  const prop = `e8995000-0000-4000-8000-000000000001`;
+  const rental = (
+    id: string,
+    rents: number,
+    royalties: number,
+    expenses: number,
+    active = true,
+    extra: Record<string, unknown> = {}
+  ) => ({
+    [`/scheduleEProperties/#${id}/propertyName`]: createStringWrapper(`Oak Street Rental`),
+    [`/scheduleEProperties/#${id}/writableRents`]: createDollarWrapper(`${rents}`),
+    [`/scheduleEProperties/#${id}/writableRoyalties`]: createDollarWrapper(`${royalties}`),
+    [`/scheduleEProperties/#${id}/writableExpenses`]: createDollarWrapper(`${expenses}`),
+    [`/scheduleEProperties/#${id}/materiallyParticipates`]: createBooleanWrapper(active),
+    [`/scheduleEProperties/#${id}/reliesOnRp201938SafeHarbor`]: createBooleanWrapper(false),
+    [`/scheduleEProperties/#${id}/isAggregated`]: createBooleanWrapper(false),
+    [`/scheduleEProperties/#${id}/hasSuspendedPassiveLoss`]: createBooleanWrapper(false),
+    ...extra,
+  });
+  const scheduleE = (rows: Record<string, unknown>, ids: string[], rents: number, royalties: number, expenses: number) => ({
+    '/hadScheduleEIncome': createBooleanWrapper(true),
+    '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+    '/scheduleEHasPartIIIIncome': createBooleanWrapper(false),
+    '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
+    '/scheduleEProvidesSubstantialServices': createBooleanWrapper(false),
+    '/scheduleEHasPersonalUse': createBooleanWrapper(false),
+    '/scheduleEHasDepreciation': createBooleanWrapper(false),
+    '/scheduleEAnyPropertyLoss': createBooleanWrapper(expenses > rents + royalties),
+    '/scheduleERentalIsTradeOrBusiness': createBooleanWrapper(true),
+    '/scheduleEWritableRents': createDollarWrapper(`${rents}`),
+    '/scheduleEWritableRoyalties': createDollarWrapper(`${royalties}`),
+    '/scheduleEWritableExpenses': createDollarWrapper(`${expenses}`),
+    '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+    '/qbiIsCooperativePatron': createBooleanWrapper(false),
+    '/scheduleEProperties': createCollectionWrapper(ids),
+    '/scheduleEPropertiesIsDone': createBooleanWrapper(true),
+    ...rows,
+  });
+
+  it(`single section 162 rental: line 1(c) 50,000, line 11 33,900, line 17 6,780`, ({ task }) => {
+    // 26 U.S.C. 199A(a), (b)(2)(A), (i). Rev. Proc. 2025-32 §4.14 standard deduction $16,100.
+    // 26 U.S.C. 1402(a)(1): the rental is not reduced by self-employment tax.
+    task.meta.testedFactPaths = [
+      `/form8995Line1iQbi`,
+      `/form8995Line2`,
+      `/form8995Line11`,
+      `/form8995Line14`,
+      `/form8995Line16`,
+      `/form8995Line17`,
+      `/form8995Required`,
+      `/flowKnockoutScheduleETradeOrBusinessQbi`,
+    ];
+    const g = fg({ ...noW2, ...scheduleE(rental(prop, 50000, 0, 0), [prop], 50000, 0, 0) });
+    expect(val(g, `/agi`)).toBe(`50000.00`);
+    expect(val(g, `/form8995Line2`)).toBe(`50000.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`50000.00`);
+    expect(val(g, `/form8995Line1iTin`)).toBe(val(g, `/primaryFiler/tin`));
+    expect(val(g, `/form8995Line5`)).toBe(`10000.00`);
+    expect(val(g, `/form8995Line11`)).toBe(`33900.00`);
+    expect(val(g, `/form8995Line14`)).toBe(`6780.00`);
+    expect(val(g, `/form8995Line15`)).toBe(`6780.00`);
+    expect(val(g, `/form8995Line16`)).toBe(`400.00`);
+    expect(val(g, `/form8995Line17`)).toBe(`6780.00`);
+    expect(val(g, `/qbiThresholdAmount`)).toBe(`201750.00`);
+    expect(val(g, `/form8995Required`)).toBe(`true`);
+    expect(val(g, `/flowKnockoutScheduleETradeOrBusinessQbi`)).toBe(`false`);
+    expectNoQbiKnockout(g);
+  });
+
+  it(`MFJ section 162 rental: line 11 17,800 and line 17 3,560`, ({ task }) => {
+    // Rev. Proc. 2025-32 §3.26 MFJ threshold $403,500. §4.14 standard deduction $32,200.
+    task.meta.testedFactPaths = [`/form8995Line11`, `/form8995Line14`, `/form8995Line17`, `/qbiThresholdAmount`];
+    const g = fg({
+      ...noW2,
+      ...mfjFilerData,
+      [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+      ...scheduleE(rental(prop, 50000, 0, 0), [prop], 50000, 0, 0),
+    });
+    expect(val(g, `/form8995Line2`)).toBe(`50000.00`);
+    expect(val(g, `/form8995Line11`)).toBe(`17800.00`);
+    expect(val(g, `/form8995Line14`)).toBe(`3560.00`);
+    expect(val(g, `/form8995Line17`)).toBe(`3560.00`);
+    expect(val(g, `/qbiThresholdAmount`)).toBe(`403500.00`);
+    expect(val(g, `/flowKnockoutQbiAboveThreshold`)).toBe(`false`);
+  });
+
+  it(`section 162 rental net loss is line 18 and still stops on the Schedule E loss knockout`, ({ task }) => {
+    // 26 U.S.C. 199A(c)(2). 26 U.S.C. 469, 465, and 461(l) stay /flowKnockoutScheduleELoss.
+    task.meta.testedFactPaths = [
+      `/form8995Line2`,
+      `/form8995Line16`,
+      `/form8995Line17`,
+      `/form8995Line18`,
+      `/flowKnockoutScheduleELoss`,
+      `/flowKnockoutScheduleETradeOrBusinessQbi`,
+    ];
+    const g = fg({ ...noW2, ...scheduleE(rental(prop, 1000, 0, 6000), [prop], 1000, 0, 6000) });
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`-5000.00`);
+    expect(val(g, `/form8995Line2`)).toBe(`-5000.00`);
+    expect(val(g, `/form8995Line4`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line16`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line17`)).toBe(`0.00`);
+    expect(val(g, `/form8995Line18`)).toBe(`-5000.00`);
+    expect(val(g, `/flowKnockoutScheduleELoss`)).toBe(`true`);
+    expect(val(g, `/flowKnockoutScheduleETradeOrBusinessQbi`)).toBe(`false`);
+  });
+
+  it(`Schedule C plus a section 162 rental: line 2 58,467 and line 17 8,473`, ({ task }) => {
+    // Schedule C column (c) is still net of deductible self-employment tax. The rental row is not.
+    task.meta.testedFactPaths = [
+      `/form8995Line1iQbi`,
+      `/form8995Line1iiQbi`,
+      `/form8995Line2`,
+      `/form8995Line5`,
+      `/form8995Line11`,
+      `/form8995Line14`,
+      `/form8995Line17`,
+    ];
+    const g = fg({
+      ...noW2,
+      ...scheduleC(business(biz1, 60000, 10000), [biz1]),
+      ...scheduleE(rental(prop, 12000, 0, 0), [prop], 12000, 0, 0),
+    });
+    expect(val(g, `/deductibleSelfEmploymentTax`)).toBe(`3533.00`);
+    expect(val(g, `/agi`)).toBe(`58467.00`);
+    expect(val(g, `/form8995Line1iQbi`)).toBe(`46467.00`);
+    expect(g.get(`/form8995Line1iTin` as ConcretePath).complete).toBe(true);
+    expect(val(g, `/form8995Line1iiQbi`)).toBe(`12000.00`);
+    expect(val(g, `/form8995Line1iiTin`)).toBe(val(g, `/primaryFiler/tin`));
+    expect(val(g, `/form8995Line2`)).toBe(`58467.00`);
+    expect(val(g, `/form8995Line5`)).toBe(`11693.00`);
+    expect(val(g, `/form8995Line11`)).toBe(`42367.00`);
+    expect(val(g, `/form8995Line14`)).toBe(`8473.00`);
+    expect(val(g, `/form8995Line17`)).toBe(`8473.00`);
+    expect(val(g, `/flowKnockoutQbiMixedParticipation`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutScheduleCQbi`)).toBe(`false`);
+  });
+
+  it(`six rows stop the return; five Schedule C businesses plus no sixth rental do not`, ({ task }) => {
+    // 2026 Instructions for Form 8995 draft, PDF p. 5, line 2.
+    task.meta.testedFactPaths = [`/flowKnockoutForm8995MoreThanFiveBusinesses`];
+    const ids = [biz1, biz2, biz3, biz4, biz5];
+    const rows = Object.assign({}, ...ids.map((id) => business(id, 1000, 0)));
+    const fivePlusRental = fg({
+      ...noW2,
+      ...scheduleC(rows, ids),
+      ...scheduleE(rental(prop, 1000, 0, 0), [prop], 1000, 0, 0),
+    });
+    expect(val(fivePlusRental, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`true`);
+    const fourIds = ids.slice(0, 4);
+    const fourRows = Object.assign({}, ...fourIds.map((id) => business(id, 1000, 0)));
+    const fourPlusRental = fg({
+      ...noW2,
+      ...scheduleC(fourRows, fourIds),
+      ...scheduleE(rental(prop, 1000, 0, 0), [prop], 1000, 0, 0),
+    });
+    expect(val(fourPlusRental, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`false`);
+    const props = [prop, biz1, biz2, biz3, biz4, biz5];
+    const sixRentals = Object.assign(
+      {},
+      ...props.map((id, i) => rental(id, 1000, 0, 0, true, {
+        [`/scheduleEProperties/#${id}/propertyName`]: createStringWrapper(`Rental ${i}`),
+      }))
+    );
+    const sixE = fg({ ...noW2, ...scheduleE(sixRentals, props, 6000, 0, 0) });
+    expect(val(sixE, `/flowKnockoutForm8995MoreThanFiveBusinesses`)).toBe(`true`);
+  });
 });

@@ -19,6 +19,7 @@ import type { ConditionString } from '../../Condition.js';
 /**
  * Schedule E Part I MVP: rental real estate and royalties (#38, spec PR #8; TY2026, filed in 2027).
  * Part I supported: net income with no depreciation and no personal use.
+ * A section 162 rental is a Form 8995 line 1 row. Safe harbor, aggregation, and a suspended loss stay stops.
  * Part II supported: domestic partnership or S corporation, nonnegative box 1, material participation.
  * Nonfarm Form 1065 box 14 code A is Schedule SE line 2 (26 U.S.C. 1402(a)) except on a joint return.
  * Part III supported: domestic estate or trust, nonnegative box 6 only, material participation.
@@ -253,11 +254,81 @@ export const ScheduleEIncomeSubcategory = (
         <Boolean path='/scheduleERentalIsTradeOrBusiness' />
         <SaveAndOrContinueButton />
       </Screen>
+      <Screen route='schedule-e-properties' condition='/scheduleERentalIsTradeOrBusiness'>
+        <Heading i18nKey='/heading/income/schedule-e/properties' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/properties' />
+        <CollectionItemManager
+          path='/scheduleEProperties'
+          loopName='/scheduleEProperties'
+          donePath='/scheduleEPropertiesIsDone'
+        />
+      </Screen>
+      <CollectionLoop
+        loopName='/scheduleEProperties'
+        collection='/scheduleEProperties'
+        iconName='AttachMoney'
+        collectionItemCompletedCondition='/scheduleEProperties/*/isComplete'
+        donePath='/scheduleEPropertiesIsDone'
+      >
+        <SubSubcategory route='schedule-e-property'>
+          <Screen route='schedule-e-property-name'>
+            <Heading i18nKey='/heading/income/schedule-e/property-name' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/property-name' />
+            <LimitingString path='/scheduleEProperties/*/propertyName' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-property-amounts'>
+            <Heading i18nKey='/heading/income/schedule-e/property-amounts' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/property-amounts' />
+            <Dollar path='/scheduleEProperties/*/writableRents' />
+            <Dollar path='/scheduleEProperties/*/writableRoyalties' />
+            <Dollar path='/scheduleEProperties/*/writableExpenses' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-property-participation'>
+            <Heading i18nKey='/heading/income/schedule-e/property-participation' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/property-participation' />
+            <Boolean path='/scheduleEProperties/*/materiallyParticipates' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-property-safe-harbor'>
+            <Heading i18nKey='/heading/income/schedule-e/property-safe-harbor' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/property-safe-harbor' />
+            <Boolean path='/scheduleEProperties/*/reliesOnRp201938SafeHarbor' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-property-aggregation'>
+            <Heading i18nKey='/heading/income/schedule-e/property-aggregation' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/property-aggregation' />
+            <Boolean path='/scheduleEProperties/*/isAggregated' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-property-suspended'>
+            <Heading i18nKey='/heading/income/schedule-e/property-suspended' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/property-suspended' />
+            <Boolean path='/scheduleEProperties/*/hasSuspendedPassiveLoss' />
+            <SaveAndOrContinueButton />
+          </Screen>
+        </SubSubcategory>
+      </CollectionLoop>
+      <Screen route='schedule-e-qbi-carryforward' condition='/scheduleERentalIsTradeOrBusiness'>
+        <Heading i18nKey='/heading/income/schedule-e/qbi-carryforward' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/qbi-carryforward' />
+        <Boolean path='/qbiHasPriorYearLossCarryforward' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='schedule-e-qbi-cooperative' condition='/scheduleERentalIsTradeOrBusiness'>
+        <Heading i18nKey='/heading/income/schedule-e/qbi-cooperative' />
+        <InfoDisplay i18nKey='/info/income/schedule-e/qbi-cooperative' />
+        <Boolean path='/qbiIsCooperativePatron' />
+        <SaveAndOrContinueButton />
+      </Screen>
       {knockout(
         `schedule-e-trade-or-business-knockout`,
         `/flowKnockoutScheduleETradeOrBusinessQbi`,
         `schedule-e-trade-or-business`
       )}
+      {knockout(`schedule-e-qbi-limit-knockout`, `/scheduleEShowsQbiLimitKnockout`, `schedule-e-qbi-limit`)}
     </SubSubcategory>
     <SubSubcategory route='schedule-e-amounts'>
       <Screen route='schedule-e-amounts' condition='/hasScheduleEIncome'>

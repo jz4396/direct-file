@@ -5,6 +5,9 @@
   TY2026, filed in 2027.
 
   Part I supported case: every property has net income (no loss), no Form 4562, no IRC 280A personal use.
+  A Part I property the filer marks as a section 162 trade or business is a Form 8995 line 1 row
+  (scheduleE /scheduleEProperties). Rev. Proc. 2019-38 safe harbor, an aggregation, and a suspended
+  passive loss stay stops (/flowKnockoutScheduleETradeOrBusinessQbi).
   The K-1 question is asked of every filer (#232, #238), not only after a yes to Part I. A yes is not by
   itself a stop. Part II is computed only for the supported path below; every other K-1 situation is
   knocked out with BlockSubmissionOnTrue.
@@ -343,11 +346,755 @@
         (https://www.irs.gov/pub/irs-drop/rp-19-38.pdf) gives a
         safe harbor for a rental real estate enterprise with 250
         or more hours of rental services a year.
+        A yes is not itself a stop. Each property is entered on /scheduleEProperties and becomes a Form 8995
+        line 1 row (26 U.S.C. 199A(c)(1)). Relying on the Rev. Proc. 2019-38 safe harbor, aggregating the
+        property, having a loss suspended this year, or entering property amounts above the Part I totals
+        still stops the return (/flowKnockoutScheduleETradeOrBusinessQbi).
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties">
+      <Name>Schedule E Part I properties that are section 162 trades or businesses</Name>
+      <Description>
+        One row per Part I property the filer treats as a section 162 trade or business. 2026 Instructions
+        for Form 8995 draft (https://www.irs.gov/pub/irs-dft/i8995--dft.pdf, SHA-256 7fd77be32b9dfd5e), PDF
+        p. 3: "The ownership and rental of real property may constitute a trade or business if it meets the
+        standard described above." PDF p. 5, Line 1: each trade or business is a line 1 row. The aggregate
+        Part I totals (/scheduleEWritableRents, /scheduleEWritableRoyalties, /scheduleEWritableExpenses) stay
+        the Schedule E lines 3, 4, and 20 amounts. This collection is the qualified-business-income rows.
+        26 U.S.C. 199A(c)(3)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/199A): a qualified item has to
+        be included or allowed in determining taxable income. The sums of these rents, royalties, and expenses
+        cannot exceed those Part I totals, and the sum of line 1(c) cannot exceed Schedule E line 26
+        (/scheduleENetIncome). Exceeding either stops the return.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Collection />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEPropertiesIsDone">
+      <Name>Section 162 rental property list done</Name>
+      <Description>Filer finished the Schedule E Part I section 162 property loop.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/propertyName">
+      <Name>Section 162 rental property name (Form 8995 line 1 column (a))</Name>
+      <Description>
+        Form 8995 (2026) draft line 1 column (a): trade or business name. 2026 Instructions for Form 8995
+        draft, PDF p. 5, Line 1.
+      </Description>
+      <Writable>
+        <String />
+        <Limit type="Match">
+          <String><![CDATA[[\sA-Za-z0-9\-.,&']+]]></String>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/writableRents">
+      <Name>Rents received for this section 162 property</Name>
+      <Description>
+        This property's share of Schedule E line 3. Used only for Form 8995 line 1(c). The Schedule E
+        column A total remains /scheduleEWritableRents.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/writableRoyalties">
+      <Name>Royalties received for this section 162 property</Name>
+      <Description>
+        This property's share of Schedule E line 4. Used only for Form 8995 line 1(c). The Schedule E
+        column A total remains /scheduleEWritableRoyalties.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/writableExpenses">
+      <Name>Expenses for this section 162 property</Name>
+      <Description>
+        This property's share of Schedule E line 20, excluding depreciation. Used only for Form 8995
+        line 1(c). The Schedule E column A total remains /scheduleEWritableExpenses. 26 U.S.C. 212.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/netIncomeOrLoss">
+      <Name>Section 162 property net income or (loss)</Name>
+      <Description>
+        Rents plus royalties minus expenses, rounded to the dollar (26 U.S.C. 6102(a)). Form 8995 line 1(c)
+        for this property. 2026 Instructions for Form 8995 draft, PDF p. 5: "Enter on line 1(c) the net QBI
+        or (loss)". 26 U.S.C. 1402(a)(1) excludes real-estate rentals from net earnings from self-employment,
+        so this amount is not reduced by the deductible part of self-employment tax. Treas. Reg.
+        1.199A-3(b)(1)(vi) reduces QBI only by self-employment tax attributable to that trade. Incomplete
+        until rents, royalties, and expenses are all entered.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../writableRents" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../writableRoyalties" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../writableExpenses" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Round>
+                <Subtract>
+                  <Minuend>
+                    <Add>
+                      <Dependency path="../writableRents" />
+                      <Dependency path="../writableRoyalties" />
+                    </Add>
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency path="../writableExpenses" />
+                  </Subtrahends>
+                </Subtract>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/materiallyParticipates">
+      <Name>Filer materially participates in this rental</Name>
+      <Description>
+        26 U.S.C. 199A(i)(2)(B): an active qualified trade or business is one "in which the taxpayer
+        materially participates (within the meaning of section 469(h))." 26 U.S.C. 469(h)(1). Used for
+        Form 8995 line 16. Material participation is not required for the rest of the section 199A
+        deduction. 2026 Instructions for Form 8995 draft, PDF p. 3: "Material participation under section
+        469 isn't required to qualify for the QBI deduction, unless a taxpayer is taking the minimum
+        deduction for active qualified business income."
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/doesNotMateriallyParticipate">
+      <Name>Filer does not materially participate in this rental</Name>
+      <Derived>
+        <Not>
+          <Dependency path="../materiallyParticipates" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/reliesOnRp201938SafeHarbor">
+      <Name>Property relies on the Rev. Proc. 2019-38 safe harbor</Name>
+      <Description>
+        2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If you're relying on the safe harbor
+        contained in Rev. Proc. 2019-38, enter each enterprise as identified on the statement required for
+        use on the safe harbor." This package does not attach that statement. Yes stops the return.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/isAggregated">
+      <Name>Property is part of an aggregated trade or business</Name>
+      <Description>
+        2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If you aggregated multiple trades or
+        businesses into a single business, enter the aggregation group name ... and leave line 1(b) blank."
+        "If you aggregated trades or businesses, you must attach Schedule B (Form 8995-A) or similar
+        schedule." This package does not attach that schedule. Yes stops the return.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/hasSuspendedPassiveLoss">
+      <Name>Property has a loss suspended this year</Name>
+      <Description>
+        2026 Instructions for Form 8995 draft, PDF p. 4: "Losses or deductions from a qualified trade or
+        business that are suspended by other provisions of the Internal Revenue Code are not qualified
+        losses or deductions and, therefore, are not included in your QBI for the year." PDF p. 5, line
+        1(c): "Do not include here any losses or deductions suspended from use in calculating taxable
+        income in the current year". Yes stops the return. A net loss that is not suspended is still
+        line 1(c); /flowKnockoutScheduleELoss stays a separate stop for Form 8582, Form 6198, and Form 461.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEProperties/*/isComplete">
+      <Name>Section 162 rental property interview complete</Name>
+      <Description>Every question for this property has an answer.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../propertyName" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableRents" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableRoyalties" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableExpenses" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../materiallyParticipates" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../reliesOnRp201938SafeHarbor" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../isAggregated" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasSuspendedPassiveLoss" />
+          </IsComplete>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleETradeOrBusinessAnsweredYes">
+      <Name>Part I rental is a section 162 trade or business, answered yes</Name>
+      <Description>
+        Complete true only when /hasScheduleEIncome and /scheduleERentalIsTradeOrBusiness are both
+        complete and true. Complete false when either is unanswered, when there is no Part I income, or
+        when the answer is no. Never incomplete, so an open rental question does not make Form 8995 line 2
+        incomplete on a Schedule C return.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/hasScheduleEIncome" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+          </IsComplete>
+          <Dependency path="/hasScheduleEIncome" />
+          <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleETradeOrBusinessCount">
+      <Name>Count of section 162 rental properties</Name>
+      <Description>
+        Collection size of /scheduleEProperties when that list is complete, otherwise 0. An unfinished
+        list stays 0 so /flowKnockoutForm8995MoreThanFiveBusinesses stays complete false until the size
+        is known.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleEProperties" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency path="/scheduleEProperties" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleETradeOrBusinessReady">
+      <Name>Section 162 rental property list is finished</Name>
+      <Description>
+        Complete true when /scheduleEProperties is a complete list, /scheduleEPropertiesIsDone is true,
+        and every property's /isComplete is true. Complete false when the list is unset, not marked done,
+        or a property is still open. An empty finished list is ready; the knockout then stays incomplete
+        until a property is added.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEProperties" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEPropertiesIsDone" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEPropertiesIsDone" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleEProperties/*/isComplete" />
+                  </Count>
+                </Left>
+                <Right>
+                  <CollectionSize>
+                    <Dependency path="/scheduleEProperties" />
+                  </CollectionSize>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleETradeOrBusinessQbi">
+      <Name>Qualified business income or (loss) from section 162 rentals</Name>
+      <Description>
+        Sum of /scheduleEProperties/*/netIncomeOrLoss, rounded to the dollar (26 U.S.C. 6102(a)). $0 when
+        the filer did not answer yes. Incomplete when the answer is yes and the property list is not a
+        finished list of at least one property, so line 2 is not filed as zero. Not reduced by
+        self-employment tax. Cites on /scheduleEProperties/*/netIncomeOrLoss.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleETradeOrBusinessAnsweredYes" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleETradeOrBusinessReady" />
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleETradeOrBusinessCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </All>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleEProperties/*/netIncomeOrLoss" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEActiveProperties">
+      <Name>Section 162 rentals with material participation</Name>
+      <Derived>
+        <Filter path="/scheduleEProperties">
+          <Dependency path="materiallyParticipates" />
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleENonActiveProperties">
+      <Name>Section 162 rentals without material participation</Name>
+      <Derived>
+        <Filter path="/scheduleEProperties">
+          <Dependency path="doesNotMateriallyParticipate" />
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEActiveTradeOrBusinessCount">
+      <Name>Count of section 162 rentals with material participation</Name>
+      <Description>
+        0 when /scheduleEProperties is unset or empty. Otherwise the size of /scheduleEActiveProperties.
+        Incomplete while a listed property has not answered material participation.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/scheduleEProperties" />
+                  </IsComplete>
+                  <GreaterThan>
+                    <Left>
+                      <CollectionSize>
+                        <Dependency path="/scheduleEProperties" />
+                      </CollectionSize>
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                </All>
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency path="/scheduleEActiveProperties" />
+              </CollectionSize>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleENonActiveTradeOrBusinessCount">
+      <Name>Count of section 162 rentals without material participation</Name>
+      <Description>
+        0 when /scheduleEProperties is unset or empty. Otherwise the size of /scheduleENonActiveProperties.
+        Incomplete while a listed property has not answered material participation.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/scheduleEProperties" />
+                  </IsComplete>
+                  <GreaterThan>
+                    <Left>
+                      <CollectionSize>
+                        <Dependency path="/scheduleEProperties" />
+                      </CollectionSize>
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                </All>
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency path="/scheduleENonActiveProperties" />
+              </CollectionSize>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEAnyRp201938SafeHarbor">
+      <Name>A section 162 rental relies on Rev. Proc. 2019-38</Name>
+      <Description>
+        Complete false when the property list is unset or empty. True when any property answers yes on
+        /scheduleEProperties/*/reliesOnRp201938SafeHarbor. Incomplete while a listed property has not
+        answered.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/scheduleEProperties" />
+                  </IsComplete>
+                  <GreaterThan>
+                    <Left>
+                      <CollectionSize>
+                        <Dependency path="/scheduleEProperties" />
+                      </CollectionSize>
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                </All>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Filter path="/scheduleEProperties">
+                      <Dependency path="reliesOnRp201938SafeHarbor" />
+                    </Filter>
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <CollectionSize>
+                  <Filter path="/scheduleEProperties">
+                    <Dependency path="reliesOnRp201938SafeHarbor" />
+                  </Filter>
+                </CollectionSize>
+              </IsComplete>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEAggregatesQbi">
+      <Name>A section 162 rental is aggregated</Name>
+      <Description>
+        Complete false when the property list is unset or empty. True when any property answers yes on
+        /scheduleEProperties/*/isAggregated. Incomplete while a listed property has not answered. Cites
+        on that fact.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/scheduleEProperties" />
+                  </IsComplete>
+                  <GreaterThan>
+                    <Left>
+                      <CollectionSize>
+                        <Dependency path="/scheduleEProperties" />
+                      </CollectionSize>
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                </All>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Filter path="/scheduleEProperties">
+                      <Dependency path="isAggregated" />
+                    </Filter>
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <CollectionSize>
+                  <Filter path="/scheduleEProperties">
+                    <Dependency path="isAggregated" />
+                  </Filter>
+                </CollectionSize>
+              </IsComplete>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEHasSuspendedPassiveLoss">
+      <Name>A section 162 rental has a suspended loss this year</Name>
+      <Description>
+        Complete false when the property list is unset or empty. True when any property answers yes on
+        /scheduleEProperties/*/hasSuspendedPassiveLoss. Incomplete while a listed property has not
+        answered. Cites on that fact.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <All>
+                  <IsComplete>
+                    <Dependency path="/scheduleEProperties" />
+                  </IsComplete>
+                  <GreaterThan>
+                    <Left>
+                      <CollectionSize>
+                        <Dependency path="/scheduleEProperties" />
+                      </CollectionSize>
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                </All>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Filter path="/scheduleEProperties">
+                      <Dependency path="hasSuspendedPassiveLoss" />
+                    </Filter>
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <CollectionSize>
+                  <Filter path="/scheduleEProperties">
+                    <Dependency path="hasSuspendedPassiveLoss" />
+                  </Filter>
+                </CollectionSize>
+              </IsComplete>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleETradeOrBusinessStops">
+      <Name>Section 162 rental uses a stop that Form 8995 here cannot file</Name>
+      <Description>
+        True when any property relies on Rev. Proc. 2019-38, is aggregated, or has a suspended loss.
+        Incomplete while one of those answers is open on a listed property.
+      </Description>
+      <Derived>
+        <Any>
+          <Dependency path="/scheduleEAnyRp201938SafeHarbor" />
+          <Dependency path="/scheduleEAggregatesQbi" />
+          <Dependency path="/scheduleEHasSuspendedPassiveLoss" />
+        </Any>
+      </Derived>
     </Fact>
 
     <Fact path="/scheduleENetIncome">
@@ -3816,27 +4563,341 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutScheduleETradeOrBusinessQbi">
-      <Name>Knockout: Schedule E rental treated as a trade or business (QBI not computed)</Name>
+    <Fact path="/scheduleETradeOrBusinessAmountsExceedPartI">
+      <Name>Section 162 property amounts exceed Schedule E Part I</Name>
       <Description>
-        #185: a trade-or-business rental needs the 26 U.S.C. 199A deduction on Form 1040 (2026) draft line
-        13b,
-        "Qualified business income deduction from Form 8995 or Form 8995-A" (PDF p. 3). Line 13b
-        (taxCalculations
-        /qualifiedBusinessIncomeDeduction) is not computed yet, so a "yes" is stopped instead of filing
-        line 13b as $0.
-        Cites on /scheduleERentalIsTradeOrBusiness. Complete false when there is no Part I income
-        (/hasScheduleEIncome
-        false) or the answer is "no"; incomplete while a filer with Part I income has not answered,
-        and
-        /scheduleESectionIsComplete requires the answer.
+        26 U.S.C. 199A(c)(1) and (c)(3)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/199A): qualified
+        items are included or allowed in determining taxable income for the year. Form 8995 line 1(c) is
+        this property's net qualified business income. The sums of /scheduleEProperties rents, royalties,
+        and expenses cannot exceed Schedule E lines 3, 4, and 20 (/scheduleEWritableRents,
+        /scheduleEWritableRoyalties, /scheduleEWritableExpenses). The sum of line 1(c)
+        (/scheduleETradeOrBusinessQbi) cannot exceed Schedule E line 26 (/scheduleENetIncome). Complete
+        false when the list is not ready or nothing exceeds. Incomplete while a Part I total is still open,
+        so the return is not filed as if the excess were included in taxable income.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleETradeOrBusinessReady" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleETradeOrBusinessCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRents" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRoyalties" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableExpenses" />
+                </IsComplete>
+                <Any>
+                  <GreaterThan>
+                    <Left>
+                      <Round>
+                        <CollectionSum>
+                          <Dependency path="/scheduleEProperties/*/writableRents" />
+                        </CollectionSum>
+                      </Round>
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleEWritableRents" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Round>
+                        <CollectionSum>
+                          <Dependency path="/scheduleEProperties/*/writableRoyalties" />
+                        </CollectionSum>
+                      </Round>
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleEWritableRoyalties" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Round>
+                        <CollectionSum>
+                          <Dependency path="/scheduleEProperties/*/writableExpenses" />
+                        </CollectionSum>
+                      </Round>
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleEWritableExpenses" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="/scheduleETradeOrBusinessQbi" />
+                    </Left>
+                    <Right>
+                      <Dependency path="/scheduleENetIncome" />
+                    </Right>
+                  </GreaterThan>
+                </Any>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRents" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableRoyalties" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEWritableExpenses" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleETradeOrBusinessQbi" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleENetIncome" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleETradeOrBusinessQbi">
+      <Name>Knockout: section 162 rental is not a supported Form 8995 row</Name>
+      <Description>
+        A section 162 rental is Form 8995 line 1 (26 U.S.C. 199A(c)(1)) and Form 1040 (2026) draft line 13b.
+        This stays true when the filer relies on the Rev. Proc. 2019-38 safe harbor (the required statement
+        is not attached), aggregates the rental (Schedule B (Form 8995-A) is not attached), has a loss
+        suspended this year (2026 Instructions for Form 8995 draft, PDF p. 4 and line 1(c)), or the property
+        sums exceed the Schedule E Part I totals (26 U.S.C. 199A(c)(3)(A)(ii)). Cites on
+        /scheduleEAnyRp201938SafeHarbor, /scheduleEAggregatesQbi, /scheduleEHasSuspendedPassiveLoss, and
+        /scheduleETradeOrBusinessAmountsExceedPartI.
+        Complete false when there is no Part I income or the answer is no. Incomplete while the question
+        is unanswered, while a yes has no finished property, while a stop answer is open, or while a Part I
+        total is still open.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleEIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleETradeOrBusinessReady" />
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleETradeOrBusinessCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <Any>
+                  <Dependency path="/scheduleETradeOrBusinessStops" />
+                  <Dependency path="/scheduleETradeOrBusinessAmountsExceedPartI" />
+                </Any>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleETradeOrBusinessReady" />
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleETradeOrBusinessCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/scheduleETradeOrBusinessStops" />
+                </Not>
+                <Not>
+                  <Dependency path="/scheduleETradeOrBusinessAmountsExceedPartI" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleETradeOrBusinessResolved">
+      <Name>Section 162 rental question is resolved for the Schedule E section</Name>
+      <Description>
+        Complete true when there is no Part I income, the answer is no, or the property list is finished
+        and the safe-harbor knockout plus the carryforward and cooperative questions are complete.
+        Complete false otherwise, including a yes with no finished property. Never incomplete, so
+        /scheduleESectionIsComplete stays complete false rather than incomplete.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleEIncome" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleETradeOrBusinessReady" />
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleETradeOrBusinessCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <IsComplete>
+                  <Dependency path="/flowKnockoutScheduleETradeOrBusinessQbi" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency module="form8995" path="/qbiHasPriorYearLossCarryforward" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency module="form8995" path="/qbiIsCooperativePatron" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEShowsQbiLimitKnockout">
+      <Name>Show the Form 8995 limit screen for a section 162 rental</Name>
+      <Description>
+        Screen condition only. Not BlockSubmissionOnTrue: the stops themselves are already in
+        /flowIsKnockedOut. True when the filer answered yes and taxable income is above the Form 8995
+        threshold, a prior-year loss carryforward applies, the filer is a cooperative patron, material
+        participation is mixed, or Schedule C businesses plus these properties exceed five.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
         <All>
-          <Dependency path="/hasScheduleEIncome" />
-          <Dependency path="/scheduleERentalIsTradeOrBusiness" />
+          <Dependency path="/scheduleETradeOrBusinessAnsweredYes" />
+          <Any>
+            <Dependency module="form8995" path="/flowKnockoutQbiAboveThreshold" />
+            <Dependency module="form8995" path="/flowKnockoutQbiPriorYearCarryforward" />
+            <Dependency module="form8995" path="/flowKnockoutQbiCooperativePatron" />
+            <Dependency module="form8995" path="/flowKnockoutQbiMixedParticipation" />
+            <Dependency module="form8995" path="/flowKnockoutForm8995MoreThanFiveBusinesses" />
+          </Any>
         </All>
       </Derived>
     </Fact>
@@ -3884,7 +4945,9 @@
         is complete or an out-of-scope
         knockout is true (/scheduleEPartIIResolved). If the filer has Part I
         income, every amount and screener is
-        answered too. IsComplete of an unanswered question is false, so
+        answered too. A yes on /scheduleERentalIsTradeOrBusiness also needs a finished property list and
+        the Form 8995 carryforward and cooperative answers (/scheduleETradeOrBusinessResolved).
+        IsComplete of an unanswered question is false, so
         an otherwise finished interview stays incomplete
         until both questions are answered.
       </Description>
@@ -3928,6 +4991,7 @@
                 <IsComplete>
                   <Dependency path="/scheduleERentalIsTradeOrBusiness" />
                 </IsComplete>
+                <Dependency path="/scheduleETradeOrBusinessResolved" />
               </All>
             </Then>
           </Case>

@@ -13,15 +13,21 @@
   - Form 1040 (2026) draft, Created 8/19/26, (irs.gov/pub/irs-dft, file f1040 draft; full URL in /form8995Line17) (e044e765ace334c7), PDF p. 3,
     line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A".
 
-  Supported slice: qualified business income from Schedule C. Column (c) reduces each business by its owner's
-  share of deductible self-employment tax (Treas. Reg. 1.199A-3(b)(1)(vi)). A secondary-filer business still stops
-  submission (scheduleC /flowKnockoutScheduleCSpouseBusiness). More than five businesses stops the print
+  Supported slice: qualified business income from Schedule C, and from a Schedule E Part I property the filer
+  marks as a section 162 trade or business (scheduleE /scheduleEProperties). Schedule C column (c) reduces each
+  business by its owner's share of deductible self-employment tax (Treas. Reg. 1.199A-3(b)(1)(vi)). A rental row
+  is not reduced: 26 U.S.C. 1402(a)(1) excludes real-estate rentals from net earnings from self-employment.
+  Column (b) on a rental row is the filer's SSN or ITIN, and is blank only when the rental is aggregated.
+  A secondary-filer business still stops
+  submission (scheduleC /flowKnockoutScheduleCSpouseBusiness). More than five trades or businesses, counting
+  Schedule C and these rentals together, stops the print
   (/flowKnockoutForm8995MoreThanFiveBusinesses): the instructions require a statement this package does not attach.
   Taxable income before the deduction at or below
   the threshold, no prior-year loss carryforward, not a cooperative patron. Every other source of 199A income stays a
   stop with BlockSubmissionOnTrue: 1099-DIV box 5 (dividends /flowKnockoutSection199ADividends), a PTP
   (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp) and a K-1 section 199A statement
-  (scheduleE /flowKnockoutScheduleEPartIIQbiCode), Schedule E trade-or-business rentals
+  (scheduleE /flowKnockoutScheduleEPartIIQbiCode). A Rev. Proc. 2019-38 safe harbor, an aggregation, a
+  suspended passive loss, or section 162 amounts above the Schedule E Part I totals stay a stop
   (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). So lines 6-9 are $0 here.
 
   Each line is rounded to whole dollars as it is computed (26 U.S.C. 6102(a); #202).
@@ -64,7 +70,7 @@
       </Writable>
     </Fact>
 
-    <Fact path="/form8995HasQbi">
+    <Fact path="/form8995HasScheduleCQbi">
       <Name>Return has Schedule C qualified business income or loss</Name>
       <Description>
         Schedule C net profit or loss is qualified business income or loss: 26 U.S.C. 199A(c)(1), (c)(3).
@@ -107,6 +113,23 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995HasQbi">
+      <Name>Return has qualified business income or loss on Form 8995</Name>
+      <Description>
+        True when /form8995HasScheduleCQbi is true or the filer answered yes to a section 162 Schedule E
+        rental (/scheduleETradeOrBusinessAnsweredYes). 26 U.S.C. 199A(c)(1). An unanswered rental question
+        is complete false on that fact, so a Schedule C return does not go incomplete because Schedule E
+        has not been reached.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Dependency path="/form8995HasScheduleCQbi" />
+          <Dependency module="scheduleE" path="/scheduleETradeOrBusinessAnsweredYes" />
+        </Any>
       </Derived>
     </Fact>
 
@@ -217,15 +240,35 @@
         Each line 1 column (c) subtracts only that owner's share
         (/primaryFilerDeductibleSelfEmploymentTax or /secondaryFilerDeductibleSelfEmploymentTax), so the rows
         still add to line 2.
+        A section 162 rental's line 1(c) is scheduleE /scheduleETradeOrBusinessQbi and is not reduced by
+        self-employment tax (26 U.S.C. 1402(a)(1)). Line 2 adds that amount to the Schedule C component.
         When Schedule SE line 2 also includes Form 1065 box 14 code A, the deductible part has to be split
         between the Schedule C trade and the partnership. That split is not computed, so the return stops
-        (/flowKnockoutScheduleCQbiAndK1Box14CodeA). Schedule 1 lines 16 and 17 are not part of this return.
+        (/flowKnockoutScheduleCQbiAndK1Box14CodeA). A rental alone does not fire that stop. Schedule 1
+        lines 16 and 17 are not part of this return.
+      </Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/form8995ScheduleCComponent" />
+            <Dependency module="scheduleE" path="/scheduleETradeOrBusinessQbi" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleCComponent">
+      <Name>Schedule C qualified business income net of deductible self-employment tax</Name>
+      <Description>
+        scheduleC /scheduleCNetProfitOrLoss minus scheduleSE /deductibleSelfEmploymentTax, rounded to the
+        dollar, when /form8995HasScheduleCQbi is true. $0 otherwise, so a rental-only return does not
+        subtract self-employment tax. Treas. Reg. 1.199A-3(b)(1)(vi).
       </Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <Dependency path="/form8995HasQbi" />
+              <Dependency path="/form8995HasScheduleCQbi" />
             </When>
             <Then>
               <Round>
@@ -468,10 +511,10 @@
       <Description>
         26 U.S.C. 199A(i)(2)(A): "aggregate qualified business income with respect to all active qualified
         trades or
-        businesses". When every business is active this is line 2; when none is, $0. A return with both active
-        and
-        non-active businesses would need the self-employment tax deduction apportioned per business, so it is a stop
-        (/flowKnockoutQbiMixedParticipation) and this value is not used.
+        businesses". When every business and section 162 rental is active this is line 2; when any is not,
+        $0. A return with both active and non-active trades stops
+        (/flowKnockoutQbiMixedParticipation) and this value is not used. Schedule C and Schedule E are
+        counted together (/form8995NonActiveCount).
       </Description>
       <Derived>
         <Switch>
@@ -489,9 +532,7 @@
             <When>
               <GreaterThan>
                 <Left>
-                  <CollectionSize>
-                    <Dependency module="scheduleC" path="/scheduleCNonActiveBusinesses" />
-                  </CollectionSize>
+                  <Dependency path="/form8995NonActiveCount" />
                 </Left>
                 <Right>
                   <Int>0</Int>
@@ -504,7 +545,9 @@
           </Case>
           <Case>
             <When>
-              <True />
+              <IsComplete>
+                <Dependency path="/form8995NonActiveCount" />
+              </IsComplete>
             </When>
             <Then>
               <Dependency path="/form8995Line2" />
@@ -3476,29 +3519,290 @@
       </Derived>
     </Fact>
 
-    <Fact path="/form8995Line1iName">
-      <Name>Form 8995 line 1(i) column (a)</Name>
+    <Fact path="/form8995ScheduleCCount">
+      <Name>Count of Schedule C businesses on Form 8995</Name>
       <Description>
-        Form 8995 (2026) draft line 1(i) column (a): trade, business, or aggregation name. The Schedule C
-        business name. Incomplete when this row has no business, so the PDF field stays blank.
+        Collection size of /scheduleCBusinesses when that list is complete, otherwise 0.
       </Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-                <GreaterThan>
-                  <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
-                  </Left>
-                  <Right>
-                    <Int>0</Int>
-                  </Right>
-                </GreaterThan>
+              <IsComplete>
+                <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleCActiveCount">
+      <Name>Count of active Schedule C businesses</Name>
+      <Description>
+        Size of /scheduleCActiveBusinesses when the business list is complete. 0 when the list is not
+        complete. Incomplete while a listed business has not answered material participation.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency module="scheduleC" path="/scheduleCActiveBusinesses" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleCNonActiveCount">
+      <Name>Count of non-active Schedule C businesses</Name>
+      <Description>
+        Size of /scheduleCNonActiveBusinesses when the business list is complete. 0 when the list is not
+        complete. Incomplete while a listed business has not answered material participation.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency module="scheduleC" path="/scheduleCBusinesses" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency module="scheduleC" path="/scheduleCNonActiveBusinesses" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleECount">
+      <Name>Count of section 162 rentals on Form 8995</Name>
+      <Description>scheduleE /scheduleETradeOrBusinessCount.</Description>
+      <Derived>
+        <Dependency module="scheduleE" path="/scheduleETradeOrBusinessCount" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ActiveCount">
+      <Name>Count of active trades or businesses on Form 8995</Name>
+      <Description>
+        Schedule C businesses with material participation plus section 162 rentals with material
+        participation. 26 U.S.C. 199A(i)(2)(B), 469(h).
+      </Description>
+      <Derived>
+        <Add>
+          <Dependency path="/form8995ScheduleCActiveCount" />
+          <Dependency module="scheduleE" path="/scheduleEActiveTradeOrBusinessCount" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995NonActiveCount">
+      <Name>Count of non-active trades or businesses on Form 8995</Name>
+      <Description>
+        Schedule C businesses without material participation plus section 162 rentals without material
+        participation. Incomplete while either list has an unanswered material-participation question.
+      </Description>
+      <Derived>
+        <Add>
+          <Dependency path="/form8995ScheduleCNonActiveCount" />
+          <Dependency module="scheduleE" path="/scheduleENonActiveTradeOrBusinessCount" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleERow0">
+      <Name>Form 8995 line 1 Schedule E property at row index 0</Name>
+      <Description>
+        /scheduleEProperties at index 0 minus /form8995ScheduleCCount. Schedule C occupies the earlier
+        rows. Out of range is incomplete.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEProperties" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>0</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/form8995ScheduleCCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleERow1">
+      <Name>Form 8995 line 1 Schedule E property at row index 1</Name>
+      <Description>Same as /form8995ScheduleERow0 at index 1.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEProperties" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>1</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/form8995ScheduleCCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleERow2">
+      <Name>Form 8995 line 1 Schedule E property at row index 2</Name>
+      <Description>Same as /form8995ScheduleERow0 at index 2.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEProperties" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>2</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/form8995ScheduleCCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleERow3">
+      <Name>Form 8995 line 1 Schedule E property at row index 3</Name>
+      <Description>Same as /form8995ScheduleERow0 at index 3.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEProperties" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>3</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/form8995ScheduleCCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995ScheduleERow4">
+      <Name>Form 8995 line 1 Schedule E property at row index 4</Name>
+      <Description>Same as /form8995ScheduleERow0 at index 4.</Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEProperties" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>4</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/form8995ScheduleCCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995Line1iName">
+      <Name>Form 8995 line 1(i) column (a)</Name>
+      <Description>
+        Form 8995 (2026) draft line 1(i) column (a): trade, business, or aggregation name. Schedule C
+        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        row has no trade or business, so the PDF field stays blank.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/form8995ScheduleCCount" />
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
             </When>
             <Then>
               <Dependency path="/form8995Business0/businessName" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow0/propertyName" />
             </Then>
           </Case>
         </Switch>
@@ -3510,25 +3814,50 @@
         Form 8995 (2026) draft line 1(i) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
           <Case>
             <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/form8995ScheduleCCount" />
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995Business0/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
                   </Left>
                   <Right>
                     <Int>0</Int>
                   </Right>
                 </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow0/isAggregated" />
+                </Not>
+              </All>
             </When>
             <Then>
-              <Dependency path="/form8995Business0/filer/tin" />
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -3539,23 +3868,23 @@
       <Description>
         Form 8995 (2026) draft line 1(i) column (c): qualified business income or (loss). 2026 Instructions
         for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
-        self-employment tax". This row's Schedule C net profit or loss minus /form8995Business0SeShare. Across the
-        rows that exist, column (c) sums to line 2.
+        self-employment tax". A Schedule C row is that business's net profit or loss minus
+        /form8995Business0SeShare. A section 162 rental row is the property's net income or loss and is not
+        reduced by self-employment tax (26 U.S.C. 1402(a)(1)). Across the rows that exist, column (c) sums
+        to line 2.
       </Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-                <GreaterThan>
-                  <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
-                  </Left>
-                  <Right>
-                    <Int>0</Int>
-                  </Right>
-                </GreaterThan>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/form8995ScheduleCCount" />
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
             </When>
             <Then>
               <Subtract>
@@ -3568,14 +3897,33 @@
               </Subtract>
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow0/netIncomeOrLoss" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/form8995Line1iiName">
       <Name>Form 8995 line 1(ii) column (a)</Name>
       <Description>
-        Form 8995 (2026) draft line 1(ii) column (a): trade, business, or aggregation name. The Schedule C
-        business name. Incomplete when this row has no business, so the PDF field stays blank.
+        Form 8995 (2026) draft line 1(ii) column (a): trade, business, or aggregation name. Schedule C
+        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
         <Switch>
@@ -3583,9 +3931,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>1</Int>
@@ -3594,6 +3940,24 @@
             </When>
             <Then>
               <Dependency path="/form8995Business1/businessName" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow1/propertyName" />
             </Then>
           </Case>
         </Switch>
@@ -3605,7 +3969,11 @@
         Form 8995 (2026) draft line 1(ii) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -3613,9 +3981,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>1</Int>
@@ -3624,6 +3990,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business1/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>1</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow1/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -3643,9 +4032,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>1</Int>
@@ -3663,14 +4050,33 @@
               </Subtract>
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow1/netIncomeOrLoss" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/form8995Line1iiiName">
       <Name>Form 8995 line 1(iii) column (a)</Name>
       <Description>
-        Form 8995 (2026) draft line 1(iii) column (a): trade, business, or aggregation name. The Schedule C
-        business name. Incomplete when this row has no business, so the PDF field stays blank.
+        Form 8995 (2026) draft line 1(iii) column (a): trade, business, or aggregation name. Schedule C
+        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
         <Switch>
@@ -3678,9 +4084,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>2</Int>
@@ -3689,6 +4093,24 @@
             </When>
             <Then>
               <Dependency path="/form8995Business2/businessName" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow2/propertyName" />
             </Then>
           </Case>
         </Switch>
@@ -3700,7 +4122,11 @@
         Form 8995 (2026) draft line 1(iii) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -3708,9 +4134,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>2</Int>
@@ -3719,6 +4143,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business2/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>2</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow2/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -3738,9 +4185,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>2</Int>
@@ -3758,14 +4203,33 @@
               </Subtract>
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow2/netIncomeOrLoss" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/form8995Line1ivName">
       <Name>Form 8995 line 1(iv) column (a)</Name>
       <Description>
-        Form 8995 (2026) draft line 1(iv) column (a): trade, business, or aggregation name. The Schedule C
-        business name. Incomplete when this row has no business, so the PDF field stays blank.
+        Form 8995 (2026) draft line 1(iv) column (a): trade, business, or aggregation name. Schedule C
+        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
         <Switch>
@@ -3773,9 +4237,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>3</Int>
@@ -3784,6 +4246,24 @@
             </When>
             <Then>
               <Dependency path="/form8995Business3/businessName" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>3</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow3/propertyName" />
             </Then>
           </Case>
         </Switch>
@@ -3795,7 +4275,11 @@
         Form 8995 (2026) draft line 1(iv) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -3803,9 +4287,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>3</Int>
@@ -3814,6 +4296,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business3/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>3</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow3/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -3833,9 +4338,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>3</Int>
@@ -3853,14 +4356,33 @@
               </Subtract>
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>3</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow3/netIncomeOrLoss" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/form8995Line1vName">
       <Name>Form 8995 line 1(v) column (a)</Name>
       <Description>
-        Form 8995 (2026) draft line 1(v) column (a): trade, business, or aggregation name. The Schedule C
-        business name. Incomplete when this row has no business, so the PDF field stays blank.
+        Form 8995 (2026) draft line 1(v) column (a): trade, business, or aggregation name. Schedule C
+        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
         <Switch>
@@ -3868,9 +4390,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>4</Int>
@@ -3879,6 +4399,24 @@
             </When>
             <Then>
               <Dependency path="/form8995Business4/businessName" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow4/propertyName" />
             </Then>
           </Case>
         </Switch>
@@ -3890,7 +4428,11 @@
         Form 8995 (2026) draft line 1(v) column (b). 2026 Instructions for Form 8995 draft, Specific
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
-        Schedule C does not collect an EIN, so this is the owner's TIN.
+        Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
+        you aggregated multiple trades or businesses into a single business, enter the aggregation group name
+        ... and leave line 1(b) blank."
       </Description>
       <Derived>
         <Switch>
@@ -3898,9 +4440,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>4</Int>
@@ -3909,6 +4449,29 @@
             </When>
             <Then>
               <Dependency path="/form8995Business4/filer/tin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Add>
+                      <Dependency path="/form8995ScheduleCCount" />
+                      <Dependency path="/form8995ScheduleECount" />
+                    </Add>
+                  </Left>
+                  <Right>
+                    <Int>4</Int>
+                  </Right>
+                </GreaterThan>
+                <Not>
+                  <Dependency path="/form8995ScheduleERow4/isAggregated" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/primaryFiler/tin" />
             </Then>
           </Case>
         </Switch>
@@ -3928,9 +4491,7 @@
             <When>
                 <GreaterThan>
                   <Left>
-                    <CollectionSize>
-                      <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                    </CollectionSize>
+                    <Dependency path="/form8995ScheduleCCount" />
                   </Left>
                   <Right>
                     <Int>4</Int>
@@ -3946,6 +4507,24 @@
                   <Dependency path="/form8995Business4SeShare" />
                 </Subtrahends>
               </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995ScheduleERow4/netIncomeOrLoss" />
             </Then>
           </Case>
         </Switch>
@@ -4003,8 +4582,8 @@
 
     <Fact path="/form8995Required">
       <Name>Form 8995 is filed</Name>
-      <Description>The return has Schedule C qualified business income or loss (a loss still files Form 8995 to report
-        the line 18 carryforward).</Description>
+      <Description>The return has Schedule C qualified business income or loss, or a section 162 Schedule E
+        rental (a loss still files Form 8995 to report the line 18 carryforward).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Dependency path="/form8995HasQbi" />
@@ -4027,7 +4606,7 @@
       <Export downstreamFacts="true" />
       <Derived>
         <All>
-          <Dependency path="/form8995HasQbi" />
+          <Dependency path="/form8995HasScheduleCQbi" />
           <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
           <Dependency module="scheduleE" path="/scheduleEK1HasNonzeroBox14CodeA" />
         </All>
@@ -4046,8 +4625,8 @@
         to the next year." The 2026 draft Form 8995 is the print template (pdf/2026/IRS8995, #17), so the package can
         include it, including in a loss year (26 U.S.C. 199A(c)(2)). There is still no MeF mapping, so submitting
         line 13b would leave Form 8995 off the electronic return. True whenever /form8995Required is true; complete
-        false when it is not required (no Schedule C income, or the self-employment question answered no or not yet
-        answered).
+        false when it is not required (no Schedule C income and no section 162 rental, or those questions
+        answered no or not yet answered).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4057,16 +4636,16 @@
     </Fact>
 
     <Fact path="/flowKnockoutForm8995MoreThanFiveBusinesses">
-      <Name>Knockout: more than five Schedule C businesses on Form 8995</Name>
+      <Name>Knockout: more than five trades or businesses on Form 8995</Name>
       <Description>
         2026 Instructions for Form 8995 draft, PDF p. 5, line 2: "If you have more than five trades or
         businesses, attach a statement with the name and taxpayer identification number of the trade(s) or
         business(es) and include the income and loss from those trade(s) or business(es) in the total for line 2."
         This package does not attach that statement. Column (c) is split only across lines 1(i) through 1(v), so a
-        sixth business would be omitted while line 2, which uses every Schedule C business, still included it.
-        True when /form8995HasQbi is true and /scheduleCBusinesses is a complete list of more than five items.
-        Complete false when Form 8995 is not required, the list is not finished, or the finished list has five or
-        fewer.
+        sixth trade or business would be omitted while line 2 still included it. Schedule C businesses and
+        section 162 rentals are counted together. True when /form8995HasQbi is true and that count is more than
+        five. Complete false when Form 8995 is not required, a list is not finished (that count is 0), or the
+        finished lists together have five or fewer.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4084,23 +4663,12 @@
           </Case>
           <Case>
             <When>
-              <Not>
-                <IsComplete>
-                  <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                </IsComplete>
-              </Not>
-            </When>
-            <Then>
-              <False />
-            </Then>
-          </Case>
-          <Case>
-            <When>
               <GreaterThan>
                 <Left>
-                  <CollectionSize>
-                    <Dependency module="scheduleC" path="/scheduleCBusinesses" />
-                  </CollectionSize>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                  </Add>
                 </Left>
                 <Right>
                   <Int>5</Int>
@@ -4132,7 +4700,7 @@
         the
         specified service rules of 26 U.S.C. 199A(b)(2)(B), (b)(3) and (d)(3) apply on Form 8995-A, which is not
         supported.
-        Complete false without Schedule C income (#186).
+        Complete false without qualified business income from Schedule C or a section 162 rental (#186).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4153,8 +4721,9 @@
 
     <Fact path="/flowKnockoutQbiPriorYearCarryforward">
       <Name>Knockout: prior-year QBI or REIT/PTP loss carryforward</Name>
-      <Description>Cites on /qbiHasPriorYearLossCarryforward. Complete false without Schedule C income or on "no";
-        incomplete while a filer with Schedule C income hasn't answered (#186).</Description>
+      <Description>Cites on /qbiHasPriorYearLossCarryforward. Complete false without qualified business
+        income or on "no"; incomplete while a filer with Schedule C income or a section 162 rental hasn't
+        answered (#186).</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -4167,7 +4736,7 @@
 
     <Fact path="/flowKnockoutQbiCooperativePatron">
       <Name>Knockout: patron of an agricultural or horticultural cooperative (Form 8995-A)</Name>
-      <Description>Cites on /qbiIsCooperativePatron. Complete false without Schedule C income or on "no" (#186).</Description>
+      <Description>Cites on /qbiIsCooperativePatron. Complete false without qualified business income or on "no" (#186).</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -4179,15 +4748,13 @@
     </Fact>
 
     <Fact path="/flowKnockoutQbiMixedParticipation">
-      <Name>Knockout: some Schedule C businesses are active and some are not</Name>
+      <Name>Knockout: some trades or businesses are active and some are not</Name>
       <Description>
-        The 26 U.S.C. 199A(i)(2)(A) test counts QBI only from businesses with material participation, and
-        each business's
-        QBI is reduced by its share of the deductible part of self-employment tax (Treas. Reg.
-        1.199A-3(b)(1)(vi)). That
-        apportionment is not modeled, so a return with both active and non-active businesses is
-        stopped. Complete false
-        without Schedule C income or when every business has the same answer (#186).
+        The 26 U.S.C. 199A(i)(2)(A) test counts QBI only from trades or businesses with material
+        participation (26 U.S.C. 199A(i)(2)(B), 469(h)). Schedule C and section 162 rentals are counted
+        together. A return with both active and non-active trades is stopped. Complete false without
+        qualified business income, when every trade has the same answer, or while a list is unfinished
+        (#186). Incomplete while a listed trade has not answered material participation.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4196,9 +4763,7 @@
           <Dependency path="/form8995HasQbi" />
           <GreaterThan>
             <Left>
-              <CollectionSize>
-                <Dependency module="scheduleC" path="/scheduleCActiveBusinesses" />
-              </CollectionSize>
+              <Dependency path="/form8995ActiveCount" />
             </Left>
             <Right>
               <Int>0</Int>
@@ -4206,9 +4771,7 @@
           </GreaterThan>
           <GreaterThan>
             <Left>
-              <CollectionSize>
-                <Dependency module="scheduleC" path="/scheduleCNonActiveBusinesses" />
-              </CollectionSize>
+              <Dependency path="/form8995NonActiveCount" />
             </Left>
             <Right>
               <Int>0</Int>

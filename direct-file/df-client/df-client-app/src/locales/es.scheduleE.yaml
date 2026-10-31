@@ -6,6 +6,7 @@ subsubcategories:
     schedule-e-k1: Sociedad colectiva o sociedad anónima de tipo S
     schedule-e-estate: Caudal hereditario o fideicomiso
     schedule-e-amounts: Cantidades de alquiler y regalías
+    schedule-e-property: Alquiler de la sección 162
 headings:
   /heading/income/schedule-e: Ingresos de alquiler y regalías
   /heading/income/schedule-e/intro: ¿Tuvo ingresos de alquiler de bienes raíces o de regalías en {{/taxYear}}?
@@ -55,9 +56,20 @@ headings:
   /heading/knockout/schedule-e-depreciation: Esta herramienta todavía no acepta depreciación ni gastos de vehículo
   /heading/knockout/schedule-e-loss: Esta herramienta todavía no acepta pérdidas de alquiler o regalías
   /heading/income/schedule-e/trade-or-business:
-    ¿Alguno de sus alquileres es una ocupación o negocio para la deducción por ingreso calificado de negocios?
+    ¿Alguno de sus alquileres es una ocupación o negocio de la sección 162 para la deducción por ingreso calificado de negocios?
+  /heading/income/schedule-e/properties: Agregue cada alquiler que sea una ocupación o negocio de la sección 162
+  /heading/income/schedule-e/property-name: ¿Cuál es el nombre de este alquiler?
+  /heading/income/schedule-e/property-amounts: Anote los alquileres, regalías y gastos de esta propiedad
+  /heading/income/schedule-e/property-participation: ¿Participó de forma importante en este alquiler?
+  /heading/income/schedule-e/property-safe-harbor: ¿Se ampara en el puerto seguro de bienes raíces de alquiler para esta propiedad?
+  /heading/income/schedule-e/property-aggregation: ¿Este alquiler forma parte de una ocupación o negocio agregada?
+  /heading/income/schedule-e/property-suspended: ¿Este alquiler tiene una pérdida suspendida este año?
+  /heading/income/schedule-e/qbi-carryforward: ¿Tiene un arrastre de pérdida de negocio calificado de un año anterior?
+  /heading/income/schedule-e/qbi-cooperative: ¿Es socio de una cooperativa agrícola u hortícola?
   /heading/knockout/schedule-e-trade-or-business:
-    Esta herramienta todavía no acepta la deducción por ingreso calificado de negocios para alquileres
+    Esta herramienta no acepta una declaración del puerto seguro, una agregación ni una pérdida suspendida para este alquiler
+  /heading/knockout/schedule-e-qbi-limit:
+    Esta herramienta no puede calcular esta deducción por ingreso calificado de negocios
   /heading/knockout/schedule-e-eitc:
     Esta herramienta todavía no puede verificar el Crédito por Ingreso del Trabajo con ingresos de alquiler o regalías
 info:
@@ -178,16 +190,67 @@ info:
             no lo acepta. Tendrá que usar otra manera de presentar esta declaración.
   /info/income/schedule-e/trade-or-business:
     body: >-
-      Conteste que sí si trata un alquiler como una ocupación o negocio, por ejemplo porque usted u otras personas
-      prestaron 250 horas o más de servicios de alquiler durante el año, o porque alquila la propiedad a un negocio que
-      usted o su familia controlan en común.
+      Conteste que sí si un alquiler es una ocupación o negocio de la sección 162, incluida una propiedad que alquila a
+      una ocupación o negocio que usted controla en común. Anotará cada propiedad. La deducción se calcula en el
+      Formulario 8995. El puerto seguro del Rev. Proc. 2019-38, una agregación, una pérdida suspendida este año o
+      cantidades mayores que los totales del Anexo E detienen la declaración.
+  /info/income/schedule-e/properties:
+    body: >-
+      Agregue una entrada por cada alquiler que trate como una ocupación o negocio de la sección 162. El nombre y el
+      ingreso o la pérdida neta van en la línea 1 del Formulario 8995. Los totales del Anexo E se anotan en una
+      pantalla posterior.
+  /info/income/schedule-e/property-name:
+    body: >-
+      Este nombre es la columna (a) de la línea 1 del Formulario 8995. La columna (b) es su SSN o ITIN. Queda en
+      blanco solo si este alquiler está agregado.
+  /info/income/schedule-e/property-amounts:
+    body: >-
+      Alquileres, regalías y gastos solo de esta propiedad. El ingreso o la pérdida neta es la columna (c) de la línea
+      1 del Formulario 8995. No se reduce por el impuesto del trabajo por cuenta propia. La declaración se detiene si
+      estas cantidades, sumadas entre propiedades, superan los totales del Anexo E, o si la columna (c) supera la
+      línea 26 del Anexo E.
+  /info/income/schedule-e/property-participation:
+    body: >-
+      La participación importante importa para la deducción mínima de $400 en la línea 16 del Formulario 8995. No se
+      exige para el resto de la deducción.
+  /info/income/schedule-e/property-safe-harbor:
+    body: >-
+      Conteste que sí si se ampara en el puerto seguro del Rev. Proc. 2019-38. Ese puerto seguro exige una declaración
+      que esta herramienta no adjunta.
+  /info/income/schedule-e/property-aggregation:
+    body: >-
+      Conteste que sí si este alquiler forma parte de una ocupación o negocio agregada. Una agregación se declara en
+      el Anexo B (Formulario 8995-A), que esta herramienta no adjunta.
+  /info/income/schedule-e/property-suspended:
+    body: >-
+      Conteste que sí si una pérdida o deducción de este alquiler está suspendida este año, incluso por las reglas de
+      actividad pasiva. Una pérdida suspendida no es ingreso calificado de negocios este año.
+  /info/income/schedule-e/qbi-carryforward:
+    body: >-
+      Conteste que sí si tiene un arrastre de pérdida neta de negocio calificado de un año anterior. La línea 3 del
+      Formulario 8995 no se calcula aquí.
+  /info/income/schedule-e/qbi-cooperative:
+    body: >-
+      Conteste que sí si es socio de una cooperativa agrícola u hortícola. Un socio usa el Formulario 8995-A, que esta
+      herramienta no calcula.
   /info/knockout/schedule-e-trade-or-business:
     alertText:
       body:
         - p: >-
-            Un alquiler que es una ocupación o negocio puede tener derecho a la deducción por ingreso calificado de
-            negocios (Formulario 8995). Esta herramienta todavía no calcula esa deducción. Tendrá que usar otra manera
-            de presentar esta declaración.
+            El Rev. Proc. 2019-38 exige una declaración que esta herramienta no adjunta. Una agregación se declara en
+            el Anexo B (Formulario 8995-A). Una pérdida suspendida conforme a la sección 469 u otra limitación no es
+            ingreso calificado de negocios este año. La declaración también se detiene si los alquileres, las regalías
+            o los gastos de la sección 162 superan los totales del Anexo E, o si la columna (c) de la línea 1 del
+            Formulario 8995 supera la línea 26 del Anexo E. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-e-qbi-limit:
+    alertText:
+      body:
+        - p: >-
+            Esta herramienta calcula la deducción por ingreso calificado de negocios solo con el Formulario 8995
+            simplificado. No puede manejar un arrastre de pérdida de un año anterior, pagos de cooperativa, ingreso
+            tributable por encima del límite del Formulario 8995, una mezcla de ocupaciones en las que participó de
+            forma importante y otras en las que no, ni más de cinco ocupaciones o negocios. Tendrá que usar otra
+            manera de presentar esta declaración.
   /info/knockout/schedule-e-part-ii:
     alertText:
       body:
@@ -282,8 +345,51 @@ fields:
       "no": No, todas las propiedades tuvieron ganancia o quedaron a la par
   /scheduleERentalIsTradeOrBusiness:
     boolean:
-      "yes": Sí, al menos un alquiler es una ocupación o negocio
+      "yes": Sí, al menos un alquiler es una ocupación o negocio de la sección 162
       "no": "No"
+  /scheduleEProperties/*/propertyName:
+    name: Nombre de la propiedad
+  /scheduleEProperties/*/writableRents:
+    name: Alquileres recibidos por esta propiedad
+  /scheduleEProperties/*/writableRoyalties:
+    name: Regalías recibidas por esta propiedad
+  /scheduleEProperties/*/writableExpenses:
+    name: Gastos de esta propiedad (sin incluir la depreciación)
+  /scheduleEProperties/*/materiallyParticipates:
+    boolean:
+      "yes": Sí, participé de forma importante
+      "no": No, no participé de forma importante
+  /scheduleEProperties/*/reliesOnRp201938SafeHarbor:
+    boolean:
+      "yes": Sí, me amparo en el puerto seguro
+      "no": "No"
+  /scheduleEProperties/*/isAggregated:
+    boolean:
+      "yes": Sí, este alquiler está agregado
+      "no": "No"
+  /scheduleEProperties/*/hasSuspendedPassiveLoss:
+    boolean:
+      "yes": Sí, una pérdida está suspendida este año
+      "no": "No"
+  /scheduleEProperties:
+    controls:
+      add: Agregar otro alquiler
+      complete_zero: No tengo uno para agregar
+      complete: Terminé de agregar alquileres
+      back: Volver a la lista
+    collectionListing:
+      itemHeading1: "{{/scheduleEProperties/*/propertyName}}"
+      itemHeading2: Alquiler incompleto
+      label2: Alquiler
+    deleteControl:
+      text: <LinkModal1>Quitar este alquiler</LinkModal1>
+      LinkModal1:
+        header: ¿Seguro que quiere quitar este alquiler?
+        body:
+          - p: Esto no se puede deshacer.
+        controls:
+          confirm: Quitar este alquiler
+          cancel: Cancelar
   /scheduleEWritableRents:
     name: Total de alquileres recibidos
   /scheduleEWritableRoyalties:
@@ -460,7 +566,17 @@ dataviews:
     /scheduleEProvidesSubstantialServices:
       ¿Prestó servicios considerables, como limpieza, ropa de cama o servicio de limpieza?
     /scheduleERentalIsTradeOrBusiness:
-      ¿Algún alquiler es una ocupación o negocio para la deducción por ingreso calificado de negocios?
+      ¿Algún alquiler es una ocupación o negocio de la sección 162 para la deducción por ingreso calificado de negocios?
+    /scheduleEProperties/*/propertyName: Nombre del alquiler
+    /scheduleEProperties/*/writableRents: Alquileres recibidos por esta propiedad
+    /scheduleEProperties/*/writableRoyalties: Regalías recibidas por esta propiedad
+    /scheduleEProperties/*/writableExpenses: Gastos de esta propiedad
+    /scheduleEProperties/*/materiallyParticipates: ¿Participó de forma importante en este alquiler?
+    /scheduleEProperties/*/reliesOnRp201938SafeHarbor: ¿Se ampara en el puerto seguro del Rev. Proc. 2019-38?
+    /scheduleEProperties/*/isAggregated: ¿Este alquiler está agregado?
+    /scheduleEProperties/*/hasSuspendedPassiveLoss: ¿Este alquiler tiene una pérdida suspendida este año?
+    /qbiHasPriorYearLossCarryforward: ¿Tiene un arrastre de pérdida de negocio calificado de un año anterior?
+    /qbiIsCooperativePatron: ¿Es socio de una cooperativa agrícola u hortícola?
     /scheduleEPartIILine27:
       ¿Está declarando una pérdida no permitida de un año anterior o gastos de sociedad no reembolsados?
     /scheduleEHasPartIIIIncome: ¿Recibió un Anexo K-1 de un caudal hereditario o fideicomiso?
