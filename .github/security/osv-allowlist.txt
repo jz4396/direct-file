@@ -79,6 +79,10 @@ direct-file/df-client/package-lock.json	GHSA-f886-m6hf-6m8v	npm	brace-expansion	
 direct-file/df-client/package-lock.json	GHSA-fj3w-jwp8-x2g3	npm	fast-xml-parser	4.4.1
 direct-file/df-client/package-lock.json	GHSA-fx2h-pf6j-xcff	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-fxqj-rqcc-2cmp	npm	postcss	8.4.47
+# GHSA-g3hv-75wg-m249 ambient minimatch globparts DoS; lockfiles unchanged.
+direct-file/df-client/package-lock.json	GHSA-g3hv-75wg-m249	npm	minimatch	3.1.2
+direct-file/df-client/package-lock.json	GHSA-g3hv-75wg-m249	npm	minimatch	5.1.6
+direct-file/df-client/package-lock.json	GHSA-g3hv-75wg-m249	npm	minimatch	9.0.5
 direct-file/df-client/package-lock.json	GHSA-g4jq-h2w9-997c	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-gh4j-gqv2-49f6	npm	fast-xml-parser	4.4.1
 direct-file/df-client/package-lock.json	GHSA-h67p-54hq-rp68	npm	js-yaml	4.1.0
