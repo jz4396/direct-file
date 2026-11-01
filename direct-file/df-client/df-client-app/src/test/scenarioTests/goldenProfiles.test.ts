@@ -8,7 +8,9 @@
 // profile J (full-year Florida resident, single: W-2, Form 1099-DIV boxes 1a, 1b, and 2a, and Schedule E
 // Part I rental income), and profile K (Florida full-year single, one Schedule C, Form 8995 with the line 14
 // income limitation), and profile L (Florida full-year single: W-2, Schedule C, and Form 1099-INT boxes 8 and 9,
-// with the box 9 amount on Form 6251 line 2g producing alternative minimum tax).
+// with the box 9 amount on Form 6251 line 2g producing alternative minimum tax), and profile M
+// (Golden M: full-year Pennsylvania resident, W-2 wages $60,000 with box 17 PA withholding $1,842,
+// and one Schedule C, so PA-40 and PA-40 C both print on the public path).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -120,7 +122,8 @@
 //      fixture SSNs other than profiles C, D, F, and G are in the 900 area, which SSA never issues; the app reads them
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
-//      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profiles C and D use
+//      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
+//      the ITIN ranges). Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
 //      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
@@ -188,6 +191,9 @@ import {
   profileLFlSinglePabInterest,
   profileLInterestId,
   profileLW2,
+  profileMBusinessId,
+  profileMPaScheduleC,
+  profileMW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -2961,5 +2967,235 @@ describe(`golden end-to-end scenario (synthetic data): profile L, Florida single
       '/form2210Line7': `-989.00`,
     });
     expectStoppedOnly(g);
+  });
+});
+
+// The only submission-blocking facts this return sets true. Form 8995 prints (#17). Submission still stops because
+// there is no MeF mapping (/flowKnockoutForm8995WithoutTy2026Template). PA-40 and PA-40 C print: the business is
+// full-year and line-item, so /flowKnockoutPaScheduleC is complete false.
+const PROFILE_M_STOPPED = [`/flowKnockoutForm8995WithoutTy2026Template`, `/flowIsKnockedOut`];
+
+const GOLDEN_PROFILE_M = path.join(
+  `..`,
+  `..`,
+  `backend`,
+  `src`,
+  `test`,
+  `resources`,
+  `submission-blocking`,
+  `golden-profileM-complete.json`
+);
+
+describe(`golden end-to-end scenario (synthetic data): profile M, Golden M, full-year PA, PA-40 and PA-40 C`, () => {
+  it(`golden-profileM-complete.json is the persisted profileMPaScheduleC return`, () => {
+    const exported = JSON.parse(fs.readFileSync(GOLDEN_PROFILE_M, `utf8`)).facts;
+    const persisted = JSON.parse(graph(profileMPaScheduleC).toJSON());
+    expect(exported).toEqual(persisted);
+  });
+
+  // Drew Example. Single, full-year Pennsylvania resident [PA] [TRC]; born 1987-02-11 (under 65, after January 1, 1962), SSN
+  //   900-40-1014 (900 area, group 40, outside the ITIN ranges). Address 123 Example St, Harrisburg, PA 17101.
+  //   School code 22275 (Harrisburg City, PA-40 IN (2025) pp. 46-47). One W-2, no interest, no dividends, no sales.
+  //   Standard deduction. No federal estimated payments.
+  // W-2: box 1 wages $60,000 (Form 1040 line 1a). The cite names no federal withholding, so box 2 is $0.
+  //   Box 3 and box 5 are the same $60,000 wage. Box 4 is 6.2% × 60,000 = 3,720 (26 U.S.C. 3101(a)). Box 6 is
+  //   1.45% × 60,000 = 870 (26 U.S.C. 3101(b)); no 0.9% because this employer paid under $200,000 (26 U.S.C.
+  //   3102(f)(1)). Box 16 is the same $60,000 wage (PA-40 line 1a is box 16, [PA] p. 10). Box 17 PA withholding
+  //   $1,842 (PA-40 line 13, [PA] p. 21).
+  // Schedule C (line-item expenses; the single expense total is not stored): Example Consulting, line 1 gross
+  //   receipts $30,000, no returns, no inventory (line 4 $0), no other income, line 7 $30,000, line 8 advertising
+  //   $2,000, line 22 supplies $3,000, line 28 $5,000, line 31 net profit $25,000. 26 U.S.C. 61, 162
+  //   (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C, line 31: "If a profit, enter on both
+  //   Schedule 1 (Form 1040), line 3, and on Schedule SE, line 2."
+  // Schedule SE, whole dollars, rounded half up at each line. Cents before that rounding, in parentheses.
+  //   Line 4a = round(25,000 x 92.35%) = round(23,087.50) = 23,088. 26 U.S.C. 1402(a)(12).
+  //   Line 8a = box 3 + box 7 = 60,000 (no tips). Wage base $184,500 (2026 draft Instructions for Schedule SE,
+  //   PDF p. 2, line 7 "$184,500"; 90 FR 49047, p. 49050). Line 9 = 184,500 - 60,000 = 124,500, which is more than
+  //   line 6, so line 10 uses all of line 6. 26 U.S.C. 1402(b)(1).
+  //   Line 10 = round(23,088 x 12.4%) = round(2,862.912) = 2,863 (26 U.S.C. 1401(a)).
+  //   Line 11 = round(23,088 x 2.9%) = round(669.552) = 670 (26 U.S.C. 1401(b)(1)).
+  //   Line 12 = 2,863 + 670 = 3,533 (cents: 3,532.464). Schedule 2 line 4.
+  //   Line 13 = round(3,533 x 50%) = round(1,766.50) = 1,767 (cents: 1,766.232). 26 U.S.C. 164(f). Schedule 1 line 15.
+  //   The questions for lines 1a, 1b, 4b, Part II, 5a, 5b, checkbox A, and 8c are answered no, so
+  //   /flowKnockoutScheduleSEOutOfScope is complete false.
+  // Form 1040: line 1a 60,000. Schedule 1 line 3 25,000; line 8 25,000; line 9 85,000; line 10 1,767; line 11 AGI
+  //   83,233 (60,000 + 25,000 - 1,767). Line 12e standard deduction 16,100. Rev. Proc. 2025-32 §4.14(1),
+  //   PDF p. 18: "Unmarried Individuals (other than Surviving Spouses and Heads of Households) ... $16,100"
+  //   (SHA-256 e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b). Born after January 1, 1962, so
+  //   no additional amount for age and no Schedule 1-A enhanced senior deduction. Line 13a is $0. Taxable income
+  //   before the section 199A deduction = 83,233 - 16,100 = 67,133.
+  // Form 8995 (the PDF prints; submission still stops because there is no MeF mapping):
+  //   Line 1(i)(c) and line 2 = 25,000 - 1,767 = 23,233. Treas. Reg. 1.199A-3(b)(1)(vi).
+  //   Line 5 = round(20% x 23,233) = round(4,646.60) = 4,647. 26 U.S.C. 199A(b)(2)(A).
+  //   Lines 6 through 9 are $0. Line 10 = 4,647. Line 11 = 67,133. Line 12 net capital gain $0. Line 13 = 67,133.
+  //   Line 14 = round(20% x 67,133) = round(13,426.60) = 13,427. 26 U.S.C. 199A(a)(2).
+  //   Line 15 = the smaller of line 10 and line 14 = 4,647. The income limitation does not bind.
+  //   Line 16 minimum deduction $400 (26 U.S.C. 199A(i)) is less than 4,647, so line 17 = 4,647 (Form 1040 line 13b).
+  //   Line 15 taxable income = 67,133 - 4,647 = 62,486.
+  // Line 16, under $100,000, so the Tax Table [GI p. 36]. The 62,450-62,500 row uses the midpoint $62,475.
+  //   [RP] p. 11 §4.01 Table 3 (unmarried): "Over $50,400 but not over $105,700 $5,800 plus 22% of the excess over
+  //   $50,400": 5,800 + 22% x (62,475 - 50,400) = 5,800 + 2,656.50 = 8,456.50, half a dollar up, 8,457.
+  // Schedule 2 line 21 = line 4 self-employment tax 3,533. No AMT (AMTI is under the $90,100 exemption [RP p. 16
+  //   §4.10]), no NIIT (AGI under $200,000 [1411]), no additional Medicare tax (wages and net earnings are each
+  //   under $200,000).
+  // Form 1040 line 24 total tax = 8,457 + 3,533 = 11,990. Line 25 withholding $0. Line 26 estimated tax payments $0.
+  //   Line 33 $0. Line 37 amount owed 11,990. Form 2210 line 6 is withholding only ($0), so line 7 is 11,990. Lines 4
+  //   and 7 are both at least $1,000, so a penalty is possible. Every Part II box is no, so /flowKnockoutForm2210 is
+  //   complete false and the IRS bills any penalty.
+  // PA-40 [PA] [TRC]. Line 1a = box 16 $60,000 [PA p. 10]. Line 1b $0. Line 1c 60,000. Line 4 = PA-40 C line 39.
+  //   There is no meals amount, so the meals add-back is $0 and line 39 equals federal line 31, $25,000.
+  //   72 P.S. §7303(a)(2). PA-40 IN (2025) p. 17, LINE 4: "You must use PA Schedule C". PA-40 C (EX) 03-26 line 1a
+  //   $30,000, line 6 advertising $2,000, line 28 supplies $3,000, line 38 $5,000, line 39 $25,000. Lines 2, 3, 5, 6,
+  //   7, and 8 are $0. Line 9 adds only the positive amounts [PA p. 20]: 60,000 + 25,000 = 85,000. Line 10 $0.
+  //   Line 11 85,000 [PA p. 21]. Line 12 = 85,000 x 3.07% = 2,609.50 exactly [PA p. 21, LINE 12; 72 P.S. §7302(a)].
+  //   [PA] p. 4 rounds half-up to a whole dollar on the printed form; the fact stays 2,609.50 and the form prints
+  //   2,610.00. Line 13 = box 17 $1,842. Line 15 $0 (/paHasEstimatedInstallmentPayments is no; PA-40 IN (2025) p. 21,
+  //   LINE 15, Pennsylvania payments only). Schedule SP: eligibility income is line 9, $85,000. Table 1 (unmarried,
+  //   no dependent child) 100% column is $6,500 and the 10% column is $6,500 + $2,250 = $8,750 [PA p. 39]. $85,000
+  //   is above that column, so the decimal is 0 and line 21 is $0. 72 P.S. §7304. Schedule SP is not in the package.
+  //   Line 24 = line 13, 1,842. Line 26 = 2,609.50 - 1,842 = 767.50 (prints 768.00). Line 29 $0.
+  const g = graph(profileMPaScheduleC);
+  const expectStoppedOnly = (fg: Fg) => {
+    const stopped = new Set(PROFILE_M_STOPPED);
+    for (const path of submissionBlockingFacts.filter((p) => !p.includes(`*`) && p !== `/flowIncomplete`)) {
+      const r = get(fg, path);
+      if (stopped.has(path)) {
+        expect(r.complete, path).toBe(true);
+        expect(r.get, path).toBe(true);
+      } else {
+        expect(r.complete && r.get === true, path).toBe(false);
+      }
+    }
+  };
+
+  it(`Schedule C is receipts $30,000 minus advertising $2,000 and supplies $3,000`, () => {
+    const biz = `/scheduleCBusinesses/#${profileMBusinessId}`;
+    expect(get(g, `${biz}/businessName`).get).toBe(`Example Consulting`);
+    expect(get(g, `${biz}/usesLegacyExpenseBucket`).get).toBe(false);
+    expect(get(g, `/scheduleCHasLegacyExpenseBucket`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    const w2 = `/formW2s/#${profileMW2.id}`;
+    expectDollars(g, {
+      '/wages': `60000.00`,
+      [`${w2}/oasdiWages`]: `60000.00`,
+      [`${w2}/oasdiWithholding`]: `3720.00`,
+      [`${w2}/medicareWages`]: `60000.00`,
+      [`${w2}/medicareWithholding`]: `870.00`,
+      '/scheduleSELine8a': `60000.00`,
+      '/primaryFilerOasdiWagesTotal': `60000.00`,
+      '/primaryFilerSeRemainingSocialSecurityWageBase': `124500.00`,
+      [`${biz}/line1GrossReceipts`]: `30000.00`,
+      [`${biz}/line7GrossIncome`]: `30000.00`,
+      [`${biz}/line8Advertising`]: `2000.00`,
+      [`${biz}/line22Supplies`]: `3000.00`,
+      [`${biz}/line28`]: `5000.00`,
+      [`${biz}/netProfitOrLoss`]: `25000.00`,
+      [`${biz}/paMealsAddBack`]: `0.00`,
+      [`${biz}/paTotalExpenses`]: `5000.00`,
+      [`${biz}/paNetProfitOrLoss`]: `25000.00`,
+      '/scheduleCNetProfitOrLoss': `25000.00`,
+      '/schedule1Line3': `25000.00`,
+      '/primaryFilerSeNetEarnings': `23088.00`,
+      '/primaryFilerSeSocialSecurityTax': `2863.00`,
+      '/primaryFilerSeMedicareTax': `670.00`,
+      '/selfEmploymentTax': `3533.00`,
+      '/deductibleSelfEmploymentTax': `1767.00`,
+      '/schedule1Line15': `1767.00`,
+      '/schedule2Line4': `3533.00`,
+    });
+    expect(Number(get(g, `/primaryFilerSeNetEarnings`).get.toString())).toBeLessThan(
+      Number(get(g, `/primaryFilerSeRemainingSocialSecurityWageBase`).get.toString())
+    );
+  });
+
+  it(`Form 8995 and Form 1040 follow the W-2 and the cited Schedule C`, () => {
+    expect(get(g, `/form8995Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expectDollars(g, {
+      '/agi': `83233.00`,
+      '/standardDeduction': `16100.00`,
+      '/form8995Line2': `23233.00`,
+      '/form8995Line5': `4647.00`,
+      '/form8995Line10': `4647.00`,
+      '/form8995Line11': `67133.00`,
+      '/form8995Line14': `13427.00`,
+      '/form8995Line15': `4647.00`,
+      '/form8995Line17': `4647.00`,
+      '/qualifiedBusinessIncomeDeduction': `4647.00`,
+      '/taxableIncome': `62486.00`,
+      '/tentativeTaxFromTaxableIncome': `8457.00`,
+      '/totalTax': `11990.00`,
+      '/formW2Withholding': `0.00`,
+      '/estimatedAndFromLastYear': `0.00`,
+      '/totalPayments': `0.00`,
+      '/overpayment': `0.00`,
+      '/balanceDue': `11990.00`,
+    });
+    expect(Number(get(g, `/form8995Line10`).get.toString())).toBeLessThan(
+      Number(get(g, `/form8995Line14`).get.toString())
+    );
+  });
+
+  it(`PA-40 line 4 is PA-40 C line 39, and the public-path stops for that schedule stay false`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPa`).get).toBe(true);
+    expect(get(g, `/livedInFl`).get).toBe(false);
+    expect(get(g, `/paSchoolCode`).get).toBe(`22275`);
+    expect(get(g, `/flowKnockoutPaScheduleC`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(get(g, `/paSpLine15`).get.toString()).toBe(`0/1`);
+    expect(get(g, pdfIncludeWhen(`PA40`) as string).get).toBe(true);
+    expectDollars(g, {
+      '/paLine1a': `60000.00`,
+      '/paLine1c': `60000.00`,
+      '/paLine4': `25000.00`,
+      '/paLine9': `85000.00`,
+      '/paLine11': `85000.00`,
+      '/paLine12': `2609.50`,
+      '/paLine13': `1842.00`,
+      '/paLine15': `0.00`,
+      '/paLine21': `0.00`,
+      '/paLine24': `1842.00`,
+      '/paLine26': `767.50`,
+      '/paLine29': `0.00`,
+      '/stateTaxLiability': `2609.50`,
+      '/stateAmountOwed': `767.50`,
+      '/stateRefund': `0.00`,
+    });
+    expectStoppedOnly(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile M negative row (single expense total stops the return)`, () => {
+  it(`a single expense total sets /flowKnockoutPaScheduleC, so PA-40 C is not on the public path`, () => {
+    const id = profileMBusinessId;
+    const facts: Record<string, unknown> = { ...profileMPaScheduleC };
+    const keep = new Set([
+      `/scheduleCBusinesses/#${id}/filer`,
+      `/scheduleCBusinesses/#${id}/businessName`,
+      `/scheduleCBusinesses/#${id}/materiallyParticipates`,
+      `/scheduleCBusinesses/#${id}/writableGrossReceipts`,
+    ]);
+    for (const key of Object.keys(facts)) {
+      if (key.startsWith(`/scheduleCBusinesses/#${id}/`) && !keep.has(key)) delete facts[key];
+    }
+    facts[`/scheduleCBusinesses/#${id}/writableTotalExpenses`] = createDollarWrapper(`5000`);
+    const n = graph(facts);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaScheduleC`);
+    expect(get(n, `/scheduleCBusinesses/#${id}/usesLegacyExpenseBucket` as string).get).toBe(true);
+    expect(get(n, `/flowKnockoutPaScheduleC`).complete).toBe(true);
+    expect(get(n, `/flowKnockoutPaScheduleC`).get).toBe(true);
+    expect(get(n, `/flowIsKnockedOut`).get).toBe(true);
   });
 });

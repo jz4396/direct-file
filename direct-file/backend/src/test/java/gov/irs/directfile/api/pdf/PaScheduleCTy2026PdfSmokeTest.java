@@ -29,12 +29,14 @@ import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.bla
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.fieldsOnPages;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.is;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.pageWith;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.paResident;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrint;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrintOf;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.amount;
 import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.selfEmployed;
@@ -76,6 +78,72 @@ class PaScheduleCTy2026PdfSmokeTest {
         m.put(biz() + "otherIncomeNeedsAnotherForm", bool(false));
         m.put(biz() + "hasDeductibleExpenses", bool(false));
         return m;
+    }
+
+    /**
+     * Golden M (#135), public print path only. The facts are {@code golden-profileM-complete.json}, the persisted
+     * client profile {@code profileMPaScheduleC}: Drew Example, full-year Pennsylvania, school code 22275. One W-2,
+     * box 1 and box 16 $60,000, box 17 PA withholding $1,842. Schedule C is receipts $30,000, advertising $2,000,
+     * supplies $3,000, no meals.
+     *
+     * <p>PA-40 C (EX) 03-26 line 39 = line 5 $30,000 minus line 38 $5,000 = $25,000. There is no meals amount, so the
+     * meals add-back is $0 and line 39 equals federal Schedule C line 31. PA-40 line 4 is that net. 72 P.S.
+     * §7303(a)(2). PA-40 IN (2025) p. 17, LINE 4.
+     *
+     * <p>PA-40 line 1a is box 16, $60,000 (p. 10, LINE 1a). Line 9 and line 11 are $85,000 (p. 20, LINE 9; p. 21, LINE
+     * 11). Line 12 is line 11 times 3.07 percent: 85,000 × 0.0307 = 2,609.50. [PA] p. 21, LINE 12. [TRC] §302(a), 72
+     * P.S. §7302(a). [PA] p. 4 rounds each printed line half-up to a whole dollar, so the form prints 2,610.00. Line
+     * 13 is box 17, $1,842.00. Line 26 is 2,609.50 - 1,842 = 767.50, which prints 768.00. Eligibility income $85,000
+     * is above Table 1's 10 percent column ($8,750 for an unmarried claimant with no dependent child, [PA] p. 39), so
+     * line 21 is $0 and Schedule SP is not in the package. 72 P.S. §7304.
+     */
+    @Test
+    void goldenMPa40AndPa40CPrintOnThePublicPath() throws Exception {
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileM-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            assertTrue(pageWith(doc, PAGE1), "PA-40 C page 1 is in the package");
+            assertTrue(pageWith(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1), "PA-40 is in the package");
+            assertFalse(
+                    pageWith(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.SP_PAGE1),
+                    "no Schedule SP when line 21 is $0");
+
+            Map<String, String> c = fieldsOnPages(doc, PAGE1);
+            assertTrue(isUpper(c, "Name of Owner as shown PA tax return").contains("DREW"), "owner");
+            assertTrue(isUpper(c, "Name of Owner as shown PA tax return").contains("EXAMPLE"), "owner last name");
+            assertEquals("900401014", fieldDigits(c, "Owner's Social Security Number"), "SSN");
+            assertEquals("EXAMPLE CONSULTING", isUpper(c, "Business Name"), "business name");
+            is(c, "Year", "26", "year");
+            is(c, "1. a Gross receipts or sales", "30,000.00", "PA-40 C line 1a");
+            blank(c, "1. b. Returns & allowances", "line 1b");
+            is(c, "1. c. Balance", "30,000.00", "line 1c");
+            blank(c, "2. Cost", "no inventory");
+            is(c, "5. Total Income", "30,000.00", "line 5");
+            is(c, "6. Advertising", "2,000.00", "line 6");
+            is(c, "28. Supplies", "3,000.00", "line 28");
+            blank(c, "31. Travel and entertainment", "no meals");
+            is(c, "38. Total Expenses. Add Lines 6 through 37", "5,000.00", "line 38");
+            is(c, "39. Net Profit of Loss", "25,000.00", "line 39");
+            is(c, "41. Loss", "Off", "profit");
+            is(c, "C2. Yes/No", "4", "office in home: No");
+
+            Map<String, String> pa = fieldsOnPages(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1);
+            is(pa, "Residency Status", "1", "(R) Resident");
+            is(pa, "Filing Status", "1", "single");
+            is(pa, "Enter five digit School Code from list on pags 42 & 43", "22275", "Harrisburg City");
+            is(pa, "Name of School District", "HARRISBURG CITY", "pp. 46-47");
+            is(pa, "1a. Gross Compensation", "60,000.00", "line 1a = box 16");
+            is(pa, "4. Loss", "Off", "line 4 is income");
+            is(pa, "4. Net Income or Loss from the Operation of a Business, etc", "25,000.00", "line 4 = line 39");
+            is(pa, "9. Total PA Taxable Income", "85,000.00", "line 9");
+            is(pa, "11. Adjusted PA Taxable Income", "85,000.00", "line 11");
+
+            Map<String, String> p2 = fieldsOnPages(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE2);
+            is(p2, "12. PA Tax Liability. Multiply Line 11 by 3.07%", "2,610.00", "line 12 prints 2,609.50 half-up");
+            is(p2, "13. Total PA Tax Withheld", "1,842.00", "line 13 = box 17");
+            blank(p2, "21. Tax Forgiveness Credit", "line 21");
+            is(p2, "26. TAX DUE", "768.00", "line 26 prints 767.50 half-up");
+            blank(p2, "29. OVERPAYMENT", "line 29");
+        }
     }
 
     @Test

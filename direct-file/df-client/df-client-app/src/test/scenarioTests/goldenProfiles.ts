@@ -8,7 +8,9 @@
 // profile J (full-year Florida resident, single: W-2, Form 1099-DIV boxes 1a, 1b, and 2a, and Schedule E
 // Part I rental income), and profile K (Florida full-year single, one Schedule C, Form 8995 with the line 14
 // income limitation), and profile L (Florida full-year single: W-2, Schedule C, and Form 1099-INT boxes 8 and 9,
-// with the box 9 amount on Form 6251 line 2g producing alternative minimum tax).
+// with the box 9 amount on Form 6251 line 2g producing alternative minimum tax), and profile M
+// (Golden M: full-year Pennsylvania resident, W-2 wages $60,000 with box 17 PA withholding $1,842,
+// and one Schedule C, so PA-40 and PA-40 C both print on the public path).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -961,6 +963,92 @@ export const profileLFlSinglePabInterest = {
   ),
 };
 
+/**
+ * Profile M (Golden M, #135): full-year Pennsylvania resident, single, under 65. One W-2: wages $60,000, box 16 the
+ * same $60,000 (PA-40 line 1a is box 16), box 17 PA withholding $1,842. The cite names no federal withholding, so
+ * box 2 is $0. Boxes 3 and 5 are the same $60,000 wage, so Schedule SE line 8a is $60,000 and line 9 is the wage-base
+ * room. Box 4 is 6.2% of that wage and box 6 is 1.45%. Schedule C is receipts $30,000 minus advertising $2,000 minus
+ * supplies $3,000. No estimated payments. PA-40 line 4 is PA-40 C line 39 (no meals, so no add-back). The full-year
+ * line-item path prints PA-40 and PA-40 C. Submission still stops because Form 8995 has no MeF mapping.
+ * The person const is drewM because profile L already binds drew.
+ */
+const drewM: Person = { first: `Drew`, last: `Example`, ssn: [`900`, `40`, `1014`], dob: `1987-02-11` };
+export const profileMBusinessId = `13500000-0000-4000-8000-000000001601`;
+export const profileMW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001602`,
+  employer: `Example Payroll LLC`,
+  ein: [`00`, `0001601`],
+  box1: 60000,
+  // Not in the cite. $0 is no federal withholding, not a made-up payment.
+  box2: 0,
+  // Same $60,000 wage. Schedule SE line 8a is box 3.
+  box3: 60000,
+  // 6.2% × 60,000. 26 U.S.C. 3101(a).
+  box4: 3720,
+  box5: 60000,
+  // 1.45% × 60,000. 26 U.S.C. 3101(b). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 870,
+  // PA-40 line 1a is box 16. The cited wage, so line 1a plus the $25,000 net is line 9 $85,000.
+  box16: 60000,
+  box17: 1842,
+};
+const profileMScheduleCStops = [
+  `hasInventoryOrCogs`,
+  `hasCarTruckOrVehicleLoan`,
+  `hasDepreciationOrSection179`,
+  `hasDepletion`,
+  `hasVehicleMachineryEquipmentRent`,
+  `hasHomeOffice`,
+  `hasEnergyEfficientBuildingsDeduction`,
+];
+export const profileMPaScheduleC = {
+  ...single(drewM, { street: `123 Example St`, city: `Harrisburg`, zip: `17101`, state: `PA` }),
+  [`/filers/#${primaryFilerId}/occupation`]: createStringWrapper(`Consultant`),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+  '/paSchoolDistrictCode': createStringWrapper(`22275`),
+  '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+  ...w2s(drewM.ssn, profileMW2),
+  '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  // Answered no. Unanswered, /flowKnockoutScheduleSEOutOfScope stays incomplete and refuses the print.
+  // 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8), 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l).
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
+  '/scheduleCBusinesses': createCollectionWrapper([profileMBusinessId]),
+  '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/businessName`]: createStringWrapper(`Example Consulting`),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/writableGrossReceipts`]: createDollarWrapper(`30000`),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/writableReturnsAndAllowances`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/writableOtherIncome`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/hasDeductibleExpenses`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/expenseLinesChosen`]: createMultEnumWrapper(
+    [`advertising`, `supplies`],
+    `/scheduleCExpenseLineOptions`
+  ),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/writableAdvertising`]: createDollarWrapper(`2000`),
+  [`/scheduleCBusinesses/#${profileMBusinessId}/writableSupplies`]: createDollarWrapper(`3000`),
+  ...Object.fromEntries(
+    profileMScheduleCStops.map((key) => [
+      `/scheduleCBusinesses/#${profileMBusinessId}/${key}`,
+      createBooleanWrapper(false),
+    ])
+  ),
+  // The cite has no estimated payments. Form 1040 line 26 stays $0. These are not PA-40 line 15.
+  '/paidEstimatedTaxesOrFromLastYear': createBooleanWrapper(false),
+  // A penalty is possible (withholding is $0). Every Part II box is no, so the IRS bills it and the print is not refused.
+  '/form2210WaiverRequested': createBooleanWrapper(false),
+  '/form2210AnnualizedIncome': createBooleanWrapper(false),
+  '/form2210WithholdingOnActualDates': createBooleanWrapper(false),
+  '/form2210FiledJointReturnPriorYear': createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -980,4 +1068,5 @@ export const goldenProfiles = {
   profileJFlDividendsRental,
   profileKFlSingleScheduleC,
   profileLFlSinglePabInterest,
+  profileMPaScheduleC,
 };
