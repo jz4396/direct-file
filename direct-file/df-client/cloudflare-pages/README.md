@@ -147,7 +147,11 @@ does not claim that the server build keeps no return data.
   back. The same file with a wrong passphrase shows the decrypt-failed message and leaves the open return unchanged.
   An encrypted file for another tax year shows the wrong-tax-year message and leaves the open return unchanged. The
   download is an AES-GCM envelope at the production PBKDF2 iteration count; the marker and the passphrase are not in
-  the file and not in any request.
+  the file and not in any request. The same file also drives the plaintext acknowledgment gate (download stays
+  disabled until the unencrypted-file checkbox is checked, a short passphrase cannot skip it, and a long enough
+  passphrase hides it), imports a v1 bare fact-graph file and reads those facts back from a current-version save
+  file, and rejects a newer schema version with the unsupported-version message while leaving the open return
+  unchanged.
 - `src/staticClient/staticBranding.test.tsx`: in static mode the layout shows the notice (English and Spanish), with
   no close control, no government banner, no IRS logo and no agency footer. The regular build still shows them.
 - `src/staticClient/pagesConfig.test.ts`: the `_headers` CSP matches the CSP builder, including `base-uri 'none'`;
