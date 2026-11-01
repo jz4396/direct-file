@@ -18,7 +18,8 @@ import { baseFilerData, filerWithRefundDueData, primaryFilerId, uuid } from '../
  * Part II (#85): line 28 column (k) for domestic partnership or S corporation box 1, material participation.
  * Part III (#85): line 33 column (f) for domestic estate or trust box 6 with material participation.
  * Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make it passive, so a nonzero amount
- * is column (d) and stops the return. Part IV is an explicit stop, including a Schedule Q holder who
+ * is column (d) and stops the return. Box 12 code A is Form 6251 line 2j. Codes B through I stop the return.
+ * Part IV is an explicit stop, including a Schedule Q holder who
  * has no Part II income. Line 39 stays incomplete when the answer is yes.
  */
 const supported = {
@@ -382,6 +383,7 @@ const partIIKnockouts = [
   `/flowKnockoutScheduleEPartIIIBox7`,
   `/flowKnockoutScheduleEPartIIIBox8`,
   `/flowKnockoutScheduleEPartIIIBox2b`,
+  `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`,
   `/flowKnockoutScheduleEPartIIIOtherK1Amount`,
   `/flowKnockoutScheduleEPartIIIBasis`,
   `/flowKnockoutScheduleEPartIIIAtRisk`,
@@ -540,7 +542,7 @@ describe(`Schedule E Part II ordinary income (#85)`, () => {
 
 const estateId = `c8f2d3b1-2222-4333-8444-555566667777`;
 const estate2Id = `c8f2d3b1-2222-4333-8444-555566667778`;
-/** Supported Part III estate: domestic, box 6 only, material participation. Box 8 is zero. */
+/** Supported Part III estate: domestic, box 6 only, material participation. Box 8 is zero. Box 12 code A is zero. */
 const estate = (id: string, box6: string, extra: Record<string, unknown> = {}) => ({
   [`/scheduleEEstates/#${id}/entityName`]: createStringWrapper(`Harbor Trust`),
   [`/scheduleEEstates/#${id}/isForeignBeneficiary`]: createBooleanWrapper(false),
@@ -554,6 +556,9 @@ const estate = (id: string, box6: string, extra: Record<string, unknown> = {}) =
   [`/scheduleEEstates/#${id}/box7`]: createDollarWrapper(`0`),
   [`/scheduleEEstates/#${id}/box8`]: createDollarWrapper(`0`),
   [`/scheduleEEstates/#${id}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleEEstates/#${id}/box12CodeA`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${id}/hasBox12CodesBThroughI`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${id}/hasBox12CodeJ`]: createBooleanWrapper(false),
   [`/scheduleEEstates/#${id}/hasOtherK1Amount`]: createBooleanWrapper(false),
   [`/scheduleEEstates/#${id}/basisLimitApplies`]: createBooleanWrapper(false),
   [`/scheduleEEstates/#${id}/anyAmountNotAtRisk`]: createBooleanWrapper(false),
@@ -573,6 +578,94 @@ const oneEstate = (box6: string, extra: Record<string, unknown> = {}) => ({
 });
 
 describe(`Schedule E Part III estates and trusts (#85)`, () => {
+  it(`box 12 code A is Form 6251 line 2j and codes B through I stay stopped`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEBox12CodeATotal`,
+      `/form6251Line2j`,
+      `/form6251Line4`,
+      `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/scheduleESectionIsComplete`,
+    ];
+    // Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) PDF p. 3: "Code A, Adjustment for minimum
+    // tax purposes, is the total amount reported on Form 6251, line 2j." Form 6251 (2026) draft line 2j. Line 4
+    // combines lines 1b through 3. 26 U.S.C. 55(b)(2). Codes B through I are not line 2j.
+    const base = fg();
+    const g = fg(oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box12CodeA`]: createDollarWrapper(`1500.40`) }));
+    expect(get(g, `/scheduleEBox12CodeATotal`).get.toString()).toBe(`1500.40`);
+    expect(get(g, `/form6251Line2j`).get.toString()).toBe(`1500.00`);
+    expect(Number(get(g, `/form6251Line4`).get.toString())).toBe(
+      Number(get(base, `/form6251Line4`).get.toString()) + 1500
+    );
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`0.00`);
+
+    const stopped = fg(
+      oneEstate(`0`, {
+        [`/scheduleEEstates/#${estateId}/box12CodeA`]: createDollarWrapper(`1500`),
+        [`/scheduleEEstates/#${estateId}/hasBox12CodesBThroughI`]: createBooleanWrapper(true),
+      })
+    );
+    expect(get(stopped, `/form6251Line2j`).get.toString()).toBe(`1500.00`);
+    expect(get(stopped, `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`).get).toBe(true);
+    expect(get(stopped, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
+    expect(get(stopped, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`two estates' box 12 code A amounts are added and only the total is rounded`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleEBox12CodeATotal`, `/form6251Line2j`];
+    // 26 U.S.C. 6102(a): cents stay in the addition. 10.40 + 10.50 = 20.90, which rounds to 21.
+    const g = fg({
+      ...partIIIGate,
+      '/scheduleEEstates': createCollectionWrapper([estateId, estate2Id]),
+      ...estate(estateId, `0`, { [`/scheduleEEstates/#${estateId}/box12CodeA`]: createDollarWrapper(`10.40`) }),
+      ...estate(estate2Id, `0`, { [`/scheduleEEstates/#${estate2Id}/box12CodeA`]: createDollarWrapper(`10.50`) }),
+    });
+    expect(get(g, `/scheduleEBox12CodeATotal`).get.toString()).toBe(`20.90`);
+    expect(get(g, `/form6251Line2j`).get.toString()).toBe(`21.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+  });
+
+  it(`a negative box 12 code A reduces Form 6251 line 4 and is not a Part III stop`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form6251Line2j`,
+      `/form6251Line4`,
+      `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`,
+      `/scheduleESectionIsComplete`,
+    ];
+    // The beneficiary instructions report the code A amount on line 2j, including a negative adjustment.
+    const base = fg();
+    const g = fg(oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box12CodeA`]: createDollarWrapper(`-2500`) }));
+    expect(get(g, `/form6251Line2j`).get.toString()).toBe(`-2500.00`);
+    expect(Number(get(g, `/form6251Line4`).get.toString())).toBe(
+      Number(get(base, `/form6251Line4`).get.toString()) - 2500
+    );
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+  });
+
+  it(`box 12 code J is not a stop and is not Form 6251 line 2j`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleEPartIIIOtherK1Amount`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowIsKnockedOut`,
+      `/scheduleESectionIsComplete`,
+      `/form6251Line2j`,
+    ];
+    // Schedule K-1 (Form 1041) (2025) page 2: "J Exclusion items — 2026 Form 8801." 26 U.S.C. 53. Code J is
+    // not 26 U.S.C. 59(c) code A and is not Form 6251 line 2j. A yes with hasOtherK1Amount no does not stop.
+    const g = fg(oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/hasBox12CodeJ`]: createBooleanWrapper(true) }));
+    expect(get(g, `/flowKnockoutScheduleEPartIIIOtherK1Amount`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+    expect(get(g, `/form6251Line2j`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).get).toBe(true);
+  });
+
   it(`box 6 $9,000 with material participation is column (f) and Schedule 1 line 5`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/scheduleEPartIIILine33AColumnF`,
@@ -739,6 +832,11 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
       `box 8 other rental income`,
       `/flowKnockoutScheduleEPartIIIBox8`,
       { [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`500`) },
+    ],
+    [
+      `box 12 codes B through I`,
+      `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`,
+      { [`/scheduleEEstates/#${estateId}/hasBox12CodesBThroughI`]: createBooleanWrapper(true) },
     ],
     [
       `another K-1 amount`,

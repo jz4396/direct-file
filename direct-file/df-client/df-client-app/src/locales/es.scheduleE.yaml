@@ -32,7 +32,8 @@ headings:
     ¿Es un beneficiario extranjero, un fideicomiso extranjero o un tratamiento distinto?
   /heading/income/schedule-e/estate-interest-dividends: Anote los intereses y dividendos del Anexo K-1 (Formulario 1041)
   /heading/income/schedule-e/estate-boxes: Anote el ingreso del Anexo K-1 (Formulario 1041)
-  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 1, 2a, 2b, 5, 6, 7 y 8?
+  /heading/income/schedule-e/estate-box12: Anote la casilla 12, código A, del Anexo K-1 (Formulario 1041)
+  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 1, 2a, 2b, 5, 6, 7, 8 y los códigos A a J de la casilla 12?
   /heading/income/schedule-e/estate-limits: ¿Se aplica algún límite de pérdida a este caudal hereditario o fideicomiso?
   /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC (Anexo Q, Formulario 1066)?
   /heading/income/schedule-e/k1-intro: Agregue cada sociedad colectiva y sociedad anónima de tipo S
@@ -124,10 +125,17 @@ info:
       Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Conteste que sí a la participación
       importante si intervino de forma regular, continua y considerable. La casilla 6 va en la columna (f) si participó
       de forma importante. Las casillas 7 y 8 son ingreso de alquiler y detienen esta declaración.
+  /info/income/schedule-e/estate-box12:
+    body: >-
+      El código A es el ajuste para fines del impuesto mínimo. Va en la línea 2j del Formulario 6251. Anote 0 si el
+      código A está en blanco. Anote una cantidad negativa si el ajuste es negativo. Conteste que sí si la casilla 12
+      tiene una cantidad para el código B, C, D, E, F, G, H o I. Esos códigos no se anotan en la línea 2j. El código J
+      son partidas de exclusión para el Formulario 8801. Conteste que sí si el código J tiene una cantidad. El código J
+      no es la línea 2j y no detiene esta declaración.
   /info/income/schedule-e/estate-other:
     body: >-
-      Conteste que sí si alguna casilla distinta de las casillas 1, 2a, 2b, 5, 6, 7 y 8 tiene una cantidad, incluso
-      ganancia de capital, deducciones, créditos o la casilla 14.
+      Conteste que sí por las casillas 3, 4, 9, 10, 11, 13 y 14, incluso ganancia de capital, deducciones y créditos.
+      Los códigos A a J de la casilla 12 están en la pantalla anterior. No conteste que sí solo por el código J.
   /info/income/schedule-e/estate-limits:
     body: >-
       Conteste que sí a la primera pregunta si se aplica un límite de base. Conteste que sí a la segunda si alguna
@@ -320,10 +328,12 @@ info:
       body:
         - p: >-
             Esta herramienta puede declarar el ingreso ordinario del negocio de un caudal hereditario o fideicomiso
-            nacional si usted participó de forma importante y esa cantidad no es una pérdida. Otro ingreso de alquiler,
-            ingreso de alquiler de bienes raíces, una pérdida, una actividad pasiva, otra cantidad del Anexo K-1, un
-            fideicomiso extranjero o un límite de base, de riesgo o de pérdida pasiva necesitan formularios que esta
-            herramienta todavía no acepta. Tendrá que usar otra manera de presentar esta declaración.
+            nacional si usted participó de forma importante y esa cantidad no es una pérdida. La casilla 12, código A,
+            va en la línea 2j del Formulario 6251. La casilla 12, código J, partidas de exclusión, no detiene esta
+            declaración. Los códigos B a I de la casilla 12, otro ingreso de alquiler, el ingreso de alquiler de bienes
+            raíces, una pérdida, una actividad pasiva, otra cantidad del Anexo K-1, un fideicomiso extranjero o un
+            límite de base, de riesgo o de pérdida pasiva necesitan formularios que esta herramienta todavía no acepta.
+            Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-e-part-iv:
     alertText:
       body:
@@ -479,6 +489,16 @@ fields:
     boolean:
       "yes": Sí, participé de forma importante
       "no": No, no participé de forma importante
+  /scheduleEEstates/*/box12CodeA:
+    name: Casilla 12, código A, ajuste para fines del impuesto mínimo
+  /scheduleEEstates/*/hasBox12CodesBThroughI:
+    boolean:
+      "yes": Sí, el código B, C, D, E, F, G, H o I tiene una cantidad
+      "no": No, los códigos B a I están en blanco o en cero
+  /scheduleEEstates/*/hasBox12CodeJ:
+    boolean:
+      "yes": Sí, el código J tiene una cantidad
+      "no": No, el código J está en blanco o en cero
   /scheduleEEstates/*/hasOtherK1Amount:
     boolean:
       "yes": Sí, otra casilla tiene una cantidad
@@ -686,8 +706,10 @@ dataviews:
     /scheduleEEstates/*/box7: Casilla 7, ingreso neto de alquiler de bienes raíces
     /scheduleEEstates/*/box8: Casilla 8, otro ingreso de alquiler
     /scheduleEEstates/*/materiallyParticipates: ¿Participó de forma importante?
-    /scheduleEEstates/*/hasOtherK1Amount:
-      ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 5, 6, 7 y 8 tiene una cantidad?
+    /scheduleEEstates/*/box12CodeA: Casilla 12, código A, ajuste para fines del impuesto mínimo
+    /scheduleEEstates/*/hasBox12CodesBThroughI: ¿La casilla 12 tiene una cantidad para el código B, C, D, E, F, G, H o I?
+    /scheduleEEstates/*/hasBox12CodeJ: ¿La casilla 12, código J, partidas de exclusión, tiene una cantidad?
+    /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 5, 6, 7, 8 y los códigos A a J de la casilla 12 tiene una cantidad?
     /scheduleEEstates/*/basisLimitApplies: ¿Se aplica un límite de base?
     /scheduleEEstates/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/passiveDeductionOrLoss: ¿Hay una deducción o pérdida pasiva?

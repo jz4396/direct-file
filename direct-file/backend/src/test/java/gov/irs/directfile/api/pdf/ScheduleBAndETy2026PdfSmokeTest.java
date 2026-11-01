@@ -120,6 +120,16 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "hasOtherK1Amount", bool(false));
         m.put(p + "basisComputationRequired", bool(false));
         m.put(p + "anyAmountNotAtRisk", bool(false));
+        // Form 1065 boxes 5, 6a, and 6b and Form 1120-S boxes 4, 5a, and 5b are Form 1040 lines 2b, 3b, and 3a.
+        // A supported entity has them at zero. 26 U.S.C. 469(e)(1)(A).
+        m.put(p + "form1065Box5", dollar("0.00"));
+        m.put(p + "form1065Box6a", dollar("0.00"));
+        m.put(p + "form1065Box6b", dollar("0.00"));
+        m.put(p + "form1120sBox4", dollar("0.00"));
+        m.put(p + "form1120sBox5a", dollar("0.00"));
+        m.put(p + "form1120sBox5b", dollar("0.00"));
+        m.put(p + "dividendIncludesPtep", bool(false));
+        m.put(p + "box5IncludesCleanRenewableEnergyBondInterest", bool(false));
     }
 
     static Map<String, String> partIIGate(Map<String, String> m) {
@@ -155,6 +165,10 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "box7", dollar("0.00"));
         m.put(p + "box8", dollar("0.00"));
         m.put(p + "materiallyParticipates", bool(true));
+        // Box 12 code A is Form 6251 line 2j. Codes B through I are a separate stop. Code J is not a stop.
+        m.put(p + "box12CodeA", dollar("0.00"));
+        m.put(p + "hasBox12CodesBThroughI", bool(false));
+        m.put(p + "hasBox12CodeJ", bool(false));
         m.put(p + "hasOtherK1Amount", bool(false));
         m.put(p + "basisLimitApplies", bool(false));
         m.put(p + "anyAmountNotAtRisk", bool(false));
