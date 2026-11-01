@@ -339,6 +339,88 @@
       </Derived>
     </Fact>
 
+    <Fact path="/writablePtcDependentHasForm2555">
+      <Description>#88: Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8,
+        Worksheet 1-2, line 3: "Enter any amounts for your dependents from Form 2555, lines 45 and 50".
+        26 U.S.C. 36B(d)(2)(B)(i) (https://www.law.cornell.edu/uscode/text/26/36B) increases modified AGI by "any
+        amount excluded from gross income under section 911". Those lines are not computed. True when a dependent who
+        must file has an amount on Form 2555, lines 45 and 50.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/flowKnockoutPtcDependentForm2555">
+      <Name>Knockout: dependent Form 2555</Name>
+      <Description>#88: Worksheet 1-2, line 3 is not entered on Form 8962 line 2b. 26 U.S.C. 36B(d)(2)(B)(i)
+        (https://www.law.cornell.edu/uscode/text/26/36B): modified AGI includes "any amount excluded from gross income
+        under section 911". Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8,
+        Worksheet 1-2, line 3: "Enter any amounts for your dependents from Form 2555, lines 45 and 50". Form 2555 is
+        not computed, so a dependent who must file and has an amount on those lines stops the return. Complete false
+        unless /dependentsRequiredToFile is true and /writablePtcDependentHasForm2555 is a complete true. Line 2b stays
+        incomplete until that answer is no, so worksheet line 3 is not entered as zero.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency path="/dependentsRequiredToFile" />
+          <IsComplete>
+            <Dependency path="/writablePtcDependentHasForm2555" />
+          </IsComplete>
+          <Dependency path="/writablePtcDependentHasForm2555" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/writablePtcFilingForm8814">
+      <Description>#88: Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8,
+        Worksheet 1-1 footnote and Line 2b, Form 8814: "If you are filing Form 8814 and the amount on Form 8814, line
+        4, is more than $1,350, you must enter certain amounts from that form on Worksheet 1-2." True when the
+        taxpayer is filing Form 8814, Parents' Election to Report Child's Interest and Dividends. This question is the
+        Form 8814 determination. /form8814Included is not that determination.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/flowKnockoutPtcForm8814">
+      <Name>Knockout: Form 8814</Name>
+      <Description>#88: Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8, Line
+        2b, Form 8814: "If you are filing Form 8814, Parents' Election to Report Child's Interest and Dividends, and
+        the amount on Form 8814, line 4, is more than $1,350, you must include on line 1 of Worksheet 1-2 the sum of
+        the tax-exempt interest from Form 8814, line 1b; the lesser of Form 8814, line 4 or line 5; and any nontaxable
+        social security benefits your child received." Those amounts are not computed. Filing Form 8814 stops the
+        return. Complete false when /writablePtcFilingForm8814 is not a complete true. /form8814Included is not this
+        stop.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/writablePtcFilingForm8814" />
+                </IsComplete>
+                <Dependency path="/writablePtcFilingForm8814" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/maybeEligibleForPtc">
       <Description>Maybe eligible for PTC based on dependence status</Description>
       <Export downstreamFacts="true" />
@@ -483,6 +565,45 @@
                         <Dependency
                           path="/writableBelow100ThresholdAndNotEligibleForMedicaidBecauseOfImmigrationStatus" />
                       </IsComplete>
+                    </Then>
+                  </Case>
+                  <Case>
+                    <When>
+                      <True />
+                    </When>
+                    <Then>
+                      <True />
+                    </Then>
+                  </Case>
+                </Switch>
+
+                <!-- Worksheet 1-2 is required before Form 8962 line 3 can include line 2b. -->
+                <Switch>
+                  <Case>
+                    <When>
+                      <GreaterThanOrEqual>
+                        <Left>
+                          <Dependency module="familyAndHousehold" path="/claimedDependentsCount" />
+                        </Left>
+                        <Right>
+                          <Int>1</Int>
+                        </Right>
+                      </GreaterThanOrEqual>
+                    </When>
+                    <Then>
+                      <All>
+                        <IsComplete>
+                          <Dependency path="/writableDependentsRequiredToFile" />
+                        </IsComplete>
+                        <Any>
+                          <Not>
+                            <Dependency path="/dependentsRequiredToFile" />
+                          </Not>
+                          <IsComplete>
+                            <Dependency path="/form8962Line2b" />
+                          </IsComplete>
+                        </Any>
+                      </All>
                     </Then>
                   </Case>
                   <Case>
@@ -840,14 +961,23 @@
     </Fact>
 
     <Fact path="/writableDependentsRequiredToFile">
-      <Description>(writable)At least one dependent is required to file</Description>
+      <Description>#88: 26 U.S.C. 36B(d)(2)(A)(ii)(II) (https://www.law.cornell.edu/uscode/text/26/36B): household
+        income includes a dependent's modified AGI only when that person "was required to file a return of tax
+        imposed by section 1". Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8,
+        Line 2b: "Enter on line 2b the combined modified AGI for your dependents who are required to file an income
+        tax return because their income meets the income tax return filing threshold. ... Do not include the modified
+        AGI of dependents who are filing a tax return only to claim a refund of tax withheld or estimated tax." True
+        when at least one claimed dependent meets that filing threshold.</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
 
     <Fact path="/dependentsRequiredToFile">
-      <Description>At least one dependent is required to file</Description>
+      <Description>#88: true when a claimed dependent (a person taken into account in tax family size, 26 U.S.C.
+        36B(d)(1) and (d)(2)(A)(ii)(I)) is required to file under section 1. That dependent's modified AGI is Form
+        8962 line 2b (/form8962Line2b). Instructions for Form 8962 (2025), PDF p. 22, Line 2b: "Complete line 2b only
+        if your dependent(s) is required to file an income tax return."</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -1675,14 +1805,154 @@
       </Derived>
     </Fact>
 
+    <Fact path="/writablePtcDependentsAgi">
+      <Name>Worksheet 1-2 line 1</Name>
+      <Description>#88: Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8,
+        Worksheet 1-2, line 1: "Enter the AGI* for your dependents from Form 1040, 1040-SR, or 1040-NR, line 11a".
+        Footnote: "Only include your dependents who are required to file an income tax return because their income
+        meets the income tax return filing threshold." 26 U.S.C. 36B(d)(2)(B)
+        (https://www.law.cornell.edu/uscode/text/26/36B) starts modified AGI with adjusted gross income. PDF p. 8, Form
+        8814: if Form 8814, line 4, is more than $1,350, line 1 also includes Form 8814, line 1b, the lesser of Form
+        8814, line 4 or line 5, and the child's nontaxable social security. That inclusion is not computed.
+        /flowKnockoutPtcForm8814 stops the return when Form 8814 is filed.</Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/writablePtcDependentsTaxExemptInterest">
+      <Name>Worksheet 1-2 line 2</Name>
+      <Description>#88: Instructions for Form 8962 (2025), PDF p. 8, Worksheet 1-2, line 2: "Enter any tax-exempt
+        interest for your dependents from Form 1040, 1040-SR, or 1040-NR, line 2a". 26 U.S.C. 36B(d)(2)(B)(ii):
+        modified AGI increases AGI by "any amount of interest received or accrued by the taxpayer during the taxable
+        year which is exempt from tax".</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/writablePtcDependentsNontaxableSocialSecurity">
+      <Name>Worksheet 1-2 line 4</Name>
+      <Description>#88: Instructions for Form 8962 (2025), PDF p. 8, Worksheet 1-2, line 4: "For each dependent filing
+        Form 1040 or 1040-SR: If line 6a is more than line 6b, subtract line 6b from line 6a and enter the result".
+        26 U.S.C. 36B(d)(2)(B)(iii): modified AGI increases AGI by "an amount equal to the portion of the taxpayer's
+        social security benefits (as defined in section 86(d)) which is not included in gross income under section 86
+        for the taxable year".</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/form8962Line2b">
+      <Name>Form 8962 line 2b</Name>
+      <Description>#88: Form 8962 line 2b, dependents' modified AGI. 26 U.S.C. 36B(d)(2)(A)(ii)
+        (https://www.law.cornell.edu/uscode/text/26/36B): household income includes "the aggregate modified adjusted
+        gross incomes of all other individuals who (I) were taken into account in determining the taxpayer's family
+        size under paragraph (1), and (II) were required to file a return of tax imposed by section 1 for the taxable
+        year." Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8, Worksheet 1-2,
+        line 5: "Add lines 1 through 4. Enter here and on Form 8962, line 2b". Worksheet line 3 (Form 2555, lines 45
+        and 50) is not an addend: /flowKnockoutPtcDependentForm2555 stops the return when a dependent has that amount,
+        so line 3 is zero when line 2b is computed. /flowKnockoutPtcForm8814 stops the return when Form 8814 is filed,
+        so the Form 8814 inclusion on worksheet line 1 is not left off line 2b. Complete only when
+        /dependentsRequiredToFile is true and both of those answers are no. PDF p. 22, Line 2b: "Complete line 2b only
+        if your dependent(s) is required to file an income tax return. ... If you are not required to complete line
+        2b, enter your modified AGI from line 2a on line 3." Dollars only (PDF p. 22: "enter dollars only on Form
+        8962").</Description>
+      <Export mef="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/dependentsRequiredToFile" />
+                <IsComplete>
+                  <Dependency path="/writablePtcDependentHasForm2555" />
+                </IsComplete>
+                <Not>
+                  <Dependency path="/writablePtcDependentHasForm2555" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="/writablePtcFilingForm8814" />
+                </IsComplete>
+                <Not>
+                  <Dependency path="/writablePtcFilingForm8814" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Round>
+                <Add>
+                  <Dependency path="/writablePtcDependentsAgi" />
+                  <Dependency path="/writablePtcDependentsTaxExemptInterest" />
+                  <Dependency path="/writablePtcDependentsNontaxableSocialSecurity" />
+                </Add>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/householdIncome">
-      <Description>The household income for PTC (magi + dependents magi), used on Form 8962 Line 3</Description>
+      <Description>#88: Form 8962 line 3. 26 U.S.C. 36B(d)(2)(A) (https://www.law.cornell.edu/uscode/text/26/36B):
+        household income is "the modified adjusted gross income of the taxpayer, plus" the aggregate modified AGI in
+        (d)(2)(A)(ii). Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8, Line 3:
+        "Add the amounts on lines 2a and 2b. Combine them even if one or both of them are negative. If the total is
+        less than zero, enter -0- on line 3." Line 2a is /ptcMagi. Line 2b (/form8962Line2b) is added when a dependent
+        is required to file; otherwise line 3 is line 2a (PDF p. 22).</Description>
       <Export mef="true" />
       <ExportZero />
       <Derived>
         <GreaterOf>
           <Dollar>0</Dollar>
-          <Dependency path="/ptcMagi" />
+          <Add>
+            <Dependency path="/ptcMagi" />
+            <Switch>
+              <Case>
+                <When>
+                  <All>
+                    <IsComplete>
+                      <Dependency path="/dependentsRequiredToFile" />
+                    </IsComplete>
+                    <Dependency path="/dependentsRequiredToFile" />
+                  </All>
+                </When>
+                <Then>
+                  <Dependency path="/form8962Line2b" />
+                </Then>
+              </Case>
+              <!-- PDF p. 8: Form 8814 line 4 over $1,350 must be included on Worksheet 1-2, line 1. Do not carry
+                   line 2a to line 3 while that inclusion is uncomputed. -->
+              <Case>
+                <When>
+                  <All>
+                    <IsComplete>
+                      <Dependency path="/writablePtcFilingForm8814" />
+                    </IsComplete>
+                    <Dependency path="/writablePtcFilingForm8814" />
+                  </All>
+                </When>
+                <Then>
+                  <Dependency path="/form8962Line2b" />
+                </Then>
+              </Case>
+              <Case>
+                <When>
+                  <True />
+                </When>
+                <Then>
+                  <Dollar>0</Dollar>
+                </Then>
+              </Case>
+            </Switch>
+          </Add>
         </GreaterOf>
       </Derived>
     </Fact>

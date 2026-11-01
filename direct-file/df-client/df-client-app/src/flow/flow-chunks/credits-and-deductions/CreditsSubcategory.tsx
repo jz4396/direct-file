@@ -705,15 +705,101 @@ export const CreditsSubcategory = (
               <Boolean path='/writableDependentsRequiredToFile' batches={[`ptc-1`]} />
               <SaveAndOrContinueButton />
             </Screen>
-            <Screen route='dependents-filing-req-ko' condition='/dependentsRequiredToFile' isKnockout>
+            <Screen route='ptc-form-8814' condition='/claimedDependentsCount'>
+              <ContextHeading
+                displayOnlyOn='edit'
+                i18nKey='/heading/credits-and-deductions/credits/ptc'
+                batches={[`ptc-1`]}
+              />
+              <Heading i18nKey='/heading/credits-and-deductions/credits/ptc-form-8814' batches={[`ptc-1`]} />
+              <InfoDisplay i18nKey='/info/credits-and-deductions/credits/ptc-form-8814' batches={[`ptc-1`]} />
+              <Boolean path='/writablePtcFilingForm8814' batches={[`ptc-1`]} />
+              <SaveAndOrContinueButton />
+            </Screen>
+            <Screen route='ptc-form-8814-ko' condition='/flowKnockoutPtcForm8814' isKnockout>
+              <IconDisplay name='ErrorOutline' size={9} isCentered />
+              <Heading i18nKey='/heading/knockout/ptc-generic-ko' batches={[`ptc-1`]} />
+              <InfoDisplay i18nKey='/info/credits-and-deductions/credits/ptc-form-8814-ko' batches={[`ptc-1`]} />
+              <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+              <KnockoutButton i18nKey='button.knockout' />
+            </Screen>
+            <Screen route='ptc-dependents-worksheet-agi' condition='/dependentsRequiredToFile'>
+              <ContextHeading
+                displayOnlyOn='edit'
+                i18nKey='/heading/credits-and-deductions/credits/ptc'
+                batches={[`ptc-1`]}
+              />
+              <Heading
+                i18nKey='/heading/credits-and-deductions/credits/ptc-dependents-worksheet-agi'
+                batches={[`ptc-1`]}
+              />
+              <InfoDisplay
+                i18nKey='/info/credits-and-deductions/credits/ptc-dependents-worksheet-agi'
+                batches={[`ptc-1`]}
+              />
+              <Dollar path='/writablePtcDependentsAgi' batches={[`ptc-1`]} />
+              <SaveAndOrContinueButton />
+            </Screen>
+            <Screen route='ptc-dependents-worksheet-tax-exempt-interest' condition='/dependentsRequiredToFile'>
+              <ContextHeading
+                displayOnlyOn='edit'
+                i18nKey='/heading/credits-and-deductions/credits/ptc'
+                batches={[`ptc-1`]}
+              />
+              <Heading
+                i18nKey='/heading/credits-and-deductions/credits/ptc-dependents-worksheet-tax-exempt-interest'
+                batches={[`ptc-1`]}
+              />
+              <InfoDisplay
+                i18nKey='/info/credits-and-deductions/credits/ptc-dependents-worksheet-tax-exempt-interest'
+                batches={[`ptc-1`]}
+              />
+              <Dollar path='/writablePtcDependentsTaxExemptInterest' batches={[`ptc-1`]} />
+              <SaveAndOrContinueButton />
+            </Screen>
+            <Screen route='ptc-dependent-form-2555' condition='/dependentsRequiredToFile'>
+              <ContextHeading
+                displayOnlyOn='edit'
+                i18nKey='/heading/credits-and-deductions/credits/ptc'
+                batches={[`ptc-1`]}
+              />
+              <Heading
+                i18nKey='/heading/credits-and-deductions/credits/ptc-dependent-form-2555'
+                batches={[`ptc-1`]}
+              />
+              <InfoDisplay
+                i18nKey='/info/credits-and-deductions/credits/ptc-dependent-form-2555'
+                batches={[`ptc-1`]}
+              />
+              <Boolean path='/writablePtcDependentHasForm2555' batches={[`ptc-1`]} />
+              <SaveAndOrContinueButton />
+            </Screen>
+            <Screen route='ptc-dependent-form-2555-ko' condition='/flowKnockoutPtcDependentForm2555' isKnockout>
               <IconDisplay name='ErrorOutline' size={9} isCentered />
               <Heading i18nKey='/heading/knockout/ptc-generic-ko' batches={[`ptc-1`]} />
               <InfoDisplay
-                i18nKey='/info/credits-and-deductions/credits/dependents-filing-req-ko'
+                i18nKey='/info/credits-and-deductions/credits/ptc-dependent-form-2555-ko'
                 batches={[`ptc-1`]}
               />
               <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
               <KnockoutButton i18nKey='button.knockout' />
+            </Screen>
+            <Screen route='ptc-dependents-worksheet-social-security' condition='/dependentsRequiredToFile'>
+              <ContextHeading
+                displayOnlyOn='edit'
+                i18nKey='/heading/credits-and-deductions/credits/ptc'
+                batches={[`ptc-1`]}
+              />
+              <Heading
+                i18nKey='/heading/credits-and-deductions/credits/ptc-dependents-worksheet-social-security'
+                batches={[`ptc-1`]}
+              />
+              <InfoDisplay
+                i18nKey='/info/credits-and-deductions/credits/ptc-dependents-worksheet-social-security'
+                batches={[`ptc-1`]}
+              />
+              <Dollar path='/writablePtcDependentsNontaxableSocialSecurity' batches={[`ptc-1`]} />
+              <SaveAndOrContinueButton />
             </Screen>
             <Screen route='1095-a-check'>
               <ContextHeading

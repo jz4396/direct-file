@@ -85,7 +85,7 @@ class Form8962Ty2026PdfSmokeTest {
             // draft's own fields.
             assertTrue(graph.get("/totalPtcAmountAllowed").complete());
             assertFalse(field(fields, "f1_90[0]").isEmpty(), "line 24 is f1_90, not the 2024 f1_91");
-            assertBlank(fields, "f1_5[0]", "2b dependents' MAGI");
+            assertBlank(fields, "f1_5[0]", "2b blank when no dependent is required to file");
             assertBlank(fields, "f1_18[0]", "January column (a) when line 10 is Yes");
             assertBlank(fields, "f1_89[0]", "December column (f) when line 10 is Yes");
             assertBlank(fields, "f1_94[0]", "28 reserved");
@@ -134,8 +134,8 @@ class Form8962Ty2026PdfSmokeTest {
     }
 
     /**
-     * Each mapped field's tooltip on the 2026 draft names the line the field map fills. Lines 2b, 28 and 29, line 9
-     * Yes, and Parts IV and V stay unmapped.
+     * Each mapped field's tooltip on the 2026 draft names the line the field map fills. Lines 28 and 29, line 9
+     * Yes, and Parts IV and V stay unmapped. Line 2b is mapped when a dependent is required to file.
      */
     @Test
     void mappedFieldTooltipsNameTheComputedLinesAndReservedLinesStayUnmapped() throws Exception {
@@ -145,6 +145,7 @@ class Form8962Ty2026PdfSmokeTest {
         expected.put("c1_1[0]", "married filing separately");
         expected.put("f1_3[0]", "1. Tax family size");
         expected.put("f1_4[0]", "2a. Modified A G I");
+        expected.put("f1_5[0]", "2b. Enter the total of your dependents' modified A G I");
         expected.put("f1_6[0]", "3. Household income");
         expected.put("c1_2[0]", "a. Alaska");
         expected.put("c1_2[1]", "4b. Hawaii");
@@ -217,7 +218,7 @@ class Form8962Ty2026PdfSmokeTest {
                                 + "\"");
             }
             assertEquals(expected.size(), mapped, "every computed line is mapped");
-            for (String reserved : List.of("f1_5[0]", "f1_94[0]", "f1_95[0]", "c1_4[0]")) {
+            for (String reserved : List.of("f1_94[0]", "f1_95[0]", "c1_4[0]")) {
                 assertFalse(mappedLine(config, reserved), reserved + " is not a field-map key");
             }
             assertTrue(

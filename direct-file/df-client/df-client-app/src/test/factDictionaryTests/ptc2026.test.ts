@@ -12,7 +12,7 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithW2NoDeductionsNoCreditsBaseData, makeW2Data, primaryFilerId } from '../testData.js';
+import { filerWithW2NoDeductionsNoCreditsBaseData, makeChildData, makeW2Data, primaryFilerId } from '../testData.js';
 
 /**
  * #88 Form 8962 (2026) premium tax credit. Golden end-to-end scenarios (synthetic data): Single, tax family of 1, 48
@@ -79,6 +79,8 @@ const knockouts = [
   `/flowKnockoutPtcAllocationOfPolicyAmounts`,
   `/flowKnockoutPtcAlternativeCalculationForYearOfMarriage`,
   `/flowKnockoutPtcSelfEmployedHealthInsurance`,
+  `/flowKnockoutPtcDependentForm2555`,
+  `/flowKnockoutPtcForm8814`,
   `/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl`,
   `/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod`,
 ];
@@ -488,5 +490,143 @@ describe(`Form 8962 (2026) knockouts`, () => {
     const g = fg({ ...noPlan, '/1095As': createCollectionWrapper([]) });
     expectNoPtcKnockout(g);
     expectNoPtcKnockout(fg(filerWithW2NoDeductionsNoCreditsBaseData));
+  });
+});
+
+/**
+ * Form 8962 line 2b. 26 U.S.C. 36B(d)(2)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/36B): household income
+ * includes "the aggregate modified adjusted gross incomes of all other individuals who (I) were taken into account in
+ * determining the taxpayer's family size under paragraph (1), and (II) were required to file a return of tax imposed
+ * by section 1". Instructions for Form 8962 (2025), https://www.irs.gov/pub/irs-pdf/i8962.pdf, PDF p. 8, Worksheet
+ * 1-2, line 5: "Add lines 1 through 4. Enter here and on Form 8962, line 2b". PDF p. 8, Line 3: "Add the amounts on
+ * lines 2a and 2b. Combine them even if one or both of them are negative. If the total is less than zero, enter -0-".
+ * PDF p. 22: "Complete line 2b only if your dependent(s) is required to file an income tax return."
+ */
+const dependentId = `88c00000-0000-4000-8000-000000000001`;
+const dependentsMagi = (
+  agi: number,
+  taxExemptInterest: number,
+  nontaxableSocialSecurity: number,
+  requiredToFile = true,
+  dependentHasForm2555 = false,
+  filingForm8814 = false
+) => ({
+  '/familyAndHousehold': createCollectionWrapper([dependentId]),
+  ...makeChildData(dependentId),
+  '/writableDependentsRequiredToFile': createBooleanWrapper(requiredToFile),
+  '/writablePtcDependentHasForm2555': createBooleanWrapper(dependentHasForm2555),
+  '/writablePtcFilingForm8814': createBooleanWrapper(filingForm8814),
+  '/writablePtcDependentsAgi': createDollarWrapper(`${agi}`),
+  '/writablePtcDependentsTaxExemptInterest': createDollarWrapper(`${taxExemptInterest}`),
+  '/writablePtcDependentsNontaxableSocialSecurity': createDollarWrapper(`${nontaxableSocialSecurity}`),
+});
+
+describe(`Form 8962 line 2b dependents' modified AGI`, () => {
+  it(`a tax family of 1 leaves line 2b blank and line 3 equal to line 2a`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8962Line2b`, `/householdIncome`];
+    const g = fg(ptcReturn(31300, 5000, 6000, 4500));
+    expect(val(g, `/taxFamilySize`)).toBe(`1`);
+    expect(val(g, `/dependentsRequiredToFile`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutPtcDependentForm2555`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutPtcForm8814`)).toBe(`false`);
+    expect(raw(g, `/form8962Line2b`).complete).toBe(false);
+    expect(val(g, `/ptcMagi`)).toBe(`31300.00`);
+    expect(val(g, `/householdIncome`)).toBe(`31300.00`);
+  });
+
+  it(`Worksheet 1-2 lines 1 through 4 are line 2b and are added to line 3`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8962Line2b`, `/householdIncome`, `/householdIncomeAsPercent`];
+    // Line 1 AGI 8,000 + line 2 tax-exempt interest 1,500 + line 4 nontaxable social security 900 = 10,400.
+    // Worksheet line 3 is zero: no dependent has Form 2555, lines 45 and 50, and Form 8814 is not filed.
+    // Filer line 2a is 31,300. Line 3 is 41,700.
+    // Tax family size 2. 2025 HHS poverty guideline, 90 FR 5917 p. 5917: 15,650 + 5,500 = 21,150.
+    // 41,700 x 100 / 21,150 = 197.16, and line 5 drops the fraction (i8962 (2025), PDF p. 9).
+    const g = fg(ptcReturn(31300, 5000, 6000, 0, dependentsMagi(8000, 1500, 900)));
+    expect(val(g, `/claimedDependentsCount`)).toBe(`1`);
+    expect(val(g, `/taxFamilySize`)).toBe(`2`);
+    expect(val(g, `/dependentsRequiredToFile`)).toBe(`true`);
+    expect(val(g, `/flowKnockoutPtcDependentForm2555`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutPtcForm8814`)).toBe(`false`);
+    expect(val(g, `/form8962Line2b`)).toBe(`10400.00`);
+    expect(val(g, `/ptcMagi`)).toBe(`31300.00`);
+    expect(val(g, `/householdIncome`)).toBe(`41700.00`);
+    expect(val(g, `/federalPovertyLevelThreshold`)).toBe(`21150.00`);
+    expect(val(g, `/householdIncomeAsPercent`)).toBe(`197`);
+    expectNoPtcKnockout(g);
+    expect(val(g, `/ptcSectionIsComplete`)).toBe(`true`);
+  });
+
+  it(`a dependent filing only for a refund is left off line 2b`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8962Line2b`, `/householdIncome`];
+    // PDF p. 8, Line 2b: "Do not include the modified AGI of dependents who are filing a tax return only to claim a
+    // refund of tax withheld or estimated tax." The person is still in tax family size. Stored worksheet amounts are
+    // not line 2b. 31,300 x 100 / 21,150 = 147.99, and line 5 drops the fraction (i8962 (2025), PDF p. 9).
+    const g = fg(ptcReturn(31300, 5000, 6000, 0, dependentsMagi(8000, 1500, 900, false)));
+    expect(val(g, `/taxFamilySize`)).toBe(`2`);
+    expect(val(g, `/dependentsRequiredToFile`)).toBe(`false`);
+    expect(raw(g, `/form8962Line2b`).complete).toBe(false);
+    expect(val(g, `/householdIncome`)).toBe(`31300.00`);
+    expect(val(g, `/householdIncomeAsPercent`)).toBe(`147`);
+  });
+
+  it(`negative dependent AGI is combined on line 3, and a negative total is -0-`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8962Line2b`, `/householdIncome`];
+    const combined = fg(ptcReturn(20000, 5000, 6000, 0, dependentsMagi(-2500, 0, 0)));
+    expect(val(combined, `/form8962Line2b`)).toBe(`-2500.00`);
+    expect(val(combined, `/householdIncome`)).toBe(`17500.00`);
+    expect(val(combined, `/householdIncomeAsPercent`)).toBe(`82`);
+    // Advance payments keep Form 8962 needed, so line 5 of 0 is the below-100 knockout
+    // (26 U.S.C. 36B(c)(1)(A)).
+    const floored = fg(ptcReturn(1000, 5000, 6000, 400, dependentsMagi(-4000, 0, 0)));
+    expect(val(floored, `/form8962Line2b`)).toBe(`-4000.00`);
+    expect(val(floored, `/householdIncome`)).toBe(`0.00`);
+    expect(val(floored, `/householdIncomeAsPercent`)).toBe(`0`);
+    expect(val(floored, `/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl`)).toBe(`true`);
+  });
+
+  it(`line 2b rounds half up to a whole dollar`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8962Line2b`];
+    // PDF p. 22: "enter dollars only on Form 8962."
+    const up = fg(ptcReturn(31300, 5000, 6000, 0, dependentsMagi(10.5, 0, 0)));
+    expect(val(up, `/form8962Line2b`)).toBe(`11.00`);
+    const down = fg(ptcReturn(31300, 5000, 6000, 0, dependentsMagi(10.49, 0, 0)));
+    expect(val(down, `/form8962Line2b`)).toBe(`10.00`);
+  });
+
+  it(`line 3 is incomplete until Worksheet 1-2 is complete`, ({ task }) => {
+    task.meta.testedFactPaths = [`/form8962Line2b`, `/householdIncome`];
+    const { '/writablePtcDependentsAgi': _agi, ...withoutAgi } = dependentsMagi(8000, 1500, 900);
+    const g = fg(ptcReturn(31300, 5000, 6000, 0, withoutAgi));
+    expect(val(g, `/dependentsRequiredToFile`)).toBe(`true`);
+    expect(raw(g, `/form8962Line2b`).complete).toBe(false);
+    expect(raw(g, `/householdIncome`).complete).toBe(false);
+    expect(val(g, `/ptcSectionIsComplete`)).toBe(`false`);
+  });
+
+  it(`a dependent with Form 2555, lines 45 and 50, stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPtcDependentForm2555`];
+    // PDF p. 8, Worksheet 1-2, line 3: "Enter any amounts for your dependents from Form 2555, lines 45 and 50".
+    // 26 U.S.C. 36B(d)(2)(B)(i). That amount is not collected, and line 2b is not computed without it.
+    const g = fg(ptcReturn(31300, 5000, 6000, 0, dependentsMagi(8000, 1500, 900, true, true, false)));
+    expect(val(g, `/dependentsRequiredToFile`)).toBe(`true`);
+    expect(val(g, `/flowKnockoutPtcDependentForm2555`)).toBe(`true`);
+    expect(val(g, `/flowKnockoutPtcForm8814`)).toBe(`false`);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
+    expect(raw(g, `/form8962Line2b`).complete).toBe(false);
+    expect(raw(g, `/householdIncome`).complete).toBe(false);
+  });
+
+  it(`filing Form 8814 stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPtcForm8814`];
+    // PDF p. 8, Line 2b, Form 8814: if line 4 is more than $1,350, Worksheet 1-2, line 1, includes Form 8814, line
+    // 1b, the lesser of line 4 or line 5, and the child's nontaxable social security. Those amounts are not computed.
+    // The child is not required to file. Line 3 is not line 2a while Form 8814 is filed.
+    const g = fg(ptcReturn(31300, 5000, 6000, 0, dependentsMagi(0, 0, 0, false, false, true)));
+    expect(val(g, `/dependentsRequiredToFile`)).toBe(`false`);
+    expect(val(g, `/flowKnockoutPtcForm8814`)).toBe(`true`);
+    expect(val(g, `/flowKnockoutPtcDependentForm2555`)).toBe(`false`);
+    expect(val(g, `/flowIsKnockedOut`)).toBe(`true`);
+    expect(raw(g, `/form8962Line2b`).complete).toBe(false);
+    expect(raw(g, `/householdIncome`).complete).toBe(false);
   });
 });

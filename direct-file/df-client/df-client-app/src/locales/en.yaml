@@ -2392,6 +2392,16 @@ headings:
   /heading/credits-and-deductions/credits/ptc-dependents-filing-req:
     Do you have a dependent who is required to file a {{/taxYear}} federal tax return because their income is more than
     a certain amount?
+  /heading/credits-and-deductions/credits/ptc-dependents-worksheet-agi:
+    What is the combined AGI on Form 1040, Form 1040-SR, or Form 1040-NR, line 11a, for the dependents who must file?
+  /heading/credits-and-deductions/credits/ptc-dependents-worksheet-tax-exempt-interest:
+    What is their combined tax-exempt interest from Form 1040, Form 1040-SR, or Form 1040-NR, line 2a?
+  /heading/credits-and-deductions/credits/ptc-form-8814:
+    Are you filing Form 8814, Parents’ Election to Report Child’s Interest and Dividends?
+  /heading/credits-and-deductions/credits/ptc-dependent-form-2555:
+    Did any dependent who must file have an amount on Form 2555, lines 45 and 50?
+  /heading/credits-and-deductions/credits/ptc-dependents-worksheet-social-security:
+    What is their combined nontaxable social security (Form 1040 or Form 1040-SR, line 6a minus line 6b)?
   /heading/credits-and-deductions/credits/ptc-multiple-form-check:
     Do you have more than one Form 1095-A to add to your federal tax return?
   /heading/credits-and-deductions/credits/ptc-enrollment-family-self-with-deps:
@@ -9448,12 +9458,44 @@ info:
       - p: >-
           You can be covered under a QSEHRA and still qualify to take the Premium Tax Credit, but Direct File doesn’t
           support this tax situation yet.
-  /info/credits-and-deductions/credits/dependents-filing-req-ko:
+  /info/credits-and-deductions/credits/ptc-dependents-worksheet-agi:
     body:
-      - p: You said you have at least one dependent who is required to file a {{/taxYear}} federal tax return.
-      - p:
-          You’ll need to include part of their income when calculating your Premium Tax Credit (PTC). You may still
-          qualify for the PTC, but Direct File doesn’t support this tax situation yet.
+      - p: >-
+          Include only a dependent who is in your tax family and who must file a federal income tax return because
+          their income meets the filing threshold.
+      - p: >-
+          Do not include a dependent who is filing only to claim a refund of withheld income tax or estimated tax.
+      - p: If the combined AGI is negative, enter the negative amount.
+  /info/credits-and-deductions/credits/ptc-dependents-worksheet-tax-exempt-interest:
+    body:
+      - p: >-
+          This is Worksheet 1-2, line 2. Enter 0 if none of those dependents has tax-exempt interest.
+  /info/credits-and-deductions/credits/ptc-form-8814:
+    body:
+      - p: >-
+          If you are filing Form 8814 and the amount on Form 8814, line 4, is more than $1,350, Worksheet 1-2, line 1,
+          must include the tax-exempt interest from Form 8814, line 1b, the lesser of Form 8814, line 4 or line 5, and
+          any nontaxable social security benefits the child received.
+  /info/credits-and-deductions/credits/ptc-form-8814-ko:
+    body:
+      - p: >-
+          You said you are filing Form 8814. Worksheet 1-2 has to include amounts from that form when line 4 is more
+          than $1,350. Direct File doesn’t support this situation yet.
+  /info/credits-and-deductions/credits/ptc-dependent-form-2555:
+    body:
+      - p: >-
+          Worksheet 1-2, line 3, is any amount on Form 2555, lines 45 and 50, for a dependent who must file. That is
+          income excluded from gross income under section 911, and it is part of modified AGI.
+  /info/credits-and-deductions/credits/ptc-dependent-form-2555-ko:
+    body:
+      - p: >-
+          You said a dependent who must file has an amount on Form 2555, lines 45 and 50. That excluded income is part
+          of modified AGI. Direct File doesn’t support this situation yet.
+  /info/credits-and-deductions/credits/ptc-dependents-worksheet-social-security:
+    body:
+      - p: >-
+          For each of those dependents filing Form 1040 or Form 1040-SR, if line 6a is more than line 6b, subtract
+          line 6b from line 6a. Enter the total. Enter 0 if none.
   /info/credits-and-deductions/credits/ptc-multiple-form-check-shared:
     body:
       - p: "You could have more than one Form 1095-A if, for example:"
@@ -20033,6 +20075,20 @@ fields:
       ExceedsMinLimit: Must be at least $0
   /writableCdccTotalQualifiedDependentCareExpenses:
     name: "{{/taxYear}} Qualified expenses"
+  /writablePtcDependentsAgi:
+    name: Dependents' combined AGI (Worksheet 1-2, line 1)
+  /writablePtcDependentsTaxExemptInterest:
+    name: Dependents' tax-exempt interest (Worksheet 1-2, line 2)
+  /writablePtcFilingForm8814:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /writablePtcDependentHasForm2555:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /writablePtcDependentsNontaxableSocialSecurity:
+    name: Dependents' nontaxable social security (Worksheet 1-2, line 4)
   /cdccCombatPayElection:
     /combatPayOptions:
       usePrimaryCombatPay: Include all combat pay

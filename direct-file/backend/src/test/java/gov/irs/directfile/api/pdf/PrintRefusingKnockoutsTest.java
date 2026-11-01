@@ -60,7 +60,9 @@ class PrintRefusingKnockoutsTest {
             "/flowKnockoutPtcAlternativeCalculationForYearOfMarriage",
             "/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl",
             "/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod",
-            "/flowKnockoutPtcSelfEmployedHealthInsurance");
+            "/flowKnockoutPtcSelfEmployedHealthInsurance",
+            "/flowKnockoutPtcDependentForm2555",
+            "/flowKnockoutPtcForm8814");
     static final int FORM_8962_SCENARIO_COUNT = 7;
     /** Negative modified AGI, so Form 8962 line 5 is under 100%. */
     static final String PTC_BELOW_100_SCENARIO = "ptc-no-aptc-negative-magi.json";
@@ -236,7 +238,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(53, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(55, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
