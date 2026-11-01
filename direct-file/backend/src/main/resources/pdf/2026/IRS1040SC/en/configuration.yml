@@ -17,9 +17,15 @@
 # 20b, 21-26, 27b, 28, 29, 30 (simplified method only), 31, 32, and the first three Part V lines plus line 48. A single
 # stored expense total still prints on line 28,
 # with lines 2, 4, and 6 at zero so lines 3, 5, and 7 equal line 1.
+# Header lines A, B, D, E, and F (cash and accrual) are mapped (#89). 2026 draft Instructions for Schedule C
+# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 Lines A, B, D, and E, and PDF p. 5 Line F.
+# Line A is the activity plus the product or service. Line B is a six-digit code from the chart at the end of those
+# instructions. Line D is the EIN, or blank when the filer has none (never an SSN). Line E is blank when the business
+# is at the address on page 1 of the return. Line F checks cash or accrual. Other (line F (3) and the specify line)
+# stops the return and is not mapped. An unanswered required fact prints blank and is not defaulted to cash.
+# 26 U.S.C. 446(c).
 # Not mapped, left blank (the return stops instead of printing a zero):
-#   A principal business, B code, D EIN, E business address, F accounting method, H started or acquired this year,
-#   I/J Forms 1099, the line 1 statutory-employee checkbox.
+#   H started or acquired this year, I/J Forms 1099, the line 1 statutory-employee checkbox.
 #   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
 #   line 20a equipment rent, line 27a (Form 7205),
 #   Part IV, and Part V lines 4-9.
@@ -42,7 +48,19 @@ form:
     Page1[0]:
       f1_1[0]: /scheduleCBusinesses/*/filer/fullName # "Name of proprietor"
       f1_2[0]: /scheduleCBusinesses/*/filer/tin # "Social security number (SSN)"
+      f1_3[0]: /scheduleCBusinesses/*/lineAPrincipalBusiness # A activity, including product or service
+      f1_4[0]: /scheduleCBusinesses/*/principalBusinessCode # B six-digit code
       f1_5[0]: /scheduleCBusinesses/*/businessName # C "Business name. If no separate business name, leave blank."
+      BoxD[0]:
+        f1_6[0]: /scheduleCBusinesses/*/lineDEmployerIdNumber # D EIN, blank when there is none
+      f1_7[0]: /scheduleCBusinesses/*/lineEStreet # E street; blank if the business is at the return address
+      f1_8[0]: /scheduleCBusinesses/*/lineEApt # E apt
+      f1_9[0]: /scheduleCBusinesses/*/lineECity # E city
+      f1_10[0]: /scheduleCBusinesses/*/lineEState # E state
+      f1_11[0]: /scheduleCBusinesses/*/lineEZip # E ZIP
+      c1_1[0]: /scheduleCBusinesses/*/accountingMethodIsCash # F (1) Cash
+      c1_1[1]: /scheduleCBusinesses/*/accountingMethodIsAccrual # F (2) Accrual
+      # c1_1[2] and f1_12 stay blank. Other is a form stop, not a printed specify line. PDF p. 5, Line F.
       c1_2[0]: /scheduleCBusinesses/*/materiallyParticipates # G "Did you materially participate ... ? Yes"
       c1_2[1]: /scheduleCBusinesses/*/doesNotMateriallyParticipate # G "No"
       f1_13[0]: /scheduleCBusinesses/*/line1GrossReceipts # 1 "Gross receipts or sales" (26 U.S.C. 61)

@@ -2,6 +2,8 @@ package gov.irs.directfile.api.loaders.processor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import gov.irs.directfile.api.loaders.domain.ExportNode;
@@ -60,7 +63,6 @@ public class XmlProcessor {
      * @param in InputStream
      * @return TaxYearDigest
      */
-    @SuppressWarnings(value = {"PMD.CloseResource"}) // suppress this warning for inputStream
     public TaxDictionaryDigest process(final String folderName, final Resource[] xmlFactDictionaryModules) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
@@ -70,9 +72,13 @@ public class XmlProcessor {
             Map<String, TaxFact> factMap = new HashMap<>();
             for (Resource factDictionaryModuleXml : xmlFactDictionaryModules) {
                 DocumentBuilder db = dbf.newDocumentBuilder();
-                InputStream in = factDictionaryModuleXml.getInputStream();
-                Document doc = db.parse(in);
-                in.close();
+                String xml;
+                try (InputStream in = factDictionaryModuleXml.getInputStream()) {
+                    xml = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                }
+                // Draft instruction filenames contain "--" (for example i1040sc--dft.pdf). XML
+                // comments cannot contain that sequence, so comments are removed before parse.
+                Document doc = db.parse(new InputSource(new StringReader(stripComments(xml))));
                 // facts
                 XPath xPath = XPathFactory.newInstance().newXPath();
 
@@ -94,6 +100,40 @@ public class XmlProcessor {
         } catch (XPathExpressionException e) {
             throw new XmlProcessorException("Invalid xpath", e);
         }
+    }
+
+    /**
+     * Removes XML comments, including comments whose text contains "--". A conformant parser rejects
+     * that sequence, and the Schedule C header cite uses the 2026 draft filename {@code i1040sc--dft.pdf}.
+     * CDATA sections are left intact. Comment text is not part of the fact dictionary.
+     */
+    public static String stripComments(final String xml) {
+        StringBuilder out = new StringBuilder(xml.length());
+        int i = 0;
+        int n = xml.length();
+        while (i < n) {
+            if (xml.startsWith("<![CDATA[", i)) {
+                int end = xml.indexOf("]]>", i + 9);
+                if (end < 0) {
+                    out.append(xml, i, n);
+                    break;
+                }
+                out.append(xml, i, end + 3);
+                i = end + 3;
+                continue;
+            }
+            if (xml.startsWith("<!--", i)) {
+                int end = xml.indexOf("-->", i + 4);
+                if (end < 0) {
+                    throw new XmlProcessorException("Unclosed XML comment");
+                }
+                i = end + 3;
+                continue;
+            }
+            out.append(xml.charAt(i));
+            i++;
+        }
+        return out.toString();
     }
 
     private TaxFact readFact(Node node) {

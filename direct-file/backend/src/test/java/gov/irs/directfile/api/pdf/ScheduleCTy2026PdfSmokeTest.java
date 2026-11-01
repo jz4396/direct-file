@@ -19,6 +19,7 @@ import gov.irs.directfile.models.FactTypeWithItem;
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.fieldsOnPages;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrint;
 import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.amount;
@@ -70,7 +71,103 @@ class ScheduleCTy2026PdfSmokeTest {
             String text = new PDFTextStripper().getText(doc);
             assertFalse(text.contains("Schedule 3-A (Form 1040) 2026"), "no lines 27a-30, so no Schedule 3-A");
             assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
+            assertHeaderBlank(sc);
         }
+    }
+
+    /**
+     * #89. Lines A–F stay blank when the filer has not answered them. 2026 draft Instructions for Schedule C, PDF
+     * pp. 4–5. Cash is not assumed. An SSN is not written on line D.
+     */
+    @Test
+    void headerLinesStayBlankWhenRequiredFactsAreMissing() throws Exception {
+        byte[] bytes = generate(selfEmployed("170000.00", "170000.00", "30000.00"));
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            assertHeaderBlank(sc);
+            assertTrue(value(sc, "Page1[0].f1_5[0]").contains("Synthetic Consulting"), "C still prints");
+            String page = scheduleCPage(doc);
+            assertTrue(page.contains("Principal business or profession"), "line A caption");
+            assertTrue(page.contains("Enter code from instructions"), "line B caption");
+            assertTrue(page.contains("Employer ID number"), "line D caption");
+            assertTrue(page.contains("Business address"), "line E caption");
+            assertTrue(page.contains("Accounting method"), "line F caption");
+        }
+    }
+
+    /**
+     * #89. Cash, an EIN, and a separate address print on lines A, B, D, E, and F. Line C is the business name.
+     * 2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, D, and E, and PDF p. 5 Line F.
+     */
+    @Test
+    void headerLinesAFPrintCashEinAndSeparateAddress() throws Exception {
+        Map<String, String> facts = selfEmployed("170000.00", "170000.00", "30000.00");
+        header(facts, "Consulting", "Tax preparation", "541213", true, "12", "3456789", false, "cash");
+        facts.put(biz() + "businessAddress", address("200 Market", "Suite 4", "Harrisburg", "PA", "17101"));
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            String lineA = value(sc, "Page1[0].f1_3[0]");
+            assertTrue(lineA.contains("Consulting"), "A activity");
+            assertTrue(lineA.contains("Tax preparation"), "A product");
+            assertEquals("541213", value(sc, "Page1[0].f1_4[0]"), "B code");
+            assertTrue(value(sc, "Page1[0].f1_5[0]").contains("Synthetic Consulting"), "C name");
+            assertEquals("12-3456789", value(sc, "Page1[0].BoxD[0].f1_6[0]"), "D EIN");
+            assertEquals("200 Market", value(sc, "Page1[0].f1_7[0]"), "E street");
+            assertEquals("Suite 4", value(sc, "Page1[0].f1_8[0]"), "E apt");
+            assertEquals("Harrisburg", value(sc, "Page1[0].f1_9[0]"), "E city");
+            assertEquals("PA", value(sc, "Page1[0].f1_10[0]"), "E state");
+            assertEquals("17101", value(sc, "Page1[0].f1_11[0]"), "E ZIP");
+            assertTrue(checked(sc, "Page1[0].c1_1[0]"), "F cash");
+            blank(sc, "Page1[0].c1_1[1]", "F accrual");
+            blank(sc, "Page1[0].c1_1[2]", "F other");
+            blank(sc, "Page1[0].f1_12[0]", "F specify");
+        }
+    }
+
+    /**
+     * At the return address, with no EIN, on the accrual method. Line D and line E stay blank. 2026 draft
+     * Instructions for Schedule C, PDF p. 4, Lines D and E. 26 U.S.C. 446(c)(2).
+     */
+    @Test
+    void headerAtHomeWithNoEinPrintsAccrualAndLeavesDAndEBlank() throws Exception {
+        Map<String, String> facts = selfEmployed("170000.00", "170000.00", "30000.00");
+        header(facts, "Consulting", "Tax preparation", "541213", false, null, null, true, "accrual");
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            assertEquals("541213", value(sc, "Page1[0].f1_4[0]"), "B");
+            blank(sc, "Page1[0].BoxD[0].f1_6[0]", "D no EIN");
+            blank(sc, "Page1[0].f1_7[0]", "E street");
+            blank(sc, "Page1[0].f1_8[0]", "E apt");
+            blank(sc, "Page1[0].f1_9[0]", "E city");
+            blank(sc, "Page1[0].f1_10[0]", "E state");
+            blank(sc, "Page1[0].f1_11[0]", "E ZIP");
+            blank(sc, "Page1[0].c1_1[0]", "F cash");
+            assertTrue(checked(sc, "Page1[0].c1_1[1]"), "F accrual");
+            blank(sc, "Page1[0].c1_1[2]", "F other");
+        }
+    }
+
+    /**
+     * Other stops the return instead of printing line F (3). 2026 draft Instructions for Schedule C, PDF p. 5, Line
+     * F. 26 U.S.C. 446(c). No new print-refuse path was added.
+     */
+    @Test
+    void headerOtherStopsInsteadOfPrinting() throws Exception {
+        Map<String, String> other = selfEmployed("170000.00", "170000.00", "30000.00");
+        header(other, "Consulting", "Tax preparation", "541213", false, null, null, true, "other");
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(graphOf(other)).contains("/flowKnockoutScheduleCOutOfScope"),
+                "other accounting method refuses the print");
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(other));
+        assertTrue(
+                e.getBody().getProperties().get("blockingFacts") instanceof List<?> blocking
+                        && blocking.contains("/flowKnockoutScheduleCOutOfScope"),
+                "public print lists the Schedule C stop");
     }
 
     /**
@@ -390,5 +487,71 @@ class ScheduleCTy2026PdfSmokeTest {
     private static boolean checked(Map<String, String> fields, String suffix) {
         String v = value(fields, suffix);
         return !v.isEmpty() && !"Off".equals(v);
+    }
+
+    private static void assertHeaderBlank(Map<String, String> sc) {
+        blank(sc, "Page1[0].f1_3[0]", "A");
+        blank(sc, "Page1[0].f1_4[0]", "B");
+        blank(sc, "Page1[0].BoxD[0].f1_6[0]", "D");
+        blank(sc, "Page1[0].f1_7[0]", "E street");
+        blank(sc, "Page1[0].f1_8[0]", "E apt");
+        blank(sc, "Page1[0].f1_9[0]", "E city");
+        blank(sc, "Page1[0].f1_10[0]", "E state");
+        blank(sc, "Page1[0].f1_11[0]", "E ZIP");
+        blank(sc, "Page1[0].c1_1[0]", "F cash");
+        blank(sc, "Page1[0].c1_1[1]", "F accrual");
+        blank(sc, "Page1[0].c1_1[2]", "F other");
+        blank(sc, "Page1[0].f1_12[0]", "F specify");
+    }
+
+    private static String scheduleCPage(PDDocument doc) throws Exception {
+        PDFTextStripper stripper = new PDFTextStripper();
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            stripper.setStartPage(i + 1);
+            stripper.setEndPage(i + 1);
+            String page = stripper.getText(doc);
+            if (page.contains(SC_FOOTER)) {
+                return page;
+            }
+        }
+        throw new AssertionError("Schedule C page missing");
+    }
+
+    static void header(
+            Map<String, String> facts,
+            String activity,
+            String product,
+            String code,
+            boolean hasEin,
+            String einPrefix,
+            String einSerial,
+            boolean atHome,
+            String method) {
+        String b = biz();
+        facts.put(b + "principalBusinessActivity", string(activity));
+        facts.put(b + "principalProductOrService", string(product));
+        facts.put(b + "principalBusinessCode", string(code));
+        facts.put(b + "hasEmployerIdNumber", bool(hasEin));
+        if (hasEin) {
+            facts.put(b + "employerIdNumber", ein(einPrefix, einSerial));
+        }
+        facts.put(b + "businessConductedAtHome", bool(atHome));
+        facts.put(b + "accountingMethod", scheduleCEnum(method));
+    }
+
+    static String scheduleCEnum(String value) {
+        return "{\"$type\":\"gov.irs.factgraph.persisters.EnumWrapper\",\"item\":{\"value\":[\"" + value
+                + "\"],\"enumOptionsPath\":\"/scheduleCAccountingMethodOptions\"}}";
+    }
+
+    static String ein(String prefix, String serial) {
+        return "{\"$type\":\"gov.irs.factgraph.persisters.EinWrapper\",\"item\":{\"prefix\":\"" + prefix
+                + "\",\"serial\":\"" + serial + "\"}}";
+    }
+
+    static String address(String street, String line2, String city, String state, String zip) {
+        return "{\"$type\":\"gov.irs.factgraph.persisters.AddressWrapper\",\"item\":{\"streetAddress\":\"" + street
+                + "\",\"streetAddressLine2\":\"" + line2 + "\",\"city\":\"" + city + "\",\"postalCode\":\"" + zip
+                + "\",\"stateOrProvence\":\"" + state + "\"}}";
     }
 }

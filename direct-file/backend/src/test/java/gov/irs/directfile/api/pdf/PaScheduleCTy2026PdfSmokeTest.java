@@ -176,6 +176,7 @@ class PaScheduleCTy2026PdfSmokeTest {
             is(p1, "41. Loss", "Off", "profit");
             is(p1, "E. Method(s)", "Off", "no inventory method");
             is(p1, "C2. Yes/No", "4", "office in home: No");
+            assertPaHeaderBlank(p1);
 
             Map<String, String> pa = fieldsOnPages(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1);
             is(
@@ -505,6 +506,75 @@ class PaScheduleCTy2026PdfSmokeTest {
         }
         assertTrue(found != null, "a PA-40 C page contains " + needle);
         return found;
+    }
+
+    /**
+     * #89. PA-40 C letters differ from federal Schedule C. A is activity plus product, C is the EIN, D is the address,
+     * the NAICS box is federal line B, and F is the accounting method. Cash's export value is 2 (the leftmost oval).
+     * 2026 draft Instructions for Schedule C, PDF pp. 4–5. PA-40 IN (2025) p. 5, UPPER CASE.
+     */
+    @Test
+    void headerLinesPrintActivityEinAddressCodeAndCash() throws Exception {
+        Map<String, String> facts = lineItemPa("50000.00", "20000.00");
+        ScheduleCTy2026PdfSmokeTest.header(
+                facts, "Consulting", "Tax preparation", "541213", true, "12", "3456789", false, "cash");
+        facts.put(biz() + "businessAddress", ScheduleCTy2026PdfSmokeTest.address("200 Market", "Suite 4", "York", "PA", "17401"));
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PAGE1);
+            is(p1, "Main business activity", "CONSULTING", "A activity");
+            is(p1, "product or service", "TAX PREPARATION", "A product");
+            is(p1, "Employer Identification Number", "12-3456789", "C EIN");
+            is(p1, "Business address (number & street)", "200 MARKET SUITE 4", "D street");
+            is(p1, "City, State and Zip Code", "YORK, PA 17401", "D city");
+            is(p1, "Federal NAICS Code", "541213", "federal line B");
+            is(p1, "F.  Accounting Method(s)", "2", "F cash exports 2");
+            is(p1, "Business Name", "SYNTHETIC CONSULTING", "B name");
+        }
+    }
+
+    /**
+     * At the return address, with no EIN, on the accrual method. PA still prints the home address. Accrual's export
+     * value is 1. 2026 draft Instructions for Schedule C, PDF p. 4, Lines D and E. PA-40 C (EX) 03-26 has no
+     * home-address exception.
+     */
+    @Test
+    void headerAtHomePrintsTheReturnAddressAndAccrual() throws Exception {
+        Map<String, String> facts = lineItemPa("50000.00", "20000.00");
+        ScheduleCTy2026PdfSmokeTest.header(
+                facts, "Consulting", "Tax preparation", "541213", false, null, null, true, "accrual");
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PAGE1);
+            blank(p1, "Employer Identification Number", "C no EIN");
+            is(p1, "Business address (number & street)", "100 SYNTHETIC LN", "home street");
+            is(p1, "City, State and Zip Code", "HARRISBURG, PA 17101", "home city");
+            is(p1, "F.  Accounting Method(s)", "1", "F accrual exports 1");
+        }
+    }
+
+    /** Other stops the return. The PA oval is not set to export 3. 26 U.S.C. 446(c). */
+    @Test
+    void headerOtherStopsInsteadOfFillingTheOval() throws Exception {
+        Map<String, String> other = lineItemPa("50000.00", "20000.00");
+        ScheduleCTy2026PdfSmokeTest.header(
+                other, "Consulting", "Tax preparation", "541213", false, null, null, true, "other");
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(graph(other)).contains("/flowKnockoutScheduleCOutOfScope"),
+                "other accounting method refuses the print");
+        assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(other));
+    }
+
+    private static void assertPaHeaderBlank(Map<String, String> p1) {
+        blank(p1, "Main business activity", "activity");
+        blank(p1, "product or service", "product");
+        blank(p1, "Employer Identification Number", "EIN");
+        blank(p1, "Business address (number & street)", "street");
+        blank(p1, "City, State and Zip Code", "city");
+        blank(p1, "Federal NAICS Code", "NAICS");
+        is(p1, "F.  Accounting Method(s)", "Off", "accounting method");
     }
 
     private static String biz() {
