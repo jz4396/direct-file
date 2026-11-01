@@ -166,6 +166,36 @@ class ScheduleEicTy2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Golden G (#135 / #17), public print path only. The facts are {@code golden-profileG-complete.json}, the persisted
+     * client profile {@code profileGMfjTwoChildren}: Harper and Reese Example, two qualifying children (Robin and Sky),
+     * EIC $2,079. Not the head-of-household smoke harness.
+     *
+     * <p>2026 Schedule EIC draft, page 1: "Complete and attach to Form 1040 or 1040-SR only if you have a qualifying
+     * child." 26 U.S.C. 32(c)(3)(D)(i) requires each child's name, age, and TIN. 2025 Instructions for Form 1040, p.
+     * 40: complete and attach Schedule EIC. Line 27a is the earned income credit. Neither child is another person's
+     * qualifying child, so the section 152(c)(4) tie-breaker does not stop the print.
+     */
+    @Test
+    void goldenGScheduleEicPrintsOnThePublicPath() throws Exception {
+        byte[] bytes = ScheduleATy2026PdfSmokeTest.generatePublicPrintOf(
+                "submission-blocking/golden-profileG-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> eic =
+                    PaPit40ScheduleSpTy2026PdfSmokeTest.fieldsOnPages(doc, "Qualifying Child Information");
+            assertFalse(eic.isEmpty(), "Schedule EIC printed on the public path");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_03[0]", "Robin Example", "child 1 name");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_04[0]", "Sky Example", "child 2 name");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_06[0]", "444-00-2003", "child 1 TIN");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_07[0]", "444-00-2004", "child 2 TIN");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.blank(eic, "f1_05[0]", "no third child");
+
+            Map<String, String> page2 = PaPit40ScheduleSpTy2026PdfSmokeTest.fieldsOnPages(
+                    doc, "27a Earned income credit (EIC)");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(page2, "f2_26[0]", "2079.00", "Form 1040 line 27a is 2,079");
+        }
+    }
+
     static final String UNO = "/familyAndHousehold/#60c874b4-bb7b-4c82-8550-5555b2b585f8/";
     static final String DUO = "/familyAndHousehold/#93e7961f-dd7b-4c7f-9430-bb597123935f/";
 

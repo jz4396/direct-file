@@ -1634,7 +1634,24 @@ describe(`golden end-to-end scenario (synthetic data): profile F negative rows (
 // itself is computed. 26 U.S.C. 152(c)(4) still stops a shared qualifying child (scheduleEicKnockout.test.ts).
 const PROFILE_G_STOPPED: string[] = [];
 
+const GOLDEN_PROFILE_G = path.join(
+  `..`,
+  `..`,
+  `backend`,
+  `src`,
+  `test`,
+  `resources`,
+  `submission-blocking`,
+  `golden-profileG-complete.json`
+);
+
 describe(`golden end-to-end scenario (synthetic data): profile G, MFJ, two children, Schedule 8812, Form 2441, EITC`, () => {
+  it(`golden-profileG-complete.json is the persisted profileGMfjTwoChildren return`, () => {
+    const exported = JSON.parse(fs.readFileSync(GOLDEN_PROFILE_G, `utf8`)).facts;
+    const persisted = JSON.parse(graph(profileGMfjTwoChildren).toJSON());
+    expect(exported).toEqual(persisted);
+  });
+
   // Married filing jointly, Florida resident [FL]. Harper Example, born 1985-06-12, SSN 444-00-2001. Reese Example,
   //   born 1986-11-03, SSN 444-00-2002. Robin Example, born 2018-04-12 (8 at year end), SSN 444-00-2003. Sky Example,
   //   born 2020-09-15 (6 at year end), SSN 444-00-2004. Each child lived in the home 12 months. Every SSN is group 00
