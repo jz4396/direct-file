@@ -54,6 +54,16 @@ headings:
   /heading/income/schedule-c/depletion: "¿Este negocio tuvo una deducción por agotamiento?"
   /heading/income/schedule-c/equipment-rent: "¿Este negocio alquiló vehículos, maquinaria o equipo?"
   /heading/income/schedule-c/home-office: "¿Usó su hogar para este negocio?"
+  /heading/income/schedule-c/home-office-method: "¿Quiere usar el método simplificado para este hogar?"
+  /heading/income/schedule-c/home-office-same-area:
+    "¿Usó la misma área de un solo hogar exclusivamente para este negocio durante todo el año?"
+  /heading/income/schedule-c/home-office-gross-income:
+    "¿Todos los ingresos brutos de este negocio provienen de ese uso del hogar?"
+  /heading/income/schedule-c/home-office-shared-space:
+    "¿Esta área la usa solo usted y no la comparte con el negocio de otra persona?"
+  /heading/income/schedule-c/home-office-rental: "¿Esta deducción es por un uso distinto del alquiler del hogar?"
+  /heading/income/schedule-c/home-office-carryover: "¿No tiene un traslado de gastos reales del Formulario 8829?"
+  /heading/income/schedule-c/home-office-square-feet: "Ingrese los pies cuadrados del hogar y del área del negocio"
   /heading/income/schedule-c/energy: "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
   /heading/income/schedule-c/has-expenses: "¿Este negocio tuvo gastos deducibles?"
   /heading/income/schedule-c/which-expenses: "¿Qué gastos tuvo este negocio?"
@@ -152,8 +162,8 @@ info:
             El método opcional que no es de agricultura no se puede usar en esta declaración. Puede ser porque no se
             cumplen las pruebas de montos, el monto de la línea 17 sería menor que sus ganancias netas reales, las
             ganancias netas no fueron de al menos $400 en 2 de los 3 años anteriores, este sería el sexto uso o uno
-            posterior, o el recuadro 14 código A del Anexo K-1 (Formulario 1065) es mayor que cero. Tendrá que usar
-            otra manera de presentar esta declaración.
+            posterior, o el recuadro 14 código A del Anexo K-1 (Formulario 1065) es mayor que cero. Tendrá que usar otra
+            manera de presentar esta declaración.
   /heading/knockout/schedule-se-nonfarm-optional-method-credits:
     Esta herramienta no puede calcular esos créditos con el método opcional que no es de agricultura
   /info/knockout/schedule-se-nonfarm-optional-method-credits:
@@ -189,32 +199,32 @@ info:
   /info/income/schedule-c/inventory-method:
     body:
       "La línea 33a es el costo. La línea 33b es el menor entre el costo o el mercado. La línea 33c, cualquier otro
-      método, no se puede calcular aquí. Elija materiales y suministros no incidentales solo si no lleva inventario.
-      Ese método no usa la Parte III."
+      método, no se puede calcular aquí. Elija materiales y suministros no incidentales solo si no lleva inventario. Ese
+      método no usa la Parte III."
   /info/income/schedule-c/inventory-change:
     body:
-      "La línea 34 pregunta si las cantidades, los costos o las valoraciones cambiaron entre el inventario inicial y
-      el final. Conteste que sí si cambiaron. Esta herramienta no puede calcular ese cambio."
+      "La línea 34 pregunta si las cantidades, los costos o las valoraciones cambiaron entre el inventario inicial y el
+      final. Conteste que sí si cambiaron. Esta herramienta no puede calcular ese cambio."
   /info/income/schedule-c/small-business:
     body:
-      "Califica como contribuyente de pequeño negocio si sus ingresos brutos anuales promedio de los 3 años
-      tributarios anteriores son de $32 millones o menos y no es un refugio fiscal. Ingrese ese promedio. Incluya un
-      negocio predecesor y anualice un año corto antes de ingresarlo. Use 0 si el negocio no existía en esos años.
-      Los ingresos de este año no son ese promedio. Conteste que sí si es un refugio fiscal. Si el promedio es mayor
-      de $32,000,000, o si es un refugio fiscal, esta herramienta no puede calcular la Parte III."
+      "Califica como contribuyente de pequeño negocio si sus ingresos brutos anuales promedio de los 3 años tributarios
+      anteriores son de $32 millones o menos y no es un refugio fiscal. Ingrese ese promedio. Incluya un negocio
+      predecesor y anualice un año corto antes de ingresarlo. Use 0 si el negocio no existía en esos años. Los ingresos
+      de este año no son ese promedio. Conteste que sí si es un refugio fiscal. Si el promedio es mayor de $32,000,000,
+      o si es un refugio fiscal, esta herramienta no puede calcular la Parte III."
   /info/income/schedule-c/line-35:
     body:
       "La línea 35 es el inventario al principio del año. Si es distinto del inventario final del año pasado, el
-      formulario pide adjuntar una explicación. Esta herramienta no puede presentar esa explicación. Conteste que sí
-      si los montos difieren. Conteste que no si la línea 35 es igual al inventario final del año pasado, incluido
-      cero cuando el negocio es nuevo."
+      formulario pide adjuntar una explicación. Esta herramienta no puede presentar esa explicación. Conteste que sí si
+      los montos difieren. Conteste que no si la línea 35 es igual al inventario final del año pasado, incluido cero
+      cuando el negocio es nuevo."
   /info/income/schedule-c/inventory-amounts:
     body:
-      "La línea 35 es el inventario al principio del año. La línea 36 son las compras menos los artículos retirados
-      para uso personal. La línea 37 es la mano de obra, sin incluir cantidades que se pagó a usted mismo. La línea 38
-      son materiales y suministros. La línea 39 son otros costos. La línea 41 es el inventario al final del año. La
-      línea 42, que también es la línea 4, es la línea 35 más la línea 36 más las líneas 37 a 39, menos la línea 41.
-      Si ese resultado es menor que cero, esta herramienta no puede completar la declaración."
+      "La línea 35 es el inventario al principio del año. La línea 36 son las compras menos los artículos retirados para
+      uso personal. La línea 37 es la mano de obra, sin incluir cantidades que se pagó a usted mismo. La línea 38 son
+      materiales y suministros. La línea 39 son otros costos. La línea 41 es el inventario al final del año. La línea
+      42, que también es la línea 4, es la línea 35 más la línea 36 más las líneas 37 a 39, menos la línea 41. Si ese
+      resultado es menor que cero, esta herramienta no puede completar la declaración."
   /info/income/schedule-c/vehicle:
     body:
       "Conteste que sí si tuvo gastos de automóvil y camión (línea 9) o intereses de un préstamo de vehículo (línea
@@ -229,8 +239,42 @@ info:
     body: "Conteste que sí si alquiló vehículos, maquinaria y equipo (línea 20a)."
   /info/income/schedule-c/home-office:
     body:
-      "Conteste que sí si reclama gastos por el uso comercial de su hogar en la línea 30, incluido el método
-      simplificado. Eso necesita el Formulario 8829 o la hoja de trabajo simplificada."
+      "Conteste que sí si reclama gastos por el uso comercial de su hogar en la línea 30 del Anexo C. Conteste que no si
+      no los reclama. Las preguntas siguientes cubren el método simplificado. El Formulario 8829 no se calcula aquí."
+  /info/income/schedule-c/home-office-method:
+    body:
+      "El método simplificado es $5 por los pies cuadrados permitidos. Conteste que no si usa el Formulario 8829 para
+      los gastos reales. Esta herramienta no puede calcular el Formulario 8829."
+  /info/income/schedule-c/home-office-same-area:
+    body:
+      "Conteste que sí solo si usó la misma área de un solo hogar para este negocio durante todo el año, y usó esa área
+      exclusivamente para el negocio. Conteste que no si usó más de un hogar, el área cambió, usó el hogar solo parte
+      del año, o un centro de cuidado diurno no se usó exclusivamente para el negocio."
+  /info/income/schedule-c/home-office-gross-income:
+    body:
+      "Conteste que sí solo si cada dólar de los ingresos brutos de este negocio proviene de ese uso del hogar, y ningún
+      monto del Formulario 8949 o del Formulario 4797 cambia el límite. La deducción entonces no puede ser mayor que la
+      línea 29 del Anexo C. Si la línea 29 es cero o una pérdida, la deducción es cero. Conteste que no si parte de los
+      ingresos brutos proviene de otro lugar."
+  /info/income/schedule-c/home-office-shared-space:
+    body:
+      "Conteste que sí si no comparte estos pies cuadrados con otra persona que usa el hogar para un negocio distinto.
+      Conteste que no si comparte el espacio. Esta herramienta no asigna el espacio compartido."
+  /info/income/schedule-c/home-office-rental:
+    body:
+      "No puede usar el método simplificado para calcular una deducción por el uso del hogar como alquiler. Conteste que
+      sí si este uso no es un alquiler. Conteste que no si es un alquiler."
+  /info/income/schedule-c/home-office-carryover:
+    body:
+      "Conteste que sí si no tiene gastos de operación, pérdidas por hechos fortuitos en exceso ni depreciación
+      trasladados del Formulario 8829. Esos montos son las líneas 6a y 6b de la hoja de trabajo del método simplificado
+      y no se permiten este año. Conteste que no si tiene un traslado. Esta herramienta no calcula las líneas 6a y 6b."
+  /info/income/schedule-c/home-office-square-feet:
+    body:
+      "Ingrese el total de pies cuadrados del hogar y luego los pies cuadrados que realmente usó para este negocio. El
+      área del negocio no puede ser mayor que el hogar. La deducción usa esa área del negocio, pero no más de 300 pies
+      cuadrados, por $5. Si más de un negocio usa el método simplificado, esta herramienta no puede dividir los 300 pies
+      cuadrados."
   /info/income/schedule-c/energy:
     body: "Conteste que sí si reclama la deducción de la línea 27a. Necesita el Formulario 7205."
   /info/income/schedule-c/has-expenses:
@@ -274,16 +318,18 @@ info:
     alertText:
       body:
         - p:
-            "Este negocio necesita un formulario o un límite de pérdida que esta herramienta no calcula. Eso incluye
-            un método de inventario distinto del costo o del menor entre el costo o el mercado, un cambio en cómo se
-            valoró el inventario, ingresos brutos anuales promedio de los 3 años anteriores de más de $32,000,000, un
-            refugio fiscal, un costo de mercancías vendidas menor que cero, un inventario inicial distinto del
-            inventario final del año pasado, una declaración de que no lleva inventario
-            mientras la Parte III sigue llena, gastos de vehículo, depreciación, agotamiento, alquiler de equipo, una
-            oficina en el hogar, el Formulario 7205, comidas que no están limitadas al 50 por ciento, créditos por
-            empleo, intereses que deben asignarse, amortización nueva, más de tres otros gastos, ingresos de la línea 6
-            de otro formulario, una pérdida en la que no participó materialmente o una pérdida que no está totalmente
-            en riesgo. Tendrá que usar otra manera de presentar esta declaración."
+            "Este negocio necesita un formulario o un límite de pérdida que esta herramienta no calcula. Eso incluye un
+            método de inventario distinto del costo o del menor entre el costo o el mercado, un cambio en cómo se valoró
+            el inventario, ingresos brutos anuales promedio de los 3 años anteriores de más de $32,000,000, un refugio
+            fiscal, un costo de mercancías vendidas menor que cero, un inventario inicial distinto del inventario final
+            del año pasado, una declaración de que no lleva inventario mientras la Parte III sigue llena, gastos de
+            vehículo, depreciación, agotamiento, alquiler de equipo, el Formulario 8829, espacio compartido, uso del
+            hogar como alquiler, un traslado previo del Formulario 8829, un método simplificado que esta herramienta no
+            calcula, más de un negocio que usa el método simplificado, el Formulario 7205, comidas que no están
+            limitadas al 50 por ciento, créditos por empleo, intereses que deben asignarse, amortización nueva, más de
+            tres otros gastos, ingresos de la línea 6 de otro formulario, una pérdida en la que no participó
+            materialmente o una pérdida que no está totalmente en riesgo. Tendrá que usar otra manera de presentar esta
+            declaración."
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -499,6 +545,40 @@ fields:
     boolean:
       "yes": "Sí"
       "no": "No"
+  /scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod:
+    boolean:
+      "yes": "Sí, usar el método simplificado"
+      "no": "No, usar el Formulario 8829"
+  /scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodGrossIncomeIsLine29:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodSpaceNotShared:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodNotRentalUse:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodNoPrior8829Carryover:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/writableHomeTotalSquareFeet:
+    name: "Total de pies cuadrados del hogar"
+    errorMessages:
+      ExceedsMinLimit: "Ingrese pies cuadrados de 0 o más"
+      InvalidCharacters: "Ingrese pies cuadrados enteros, como 1500"
+  /scheduleCBusinesses/*/writableBusinessUseSquareFeet:
+    name: "Pies cuadrados usados para este negocio"
+    errorMessages:
+      ExceedsMinLimit: "Ingrese pies cuadrados de 0 o más"
+      InvalidCharacters: "Ingrese pies cuadrados enteros, como 150"
   /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
     boolean:
       "yes": "Sí"
@@ -583,6 +663,19 @@ dataviews:
     /scheduleCBusinesses/*/hasDepletion: "¿Este negocio tuvo una deducción por agotamiento?"
     /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent: "¿Este negocio alquiló vehículos, maquinaria o equipo?"
     /scheduleCBusinesses/*/hasHomeOffice: "¿Usó su hogar para este negocio?"
+    /scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod: "¿Quiere usar el método simplificado para este hogar?"
+    /scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear:
+      "¿Usó la misma área de un solo hogar exclusivamente para este negocio durante todo el año?"
+    /scheduleCBusinesses/*/simplifiedMethodGrossIncomeIsLine29:
+      "¿Todos los ingresos brutos de este negocio provienen de ese uso del hogar?"
+    /scheduleCBusinesses/*/simplifiedMethodSpaceNotShared:
+      "¿Esta área la usa solo usted y no la comparte con el negocio de otra persona?"
+    /scheduleCBusinesses/*/simplifiedMethodNotRentalUse:
+      "¿Esta deducción es por un uso distinto del alquiler del hogar?"
+    /scheduleCBusinesses/*/simplifiedMethodNoPrior8829Carryover:
+      "¿No tiene un traslado de gastos reales del Formulario 8829?"
+    /scheduleCBusinesses/*/writableHomeTotalSquareFeet: "Total de pies cuadrados del hogar"
+    /scheduleCBusinesses/*/writableBusinessUseSquareFeet: "Pies cuadrados usados para este negocio"
     /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
       "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
     /scheduleCBusinesses/*/hasDeductibleExpenses: "¿Este negocio tuvo gastos deducibles?"

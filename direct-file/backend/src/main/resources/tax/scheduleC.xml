@@ -139,6 +139,89 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCMultipleSimplifiedHomeOffices">
+      <Name>More than one business uses the simplified method</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12: "You are limited to a maximum of 300 square feet
+        for all of the businesses you conduct in your home." This tool does not split that maximum. More than one
+        business that elects the simplified method stops the return. A business that has not started the line-item
+        questions, that does not claim a home office, or that does not elect the simplified method is not counted. An
+        unanswered election on a started line-item business stays incomplete. Rev. Proc. 2013-13.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleCBusinesses/*/usesSimplifiedHomeOffice" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCHasHomeOffice">
+      <Name>A line-item Schedule C business claims business use of the home</Name>
+      <Description>True when any started line-item business answers yes to business use of the home. Pennsylvania does
+        not recognize the federal safe harbor, and PA Schedule C-2 actual expenses are not computed. PA-40 C (EX) 03-26
+        instructions, PDF p. 4: "Pennsylvania does not recognize the federal safe harbor method." A business that still
+        uses the single expense total is not counted; that return is already stopped by
+        /scheduleCHasLegacyExpenseBucket. False when there is no Schedule C. Read by /flowKnockoutPaScheduleC.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleCBusinesses/*/claimsHomeOffice" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/hadSelfEmploymentIncome">
       <Name>Had self-employment / gig / freelance income</Name>
       <Description>
@@ -700,12 +783,12 @@
     <Fact path="/scheduleCBusinesses/*/netProfitOrLoss">
       <Name>Net profit or (loss)</Name>
       <Description>
-        Schedule C line 31. Single-total path: gross receipts minus that total. Line-item path: line 7 minus
-        line 28, and only when line 7 and line 28 are complete and no out-of-scope form applies. A loss that
-        needs Form
-        6198 or Form 8582 is still computed and is stopped by /flowKnockoutScheduleCOutOfScope,
-        because the stop reads
-        this result and this result must not read the stop. 26 U.S.C. 61, 162, 465, 469.
+        Schedule C line 31. 2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 31: subtract line 30
+        from line 29. Single-total path: line 29, which is gross receipts minus that total, and line 30 is zero.
+        Line-item path: line 29 minus line 30, and only when both are complete and no out-of-scope form applies. A
+        loss that needs Form 6198 or Form 8582 is still computed and is stopped by
+        /flowKnockoutScheduleCOutOfScope, because the stop reads this result and this result must not read the stop.
+        26 U.S.C. 61, 162, 280A(c)(5), 465, 469.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -715,16 +798,7 @@
               <Dependency path="../usesLegacyExpenseBucket" />
             </When>
             <Then>
-              <Round>
-                <Subtract>
-                  <Minuend>
-                    <Dependency path="../grossReceipts" />
-                  </Minuend>
-                  <Subtrahends>
-                    <Dependency path="../totalExpenses" />
-                  </Subtrahends>
-                </Subtract>
-              </Round>
+              <Dependency path="../line29TentativeProfit" />
             </Then>
           </Case>
           <Case>
@@ -734,10 +808,10 @@
                   <Dependency path="../scheduleCFormStop" />
                 </Not>
                 <IsComplete>
-                  <Dependency path="../line7GrossIncome" />
+                  <Dependency path="../line29TentativeProfit" />
                 </IsComplete>
                 <IsComplete>
-                  <Dependency path="../line28" />
+                  <Dependency path="../line30" />
                 </IsComplete>
               </All>
             </When>
@@ -745,10 +819,10 @@
               <Round>
                 <Subtract>
                   <Minuend>
-                    <Dependency path="../line7GrossIncome" />
+                    <Dependency path="../line29TentativeProfit" />
                   </Minuend>
                   <Subtrahends>
-                    <Dependency path="../line28" />
+                    <Dependency path="../line30" />
                   </Subtrahends>
                 </Subtract>
               </Round>
@@ -766,7 +840,7 @@
         path: name, material participation, Part I amounts, and every stop question.
         A form stop completes the business
         without expense amounts. Otherwise the expense lines, line 7,
-        and line 28 must be complete, and a loss needs the
+        line 28, and line 30 must be complete, and a loss needs the
         at-risk answer.
       </Description>
       <Derived>
@@ -835,6 +909,9 @@
                 </IsComplete>
                 <IsComplete>
                   <Dependency path="../line28" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../line30" />
                 </IsComplete>
                 <Any>
                   <Not>
@@ -1818,11 +1895,286 @@
     <Fact path="/scheduleCBusinesses/*/hasHomeOffice">
       <Name>Business use of home</Name>
       <Description>Schedule C line 30. 2026 draft Instructions for Schedule C
-        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11, Line 30: Form 8829 or the simplified method.
-        Either method stops the return. Line 30 stays blank, so a supported return's line 31 equals line 29.</Description>
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12, Business Use of Your Home. Yes continues to the
+        simplified method or to a stop for Form 8829. No leaves line 30 at zero, so line 31 equals line 29. 26 U.S.C.
+        280A.</Description>
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod">
+      <Name>Simplified method for business use of the home</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12. Yes elects the simplified method. No means Form
+        8829 (actual expenses). Form 8829 is not computed and stops the return. Rev. Proc. 2013-13.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear">
+      <Name>Same area of one home for the whole year</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12: the simplified method is used for one home, and
+        another home needs Form 8829. PDF p. 14, Simplified Method Worksheet, line 3b is 1.0 unless a daycare facility
+        is not used exclusively for business. PDF p. 15: part-year use and an area that changed use an average monthly
+        square footage. Yes means the same area of one home was used for the whole year and the use was exclusive, so
+        line 3b is 1.0. No stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/simplifiedMethodGrossIncomeIsLine29">
+      <Name>Gross-income limit is Schedule C line 29</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 13, Simplified Method Worksheet, Line 1: if all gross
+        income from the business is from the qualified business use of the home, the limit starts with "A. Enter the
+        amount from Schedule C, line 29" and then any Form 8949 or Form 4797 gain or loss from the business use of the
+        home. If part of the gross income is from a different location, line 1 is not line 29. Yes means all Schedule C
+        gross income is from that use of the home and no Form 8949 or Form 4797 amount changes the limit. No stops the
+        return. 26 U.S.C. 280A(c)(5).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/simplifiedMethodSpaceNotShared">
+      <Name>Simplified-method area is not shared</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12, Shared use (for simplified method only): "If you
+        share your home with someone else who uses the home for a separate business that also qualifies for this
+        deduction, you may not include the same square feet to figure your deduction as the other person. You must
+        allocate the shared space between you and the other person in a reasonable manner." This tool does not allocate
+        shared space. Yes means the square feet are not shared with another person's separate business. No stops the
+        return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/simplifiedMethodNotRentalUse">
+      <Name>Simplified method is not for rental use of the home</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 11: "You can't use the simplified method to figure a
+        deduction for rental use of your home." Yes means this deduction is not for rental use of the home. No stops
+        the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/simplifiedMethodNoPrior8829Carryover">
+      <Name>No prior Form 8829 carryover</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12, Carryover of actual expenses from Form 8829: "If
+        you used Form 8829 in a prior year and you had actual expenses that you could carry over to the next year, you
+        can't claim those expenses if you are using the simplified method. Instead, the actual expenses from Form 8829
+        that were not allowed will be carried over to the next year that you use actual expenses to figure your
+        deduction." PDF p. 14, Simplified Method Worksheet, lines 6a and 6b, are those carryovers and are not allowed
+        in 2026. This tool does not track lines 6a and 6b. Yes means there is no carryover. No stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksSimplifiedHomeOfficeYear">
+      <Name>Ask whether one area was used all year</Name>
+      <Description>Asked after business use of the home is yes and the simplified method is elected.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasHomeOffice" />
+          <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksSimplifiedHomeOfficeGrossIncome">
+      <Name>Ask whether the gross-income limit is line 29</Name>
+      <Description>Asked after the simplified method applies to the same area of one home for the whole year.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksSimplifiedHomeOfficeYear" />
+          <Dependency path="../simplifiedMethodSameAreaAllYear" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksSimplifiedHomeOfficeSharedSpace">
+      <Name>Ask whether the simplified-method area is shared</Name>
+      <Description>Asked after the gross-income limit is Schedule C line 29.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksSimplifiedHomeOfficeGrossIncome" />
+          <Dependency path="../simplifiedMethodGrossIncomeIsLine29" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksSimplifiedHomeOfficeRentalUse">
+      <Name>Ask whether the simplified method is for rental use</Name>
+      <Description>Asked after the filer says the square feet are not shared with another person's business.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksSimplifiedHomeOfficeSharedSpace" />
+          <Dependency path="../simplifiedMethodSpaceNotShared" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksSimplifiedHomeOfficeCarryover">
+      <Name>Ask whether a prior Form 8829 carryover exists</Name>
+      <Description>Asked after the filer says the simplified method is not for rental use of the home.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksSimplifiedHomeOfficeRentalUse" />
+          <Dependency path="../simplifiedMethodNotRentalUse" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksSimplifiedHomeOfficeSquareFeet">
+      <Name>Ask for home and business square feet</Name>
+      <Description>Asked when line 30 can be $5 times allowable square feet, limited by Schedule C line 29, and there
+        is no shared space, rental use, or prior Form 8829 carryover.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksSimplifiedHomeOfficeCarryover" />
+          <Dependency path="../simplifiedMethodNoPrior8829Carryover" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableHomeTotalSquareFeet">
+      <Name>Total square feet of the home</Name>
+      <Description>Schedule C line 30, area of the home. 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 30(a). Stored as a dollar amount of whole square feet and
+        rounded to an integer. The area used for business cannot be larger than this area.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableBusinessUseSquareFeet">
+      <Name>Square feet used for business</Name>
+      <Description>Schedule C line 30, part of the home used for business. 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 30(b). This is the area actually used. The simplified-method
+        worksheet then limits the deduction to 300 square feet. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12: "you may not allocate more square feet to a
+        qualified business use than you actually use in that business."</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/homeTotalSquareFeet">
+      <Name>Line 30 total square feet of the home</Name>
+      <Description>Whole square feet of the home, from the amount entered for line 30(a).</Description>
+      <Derived>
+        <RoundToInt>
+          <Dependency path="../writableHomeTotalSquareFeet" />
+        </RoundToInt>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/businessUseSquareFeet">
+      <Name>Line 30 square feet used for business</Name>
+      <Description>Whole square feet of the part of the home used for business, from the amount entered for line
+        30(b). Not capped at 300. The cap is applied in /allowableHomeOfficeSquareFeet.</Description>
+      <Derived>
+        <RoundToInt>
+          <Dependency path="../writableBusinessUseSquareFeet" />
+        </RoundToInt>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSimplifiedMethodAmount">
+      <Name>Simplified method amount per square foot</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 14, Simplified Method Worksheet, line 3a: "Maximum
+        allowable amount ... $5." Worksheet line 4 is allowable square feet times this amount. PDF p. 11: the deduction
+        is figured by multiplying the area by $5. Rev. Proc. 2013-13.</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>5</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSimplifiedMethodMaxSquareFeet">
+      <Name>Simplified method maximum square feet</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 14, Simplified Method Worksheet, line 2: "Allowable
+        square footage for the qualified business use. Don't enter more than 300 square feet." PDF p. 12: "You are
+        limited to a maximum of 300 square feet for all of the businesses you conduct in your home." Rev. Proc.
+        2013-13.</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Int>300</Int>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/allowableHomeOfficeSquareFeet">
+      <Name>Allowable square feet for the simplified method</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 14, Simplified Method Worksheet, line 2: "Allowable
+        square footage ... Don't enter more than 300 square feet." The smaller of the business area and
+        /scheduleCSimplifiedMethodMaxSquareFeet. PDF p. 12: "You are limited to a maximum of 300 square feet for all of
+        the businesses you conduct in your home." Rev. Proc. 2013-13.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="../businessUseSquareFeet" />
+          <Dependency path="/scheduleCSimplifiedMethodMaxSquareFeet" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/businessUseSquareFeetWithinHome">
+      <Name>Business area is not larger than the home</Name>
+      <Description>The part of the home used for business cannot exceed the home. A larger entry leaves line 30
+        incomplete. It is not a form stop.</Description>
+      <Derived>
+        <LessThanOrEqual>
+          <Left>
+            <Dependency path="../businessUseSquareFeet" />
+          </Left>
+          <Right>
+            <Dependency path="../homeTotalSquareFeet" />
+          </Right>
+        </LessThanOrEqual>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/usesSimplifiedHomeOffice">
+      <Name>This line-item business elects the simplified method</Name>
+      <Description>True only when the line-item questions have started, business use of the home is yes, and the
+        simplified method is elected. A single expense total is not counted, so an unanswered home-office question on
+        that older path does not make /scheduleCMultipleSimplifiedHomeOffices incomplete.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../itemizedStarted" />
+          <Dependency path="../hasHomeOffice" />
+          <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/claimsHomeOffice">
+      <Name>This line-item business claims business use of the home</Name>
+      <Description>True only when the line-item questions have started and business use of the home is yes. Used to
+        stop a Pennsylvania return. Actual expenses and PA Schedule C-2 are not computed.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../itemizedStarted" />
+          <Dependency path="../hasHomeOffice" />
+        </All>
+      </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction">
@@ -1903,6 +2255,30 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasHomeOffice" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../simplifiedMethodSameAreaAllYear" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../simplifiedMethodGrossIncomeIsLine29" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../simplifiedMethodSpaceNotShared" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../simplifiedMethodNotRentalUse" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../simplifiedMethodNoPrior8829Carryover" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableHomeTotalSquareFeet" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableBusinessUseSquareFeet" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasEnergyEfficientBuildingsDeduction" />
@@ -3902,12 +4278,146 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCBusinesses/*/line29TentativeProfit">
+      <Name>Schedule C line 29</Name>
+      <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 29: tentative profit or (loss).
+        Subtract line 28 from line 7. On a return that still uses the single expense total, gross receipts minus that
+        total. This amount does not depend on line 30 or on a form stop. 26 U.S.C. 61, 162.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../usesLegacyExpenseBucket" />
+            </When>
+            <Then>
+              <Round>
+                <Subtract>
+                  <Minuend>
+                    <Dependency path="../grossReceipts" />
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency path="../totalExpenses" />
+                  </Subtrahends>
+                </Subtract>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../line7GrossIncome" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../line28" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Round>
+                <Subtract>
+                  <Minuend>
+                    <Dependency path="../line7GrossIncome" />
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency path="../line28" />
+                  </Subtrahends>
+                </Subtract>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line30">
+      <Name>Schedule C line 30</Name>
+      <Description>Expenses for business use of your home under the simplified method. 2026 draft Instructions for
+        Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 14, Simplified Method Worksheet: "3a.
+        Maximum allowable amount ... $5." Line 2: "Allowable square footage ... Don't enter more than 300 square feet."
+        Line 5: "Allowable expenses using the simplified method. Enter the smaller of line 1 or line 4 here and include
+        that amount on Schedule C, line 30. If zero or less, enter -0-." Worksheet line 4 is allowable square feet
+        times $5. When all gross income is from the home, worksheet line 1 starts with Schedule C line 29 (PDF p. 13).
+        The deduction is the smaller of line 29, not below zero, and $5 times the business square feet, not more than
+        300. Rev. Proc. 2013-13. 26 U.S.C. 280A(c)(5). Zero when there is no home office or the return still uses the
+        single expense total. Form 8829, a part-year or changing area, a daycare fraction other than 1.0, a second
+        home, gross income that is not all from the home, a Form 8949 or Form 4797 adjustment, shared space, rental use
+        of the home, a prior Form 8829 carryover, and more than one simplified-method business are not computed. The $5
+        amount is /scheduleCSimplifiedMethodAmount. The 300 square foot limit is
+        /scheduleCSimplifiedMethodMaxSquareFeet. If the business area is larger than the home, line 30 stays
+        incomplete.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../usesLegacyExpenseBucket" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../hasHomeOffice" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../hasHomeOffice" />
+                <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+                <Dependency path="../simplifiedMethodSameAreaAllYear" />
+                <Dependency path="../simplifiedMethodGrossIncomeIsLine29" />
+                <Dependency path="../simplifiedMethodSpaceNotShared" />
+                <Dependency path="../simplifiedMethodNotRentalUse" />
+                <Dependency path="../simplifiedMethodNoPrior8829Carryover" />
+                <Not>
+                  <Dependency path="/scheduleCMultipleSimplifiedHomeOffices" />
+                </Not>
+                <Dependency path="../businessUseSquareFeetWithinHome" />
+                <IsComplete>
+                  <Dependency path="../homeTotalSquareFeet" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../businessUseSquareFeet" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../line29TentativeProfit" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Round>
+                <LesserOf>
+                  <Multiply>
+                    <Dependency path="../allowableHomeOfficeSquareFeet" />
+                    <Dependency path="/scheduleCSimplifiedMethodAmount" />
+                  </Multiply>
+                  <GreaterOf>
+                    <Dependency path="../line29TentativeProfit" />
+                    <Dollar>0</Dollar>
+                  </GreaterOf>
+                </LesserOf>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCBusinesses/*/scheduleCFormStop">
       <Name>Schedule C business needs a form this tool does not compute</Name>
       <Description>True when Part III cannot be figured (line 33c, a line 34 change, a 3-prior-year average over
         $32,000,000, a tax shelter, line 42 below zero, line 35 different from last year's closing inventory, the
         section 471(c) no-inventory method claimed together with Part III, or Part III amounts while the filer says
-        there is no inventory), or a vehicle, depreciation, depletion, equipment rent, a home office, the line 27a
+        there is no inventory), or a vehicle, depreciation, depletion, equipment rent, Form 8829, shared space, rental
+        use of the home, a prior Form 8829 carryover, a simplified method this tool does not figure, more than one
+        simplified-method business, the line 27a
         deduction, a non-50-percent meal, wage credits, interest that must be allocated, new amortization, a fourth Part
         V line, or line 6 income that belongs on another form applies. A yes on any stop is enough; later blanks do
         not turn it off. Cost or lower of cost or market, line 34 no, a 3-prior-year average that does not exceed
@@ -3920,7 +4430,48 @@
           <Dependency path="../hasDepreciationOrSection179" />
           <Dependency path="../hasDepletion" />
           <Dependency path="../hasVehicleMachineryEquipmentRent" />
-          <Dependency path="../hasHomeOffice" />
+          <All>
+            <Dependency path="../hasHomeOffice" />
+            <Not>
+              <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+            </Not>
+          </All>
+          <All>
+            <Dependency path="../hasHomeOffice" />
+            <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+            <Not>
+              <Dependency path="../simplifiedMethodSameAreaAllYear" />
+            </Not>
+          </All>
+          <All>
+            <Dependency path="../hasHomeOffice" />
+            <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+            <Not>
+              <Dependency path="../simplifiedMethodGrossIncomeIsLine29" />
+            </Not>
+          </All>
+          <All>
+            <Dependency path="../hasHomeOffice" />
+            <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+            <Not>
+              <Dependency path="../simplifiedMethodSpaceNotShared" />
+            </Not>
+          </All>
+          <All>
+            <Dependency path="../hasHomeOffice" />
+            <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+            <Not>
+              <Dependency path="../simplifiedMethodNotRentalUse" />
+            </Not>
+          </All>
+          <All>
+            <Dependency path="../hasHomeOffice" />
+            <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+            <Not>
+              <Dependency path="../simplifiedMethodNoPrior8829Carryover" />
+            </Not>
+          </All>
+          <Dependency path="/scheduleCMultipleSimplifiedHomeOffices" />
           <Dependency path="../hasEnergyEfficientBuildingsDeduction" />
           <All>
             <Dependency path="../choseMeals" />
@@ -4069,8 +4620,9 @@
         (lines 9 and 16b, Form 4562),
         depreciation
         or section 179 (line 13, Form 4562), depletion (line 12), rent of vehicles or equipment
-        (line 20a), business use
-        of the home (line 30, Form 8829 or the simplified method), the energy efficient
+        (line 20a), Form 8829, shared space, rental use of the home, a prior Form 8829 carryover, a simplified method
+        that is not $5 times at most 300 square feet limited by line 29, or more than one business using the simplified
+        method (line 30), the energy efficient
         commercial buildings deduction
         (line 27a, Form 7205), meals that are not limited to 50 percent
         (line 24b, 26 U.S.C. 274(n)), wages reduced by an
