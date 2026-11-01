@@ -10,11 +10,14 @@
 # No 2026 Spanish Schedule SE exists (irs.gov has no f1040sses), so Spanish returns print this English form.
 #
 # Included when /primaryFilerSeTaxApplies: line 4c "If less than $400, stop; you don't owe self-employment tax"
-# (26 U.S.C. 1402(b)(2)), tested per filer. Every line maps the primary filer's own Schedule SE chain
+# (26 U.S.C. 1402(b)(2)), or line 5b is more than zero (26 U.S.C. 1402(j)(2)(B), church employee income under
+# $100 after the 92.35% factor is -0-). Tested per filer. Every line maps the primary filer's own Schedule SE chain
 # (scheduleSE.xml /primaryFiler... facts), not the combined /seNetEarningsFromSelfEmployment or /selfEmploymentTax:
 # 2026 draft i1040sse, Joint Returns: "If both spouses have self-employment income, each must file a separate Schedule
 # SE." Only this form prints for now: a Schedule C business owned by the spouse stops the return (scheduleC
-# /flowKnockoutScheduleCSpouseBusiness), so the person with self-employment income is the primary filer.
+# /flowKnockoutScheduleCSpouseBusiness), and the spouse's church employee income stops the return
+# (scheduleSE /hadSecondaryFilerChurchEmployeeIncome; 26 U.S.C. 3121(w), 1402(b), 1402(j)). That income is not
+# entered on the primary filer's line 5a. The person with the computed Schedule SE is the primary filer.
 #
 # Line arithmetic (scheduleSE.xml, primary chain): when the nonfarm optional method applies, line 2 is skipped, so
 # lines 2, 3, and 4a are $0 and line 4c equals line 4b (26 U.S.C. 1402(a), 1402(l)). Otherwise 4a = line 3 x 92.35%
@@ -44,7 +47,12 @@
 #           not allowed refuses the print (/flowKnockoutScheduleSENonfarmOptionalMethod). Line 14 is the
 #           preprinted maximum ($7,560). Line 15 stays blank: the farm optional method is
 #           /hadFarmSelfEmploymentIncome and still refuses the print.
-#   5a, 5b  church employee income (/hadChurchEmployeeIncome; 26 U.S.C. 1402(a)(14), 1402(j)).
+#   5a, 5b  primary filer's church employee income. 26 U.S.C. 3121(w) is the church or qualified
+#           church-controlled organization election that excludes the service from employment. Line 5a is
+#           /primaryFilerSeLine5a. Line 5b is line 5a times 92.35%, and -0- when that product is under $100
+#           (26 U.S.C. 1402(a)(12), 1402(j)(2)(B), 1402(j)(3)). $0 prints blank. Line 4c under $400 prints
+#           blank and line 6 is line 5b (/primaryFilerSeReportedLine4c). The secondary filer's church
+#           employee income is not these lines.
 #   8b   Form 4137 unreported tips: stops the return (unreportedTips /flowKnockoutUnreportedTips).
 #   8c   Form 8919 wages (/hadForm8919Wages). income /wagesFrom8919 is $0. Notary fees excluded under
 #        26 U.S.C. 1402(c)(1) (/hasNotarySeExclusion) are not subtracted from line 3.
@@ -65,7 +73,9 @@ form:
       f1_6[0]: /primaryFilerSeReportedNetProfit # 3 "Combine lines 1a, 1b, and 2"
       f1_7[0]: /primaryFilerSeReportedLine4a # 4a "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)"
       f1_8[0]: /primaryFilerSeLine4b # 4b "If you elect one or both of the optional methods, enter the total of lines 15 and 17 here"
-      f1_9[0]: /primaryFilerSeLine4c # 4c "Combine lines 4a and 4b"
+      f1_9[0]: /primaryFilerSeReportedLine4c # 4c "Combine lines 4a and 4b. If less than $400 ... Exception: If less than $400 and you had church employee income, enter -0- and continue"
+      f1_10[0]: /primaryFilerSeLine5a # 5a "Enter your church employee income from Form W-2"
+      f1_11[0]: /primaryFilerSeLine5b # 5b "Multiply line 5a by 92.35% (0.9235). If less than $100, enter -0-"
       f1_12[0]: /primaryFilerSeIncome # 6 "Add lines 4c and 5b"
       f1_14[0]: /scheduleSELine8a # 8a "Total social security wages and tips (total of boxes 3 and 7 on Form(s) W-2)"
       f1_17[0]: /scheduleSELine8d # 8d "Add lines 8a, 8b, and 8c"

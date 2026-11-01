@@ -19,9 +19,10 @@ import {
 
 /**
  * Schedule SE lines this tool does not compute. 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8), 1402(a)(12),
- * 1402(a)(14), 1402(b)(2), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l), and 164(f)(1)
+ * 1402(a)(14), 1402(b)(2), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l), 3121(w), and 164(f)(1)
  * (https://www.law.cornell.edu/uscode/text/26/1402). Supported path: net profit floored at 0, times 92.35%,
- * OASDI 12.4% and Medicare 2.9%, half on Schedule 1 line 15.
+ * OASDI 12.4% and Medicare 2.9%, half on Schedule 1 line 15. The primary filer's church employee income is
+ * lines 5a and 5b. The spouse's church employee income stops a joint return and is not line 5a.
  */
 const KO = `/flowKnockoutScheduleSEOutOfScope`;
 const NONFARM_KO = `/flowKnockoutScheduleSENonfarmOptionalMethod`;
@@ -106,7 +107,7 @@ describe(`Schedule SE out-of-scope lines`, () => {
 
   it(`any yes on a line this tool does not compute stops the return`, ({ task }) => {
     task.meta.testedFactPaths = [KO, `/flowIsKnockedOut`, `/scheduleCSectionIsComplete`];
-    for (const path of QUESTIONS.filter((q) => q !== `/usesSeOptionalMethod`)) {
+    for (const path of QUESTIONS.filter((q) => q !== `/usesSeOptionalMethod` && q !== `/hadChurchEmployeeIncome`)) {
       const g = fg({ ...noW2, ...scheduleC({ [path]: createBooleanWrapper(true) }) });
       const knockout = read(g, KO);
       expect(knockout.complete, path).toBe(true);
@@ -344,5 +345,219 @@ describe(`Schedule SE out-of-scope lines`, () => {
     expect(read(g, `/flowIsKnockedOut`).complete).toBe(true);
     expect(read(g, `/flowIsKnockedOut`).get).toBe(true);
     expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`1130.00`);
+  });
+
+  it(`church employee income of $1,000 is line 5b $924 and is added on line 6`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/primaryFilerSeLine5a`,
+      `/primaryFilerSeLine5b`,
+      `/primaryFilerSeLine4c`,
+      `/primaryFilerSeReportedLine4c`,
+      `/primaryFilerSeIncome`,
+      `/selfEmploymentTax`,
+      `/deductibleSelfEmploymentTax`,
+      KO,
+    ];
+    // Schedule C line 31 $8,000. Line 4a = round(8,000 × 0.9235) = 7,388. 26 U.S.C. 1402(a)(12).
+    // Line 5a $1,000 × 0.9235 = 923.50, which is not under $100, so line 5b = 924. 26 U.S.C. 1402(j)(3).
+    // Line 6 = 7,388 + 924 = 8,312. 2026 draft Schedule SE, PDF p. 2, line 6.
+    // round(8,312 × 0.124) = 1,031; round(8,312 × 0.029) = 241; total 1,272. Half is 636.
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`1000.00`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeLine5a`).get.toString()).toBe(`1000.00`);
+    expect(read(g, `/primaryFilerSeLine5b`).get.toString()).toBe(`924.00`);
+    expect(read(g, `/primaryFilerSeLine4c`).get.toString()).toBe(`7388.00`);
+    expect(read(g, `/primaryFilerSeReportedLine4c`).get.toString()).toBe(`7388.00`);
+    expect(read(g, `/primaryFilerSeIncome`).get.toString()).toBe(`8312.00`);
+    expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`1272.00`);
+    expect(read(g, `/deductibleSelfEmploymentTax`).get.toString()).toBe(`636.00`);
+    expect(read(g, KO).complete).toBe(true);
+    expect(read(g, KO).get).toBe(false);
+    expect(read(g, `/scheduleCSectionIsComplete`).get).toBe(true);
+  });
+
+  it(`a line 5b result under $100 is zero and does not change other self-employment tax`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerSeLine5b`, `/primaryFilerSeIncome`, `/selfEmploymentTax`];
+    // $100 × 0.9235 = $92.35, which is under $100, so line 5b is -0-. 26 U.S.C. 1402(j)(2)(B).
+    // 2026 draft Schedule SE, PDF p. 2, line 5b. Line 4c stays $7,388 and the tax stays $1,130.
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`100.00`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeLine5a`).get.toString()).toBe(`100.00`);
+    expect(read(g, `/primaryFilerSeLine5b`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerSeIncome`).get.toString()).toBe(`7388.00`);
+    expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`1130.00`);
+    expect(read(g, `/deductibleSelfEmploymentTax`).get.toString()).toBe(`565.00`);
+  });
+
+  it(`church employee income alone under $100 leaves self-employment tax at zero`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerSeLine5b`, `/primaryFilerSeTaxApplies`, `/selfEmploymentTax`];
+    // Schedule C $400: line 4a = round(400 × 0.9235) = 369, under $400. 26 U.S.C. 1402(b)(2).
+    // Church wages $108.27 × 0.9235 = $99.99, under $100, so line 5b is -0-. 26 U.S.C. 1402(j)(2).
+    // Both floors fail, so self-employment tax is zero.
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`400.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`0.00`),
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`108.27`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeLine4c`).get.toString()).toBe(`369.00`);
+    expect(read(g, `/primaryFilerSeReportedLine4c`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerSeLine5b`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerSeIncome`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerSeTaxApplies`).get).toBe(false);
+    expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`0.00`);
+  });
+
+  it(`$108.28 of church employee income is line 5b $100 when other net earnings are under $400`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/primaryFilerSeLine5b`,
+      `/primaryFilerSeIncome`,
+      `/primaryFilerSeSocialSecurityTax`,
+      `/primaryFilerSeMedicareTax`,
+      `/selfEmploymentTax`,
+      `/deductibleSelfEmploymentTax`,
+    ];
+    // 2026 draft Instructions for Schedule SE, PDF p. 2: church employee income of $108.28 or more.
+    // $108.28 × 0.9235 = $99.99658, which rounds to $100.00 and is not under $100. Line 5b = $100.
+    // Line 4c is under $400, so it is -0- on line 6. 2026 draft Schedule SE, PDF p. 2, line 4c exception.
+    // round(100 × 0.124) = 12; round(100 × 0.029) = 3; total 15. Half is 8. 26 U.S.C. 1401, 164(f)(1).
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`0.00`),
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`108.28`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeLine5a`).get.toString()).toBe(`108.28`);
+    expect(read(g, `/primaryFilerSeLine5b`).get.toString()).toBe(`100.00`);
+    expect(read(g, `/primaryFilerSeReportedLine4c`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerSeIncome`).get.toString()).toBe(`100.00`);
+    expect(read(g, `/primaryFilerSeTaxApplies`).get).toBe(true);
+    expect(read(g, `/primaryFilerSeSocialSecurityTax`).get.toString()).toBe(`12.00`);
+    expect(read(g, `/primaryFilerSeMedicareTax`).get.toString()).toBe(`3.00`);
+    expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`15.00`);
+    expect(read(g, `/deductibleSelfEmploymentTax`).get.toString()).toBe(`8.00`);
+  });
+
+  it(`church employee income of $10,000 with no other net earnings is taxed on line 5b only`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerSeLine5b`, `/primaryFilerSeIncome`, `/selfEmploymentTax`];
+    // $10,000 × 0.9235 = $9,235. Line 6 = $9,235. 26 U.S.C. 1402(a)(12), 1402(j)(1)(B).
+    // round(9,235 × 0.124) = 1,145; round(9,235 × 0.029) = 268; total 1,413. Half is 707.
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`0.00`),
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`10000.00`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeLine5b`).get.toString()).toBe(`9235.00`);
+    expect(read(g, `/primaryFilerSeIncome`).get.toString()).toBe(`9235.00`);
+    expect(read(g, `/primaryFilerSeSocialSecurityTax`).get.toString()).toBe(`1145.00`);
+    expect(read(g, `/primaryFilerSeMedicareTax`).get.toString()).toBe(`268.00`);
+    expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`1413.00`);
+    expect(read(g, `/deductibleSelfEmploymentTax`).get.toString()).toBe(`707.00`);
+  });
+
+  it(`a yes without the line 5a amount stays incomplete`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerSeLine5a`, `/scheduleCSectionIsComplete`, KO];
+    const g = fg({
+      ...noW2,
+      ...scheduleC({ '/hadChurchEmployeeIncome': createBooleanWrapper(true) }),
+    });
+    expect(read(g, `/primaryFilerSeLine5a`).complete).toBe(false);
+    expect(read(g, `/primaryFilerSeLine5b`).complete).toBe(false);
+    expect(read(g, `/selfEmploymentTax`).complete).toBe(false);
+    expect(read(g, KO).complete).toBe(true);
+    expect(read(g, KO).get).toBe(false);
+    expect(read(g, `/scheduleCSectionIsComplete`).complete).toBe(true);
+    expect(read(g, `/scheduleCSectionIsComplete`).get).toBe(false);
+  });
+
+  it(`a joint return stops when the spouse has church employee income, and that income is not line 5a`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      KO,
+      `/askSecondaryFilerChurchEmployeeIncome`,
+      `/hadSecondaryFilerChurchEmployeeIncome`,
+      `/primaryFilerSeLine5a`,
+      `/primaryFilerSeLine5b`,
+      `/primaryFilerSeLine4c`,
+      `/primaryFilerSeIncome`,
+    ];
+    // 26 U.S.C. 3121(w), 1402(b), and 1402(j). 2026 draft Instructions for Schedule SE, PDF p. 3: each spouse
+    // files a separate Schedule SE. The spouse's wages are not /churchEmployeeIncome.
+    const mfj = { '/filingStatus': createEnumWrapper(`marriedFilingJointly`, `/filingStatusOptions`) };
+    const open = fg({ ...noW2, ...mfj, ...scheduleC() });
+    expect(read(open, `/askSecondaryFilerChurchEmployeeIncome`).get).toBe(true);
+    expect(read(open, KO).complete).toBe(false);
+
+    const spouse = fg({
+      ...noW2,
+      ...mfj,
+      ...scheduleC({ '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(true) }),
+    });
+    expect(read(spouse, `/primaryFilerSeLine5a`).get.toString()).toBe(`0.00`);
+    expect(read(spouse, `/primaryFilerSeLine5b`).get.toString()).toBe(`0.00`);
+    expect(read(spouse, KO).complete).toBe(true);
+    expect(read(spouse, KO).get).toBe(true);
+    expect(read(spouse, `/flowIsKnockedOut`).get).toBe(true);
+    expect(read(spouse, `/scheduleCSectionIsComplete`).get).toBe(false);
+
+    const both = fg({
+      ...noW2,
+      ...mfj,
+      ...scheduleC({
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`1000.00`),
+        '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(true),
+      }),
+    });
+    expect(read(both, `/primaryFilerSeLine5a`).get.toString()).toBe(`1000.00`);
+    expect(read(both, `/primaryFilerSeLine5b`).get.toString()).toBe(`924.00`);
+    expect(read(both, KO).get).toBe(true);
+
+    const primaryOnly = fg({
+      ...noW2,
+      ...mfj,
+      ...scheduleC({
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`1000.00`),
+        '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(false),
+      }),
+    });
+    expect(read(primaryOnly, `/primaryFilerSeLine5a`).get.toString()).toBe(`1000.00`);
+    expect(read(primaryOnly, `/primaryFilerSeLine4c`).get.toString()).toBe(`7388.00`);
+    expect(read(primaryOnly, `/primaryFilerSeIncome`).get.toString()).toBe(`8312.00`);
+    expect(read(primaryOnly, KO).complete).toBe(true);
+    expect(read(primaryOnly, KO).get).toBe(false);
+  });
+
+  it(`a return that is not a joint return does not ask the spouse church employee question`, ({ task }) => {
+    task.meta.testedFactPaths = [KO, `/askSecondaryFilerChurchEmployeeIncome`, `/primaryFilerSeLine5a`];
+    // 26 U.S.C. 3121(w) and 1402(b) are per person. The spouse question is asked only on a joint return.
+    const g = fg({ ...noW2, ...scheduleC() });
+    expect(read(g, `/askSecondaryFilerChurchEmployeeIncome`).get).toBe(false);
+    expect(read(g, KO).complete).toBe(true);
+    expect(read(g, KO).get).toBe(false);
+    const stray = fg({
+      ...noW2,
+      ...scheduleC({ '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(true) }),
+    });
+    expect(read(stray, `/primaryFilerSeLine5a`).get.toString()).toBe(`0.00`);
+    expect(read(stray, KO).get).toBe(false);
   });
 });

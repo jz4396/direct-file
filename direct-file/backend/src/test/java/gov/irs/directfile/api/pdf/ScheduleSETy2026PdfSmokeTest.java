@@ -223,6 +223,71 @@ class ScheduleSETy2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Church employee income of $10,000 with Schedule C profit of $30,000. Line 5b is round($10,000 × 0.9235) =
+     * $9,235. Line 4c stays $27,705 because it is at least $400. Line 6 is $36,940. 2026 draft Schedule SE, PDF p. 2,
+     * lines 5a, 5b, and 6. 26 U.S.C. 1402(a)(12), 1402(j)(2), 1402(j)(3). W-2 social security wages of $170,000 still
+     * limit line 10 to the remaining wage base.
+     */
+    @Test
+    void churchEmployeeIncomeIsAddedOnLine6() throws Exception {
+        Map<String, String> facts = selfEmployed("170000.00", "170000.00", "30000.00");
+        facts.put("/hadChurchEmployeeIncome", bool(true));
+        facts.put("/churchEmployeeIncome", dollar("10000.00"));
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertFalse(se.isEmpty(), "Schedule SE printed");
+            amount(se, "Page1[0].f1_7[0]", 27705, "4a");
+            amount(se, "Page1[0].f1_9[0]", 27705, "4c");
+            amount(se, "Page1[0].f1_10[0]", 10000, "5a");
+            amount(se, "Page1[0].f1_11[0]", 9235, "5b = 10,000 x 92.35%");
+            amount(se, "Page1[0].f1_12[0]", 36940, "6 = 4c + 5b");
+            amount(se, "Page1[0].f1_19[0]", 1798, "10 still limited by line 9");
+            amount(se, "Page1[0].f1_20[0]", 1071, "11 = 36,940 x 2.9%");
+            amount(se, "Page1[0].f1_21[0]", 2869, "12");
+            amount(se, "Page1[0].f1_22[0]", 1435, "13 = 2,869 x 50%");
+        }
+    }
+
+    /**
+     * Only church employee income of $108.28. That amount times 92.35% is $100, so line 5b is $100. Line 4c is under
+     * $400 and prints blank. 2026 draft Instructions for Schedule SE, PDF p. 2 and PDF p. 4. 26 U.S.C. 1402(j)(2)(B).
+     */
+    @Test
+    void churchEmployeeIncomeAtThe100FloorPrintsLine5b() throws Exception {
+        Map<String, String> facts = selfEmployed("0.00", "0.00", "0.00");
+        facts.put("/hadChurchEmployeeIncome", bool(true));
+        facts.put("/churchEmployeeIncome", dollar("108.28"));
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertFalse(se.isEmpty(), "Schedule SE printed");
+            blank(se, "Page1[0].f1_9[0]", "4c under $400");
+            assertEquals(10828, cents(value(se, "Page1[0].f1_10[0]")), "5a");
+            amount(se, "Page1[0].f1_11[0]", 100, "5b");
+            amount(se, "Page1[0].f1_12[0]", 100, "6 = 5b");
+            amount(se, "Page1[0].f1_19[0]", 12, "10 = 100 x 12.4%");
+            amount(se, "Page1[0].f1_20[0]", 3, "11 = 100 x 2.9%");
+            amount(se, "Page1[0].f1_21[0]", 15, "12");
+            amount(se, "Page1[0].f1_22[0]", 8, "13");
+        }
+    }
+
+    /** Church employee income of $100 produces line 5b under $100, and line 4c under $400, so no Schedule SE. */
+    @Test
+    void churchEmployeeIncomeUnder100DoesNotPrintScheduleSE() throws Exception {
+        Map<String, String> facts = selfEmployed("50000.00", "50000.00", "400.00");
+        facts.put("/hadChurchEmployeeIncome", bool(true));
+        facts.put("/churchEmployeeIncome", dollar("100.00"));
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(
+                    text.contains(SE_FOOTER), "no Schedule SE when line 5b is under $100 and line 4c is under $400");
+        }
+    }
+
     @Test
     void noScheduleSEUnder400NetEarnings() throws Exception {
         byte[] bytes = generate(selfEmployed("50000.00", "50000.00", "400.00"));
@@ -244,6 +309,8 @@ class ScheduleSETy2026PdfSmokeTest {
         expected.put(
                 "f1_8[0]", "4b. If you elect one or both of the optional methods, enter the total of lines 15 and 17");
         expected.put("f1_9[0]", "4c. Combine lines 4a and 4b");
+        expected.put("f1_10[0]", "5a. Enter your church employee income from Form W-2");
+        expected.put("f1_11[0]", "5b. Multiply line 5a by 92.35% (0.9235). If less than $100");
         expected.put("f2_3[0]", "16. Subtract line 15 from line 14");
         expected.put("f2_4[0]", "17. Enter the smaller of: two-thirds (2/3) of gross nonfarm income");
         expected.put("f1_12[0]", "6. Add lines 4c and 5b");

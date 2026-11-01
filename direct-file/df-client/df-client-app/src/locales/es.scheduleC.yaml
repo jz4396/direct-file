@@ -20,7 +20,10 @@ headings:
   /heading/income/schedule-c/farm:
     ¿Tuvo ingresos de agricultura, pagos del Programa de Reservas para la Conservación, o quiere usar el método opcional
     de agricultura?
-  /heading/income/schedule-c/church-employee: ¿Tuvo ingresos como empleado de una iglesia?
+  /heading/income/schedule-c/church-employee:
+    ¿Usted, la persona que aparece primero en la declaración, tuvo ingresos como empleado de una iglesia?
+  /heading/income/schedule-c/church-employee-amount: ¿Cuántos ingresos tuvo como empleado de una iglesia?
+  /heading/income/schedule-c/spouse-church-employee: ¿Su cónyuge tuvo ingresos como empleado de una iglesia?
   /heading/income/schedule-c/optional-method:
     ¿Quiere usar el método opcional que no es de agricultura para calcular el impuesto sobre el trabajo por cuenta
     propia?
@@ -116,8 +119,27 @@ info:
       corresponde. Esta herramienta no puede calcular esas líneas.
   /info/income/schedule-c/church-employee:
     body: >-
-      Los ingresos como empleado de una iglesia van en las líneas 5a y 5b del Anexo SE. Se calculan por separado de los
-      otros ingresos del trabajo por cuenta propia. Conteste que sí si los tiene.
+      Los ingresos como empleado de una iglesia son salarios del Formulario W-2 por trabajo como empleado de una iglesia
+      o de una organización controlada por una iglesia que eligió no pagar los impuestos del empleador del Seguro Social
+      y Medicare. No incluyen el pago por servicios como ministro, miembro de una orden religiosa o practicante de la
+      Ciencia Cristiana. Van en las líneas 5a y 5b del Anexo SE, aparte de los otros ingresos del trabajo por cuenta
+      propia. Conteste solo por la persona que aparece primero en la declaración. Conteste que sí si esa persona los
+      tiene.
+  /info/income/schedule-c/church-employee-amount:
+    body: >-
+      Anote los ingresos como empleado de una iglesia de su Formulario W-2. Esa es la línea 5a del Anexo SE de la
+      persona que aparece primero en la declaración. No anote aquí los ingresos como empleado de una iglesia de su
+      cónyuge. La línea 5b es ese monto por 92.35 por ciento. Si la línea 5b es menor de $100, es cero y esos ingresos
+      no están sujetos al impuesto sobre el trabajo por cuenta propia. Las otras ganancias netas se siguen probando en
+      $400.
+  /info/income/schedule-c/spouse-church-employee:
+    body: >-
+      Los ingresos como empleado de una iglesia son salarios del Formulario W-2 por trabajo como empleado de una iglesia
+      o de una organización controlada por una iglesia que eligió no pagar los impuestos del empleador del Seguro Social
+      y Medicare. No incluyen el pago por servicios como ministro, miembro de una orden religiosa o practicante de la
+      Ciencia Cristiana. Cada cónyuge calcula el impuesto sobre el trabajo por cuenta propia en un Anexo SE separado.
+      Esta herramienta calcula las líneas 5a y 5b solo para la persona que aparece primero. Conteste que sí si su
+      cónyuge tiene ingresos como empleado de una iglesia. Tendrá que usar otra manera de presentar.
   /info/income/schedule-c/optional-method:
     body: >-
       El método opcional que no es de agricultura es la línea 4b y las líneas 16 y 17 de la Parte II del Anexo SE. Puede
@@ -152,9 +174,10 @@ info:
       body:
         - p: >-
             Esta declaración necesita una línea del Anexo SE que esta herramienta no calcula. Eso incluye ingresos de
-            agricultura, pagos del Programa de Reservas para la Conservación, el método opcional de agricultura,
-            ingresos como empleado de una iglesia, el ministerio o una exención del Formulario 4361 o 4029, honorarios
-            de notario o salarios del Formulario 8919. Tendrá que usar otra manera de presentar esta declaración.
+            agricultura, pagos del Programa de Reservas para la Conservación, el método opcional de agricultura, el
+            ministerio o una exención del Formulario 4361 o 4029, honorarios de notario, salarios del Formulario 8919 o
+            los ingresos como empleado de una iglesia de su cónyuge. Tendrá que usar otra manera de presentar esta
+            declaración.
   /info/knockout/schedule-se-nonfarm-optional-method:
     alertText:
       body:
@@ -343,6 +366,12 @@ fields:
     boolean:
       "yes": Sí
       "no": "No"
+  /hadSecondaryFilerChurchEmployeeIncome:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /churchEmployeeIncome:
+    name: "Línea 5a, ingresos como empleado de una iglesia del Formulario W-2"
   /usesSeOptionalMethod:
     boolean:
       "yes": Sí

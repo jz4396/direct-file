@@ -92,6 +92,18 @@ export const ScheduleCIncomeSubcategory = (
         <Boolean path='/hadChurchEmployeeIncome' />
         <SaveAndOrContinueButton />
       </Screen>
+      <Screen route='schedule-c-church-employee-amount' condition='/hadChurchEmployeeIncome'>
+        <Heading i18nKey='/heading/income/schedule-c/church-employee-amount' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/church-employee-amount' />
+        <Dollar path='/churchEmployeeIncome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='schedule-c-spouse-church-employee' condition='/askSecondaryFilerChurchEmployeeIncome'>
+        <Heading i18nKey='/heading/income/schedule-c/spouse-church-employee' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/spouse-church-employee' />
+        <Boolean path='/hadSecondaryFilerChurchEmployeeIncome' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='schedule-c-optional-method' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/optional-method' />
         <InfoDisplay i18nKey='/info/income/schedule-c/optional-method' />

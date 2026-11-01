@@ -832,10 +832,13 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
-     * Schedule SE lines 1a, 1b, 4b, Part II, 5a, 5b, checkbox A, and 8c. 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8),
-     * 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), and 1402(l). A return with no self-employment
-     * income is complete false. An unanswered question while self-employment income is yes refuses the print. Every
-     * answer no does not. Any yes refuses the print.
+     * Schedule SE lines 1a, 1b, 4b, Part II, checkbox A, and 8c. 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8),
+     * 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), and 1402(l). The primary filer's lines 5a and 5b are church
+     * employee income (26 U.S.C. 3121(w), 1402(a)(12), 1402(a)(14), 1402(j)) and do not refuse the print. The
+     * secondary filer's church employee income is not line 5a and does refuse the print on a joint return. A return
+     * with no self-employment income is complete false. An unanswered question while self-employment income is yes
+     * refuses the print. Every stopping answer no does not. A yes on a line this tool does not compute refuses the
+     * print.
      */
     @Test
     void scheduleSeOutOfScopeRefusesPrintUntilEveryQuestionIsNo() throws Exception {
@@ -878,6 +881,39 @@ class PrintRefusingKnockoutsTest {
         assertEquals(Boolean.TRUE, farm.get(ko).get());
         assertEquals(Boolean.TRUE, farm.get("/flowIsKnockedOut").get());
         assertTrue(PrintRefusingKnockouts.refusingPaths(farm).contains(ko));
+
+        Map<String, String> churchFacts =
+                new HashMap<>(ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "30000.00"));
+        churchFacts.put("/hadChurchEmployeeIncome", ScheduleATy2026PdfSmokeTest.bool(true));
+        churchFacts.put("/churchEmployeeIncome", ScheduleATy2026PdfSmokeTest.dollar("1000.00"));
+        Graph church = fgs.getGraph(smoke(churchFacts));
+        assertEquals(Boolean.FALSE, church.get(ko).get(), "lines 5a and 5b do not stop the return");
+        assertFalse(PrintRefusingKnockouts.refusingPaths(church).contains(ko));
+        assertEquals("924.00", church.get("/primaryFilerSeLine5b").get().toString());
+
+        Map<String, String> spouseFacts =
+                new HashMap<>(ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "30000.00"));
+        spouseFacts.put(
+                "/filingStatus",
+                PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("marriedFilingJointly", "/filingStatusOptions"));
+        Graph spouseOpen = fgs.getGraph(smoke(spouseFacts));
+        assertFalse(spouseOpen.get(ko).complete(), "an unanswered spouse question refuses the print");
+        assertTrue(PrintRefusingKnockouts.refusingPaths(spouseOpen).contains(ko));
+
+        spouseFacts.put("/hadSecondaryFilerChurchEmployeeIncome", ScheduleATy2026PdfSmokeTest.bool(true));
+        Graph spouse = fgs.getGraph(smoke(spouseFacts));
+        assertEquals(Boolean.TRUE, spouse.get(ko).get(), "spouse church employee income is not line 5a");
+        assertTrue(PrintRefusingKnockouts.refusingPaths(spouse).contains(ko));
+        assertEquals("0.00", spouse.get("/primaryFilerSeLine5a").get().toString());
+
+        spouseFacts.put("/hadSecondaryFilerChurchEmployeeIncome", ScheduleATy2026PdfSmokeTest.bool(false));
+        spouseFacts.put("/hadChurchEmployeeIncome", ScheduleATy2026PdfSmokeTest.bool(true));
+        spouseFacts.put("/churchEmployeeIncome", ScheduleATy2026PdfSmokeTest.dollar("1000.00"));
+        Graph primaryOnJoint = fgs.getGraph(smoke(spouseFacts));
+        assertEquals(Boolean.FALSE, primaryOnJoint.get(ko).get());
+        assertFalse(PrintRefusingKnockouts.refusingPaths(primaryOnJoint).contains(ko));
+        assertEquals("1000.00", primaryOnJoint.get("/primaryFilerSeLine5a").get().toString());
+        assertEquals("924.00", primaryOnJoint.get("/primaryFilerSeLine5b").get().toString());
     }
 
     /**

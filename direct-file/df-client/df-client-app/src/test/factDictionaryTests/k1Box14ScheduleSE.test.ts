@@ -253,11 +253,12 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
     expect(get(openList, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
   });
 
-  it(`church, minister, farm, notary, and Form 8919 stops still apply`, ({ task }) => {
+  it(`minister, farm, notary, and Form 8919 stops still apply`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutScheduleSEOutOfScope`];
-    // 26 U.S.C. 1402(a)(8), 1402(a)(14), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l).
+    // 26 U.S.C. 1402(a)(8), 1402(a)(14), 1402(c)(4), 1402(e), 1402(g), 1402(l). Church employee
+    // income is lines 5a and 5b (1402(j)), not this stop.
     const rows = partII([partnershipId], k1(partnershipId, `8000`));
-    for (const path of seQuestions.filter((q) => q !== `/usesSeOptionalMethod`)) {
+    for (const path of seQuestions.filter((q) => q !== `/usesSeOptionalMethod` && q !== `/hadChurchEmployeeIncome`)) {
       const g = fg({
         ...rows,
         '/hadSelfEmploymentIncome': createBooleanWrapper(true),
@@ -289,7 +290,7 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
   });
 
-  it(`a K-1-only filer is asked the Schedule SE stops and each yes stops the return`, ({ task }) => {
+  it(`a K-1-only filer is asked the Schedule SE stops and each unsupported yes stops the return`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/scheduleSEOutOfScopeQuestionsApply`,
       `/flowKnockoutScheduleSEOutOfScope`,
@@ -320,7 +321,13 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
         `/scheduleSEOutOfScopeQuestionsApply`,
       ]);
     }
-    for (const path of seQuestions.filter((q) => q !== `/usesSeOptionalMethod`)) {
+    expect(screens.screensByRoute.get(`/flow/income/schedule-c/schedule-c-church-employee-amount`)?.conditions).toEqual(
+      [`/hadChurchEmployeeIncome`]
+    );
+    expect(screens.screensByRoute.get(`/flow/income/schedule-c/schedule-c-spouse-church-employee`)?.conditions).toEqual(
+      [`/askSecondaryFilerChurchEmployeeIncome`]
+    );
+    for (const path of seQuestions.filter((q) => q !== `/usesSeOptionalMethod` && q !== `/hadChurchEmployeeIncome`)) {
       const g = fg({
         ...rows,
         ...Object.fromEntries(seQuestions.map((q) => [q, createBooleanWrapper(q === path)])),
@@ -337,10 +344,62 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
     expect(get(elected, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
     expect(get(elected, `/flowKnockoutScheduleSENonfarmOptionalMethod`).get).toBe(true);
     expect(get(elected, `/flowIsKnockedOut`).get).toBe(true);
+    // Box 14 code A $8,000 is line 4c $7,388. Church wages $1,000 × 0.9235 = $923.50, so line 5b is $924.
+    // Line 6 is $8,312. A yes does not stop the return. 26 U.S.C. 1402(a)(12), 1402(j)(2), 1402(j)(3).
+    // 2026 draft Schedule SE, PDF p. 2, lines 5b and 6.
+    const church = fg({
+      ...rows,
+      ...Object.fromEntries(seQuestions.map((q) => [q, createBooleanWrapper(q === `/hadChurchEmployeeIncome`)])),
+      '/churchEmployeeIncome': createDollarWrapper(`1000.00`),
+    });
+    expect(get(church, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
+    expect(get(church, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expect(get(church, `/primaryFilerSeLine5a`).get.toString()).toBe(`1000.00`);
+    expect(get(church, `/primaryFilerSeLine5b`).get.toString()).toBe(`924.00`);
+    expect(get(church, `/primaryFilerSeIncome`).get.toString()).toBe(`8312.00`);
+    expect(get(church, `/selfEmploymentTax`).get.toString()).toBe(`1272.00`);
     const open = fg(rows);
     expect(get(open, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(false);
     const zero = fg(partII([partnershipId], k1(partnershipId, `0`)));
     expect(get(zero, `/scheduleSEOutOfScopeQuestionsApply`).get).toBe(false);
     expect(get(zero, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+  });
+
+  it(`spouse church employee income on a joint return is not line 5a`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleSEOutOfScope`,
+      `/primaryFilerSeLine5a`,
+      `/askSecondaryFilerChurchEmployeeIncome`,
+    ];
+    // 26 U.S.C. 3121(w), 1402(b), and 1402(j). Box 14 code A stays on line 2. The spouse's church wages
+    // are not added to line 5a. 2026 draft Instructions for Schedule SE, PDF p. 3.
+    const rows = partII([partnershipId], k1(partnershipId, `8000`));
+    const base = {
+      ...rows,
+      '/filingStatus': createEnumWrapper(`marriedFilingJointly`, `/filingStatusOptions`),
+      ...Object.fromEntries(seQuestions.map((q) => [q, createBooleanWrapper(false)])),
+    };
+    const open = fg(base);
+    expect(get(open, `/askSecondaryFilerChurchEmployeeIncome`).get).toBe(true);
+    expect(get(open, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(false);
+    const answeredNo = fg({ ...base, '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(false) });
+    expect(get(answeredNo, `/primaryFilerSeLine5a`).get.toString()).toBe(`0.00`);
+    expect(get(answeredNo, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    const spouse = fg({ ...base, '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(true) });
+    expect(get(spouse, `/primaryFilerSeLine5a`).get.toString()).toBe(`0.00`);
+    expect(get(spouse, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(true);
+    expect(get(spouse, `/flowIsKnockedOut`).get).toBe(true);
+    const primary = fg({
+      ...base,
+      '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+      '/churchEmployeeIncome': createDollarWrapper(`1000.00`),
+      '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(false),
+    });
+    // A joint return does not put box 14 code A on one spouse's line 2. Line 6 is line 5b only.
+    // 26 U.S.C. 1402(b). $1,000 × 0.9235 = $923.50, so line 5b is $924.
+    expect(get(primary, `/primaryFilerSeLine5a`).get.toString()).toBe(`1000.00`);
+    expect(get(primary, `/primaryFilerSeLine5b`).get.toString()).toBe(`924.00`);
+    expect(get(primary, `/primaryFilerSeIncome`).get.toString()).toBe(`924.00`);
+    expect(get(primary, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
   });
 });

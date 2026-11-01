@@ -16,7 +16,10 @@ headings:
   /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
   /heading/income/schedule-c/farm:
     Did you have farm income, Conservation Reserve Program payments, or do you want to use the farm optional method?
-  /heading/income/schedule-c/church-employee: Did you have church employee income?
+  /heading/income/schedule-c/church-employee:
+    Did you, the person listed first on the return, have church employee income?
+  /heading/income/schedule-c/church-employee-amount: How much church employee income did you have?
+  /heading/income/schedule-c/spouse-church-employee: Did your spouse have church employee income?
   /heading/income/schedule-c/optional-method:
     Do you want to use the nonfarm optional method to figure self-employment tax?
   /heading/income/schedule-c/nonfarm-prior-years:
@@ -103,8 +106,24 @@ info:
       optional method. Answer yes if any of those apply. This tool cannot figure those lines.
   /info/income/schedule-c/church-employee:
     body: >-
-      Church employee income goes on Schedule SE lines 5a and 5b. It is figured separately from other self-employment
-      income. Answer yes if you have it.
+      Church employee income is wages from Form W-2 for work as an employee of a church or qualified church-controlled
+      organization that elected out of employer social security and Medicare taxes. It does not include pay for
+      services as a minister, a member of a religious order, or a Christian Science practitioner. It goes on Schedule
+      SE lines 5a and 5b, separate from other self-employment income. Answer this only for the person listed first on
+      the return. Answer yes if that person has it.
+  /info/income/schedule-c/church-employee-amount:
+    body: >-
+      Enter the church employee income from your Form W-2. This is Schedule SE line 5a for the person listed first on
+      the return. Do not enter your spouse's church employee income here. Line 5b is that amount times 92.35 percent.
+      If line 5b is under $100, it is zero and that income is not subject to self-employment tax. Other net earnings
+      are still tested at $400.
+  /info/income/schedule-c/spouse-church-employee:
+    body: >-
+      Church employee income is wages from Form W-2 for work as an employee of a church or qualified church-controlled
+      organization that elected out of employer social security and Medicare taxes. It does not include pay for
+      services as a minister, a member of a religious order, or a Christian Science practitioner. Each spouse figures
+      self-employment tax on a separate Schedule SE. This tool figures lines 5a and 5b only for the person listed
+      first. Answer yes if your spouse has church employee income. You will need another way to file.
   /info/income/schedule-c/optional-method:
     body: >-
       The nonfarm optional method is Schedule SE line 4b and Part II lines 16 and 17. You may use it only when your net
@@ -137,8 +156,9 @@ info:
       body:
         - p: >-
             This return needs a Schedule SE line this tool does not figure. That includes farm income, Conservation
-            Reserve Program payments, the farm optional method, church employee income, ministry or a Form 4361 or Form
-            4029 exemption, notary fees, or Form 8919 wages. You will need another way to file this return.
+            Reserve Program payments, the farm optional method, ministry or a Form 4361 or Form 4029 exemption, notary
+            fees, Form 8919 wages, or your spouse's church employee income. You will need another way to file this
+            return.
   /info/knockout/schedule-se-nonfarm-optional-method:
     alertText:
       body:
@@ -307,6 +327,12 @@ fields:
     boolean:
       "yes": Yes
       "no": "No"
+  /hadSecondaryFilerChurchEmployeeIncome:
+    boolean:
+      "yes": Yes
+      "no": "No"
+  /churchEmployeeIncome:
+    name: "Line 5a, church employee income from Form W-2"
   /usesSeOptionalMethod:
     boolean:
       "yes": Yes
