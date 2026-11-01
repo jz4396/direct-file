@@ -7,7 +7,8 @@
 // (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout),
 // profile J (full-year Florida resident, single: W-2, Form 1099-DIV boxes 1a, 1b, and 2a, and Schedule E
 // Part I rental income), and profile K (Florida full-year single, one Schedule C, Form 8995 with the line 14
-// income limitation).
+// income limitation), and profile L (Florida full-year single: W-2, Schedule C, and Form 1099-INT boxes 8 and 9,
+// with the box 9 amount on Form 6251 line 2g producing alternative minimum tax).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -170,6 +171,13 @@ const interest = (id: string, payer: string, box1: number) => ({
   [`/interestReports/#${id}/writable1099Amount`]: createDollarWrapper(`${box1}`),
   [`/interestReports/#${id}/writableInterestOnGovernmentBonds`]: createDollarWrapper(`0`),
   [`/interestReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+});
+
+/** Form 1099-INT with box 1 at $0, box 8 (Form 1040 line 2a), and box 9 (Form 6251 line 2g). */
+const taxExemptInterest = (id: string, payer: string, box8: number, box9: number) => ({
+  ...interest(id, payer, 0),
+  [`/interestReports/#${id}/writableTaxExemptInterest`]: createDollarWrapper(`${box8}`),
+  [`/interestReports/#${id}/writableSpecifiedPrivateActivityBondInterest`]: createDollarWrapper(`${box9}`),
 });
 
 const qualifiedDividends = (id: string, payer: string, box1a: number, box1b: number, box2a?: number) => ({
@@ -879,6 +887,80 @@ export const profileKFlSingleScheduleC = {
   '/form2210FiledJointReturnPriorYear': createBooleanWrapper(false),
 };
 
+/**
+ * Profile L: Florida full-year resident, single, under 65. One W-2, one Schedule C (line-item expenses, no
+ * inventory), and one Form 1099-INT whose box 8 and box 9 are equal. Box 8 is Form 1040 line 2a and is not gross
+ * income. Box 9 is specified private activity bond interest, Form 6251 line 2g, and is the preference that produces
+ * alternative minimum tax. Form 8995 prints. Submission still stops because there is no MeF mapping.
+ * Fixed identifiers: SSN 900-39-1014, W-2 id 13500000-0000-4000-8000-000000001601, 1099-INT id
+ * 13500000-0000-4000-8000-000000001602, Schedule C id 13500000-0000-4000-8000-000000001603.
+ */
+const drew: Person = { first: `Drew`, last: `Example`, ssn: [`900`, `39`, `1014`], dob: `1987-11-08` };
+export const profileLBusinessId = `13500000-0000-4000-8000-000000001603`;
+export const profileLInterestId = `13500000-0000-4000-8000-000000001602`;
+export const profileLW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001601`,
+  employer: `Example Harbor LLC`,
+  ein: [`00`, `0001601`],
+  box1: 150000,
+  box2: 37000,
+  box3: 150000,
+  // 6.2% × 150,000 = 9,300 exactly. 26 U.S.C. 3101(a). Not used in the income tax.
+  box4: 9300,
+  box5: 150000,
+  // 1.45% × 150,000 = 2,175 exactly. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000).
+  box6: 2175,
+};
+const profileLScheduleCStops = [
+  `hasInventoryOrCogs`,
+  `hasCarTruckOrVehicleLoan`,
+  `hasDepreciationOrSection179`,
+  `hasDepletion`,
+  `hasVehicleMachineryEquipmentRent`,
+  `hasHomeOffice`,
+  `hasEnergyEfficientBuildingsDeduction`,
+];
+export const profileLFlSinglePabInterest = {
+  ...single(drew, { street: `123 Example St`, city: `Gainesville`, zip: `32601`, state: `FL` }),
+  [`/filers/#${primaryFilerId}/occupation`]: createStringWrapper(`Consultant`),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  ...w2s(drew.ssn, profileLW2),
+  ...taxExemptInterest(profileLInterestId, `Example City Bond`, 40000, 40000),
+  '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  // Answered no. Unanswered, /flowKnockoutScheduleSEOutOfScope stays incomplete and refuses the print.
+  // 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8), 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l).
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
+  '/scheduleCBusinesses': createCollectionWrapper([profileLBusinessId]),
+  '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/businessName`]: createStringWrapper(`Example Advisory`),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/writableGrossReceipts`]: createDollarWrapper(`40000`),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/writableReturnsAndAllowances`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/writableOtherIncome`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/hasDeductibleExpenses`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/expenseLinesChosen`]: createMultEnumWrapper(
+    [`advertising`, `officeExpense`, `supplies`],
+    `/scheduleCExpenseLineOptions`
+  ),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/writableAdvertising`]: createDollarWrapper(`4000`),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/writableOfficeExpense`]: createDollarWrapper(`2500`),
+  [`/scheduleCBusinesses/#${profileLBusinessId}/writableSupplies`]: createDollarWrapper(`3500`),
+  ...Object.fromEntries(
+    profileLScheduleCStops.map((key) => [
+      `/scheduleCBusinesses/#${profileLBusinessId}/${key}`,
+      createBooleanWrapper(false),
+    ])
+  ),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -897,4 +979,5 @@ export const goldenProfiles = {
   profileIMfjAmtPhaseout,
   profileJFlDividendsRental,
   profileKFlSingleScheduleC,
+  profileLFlSinglePabInterest,
 };
