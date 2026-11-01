@@ -36,6 +36,7 @@ const SCENARIOS = `./src/test/factDictionaryTests/backend-scenarios`;
 const SUBMISSION_BLOCKING = path.join(`..`, `..`, `backend`, `src`, `test`, `resources`, `submission-blocking`);
 const BACKEND_GOLDEN = path.join(SUBMISSION_BLOCKING, `golden-profile5-complete.json`);
 const BACKEND_GOLDEN_H = path.join(SUBMISSION_BLOCKING, `golden-profileH-complete.json`);
+const BACKEND_GOLDEN_G = path.join(SUBMISSION_BLOCKING, `golden-profileG-complete.json`);
 const BACKEND_GOLDEN_M = path.join(SUBMISSION_BLOCKING, `golden-profileM-complete.json`);
 
 /** The operands of /flowIsKnockedOut's Any: [path, negated]. */
@@ -60,6 +61,7 @@ const returns: [string, Record<string, unknown>][] = [
   ...Object.entries(goldenProfiles).map(([k, v]) => [`golden profile ${k}`, v] as [string, Record<string, unknown>]),
   [`backend golden-profile5-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN, `utf-8`)).facts],
   [`backend golden-profileH-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_H, `utf-8`)).facts],
+  [`backend golden-profileG-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_G, `utf-8`)).facts],
   [`backend golden-profileM-complete.json`, JSON.parse(fs.readFileSync(BACKEND_GOLDEN_M, `utf-8`)).facts],
   ...fs
     .readdirSync(SCENARIOS)

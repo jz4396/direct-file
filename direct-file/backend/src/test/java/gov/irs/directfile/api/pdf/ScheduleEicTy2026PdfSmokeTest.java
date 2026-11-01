@@ -172,9 +172,11 @@ class ScheduleEicTy2026PdfSmokeTest {
      * EIC $2,079. Not the head-of-household smoke harness.
      *
      * <p>2026 Schedule EIC draft, page 1: "Complete and attach to Form 1040 or 1040-SR only if you have a qualifying
-     * child." 26 U.S.C. 32(c)(3)(D)(i) requires each child's name, age, and TIN. 2025 Instructions for Form 1040, p.
-     * 40: complete and attach Schedule EIC. Line 27a is the earned income credit. Neither child is another person's
-     * qualifying child, so the section 152(c)(4) tie-breaker does not stop the print.
+     * child." 26 U.S.C. 32(c)(3)(D)(i) requires each child's name, age, and TIN. Line 3 is the year of birth (Robin
+     * 2018, Sky 2020). Line 5 is the relationship (biological child). Line 6 is months lived in the home; each child
+     * lived all year, so the line 6 transform writes 12. 2025 Instructions for Form 1040, p. 40: complete and attach
+     * Schedule EIC. Line 27a is the earned income credit. Neither child is another person's qualifying child, so the
+     * section 152(c)(4) tie-breaker does not stop the print.
      */
     @Test
     void goldenGScheduleEicPrintsOnThePublicPath() throws Exception {
@@ -189,6 +191,25 @@ class ScheduleEicTy2026PdfSmokeTest {
             PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_06[0]", "444-00-2003", "child 1 TIN");
             PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_07[0]", "444-00-2004", "child 2 TIN");
             PaPit40ScheduleSpTy2026PdfSmokeTest.blank(eic, "f1_05[0]", "no third child");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(
+                    eic, "Year1_ReadOrder[0].f1_09[0]", "2", "child 1 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "Year1_ReadOrder[0].f1_10[0]", "0", "child 1 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "Year1_ReadOrder[0].f1_11[0]", "1", "child 1 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "Year1_ReadOrder[0].f1_12[0]", "8", "child 1 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(
+                    eic, "Year2_ReadOrder[0].f1_13[0]", "2", "child 2 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "Year2_ReadOrder[0].f1_14[0]", "0", "child 2 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "Year2_ReadOrder[0].f1_15[0]", "2", "child 2 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "Year2_ReadOrder[0].f1_16[0]", "0", "child 2 year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.blank(eic, "f1_17[0]", "no third child year of birth");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_21[0]", "Child", "child 1 relationship");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(eic, "f1_22[0]", "Child", "child 2 relationship");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.blank(eic, "f1_23[0]", "no third child relationship");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(
+                    eic, "Line6_Child1_ReadOrder[0].f1_24[0]", "12", "child 1 months");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(
+                    eic, "Line6_Child2_ReadOrder[0].f1_25[0]", "12", "child 2 months");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.blank(eic, "f1_26[0]", "no third child months");
 
             Map<String, String> page2 = PaPit40ScheduleSpTy2026PdfSmokeTest.fieldsOnPages(
                     doc, "27a Earned income credit (EIC)");
