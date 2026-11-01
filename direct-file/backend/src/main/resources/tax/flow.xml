@@ -190,6 +190,9 @@
           <Dependency module="form8995" path="/flowKnockoutScheduleCQbiAndK1Box14CodeA" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIQbiCode" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIOtherK1Amount" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIPtep" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIICleanRenewableEnergyBond" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIQualifiedDividends" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIColumnE" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIColumnF" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIForeignOrPtp" />

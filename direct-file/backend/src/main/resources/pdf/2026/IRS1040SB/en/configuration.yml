@@ -12,9 +12,13 @@
 # Included when /requiresScheduleB. Instructions for Schedule B (Form 1040) (2025) p. 1: "You had over $1,500 of
 # taxable interest or ordinary dividends" or a foreign account or foreign trust. Schedule B (2026) draft Part III
 # says the same. Line 4 is Form 1040 line 2b. Line 6 is Form 1040 line 3b. 26 U.S.C. 61(a)(4).
-# Part I line 1 lists Form 1099-INT payers, then Schedule K-1 (Form 1041) box 1 (estate or trust name).
-# Part II line 5 lists Form 1099-DIV payers, then Schedule K-1 (Form 1041) box 2a.
+# Part I line 1 lists Form 1099-INT payers, then Schedule K-1 (Form 1041) box 1 (estate or trust name),
+# then Schedule K-1 (Form 1065) box 5 or Schedule K-1 (Form 1120-S) box 4 (partnership or S corporation).
+# Part II line 5 lists Form 1099-DIV payers, then Schedule K-1 (Form 1041) box 2a, then Form 1065 box 6a
+# or Form 1120-S box 5a.
 # Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) PDF p. 2, Box 1 and Box 2a.
+# Partner's Instructions for Schedule K-1 (Form 1065) (2025) PDF p. 15, Boxes 5 and 6a.
+# Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025) PDF p. 7, Boxes 4 and 5a.
 #
 # Not mapped, left blank. A supported return never has an amount for these lines. A yes refuses the print
 # (interest /flowKnockoutInterestScheduleBSubtraction):

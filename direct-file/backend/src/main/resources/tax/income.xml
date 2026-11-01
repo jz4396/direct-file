@@ -919,8 +919,12 @@
       <Name>Qualified Dividends</Name>
       <Description>Qualified dividend income to report on line 3a of Form 1040. #86: total of Form 1099-DIV box 1b
         (dividends /totalQualifiedDividends), plus Schedule K-1 (Form 1041) box 2b (scheduleE
-        /scheduleEEstateK1QualifiedDividends). Schedule K-1 (Form 1041) (2025) page 2: "2b. Qualified dividends
-        — Form 1040 or 1040-SR, line 3a". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        /scheduleEEstateK1QualifiedDividends), plus Schedule K-1 (Form 1065) box 6b and Schedule K-1 (Form
+        1120-S) box 5b (scheduleE /scheduleEK1QualifiedDividends). Schedule K-1 (Form 1041) (2025) page 2:
+        "2b. Qualified dividends — Form 1040 or 1040-SR, line 3a". Partner's Instructions for Schedule K-1
+        (Form 1065) (2025), PDF p. 15, Box 6b: "Report any qualified dividends on Form 1040 or 1040-SR,
+        line 3a." Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5b, is the
+        same sentence. 26 U.S.C. 702(a)(5); 702(b); 1366(b). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
         p. 25,
         Line 3a: "Enter your total qualified dividends on line 3a. ... Generally, these dividends are shown in
         box 1b of
@@ -932,6 +936,7 @@
           <Add>
             <Dependency module="dividends" path="/totalQualifiedDividends" />
             <Dependency module="scheduleE" path="/scheduleEEstateK1QualifiedDividends" />
+            <Dependency module="scheduleE" path="/scheduleEK1QualifiedDividends" />
           </Add>
         </Round>
       </Derived>
@@ -941,8 +946,12 @@
       <Name>Ordinary dividends</Name>
       <Description>Ordinary dividend income to report on line 3b of Form 1040. #86: total of Form 1099-DIV box 1a
         (dividends /totalOrdinaryDividends), plus Schedule K-1 (Form 1041) box 2a (scheduleE
-        /scheduleEEstateK1OrdinaryDividends). Schedule K-1 (Form 1041) (2025) page 2: "2a. Ordinary dividends
-        — Form 1040 or 1040-SR, line 3b". Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        /scheduleEEstateK1OrdinaryDividends), plus Schedule K-1 (Form 1065) box 6a and Schedule K-1 (Form
+        1120-S) box 5a (scheduleE /scheduleEK1OrdinaryDividends). Schedule K-1 (Form 1041) (2025) page 2:
+        "2a. Ordinary dividends — Form 1040 or 1040-SR, line 3b". Partner's Instructions for Schedule K-1
+        (Form 1065) (2025), PDF p. 15, Box 6a: "Report ordinary dividends on Form 1040 or 1040-SR,
+        line 3b." Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5a, is the
+        same rule. 26 U.S.C. 702(b); 1366(b). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
         p. 26,
         Line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
         Form(s)
@@ -954,6 +963,7 @@
           <Add>
             <Dependency module="dividends" path="/totalOrdinaryDividends" />
             <Dependency module="scheduleE" path="/scheduleEEstateK1OrdinaryDividends" />
+            <Dependency module="scheduleE" path="/scheduleEK1OrdinaryDividends" />
           </Add>
         </Round>
       </Derived>

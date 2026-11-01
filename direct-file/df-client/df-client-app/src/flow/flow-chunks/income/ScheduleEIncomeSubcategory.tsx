@@ -21,6 +21,8 @@ import type { ConditionString } from '../../Condition.js';
  * Part I supported: net income with no depreciation and no personal use.
  * A section 162 rental is a Form 8995 line 1 row. Safe harbor, aggregation, and a suspended loss stay stops.
  * Part II supported: domestic partnership or S corporation, nonnegative box 1, material participation.
+ * Form 1065 boxes 5, 6a, and 6b, and Form 1120-S boxes 4, 5a, and 5b, are Form 1040 lines 2b, 3b, and 3a.
+ * Previously taxed earnings and profits in those dividend boxes stop the return (26 U.S.C. 959(a)).
  * Nonfarm Form 1065 box 14 code A is Schedule SE line 2 (26 U.S.C. 1402(a)) except on a joint return.
  * Part III supported: domestic estate or trust, nonnegative box 6 only, material participation.
  * Box 8 is other rental income (26 U.S.C. 469(c)(2) and 469(c)(4)) and stops the return.
@@ -211,6 +213,25 @@ export const ScheduleEIncomeSubcategory = (
             <Boolean path='/scheduleEK1s/*/box14CodeAWasReduced' />
             <Boolean path='/scheduleEK1s/*/box14CodeAIsFarm' />
             <Boolean path='/scheduleEK1s/*/box14CodeANotLimitedPartnerAmount' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-portfolio' condition='/scheduleEK1s/*/isPartnership'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-portfolio-partnership' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-portfolio-partnership' />
+            <Dollar path='/scheduleEK1s/*/form1065Box5' />
+            <Dollar path='/scheduleEK1s/*/form1065Box6a' />
+            <Dollar path='/scheduleEK1s/*/form1065Box6b' />
+            <Boolean path='/scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest' />
+            <Boolean path='/scheduleEK1s/*/dividendIncludesPtep' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-portfolio-s' condition='/scheduleEK1s/*/isSCorporation'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-portfolio-s-corp' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-portfolio-s-corp' />
+            <Dollar path='/scheduleEK1s/*/form1120sBox4' />
+            <Dollar path='/scheduleEK1s/*/form1120sBox5a' />
+            <Dollar path='/scheduleEK1s/*/form1120sBox5b' />
+            <Boolean path='/scheduleEK1s/*/dividendIncludesPtep' />
             <SaveAndOrContinueButton />
           </Screen>
           <Screen route='schedule-e-k1-other'>
