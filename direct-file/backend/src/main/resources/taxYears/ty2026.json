@@ -3268,6 +3268,48 @@
       ]
     },
     {
+      "fact": "/primaryFilerSeLine5b",
+      "file": "scheduleSE.xml",
+      "values": [
+        "Rational:9235/10000",
+        "Dollar:100",
+        "Dollar:0",
+        "Rational:9235/10000"
+      ],
+      "cite": [
+        {
+          "source": "f1040sse-dft",
+          "section": "Line 5b",
+          "page": 2,
+          "quote": "Multiply line 5a by 92.35% (0.9235). If less than $100, enter -0-."
+        },
+        {
+          "source": "i1040sse-dft",
+          "section": "Who Must File Schedule SE",
+          "page": 2,
+          "quote": "You had church employee income of $108.28 or more."
+        },
+        {
+          "source": "irc",
+          "section": "§ 1402(j)(2)(B)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1402",
+          "quote": "In applying paragraph (2) of subsection (b) to church employee income, \"$100\" shall be substituted for \"$400\"."
+        },
+        {
+          "source": "irc",
+          "section": "§ 1402(a)(12)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1402",
+          "quote": "in lieu of the deduction provided by section 164(f) (relating to deduction for one-half of self-employment taxes), there shall be allowed a deduction equal to the product of— the taxpayer’s net earnings from self-employment for the taxable year (determined without regard to this paragraph), and one-half of the sum of the rates imposed by subsections (a) and (b) of section 1401 for such year (determined without regard to the rate imposed under paragraph (2) of section 1401(b))"
+        },
+        {
+          "source": "irc",
+          "section": "§ 1402(j)(3)",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1402",
+          "quote": "Paragraph (1) shall not apply to any amount allowable as a deduction under subsection (a)(12), and paragraph (1) shall be applied before determining the amount so allowable."
+        }
+      ]
+    },
+    {
       "fact": "/secondaryFilerSeNetEarnings",
       "file": "scheduleSE.xml",
       "valuesFrom": "/primaryFilerSeNetEarnings",

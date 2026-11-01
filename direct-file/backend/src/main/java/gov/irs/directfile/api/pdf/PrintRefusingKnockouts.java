@@ -214,11 +214,14 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutScheduleCOutOfScope",
             // Schedule SE lines this tool does not compute. 2026 draft Schedule SE: lines 1a and 1b (farm and
             // Conservation Reserve Program payments; 26 U.S.C. 1402(a), 1402(a)(1)), Part II line 15 (farm optional
-            // method; 1402(a), 1402(l)), lines 5a and 5b (church employee income; 1402(a)(14), 1402(j)), checkbox A
-            // and ministry (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees (1402(c)(1)), and line 8c
-            // (Form 8919). Complete false when there is no Schedule C self-employment income and no nonzero
-            // Form 1065 box 14 code A, or when every question is answered no. An unanswered question while
-            // either applies refuses the print. 26 U.S.C. 1402(a). The nonfarm optional method is the next path.
+            // method; 1402(a), 1402(l)), checkbox A and ministry (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)),
+            // notary fees (1402(c)(1)), and line 8c (Form 8919). The primary filer's lines 5a and 5b (church
+            // employee income; 26 U.S.C. 3121(w), 1402(a)(12), 1402(a)(14), 1402(j)) are computed and do not refuse
+            // the print. The secondary filer's church employee income is not entered on line 5a. A yes on a joint
+            // return refuses the print. Complete false when there is no Schedule C self-employment income and no
+            // nonzero Form 1065 box 14 code A, or when every stopping question is answered no. An unanswered
+            // question while either applies refuses the print. On a return that is not married filing jointly the
+            // spouse question is not asked. 26 U.S.C. 1402(a), 1402(b). The nonfarm optional method is the next path.
             "/flowKnockoutScheduleSEOutOfScope",
             // Nonfarm optional method (line 4b and Part II lines 16 and 17). Stops when the filer elects it and
             // Schedule K-1 (Form 1065) box 14 code A is nonzero, a filer with Schedule C activity fails the dollar

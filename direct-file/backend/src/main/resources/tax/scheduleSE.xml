@@ -121,27 +121,41 @@
         Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)";
         line 3: "Combine lines
         1a, 1b, and 2". Line 1a is farm profit, including farm partnerships' box 14
-        code A. Farm profit, the farm optional method, church employee
-        income, ministry or a Form 4361 or 4029 exemption, notary
+        code A. Farm profit, the farm
+        optional method, ministry or a Form 4361 or 4029 exemption, notary
         fees, and Form 8919 wages
-        stop the return (/flowKnockoutScheduleSEOutOfScope) instead of being entered as zero.
-        The nonfarm optional method skips line 2 when /primaryFilerNonfarmOptionalMethodApplies
-        is true. An election that is not allowed stops the return
+        stop the return
+        (/flowKnockoutScheduleSEOutOfScope) instead of being entered as zero.
+        The primary filer's church employee income is lines 5a and 5b
+        (/primaryFilerSeLine5a and /primaryFilerSeLine5b), not line 3.
+        26 U.S.C. 3121(w) and 1402(j)(1)(B). The secondary filer's church employee income is not line 5a.
+        The nonfarm optional
+        method skips line 2 when /primaryFilerNonfarmOptionalMethodApplies
+        is true. An election that is not allowed stops
+        the return
         (/flowKnockoutScheduleSENonfarmOptionalMethod).
-        Box 14 code A is scheduleE /scheduleEK1Box14CodeANonfarmTotal. A reduction, farming, a
-        limited-partner amount that is not only guaranteed payments (26 U.S.C. 1402(a)(13)), a joint
+        Box 14 code A is scheduleE
+        /scheduleEK1Box14CodeANonfarmTotal. A reduction, farming, a
+        limited-partner amount that is not only guaranteed
+        payments (26 U.S.C. 1402(a)(13)), a joint
         return, or an S corporation amount stops the return (scheduleE
         /flowKnockoutScheduleEPartIIBox14CodeA and the matching stops; 2026 draft Instructions for
-        Schedule SE, PDF p. 5, Partnership Income or Loss) instead of filing line 2 without the amount or
-        on the wrong spouse's Schedule SE. Schedule C qualified business income together with a nonzero
-        box 14 code A stops the return (form8995 /flowKnockoutScheduleCQbiAndK1Box14CodeA) because the
-        deductible part of self-employment tax is not split between the trades (Treas. Reg.
+        Schedule SE, PDF p. 5,
+        Partnership Income or Loss) instead of filing line 2 without the amount or
+        on the wrong spouse's Schedule SE.
+        Schedule C qualified business income together with a nonzero
+        box 14 code A stops the return (form8995
+        /flowKnockoutScheduleCQbiAndK1Box14CodeA) because the
+        deductible part of self-employment tax is not split between
+        the trades (Treas. Reg.
         1.199A-3(b)(1)(vi)). An unanswered K-1
-        question also stops the print (scheduleE /flowKnockoutScheduleEPartII).
+        question also stops the print (scheduleE
+        /flowKnockoutScheduleEPartII).
         With lines 1a and 1b blank, line 3 equals
         line 2, so
         the same amount is
-        printed on both. Line 4a is $0 when this amount is not more than zero. Each spouse
+        printed on
+        both. Line 4a is $0 when this amount is not more than zero. Each spouse
         files their own Schedule SE:
         2026 draft
         Instructions for
@@ -609,6 +623,238 @@
       </Derived>
     </Fact>
 
+    <Fact path="/churchEmployeeIncome">
+      <Name>Church employee income (Schedule SE line 5a)</Name>
+      <Description>
+        Primary filer's church employee income from Form W-2, entered on that filer's Schedule SE
+        line 5a. 26
+        U.S.C. 1402(j)(4) (https://www.law.cornell.edu/uscode/text/26/1402#j): gross income
+        for services described in
+        section 3121(b)(8)(B) and not described in section 3121(b)(8)(A).
+        2026 draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 2, Employees of Churches
+        and Church
+        Organizations: "Church employee income is wages you received as an employee (other than
+        as a minister, member of
+        a religious order, or Christian Science practitioner) of a church or
+        qualified church-controlled organization
+        that has a certificate in effect electing an exemption
+        from employer social security and Medicare taxes." 26
+        U.S.C. 3121(w) (https://www.law.cornell.edu/uscode/text/26/3121#w) is that election: a church
+        or qualified church-controlled organization may elect that services performed in its employ
+        "shall be excluded from employment" for purposes of the Social Security Act and chapter 21.
+        26 U.S.C. 3121(b)(8)(B) is the service covered by that election. 26
+        U.S.C. 1402(j)(1)(A) does not reduce this
+        amount by deductions. Asked only after /hadChurchEmployeeIncome is yes.
+        The spouse's church employee income is not this amount. Not below zero.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/primaryFilerSeLine5a">
+      <Name>Primary filer: Schedule SE line 5a</Name>
+      <Description>
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 5a: "Enter your
+        church employee
+        income from Form W-2." $0 when /hadChurchEmployeeIncome is no or not yet answered,
+        and when
+        /scheduleSEOutOfScopeQuestionsApply is not true, so other self-employment tax stays
+        complete. An answered yes
+        without /churchEmployeeIncome leaves line 5a incomplete.
+        26 U.S.C. 1402(a)(14) and 1402(j)(1)(B): this amount is
+        not combined into line 3. 26 U.S.C. 3121(w) and 1402(b) are per person. The secondary filer's
+        church employee income is /hadSecondaryFilerChurchEmployeeIncome and is not entered here.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadChurchEmployeeIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadChurchEmployeeIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/churchEmployeeIncome" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="/churchEmployeeIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/churchEmployeeIncome" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeLine5b">
+      <Name>Primary filer: Schedule SE line 5b</Name>
+      <Description>
+        2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 5b: "Multiply
+        line 5a by 92.35%
+        (0.9235). If less than $100, enter -0-." The 92.35% factor is 26 U.S.C.
+        1402(a)(12)
+        (https://www.law.cornell.edu/uscode/text/26/1402#a_12), and 1402(j)(3) applies that
+        deduction to church employee
+        income after 1402(j)(1). 26 U.S.C. 1402(j)(2)(B)
+        (https://www.law.cornell.edu/uscode/text/26/1402#j): in applying
+        1402(b)(2) to church employee
+        income, "$100" is substituted for "$400". The product is compared to $100 before it
+        is rounded to
+        the whole dollar entered on line 5b. A product under $100 is -0-, so that income is not
+        self-employment income. 2026 draft Instructions for Schedule SE, PDF p. 2: "You had church
+        employee income of
+        $108.28 or more" must be filed, because $108.28 times 92.35% is $100 after
+        rounding to the nearest cent. $0 when
+        line 5a is $0.
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/primaryFilerSeLine5a" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerSeLine5a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Multiply>
+                    <Dependency path="/primaryFilerSeLine5a" />
+                    <Rational>9235/10000</Rational>
+                  </Multiply>
+                </Left>
+                <Right>
+                  <Dollar>100</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Round>
+                <Multiply>
+                  <Dependency path="/primaryFilerSeLine5a" />
+                  <Rational>9235/10000</Rational>
+                </Multiply>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeReportedLine4c">
+      <Name>Primary filer: Schedule SE line 4c counted toward line 6</Name>
+      <Description>
+        2026 draft Schedule SE, PDF p. 2, line 4c: "If less than $400, stop; you don't owe self-employment
+        tax. Exception: If less than $400 and you had church employee income, enter -0- and continue."
+        26 U.S.C.
+        1402(b)(2) and 1402(j)(2)(A): the $400 test applies to net earnings other than church
+        employee income. Line 4c
+        under $400 is -0- for line 6. Line 4c of $400 or more is unchanged.
+        2026 draft Instructions for Schedule SE, PDF
+        p. 4: "If your only income subject to SE tax is
+        church employee income ... Enter -0- on line 4c, and go to line
+        5a."
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/primaryFilerSeLine4c" />
+                </Left>
+                <Right>
+                  <Dependency path="/seNetEarningsThreshold" />
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerSeLine4c" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/primaryFilerSeTaxApplies">
       <Name>Primary filer: SE tax applies</Name>
       <Description>
@@ -617,18 +863,34 @@
         owe self-employment tax." 26 U.S.C. 1402(b)(2)
         (https://www.law.cornell.edu/uscode/text/26/1402#b_2): no
         self-employment income when net earnings are "less
-        than $400". The test is line 4c, per individual, so an optional-method line 4b of $400 or
-        more is self-employment income even when line 4a is zero.
+        than $400". The test is line 4c, per individual, so an
+        optional-method line 4b of $400 or
+        more is self-employment income even when line 4a is zero. 26 U.S.C. 1402(j)(2)
+        applies that test
+        separately to church employee income, with a $100 floor on line 5b. Self-employment tax also
+        applies when line 5b is more than zero, even if line 4c is under $400. When line 5b is zero and
+        line 4c is under
+        $400, self-employment tax is zero.
       </Description>
       <Derived>
-        <GreaterThanOrEqual>
-          <Left>
-            <Dependency path="/primaryFilerSeLine4c" />
-          </Left>
-          <Right>
-            <Dependency path="/seNetEarningsThreshold" />
-          </Right>
-        </GreaterThanOrEqual>
+        <Any>
+          <GreaterThanOrEqual>
+            <Left>
+              <Dependency path="/primaryFilerSeLine4c" />
+            </Left>
+            <Right>
+              <Dependency path="/seNetEarningsThreshold" />
+            </Right>
+          </GreaterThanOrEqual>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/primaryFilerSeLine5b" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </Any>
       </Derived>
     </Fact>
 
@@ -775,7 +1037,7 @@
       <Description>
         Base for Schedule SE line 10 ("Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"); $0 when
         SE tax
-        doesn't apply (line 4c).
+        doesn't apply. Line 6 is line 4c (or -0- when line 4c is under $400) plus line 5b.
       </Description>
       <Derived>
         <Switch>
@@ -785,7 +1047,7 @@
             </When>
             <Then>
               <LesserOf>
-                <Dependency path="/primaryFilerSeLine4c" />
+                <Dependency path="/primaryFilerSeIncome" />
                 <Dependency path="/primaryFilerSeRemainingSocialSecurityWageBase" />
               </LesserOf>
             </Then>
@@ -827,31 +1089,19 @@
       <Name>Primary filer: Schedule SE line 6</Name>
       <Description>
         2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
-        income stops the return when /hadChurchEmployeeIncome is yes), and $0 when line 4c is under $400
-        ("stop; you
-        don’t owe self-employment tax"). Line 4c already includes line 4b. Feeds line
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 6: "Add lines 4c
+        and 5b." Line
+        4c under $400 is -0- here (/primaryFilerSeReportedLine4c). Line 5b under $100 is -0-.
+        26 U.S.C. 1402(j)(2). The
+        sum is $0 when neither floor is met, so self-employment tax is zero.
+        Line 4c already includes line 4b. Feeds line
         11 and Form 8959 line 13.
       </Description>
       <Derived>
-        <Switch>
-          <Case>
-            <When>
-              <Dependency path="/primaryFilerSeTaxApplies" />
-            </When>
-            <Then>
-              <Dependency path="/primaryFilerSeLine4c" />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <True />
-            </When>
-            <Then>
-              <Dollar>0</Dollar>
-            </Then>
-          </Case>
-        </Switch>
+        <Add>
+          <Dependency path="/primaryFilerSeReportedLine4c" />
+          <Dependency path="/primaryFilerSeLine5b" />
+        </Add>
       </Derived>
     </Fact>
 
@@ -1435,10 +1685,13 @@
       <Name>Secondary filer: Schedule SE line 6</Name>
       <Description>
         2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 6 (line 4c plus line 5b; church employee
-        income stops the return when /hadChurchEmployeeIncome is yes), and $0 when line 4c is under $400
-        ("stop; you
-        don’t owe self-employment tax"). Line 4c already includes line 4b. Feeds line
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 6: "Add lines 4c
+        and 5b." This
+        filer's line 5b is not entered here. Church employee income is the primary filer's
+        lines 5a and 5b. Line 6 is
+        line 4c when that amount is $400 or more, and $0 when line 4c is under
+        $400 ("stop; you don't owe self-employment
+        tax"). Line 4c already includes line 4b. Feeds line
         11 and Form 8959 line 13.
       </Description>
       <Derived>
@@ -1548,7 +1801,12 @@
 
     <Fact path="/seTaxApplies">
       <Name>SE tax applies to either filer</Name>
-      <Description>True when either filer's Schedule SE line 4c is $400 or more (26 U.S.C. 1402(b)(2)).</Description>
+      <Description>
+        True when either filer's Schedule SE line 4c is $400 or more (26 U.S.C. 1402(b)(2)), or the
+        primary
+        filer's line 5b is more than zero (26 U.S.C. 1402(j)(2)(B), the $100 floor on church
+        employee income).
+      </Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Any>
@@ -1644,15 +1902,56 @@
     <Fact path="/hadChurchEmployeeIncome">
       <Name>Church employee income</Name>
       <Description>
-        Yes when the filer has church employee income for Schedule SE lines 5a and 5b. 26 U.S.C. 1402(a)(14)
-        and 1402(j) (https://www.law.cornell.edu/uscode/text/26/1402#j): that income is not reduced by
-        deductions, is not
-        combined with other net earnings, and uses a $100 floor instead of $400.
+        Yes when the primary filer has church employee income for Schedule SE lines 5a and 5b. 26 U.S.C.
+        3121(w) (https://www.law.cornell.edu/uscode/text/26/3121#w): a church or qualified
+        church-controlled organization may elect that services performed in its employ "shall be excluded
+        from employment" for Social Security and Medicare. 3121(b)(8)(B) and 1402(j)(4) are that service.
+        26 U.S.C.
+        1402(a)(14) and 1402(j) (https://www.law.cornell.edu/uscode/text/26/1402#j): that income is not
+        reduced by
+        deductions, is not combined with other net earnings, and uses a $100 floor instead of
+        $400. A yes asks for
+        /churchEmployeeIncome and does not stop the return. Line 5b is line 5a times
+        92.35%, and is -0- when that product
+        is under $100 (1402(j)(2)(B), 1402(a)(12), 1402(j)(3)). The spouse's church employee income is
+        /hadSecondaryFilerChurchEmployeeIncome and is not entered on line 5a.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/hadSecondaryFilerChurchEmployeeIncome">
+      <Name>Spouse church employee income</Name>
+      <Description>
+        Yes when the secondary filer has church employee income. 26 U.S.C. 3121(w)
+        (https://www.law.cornell.edu/uscode/text/26/3121#w) and 3121(b)(8)(B): the church or qualified
+        church-controlled organization election is per employer, and the wages belong to the employee.
+        26 U.S.C. 1402(b) and 1402(j) figure self-employment income per person. 2026 draft Instructions
+        for Schedule SE, PDF p. 3: "If both spouses have self-employment income, each must file a
+        separate Schedule SE." This filer's lines 5a and 5b are not computed. A yes stops the return.
+        The amount is not entered on /primaryFilerSeLine5a. Asked on a joint return after
+        /scheduleSEOutOfScopeQuestionsApply is true.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/askSecondaryFilerChurchEmployeeIncome">
+      <Name>Ask the spouse church employee income question</Name>
+      <Description>
+        The spouse question is asked on a joint return when the Schedule SE questions apply. 26 U.S.C.
+        3121(w), 1402(b), and 1402(j). A return that is not married filing jointly does not ask it.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="/scheduleSEOutOfScopeQuestionsApply" />
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+        </All>
+      </Derived>
     </Fact>
 
     <Fact path="/usesSeOptionalMethod">
@@ -1758,16 +2057,28 @@
       <Name>Knockout: Schedule SE line this tool does not compute</Name>
       <Description>
         Stops filing and printing when /scheduleSEOutOfScopeQuestionsApply is true and the filer answers
-        yes to farm profit, Conservation Reserve Program payments, or the farm optional method
-        (Schedule SE lines 1a, 1b, and Part II line 15; 26 U.S.C. 1402(a), 1402(a)(1), and 1402(l)),
-        church employee income (lines 5a and 5b; 1402(a)(14) and 1402(j)), ministry or a Form 4361
-        or Form 4029 exemption (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees excluded as a
-        public office (1402(c)(1)), or Form 8919 wages (line 8c). The nonfarm optional method is
-        /flowKnockoutScheduleSENonfarmOptionalMethod, not this fact. The gate is Schedule C
+        yes
+        to farm profit, Conservation Reserve Program payments, or the farm optional method
+        (Schedule SE lines 1a, 1b, and
+        Part II line 15; 26 U.S.C. 1402(a), 1402(a)(1), and 1402(l)),
+        ministry or a Form 4361
+        or Form 4029 exemption
+        (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees excluded as a
+        public office (1402(c)(1)), or Form 8919
+        wages (line 8c), or the secondary filer's church employee income (26 U.S.C. 3121(w), 1402(j)).
+        The nonfarm optional method is
+        /flowKnockoutScheduleSENonfarmOptionalMethod, not this fact. The
+        gate is Schedule C
         self-employment income or a nonzero Schedule K-1 (Form 1065) box 14 code A. Complete and false
         when that gate is not true, including when /hadSelfEmploymentIncome is unanswered and box 14
-        code A is not nonzero, and when every question is answered no. An unanswered question while the
-        gate is true stays incomplete, so those lines are not filed as zero.
+        code A is not
+        nonzero, and when every stopping question is answered no. A yes for the primary filer's church
+        employee income does not stop the return; lines 5a and 5b are computed. A yes for the spouse
+        stops the return, because that income is not entered on the primary filer's line 5a. On a
+        return that is not married filing jointly the spouse question is not asked. An unanswered
+        question while the
+        gate is true stays incomplete, so the
+        stopping lines are not filed as zero.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -1821,6 +2132,24 @@
           </Case>
           <Case>
             <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                </IsComplete>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                <Not>
+                  <IsComplete>
+                    <Dependency path="/hadSecondaryFilerChurchEmployeeIncome" />
+                  </IsComplete>
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/hadSecondaryFilerChurchEmployeeIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <Not>
                 <IsComplete>
                   <Dependency path="/hasMinisterOrSeExemption" />
@@ -1862,10 +2191,16 @@
             <Then>
               <Any>
                 <Dependency path="/hadFarmSelfEmploymentIncome" />
-                <Dependency path="/hadChurchEmployeeIncome" />
                 <Dependency path="/hasMinisterOrSeExemption" />
                 <Dependency path="/hasNotarySeExclusion" />
                 <Dependency path="/hadForm8919Wages" />
+                <All>
+                  <IsComplete>
+                    <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                  </IsComplete>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                  <Dependency path="/hadSecondaryFilerChurchEmployeeIncome" />
+                </All>
               </Any>
             </Then>
           </Case>
@@ -2180,10 +2515,18 @@
       <Name>Schedule C section complete</Name>
       <Description>
         Interview complete when there is no Schedule C and no nonzero Form 1065 box 14 code A, or when
-        Schedule C is finished, the Schedule SE out-of-scope questions are answered no, and the nonfarm
-        optional method is not stopped for eligibility. The credit conflict
+        Schedule C is finished, the Schedule SE out-of-scope questions are answered, church employee
+        income on line 5a is
+        complete, and the nonfarm optional method is not stopped for eligibility.
+        A yes on /hadChurchEmployeeIncome is
+        complete only after /churchEmployeeIncome is entered.
+        On a joint return, /hadSecondaryFilerChurchEmployeeIncome must be answered. A yes stops the
+        section: that income is not entered on the primary filer's line 5a. 26 U.S.C. 3121(w), 1402(b),
+        and 1402(j).
+        The credit conflict
         (/flowKnockoutScheduleSENonfarmOptionalMethodCredits) is not part of this fact. A K-1-only
-        return still has to answer those questions. 26 U.S.C. 1402(a).
+        return still has to
+        answer those questions. 26 U.S.C. 1402(a) and 1402(j).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2229,6 +2572,9 @@
                     </Not>
                   </All>
                 </Any>
+                <IsComplete>
+                  <Dependency path="/primaryFilerSeLine5a" />
+                </IsComplete>
                 <Not>
                   <Dependency path="/flowKnockoutScheduleSEOutOfScope" />
                 </Not>
