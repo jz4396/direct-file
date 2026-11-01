@@ -34,7 +34,8 @@
 # Not mapped, left blank (uncollected, or already a stop, so a supported return does not print $0 there):
 #   telephone 30, amortization 7, bad debts 8, bank charges 9 (a Part V "Bank fees" line stays on line 37),
 #   car and truck 10, depletion 12, depreciation and section 179 13, dues 14, freight 16, laundry 19,
-#   management fees 21, postage 24, IDC 34-36, start-up 36, Schedule C-2, EIN, address, NAICS, sales-tax license,
+#   management fees 21, postage 24, IDC 34-36, start-up 36, Schedule C-2 (home office actual expenses; the federal
+#   safe harbor is not recognized and a home office stops the return), EIN, address, NAICS, sales-tax license,
 #   product, accounting method, out of business, and the federal at-risk checkboxes.
 includeForEach: /scheduleCBusinesses
 customMaps:

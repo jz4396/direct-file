@@ -17,10 +17,12 @@ headings:
   /heading/income/schedule-c/farm:
     Did you have farm income, Conservation Reserve Program payments, or do you want to use the farm optional method?
   /heading/income/schedule-c/church-employee: Did you have church employee income?
-  /heading/income/schedule-c/optional-method: Do you want to use the nonfarm optional method to figure self-employment tax?
+  /heading/income/schedule-c/optional-method:
+    Do you want to use the nonfarm optional method to figure self-employment tax?
   /heading/income/schedule-c/nonfarm-prior-years:
     Were your net earnings from self-employment at least $400 in 2 of the 3 years before this year?
-  /heading/income/schedule-c/nonfarm-prior-uses: Have you used the nonfarm optional method in fewer than 5 earlier years?
+  /heading/income/schedule-c/nonfarm-prior-uses:
+    Have you used the nonfarm optional method in fewer than 5 earlier years?
   /heading/income/schedule-c/minister:
     Are you a minister, a member of a religious order, or a Christian Science practitioner, or do you have a Form 4361
     or Form 4029 exemption?
@@ -43,6 +45,16 @@ headings:
   /heading/income/schedule-c/depletion: "Did this business have a depletion deduction?"
   /heading/income/schedule-c/equipment-rent: "Did this business rent vehicles, machinery, or equipment?"
   /heading/income/schedule-c/home-office: "Did you use your home for this business?"
+  /heading/income/schedule-c/home-office-method: "Do you want to use the simplified method for this home?"
+  /heading/income/schedule-c/home-office-same-area:
+    "Was the same area of one home used exclusively for this business all year?"
+  /heading/income/schedule-c/home-office-gross-income:
+    "Is all of the gross income from this business from that use of the home?"
+  /heading/income/schedule-c/home-office-shared-space:
+    "Is this area used only by you, and not shared with someone else's business?"
+  /heading/income/schedule-c/home-office-rental: "Is this deduction for a use other than rental of the home?"
+  /heading/income/schedule-c/home-office-carryover: "Do you have no carryover of actual expenses from Form 8829?"
+  /heading/income/schedule-c/home-office-square-feet: "Enter the square feet of the home and of the business area"
   /heading/income/schedule-c/energy: "Did you claim the energy efficient commercial buildings deduction?"
   /heading/income/schedule-c/has-expenses: "Did this business have deductible expenses?"
   /heading/income/schedule-c/which-expenses: "Which expenses did this business have?"
@@ -142,8 +154,8 @@ info:
       body:
         - p: >-
             The nonfarm optional method was elected, and this return also claims the earned income credit, the
-            additional child tax credit, or the child and dependent care credit. Form 2441 uses Schedule SE lines 3
-            and 4b, minus the deduction on Schedule 1 line 15. Line 4b is not included in earned income here, so those
+            additional child tax credit, or the child and dependent care credit. Form 2441 uses Schedule SE lines 3 and
+            4b, minus the deduction on Schedule 1 line 15. Line 4b is not included in earned income here, so those
             credits cannot be figured with the election. You will need another way to file this return.
   /info/knockout/schedule-c-qbi:
     alertText:
@@ -161,24 +173,23 @@ info:
     body: "Answer yes if this amount is a fuel tax credit or a Form 4797 recapture. This tool cannot figure those."
   /info/income/schedule-c/inventory:
     body:
-      "Answer yes if you need Schedule C line 4 and Part III. Cost and lower of cost or market can be figured here.
-      Any other method cannot."
+      "Answer yes if you need Schedule C line 4 and Part III. Cost and lower of cost or market can be figured here. Any
+      other method cannot."
   /info/income/schedule-c/inventory-method:
     body:
-      "Line 33a is cost. Line 33b is lower of cost or market. Line 33c, any other method, cannot be figured here.
-      Choose nonincidental materials and supplies only if you do not keep an inventory. That method does not use
-      Part III."
+      "Line 33a is cost. Line 33b is lower of cost or market. Line 33c, any other method, cannot be figured here. Choose
+      nonincidental materials and supplies only if you do not keep an inventory. That method does not use Part III."
   /info/income/schedule-c/inventory-change:
     body:
-      "Line 34 asks whether quantities, costs, or valuations changed between opening and closing inventory. Answer
-      yes if they changed. This tool cannot figure that change."
+      "Line 34 asks whether quantities, costs, or valuations changed between opening and closing inventory. Answer yes
+      if they changed. This tool cannot figure that change."
   /info/income/schedule-c/small-business:
     body:
-      "You qualify as a small business taxpayer if your average annual gross receipts for the 3 prior tax years are
-      $32 million or less and you are not a tax shelter. Enter that average. Include a predecessor business, and
-      annualize a short year, before you enter it. Use 0 if the business did not exist in those years. This year's
-      receipts are not the average. Answer yes if you are a tax shelter. If the average is over $32,000,000, or you
-      are a tax shelter, this tool cannot figure Part III."
+      "You qualify as a small business taxpayer if your average annual gross receipts for the 3 prior tax years are $32
+      million or less and you are not a tax shelter. Enter that average. Include a predecessor business, and annualize a
+      short year, before you enter it. Use 0 if the business did not exist in those years. This year's receipts are not
+      the average. Answer yes if you are a tax shelter. If the average is over $32,000,000, or you are a tax shelter,
+      this tool cannot figure Part III."
   /info/income/schedule-c/line-35:
     body:
       "Line 35 is inventory at the beginning of the year. If it is different from last year's closing inventory, the
@@ -202,8 +213,40 @@ info:
     body: "Answer yes for rent of vehicles, machinery, and equipment (line 20a)."
   /info/income/schedule-c/home-office:
     body:
-      "Answer yes if you claim expenses for business use of your home on line 30, including the simplified method. That
-      needs Form 8829 or the simplified worksheet."
+      "Answer yes if you claim expenses for business use of your home on Schedule C line 30. Answer no if you do not.
+      The next questions cover the simplified method. Form 8829 is not figured here."
+  /info/income/schedule-c/home-office-method:
+    body:
+      "The simplified method is $5 times the allowable square feet. Answer no if you use Form 8829 for actual expenses.
+      This tool cannot figure Form 8829."
+  /info/income/schedule-c/home-office-same-area:
+    body:
+      "Answer yes only if you used the same area of one home for this business for the whole year, and you used that
+      area exclusively for business. Answer no if you used more than one home, the area changed, you used the home for
+      only part of the year, or a daycare facility was not used exclusively for business."
+  /info/income/schedule-c/home-office-gross-income:
+    body:
+      "Answer yes only if every dollar of this business's gross income is from that use of the home, and no Form 8949 or
+      Form 4797 amount changes the limit. The deduction then cannot be more than Schedule C line 29. If line 29 is zero
+      or a loss, the deduction is zero. Answer no if some gross income is from another location."
+  /info/income/schedule-c/home-office-shared-space:
+    body:
+      "Answer yes if you do not share these square feet with someone else who uses the home for a separate business.
+      Answer no if you share the space. This tool does not allocate shared space."
+  /info/income/schedule-c/home-office-rental:
+    body:
+      "You can't use the simplified method to figure a deduction for rental use of your home. Answer yes if this is not
+      rental use. Answer no if it is rental use."
+  /info/income/schedule-c/home-office-carryover:
+    body:
+      "Answer yes if you have no operating expenses, excess casualty losses, or depreciation carried over from Form
+      8829. Those amounts are lines 6a and 6b of the Simplified Method Worksheet and are not allowed this year. Answer
+      no if you have a carryover. This tool does not figure lines 6a and 6b."
+  /info/income/schedule-c/home-office-square-feet:
+    body:
+      "Enter the total square feet of the home, then the square feet you actually used for this business. The business
+      area cannot be larger than the home. The deduction uses that business area, but not more than 300 square feet,
+      times $5. If more than one business uses the simplified method, this tool cannot split the 300 square feet."
   /info/income/schedule-c/energy:
     body: "Answer yes if you claim the line 27a deduction. It needs Form 7205."
   /info/income/schedule-c/has-expenses:
@@ -243,13 +286,14 @@ info:
         - p:
             "This business needs a form or a loss limit this tool does not figure. That includes an inventory method
             other than cost or lower of cost or market, a change in how inventory was valued, average annual gross
-            receipts for the 3 prior tax years over $32,000,000, a tax shelter, cost of goods sold below zero,
-            beginning inventory different from last year's closing inventory, a claim that you do not keep
-            inventory while Part III is still filled in, vehicle expenses,
-            depreciation, depletion, equipment rent, a home office, Form 7205, meals that are not limited to 50
-            percent, employment credits, interest that must be allocated, new amortization, more than three other
-            expenses, line 6 income from another form, a loss you did not materially participate in, or a loss that is
-            not fully at risk. You will need another way to file this return."
+            receipts for the 3 prior tax years over $32,000,000, a tax shelter, cost of goods sold below zero, beginning
+            inventory different from last year's closing inventory, a claim that you do not keep inventory while Part
+            III is still filled in, vehicle expenses, depreciation, depletion, equipment rent, Form 8829, shared space,
+            rental use of the home, a prior Form 8829 carryover, a simplified method this tool does not figure, more
+            than one business using the simplified method, Form 7205, meals that are not limited to 50 percent,
+            employment credits, interest that must be allocated, new amortization, more than three other expenses, line
+            6 income from another form, a loss you did not materially participate in, or a loss that is not fully at
+            risk. You will need another way to file this return."
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -465,6 +509,40 @@ fields:
     boolean:
       "yes": "Yes"
       "no": "No"
+  /scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod:
+    boolean:
+      "yes": "Yes, use the simplified method"
+      "no": "No, use Form 8829"
+  /scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodGrossIncomeIsLine29:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodSpaceNotShared:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodNotRentalUse:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/simplifiedMethodNoPrior8829Carryover:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/writableHomeTotalSquareFeet:
+    name: "Total square feet of the home"
+    errorMessages:
+      ExceedsMinLimit: "Enter square feet that are 0 or more"
+      InvalidCharacters: "Enter whole square feet, like 1500"
+  /scheduleCBusinesses/*/writableBusinessUseSquareFeet:
+    name: "Square feet used for this business"
+    errorMessages:
+      ExceedsMinLimit: "Enter square feet that are 0 or more"
+      InvalidCharacters: "Enter whole square feet, like 150"
   /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
     boolean:
       "yes": "Yes"
@@ -546,6 +624,18 @@ dataviews:
     /scheduleCBusinesses/*/hasDepletion: "Did this business have a depletion deduction?"
     /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent: "Did this business rent vehicles, machinery, or equipment?"
     /scheduleCBusinesses/*/hasHomeOffice: "Did you use your home for this business?"
+    /scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod: "Do you want to use the simplified method for this home?"
+    /scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear:
+      "Was the same area of one home used exclusively for this business all year?"
+    /scheduleCBusinesses/*/simplifiedMethodGrossIncomeIsLine29:
+      "Is all of the gross income from this business from that use of the home?"
+    /scheduleCBusinesses/*/simplifiedMethodSpaceNotShared:
+      "Is this area used only by you, and not shared with someone else's business?"
+    /scheduleCBusinesses/*/simplifiedMethodNotRentalUse: "Is this deduction for a use other than rental of the home?"
+    /scheduleCBusinesses/*/simplifiedMethodNoPrior8829Carryover:
+      "Do you have no carryover of actual expenses from Form 8829?"
+    /scheduleCBusinesses/*/writableHomeTotalSquareFeet: "Total square feet of the home"
+    /scheduleCBusinesses/*/writableBusinessUseSquareFeet: "Square feet used for this business"
     /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
       "Did you claim the energy efficient commercial buildings deduction?"
     /scheduleCBusinesses/*/hasDeductibleExpenses: "Did this business have deductible expenses?"

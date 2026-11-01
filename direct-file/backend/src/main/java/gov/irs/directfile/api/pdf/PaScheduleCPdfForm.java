@@ -50,7 +50,9 @@ class PaScheduleCPdfForm extends PaPdfForm {
         facts.put(PREFIX + "InventoryMethod", method);
         // G. Change in quantities, costs, or valuations. "No" is export 2. "Yes" is a stop and stays blank.
         facts.put(PREFIX + "InventoryChange", isTrue(facts, base + "/line34ChangeNo") ? "2" : "");
-        // H. Office in the home. "No" is export 4, and only when the answer is complete. "Yes" is a stop.
+        // H. Office in the home. PA-40 C (EX) 03-26 instructions, PDF p. 4: Pennsylvania does not recognize the
+        // federal safe harbor method. Actual costs and Schedule C-2 are not computed. "No" is export 4 when the
+        // answer is complete and false. "Yes" stays blank. /flowKnockoutPaScheduleC stops that return.
         final Optional<Object> home = facts.getOptional(base + "/hasHomeOffice");
         facts.put(PREFIX + "HomeOffice", home.isPresent() && Boolean.FALSE.equals(home.get()) ? "4" : "");
 

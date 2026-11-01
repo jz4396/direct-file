@@ -15,6 +15,7 @@ import {
   LimitingString,
   MultiEnum,
   SaveAndOrContinueButton,
+  SquareFeet,
   IconDisplay,
 } from '../../ContentDeclarations.js';
 
@@ -196,10 +197,7 @@ export const ScheduleCIncomeSubcategory = (
           <Boolean path='/scheduleCBusinesses/*/inventoryValuationChanged' />
           <SaveAndOrContinueButton />
         </Screen>
-        <Screen
-          route='schedule-c-small-business'
-          condition='/scheduleCBusinesses/*/asksSmallBusinessTaxpayerQuestions'
-        >
+        <Screen route='schedule-c-small-business' condition='/scheduleCBusinesses/*/asksSmallBusinessTaxpayerQuestions'>
           <Heading i18nKey='/heading/income/schedule-c/small-business' />
           <InfoDisplay i18nKey='/info/income/schedule-c/small-business' />
           <Dollar path='/scheduleCBusinesses/*/writablePriorThreeYearAverageGrossReceipts' />
@@ -254,6 +252,67 @@ export const ScheduleCIncomeSubcategory = (
           <Boolean path='/scheduleCBusinesses/*/hasHomeOffice' />
           <SaveAndOrContinueButton />
         </Screen>
+        <Screen route='schedule-c-home-office-method' condition='/scheduleCBusinesses/*/hasHomeOffice'>
+          <Heading i18nKey='/heading/income/schedule-c/home-office-method' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/home-office-method' />
+          <Boolean path='/scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-home-office-same-area'
+          condition='/scheduleCBusinesses/*/asksSimplifiedHomeOfficeYear'
+        >
+          <Heading i18nKey='/heading/income/schedule-c/home-office-same-area' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/home-office-same-area' />
+          <Boolean path='/scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-home-office-gross-income'
+          condition='/scheduleCBusinesses/*/asksSimplifiedHomeOfficeGrossIncome'
+        >
+          <Heading i18nKey='/heading/income/schedule-c/home-office-gross-income' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/home-office-gross-income' />
+          <Boolean path='/scheduleCBusinesses/*/simplifiedMethodGrossIncomeIsLine29' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-home-office-shared-space'
+          condition='/scheduleCBusinesses/*/asksSimplifiedHomeOfficeSharedSpace'
+        >
+          <Heading i18nKey='/heading/income/schedule-c/home-office-shared-space' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/home-office-shared-space' />
+          <Boolean path='/scheduleCBusinesses/*/simplifiedMethodSpaceNotShared' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-home-office-rental'
+          condition='/scheduleCBusinesses/*/asksSimplifiedHomeOfficeRentalUse'
+        >
+          <Heading i18nKey='/heading/income/schedule-c/home-office-rental' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/home-office-rental' />
+          <Boolean path='/scheduleCBusinesses/*/simplifiedMethodNotRentalUse' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-home-office-carryover'
+          condition='/scheduleCBusinesses/*/asksSimplifiedHomeOfficeCarryover'
+        >
+          <Heading i18nKey='/heading/income/schedule-c/home-office-carryover' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/home-office-carryover' />
+          <Boolean path='/scheduleCBusinesses/*/simplifiedMethodNoPrior8829Carryover' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-home-office-square-feet'
+          condition='/scheduleCBusinesses/*/asksSimplifiedHomeOfficeSquareFeet'
+        >
+          <Heading i18nKey='/heading/income/schedule-c/home-office-square-feet' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/home-office-square-feet' />
+          <SquareFeet path='/scheduleCBusinesses/*/writableHomeTotalSquareFeet' />
+          <SquareFeet path='/scheduleCBusinesses/*/writableBusinessUseSquareFeet' />
+          <SaveAndOrContinueButton />
+        </Screen>
         <Screen route='schedule-c-energy'>
           <Heading i18nKey='/heading/income/schedule-c/energy' />
           <InfoDisplay i18nKey='/info/income/schedule-c/energy' />
@@ -275,7 +334,10 @@ export const ScheduleCIncomeSubcategory = (
         <Screen route='schedule-c-expense-amounts' condition='/scheduleCBusinesses/*/hasSelectedExpenseLines'>
           <Heading i18nKey='/heading/income/schedule-c/expense-amounts' />
           <InfoDisplay i18nKey='/info/income/schedule-c/expense-amounts' />
-          <Dollar path='/scheduleCBusinesses/*/writableAdvertising' condition='/scheduleCBusinesses/*/choseAdvertising' />
+          <Dollar
+            path='/scheduleCBusinesses/*/writableAdvertising'
+            condition='/scheduleCBusinesses/*/choseAdvertising'
+          />
           <Dollar
             path='/scheduleCBusinesses/*/writableCommissionsAndFees'
             condition='/scheduleCBusinesses/*/choseCommissionsAndFees'
