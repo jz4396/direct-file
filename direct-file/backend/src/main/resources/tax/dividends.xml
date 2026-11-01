@@ -7,7 +7,8 @@
       line 25b p. 39, Schedule 3 line 1 p. 115.
     Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient (irs.gov/pub/irs-dft, file f1099div dft; sha256 eed4f9db...)
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
-      (PA handling lives in paPit.xml /paLine3 and /flowKnockoutPaDividends).
+      (PA handling lives in paPit.xml: per-spouse Schedule B lines 1, 5, 6, 10, and 12, /paLine3, and
+      /flowKnockoutPaScheduleB).
   Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 3, 4, 5, 7, 12 and 13 per form.
   Schedule B Part II line 5 rows: 1099-DIV payers first (/dividendReports/*/payer and
     /dividendReports/*/roundedOrdinaryDividends), then Schedule K-1 (Form 1041) box 2a
@@ -25,7 +26,10 @@
     904(j) election (/dividendForeignTaxCredit, schedule3 /sched3Line1). Box 2a (#86b): Form 1040 line 7a
     with the line 7b "Schedule D not required" box under line 7a Exception 1 (/capitalGainDistributionsWithoutScheduleD,
     income /capitalGainsOrLosses), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13); either way it reaches
-    QDCG worksheet line 3 (scheduleD3 /qdcgLine3). PA-40 stops on box 2a (paPit /flowKnockoutPaDividends).
+    QDCG worksheet line 3 (scheduleD3 /qdcgLine3). On a full-year PA-40, box 2a is that filer's PA Schedule B line 10
+    and PA-40 line 3 is the sum of each spouse's Schedule B line 12 (paPit /paScheduleBTaxpayerLine12,
+    /paScheduleBSpouseLine12, /paLine3). A part-year return with box 2a stops on paPit /flowKnockoutPaDividends,
+    including when box 1a is $0, and does not add line 10. PA Schedule B is not printed (paPit /flowKnockoutPaScheduleB).
   Box 12 exempt-interest dividends are interest /taxExemptInterest (Form 1040 line 2a), not a stop.
   Box 13 specified private activity bond interest dividends are Form 6251 line 2g
   (form6251 /form6251Line2g). Box 13 cannot exceed box 12.

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -27,6 +29,7 @@ import gov.irs.directfile.api.taxreturn.models.TaxReturn;
 import gov.irs.directfile.models.FactTypeWithItem;
 
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.tin;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -489,6 +492,51 @@ class PdfKnockoutRefusalTest {
                 assertEquals("", Form6251Ty2026PdfSmokeTest.field(f, suffix), suffix + " blank, not $0");
             }
             assertTrue(Form6251Ty2026PdfSmokeTest.line(f, "f1_26[0]") > 0, "line 4 would still print");
+        }
+    }
+
+    /**
+     * Form 1099-DIV box 2a is PA Schedule B line 10 and is included in PA-40 line 3. PA-40 IN (2025) p. 15, p. 32, and
+     * p. 33, line 10. PA Schedule B (2025) form line 12: "Add Lines 6, 7, 8, 9c, 10, and 11. Enter on Line 3 of your
+     * PA-40." Golden H has ordinary dividends of $1,800. Box 2a of $10 makes line 3 $1,810 and leaves line 5 at $0
+     * (p. 32: "Do not report capital gains distributions on PA Schedule D."). Instructions PDF p. 1, WHO MUST COMPLETE:
+     * a line 10 amount requires the schedule. The schedule is not in the package, so the public print refuses on
+     * /flowKnockoutPaScheduleB only. Leaving that stop out prints PA-40 line 3 and does not add PA Schedule B.
+     */
+    @Test
+    void capitalGainDistributionsArePa40Line3AndScheduleBPrintIsRefused() throws Exception {
+        JsonNode root = MAPPER.readTree(
+                new ClassPathResource("submission-blocking/golden-profileH-complete.json").getInputStream());
+        Map<String, FactTypeWithItem> facts =
+                MAPPER.convertValue(root.get("facts"), new TypeReference<Map<String, FactTypeWithItem>>() {});
+        facts.put(
+                "/dividendReports/#13500000-0000-4000-8000-000000001102/writableCapitalGainDistributions",
+                MAPPER.readValue(dollar("10.00"), FactTypeWithItem.class));
+        var graph = factGraphService.getGraph(facts);
+        assertEquals("1800.00", graph.get("/ordinaryDividends").get().toString());
+        assertEquals("10.00", graph.get("/totalCapitalGainDistributions").get().toString());
+        assertEquals("10.00", graph.get("/paScheduleBLine10").get().toString());
+        assertEquals("1810.00", graph.get("/paLine3").get().toString());
+        assertEquals("0.00", graph.get("/paLine5").get().toString());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutPaDividends").get());
+        assertEquals(Boolean.TRUE, graph.get("/flowKnockoutPaScheduleB").get());
+        assertRefusedOnlyBy(facts, PrintRefusingKnockoutsTest.PA_SCHEDULE_B_KNOCKOUT);
+
+        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
+                .filter(p -> !p.equals(PrintRefusingKnockoutsTest.PA_SCHEDULE_B_KNOCKOUT))
+                .toList();
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false, without);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            String text = new org.apache.pdfbox.text.PDFTextStripper().getText(doc);
+            assertFalse(text.contains("PA SCHEDULE B"), "PA Schedule B is not printed");
+            assertFalse(text.contains("Total PA-Taxable Dividend Income"), "Schedule B line 12 is not printed");
+            Map<String, String> p1 = PaPit40ScheduleSpTy2026PdfSmokeTest.fieldsOnPages(
+                    doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1);
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(
+                    p1,
+                    "3. Dividend  and Capital Gains Distributions Income",
+                    "1,810.00",
+                    "PA-40 line 3 includes Schedule B line 10");
         }
     }
 

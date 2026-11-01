@@ -123,7 +123,7 @@ form:
   "1a. Gross Compensation": /paLine1a # p. 10, LINE 1a (W-2 box 16)
   "1c. Net Compensation": /paLine1c # 1a minus 1b
   "2. Interest Income": /paLine2 # p. 14, LINE 2; prints only when PA Schedule A is not required (/flowKnockoutPaScheduleA, p. 31)
-  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3; federal ordinary dividends (Form 1040 line 3b) when PA Schedule B lines 2-10 are $0; $0 prints blank. Schedule B stop /flowKnockoutPaScheduleB (p. 32)
+  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3. Full-year: sum of each spouse's PA Sch B line 12 (line 10 is that filer's 1099-DIV box 2a). A line 10 amount refuses the print (/flowKnockoutPaScheduleB). Part-year: residency-period ordinary dividends only; box 2a does not add line 10. $0 prints blank.
   "4. Loss": ~pa40Line4Loss # p. 15, same loss oval; p. 17, LINE 4
   "4. Net Income or Loss from the Operation of a Business, etc": ~pa40Line4 # p. 17, LINE 4 (PA Sch C line 39: federal line 31 minus the meals add-back; $0 blank).
   "5. Loss": ~pa40Line5Loss # p. 15, "If entering a loss, fill in the oval next to the line"
