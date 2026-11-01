@@ -138,6 +138,54 @@ class ScheduleCTy2026PdfSmokeTest {
             amount(s1, "Page1[0].f1_07[0]", 9460, "Schedule 1 line 3");
             Map<String, String> se = fieldsOnPages(doc, ScheduleSETy2026PdfSmokeTest.SE_FOOTER);
             amount(se, "Page1[0].f1_5[0]", 9460, "Schedule SE line 2");
+            blank(sc, "Page1[0].f1_50[0]", "30 blank when there is no home office");
+        }
+    }
+
+    /**
+     * Simplified method. 2026 draft Instructions for Schedule C, PDF p. 14: $5 times allowable square feet, not more
+     * than 300, and not more than worksheet line 1. Here line 29 is $10,000 and the business area is 100 square feet,
+     * so line 30 is $500 and line 31 is $9,500. Line 30(b) is the area actually used.
+     */
+    @Test
+    void simplifiedMethodPrintsLine30AndReducesLine31() throws Exception {
+        var facts = selfEmployed("170000.00", "170000.00", "10000.00");
+        String b = "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/";
+        facts.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+        facts.put(b + "writableOtherIncome", dollar("0.00"));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasCarTruckOrVehicleLoan",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasVehicleMachineryEquipmentRent",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            facts.put(b + stop, bool(false));
+        }
+        facts.put(b + "hasHomeOffice", bool(true));
+        facts.put(b + "homeOfficeUsesSimplifiedMethod", bool(true));
+        facts.put(b + "simplifiedMethodSameAreaAllYear", bool(true));
+        facts.put(b + "simplifiedMethodGrossIncomeIsLine29", bool(true));
+        facts.put(b + "simplifiedMethodSpaceNotShared", bool(true));
+        facts.put(b + "simplifiedMethodNotRentalUse", bool(true));
+        facts.put(b + "simplifiedMethodNoPrior8829Carryover", bool(true));
+        facts.put(b + "writableHomeTotalSquareFeet", dollar("1500.00"));
+        facts.put(b + "writableBusinessUseSquareFeet", dollar("100.00"));
+        facts.put(b + "hasDeductibleExpenses", bool(false));
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            amount(sc, "Page1[0].f1_19[0]", 10000, "7");
+            blank(sc, "Page1[0].f1_46[0]", "28 zero");
+            amount(sc, "Page1[0].f1_47[0]", 10000, "29");
+            assertEquals("1500", value(sc, "Page1[0].Line30_ReadOrder[0].f1_48[0]").trim(), "30(a)");
+            assertEquals("100", value(sc, "Page1[0].Line30_ReadOrder[0].f1_49[0]").trim(), "30(b)");
+            amount(sc, "Page1[0].f1_50[0]", 500, "30");
+            amount(sc, "Page1[0].f1_51[0]", 9500, "31");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "Page1[0].f1_07[0]", 9500, "Schedule 1 line 3");
         }
     }
 

@@ -164,6 +164,12 @@
       "title": "Tax Reform Code of 1971, section 302 (72 P.S. § 7302)",
       "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/1971/0/0002..HTM",
       "kind": "statute"
+    },
+    "i1040sc-dft": {
+      "title": "2026 Instructions for Schedule C, draft",
+      "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
+      "kind": "pdf",
+      "sha256": "27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9"
     }
   },
   "parameters": [
@@ -3719,6 +3725,36 @@
           "section": "§ 274(n)(1)",
           "url": "https://www.law.cornell.edu/uscode/text/26/274",
           "quote": "The amount allowable as a deduction under this chapter for any expense for food or beverages shall not exceed 50 percent of the amount of such expense which would (but for this paragraph) be allowable as a deduction under this chapter."
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleCSimplifiedMethodAmount",
+      "file": "scheduleC.xml",
+      "values": [
+        "Dollar:5"
+      ],
+      "cite": [
+        {
+          "source": "i1040sc-dft",
+          "section": "Simplified Method Worksheet, line 3a",
+          "page": 14,
+          "quote": "3a. Maximum allowable amount $5"
+        }
+      ]
+    },
+    {
+      "fact": "/scheduleCSimplifiedMethodMaxSquareFeet",
+      "file": "scheduleC.xml",
+      "values": [
+        "Int:300"
+      ],
+      "cite": [
+        {
+          "source": "i1040sc-dft",
+          "section": "Simplified Method Worksheet, line 2",
+          "page": 14,
+          "quote": "Allowable square footage for the qualified business use. Don't enter more than 300 square feet."
         }
       ]
     }

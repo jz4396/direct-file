@@ -119,10 +119,7 @@ describe(`Schedule C expense lines`, () => {
       ...stops(biz),
       ...flag(p(biz, `otherIncomeNeedsAnotherForm`), false),
       ...flag(p(biz, `hasDeductibleExpenses`), true),
-      [p(biz, `expenseLinesChosen`)]: createMultEnumWrapper(
-        [`advertising`, `meals`, `otherExpenses`],
-        options
-      ),
+      [p(biz, `expenseLinesChosen`)]: createMultEnumWrapper([`advertising`, `meals`, `otherExpenses`], options),
       ...flag(p(biz, `mealsAreStandardHalfLimit`), true),
       ...flag(p(biz, `partVIncludesNewAmortization`), false),
       ...flag(p(biz, `hasAnotherPartVExpense`), false),
@@ -135,6 +132,8 @@ describe(`Schedule C expense lines`, () => {
     expect(get(p(biz, `line24bDeductibleMeals`)).get.toString()).toBe(`51.00`);
     expect(get(p(biz, `line27bOtherExpenses`)).get.toString()).toBe(`40.00`);
     expect(get(p(biz, `line28`)).get.toString()).toBe(`191.00`);
+    expect(get(p(biz, `line29TentativeProfit`)).get.toString()).toBe(`9509.00`);
+    expect(get(p(biz, `line30`)).get.toString()).toBe(`0.00`);
     expect(get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`9509.00`);
     expect(get(`/schedule1Line3`).get.toString()).toBe(`9509.00`);
     expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
@@ -219,7 +218,7 @@ describe(`Schedule C expense lines`, () => {
     expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
   });
 
-  it(`leaves an unanswered inventory method incomplete and stops a home office, a non-50-percent meal, and line 6 that needs another form`, () => {
+  it(`leaves inventory and home-office methods incomplete and stops other out-of-scope answers`, () => {
     const common = {
       ...dollars(p(biz, `writableGrossReceipts`), `5000`),
       ...dollars(p(biz, `writableReturnsAndAllowances`), `0`),
@@ -238,7 +237,8 @@ describe(`Schedule C expense lines`, () => {
       ...business(biz, common),
       ...stops(biz, { hasHomeOffice: true }),
     });
-    expect(home.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    // The method is still unanswered, so the knockout stays incomplete. Form 8829 is a separate case below.
+    expect(home.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(false);
 
     const meals = base([biz], {
       ...business(biz, { ...common, ...dollars(p(biz, `writableMeals`), `80`) }),
@@ -351,6 +351,162 @@ describe(`Schedule C expense lines`, () => {
     const knockout = factGraph.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath);
     expect(knockout.complete).toBe(true);
     expect(knockout.get).toBe(false);
+  });
+
+  function lineItemIncome(id: string, receipts: string) {
+    return {
+      ...dollars(p(id, `writableGrossReceipts`), receipts),
+      ...dollars(p(id, `writableReturnsAndAllowances`), `0`),
+      ...dollars(p(id, `writableOtherIncome`), `0`),
+    };
+  }
+
+  /** Simplified-method answers that this tool can figure, and no other deductible expenses. */
+  function simplifiedYes(id: string, home: string, businessSq: string) {
+    return {
+      ...stops(id, { hasHomeOffice: true }),
+      ...flag(p(id, `homeOfficeUsesSimplifiedMethod`), true),
+      ...flag(p(id, `simplifiedMethodSameAreaAllYear`), true),
+      ...flag(p(id, `simplifiedMethodGrossIncomeIsLine29`), true),
+      ...flag(p(id, `simplifiedMethodSpaceNotShared`), true),
+      ...flag(p(id, `simplifiedMethodNotRentalUse`), true),
+      ...flag(p(id, `simplifiedMethodNoPrior8829Carryover`), true),
+      ...dollars(p(id, `writableHomeTotalSquareFeet`), home),
+      ...dollars(p(id, `writableBusinessUseSquareFeet`), businessSq),
+      ...flag(p(id, `hasDeductibleExpenses`), false),
+    };
+  }
+
+  it(`figures line 30 as $5 times square feet, not more than 300 and not more than line 29`, () => {
+    // 2026 draft Instructions for Schedule C, PDF p. 14: $5, not more than 300 square feet, and the smaller of
+    // worksheet lines 1 and 4. PDF p. 13: when all gross income is from the home, line 1 starts with line 29.
+    const hundred = base([biz], {
+      ...business(biz, lineItemIncome(biz, `10000`)),
+      ...simplifiedYes(biz, `2000`, `100`),
+    });
+    expect(hundred.get(p(biz, `line29TentativeProfit`)).get.toString()).toBe(`10000.00`);
+    expect(hundred.get(p(biz, `allowableHomeOfficeSquareFeet`)).get).toBe(100);
+    expect(hundred.get(p(biz, `line30`)).get.toString()).toBe(`500.00`);
+    expect(hundred.get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`9500.00`);
+    expect(hundred.get(`/scheduleCNetProfitOrLoss`).get.toString()).toBe(`9500.00`);
+    expect(hundred.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+
+    const capped = base([biz], {
+      ...business(biz, lineItemIncome(biz, `10000`)),
+      ...simplifiedYes(biz, `2000`, `400`),
+    });
+    expect(capped.get(p(biz, `businessUseSquareFeet`)).get).toBe(400);
+    expect(capped.get(p(biz, `allowableHomeOfficeSquareFeet`)).get).toBe(300);
+    expect(capped.get(p(biz, `line30`)).get.toString()).toBe(`1500.00`);
+    expect(capped.get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`8500.00`);
+
+    const limited = base([biz], {
+      ...business(biz, lineItemIncome(biz, `100`)),
+      ...simplifiedYes(biz, `2000`, `300`),
+    });
+    expect(limited.get(p(biz, `line29TentativeProfit`)).get.toString()).toBe(`100.00`);
+    expect(limited.get(p(biz, `line30`)).get.toString()).toBe(`100.00`);
+    expect(limited.get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`0.00`);
+
+    const loss = base([biz], {
+      ...business(biz, {
+        ...lineItemIncome(biz, `1000`),
+        ...dollars(p(biz, `writableAdvertising`), `1500`),
+      }),
+      ...simplifiedYes(biz, `2000`, `100`),
+      ...flag(p(biz, `hasDeductibleExpenses`), true),
+      [p(biz, `expenseLinesChosen`)]: createMultEnumWrapper([`advertising`], options),
+      ...flag(p(biz, `allInvestmentAtRisk`), true),
+    });
+    // Line 29 is a $500 loss. Worksheet line 5 is -0-, so line 30 does not increase the loss.
+    expect(loss.get(p(biz, `line29TentativeProfit`)).get.toString()).toBe(`-500.00`);
+    expect(loss.get(p(biz, `line30`)).get.toString()).toBe(`0.00`);
+    expect(loss.get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`-500.00`);
+    expect(loss.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`stops Form 8829, a simplified method this tool does not figure, and two simplified-method businesses`, () => {
+    const common = lineItemIncome(biz, `5000`);
+    const form8829 = base([biz], {
+      ...business(biz, common),
+      ...stops(biz, { hasHomeOffice: true }),
+      ...flag(p(biz, `homeOfficeUsesSimplifiedMethod`), false),
+    });
+    expect(form8829.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(form8829.get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+
+    const partYear = base([biz], {
+      ...business(biz, common),
+      ...stops(biz, { hasHomeOffice: true }),
+      ...flag(p(biz, `homeOfficeUsesSimplifiedMethod`), true),
+      ...flag(p(biz, `simplifiedMethodSameAreaAllYear`), false),
+    });
+    expect(partYear.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+
+    const otherLocation = base([biz], {
+      ...business(biz, common),
+      ...stops(biz, { hasHomeOffice: true }),
+      ...flag(p(biz, `homeOfficeUsesSimplifiedMethod`), true),
+      ...flag(p(biz, `simplifiedMethodSameAreaAllYear`), true),
+      ...flag(p(biz, `simplifiedMethodGrossIncomeIsLine29`), false),
+    });
+    expect(otherLocation.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+
+    const shared = base([biz], {
+      ...business(biz, common),
+      ...stops(biz, { hasHomeOffice: true }),
+      ...flag(p(biz, `homeOfficeUsesSimplifiedMethod`), true),
+      ...flag(p(biz, `simplifiedMethodSameAreaAllYear`), true),
+      ...flag(p(biz, `simplifiedMethodGrossIncomeIsLine29`), true),
+      ...flag(p(biz, `simplifiedMethodSpaceNotShared`), false),
+    });
+    expect(shared.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(shared.get(p(biz, `line30`)).complete).toBe(false);
+
+    const rental = base([biz], {
+      ...business(biz, common),
+      ...stops(biz, { hasHomeOffice: true }),
+      ...flag(p(biz, `homeOfficeUsesSimplifiedMethod`), true),
+      ...flag(p(biz, `simplifiedMethodSameAreaAllYear`), true),
+      ...flag(p(biz, `simplifiedMethodGrossIncomeIsLine29`), true),
+      ...flag(p(biz, `simplifiedMethodSpaceNotShared`), true),
+      ...flag(p(biz, `simplifiedMethodNotRentalUse`), false),
+    });
+    expect(rental.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(rental.get(p(biz, `line30`)).complete).toBe(false);
+
+    const carryover = base([biz], {
+      ...business(biz, common),
+      ...stops(biz, { hasHomeOffice: true }),
+      ...flag(p(biz, `homeOfficeUsesSimplifiedMethod`), true),
+      ...flag(p(biz, `simplifiedMethodSameAreaAllYear`), true),
+      ...flag(p(biz, `simplifiedMethodGrossIncomeIsLine29`), true),
+      ...flag(p(biz, `simplifiedMethodSpaceNotShared`), true),
+      ...flag(p(biz, `simplifiedMethodNotRentalUse`), true),
+      ...flag(p(biz, `simplifiedMethodNoPrior8829Carryover`), false),
+    });
+    expect(carryover.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(carryover.get(p(biz, `line30`)).complete).toBe(false);
+
+    // Business area larger than the home leaves line 30 and line 31 unfinished. It is not a form stop.
+    const tooBig = base([biz], {
+      ...business(biz, common),
+      ...simplifiedYes(biz, `100`, `150`),
+    });
+    expect(tooBig.get(p(biz, `line30`)).complete).toBe(false);
+    expect(tooBig.get(p(biz, `scheduleCFormStop`)).get).toBe(false);
+    expect(tooBig.get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+
+    const two = base([biz, biz2], {
+      ...business(biz, lineItemIncome(biz, `8000`)),
+      ...simplifiedYes(biz, `2000`, `100`),
+      ...business(biz2, lineItemIncome(biz2, `4000`)),
+      ...simplifiedYes(biz2, `2000`, `50`),
+    });
+    expect(two.get(`/scheduleCMultipleSimplifiedHomeOffices`).get).toBe(true);
+    expect(two.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(two.get(p(biz, `line30`)).complete).toBe(false);
+    expect(two.get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
   });
 });
 

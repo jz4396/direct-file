@@ -583,6 +583,31 @@ describe(`PA-40 line 4 net profits from Schedule C`, () => {
     expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
   });
 
+  it(`full-year line-item home office stops; PA does not follow the federal safe harbor`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaScheduleC`, `/scheduleCHasHomeOffice`];
+    // PA-40 C (EX) 03-26 instructions, PDF p. 4: "Pennsylvania does not recognize the federal safe harbor method."
+    // Actual expenses and Schedule C-2 are not computed. A yes to business use of the home stops the PA return.
+    const { [`/scheduleCBusinesses/#${schCBizId}/writableTotalExpenses`]: _legacy, ...schCNoBucket } =
+      schCBase(`20000`);
+    const g = build(singleFilerData, {
+      ...w2(50000, 50000, 1535),
+      ...schCNoBucket,
+      ...schCMeals(`400`),
+      [`/scheduleCBusinesses/#${schCBizId}/hasHomeOffice`]: createBooleanWrapper(true),
+      [`/scheduleCBusinesses/#${schCBizId}/homeOfficeUsesSimplifiedMethod`]: createBooleanWrapper(true),
+      [`/scheduleCBusinesses/#${schCBizId}/simplifiedMethodSameAreaAllYear`]: createBooleanWrapper(true),
+      [`/scheduleCBusinesses/#${schCBizId}/simplifiedMethodGrossIncomeIsLine29`]: createBooleanWrapper(true),
+      [`/scheduleCBusinesses/#${schCBizId}/simplifiedMethodSpaceNotShared`]: createBooleanWrapper(true),
+      [`/scheduleCBusinesses/#${schCBizId}/simplifiedMethodNotRentalUse`]: createBooleanWrapper(true),
+      [`/scheduleCBusinesses/#${schCBizId}/simplifiedMethodNoPrior8829Carryover`]: createBooleanWrapper(true),
+      [`/scheduleCBusinesses/#${schCBizId}/writableHomeTotalSquareFeet`]: createDollarWrapper(`2000`),
+      [`/scheduleCBusinesses/#${schCBizId}/writableBusinessUseSquareFeet`]: createDollarWrapper(`100`),
+    });
+    expect(get(g, `/scheduleCHasHomeOffice`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleC`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
   it(`PA/FL part-year resident with Schedule C: stop, no allocation`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutPaUnsupportedIncome`, `/paLine4`, `/flowIsKnockedOut`];
     // PA-40 IN (2025) p. 43: part-year/nonresident business income is not allocated here.

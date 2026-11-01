@@ -1221,11 +1221,15 @@
         p. 17, LINE 4: "CAUTION: You must use PA Schedule C to report income and expenses from a business or
         profession… Do not use federal Schedules C or F." The full-year line-item path prints PA-40 C (EX) 03-26
         (pdf/2026/PA40C). This stays true when a PA-40 is filed (/stateReturnPaFiled), there is Schedule C
-        (/hasScheduleCBusinesses), and either the return is not a full-year PA resident or any business still uses the
-        single expense total (/scheduleCHasLegacyExpenseBucket). One legacy business stops the whole return because
-        line 4 is a single sum. Wired into /flowIsKnockedOut via /flowKnockoutStateReturn and into
-        PrintRefusingKnockouts.FACT_PATHS. Full-year federally supported Schedule C still figures /paLine4. Tax Reform
-        Code of 1971 §303(a)(2), 72 P.S. §7303(a)(2).</Description>
+        (/hasScheduleCBusinesses), and either the return is not a full-year PA resident, any business still uses the
+        single expense total (/scheduleCHasLegacyExpenseBucket), or a line-item business claims business use of the
+        home (/scheduleCHasHomeOffice). Pennsylvania does not recognize the federal safe harbor, and PA Schedule C-2
+        actual expenses are not computed. PA-40 C (EX) 03-26 instructions, PDF p. 4: "Pennsylvania does not recognize
+        the federal safe harbor method." PDF p. 8, LINE 37: "Pennsylvania does not follow the federal safe harbor
+        rules." One legacy business or one home-office business stops the whole return because line 4 is a single sum.
+        Wired into /flowIsKnockedOut via /flowKnockoutStateReturn and into PrintRefusingKnockouts.FACT_PATHS. Full-year
+        federally supported Schedule C with no home office still figures /paLine4. Tax Reform Code of 1971 §303(a)(2),
+        72 P.S. §7303(a)(2).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -1237,6 +1241,7 @@
               <Dependency module="stateReturn" path="/stateReturnIsPa" />
             </Not>
             <Dependency module="scheduleC" path="/scheduleCHasLegacyExpenseBucket" />
+            <Dependency module="scheduleC" path="/scheduleCHasHomeOffice" />
           </Any>
         </All>
       </Derived>

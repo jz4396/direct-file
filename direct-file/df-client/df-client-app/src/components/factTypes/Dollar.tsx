@@ -20,6 +20,12 @@ function sanitizeDollar(rawValue: string) {
   return { value: sanitized, isEmpty: !sanitized };
 }
 
+/** Whole square feet are stored on a Dollar fact so the interview does not write a raw JavaScript number. */
+function sanitizeWholeDigits(rawValue: string) {
+  const sanitized = rawValue.replace(/[^0-9]/g, ``);
+  return { value: sanitized, isEmpty: !sanitized };
+}
+
 export interface DollarImplementationProps extends FactProps {
   fact: Dollar | undefined;
   setFact: (value: Dollar) => void;
@@ -27,6 +33,10 @@ export interface DollarImplementationProps extends FactProps {
   labelConfig?: LabelConfig;
   controlIdOverride?: string;
   forceUpdateInput?: boolean;
+  /** Shown before the input. Square feet pass an empty string so no dollar sign is shown. */
+  inputPrefix?: string;
+  /** Digits only. Used for Schedule C line 30 square feet. */
+  wholeDigits?: boolean;
 }
 
 /**
@@ -50,6 +60,8 @@ export const DollarImplementation = forwardRef<HTMLInputElement, DollarImplement
       forceUpdateInput,
       readOnly,
       labelConfig,
+      inputPrefix = `$`,
+      wholeDigits = false,
     },
     ref
   ) => {
@@ -111,7 +123,7 @@ export const DollarImplementation = forwardRef<HTMLInputElement, DollarImplement
     return (
       <TextFormControl
         labelConfig={labelConfig}
-        inputPrefix='$'
+        inputPrefix={inputPrefix}
         path={path}
         concretePath={concretePath}
         collectionId={collectionId}
@@ -122,10 +134,10 @@ export const DollarImplementation = forwardRef<HTMLInputElement, DollarImplement
         required={required}
         setInputValue={setInputValue}
         onError={onError}
-        sanitize={sanitizeDollar}
+        sanitize={wholeDigits ? sanitizeWholeDigits : sanitizeDollar}
         factParser={factParser}
         type='text'
-        inputMode='decimal'
+        inputMode={wholeDigits ? `numeric` : `decimal`}
         errorMessage={errorMessage}
         inputRef={ref}
         controlIdOverride={controlIdOverride}

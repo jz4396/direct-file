@@ -13,21 +13,26 @@
 # practiced as a sole proprietor." 2026 Schedule C, line 31: "If a profit, enter on both Schedule 1 (Form 1040),
 # line 3, and on Schedule SE, line 2." Net earnings from self-employment: 26 U.S.C. 1402(a).
 #
-# Supported lines (26 U.S.C. 61, 162, and 274(n) for meals): 1-8, 10, 11, 14-16a, 16c, 17-19, 20b, 21-26, 27b, 28,
-# 29, 31, 32, and the first three Part V lines plus line 48. A single stored expense total still prints on line 28,
+# Supported lines (26 U.S.C. 61, 162, 274(n) for meals, and 280A(c)(5) for line 30): 1-8, 10, 11, 14-16a, 16c, 17-19,
+# 20b, 21-26, 27b, 28, 29, 30 (simplified method only), 31, 32, and the first three Part V lines plus line 48. A single
+# stored expense total still prints on line 28,
 # with lines 2, 4, and 6 at zero so lines 3, 5, and 7 equal line 1.
 # Not mapped, left blank (the return stops instead of printing a zero):
 #   A principal business, B code, D EIN, E business address, F accounting method, H started or acquired this year,
 #   I/J Forms 1099, the line 1 statutory-employee checkbox.
 #   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
-#   line 20a equipment rent, line 27a (Form 7205), line 30 (Form 8829 or the simplified method),
+#   line 20a equipment rent, line 27a (Form 7205),
 #   Part IV, and Part V lines 4-9.
+# Line 30 is the simplified method when it applies: $5 times allowable square feet (not more than 300), not more than
+# line 29. 2026 draft Instructions for Schedule C, PDF p. 14. Line 30(a) and 30(b) are the home and business areas.
+# Form 8829 is not mapped. $0 on line 30 prints blank, so a return with no home office still shows line 31 equal to
+# line 29.
 # Part III (PDF p. 2) is mapped for cost or lower of cost or market: line 36 is purchases less personal-use
 # withdrawals, line 40 adds lines 35 through 39, and line 42 (line 40 minus line 41) is line 4.
 # Line 33c, line 34 yes, a 3-prior-year average over $32,000,000, a tax shelter, line 42 below zero, line 35
 # different from last year's closing inventory, and an inconsistent no-inventory method stop the return
 # instead of printing those lines as zero. 26 U.S.C. 448(c), 448(d)(3), 471(c), 263A(i); Rev. Proc. 2025-32 §4.30.
-# $0 amounts print blank. Line 30 is blank on a supported return, so lines 29 and 31 equal line 7 minus line 28.
+# $0 amounts print blank. With no home-office deduction, line 30 is blank and lines 29 and 31 equal line 7 minus line 28.
 includeForEach: /scheduleCBusinesses
 customMaps:
   template:
@@ -68,7 +73,11 @@ form:
       f1_43[0]: /scheduleCBusinesses/*/line26Wages # 26
       f1_45[0]: /scheduleCBusinesses/*/line27bOtherExpenses # 27b from Part V line 48
       f1_46[0]: /scheduleCBusinesses/*/totalExpenses # 28 "Total expenses before expenses for business use of home"
-      f1_47[0]: /scheduleCBusinesses/*/netProfitOrLoss # 29 "Tentative profit or (loss). Subtract line 28 from line 7"
+      f1_47[0]: /scheduleCBusinesses/*/line29TentativeProfit # 29 "Tentative profit or (loss). Subtract line 28 from line 7"
+      Line30_ReadOrder[0]:
+        f1_48[0]: /scheduleCBusinesses/*/homeTotalSquareFeet # 30(a) total square feet of the home
+        f1_49[0]: /scheduleCBusinesses/*/businessUseSquareFeet # 30(b) part of the home used for business
+      f1_50[0]: /scheduleCBusinesses/*/line30 # 30 simplified method: $5 x allowable sq ft, not more than line 29
       c1_7[0]: /scheduleCBusinesses/*/line32aAllInvestmentAtRisk # 32a all investment at risk (26 U.S.C. 465)
       c1_7[1]: /scheduleCBusinesses/*/line32bSomeInvestmentNotAtRisk # 32b
       f1_51[0]: /scheduleCBusinesses/*/netProfitOrLoss # 31 "Net profit or (loss). Subtract line 30 from line 29"
