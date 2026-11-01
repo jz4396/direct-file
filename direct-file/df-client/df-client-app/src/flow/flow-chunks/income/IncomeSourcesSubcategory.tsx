@@ -331,7 +331,7 @@ export const IncomeSourcesSubcategory = (
         <DFAlert i18nKey='/info/knockout/unrecaptured-1250-gain' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      {/* #77 Form 6251: AMT items this tool doesn't compute (lines 2c-2t, 3, 8) */}
+      {/* #77 Form 6251: AMT items this tool doesn't compute (lines 2c-2f, 2h, 2i, 2k-2t, 3, 8). Lines 2g and 2j are computed. */}
       <Screen route='amt-preference-items'>
         <Heading i18nKey='/heading/income/income-sources/amt-preference-items' />
         <InfoDisplay i18nKey='/info/income/income-sources/amt-preference-items' />

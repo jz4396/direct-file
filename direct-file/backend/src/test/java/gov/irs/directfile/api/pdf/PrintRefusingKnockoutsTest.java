@@ -105,7 +105,10 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT =
             "/flowKnockoutScheduleSENonfarmOptionalMethodCredits";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
-    /** Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). Line 2g is computed. */
+    /**
+     * Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). Lines 2g and 2j are
+     * computed. Who Must File item 4 uses the 26% or 28% line 7 figured without lines 2c through 3.
+     */
     static final String AMT_PREFERENCE_KNOCKOUT = "/flowKnockoutAmtPreferenceItems";
     /**
      * Same lines when Form 6251 is required and /hasAmtPreferenceItems is not a complete answer. The yes knockout is
@@ -214,7 +217,7 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT, // Schedule SE line this tool does not compute
                 SCHEDULE_SE_NONFARM_OPTIONAL_KNOCKOUT, // nonfarm optional method not allowed on this return
                 SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT, // election with the EITC, ACTC, or CDCC
-                AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2t, 3 and 8 (not line 2g)
+                AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 (not lines 2g and 2j)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
                 DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2f, 6, 8-11, 14-16

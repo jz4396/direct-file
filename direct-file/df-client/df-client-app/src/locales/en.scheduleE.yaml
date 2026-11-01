@@ -28,8 +28,8 @@ headings:
   /heading/income/schedule-e/estate-scope: Is this a foreign beneficiary, a foreign trust, or an inconsistent treatment?
   /heading/income/schedule-e/estate-interest-dividends: Enter interest and dividends from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-boxes: Enter the income from Schedule K-1 (Form 1041)
-  /heading/income/schedule-e/estate-other:
-    Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 5, 6, 7, and 8?
+  /heading/income/schedule-e/estate-box12: Enter Schedule K-1 (Form 1041) box 12, code A
+  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J?
   /heading/income/schedule-e/estate-limits: Do any loss limits apply to this estate or trust?
   /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC (Schedule Q, Form 1066)?
   /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
@@ -112,10 +112,16 @@ info:
       Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. Answer yes to material participation if you were involved
       on a regular, continuous, and substantial basis. Box 6 goes in column (f) when you materially participate. Box 7
       and box 8 are rental income and stop this return.
+  /info/income/schedule-e/estate-box12:
+    body: >-
+      Code A is the adjustment for minimum tax purposes. It goes on Form 6251, line 2j. Enter 0 if code A is blank.
+      Enter a negative amount if the adjustment is negative. Answer yes if box 12 has an amount for code B, C, D, E, F,
+      G, H, or I. Those codes are not entered on line 2j. Code J is exclusion items for Form 8801. Answer yes if code J
+      has an amount. Code J is not line 2j and does not stop this return.
   /info/income/schedule-e/estate-other:
     body: >-
-      Answer yes if any box other than boxes 1, 2a, 2b, 5, 6, 7, and 8 has an amount, including capital gain,
-      deductions, credits, or box 14.
+      Answer yes for boxes 3, 4, 9, 10, 11, 13, and 14, including capital gain, deductions, and credits. Box 12 codes A
+      through J are the previous screen. Do not answer yes only because of code J.
   /info/income/schedule-e/estate-limits:
     body: >-
       Answer yes to the first question if a basis limit applies. Answer yes to the second if any amount is not at risk.
@@ -233,9 +239,10 @@ info:
       body:
         - p: >-
             This tool can report ordinary business income from a domestic estate or trust when you materially
-            participated and that amount is not a loss. Other rental income, rental real estate income, a loss, a
-            passive activity, another K-1 amount, a foreign trust, or a basis, at-risk, or passive-loss limit needs
-            forms this tool doesn’t support yet. You’ll need another way to file this return.
+            participated and that amount is not a loss. Box 12, code A, goes on Form 6251, line 2j. Box 12, code J,
+            exclusion items, does not stop this return. Codes B through I on box 12, other rental income, rental real
+            estate income, a loss, a passive activity, another K-1 amount, a foreign trust, or a basis, at-risk, or
+            passive-loss limit needs forms this tool doesn’t support yet. You’ll need another way to file this return.
   /info/knockout/schedule-e-part-iv:
     alertText:
       body:
@@ -449,6 +456,16 @@ fields:
     boolean:
       "yes": Yes, I materially participated
       "no": No, I didn’t materially participate
+  /scheduleEEstates/*/box12CodeA:
+    name: Box 12, code A, adjustment for minimum tax purposes
+  /scheduleEEstates/*/hasBox12CodesBThroughI:
+    boolean:
+      "yes": Yes, code B, C, D, E, F, G, H, or I has an amount
+      "no": No, codes B through I are blank or zero
+  /scheduleEEstates/*/hasBox12CodeJ:
+    boolean:
+      "yes": Yes, code J has an amount
+      "no": No, code J is blank or zero
   /scheduleEEstates/*/hasOtherK1Amount:
     boolean:
       "yes": Yes, another box has an amount
@@ -653,7 +670,10 @@ dataviews:
     /scheduleEEstates/*/box7: Box 7, net rental real estate income
     /scheduleEEstates/*/box8: Box 8, other rental income
     /scheduleEEstates/*/materiallyParticipates: Did you materially participate?
-    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 1, 2a, 2b, 5, 6, 7, and 8 have an amount?
+    /scheduleEEstates/*/box12CodeA: Box 12, code A, adjustment for minimum tax purposes
+    /scheduleEEstates/*/hasBox12CodesBThroughI: Does box 12 have an amount for code B, C, D, E, F, G, H, or I?
+    /scheduleEEstates/*/hasBox12CodeJ: Does box 12, code J, exclusion items, have an amount?
+    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J have an amount?
     /scheduleEEstates/*/basisLimitApplies: Does a basis limit apply?
     /scheduleEEstates/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/passiveDeductionOrLoss: Is there a passive deduction or loss?

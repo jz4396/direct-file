@@ -27,6 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import gov.irs.factgraph.Graph;
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.collectionItem;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.EMPTY_COLLECTION;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.day;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.tin;
@@ -331,7 +332,7 @@ class Form6251Ty2026PdfSmokeTest {
 
     /**
      * Each mapped amount field's tooltip on the 2026 draft names the line the field map fills. Lines that are a stop
-     * (2b-2f, 2h-2t, 3, 8, 14, 35-37) stay unmapped, so they cannot print $0. Line 2g is mapped.
+     * (2b-2f, 2h, 2i, 2k-2t, 3, 8, 14, 35-37) stay unmapped, so they cannot print $0. Lines 2g and 2j are mapped.
      */
     @Test
     void mappedFieldTooltipsNameTheComputedLinesAndUnsupportedLinesStayUnmapped() throws Exception {
@@ -342,6 +343,7 @@ class Form6251Ty2026PdfSmokeTest {
         expected.put("f1_4[0]", "1b. Subtract line 1a");
         expected.put("f1_5[0]", "2a. If filing Schedule A");
         expected.put("f1_11[0]", "2g. Interest from specified private activity bonds");
+        expected.put("f1_14[0]", "2j. Estates and trusts");
         expected.put("f1_26[0]", "4. Alternative minimum taxable income");
         expected.put("f1_27[0]", "5. Exemption");
         expected.put("f1_28[0]", "6. Subtract line 5 from line 4");
@@ -383,7 +385,6 @@ class Form6251Ty2026PdfSmokeTest {
                 "f1_10[0]",
                 "f1_12[0]",
                 "f1_13[0]",
-                "f1_14[0]",
                 "f1_15[0]",
                 "f1_16[0]",
                 "f1_17[0]",
@@ -483,6 +484,77 @@ class Form6251Ty2026PdfSmokeTest {
         try (PDDocument doc = Loader.loadPDF(generate(facts))) {
             assertTrue(form6251Fields(doc).isEmpty(), "Form 6251 is not attached when AMT is zero");
         }
+    }
+
+    /**
+     * MFJ, $200,000 wages, standard deduction $32,200, no capital gain, box 6 $0. Schedule K-1 (Form 1041) box 12 code
+     * A $50,000 is Form 6251 line 2j. Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) PDF p. 3. Form 6251
+     * (2026) draft p. 1, line 2j. AMTI $250,000; line 6 $109,800; tentative minimum tax $28,548; regular tax $26,340;
+     * AMT $2,208. 26 U.S.C. 55(b)(2). Who Must File item 1 attaches Form 6251. Codes B through I are answered no.
+     */
+    @Test
+    void line2jCodeAMovesAmtAboveZeroAndPrintsOnForm6251() throws Exception {
+        Map<String, String> facts = pabInterest("0.00", "0.00", "0.00", "0.00");
+        estateBox12CodeA(facts, "50000.00");
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals("0.00", graph.get("/form6251Line2g").get().toString(), "line 2g");
+        assertEquals("50000.00", graph.get("/form6251Line2j").get().toString(), "line 2j");
+        assertEquals("50000.00", graph.get("/scheduleEBox12CodeATotal").get().toString(), "code A before rounding");
+        assertEquals("250000.00", graph.get("/form6251Line4").get().toString(), "line 4");
+        assertEquals("109800.00", graph.get("/form6251Line6").get().toString(), "line 6");
+        assertEquals("28548.00", graph.get("/form6251Line7").get().toString(), "line 7");
+        assertEquals("26340.00", graph.get("/form6251Line10").get().toString(), "line 10");
+        assertEquals("2208.00", graph.get("/amt").get().toString(), "line 11");
+        assertEquals(Boolean.TRUE, graph.get("/form6251Required").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutScheduleEPartIIIBox12CodesBThroughI").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutScheduleEPartIII").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutAmtPreferenceItems").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowIsKnockedOut").get());
+
+        try (PDDocument doc = Loader.loadPDF(generate(facts))) {
+            Map<String, String> f = form6251Fields(doc);
+            assertFalse(f.isEmpty(), "Form 6251 is attached when line 7 is greater than line 10");
+            assertEquals(5000000, line(f, "f1_14[0]"), "2j");
+            assertEquals(25000000, line(f, "f1_26[0]"), "4");
+            assertEquals(2854800, line(f, "f1_29[0]"), "7");
+            assertEquals(2634000, line(f, "f1_32[0]"), "10");
+            assertEquals(220800, line(f, "f1_33[0]"), "11");
+        }
+    }
+
+    /** Supported Part III estate, box 6 zero, box 12 code A as given, codes B through I no. */
+    static void estateBox12CodeA(Map<String, String> m, String codeA) {
+        String id = "c8f2d3b1-2222-4333-8444-555566667777";
+        String p = "/scheduleEEstates/#" + id + "/";
+        m.put("/hadScheduleEIncome", bool(false));
+        m.put("/scheduleEHasPartIIIncome", bool(true));
+        m.put("/scheduleEPartIILine27", bool(false));
+        m.put("/scheduleEHasPartIIIIncome", bool(true));
+        m.put("/scheduleEHasPartIVIncome", bool(false));
+        m.put("/scheduleEK1s", EMPTY_COLLECTION);
+        m.put("/scheduleEK1sIsDone", bool(true));
+        m.put("/scheduleEEstatesIsDone", bool(true));
+        m.put("/scheduleEEstates", collection(id));
+        m.put(p + "entityName", string("Harbor Trust"));
+        m.put(p + "isForeignBeneficiary", bool(false));
+        m.put(p + "isForeignTrust", bool(false));
+        m.put(p + "inconsistentTreatment", bool(false));
+        m.put(p + "box1", dollar("0.00"));
+        m.put(p + "box2a", dollar("0.00"));
+        m.put(p + "box2b", dollar("0.00"));
+        m.put(p + "box5", dollar("0.00"));
+        m.put(p + "box6", dollar("0.00"));
+        m.put(p + "box7", dollar("0.00"));
+        m.put(p + "box8", dollar("0.00"));
+        m.put(p + "materiallyParticipates", bool(true));
+        m.put(p + "box12CodeA", dollar(codeA));
+        m.put(p + "hasBox12CodesBThroughI", bool(false));
+        m.put(p + "hasBox12CodeJ", bool(false));
+        m.put(p + "hasOtherK1Amount", bool(false));
+        m.put(p + "basisLimitApplies", bool(false));
+        m.put(p + "anyAmountNotAtRisk", bool(false));
+        m.put(p + "passiveDeductionOrLoss", bool(false));
     }
 
     /**

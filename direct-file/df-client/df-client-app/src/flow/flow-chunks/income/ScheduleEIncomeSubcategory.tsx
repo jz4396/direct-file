@@ -26,6 +26,7 @@ import type { ConditionString } from '../../Condition.js';
  * Nonfarm Form 1065 box 14 code A is Schedule SE line 2 (26 U.S.C. 1402(a)) except on a joint return.
  * Part III supported: domestic estate or trust, nonnegative box 6 only, material participation.
  * Box 8 is other rental income (26 U.S.C. 469(c)(2) and 469(c)(4)) and stops the return.
+ * Schedule K-1 (Form 1041) box 12 code A is Form 6251 line 2j. Codes B through I stop the return.
  * Part IV (REMIC, Schedule Q (Form 1066)) is asked of every filer and is an explicit stop.
  * The Schedule K-1 question is asked of every filer, not only after a yes to rental or royalty income
  * (#232, #238, #85). Computations and cites live in backend/src/main/resources/tax/scheduleE.xml.
@@ -140,6 +141,14 @@ export const ScheduleEIncomeSubcategory = (
             <Dollar path='/scheduleEEstates/*/box7' />
             <Dollar path='/scheduleEEstates/*/box8' />
             <Boolean path='/scheduleEEstates/*/materiallyParticipates' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-estate-box12'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-box12' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-box12' />
+            <Dollar path='/scheduleEEstates/*/box12CodeA' />
+            <Boolean path='/scheduleEEstates/*/hasBox12CodesBThroughI' />
+            <Boolean path='/scheduleEEstates/*/hasBox12CodeJ' />
             <SaveAndOrContinueButton />
           </Screen>
           <Screen route='schedule-e-estate-other'>

@@ -108,6 +108,26 @@ Subcategory: /flow/income/schedule-c
 Subcategory: /flow/income/schedule-e
 /flow/income/schedule-e/schedule-e-intro
 /flow/income/schedule-e/schedule-e-part-ii
+/flow/income/schedule-e/schedule-e-estate-name
+/flow/income/schedule-e/schedule-e-estate-scope
+/flow/income/schedule-e/schedule-e-estate-interest-dividends
+/flow/income/schedule-e/schedule-e-estate-boxes
+/flow/income/schedule-e/schedule-e-estate-box12
+/flow/income/schedule-e/schedule-e-estate-other
+/flow/income/schedule-e/schedule-e-estate-limits
+/flow/income/schedule-e/schedule-e-part-iv
+/flow/income/schedule-e/schedule-e-k1-name
+/flow/income/schedule-e/schedule-e-k1-scope
+/flow/income/schedule-e/schedule-e-k1-box1
+/flow/income/schedule-e/schedule-e-k1-box14
+/flow/income/schedule-e/schedule-e-k1-other
+/flow/income/schedule-e/schedule-e-k1-columns
+/flow/income/schedule-e/schedule-e-property-name
+/flow/income/schedule-e/schedule-e-property-amounts
+/flow/income/schedule-e/schedule-e-property-participation
+/flow/income/schedule-e/schedule-e-property-safe-harbor
+/flow/income/schedule-e/schedule-e-property-aggregation
+/flow/income/schedule-e/schedule-e-property-suspended
 Subcategory: /flow/income/interest
 Subcategory: /flow/income/dividends
 Subcategory: /flow/income/dependent-care
@@ -151,6 +171,7 @@ Subcategory: /flow/credits-and-deductions/credits
 /flow/credits-and-deductions/credits/marketplace-breather
 /flow/credits-and-deductions/credits/qualified-marketplace-plan
 /flow/credits-and-deductions/credits/dependents-filing-requirement
+/flow/credits-and-deductions/credits/ptc-form-8814
 /flow/credits-and-deductions/credits/1095-a-check
 /flow/credits-and-deductions/credits/multiple-forms-check
 /flow/credits-and-deductions/credits/enrollment-family

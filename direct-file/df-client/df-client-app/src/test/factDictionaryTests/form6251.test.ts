@@ -309,7 +309,9 @@ describe(`#122 Form 6251 attached to the PDF — i6251 (2025) p. 1 "Who Must Fil
 });
 
 describe(`Form 6251 knockouts (BlockSubmissionOnTrue, wired into /flowIsKnockedOut)`, () => {
-  it(`unsupported AMT items other than line 2g (ISOs, depreciation, NOL, AMTFTC) = yes knocks out`, ({ task }) => {
+  it(`unsupported AMT items other than lines 2g and 2j (ISOs, depreciation, NOL, AMTFTC) = yes knocks out`, ({
+    task,
+  }) => {
     task.meta.testedFactPaths = [`/flowKnockoutAmtPreferenceItems`, `/flowIsKnockedOut`];
     const g = fg({ ...clean(singleFilerData, 50000), '/hasAmtPreferenceItems': createBooleanWrapper(true) });
     expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(true);
@@ -485,5 +487,128 @@ describe(`Form 6251 line 2g — specified private activity bond interest`, () =>
     expect(get(g, `/flowKnockoutHasBonds`).get).toBe(false);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
     expect(submissionBlockingFacts).toContain(`/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`);
+  });
+});
+
+/**
+ * Form 6251 line 2j. Form 6251 (2026) draft p. 1: "Estates and trusts (amount from Schedule K-1 (Form 1041), box 12,
+ * code A)." Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) PDF p. 3: "Code A, Adjustment for minimum
+ * tax purposes, is the total amount reported on Form 6251, line 2j." 26 U.S.C. 59(c). 26 U.S.C. 55(b)(2). Codes B
+ * through I are not this line. Code J is not this line. MFJ standard deduction $32,200 and exemption $140,200
+ * (Rev. Proc. 2025-32). Regular tax on taxable income $167,800 is $26,340.
+ */
+describe(`Form 6251 line 2j — Schedule K-1 (Form 1041) box 12 code A`, () => {
+  const estateId = `c8f2d3b1-2222-4333-8444-555566667777`;
+  const codeA = (amount: string) => ({
+    '/hadScheduleEIncome': createBooleanWrapper(false),
+    '/scheduleEHasPartIIIncome': createBooleanWrapper(true),
+    '/scheduleEPartIILine27': createBooleanWrapper(false),
+    '/scheduleEHasPartIIIIncome': createBooleanWrapper(true),
+    '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
+    '/scheduleEK1s': createCollectionWrapper([]),
+    '/scheduleEK1sIsDone': createBooleanWrapper(true),
+    '/scheduleEEstatesIsDone': createBooleanWrapper(true),
+    '/scheduleEEstates': createCollectionWrapper([estateId]),
+    [`/scheduleEEstates/#${estateId}/entityName`]: createStringWrapper(`Harbor Trust`),
+    [`/scheduleEEstates/#${estateId}/isForeignBeneficiary`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/isForeignTrust`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/inconsistentTreatment`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/box1`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box2a`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box2b`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box6`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/materiallyParticipates`]: createBooleanWrapper(true),
+    [`/scheduleEEstates/#${estateId}/box12CodeA`]: createDollarWrapper(amount),
+    [`/scheduleEEstates/#${estateId}/hasBox12CodesBThroughI`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/hasBox12CodeJ`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/hasOtherK1Amount`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/basisLimitApplies`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/anyAmountNotAtRisk`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/passiveDeductionOrLoss`]: createBooleanWrapper(false),
+  });
+
+  it(`line 2j $50,000 moves AMT from $0 to $2,208 and Form 6251 is required`, ({ task }) => {
+    // Same AMTI as line 2g $50,000. AMTI $250,000. Line 6 $109,800. 26% × $109,800 = $28,548. AMT $2,208.
+    task.meta.testedFactPaths = [
+      `/form6251Line2j`,
+      `/form6251Line2g`,
+      `/form6251Lines2cThrough3`,
+      `/form6251Line4`,
+      `/form6251Line7`,
+      `/amt`,
+      `/form6251Required`,
+      `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`,
+      `/flowIsKnockedOut`,
+    ];
+    const g = fg({ ...clean(mfjFilerData, 200000), ...codeA(`50000`) });
+    expect(val(g, `/form6251Line2g`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line2j`)).toBe(`50000.00`);
+    expect(val(g, `/form6251Lines2cThrough3`)).toBe(`50000.00`);
+    expect(val(g, `/form6251Line4`)).toBe(`250000.00`);
+    expect(val(g, `/form6251Line6`)).toBe(`109800.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`28548.00`);
+    expect(val(g, `/form6251Line10`)).toBe(`26340.00`);
+    expect(val(g, `/amt`)).toBe(`2208.00`);
+    expect(get(g, `/form6251Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`a negative code A reduces line 4 and does not require Form 6251 when the wage-only line 7 does not exceed line 10`, ({
+    task,
+  }) => {
+    // Line 2j −$50,000. AMTI $150,000. Line 6 $9,800. 26% × $9,800 = $2,548, which is less than regular tax $26,340.
+    // Instructions for Form 6251 (2025) p. 1, Who Must File, item 4. Lines 2c through 3 are −$50,000. Line 7 figured
+    // without them is the wage-only $15,548, which is not greater than line 10 $26,340.
+    task.meta.testedFactPaths = [
+      `/form6251Line2j`,
+      `/form6251Lines2cThrough3`,
+      `/form6251Line4ExcludingLines2cThrough3`,
+      `/form6251Line7ExcludingLines2cThrough3`,
+      `/form6251Line4`,
+      `/amt`,
+      `/form6251Required`,
+    ];
+    const g = fg({ ...clean(mfjFilerData, 200000), ...codeA(`-50000`) });
+    expect(val(g, `/form6251Line2j`)).toBe(`-50000.00`);
+    expect(val(g, `/form6251Lines2cThrough3`)).toBe(`-50000.00`);
+    expect(val(g, `/form6251Line4`)).toBe(`150000.00`);
+    expect(val(g, `/form6251Line6`)).toBe(`9800.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`2548.00`);
+    expect(val(g, `/form6251Line10`)).toBe(`26340.00`);
+    expect(val(g, `/amt`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line4ExcludingLines2cThrough3`)).toBe(`200000.00`);
+    expect(val(g, `/form6251Line7ExcludingLines2cThrough3`)).toBe(`15548.00`);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+  });
+
+  it(`Who Must File item 4 attaches Form 6251 when a negative code A removes the tentative minimum tax`, ({ task }) => {
+    // Single, $100,000 wages and $1,000,000 long-term gain. Without code A, line 7 is $202,920 and line 10 is
+    // $190,096. Code A −$1,100,000 makes line 4 $0, so line 7 is $0 and line 11 is $0. Lines 2c through 3 are
+    // negative. The 26% or 28% line 7 without those lines is $303,110, which is greater than line 10. Instructions
+    // for Form 6251 (2025) p. 1, item 4. Part III line 40 cannot exceed that 26% or 28% amount.
+    task.meta.testedFactPaths = [
+      `/form6251Line2j`,
+      `/form6251Lines2cThrough3`,
+      `/form6251Line4`,
+      `/form6251Line7`,
+      `/form6251Line7ExcludingLines2cThrough3`,
+      `/amt`,
+      `/form6251Required`,
+    ];
+    const g = fg({ ...clean(singleFilerData, 100000), ...ltGain(1000000), ...codeA(`-1100000`) });
+    expect(val(g, `/form6251Line2j`)).toBe(`-1100000.00`);
+    expect(val(g, `/form6251Lines2cThrough3`)).toBe(`-1100000.00`);
+    expect(val(g, `/form6251Line4`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line7`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line10`)).toBe(`190096.00`);
+    expect(val(g, `/amt`)).toBe(`0.00`);
+    expect(val(g, `/form6251Line7ExcludingLines2cThrough3`)).toBe(`303110.00`);
+    expect(get(g, `/form6251Required`).get).toBe(true);
   });
 });

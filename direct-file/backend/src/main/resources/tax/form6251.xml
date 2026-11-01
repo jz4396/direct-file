@@ -222,12 +222,36 @@
         </Round>
       </Derived>
     </Fact>
+    <Fact path="/form6251Line2j">
+      <Name>Form 6251 line 2j</Name>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 2j: "Estates and
+        trusts (amount from Schedule K-1 (Form 1041), box 12, code A)." Beneficiary's Instructions for Schedule K-1
+        (Form 1041) (2025), https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf PDF p. 3, Box 12: "Code A, Adjustment for
+        minimum tax purposes, is the total amount reported on Form 6251, line 2j." Schedule K-1 (Form 1041) (2025),
+        https://www.irs.gov/pub/irs-pdf/f1041sk1.pdf page 2: "A Adjustment for minimum tax purposes — Form 6251, line
+        2j." The line is scheduleE /scheduleEBox12CodeATotal, the sum of every estate or trust box 12 code A. A
+        negative adjustment stays negative. Cents stay in the addition and only this total is rounded (Form 1040
+        instr. (2025) p. 23). 26 U.S.C. 6102(a). Added on line 4. 26 U.S.C. 59(c)
+        (https://www.law.cornell.edu/uscode/text/26/59): "In the case of any estate or trust, the alternative
+        minimum taxable income of such estate or trust and any beneficiary thereof shall be determined by
+        applying part I of subchapter J with the adjustments provided in this part." 26 U.S.C. 55(b)(2)
+        (https://www.law.cornell.edu/uscode/text/26/55). Code J is not this line. Codes B through I are not this
+        line; they stop the return
+        (scheduleE /flowKnockoutScheduleEPartIIIBox12CodesBThroughI). $0 when there is no estate or trust.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Dependency module="scheduleE" path="/scheduleEBox12CodeATotal" />
+        </Round>
+      </Derived>
+    </Fact>
     <Fact path="/form6251Line4">
       <Name>Form 6251 line 4 AMTI</Name>
       <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 4:
         "Alternative minimum taxable income. Combine lines 1b through 3." Line 2g
-        (/form6251Line2g, 26 U.S.C. 57(a)(5)) is included. Lines 2b-2f and 2h-3 are $0 in scope: Schedule 1 line
-        1/8z refunds and NOLs are not supported; other adjustments and preferences (2c-2f, 2h-2t, 3) block via
+        (/form6251Line2g, 26 U.S.C. 57(a)(5)) and line 2j (/form6251Line2j, Schedule K-1 (Form 1041) box 12 code A)
+        are included. Lines 2b-2f, 2h, 2i, and 2k-3 are $0 in scope: Schedule 1 line 1/8z refunds and NOLs are not
+        supported; other adjustments and preferences (2c-2f, 2h, 2i, 2k-2t, 3) block via
         /flowKnockoutAmtPreferenceItems. IRC §55(b)(2).</Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -236,6 +260,7 @@
             <Dependency path="/form6251Line1b" />
             <Dependency path="/form6251Line2a" />
             <Dependency path="/form6251Line2g" />
+            <Dependency path="/form6251Line2j" />
           </Add>
         </Round>
       </Derived>
@@ -318,11 +343,12 @@
         https://www.irs.gov/pub/irs-pdf/i6251.pdf, Part III, Lines 13, 14, and 15: when none of statements (1) a
         different AMT gain or loss, including "a different AMT capital loss carryover", (2) Form 1040 line 15 is zero,
         or (3) a Schedule K-1 (Form 1041) box 12 code B-F applies, "Use the regular tax amounts to complete lines 13,
-        14, and 15." Statement (1) is a yes to the AMT adjustments question (/flowKnockoutAmtPreferenceItems); (3) has
-        no input in this tool; under (2) only AMT QDCG worksheet lines 2-4 are needed, and they don't depend on line 1,
-        so line 13 is still scheduleD3 /qdcgLine4. Line 14 (Schedule D line 19) and the Schedule D Tax Worksheet stop
-        the return, so lines 35-37 are skipped. Form 2555 is not collected. Tested in dividends.test.ts (#86b Form 6251
-        Part III). IRC §55(b)(3).</Description>
+        14, and 15." Statement (1) is a yes to the AMT adjustments question (/flowKnockoutAmtPreferenceItems).
+        Statement (3) is scheduleE /flowKnockoutScheduleEPartIIIBox12CodesBThroughI: codes B through I stop the return,
+        so a filed return has no box 12 code B, C, D, E, or F and uses the regular tax amounts. Under (2) only AMT
+        QDCG worksheet lines 2-4 are needed, and they don't depend on line 1, so line 13 is still scheduleD3
+        /qdcgLine4. Line 14 (Schedule D line 19) and the Schedule D Tax Worksheet stop the return, so lines 35-37 are
+        skipped. Form 2555 is not collected. Tested in dividends.test.ts (#86b Form 6251 Part III). IRC §55(b)(3).</Description>
       <Derived>
         <Dependency module="scheduleD3" path="/usesQdcgTaxWorksheet" />
       </Derived>
@@ -858,35 +884,205 @@
       <Description>#122: Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1, "Who Must
         File": "Attach Form 6251 to your return if any of the following statements are true. 1. Form 6251, line 7, is
         greater than line 10." Line 8 is $0 (foreign tax paid is a stop), so line 9 = line 7 and this is /amt (line 11)
-        greater than $0. Items 2-4 (general business credit on Form 3800; Forms 8834, 8911, 8801; negative lines 2c-3)
-        cannot apply in scope: those credits are not supported and lines 2c-2f and 2h-3 block via
-        /flowKnockoutAmtPreferenceItems. Line 2g is /form6251Line2g.
-        Used to include the 2026 draft Form 6251 (https://www.irs.gov/pub/irs-dft/f6251--dft.pdf) in the PDF.</Description>
+        greater than $0. Items 2 and 3 (general business credit on Form 3800; Forms 8834, 8911, and 8801) cannot apply
+        in scope. Lines 2c-2f, 2h, 2i, and 2k-3 block via /flowKnockoutAmtPreferenceItems. Line 2g is
+        /form6251Line2g. Line 2j is /form6251Line2j.
+        Used to include the 2026 draft Form 6251 (https://www.irs.gov/pub/irs-dft/f6251--dft.pdf) in the PDF.
+        Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1, Who Must File, item 4: "The
+        total of Form 6251, lines 2c through 3, is negative and line 7 would be greater than line 10 if you didn't take
+        into account lines 2c through 3." In scope that total is line 2g plus line 2j (/form6251Lines2cThrough3). The
+        line 7 figured without those lines is /form6251Line7ExcludingLines2cThrough3, the 26% or 28% computation on
+        line 6 from AMTI that omits them. Part III line 40 is the smaller of that computation and the capital-gain
+        computation, so a 26% or 28% amount that does not exceed line 10 means Part III line 7 would not either. When
+        that 26% or 28% amount exceeds line 10, the form is attached.</Description>
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Dependency path="/amt" />
-          </Left>
-          <Right>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/amt" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <All>
+            <LessThan>
+              <Left>
+                <Dependency path="/form6251Lines2cThrough3" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </LessThan>
+            <GreaterThan>
+              <Left>
+                <Dependency path="/form6251Line7ExcludingLines2cThrough3" />
+              </Left>
+              <Right>
+                <Dependency path="/form6251Line10" />
+              </Right>
+            </GreaterThan>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Lines2cThrough3">
+      <Name>Form 6251 lines 2c through 3 that are computed</Name>
+      <Description>Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1, Who Must File,
+        item 4, uses "the total of Form 6251, lines 2c through 3." In scope that total is line 2g plus line 2j. Lines
+        2c through 2f, 2h, 2i, and 2k through 3 are zero because those adjustments stop the return. 26 U.S.C.
+        55(b)(2).</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/form6251Line2g" />
+          <Dependency path="/form6251Line2j" />
+        </Add>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Line4ExcludingLines2cThrough3">
+      <Name>Form 6251 line 4 without lines 2c through 3</Name>
+      <Description>Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1, Who Must File,
+        item 4: line 7 "if you didn't take into account lines 2c through 3." Line 4 without those lines is line 1b
+        plus line 2a. Line 2b and line 3 are zero in scope. 26 U.S.C. 55(b)(2).</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/form6251Line1b" />
+            <Dependency path="/form6251Line2a" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251ExemptionReductionExcludingLines2cThrough3">
+      <Name>AMT exemption phaseout without lines 2c through 3</Name>
+      <Description>Same 50 percent phaseout as /form6251ExemptionReduction, applied to
+        /form6251Line4ExcludingLines2cThrough3. IRC §55(d)(2) and §55(d)(4)(A)(ii)(IV). Used only to figure Who Must
+        File item 4.</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Multiply>
+          <Rational>50/100</Rational>
+          <GreaterOf>
             <Dollar>0</Dollar>
-          </Right>
-        </GreaterThan>
+            <Subtract>
+              <Minuend>
+                <Dependency path="/form6251Line4ExcludingLines2cThrough3" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/form6251PhaseoutThreshold" />
+              </Subtrahends>
+            </Subtract>
+          </GreaterOf>
+        </Multiply>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Line5ExcludingLines2cThrough3">
+      <Name>Form 6251 line 5 without lines 2c through 3</Name>
+      <Description>Exemption after the phaseout on /form6251Line4ExcludingLines2cThrough3. Form 6251 (2026) draft line
+        5. Used only to figure Who Must File item 4.</Description>
+      <Derived>
+        <Round>
+          <GreaterOf>
+            <Dollar>0</Dollar>
+            <Subtract>
+              <Minuend>
+                <Dependency path="/form6251ExemptionAmount" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/form6251ExemptionReductionExcludingLines2cThrough3" />
+              </Subtrahends>
+            </Subtract>
+          </GreaterOf>
+        </Round>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Line6ExcludingLines2cThrough3">
+      <Name>Form 6251 line 6 without lines 2c through 3</Name>
+      <Description>Form 6251 (2026) draft line 6: "Subtract line 5 from line 4. If more than zero, go to line 7. If
+        zero or less, enter -0-." Figured from the line 4 that omits lines 2c through 3. IRC §55(b)(1)(B).</Description>
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/form6251Line4ExcludingLines2cThrough3" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/form6251Line5ExcludingLines2cThrough3" />
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Line7ExcludingLines2cThrough3">
+      <Name>Form 6251 line 7 without lines 2c through 3, at 26% or 28%</Name>
+      <Description>Form 6251 (2026) draft line 7, the "All others" computation: if line 6 is $244,500 or less ($122,250
+        or less if married filing separately), multiply line 6 by 26% (0.26); otherwise multiply line 6 by 28% (0.28)
+        and subtract $4,890 ($2,445 if married filing separately). This uses the line 6 that omits lines 2c through 3.
+        It is not a second Part III. Part III line 40 is the smaller of line 38 and line 39, and line 39 is this same
+        26% or 28% computation, so Part III line 7 cannot exceed this amount. IRC §55(b)(1)(A). Instructions for Form
+        6251 (2025) p. 1, Who Must File, item 4.</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Round>
+          <Switch>
+            <Case>
+              <When>
+                <LessThanOrEqual>
+                  <Left>
+                    <Dependency path="/form6251Line6ExcludingLines2cThrough3" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/form6251RateBreakpoint" />
+                  </Right>
+                </LessThanOrEqual>
+              </When>
+              <Then>
+                <Multiply>
+                  <Rational>26/100</Rational>
+                  <Dependency path="/form6251Line6ExcludingLines2cThrough3" />
+                </Multiply>
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Subtract>
+                  <Minuend>
+                    <Multiply>
+                      <Rational>28/100</Rational>
+                      <Dependency path="/form6251Line6ExcludingLines2cThrough3" />
+                    </Multiply>
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency path="/form6251RateOffset" />
+                  </Subtrahends>
+                </Subtract>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
       </Derived>
     </Fact>
     <Fact path="/hasAmtPreferenceItems">
-      <Name>Has unsupported AMT adjustments or preference items other than line 2g</Name>
-      <Description>#77: Form 6251 (2026) draft lines 2c-2f, 2h-2t and 3 (e.g., line 2i "Exercise of incentive stock
-        options", line 2l depreciation, line 2e/2f NOLs) and line 8 AMT foreign tax credit, other than line 2g. Line 2g
-        "Interest from specified private activity bonds exempt from the regular tax" is /form6251Line2g (26 U.S.C.
-        57(a)(5)), from 1099-INT box 9 and 1099-DIV box 13, and is not this question. IRC §56, §57, §58.</Description>
+      <Name>Has unsupported AMT adjustments or preference items other than lines 2g and 2j</Name>
+      <Description>#77: Form 6251 (2026) draft lines 2c-2f, 2h, 2i, 2k-2t and 3 (e.g., line 2i "Exercise of incentive
+        stock options", line 2l depreciation, line 2e/2f NOLs) and line 8 AMT foreign tax credit, other than lines 2g
+        and 2j. Line 2g "Interest from specified private activity bonds exempt from the regular tax" is
+        /form6251Line2g (26 U.S.C. 57(a)(5)), from 1099-INT box 9 and 1099-DIV box 13. Line 2j "Estates and trusts
+        (amount from Schedule K-1 (Form 1041), box 12, code A)" is /form6251Line2j. Neither is this question. Box 12
+        codes B through I stop on Schedule E. IRC §56, §57, §58.</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
     <Fact path="/flowKnockoutAmtPreferenceItems">
       <Name>Flow knockout: unsupported AMT items</Name>
-      <Description>#77: yes to /hasAmtPreferenceItems. Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed, so a yes
-        blocks submission instead of under-reporting AMT. Line 2g is /form6251Line2g and is not this stop.</Description>
+      <Description>#77: yes to /hasAmtPreferenceItems. Form 6251 lines 2c-2f, 2h, 2i, 2k-2t, 3 and 8 are not computed,
+        so a yes blocks submission instead of under-reporting AMT. Line 2g is /form6251Line2g and line 2j is
+        /form6251Line2j. Neither is this stop.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
@@ -903,8 +1099,8 @@
       <Description>#89: Form 6251 is attached when /form6251Required. Instructions for Form 6251 (2025),
         https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1, "Who Must File", item 1: "Form 6251, line 7, is greater than
         line 10." Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf PDF p. 2 (form p. 1), line 4:
-        "Alternative minimum taxable income. Combine lines 1b through 3." Lines 2c through 2f and 2h through 3 are not
-        computed. Line 2g is /form6251Line2g.
+        "Alternative minimum taxable income. Combine lines 1b through 3." Lines 2c through 2f, 2h, 2i, and 2k through 3
+        are not computed. Line 2g is /form6251Line2g. Line 2j is /form6251Line2j.
         /flowKnockoutAmtPreferenceItems starts with IsComplete(/hasAmtPreferenceItems), so an unanswered question is
         complete false there and must not be treated as "no". This stop is true only when Form 6251 is required and
         that

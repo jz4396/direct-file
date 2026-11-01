@@ -233,8 +233,9 @@ public final class PrintRefusingKnockouts {
             // total of Schedule SE lines 3 and 4b. Not part of /scheduleCSectionIsComplete. Complete false when the
             // method does not apply, without reading the credits.
             "/flowKnockoutScheduleSENonfarmOptionalMethodCredits",
-            // Form 6251 lines 2c-2f, 2h-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4 would
-            // combine lines 1b through 3 as if those adjustments were zero. Line 2g is /form6251Line2g. Form 6251
+            // Form 6251 lines 2c-2f, 2h, 2i, 2k-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4
+            // would combine lines 1b through 3 as if those adjustments were zero. Line 2g is /form6251Line2g. Line 2j
+            // is /form6251Line2j (Schedule K-1 (Form 1041) box 12 code A). Form 6251
             // (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf, PDF p. 2 (form p. 1), line 2i: "Exercise
             // of incentive stock options (excess of AMT income over regular tax income)"; line 3: "Other adjustments,
             // including income-based related adjustments"; line 4: "Alternative minimum taxable income. Combine lines
@@ -242,9 +243,10 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutAmtPreferenceItems",
             // The same lines when the question is unanswered. /flowKnockoutAmtPreferenceItems is complete false
             // then, because IsComplete(/hasAmtPreferenceItems) is its first All operand, so a required Form 6251
-            // would still print and line 4 would combine lines 1b through 3 as if lines 2c-3 were zero. True only
-            // when /form6251Required is true (Who Must File item 1: line 7 greater than line 10). A complete false
-            // still prints. Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1.
+            // would still print and line 4 would combine lines 1b through 3 as if lines 2c-2f, 2h, 2i, and 2k-3 were
+            // zero. True only when /form6251Required is true (Who Must File item 1: line 7 greater than line 10, or
+            // item 4 when lines 2c through 3 are negative). A complete false still prints. Instructions for Form 6251
+            // (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1.
             "/flowKnockoutAmtPreferenceItemsUnanswered",
             // Married filing separately and line 4 over $640,200. Form 6251 (2026) draft, PDF p. 2 (form p. 1),
             // line 4: "(If married filing separately and line 4 is more than $640,200, see instructions.)" 26 U.S.C.

@@ -32,11 +32,13 @@
   and 469(c)(4) applies that rule without regard to material participation. It is not 469(c)(7) rental
   real estate professional income. A nonzero box 8 is column (d) and stops the return. Box 1 interest,
   box 2a ordinary dividends, and box 2b qualified dividends (box 2b not larger than box 2a) are Form 1040
-  lines 2b, 3b, and 3a, and Schedule B when required. They are not line 33. Boxes 3, 4a, 4b, 4c, and 9
-  through 14, including box 14 code I (section 199A) and code H (Form 8960), are blank or zero. No basis
-  limit, no amount not at risk, and no passive deduction or loss. Part IV (REMIC,
-  Schedule Q (Form 1066)) is asked of every filer, including a filer who answered the K-1 question no.
-  A yes is an explicit stop and is not computed.
+  lines 2b, 3b, and 3a, and Schedule B when required. They are not line 33. Box 12 code A (adjustment for
+  minimum tax purposes) is Form 6251 line 2j. 26 U.S.C. 59(c). Codes B through I on box 12 stop the return.
+  Box 12 code J (exclusion items, 2026 Form 8801) is not a stop and is not line 2j. Boxes 3, 4a, 4b, 4c, 9
+  through 11, 13, and 14, including box 14 code I (section 199A) and code H (Form 8960), are blank or zero.
+  No basis limit, no amount not at risk, and no passive
+  deduction or loss. Part IV (REMIC, Schedule Q (Form 1066)) is asked of every filer, including a filer
+  who answered the K-1 question no. A yes is an explicit stop and is not computed.
 
   Sources (2026 drafts, PDF page numbers = printed page + 1 because of the draft coversheet):
   - Instructions for Schedule E (2026) draft, https://www.irs.gov/pub/irs-dft/i1040se%2D%2Ddft.pdf
@@ -3561,15 +3563,76 @@
       </Writable>
     </Fact>
 
-    <Fact path="/scheduleEEstates/*/hasOtherK1Amount">
-      <Name>Any Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, and 8</Name>
+    <Fact path="/scheduleEEstates/*/box12CodeA">
+      <Name>Schedule K-1 (Form 1041) box 12 code A adjustment for minimum tax purposes</Name>
       <Description>
-        Boxes 1, 2a, and 2b are entered above and reported on Form 1040 lines 2b, 3b, and 3a. Schedule K-1
-        (Form 1041) (2025) page 2 sends boxes 3, 4a, 4b, and 4c to Schedule D, box 9 to Form 8582 or
-        Schedule E columns (c) or (e), box 10 to Schedule A, box 11 to Schedule 1, Schedule A, Schedule D,
-        or Form 6251, box 12 to Form 6251, box 13 to a credit line, and box 14 to other forms, including
-        code I (section 199A) and code H (Form 8960). Those amounts are not entered. Answer no only when
-        every such box is blank or zero.
+        Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13), PDF p. 3, Box 12: "Code
+        A, Adjustment for minimum tax purposes, is the total amount reported on Form 6251, line 2j."
+        Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/f1041sk1.pdf, SHA-256
+        d8d7b6eacabdf145) page 2: "A Adjustment for minimum tax purposes — Form 6251, line 2j." Form 6251
+        (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 1, line 2j: "Estates and trusts
+        (amount from Schedule K-1 (Form 1041), box 12, code A)." The amount may be negative. Enter zero
+        when code A is blank. Cents stay on this line; Form 6251 line 2j rounds the total. 26 U.S.C. 59(c)
+        (https://www.law.cornell.edu/uscode/text/26/59): "In the case of any estate or trust, the alternative
+        minimum taxable income of such estate or trust and any beneficiary thereof shall be determined by
+        applying part I of subchapter J with the adjustments provided in this part." 26 U.S.C. 55(b)(2)
+        (https://www.law.cornell.edu/uscode/text/26/55). Code J is not this amount.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/hasBox12CodesBThroughI">
+      <Name>Schedule K-1 (Form 1041) box 12 has code B, C, D, E, F, G, H, or I</Name>
+      <Description>
+        Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025), PDF p. 3, Box 12: "The information
+        reported in box 12, codes A through I, is used to prepare your Form 6251." "Codes B through F
+        represent the portion, if any, of the amount included in code A." "Codes B through F. If you have
+        an amount in box 12 with code B, C, D, E, or F, see the instructions for lines 13, 14, and 15 of
+        Form 6251." "Codes G through I. Include the amount with any of these codes on the applicable line
+        of Form 6251." Schedule K-1 (Form 1041) (2025) page 2 lists code B qualified dividends, code C net
+        short-term capital gain, code D net long-term capital gain, code E unrecaptured section 1250 gain,
+        code F 28% rate gain, code G accelerated depreciation, code H depletion, and code I amortization.
+        Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf PDF p. 13, Lines 13,
+        14, and 15, statement 3: "You received a Schedule K-1 (Form 1041) that shows an amount in box 12
+        with code B, C, D, E, or F." Those lines are not refigured here, and codes G through I are not
+        entered on another Form 6251 line. A yes stops the return. Answer no when codes B through I are
+        blank or zero. Code A is /scheduleEEstates/*/box12CodeA. Code J is /scheduleEEstates/*/hasBox12CodeJ
+        and is not this stop.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/hasBox12CodeJ">
+      <Name>Schedule K-1 (Form 1041) box 12 code J exclusion items</Name>
+      <Description>
+        Schedule K-1 (Form 1041) (2025), https://www.irs.gov/pub/irs-pdf/f1041sk1.pdf page 2: "J Exclusion
+        items — 2026 Form 8801." Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025), PDF p. 3,
+        Box 12, Code J, exclusion items. Those items are for the prior-year minimum tax credit. 26 U.S.C. 53
+        (https://www.law.cornell.edu/uscode/text/26/53). They are not Form 6251 line 2j and they are not
+        26 U.S.C. 59(c) code A. A yes does not stop the return. Form 8801 is not computed from this answer.
+        Answer no when code J is blank or zero.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/hasOtherK1Amount">
+      <Name>Any Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J</Name>
+      <Description>
+        Boxes 1, 2a, and 2b are entered above and reported on Form 1040 lines 2b, 3b, and 3a. Box 12 code
+        A is /scheduleEEstates/*/box12CodeA. Codes B through I are /scheduleEEstates/*/hasBox12CodesBThroughI.
+        Code J is /scheduleEEstates/*/hasBox12CodeJ and is not this question. Schedule K-1 (Form 1041) (2025)
+        page 2 sends boxes 3, 4a, 4b, and 4c to Schedule D, box 9 to Form 8582 or Schedule E columns (c) or
+        (e), box 10 to Schedule A, box 11 to Schedule 1, Schedule A, Schedule D, or Form 6251, box 13 to a
+        credit line, and box 14 to other forms, including code I (section 199A) and code H (Form 8960).
+        Those amounts are not entered. Answer no when every such box is blank or zero, even if code J has
+        an amount.
       </Description>
       <Writable>
         <Boolean />
@@ -3927,10 +3990,12 @@
       <Description>
         Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 7,
         and
-        box 8 zero, box 6 at least zero, box 2b not larger than box 2a, no K-1 amount other than boxes 1,
-        2a, 2b, 5, 6, 7, and 8, no basis limit, no amount not at risk, and no passive deduction or loss.
-        Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is not on the supported
-        path. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a, not line 33.
+        box 8 zero, box 6 at least zero, box 2b not larger than box 2a, box 12 codes B through I blank or
+        zero, no K-1 amount other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J, no basis
+        limit, no amount not at risk, and no passive deduction or loss. Box 12 code A is Form 6251 line 2j.
+        Box 12 code J is answered and is not a stop. Box 8 is a rental activity under 26 U.S.C. 469(c)(2)
+        and 469(c)(4) and is not on the supported path. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and
+        3a, not line 33.
       </Description>
       <Derived>
         <All>
@@ -3979,6 +4044,15 @@
               <Dollar>0</Dollar>
             </Right>
           </Equal>
+          <IsComplete>
+            <Dependency path="../box12CodeA" />
+          </IsComplete>
+          <Not>
+            <Dependency path="../hasBox12CodesBThroughI" />
+          </Not>
+          <IsComplete>
+            <Dependency path="../hasBox12CodeJ" />
+          </IsComplete>
           <Not>
             <Dependency path="../hasOtherK1Amount" />
           </Not>
@@ -4038,6 +4112,15 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../materiallyParticipates" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box12CodeA" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasBox12CodesBThroughI" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasBox12CodeJ" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasOtherK1Amount" />
@@ -4517,10 +4600,124 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEBox12CodeATotal">
+      <Name>Schedule K-1 (Form 1041) box 12 code A before Form 6251 rounding</Name>
+      <Description>
+        Sum of /scheduleEEstates/*/box12CodeA, including a negative adjustment. Cents stay in the sum. Form
+        6251 line 2j rounds it. $0 when /scheduleEHasPartIIIncome or /scheduleEHasPartIIIIncome is unanswered
+        or no, and when the estate list is not started, so a return with no estate or trust does not leave
+        Form 6251 line 4 incomplete. A started list with an unanswered code A leaves the sum incomplete.
+        Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025), PDF p. 3, Box 12. 26 U.S.C. 59(c).
+        26 U.S.C. 55(b)(2).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/box12CodeA" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIIBox12CodesBThroughI">
+      <Name>Knockout: Schedule K-1 (Form 1041) box 12 codes B through I</Name>
+      <Description>
+        Codes B through F are a portion of code A and change Form 6251 lines 13, 14, and 15. Codes G through
+        I go on another Form 6251 line. None of those lines are computed from the K-1. Beneficiary's
+        Instructions for Schedule K-1 (Form 1041) (2025), PDF p. 3, Box 12. Instructions for Form 6251
+        (2025), PDF p. 13, statement 3, and PDF p. 14, Beneficiaries of estates or trusts. Code A is Form
+        6251 line 2j and is not this stop. Complete false when Part III is no.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <Dependency path="/scheduleEHasPartIIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEEstates/*/hasBox12CodesBThroughI" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleEPartIIIOtherK1Amount">
-      <Name>Knockout: Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, and 8</Name>
-      <Description>Capital gain (boxes 3, 4a, 4b, and 4c), deductions, credits, AMT items, or box 14, including
-        section 199A code I and Form 8960 code H. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a. Cites on
+      <Name>Knockout: Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J</Name>
+      <Description>Capital gain (boxes 3, 4a, 4b, and 4c), deductions, credits, or box 14, including section 199A
+        code I and Form 8960 code H. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a. Box 12 code A is
+        Form 6251 line 2j. Codes B through I are /flowKnockoutScheduleEPartIIIBox12CodesBThroughI. Code J,
+        exclusion items for Form 8801, is /scheduleEEstates/*/hasBox12CodeJ and is not this stop. Cites on
         /scheduleEEstates/*/hasOtherK1Amount. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4675,6 +4872,7 @@
           <Dependency path="/flowKnockoutScheduleEPartIIIBox7" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox8" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox2b" />
+          <Dependency path="/flowKnockoutScheduleEPartIIIBox12CodesBThroughI" />
           <Dependency path="/flowKnockoutScheduleEPartIIIOtherK1Amount" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBasis" />
           <Dependency path="/flowKnockoutScheduleEPartIIIAtRisk" />
@@ -4775,6 +4973,11 @@
         Boxes 1, 2a, and 2b are not line 33. Schedule K-1 (Form 1041) (2025) page 2 reports them on Form 1040
         lines 2b, 3b, and 3a. 26 U.S.C. 1411(c)(1)(A)(i) includes that interest and those ordinary dividends
         in net investment income (form8960 lines 1 and 2).
+
+        Box 12 code A is Form 6251 line 2j (/form6251Line2j), the sum of /scheduleEBox12CodeATotal rounded to
+        the dollar. Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025), PDF p. 3. 26 U.S.C. 59(c).
+        Codes B through I stop the return (/flowKnockoutScheduleEPartIIIBox12CodesBThroughI). Code J, exclusion
+        items, is not a stop.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
