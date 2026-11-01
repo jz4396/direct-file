@@ -124,7 +124,8 @@
           <Dependency module="ptc" path="/hasPtcQualifyingPlanAndQsehra" />
           <Dependency module="ptc" path="/needsAllocations" />
           <Dependency module="ptc" path="/hasEmployerSponsoredPlan" />
-          <Dependency module="ptc" path="/dependentsRequiredToFile" />
+          <!-- 26 U.S.C. 36B(d)(2)(A)(ii): a dependent required to file is Form 8962 line 2b
+               (/form8962Line2b, Worksheet 1-2), not a stop. -->
           <Dependency module="ptc" path="/selfReportedHasMultiple1095As" />
           <Dependency module="ptc" path="/hasImmigrationStatusNotEligibleForMarketplace" />
           <Dependency module="ptc" path="/wantsToUseAltCalculations" />
@@ -132,6 +133,8 @@
           <Dependency module="ptc" path="/flowKnockoutPtcAllocationOfPolicyAmounts" />
           <Dependency module="ptc" path="/flowKnockoutPtcAlternativeCalculationForYearOfMarriage" />
           <Dependency module="ptc" path="/flowKnockoutPtcSelfEmployedHealthInsurance" />
+          <Dependency module="ptc" path="/flowKnockoutPtcDependentForm2555" />
+          <Dependency module="ptc" path="/flowKnockoutPtcForm8814" />
           <Dependency module="ptc" path="/flowKnockoutPtcHouseholdIncomeBelow100PercentFpl" />
           <Dependency module="ptc" path="/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod" />
           <Dependency path="/saversCreditKnockouts" />

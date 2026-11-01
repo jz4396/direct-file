@@ -11810,14 +11810,47 @@ info:
                 a un dependiente, entonces se le podría enviar el Formulario 1095-A a la persona que completó la
                 inscripción. Tendrás que comunicarte con esa persona para obtener una copia.
             - p: <Link1095A>Conoce más sobre el Formulario 1095-A.</Link1095A>
-  /info/credits-and-deductions/credits/dependents-filing-req-ko:
+  /info/credits-and-deductions/credits/ptc-dependents-worksheet-agi:
     body:
       - p: >-
-          Dijiste que tienes por lo menos un dependiente que debe presentar una declaración del impuesto federal en el
-          {{/taxYear}}.
+          Incluye solo a un dependiente que esté en tu familia tributaria y que deba presentar una declaración del
+          impuesto federal sobre el ingreso porque sus ingresos alcanzan el umbral de presentación.
       - p: >-
-          Necesitarás incluir una parte de sus ingresos cuando calcules tu Crédito tributario de prima (PTC). Aún
-          podrías calificar para el PTC, pero Direct File todavía no acepta esta situación tributaria.
+          No incluyas a un dependiente que presenta una declaración solo para reclamar un reembolso del impuesto
+          retenido o del impuesto estimado.
+      - p: Si el AGI combinado es negativo, ingresa la cantidad negativa.
+  /info/credits-and-deductions/credits/ptc-dependents-worksheet-tax-exempt-interest:
+    body:
+      - p: >-
+          Esta es la línea 2 de la Hoja de trabajo 1-2. Ingresa 0 si ninguno de esos dependientes tiene interés exento
+          de impuestos.
+  /info/credits-and-deductions/credits/ptc-form-8814:
+    body:
+      - p: >-
+          Si presentas el Formulario 8814 y la cantidad de la línea 4 es más de $1,350, la línea 1 de la Hoja de
+          trabajo 1-2 debe incluir el interés exento de impuestos de la línea 1b del Formulario 8814, la menor de la
+          línea 4 o la línea 5, y cualquier beneficio del Seguro Social no tributable que recibió el hijo.
+  /info/credits-and-deductions/credits/ptc-form-8814-ko:
+    body:
+      - p: >-
+          Dijiste que presentas el Formulario 8814. La Hoja de trabajo 1-2 tiene que incluir cantidades de ese
+          formulario cuando la línea 4 es más de $1,350. Direct File aún no acepta esta situación.
+  /info/credits-and-deductions/credits/ptc-dependent-form-2555:
+    body:
+      - p: >-
+          La línea 3 de la Hoja de trabajo 1-2 es cualquier cantidad en las líneas 45 y 50 del Formulario 2555 de un
+          dependiente que deba presentar una declaración. Ese es ingreso excluido del ingreso bruto conforme a la
+          sección 911, y es parte del AGI modificado.
+  /info/credits-and-deductions/credits/ptc-dependent-form-2555-ko:
+    body:
+      - p: >-
+          Dijiste que un dependiente que debe presentar una declaración tiene una cantidad en las líneas 45 y 50 del
+          Formulario 2555. Ese ingreso excluido es parte del AGI modificado. Direct File aún no acepta esta situación.
+  /info/credits-and-deductions/credits/ptc-dependents-worksheet-social-security:
+    body:
+      - p: >-
+          Para cada uno de esos dependientes que presente el Formulario 1040 o 1040-SR, si la línea 6a es mayor que la
+          línea 6b, resta la línea 6b de la línea 6a. Ingresa el total. Ingresa 0 si no hay ninguno.
   /info/credits-and-deductions/credits/ptc-dependents-required:
     urls:
       LinkDependentFilingReqs: >-
@@ -19057,6 +19090,20 @@ fields:
       "no": No, no conozco sus ingresos del trabajo
   /writableCdccTotalQualifiedDependentCareExpenses:
     name: Gastos calificados del {{/taxYear}}
+  /writablePtcDependentsAgi:
+    name: AGI combinado de los dependientes (Hoja de trabajo 1-2, línea 1)
+  /writablePtcDependentsTaxExemptInterest:
+    name: Interés exento de impuestos de los dependientes (Hoja de trabajo 1-2, línea 2)
+  /writablePtcFilingForm8814:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /writablePtcDependentHasForm2555:
+    boolean:
+      "yes": Sí
+      "no": "No"
+  /writablePtcDependentsNontaxableSocialSecurity:
+    name: Seguro Social no tributable de los dependientes (Hoja de trabajo 1-2, línea 4)
   /writableSeparationAgreement:
     boolean:
       "yes": >-
@@ -21631,6 +21678,17 @@ headings:
   /heading/credits-and-deductions/credits/ptc-dependents-filing-req: >-
     ¿Tienes algún dependiente al que se le requiera presentar una declaración de impuestos federales del {{/taxYear}}
     porque sus ingresos superan cierta cantidad?
+  /heading/credits-and-deductions/credits/ptc-dependents-worksheet-agi: >-
+    ¿Cuál es el AGI combinado en la línea 11a del Formulario 1040, 1040-SR o 1040-NR de los dependientes que deben
+    presentar una declaración?
+  /heading/credits-and-deductions/credits/ptc-dependents-worksheet-tax-exempt-interest: >-
+    ¿Cuál es el interés exento de impuestos combinado de la línea 2a del Formulario 1040, 1040-SR o 1040-NR?
+  /heading/credits-and-deductions/credits/ptc-form-8814: >-
+    ¿Estás presentando el Formulario 8814, Elección de los padres de informar los intereses y dividendos de un hijo?
+  /heading/credits-and-deductions/credits/ptc-dependent-form-2555: >-
+    ¿Algún dependiente que deba presentar una declaración tiene una cantidad en las líneas 45 y 50 del Formulario 2555?
+  /heading/credits-and-deductions/credits/ptc-dependents-worksheet-social-security: >-
+    ¿Cuál es el Seguro Social no tributable combinado (línea 6a menos línea 6b del Formulario 1040 o 1040-SR)?
   /heading/credits-and-deductions/credits/ptc-dep-tp-keep-going:
     Necesitamos información sobre tu plan de salud del Mercado calificado.
   /heading/credits-and-deductions/credits/ptc-dep-tp-8962-not-needed:

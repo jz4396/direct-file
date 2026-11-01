@@ -14,9 +14,11 @@
 # of marriage) are not computed: /flowKnockoutPtcAllocationOfPolicyAmounts and
 # /flowKnockoutPtcAlternativeCalculationForYearOfMarriage. Line 9 Yes is that case, so a printed form checks line 9 No.
 #
+# Line 2b (/form8962Line2b) is mapped. It is complete only when a dependent is required to file
+# (26 U.S.C. 36B(d)(2)(A)(ii); Worksheet 1-2, line 5). The fact is incomplete otherwise, so line 2b stays blank
+# and line 3 is line 2a (i8962 (2025), PDF p. 22). A complete $0 prints (<ExportZero />).
+#
 # Not mapped, left blank (never a silent 0):
-#   2b  dependents' modified AGI. Household income here is the filer's MAGI (/householdIncome = /ptcMagi). No
-#       dependents' MAGI fact, so line 2b is not entered as $0.
 #   9 Yes  allocating policy amounts or the alternative calculation for year of marriage. Those returns are knocked
 #       out, so a printed form does not check Yes.
 #   28, 29  "Reserved for future use" (Rev. Proc. 2025-32 sec. 2.04: the 26 U.S.C. 36B(f)(2)(B) repayment limitation
@@ -39,7 +41,7 @@ form:
       c1_1[0]: /claimingMfsException # A "married filing separately" exception
       f1_3[0]: /taxFamilySize # 1 "Tax family size"
       f1_4[0]: /ptcMagi # 2a "Modified AGI"
-      # f1_5[0]: 2b dependents' modified AGI. Not computed; leave blank.
+      f1_5[0]: /form8962Line2b # 2b dependents' modified AGI (Worksheet 1-2, line 5)
       f1_6[0]: /householdIncome # 3 "Household income. Add the amounts on lines 2a and 2b"
       Line4_ReadOrder[0]:
         c1_2[0]: /federalPovertyLineLocationIsAlaska # 4a Alaska

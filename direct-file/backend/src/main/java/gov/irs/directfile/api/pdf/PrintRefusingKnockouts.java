@@ -99,6 +99,14 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod",
             // 26 U.S.C. 162(l) self-employed health insurance deduction and the credit depend on each other.
             "/flowKnockoutPtcSelfEmployedHealthInsurance",
+            // 26 U.S.C. 36B(d)(2)(B)(i): modified AGI includes section 911 income. Instructions for Form 8962 (2025),
+            // PDF p. 8, Worksheet 1-2, line 3: "Enter any amounts for your dependents from Form 2555, lines 45 and
+            // 50". Form 2555 is not computed.
+            "/flowKnockoutPtcDependentForm2555",
+            // Instructions for Form 8962 (2025), PDF p. 8, Line 2b: Form 8814, line 4, more than $1,350 must be
+            // included on Worksheet 1-2, line 1 (line 1b, the lesser of line 4 or line 5, and the child's nontaxable
+            // social security). Those amounts are not computed. /form8814Included is not this stop.
+            "/flowKnockoutPtcForm8814",
             // Schedule B line 1 prints the full taxable interest. Nominee interest, accrued interest, and U.S.
             // savings bond interest previously reported are subtracted below a subtotal (Instructions for Schedule B
             // (2025) p. 2, Line 1). That subtraction is not computed, so a yes refuses the print.
