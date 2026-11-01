@@ -68,7 +68,7 @@ abstract class PdfTemplate {
             // ASN 17 (#89: 2026 draft Schedule SE)
             new PdfForm("IRS1040SSE"),
 
-            // ASN 21
+            // ASN 21. #124 SWAP: the three statements are repo-built with the 2026 draft Form 2441 headings.
             new Irs2441PdfForm("IRS2441"),
             new PdfTable("CDCC_QUALIFYING_PERSON_STATEMENT"),
             new PdfTable("CDCC_CAREGIVERS_STATEMENT"),

@@ -534,11 +534,47 @@ class CreditFormsTy2026PdfSmokeTest {
             assertEquals(amt(f, "Page2[0].f2_20[0]"), amt(f, "Page1[0].f1_27[0]"), "3 = line 31");
             assertEquals(600000, amt(f, "Page2[0].f2_16[0]"), "27 $6,000 (two or more qualifying persons)");
             assertEquals(amt(f, "Page2[0].f2_1[0]") + amt(f, "Page2[0].f2_2[0]"), amt(f, "Page2[0].f2_4[0]"), "15");
-            // Statements still print after the form (2024-folder templates; see the PR for their year wording).
+            // #124 SWAP: repo-built statements use the 2026 draft Form 2441 headings, not the prior year.
             String all = String.join(" ", texts);
             assertTrue(all.contains("Form 2441 Additional Qualifying Persons"), "qualifying persons statement");
             assertTrue(all.contains("Form 2441 Additional Care Providers"), "care providers statement");
             assertTrue(all.contains("Form 2441 Due Diligence Statement"), "due diligence statement");
+            String statements = texts.stream()
+                    .filter(t -> t.contains("Form 2441 Additional") || t.contains("Form 2441 Due Diligence"))
+                    .reduce("", (a, b) -> a + " " + b);
+            assertTrue(
+                    statements.contains(
+                            "Qualified expenses you incurred and paid in 2026 for the person listed in column (a)"),
+                    "line 2 column (d) heading");
+            assertTrue(
+                    statements.contains("Was the care provider your household employee in 2026?"),
+                    "line 1d heading");
+            assertTrue(statements.contains("Identifying number (SSN or EIN)"), "line 1c heading");
+            assertFalse(statements.contains("2024"), "statement pages do not print 2024: " + statements);
+            assertFalse(statements.contains("paid in 2024"));
+            assertFalse(statements.contains("household employee in 2024"));
+            List<Integer> qpPages = pages(texts, t -> t.contains("Form 2441 Additional Qualifying Persons"));
+            Map<String, String> qp = fieldsOn(doc, qpPages);
+            assertEquals(
+                    "NonD", field(qp, "a Qualifying persons first nameRow1"), "first person past the three on the form");
+            assertEquals(
+                    "2000.00",
+                    field(
+                            qp,
+                            "d Qualified expenses you incurred and paid in 2026 for the person listed in column aRow1"),
+                    "column (d) expenses");
+            List<Integer> carePages = pages(texts, t -> t.contains("Form 2441 Additional Care Providers"));
+            Map<String, String> care = fieldsOn(doc, carePages);
+            assertEquals("Loyal Non-profit", field(care, "1 a Care providers nameRow1"), "provider 1");
+            assertEquals(
+                    "No",
+                    field(care, "d Was the care provider your household employee in 2026Row1"),
+                    "1d");
+            List<Integer> duePages = pages(texts, t -> t.contains("Form 2441 Due Diligence Statement"));
+            assertEquals(
+                    "Mama Goose",
+                    field(fieldsOn(doc, duePages), "Care providers nameRow1"),
+                    "due diligence provider");
             assertFalse(all.contains(COVER_SHEET), "draft cover sheets dropped");
         }
     }

@@ -167,6 +167,9 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS8962", 2),
             Map.entry("IRS1040S8812", 2),
             Map.entry("IRS2441", 2),
+            Map.entry("CDCC_QUALIFYING_PERSON_STATEMENT", 1),
+            Map.entry("CDCC_CAREGIVERS_STATEMENT", 1),
+            Map.entry("IRS2441_DUE_DILIGENCE_STATEMENT", 1),
             Map.entry("IRS8880", 1),
             Map.entry("IRS8995", 1),
             Map.entry("IRS8889", 1),
@@ -183,16 +186,6 @@ class Ty2026PdfPackageTest {
      * printed by a scenario below or listed here, so a new template fails this test until it is covered.
      */
     static final Map<String, String> EXCLUDED = Map.ofEntries(
-            // Form 2441 attachments (more than three qualifying persons or care providers; Part I line 1c due
-            // diligence) are not IRS forms, so there is no 2026 draft: they still print the pdf/2024 statement
-            // templates, two of which print "2024" in a column heading.
-            Map.entry(
-                    "CDCC_QUALIFYING_PERSON_STATEMENT",
-                    "pdf/2024 Form 2441 statement template; column (e) heading prints \"paid in 2024\""),
-            Map.entry(
-                    "CDCC_CAREGIVERS_STATEMENT",
-                    "pdf/2024 Form 2441 statement template; column (d) heading prints \"household employee in 2024?\""),
-            Map.entry("IRS2441_DUE_DILIGENCE_STATEMENT", "pdf/2024 Form 2441 statement template; no 2026 template"),
             Map.entry("FORM9000", "2021 Form 9000 template only (alternative media preference)"),
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
             Map.entry("CTC_DEPENDENTS_STATEMENT", "2024 Form 8862 statement template only"),
@@ -465,8 +458,8 @@ class Ty2026PdfPackageTest {
                 "/familyAndHousehold/#" + Form1040AdditionalDependentsStatementTy2026Test.QUATRO_ID + "/tin",
                 ScheduleEicTy2026PdfSmokeTest.fact(tin("444", "00", "7777")));
         // Clones of the under-13 child would be Form 2441 qualifying persons. Four of them would attach the
-        // pdf/2024 qualifying-persons statement, which this package does not print. Age 14 is still under 19, so a
-        // stored full-time-student answer does not check row (6), and is past the Form 2441 age.
+        // qualifying-persons statement. Age 14 is still under 19, so a stored full-time-student answer does not
+        // check row (6), and is past the Form 2441 age. hoh-cdcc-multiple-careproviders covers that statement.
         for (String id : List.of(
                 Form1040AdditionalDependentsStatementTy2026Test.TRES_ID,
                 Form1040AdditionalDependentsStatementTy2026Test.QUATRO_ID,
@@ -508,6 +501,12 @@ class Ty2026PdfPackageTest {
         // #17: qualifying-child EIC prints Schedule EIC when the child is not another person's qualifying child.
         // 26 U.S.C. 32(c)(3)(D)(i); 2026 Schedule EIC draft, page 1. The shared-QC stop is PdfKnockoutRefusalTest.
         printed.addAll(renderFacts(PdfKnockoutRefusalTest.familyWithSsns(), null, null).forms.keySet());
+        // #124 SWAP: Form 2441 statements. 2026 draft Form 2441 page 2, line 2 column (d) "paid in 2026" and
+        // line 1d "household employee in 2026".
+        printed.addAll(
+                renderFacts(scenarioFile("hoh-cdcc-multiple-careproviders.json"), null, null)
+                        .forms
+                        .keySet());
         assertEquals(PAGES.keySet(), printed, "forms printed across the scenarios");
         Set<String> notPrinted = new TreeSet<>(templates.keySet());
         notPrinted.removeAll(printed);

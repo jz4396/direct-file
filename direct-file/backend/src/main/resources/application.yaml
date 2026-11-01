@@ -435,9 +435,9 @@ direct-file:
       - name: IRS2441_DUE_DILIGENCE_STATEMENT
         year: 2026
         language-code: en
-        location: pdf/2024/IRS2441_DUE_DILIGENCE_STATEMENT/en/irs2441_due_diligence_statement.pdf
+        location: pdf/2026/IRS2441_DUE_DILIGENCE_STATEMENT/en/irs2441-due-diligence.pdf
         location-type: classpath
-        configuration-location: pdf/2024/IRS2441_DUE_DILIGENCE_STATEMENT/en/configuration.yml
+        configuration-location: pdf/2026/IRS2441_DUE_DILIGENCE_STATEMENT/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: IRS6251
@@ -499,17 +499,17 @@ direct-file:
       - name: CDCC_QUALIFYING_PERSON_STATEMENT
         year: 2026
         language-code: en
-        location: pdf/2024/CDCC_QUALIFYING_PERSON_STATEMENT/en/irs2441_qualifying_persons_statement.pdf
+        location: pdf/2026/CDCC_QUALIFYING_PERSON_STATEMENT/en/irs2441-qualifying-persons.pdf
         location-type: classpath
-        configuration-location: pdf/2024/CDCC_QUALIFYING_PERSON_STATEMENT/en/configuration.yml
+        configuration-location: pdf/2026/CDCC_QUALIFYING_PERSON_STATEMENT/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
       - name: CDCC_CAREGIVERS_STATEMENT
         year: 2026
         language-code: en
-        location: pdf/2024/CDCC_CAREGIVERS_STATEMENT/en/2441_Additional-Care-Providers.pdf
+        location: pdf/2026/CDCC_CAREGIVERS_STATEMENT/en/irs2441-care-providers.pdf
         location-type: classpath
-        configuration-location: pdf/2024/CDCC_CAREGIVERS_STATEMENT/en/configuration.yml
+        configuration-location: pdf/2026/CDCC_CAREGIVERS_STATEMENT/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
   pii-service:
