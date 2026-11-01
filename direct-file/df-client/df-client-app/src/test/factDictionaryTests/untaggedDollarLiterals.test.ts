@@ -82,10 +82,6 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `sign test against the § 1341(a)(3) $3,000 (cited on /maximumSocialSecurityBenefitsRepaidSupported)`,
   },
-  '/w2MinAmount': {
-    kind: `structural`,
-    reason: `unused $600 constant; Form W-2 furnishing is § 6051(a), not the § 6041(a) information-return threshold`,
-  },
   '/paSpTableBase': {
     kind: `remaining`,
     reason: `standing PA Tax Forgiveness table ($6,500 / $13,000 / $9,500); 2026 PA-40 instructions are not published`,
