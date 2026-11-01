@@ -97,7 +97,7 @@ class ScheduleCTy2026PdfSmokeTest {
 
     /**
      * #89. Cash, an EIN, and a separate address print on lines A, B, D, E, and F. Line C is the business name.
-     * 2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, D, and E, and PDF p. 5 Line F.
+     * 2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F.
      */
     @Test
     void headerLinesAFPrintCashEinAndSeparateAddress() throws Exception {
@@ -128,7 +128,7 @@ class ScheduleCTy2026PdfSmokeTest {
 
     /**
      * At the return address, with no EIN, on the accrual method. Line D and line E stay blank. 2026 draft
-     * Instructions for Schedule C, PDF p. 4, Lines D and E. 26 U.S.C. 446(c)(2).
+     * Instructions for Schedule C, PDF p. 4, Line D, and PDF p. 5, Line E. 26 U.S.C. 446(c)(2).
      */
     @Test
     void headerAtHomeWithNoEinPrintsAccrualAndLeavesDAndEBlank() throws Exception {

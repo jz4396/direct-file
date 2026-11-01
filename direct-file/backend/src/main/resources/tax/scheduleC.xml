@@ -692,7 +692,7 @@
 
     <!--
       Header lines A, B, D, E, and F (#89). Line C is businessName.
-      2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, D, and E, and PDF p. 5 Line F
+      2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F
       (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf). 26 U.S.C. 446(c) (https://www.law.cornell.edu/uscode/text/26/446).
       PA-40 C (EX) 03-26, Identification Information: the same activity, the federal code, the FEIN (blank if
       none), the complete business address, and the accounting-method oval. An unanswered required fact stays
@@ -837,7 +837,7 @@
       <Name>Business is conducted at the home address on the return</Name>
       <Description>
         Schedule C line E. 2026 draft Instructions for Schedule C
-        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line E: if you conducted the business from
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E: if you conducted the business from
         your home at the address shown on page 1 of the return, you do not have to complete line E. Yes leaves
         federal line E blank. PA-40 C (EX) 03-26 still asks for the complete business address, which is then the
         address on the return. No asks for a separate business address.
@@ -891,7 +891,7 @@
       <Name>Business address</Name>
       <Description>
         Schedule C line E when the business is not conducted at the address on page 1 of the return. 2026 draft
-        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line E: street
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E: street
         address, not a box number, and the suite or room number if any. Also the PA-40 C business address in that
         case.
       </Description>
@@ -904,7 +904,7 @@
       <Name>Schedule C line E street</Name>
       <Description>
         Blank when the business is at the address on the return. Otherwise the business street. 2026 draft
-        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line E.
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.
       </Description>
       <Derived>
         <Switch>
@@ -939,7 +939,7 @@
       <Name>Schedule C line E apartment</Name>
       <Description>Line E suite, room, or apartment. Blank when the business is at the address on the return, or
         when the separate address has no second line. 2026 draft Instructions for Schedule C
-        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line E.</Description>
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -972,7 +972,7 @@
     <Fact path="/scheduleCBusinesses/*/lineECity">
       <Name>Schedule C line E city</Name>
       <Description>Line E city. Blank when the business is at the address on the return. 2026 draft Instructions
-        for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line E.</Description>
+        for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -1005,7 +1005,7 @@
     <Fact path="/scheduleCBusinesses/*/lineEState">
       <Name>Schedule C line E state</Name>
       <Description>Line E state. Blank when the business is at the address on the return. 2026 draft Instructions
-        for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line E.</Description>
+        for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -1038,7 +1038,7 @@
     <Fact path="/scheduleCBusinesses/*/lineEZip">
       <Name>Schedule C line E ZIP code</Name>
       <Description>Line E ZIP code. Blank when the business is at the address on the return. 2026 draft
-        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line E.</Description>
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
       <Derived>
         <Switch>
           <Case>

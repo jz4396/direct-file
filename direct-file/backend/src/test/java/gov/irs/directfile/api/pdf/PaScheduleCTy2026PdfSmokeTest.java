@@ -536,7 +536,7 @@ class PaScheduleCTy2026PdfSmokeTest {
 
     /**
      * At the return address, with no EIN, on the accrual method. PA still prints the home address. Accrual's export
-     * value is 1. 2026 draft Instructions for Schedule C, PDF p. 4, Lines D and E. PA-40 C (EX) 03-26 has no
+     * value is 1. 2026 draft Instructions for Schedule C, PDF p. 4, Line D, and PDF p. 5, Line E. PA-40 C (EX) 03-26 has no
      * home-address exception.
      */
     @Test

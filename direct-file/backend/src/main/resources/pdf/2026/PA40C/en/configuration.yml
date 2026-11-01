@@ -9,7 +9,7 @@
 # the printed line caption beside it. Map only terminal fields. "4. Other Income" and "38. Total Expenses" are
 # parents; the amount fields are the longer names below.
 # Header (#89), PA-40 C (EX) 03-26 Identification Information, and the 2026 draft Instructions for Schedule C
-# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 Lines A, B, D, and E, and PDF p. 5 Line F:
+# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F:
 #   A activity and product, C EIN (blank if none), D the complete address, Federal NAICS Code (Schedule C line B),
 #   and F accounting method. Line B (business name) was already mapped. Line E on this form is inventory, not the
 #   accounting method.

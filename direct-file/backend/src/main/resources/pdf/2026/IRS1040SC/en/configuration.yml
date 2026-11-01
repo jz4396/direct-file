@@ -18,7 +18,7 @@
 # stored expense total still prints on line 28,
 # with lines 2, 4, and 6 at zero so lines 3, 5, and 7 equal line 1.
 # Header lines A, B, D, E, and F (cash and accrual) are mapped (#89). 2026 draft Instructions for Schedule C
-# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 Lines A, B, D, and E, and PDF p. 5 Line F.
+# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F.
 # Line A is the activity plus the product or service. Line B is a six-digit code from the chart at the end of those
 # instructions. Line D is the EIN, or blank when the filer has none (never an SSN). Line E is blank when the business
 # is at the address on page 1 of the return. Line F checks cash or accrual. Other (line F (3) and the specify line)

@@ -344,7 +344,7 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     });
 
     it(`header lines A through F stay incomplete until answered, then print the answered values`, ({ task }) => {
-      // 2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, D, and E, and PDF p. 5 Line F.
+      // 2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F.
       // 26 U.S.C. 446(c). PA-40 C (EX) 03-26 uses the same activity, code, EIN, and address.
       task.meta.testedFactPaths = [
         `/scheduleCBusinesses/*/lineAPrincipalBusiness`,
