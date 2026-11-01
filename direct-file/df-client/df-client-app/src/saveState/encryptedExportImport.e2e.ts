@@ -6,12 +6,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { launchPinnedChromium } from '../staticClient/noRetention/pinnedChromium.js';
 import { startStagedSiteServer, type StagedSiteServer } from '../staticClient/noRetention/stagedSiteServer.js';
 import { scenarioFactGraphJson, TEST_ITERATIONS } from './saveStateTestUtils.js';
-import { createSaveState, DEFAULT_TAX_YEAR } from './saveStateSchema.js';
+import { createSaveState, DEFAULT_TAX_YEAR, SAVE_STATE_FORMAT, SAVE_STATE_VERSION } from './saveStateSchema.js';
 import { exportSaveFile } from './saveStateFile.js';
 import { decryptText, ENCRYPTED_FORMAT, PBKDF2_ITERATIONS, type EncryptedEnvelope } from './saveStateCrypto.js';
 
 /**
- * Encrypted save-file round trip in a real browser (#126, under #132).
+ * Save-file behavior in a real browser (#126, under #132).
  *
  * The staged static site is driven the way a person would: load a synthetic return, download it as an encrypted
  * save file, clear all data on this device, reload (that drops the in-memory return; clear itself wipes storage
@@ -20,6 +20,9 @@ import { decryptText, ENCRYPTED_FORMAT, PBKDF2_ITERATIONS, type EncryptedEnvelop
  *
  * The downloaded file is an AES-GCM envelope at the production PBKDF2 iteration count. The marker and the
  * passphrase are not in that file, and neither is in any request.
+ *
+ * A second case covers the plaintext acknowledgment gate, a v1 (bare fact-graph) file migrating into the open
+ * return, and a future schema version being rejected without changing that return.
  */
 
 const APP_DIR = path.resolve(__dirname, `../..`);
@@ -30,10 +33,16 @@ const t = (
     account: {
       deviceData: {
         title: string;
-        export: { button: string; doneEncrypted: string; donePlain: string };
+        export: {
+          button: string;
+          doneEncrypted: string;
+          donePlain: string;
+          plaintextWarning: string;
+          plaintextAck: string;
+        };
         import: { button: string; done: string };
         clear: { button: string; done: string };
-        errors: { 'decrypt-failed': string; 'wrong-tax-year': string };
+        errors: { 'decrypt-failed': string; 'wrong-tax-year': string; 'unsupported-version': string };
       };
     };
   }
@@ -58,7 +67,7 @@ function factsNamed(firstName: string): Record<string, PersistedFact> {
   return facts;
 }
 
-describe(`encrypted export, clear, and import (real browser)`, () => {
+describe(`save-state export and import (real browser)`, () => {
   let site: StagedSiteServer;
   let browser: Browser;
   let seedFile: string;
@@ -126,6 +135,26 @@ describe(`encrypted export, clear, and import (real browser)`, () => {
     await page.locator(`#import-passphrase`).waitFor({ state: `detached` });
     await chooseFile(page, name, text);
     await page.locator(`#import-passphrase`).waitFor();
+  };
+
+  /**
+   * Clearing the input drops the previous file (Import disables). Waiting until Import is enabled again means the
+   * new file has been read. A plaintext file never asks for a passphrase.
+   */
+  const choosePlainFile = async (page: Page, name: string, text: string) => {
+    const importReady = (enabled: boolean) =>
+      page.waitForFunction(
+        ({ label, enabled: want }) => {
+          const button = [...document.querySelectorAll(`button`)].find((el) => el.textContent?.includes(label));
+          return !!button && (button as HTMLButtonElement).disabled !== want;
+        },
+        { label: t.import.button, enabled }
+      );
+    await page.locator(`#import-file`).setInputFiles([]);
+    await importReady(false);
+    await chooseFile(page, name, text);
+    await importReady(true);
+    await page.locator(`#import-passphrase`).waitFor({ state: `detached` });
   };
 
   const downloadSave = async (page: Page) => {
@@ -221,6 +250,126 @@ describe(`encrypted export, clear, and import (real browser)`, () => {
 
     expect(aborted).toEqual([]);
     const secrets = [MARKER, WRONG_YEAR_MARKER, PASSPHRASE, WRONG_PASSPHRASE];
+    const leaks: string[] = [];
+    for (const request of requests) {
+      const headers = JSON.stringify(await request.allHeaders().catch(() => request.headers()));
+      const blob = `${request.method()} ${request.url()}\n${headers}\n${request.postData() ?? ``}`;
+      const decoded = (() => {
+        try {
+          return decodeURIComponent(blob);
+        } catch {
+          return blob;
+        }
+      })();
+      for (const secret of secrets) {
+        if (blob.includes(secret) || decoded.includes(secret)) {
+          leaks.push(`${secret} in ${request.method()} ${request.url()}`);
+        }
+      }
+      if (request.postData() && !request.url().startsWith(`blob:`)) {
+        leaks.push(`body on ${request.method()} ${request.url()}`);
+      }
+    }
+    expect(leaks).toEqual([]);
+
+    await context.close();
+  }, 180_000);
+
+  it(`gates plaintext export, migrates a v1 file, and rejects a future version`, async () => {
+    const v1Marker = `Migrcanary`;
+    const futureMarker = `Futucanary`;
+    const v1File = JSON.stringify(factsNamed(v1Marker));
+    const futureVersion = SAVE_STATE_VERSION + 1;
+    const futureFile = JSON.stringify({ ...createSaveState(factsNamed(futureMarker)), version: futureVersion });
+    expect(JSON.parse(v1File).format).toBeUndefined();
+    expect(JSON.parse(v1File).version).toBeUndefined();
+    expect(JSON.parse(futureFile).version).toBe(futureVersion);
+    expect(futureVersion).toBeGreaterThan(SAVE_STATE_VERSION);
+
+    const context = await browser.newContext({ acceptDownloads: true });
+    const requests: Request[] = [];
+    const aborted: string[] = [];
+    context.on(`request`, (request) => requests.push(request));
+    await context.route(`**/*`, (route) => {
+      const url = route.request().url();
+      if (url.startsWith(`${site.origin}/`) || url.startsWith(`blob:`)) return route.continue();
+      aborted.push(`${route.request().method()} ${url}`);
+      return route.abort(`blockedbyclient`);
+    });
+    const page = await context.newPage();
+    page.setDefaultTimeout(90_000);
+
+    await startReturn(page);
+
+    const downloadButton = page.getByRole(`button`, { name: t.export.button });
+    const ack = page.locator(`#export-plaintext-ack`);
+    const toggleAck = () => page.locator(`label[for="export-plaintext-ack"]`).click();
+
+    // No passphrase and no acknowledgment: the download control does not run.
+    await page.getByText(t.export.plaintextWarning).waitFor();
+    await page.getByText(t.export.plaintextAck).waitFor();
+    expect(await ack.isChecked()).toBe(false);
+    expect(await downloadButton.isDisabled()).toBe(true);
+    await expect(downloadButton.click({ timeout: 1_000 })).rejects.toThrow();
+
+    await toggleAck();
+    expect(await ack.isChecked()).toBe(true);
+    expect(await downloadButton.isEnabled()).toBe(true);
+    await toggleAck();
+    expect(await ack.isChecked()).toBe(false);
+    expect(await downloadButton.isDisabled()).toBe(true);
+
+    // A passphrase too short to encrypt still cannot download, and it is not the plaintext path.
+    await page.locator(`#export-passphrase`).fill(`short`);
+    await ack.waitFor({ state: `detached` });
+    expect(await downloadButton.isDisabled()).toBe(true);
+    await page.locator(`#export-passphrase`).fill(PASSPHRASE);
+    await ack.waitFor({ state: `detached` });
+    expect(await downloadButton.isEnabled()).toBe(true);
+    await page.locator(`#export-passphrase`).fill(``);
+    await page.getByText(t.export.plaintextWarning).waitFor();
+    expect(await ack.isChecked()).toBe(false);
+    expect(await downloadButton.isDisabled()).toBe(true);
+
+    const downloaded = JSON.parse(await exportPlaintext(page)) as {
+      format: string;
+      version: number;
+      facts: unknown;
+    };
+    expect(downloaded.format).toBe(SAVE_STATE_FORMAT);
+    expect(downloaded.version).toBe(SAVE_STATE_VERSION);
+    expect(JSON.stringify(downloaded).includes(v1Marker)).toBe(false);
+    expect(await ack.isChecked()).toBe(false);
+    expect(await downloadButton.isDisabled()).toBe(true);
+
+    await choosePlainFile(page, `v1.json`, v1File);
+    await page.getByRole(`button`, { name: t.import.button }).click();
+    await statusShows(page, t.import.done);
+    const migrated = JSON.parse(await exportPlaintext(page)) as {
+      format: string;
+      version: number;
+      taxYear: number;
+      facts: unknown;
+    };
+    expect(migrated.format).toBe(SAVE_STATE_FORMAT);
+    expect(migrated.version).toBe(SAVE_STATE_VERSION);
+    expect(migrated.taxYear).toBe(DEFAULT_TAX_YEAR);
+    expect(JSON.stringify(migrated.facts)).toContain(v1Marker);
+    expect(JSON.stringify(migrated.facts).includes(futureMarker)).toBe(false);
+
+    await choosePlainFile(page, `future.json`, futureFile);
+    await page.getByRole(`button`, { name: t.import.button }).click();
+    await statusShows(page, t.errors[`unsupported-version`]);
+    const statusText = await page.getByTestId(`device-data-status`).innerText();
+    expect(statusText.includes(futureMarker)).toBe(false);
+    expect(statusText.includes(v1Marker)).toBe(false);
+    const afterReject = await exportPlaintext(page);
+    expect(afterReject).toContain(v1Marker);
+    expect(afterReject.includes(futureMarker)).toBe(false);
+    expect(JSON.parse(afterReject).version).toBe(SAVE_STATE_VERSION);
+
+    expect(aborted).toEqual([]);
+    const secrets = [v1Marker, futureMarker, PASSPHRASE];
     const leaks: string[] = [];
     for (const request of requests) {
       const headers = JSON.stringify(await request.allHeaders().catch(() => request.headers()));
