@@ -95,9 +95,10 @@ info:
     alertText:
       body:
         - p:
-            Sus dividendos de Pensilvania necesitan un ajuste en el Anexo B de Pensilvania, como dividendos de
-            obligaciones de EE. UU. o de Pensilvania o dividendos recibidos mientras vivía fuera de Pensilvania. Esta
-            herramienta aún no calcula esos ajustes.
+            Sus dividendos de Pensilvania necesitan un ajuste en el Anexo B de Pensilvania que esta herramienta aún no
+            calcula, como dividendos de obligaciones de EE. UU. o de Pensilvania, dividendos recibidos mientras vivía
+            fuera de Pensilvania, o distribuciones de ganancias de capital en una declaración conjunta o de residente
+            parte del año.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
@@ -278,10 +279,10 @@ info:
     alertText:
       body:
         - p:
-            Su declaración de Pensilvania necesita el Anexo B de PA, y esta herramienta aún no puede completarlo. Esto
-            incluye distribuciones de ganancias de capital (casilla 2a del Formulario 1099-DIV), dividendos de fondos
-            provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que recibió como nominatario, o
-            dividendos ordinarios que recibió mientras vivía fuera de Pensilvania.
+            Su declaración de Pensilvania necesita el Anexo B de PA para un importe que esta herramienta no incluye en el
+            anexo. Esto incluye distribuciones de ganancias de capital en una declaración conjunta o de residente parte
+            del año, dividendos de fondos provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que
+            recibió como nominatario, o dividendos ordinarios que recibió mientras vivía fuera de Pensilvania.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:

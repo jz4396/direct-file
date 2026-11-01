@@ -84,8 +84,9 @@ info:
     alertText:
       body:
         - p:
-            Your Pennsylvania dividends need an adjustment on PA Schedule B, such as dividends from U.S. or Pennsylvania
-            obligations or dividends received while you lived outside Pennsylvania. This tool doesn’t figure those yet.
+            Your Pennsylvania dividends need an adjustment on PA Schedule B that this tool doesn’t figure yet, such as
+            dividends from U.S. or Pennsylvania obligations, dividends received while you lived outside Pennsylvania, or
+            capital gain distributions on a joint or part-year return.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
@@ -255,9 +256,10 @@ info:
     alertText:
       body:
         - p:
-            Your Pennsylvania return needs PA Schedule B, and this tool can’t fill it out yet. This includes capital
-            gain distributions (Form 1099-DIV box 2a), fund dividends from U.S. or Pennsylvania obligations, dividends
-            you received as a nominee, or ordinary dividends you received while you lived outside Pennsylvania.
+            Your Pennsylvania return needs PA Schedule B for an amount this tool doesn’t put on the schedule. This
+            includes capital gain distributions on a joint or part-year return, fund dividends from U.S. or Pennsylvania
+            obligations, dividends you received as a nominee, or ordinary dividends you received while you lived
+            outside Pennsylvania.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:

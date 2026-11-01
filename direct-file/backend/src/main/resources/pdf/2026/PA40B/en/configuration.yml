@@ -1,0 +1,58 @@
+# PA-40 Schedule B, Dividend Income. PA-40 B (EX) 04-25 (FI). Page 1 control number 2501510057.
+# Source: https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
+# committed byte-identical as 2025_pa-40b.pdf; SHA-256 c6d8f5cdd63045e1e40b6deeced2c80b23006b7700befe3b8f0c430f2b40a0d4
+# (pinned in pdf/2026/state-interim-pdf-sha256.txt). The file is the schedule, a blank page, and three pages of
+# instructions; skipTrailingPages drops the blank page and the instructions. No Spanish PA-40 B is published; English
+# only.
+#
+# Field names are the PDF's own fully qualified AcroForm names (PDFBox getField). A line amount is parent /T "1" plus
+# child /T " Dividend income ..." (leading space), the same parent.child pattern as PA-40 "1a. Gross Compensation".
+# The taxpayer/spouse/joint oval is one checkbox; export values 1, 2, and 3 are left to right. This path fills 1
+# (taxpayer). Map only the lines this path computes. $0 on lines 2, 3, 4, 5, 7, 8, 9, and 11 stays blank, not $0.
+# PaScheduleBPdfForm fills the ~paB* pseudo-facts (upper case, SSN without dashes, oval, amounts).
+# Amounts: whole dollars rounded half-up (PA-40 IN (2025) p. 4), written as the form shows them (1,234.00); $0 prints
+# blank.
+#
+# Included only when /paScheduleBSupported is true: a full-year PA resident who is not filing jointly, with a
+# whole-dollar Form 1099-DIV box 2a (/paScheduleBTaxpayerLine10 greater than $0), no spouse line 10, no nominee
+# dividends, and either no ordinary dividends or /paHasExemptObligationDividends answered no. Anything else leaves the
+# fact false or incomplete.
+# computePseudoFacts returns false unless that fact is true and line 10 and line 12 are present and positive, so a
+# missing amount does not print as $0. /flowKnockoutPaScheduleB and /flowKnockoutPaDividends stay true, or incomplete,
+# for every other Schedule B case.
+#
+# Cites: 72 P.S. §7303(a)(5). PA-40 IN (2025) p. 15, LINE 3, and p. 32: "Capital gains distributions are taxable as
+# dividend income on Line 3. Do not report capital gains distributions on PA Schedule D." If lines 2 through 10 are $0,
+# "you must report your income on Line 3 of the PA-40, but you do not have to submit PA Schedule B." PA-40 B (2025)
+# PDF p. 3, WHO MUST COMPLETE: include the schedule when any of lines 2 through 11 (not subtotal line 6) has an amount.
+# PDF p. 1 and p. 4: line 1 is federal Form 1040 line 3b; line 6 is line 1 minus line 5; line 10 is capital gains
+# distributions; line 12 is lines 6, 7, 8, 9c, 10, and 11, and "Enter on Line 3 of your PA-40."
+#
+# Mapped:
+#   Name and SSN of the filer shown first on the PA-40. Oval 1 (taxpayer).
+#   Line 1 (/paScheduleBTaxpayerLine1, that filer's Form 1099-DIV box 1a).
+#   Line 6 (/paScheduleBTaxpayerLine6; lines 2, 3, and 4 are $0 on this path, so line 6 equals line 1).
+#   Line 10 (/paScheduleBTaxpayerLine10, half-up whole dollars of that filer's Form 1099-DIV box 2a).
+#   Line 12 (/paScheduleBTaxpayerLine12, line 6 plus line 10; lines 7, 8, 9c, and 11 are $0 on this path).
+# Not mapped, left blank (uncollected, or already a stop, so a supported return does not print $0 there):
+#   lines 2, 3, 4 and its description, 5, 7, 8 and its description, 9a, 9b, 9c, and 11.
+includeWhen: /paScheduleBSupported
+customMaps:
+  template:
+    skipTrailingPages: "4"
+otherRequiredFacts:
+  - /primaryFiler/fullName
+  - /primaryFiler/tin
+  - /isFilingStatusMFJ
+  - /paScheduleBTaxpayerLine1
+  - /paScheduleBTaxpayerLine6
+  - /paScheduleBTaxpayerLine10
+  - /paScheduleBTaxpayerLine12
+form:
+  "Name (if filing jointly, use name shown first on the PA-40)": ~paBName
+  "Enter the Social Security number shown first on the PA-40": ~paBSsn
+  "Click on the appropriate oval for taxpayer/spouse/joint to indicate who is reporting the dividend and capital gains distributions income": ~paBWhose
+  "1. Dividend income from Line 3b of your federal return": ~paBLine1
+  "6. Subtract the amount on Line 5 from the amount on Line 1 and enter the result": ~paBLine6
+  "10. Enter the amount of any capital gains distributions - See the instructions": ~paBLine10
+  "12. Add the amounts on Lines 6, 7, 8, 9c, 10 and 11 and enter the result here and include on Line 3 of your PA-40": ~paBLine12

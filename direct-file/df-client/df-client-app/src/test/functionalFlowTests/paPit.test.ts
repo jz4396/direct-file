@@ -97,7 +97,7 @@ describe(`PA-40 core (#78) flow`, () => {
 // have an amount. Ordinary dividends alone do not. The dividend screens before it don't stop the booklet cases.
 describe(`PA Schedule B dividend knockout (#154) flow`, () => {
   const divId = `15400000-0000-4000-8000-000000000001`;
-  const withDividends = (box1a: number, box2a?: number) => {
+  const withDividends = (box1a: number, box2a?: number, exempt = false) => {
     const { factGraph } = setupFactGraph({
       ...baseFilerData,
       ...makeW2Data(50000),
@@ -108,7 +108,7 @@ describe(`PA Schedule B dividend knockout (#154) flow`, () => {
       '/paHasUnreimbursedEmployeeExpenses': createBooleanWrapper(false),
       '/paHasUnsupportedItems': createBooleanWrapper(false),
       '/paHasEstimatedInstallmentPayments': createBooleanWrapper(false),
-      '/paHasExemptObligationDividends': createBooleanWrapper(false),
+      '/paHasExemptObligationDividends': createBooleanWrapper(exempt),
       '/dividendReports': createCollectionWrapper([divId]),
       '/dividendReportsIsDone': createBooleanWrapper(true),
       [`/dividendReports/#${divId}/filer`]: createCollectionItemWrapper(primaryFilerId),
@@ -131,8 +131,14 @@ describe(`PA Schedule B dividend knockout (#154) flow`, () => {
       givenFacts(withDividends(2500)).atPath(`${path}/pa-estimated-installment-payments`, null, task)
     ).toRouteNextTo(`${path}/tax-amount-intro`);
   });
-  it(`box 2a capital gain distributions route to the Schedule B knockout`, ({ task }) => {
+  it(`box 2a on a full-year single return continues to estimated payments`, ({ task }) => {
+    // PA-40 B (2025) line 10 prints. PA-40 IN (2025) p. 32.
     expect(givenFacts(withDividends(100, 10)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
+      `${path}/pa-estimated-installment-payments`
+    );
+  });
+  it(`exempt-obligation dividends with box 2a still route to the Schedule B knockout`, ({ task }) => {
+    expect(givenFacts(withDividends(100, 10, true)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
       `${path}/pa-schedule-b-knockout`
     );
   });

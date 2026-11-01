@@ -120,8 +120,9 @@ abstract class PdfTemplate {
             // no ASN
             new PdfForm("DF1099R"),
 
-            // State returns follow the federal forms (#123): PA-40, PA-40 Schedule C, then PA-40 Schedule SP.
+            // State returns follow the federal forms (#123): PA-40, PA-40 Schedule B, Schedule C, then Schedule SP.
             new Pa40PdfForm("PA40"),
+            new PaScheduleBPdfForm("PA40B"),
             new PaScheduleCPdfForm("PA40C"),
             new PaScheduleSpPdfForm("PA40SP"));
 

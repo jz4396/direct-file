@@ -172,6 +172,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS8889", 1),
             Map.entry("IRS8862", 3),
             Map.entry("PA40", 2),
+            Map.entry("PA40B", 1),
             Map.entry("PA40C", 2),
             Map.entry("PA40SP", 2),
             Map.entry("IRSW2", 1));
@@ -491,6 +492,7 @@ class Ty2026PdfPackageTest {
                 itemizer(),
                 paTaxForgiveness(),
                 PaScheduleCTy2026PdfSmokeTest.lineItemPa("50000.00", "20000.00"),
+                PaScheduleBTy2026PdfSmokeTest.capitalGainDistributions(),
                 selfEmployedFamily("4000.00"),
                 ScheduleBAndETy2026PdfSmokeTest.partI(),
                 ScheduleRTy2026PdfSmokeTest.disabledSingle(),

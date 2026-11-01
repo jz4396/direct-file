@@ -123,7 +123,9 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-unsupported-income' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
-      {/* #123 PA Schedules A, B, and D are not printed. For a full-year resident, each spouse's Schedule B line 12, including line 10, is included in PA-40 line 3. A line 10 amount still refuses the print. PA Schedule C prints for a full-year line-item business. */}
+      {/* #123 PA Schedules A and D are not printed. PA Schedule C prints for a full-year line-item business.
+          PA Schedule B prints for the full-year, not-joint taxpayer Form 1099-DIV box 2a path (#89). This screen stays
+          for every other Schedule B amount. For a full-year resident, each spouse's line 12 is still PA-40 line 3. */}
       <Screen route='pa-schedule-a-knockout' condition='/flowKnockoutPaScheduleA' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-schedule-a' />
