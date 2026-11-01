@@ -473,6 +473,76 @@ describe(`PA-40 line 3 dividends (PA-40 IN (2025) p. 15 and PA Schedule B p. 32)
     expect(get(unanswered, `/flowKnockoutPaDividends`).complete).toBe(false);
     expect(get(unanswered, `/flowIsKnockedOut`).complete).toBe(false);
   });
+  it(`part-year with box 2a stops on the dividends knockout and line 3 does not include line 10`, ({ task }) => {
+    // PA Schedule B (2025) instructions, PDF p. 4, LINE 4 lists a nonresident-period amount as a reduction. LINE 10
+    // does not allocate box 2a between the residency period and the nonresident period, so /paLine3 stays the
+    // residency-period ordinary dividends. The stop is /flowKnockoutPaDividends when /paPartYearHasDividends and
+    // /totalCapitalGainDistributions is greater than $0. It does not depend on /flowKnockoutPaScheduleB.
+    task.meta.testedFactPaths = [
+      `/paLine3`,
+      `/paScheduleBLine10`,
+      `/flowKnockoutPaDividends`,
+      `/flowKnockoutPaScheduleB`,
+    ];
+    const partYear = (box2a: number, resident?: string) =>
+      build({
+        ...divs({ box1a: 700, box2a }),
+        '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+        '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+        '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+        [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+        [`/formW2s/#${w2Id}/paPartYearResidentPeriodWages`]: createDollarWrapper(`40000`),
+        ...(resident === undefined ? {} : { '/paPartYearResidentDividends': createDollarWrapper(resident) }),
+      });
+    const allResident = partYear(10, `700`);
+    expect(val(allResident, `/paScheduleBLine10`)).toBe(`10.00`);
+    expect(val(allResident, `/paLine3`)).toBe(`700.00`);
+    expect(get(allResident, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(allResident, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    expect(get(allResident, `/flowIsKnockedOut`).get).toBe(true);
+    const partial = partYear(10, `200`);
+    expect(val(partial, `/paPartYearNonresidentDividends`)).toBe(`500.00`);
+    expect(val(partial, `/paLine3`)).toBe(`200.00`);
+    expect(get(partial, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(partial, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    const unanswered = partYear(10);
+    expect(get(unanswered, `/paLine3`).complete).toBe(false);
+    expect(val(unanswered, `/paScheduleBLine10`)).toBe(`10.00`);
+    expect(get(unanswered, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(unanswered, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    // Whole dollars drop box 2a under $0.50, so Schedule B line 10 is $0. The part-year stop still uses the
+    // unrounded total and does not depend on /flowKnockoutPaScheduleB.
+    const cents = partYear(0.4, `700`);
+    expect(val(cents, `/totalCapitalGainDistributions`)).toBe(`0.40`);
+    expect(val(cents, `/paScheduleBLine10`)).toBe(`0.00`);
+    expect(val(cents, `/paLine3`)).toBe(`700.00`);
+    expect(get(cents, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(cents, `/flowKnockoutPaScheduleB`).get).toBe(false);
+  });
+  it(`part-year with only box 2a stops on the dividends knockout and line 3 stays $0`, ({ task }) => {
+    // Box 1a is $0, so /hasDividendIncome is false and /paPartYearHasDividends is false. PA Schedule B (2025)
+    // instructions, PDF p. 4, LINE 10 does not allocate the capital gain distribution, so /paLine3 stays $0.
+    // /flowKnockoutPaDividends is /paPartYearSupported and /totalCapitalGainDistributions greater than $0. That
+    // clause is outside /hasDividendIncome and does not depend on /flowKnockoutPaScheduleB.
+    task.meta.testedFactPaths = [`/paLine3`, `/flowKnockoutPaDividends`, `/paPartYearSupported`];
+    const g = build({
+      ...divs({ box1a: 0, box2a: 10 }),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+      [`/formW2s/#${w2Id}/paPartYearW2State`]: createEnumWrapper(`pa`, `/paPartYearW2StateOptions`),
+      [`/formW2s/#${w2Id}/paPartYearResidentPeriodWages`]: createDollarWrapper(`40000`),
+    });
+    expect(get(g, `/hasDividendIncome`).get).toBe(false);
+    expect(get(g, `/paPartYearHasDividends`).get).toBe(false);
+    expect(get(g, `/paPartYearSupported`).get).toBe(true);
+    expect(val(g, `/totalCapitalGainDistributions`)).toBe(`10.00`);
+    expect(val(g, `/paLine3`)).toBe(`0.00`);
+    expect(val(g, `/paScheduleBLine10`)).toBe(`10.00`);
+    expect(get(g, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
   it(`not a PA return: never asked, never blocked`, () => {
     const g = build({ ...divs({ box1a: 700 }), '/paHasExemptObligationDividends': createBooleanWrapper(true) });
     expect(get(g, `/paAskExemptObligationDividends`).get).toBe(false);
@@ -647,15 +717,122 @@ describe(`#86b capital gain distributions and the QDCG Tax Worksheet`, () => {
     noKnockouts(g);
   });
 
-  it(`box 2a on a Pennsylvania return stops the PA return (PA Schedule B line 10)`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutPaDividends`];
+  it(`box 2a is PA Schedule B line 10 and PA-40 line 3; Schedule B is not printed`, ({ task }) => {
+    // PA-40 IN (2025) p. 15 and p. 32: capital gain distributions are dividend income on line 3, not PA Schedule D.
+    // p. 33 line 10 and PA Schedule B (2025) instructions PDF p. 2, LINE 10: the federal capital gain distribution.
+    // Form line 12 adds line 10 and is entered on PA-40 line 3. WHO MUST COMPLETE: a line 10 amount requires the
+    // schedule. The schedule is not printed (/flowKnockoutPaScheduleB).
+    task.meta.testedFactPaths = [
+      `/paScheduleBLine10`,
+      `/paLine3`,
+      `/paLine5`,
+      `/paLine9`,
+      `/flowKnockoutPaScheduleB`,
+      `/flowKnockoutPaDividends`,
+    ];
     const pa = build({ ...divs({ box1a: 500, box2a: 10 }), ...state(`pa`) });
-    expect(get(pa, `/flowKnockoutPaDividends`).get).toBe(true);
-    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaDividends`);
+    expect(val(pa, `/totalCapitalGainDistributions`)).toBe(`10.00`);
+    expect(val(pa, `/paScheduleBLine10`)).toBe(`10.00`);
+    expect(val(pa, `/paLine3`)).toBe(`510.00`);
+    expect(val(pa, `/paLine5`)).toBe(`0.00`);
+    expect(val(pa, `/paLine9`)).toBe(`40510.00`); // wages 40,000 + line 3 510
+    expect(get(pa, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(pa, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    expect(get(pa, `/flowKnockoutPaScheduleD`).get).toBe(false);
+    expect(get(pa, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaScheduleB`);
+
     const onlyCgd = build({ ...divs({ box1a: 0, box2a: 10 }), ...state(`pa`) });
-    expect(get(onlyCgd, `/flowKnockoutPaDividends`).get).toBe(true);
-    expect(get(build({ ...divs({ box1a: 500 }), ...state(`pa`) }), `/flowKnockoutPaDividends`).get).toBe(false);
-    expect(get(build(divs({ box1a: 500, box2a: 10 })), `/flowKnockoutPaDividends`).get).toBe(false); // NJ
+    expect(val(onlyCgd, `/ordinaryDividends`)).toBe(`0.00`);
+    expect(val(onlyCgd, `/paScheduleBLine10`)).toBe(`10.00`);
+    expect(val(onlyCgd, `/paLine3`)).toBe(`10.00`);
+    expect(get(onlyCgd, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(onlyCgd, `/flowKnockoutPaScheduleB`).get).toBe(true);
+
+    const noCgd = build({ ...divs({ box1a: 500 }), ...state(`pa`) });
+    expect(val(noCgd, `/paScheduleBLine10`)).toBe(`0.00`);
+    expect(val(noCgd, `/paLine3`)).toBe(`500.00`);
+    expect(get(noCgd, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(noCgd, `/flowKnockoutPaScheduleB`).get).toBe(false);
+    expect(get(noCgd, `/flowIsKnockedOut`).get).toBe(false);
+
+    // Not a PA-40: line 10 is $0 and line 3 stays Form 1040 line 3b.
+    const nj = build(divs({ box1a: 500, box2a: 10 }));
+    expect(val(nj, `/paScheduleBLine10`)).toBe(`0.00`);
+    expect(val(nj, `/paLine3`)).toBe(`500.00`);
+    expect(get(nj, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(nj, `/flowKnockoutPaScheduleB`).get).toBe(false);
+
+    // Schedule B instructions, PDF p. 1: drop under $0.50; $0.50 and over rounds up. $0 on line 10 needs no schedule.
+    const under = build({ ...divs({ box1a: 100, box2a: 0.49 }), ...state(`pa`) });
+    expect(val(under, `/paScheduleBLine10`)).toBe(`0.00`);
+    expect(val(under, `/paLine3`)).toBe(`100.00`);
+    expect(get(under, `/flowKnockoutPaScheduleB`).get).toBe(false);
+    const halves = build({ ...divs({ box1a: 10.4, box2a: 10.4 }, { box1a: 0, box2a: 10.4 }), ...state(`pa`) });
+    expect(val(halves, `/totalCapitalGainDistributions`)).toBe(`20.80`);
+    expect(val(halves, `/paScheduleBLine10`)).toBe(`21.00`);
+    expect(val(halves, `/ordinaryDividends`)).toBe(`10.00`); // 10.40 rounds to 10 on Form 1040 line 3b
+    expect(val(halves, `/paLine3`)).toBe(`31.00`);
+    expect(get(halves, `/flowKnockoutPaScheduleB`).get).toBe(true);
+
+    // Schedule D is required, so box 2a is Schedule D line 13, not Form 1040 line 7a. Line 10 is still box 2a, not the
+    // net after the long-term carryover (Schedule D line 15). PA-40 IN (2025) p. 32: do not report it on PA Schedule D.
+    const withCarry = build({
+      ...divs({ box1a: 500, box2a: 1200 }),
+      ...state(`pa`),
+      '/writableLongTermCapitalLossCarryover': createDollarWrapper(`200`),
+    });
+    expect(get(withCarry, `/requiresScheduleD`).get).toBe(true);
+    expect(val(withCarry, `/scheduleDLine13`)).toBe(`1200.00`);
+    expect(val(withCarry, `/scheduleDLine15`)).toBe(`1000.00`);
+    expect(val(withCarry, `/paScheduleBLine10`)).toBe(`1200.00`);
+    expect(val(withCarry, `/paScheduleBTaxpayerLine1`)).toBe(`500.00`);
+    expect(val(withCarry, `/paScheduleBTaxpayerLine10`)).toBe(`1200.00`);
+    expect(val(withCarry, `/paScheduleBTaxpayerLine12`)).toBe(`1700.00`);
+    expect(val(withCarry, `/paScheduleBSpouseLine12`)).toBe(`0.00`);
+    expect(val(withCarry, `/paLine3`)).toBe(`1700.00`);
+    expect(val(withCarry, `/paLine5`)).toBe(`0.00`);
+    expect(get(withCarry, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    expect(get(withCarry, `/flowKnockoutPaScheduleD`).get).toBe(false);
+    expect(get(withCarry, `/flowKnockoutPaDividends`).get).toBe(false);
+  });
+
+  it(`married filing jointly: each filer's Schedule B lines 1, 10, and 12, and line 3 is their sum`, ({ task }) => {
+    // PA-40 Schedule B (2025) form, PDF p. 1: a separate schedule includes only that filer's share.
+    // Instructions, PDF p. 4, LINE 1: only that filer's portion of Form 1040 line 3b. LINE 10: that filer's box 2a.
+    // PDF p. 5, LINE 12: the combined line 12 amounts go on PA-40 line 3.
+    task.meta.testedFactPaths = [
+      `/paScheduleBTaxpayerLine1`,
+      `/paScheduleBTaxpayerLine10`,
+      `/paScheduleBTaxpayerLine12`,
+      `/paScheduleBSpouseLine1`,
+      `/paScheduleBSpouseLine10`,
+      `/paScheduleBSpouseLine12`,
+      `/paLine3`,
+    ];
+    const g = build(
+      {
+        ...divs({ box1a: 800, box2a: 1200 }, { box1a: 300, box2a: 450, filer: spouseId }),
+        ...state(`pa`),
+      },
+      mfjFilerData
+    );
+    expect(val(g, `/paScheduleBTaxpayerLine1`)).toBe(`800.00`);
+    expect(val(g, `/paScheduleBTaxpayerLine5`)).toBe(`0.00`);
+    expect(val(g, `/paScheduleBTaxpayerLine6`)).toBe(`800.00`);
+    expect(val(g, `/paScheduleBTaxpayerLine10`)).toBe(`1200.00`);
+    expect(val(g, `/paScheduleBTaxpayerLine12`)).toBe(`2000.00`);
+    expect(val(g, `/paScheduleBSpouseLine1`)).toBe(`300.00`);
+    expect(val(g, `/paScheduleBSpouseLine5`)).toBe(`0.00`);
+    expect(val(g, `/paScheduleBSpouseLine6`)).toBe(`300.00`);
+    expect(val(g, `/paScheduleBSpouseLine10`)).toBe(`450.00`);
+    expect(val(g, `/paScheduleBSpouseLine12`)).toBe(`750.00`);
+    expect(val(g, `/paLine3`)).toBe(`2750.00`);
+    expect(val(g, `/paScheduleBLine10`)).toBe(`1650.00`);
+    expect(val(g, `/paLine5`)).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleD`).get).toBe(false);
   });
 
   it(`box 2a counts as unearned income for Form 8615`, () => {
@@ -755,9 +932,20 @@ describe(`#154 PA Schedule B dividend knockout`, () => {
     expect(scheduleB(g)).toBe(true);
     expect(get(g, `/flowKnockoutPaDividends`).get).toBe(true);
   });
-  it(`Line 10: any capital gain distribution (box 2a) stops it, even with $0 in box 1a`, () => {
-    expect(scheduleB(paBuild(divs({ box1a: 0, box2a: 10 })))).toBe(true);
-    expect(scheduleB(paBuild(divs({ box1a: 100, box2a: 1 })))).toBe(true);
+  it(`Line 10: any capital gain distribution (box 2a) is on PA-40 line 3 and still stops the schedule`, () => {
+    const only = paBuild(divs({ box1a: 0, box2a: 10 }));
+    expect(val(only, `/paScheduleBLine10`)).toBe(`10.00`);
+    expect(val(only, `/paLine3`)).toBe(`10.00`);
+    expect(scheduleB(only)).toBe(true);
+    const both = paBuild(divs({ box1a: 100, box2a: 1 }));
+    expect(val(both, `/paLine3`)).toBe(`101.00`);
+    expect(scheduleB(both)).toBe(true);
+    expect(get(both, `/flowKnockoutPaDividends`).get).toBe(false);
+    // $0.40 rounds to $0 on line 10, so Schedule B is not required.
+    const cents = paBuild(divs({ box1a: 100, box2a: 0.4 }));
+    expect(val(cents, `/paScheduleBLine10`)).toBe(`0.00`);
+    expect(val(cents, `/paLine3`)).toBe(`100.00`);
+    expect(scheduleB(cents)).toBe(false);
   });
   it(`Line 4: dividends received as a nominee stop it (and the federal return)`, () => {
     const g = paBuild(divs({ box1a: 100, nominee: true }));
