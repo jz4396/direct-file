@@ -38,11 +38,17 @@
     <Fact path="/interestIncome">
       <Name>Interest income</Name>
       <Description>Taxable interest income to report on line 2b of Form 1040. Form 1099-INT box 1, plus
-        Schedule K-1 (Form 1041) box 1. Schedule K-1 (Form 1041) (2025)
+        Schedule K-1 (Form 1041) box 1, Schedule K-1 (Form 1065) box 5, and Schedule K-1 (Form 1120-S)
+        box 4. Schedule K-1 (Form 1041) (2025)
         (https://www.irs.gov/pub/irs-pdf/f1041sk1.pdf, SHA-256 d8d7b6eacabdf145) page 2: "1. Interest income
         — Form 1040 or 1040-SR, line 2b". Beneficiary's Instructions (2025)
         (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13) PDF p. 2, Box 1. 26 U.S.C.
-        61(a)(4); 662(a); 652(a); 662(b); 652(b). When Schedule B is required, line 2b is the sum of the
+        61(a)(4); 662(a); 652(a); 662(b); 652(b). Partner's Instructions for Schedule K-1 (Form 1065)
+        (2025) (https://www.irs.gov/pub/irs-pdf/i1065sk1.pdf, SHA-256 659063e0aaa36e44), PDF p. 15, Box 5:
+        "Report interest income on Form 1040 or 1040-SR, line 2b." Shareholder's Instructions for Schedule
+        K-1 (Form 1120-S) (2025) (https://www.irs.gov/pub/irs-pdf/i1120ssk.pdf, SHA-256 fb6194da1d1f9e89),
+        PDF p. 7, Box 4: "Report interest income on Form 1040 or 1040-SR, line 2b." 26 U.S.C. 702(b);
+        1366(b). When Schedule B is required, line 2b is the sum of the
         already-rounded Part I line 1 amounts (each 1099 and each K-1 box 1). Otherwise cents are kept until
         the total is rounded. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23.</Description>
       <Export downstreamFacts="true" mef="true" />
@@ -62,6 +68,7 @@
                     <Dependency path="/interestReports/*/roundedTaxableInterest" />
                   </CollectionSum>
                   <Dependency module="scheduleE" path="/scheduleEEstateK1InterestRounded" />
+                  <Dependency module="scheduleE" path="/scheduleEK1InterestRounded" />
                 </Add>
               </Then>
             </Case>
@@ -75,6 +82,7 @@
                     <Dependency path="/interestReports/*/taxableInterest" />
                   </CollectionSum>
                   <Dependency module="scheduleE" path="/scheduleEEstateK1Interest" />
+                  <Dependency module="scheduleE" path="/scheduleEK1Interest" />
                 </Add>
               </Then>
             </Case>
@@ -1355,7 +1363,10 @@
         two or more amounts to figure the amount to enter on a line, include
         cents when adding the amounts and
         round off only the total." The total includes Schedule K-1 (Form 1041) box 1
-        (scheduleE /scheduleEEstateK1Interest), unrounded, so this fact does not depend on /interestIncome.</Description>
+        (scheduleE /scheduleEEstateK1Interest), plus Schedule K-1 (Form 1065) box 5 and Schedule K-1
+        (Form 1120-S) box 4 (scheduleE /scheduleEK1Interest), unrounded, so this fact does not depend on
+        /interestIncome. Partner's Instructions (2025), PDF p. 15, Box 5. Shareholder's Instructions
+        (2025), PDF p. 7, Box 4. 26 U.S.C. 702(b); 1366(b).</Description>
 
       <Derived>
         <GreaterThan>
@@ -1366,6 +1377,7 @@
                   <Dependency path="/interestReports/*/taxableInterest" />
                 </CollectionSum>
                 <Dependency module="scheduleE" path="/scheduleEEstateK1Interest" />
+                <Dependency module="scheduleE" path="/scheduleEK1Interest" />
               </Add>
             </Round>
           </Left>
@@ -1386,7 +1398,7 @@
         ordinary dividends. This amount should be shown
         in box 1a of your Forms 1099-DIV or substitute
         statements." Reads income /ordinaryDividends, the whole-dollar
-        total of Form 1099-DIV box 1a plus Schedule K-1 (Form 1041) box 2a (Form 1040
+        total of Form 1099-DIV box 1a plus Schedule K-1 (Form 1041) box 2a, Schedule K-1 (Form 1065) box 6a, and Schedule K-1 (Form 1120-S) box 5a (Form 1040
         instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23:
         "include cents when adding the amounts
         and round off only the total"), the same rounding as
@@ -2784,7 +2796,7 @@
 
     <Fact path="/scheduleBPartIRow0Payer">
       <Name>Schedule B Part I line 1 payer 1</Name>
-      <Description>Schedule B (Form 1040) Part I line 1. Form 1099-INT rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 1 greater than zero. Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13) PDF p. 2, Box 1: interest is reported on Schedule B Part I line 1 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar taxable interest or rounded box 1. 26 U.S.C. 61(a)(4); 662(b); 652(b). A row past the 14 printed lines is in the line 2 total and is not printed.</Description>
+      <Description>Schedule B (Form 1040) Part I line 1. Form 1099-INT rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 1 greater than zero. Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13) PDF p. 2, Box 1: interest is reported on Schedule B Part I line 1 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar taxable interest or rounded box 1. 26 U.S.C. 61(a)(4); 662(b); 652(b). A row past the 14 printed lines is in the line 2 total and is not printed. After those rows, each partnership or S corporation with Form 1065 box 5 or Form 1120-S box 4 greater than zero. Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 5, and Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 4, report that interest on Form 1040 line 2b. The payer is the partnership or S corporation. The amount is the whole-dollar box. 26 U.S.C. 702(b); 1366(b).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -2828,13 +2840,38 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>0</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow0K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
 
     <Fact path="/scheduleBPartIRow0Amount">
       <Name>Schedule B Part I line 1 amount 1</Name>
-      <Description>Schedule B (Form 1040) Part I line 1. Form 1099-INT rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 1 greater than zero. Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13) PDF p. 2, Box 1: interest is reported on Schedule B Part I line 1 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar taxable interest or rounded box 1. 26 U.S.C. 61(a)(4); 662(b); 652(b). A row past the 14 printed lines is in the line 2 total and is not printed.</Description>
+      <Description>Schedule B (Form 1040) Part I line 1. Form 1099-INT rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 1 greater than zero. Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025) (https://www.irs.gov/pub/irs-pdf/i1041sk1.pdf, SHA-256 516ed87ce8108a13) PDF p. 2, Box 1: interest is reported on Schedule B Part I line 1 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar taxable interest or rounded box 1. 26 U.S.C. 61(a)(4); 662(b); 652(b). A row past the 14 printed lines is in the line 2 total and is not printed. After those rows, each partnership or S corporation with Form 1065 box 5 or Form 1120-S box 4 greater than zero. Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 5, and Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 4, report that interest on Form 1040 line 2b. The payer is the partnership or S corporation. The amount is the whole-dollar box. 26 U.S.C. 702(b); 1366(b).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -2876,6 +2913,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>0</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow0K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -2953,6 +3015,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>1</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow1K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3026,6 +3113,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>1</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow1K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -3128,6 +3240,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>2</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow2K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3226,6 +3363,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>2</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow2K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -3353,6 +3515,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>3</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow3K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3476,6 +3663,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>3</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow3K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -3628,6 +3840,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>4</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow4K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3776,6 +4013,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>4</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow4K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -3953,6 +4215,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>5</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow5K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4126,6 +4413,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>5</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow5K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -4328,6 +4640,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>6</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow6K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4526,6 +4863,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>6</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow6K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -4753,6 +5115,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>7</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow7K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4976,6 +5363,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>7</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow7K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -5228,6 +5640,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>8</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow8K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -5476,6 +5913,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>8</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow8K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -5753,6 +6215,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>9</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow9K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -6026,6 +6513,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>9</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow9K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -6328,6 +6840,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>10</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow10K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -6626,6 +7163,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>10</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow10K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -6953,6 +7515,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>11</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow11K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -7276,6 +7863,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>11</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow11K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -7628,6 +8240,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>12</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow12K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -7976,6 +8613,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>12</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow12K1Item/roundedK1Interest" />
             </Then>
           </Case>
         </Switch>
@@ -8353,6 +9015,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>13</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow13K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -8728,13 +9415,38 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox1Item0/roundedBox1" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1InterestCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>13</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBInterestReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox1Count" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIRow13K1Item/roundedK1Interest" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
 
     <Fact path="/scheduleBPartIIRow0Payer">
       <Name>Schedule B Part II line 5 payer 1</Name>
-      <Description>Schedule B (Form 1040) Part II line 5. Form 1099-DIV rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 2a greater than zero. Beneficiary's Instructions (2025) PDF p. 2, Box 2a: ordinary dividends are reported on Schedule B Part II line 5 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar ordinary dividends or rounded box 2a. Line 6 is income /ordinaryDividends, the rounded total, which can differ by $1 from the sum of these rows when there are cents. 26 U.S.C. 61(a)(7); 662(b); 652(b).</Description>
+      <Description>Schedule B (Form 1040) Part II line 5. Form 1099-DIV rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 2a greater than zero. Beneficiary's Instructions (2025) PDF p. 2, Box 2a: ordinary dividends are reported on Schedule B Part II line 5 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar ordinary dividends or rounded box 2a. Line 6 is income /ordinaryDividends, the rounded total, which can differ by $1 from the sum of these rows when there are cents. 26 U.S.C. 61(a)(7); 662(b); 652(b). After those rows, each partnership or S corporation with Form 1065 box 6a or Form 1120-S box 5a greater than zero. Partner's Instructions (2025), PDF p. 15, Box 6a, and Shareholder's Instructions (2025), PDF p. 7, Box 5a, report ordinary dividends on Form 1040 line 3b. The payer is the partnership or S corporation. 26 U.S.C. 702(b); 1366(b).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -8778,13 +9490,38 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>0</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow0K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
 
     <Fact path="/scheduleBPartIIRow0Amount">
       <Name>Schedule B Part II line 5 amount 1</Name>
-      <Description>Schedule B (Form 1040) Part II line 5. Form 1099-DIV rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 2a greater than zero. Beneficiary's Instructions (2025) PDF p. 2, Box 2a: ordinary dividends are reported on Schedule B Part II line 5 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar ordinary dividends or rounded box 2a. Line 6 is income /ordinaryDividends, the rounded total, which can differ by $1 from the sum of these rows when there are cents. 26 U.S.C. 61(a)(7); 662(b); 652(b).</Description>
+      <Description>Schedule B (Form 1040) Part II line 5. Form 1099-DIV rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 2a greater than zero. Beneficiary's Instructions (2025) PDF p. 2, Box 2a: ordinary dividends are reported on Schedule B Part II line 5 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar ordinary dividends or rounded box 2a. Line 6 is income /ordinaryDividends, the rounded total, which can differ by $1 from the sum of these rows when there are cents. 26 U.S.C. 61(a)(7); 662(b); 652(b). After those rows, each partnership or S corporation with Form 1065 box 6a or Form 1120-S box 5a greater than zero. Partner's Instructions (2025), PDF p. 15, Box 6a, and Shareholder's Instructions (2025), PDF p. 7, Box 5a, report ordinary dividends on Form 1040 line 3b. The payer is the partnership or S corporation. 26 U.S.C. 702(b); 1366(b).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -8826,6 +9563,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>0</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow0K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -8903,6 +9665,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>1</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow1K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -8976,6 +9763,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>1</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow1K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -9078,6 +9890,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>2</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow2K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -9176,6 +10013,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>2</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow2K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -9303,6 +10165,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>3</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow3K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -9426,6 +10313,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>3</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow3K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -9578,6 +10490,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>4</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow4K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -9726,6 +10663,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>4</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow4K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -9903,6 +10865,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>5</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow5K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -10076,6 +11063,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>5</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow5K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -10278,6 +11290,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>6</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow6K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -10476,6 +11513,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>6</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow6K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -10703,6 +11765,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>7</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow7K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -10926,6 +12013,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>7</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow7K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -11178,6 +12290,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>8</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow8K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -11426,6 +12563,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>8</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow8K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -11703,6 +12865,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>9</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow9K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -11976,6 +13163,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>9</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow9K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -12278,6 +13490,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>10</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow10K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -12576,6 +13813,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>10</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow10K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -12903,6 +14165,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>11</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow11K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -13226,6 +14513,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>11</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow11K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -13578,6 +14890,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>12</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow12K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -13926,6 +15263,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>12</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow12K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -14303,6 +15665,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>13</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow13K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -14676,6 +16063,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>13</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow13K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>
@@ -15078,6 +16490,31 @@
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/entityName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>14</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow14K1Item/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -15476,6 +16913,31 @@
             </When>
             <Then>
               <Dependency module="scheduleE" path="/scheduleEEstateBox2aItem0/roundedBox2a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Int>14</Int>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleBDividendReportCount" />
+                    </Subtrahends>
+                    <Subtrahends>
+                      <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleBPartIIRow14K1Item/roundedK1OrdinaryDividends" />
             </Then>
           </Case>
         </Switch>

@@ -57,6 +57,14 @@ const k1 = (id: string, box1: string, type: `P` | `S`, extra: Record<string, unk
   [`/scheduleEK1s/#${id}/hasOtherK1Amount`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/basisComputationRequired`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/anyAmountNotAtRisk`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${id}/form1065Box5`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1065Box6a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1065Box6b`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1120sBox4`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1120sBox5a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1120sBox5b`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/dividendIncludesPtep`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${id}/box5IncludesCleanRenewableEnergyBondInterest`]: createBooleanWrapper(false),
   ...extra,
 });
 const partIIGate = {
@@ -359,6 +367,9 @@ const partIIKnockouts = [
   `/flowKnockoutScheduleCQbiAndK1Box14CodeA`,
   `/flowKnockoutScheduleEPartIIQbiCode`,
   `/flowKnockoutScheduleEPartIIOtherK1Amount`,
+  `/flowKnockoutScheduleEPartIIPtep`,
+  `/flowKnockoutScheduleEPartIICleanRenewableEnergyBond`,
+  `/flowKnockoutScheduleEPartIIQualifiedDividends`,
   `/flowKnockoutScheduleEPartIIColumnE`,
   `/flowKnockoutScheduleEPartIIColumnF`,
   `/flowKnockoutScheduleEPartIIForeignOrPtp`,
@@ -998,5 +1009,391 @@ describe(`Schedule K-1 (Form 1041) boxes 1, 2a, and 2b`, () => {
     expect(get(g, `/flowKnockoutScheduleEPartIIIBox2b`).get).toBe(true);
     expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+});
+
+type K1Type = `P` | `S`;
+const portfolioBoxes = { interest: `900`, ordinary: `1200`, qualified: `800` };
+/** Box 1 is zero. Interest and dividends are Form 1040 lines 2b, 3b, and 3a, not Schedule E line 28. */
+const portfolioK1 = (
+  id: string,
+  type: K1Type,
+  boxes: { interest: string; ordinary: string; qualified: string } = portfolioBoxes,
+  extra: Record<string, unknown> = {}
+) =>
+  k1(
+    id,
+    `0`,
+    type,
+    type === `P`
+      ? {
+          [`/scheduleEK1s/#${id}/form1065Box5`]: createDollarWrapper(boxes.interest),
+          [`/scheduleEK1s/#${id}/form1065Box6a`]: createDollarWrapper(boxes.ordinary),
+          [`/scheduleEK1s/#${id}/form1065Box6b`]: createDollarWrapper(boxes.qualified),
+          ...extra,
+        }
+      : {
+          [`/scheduleEK1s/#${id}/form1120sBox4`]: createDollarWrapper(boxes.interest),
+          [`/scheduleEK1s/#${id}/form1120sBox5a`]: createDollarWrapper(boxes.ordinary),
+          [`/scheduleEK1s/#${id}/form1120sBox5b`]: createDollarWrapper(boxes.qualified),
+          ...extra,
+        }
+  );
+const onePortfolioK1 = (
+  id: string,
+  type: K1Type,
+  boxes?: { interest: string; ordinary: string; qualified: string },
+  extra: Record<string, unknown> = {}
+) => ({
+  ...partIIGate,
+  '/scheduleEK1s': createCollectionWrapper([id]),
+  ...portfolioK1(id, type, boxes, extra),
+});
+
+describe(`Schedule K-1 (Form 1065 and Form 1120-S) interest and dividends`, () => {
+  it(`reports Form 1065 boxes 5, 6a, and 6b on Form 1040 lines 2b, 3b, and 3a`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1065Box5`,
+      `/scheduleEK1s/*/form1065Box6a`,
+      `/scheduleEK1s/*/form1065Box6b`,
+      `/scheduleEK1s/*/k1Interest`,
+      `/interestIncome`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/qdcgLine2`,
+      `/qdcgLine4`,
+      `/requiresScheduleB`,
+      `/scheduleEPartIILine32`,
+      `/schedule1Line5`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowKnockoutScheduleEPartIIPtep`,
+      `/flowKnockoutScheduleEPartIIQualifiedDividends`,
+    ];
+    // Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15: box 5 is Form 1040 line 2b,
+    // box 6a is line 3b, and box 6b is line 3a. Portfolio income is not Schedule E line 28.
+    // 26 U.S.C. 61(a)(4), 61(a)(7), 1(h)(11), 702(a)(5), 702(b).
+    // $900 and $1,200 are not over the Schedule B $1,500 threshold. Instructions for Schedule B (2025) p. 1.
+    const g = fg(onePortfolioK1(partnershipId, `P`));
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/qdcgLine2`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/qdcgLine4`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/scheduleEPartIILine32`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIPtep`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIQualifiedDividends`).get).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+  });
+
+  it(`reports Form 1120-S boxes 4, 5a, and 5b on the same Form 1040 lines`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1120sBox4`,
+      `/scheduleEK1s/*/form1120sBox5a`,
+      `/scheduleEK1s/*/form1120sBox5b`,
+      `/interestIncome`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/scheduleEPartIILine32`,
+      `/flowKnockoutScheduleEPartII`,
+    ];
+    // Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7: box 4 is Form 1040 line 2b,
+    // box 5a is line 3b, and box 5b is line 3a. 26 U.S.C. 61(a)(4), 61(a)(7), 1(h)(11), 1366(a)(1)(A), 1366(b).
+    const g = fg(onePortfolioK1(sCorpId, `S`));
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/k1Interest`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/k1OrdinaryDividends`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/k1QualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/scheduleEPartIILine32`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+  });
+
+  it(`keeps box 1 in column (k) and keeps interest and dividends off Schedule E line 32`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEPartIILine32`,
+      `/schedule1Line5`,
+      `/interestIncome`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, Portfolio Income: boxes 5 through 9b are not entered on
+    // Schedule E line 28. Column (k) is box 1. 26 U.S.C. 702(a)(8).
+    const g = fg(
+      onePortfolioK1(partnershipId, `P`, portfolioBoxes, {
+        [`/scheduleEK1s/#${partnershipId}/box1`]: createDollarWrapper(`12000`),
+      })
+    );
+    expect(get(g, `/scheduleEPartIILine32`).get.toString()).toBe(`12000.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`12000.00`);
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+  });
+
+  it(`requires Schedule B when ordinary dividends are over $1,500 and prints the partnership`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/requiresScheduleB`,
+      `/requiresScheduleBForOrdinaryDividends`,
+      `/scheduleBPartIRow0Payer`,
+      `/scheduleBPartIRow0Amount`,
+      `/scheduleBPartIIRow0Payer`,
+      `/scheduleBPartIIRow0Amount`,
+      `/interestIncome`,
+      `/ordinaryDividends`,
+    ];
+    // Instructions for Schedule B (2025) p. 1: over $1,500 of ordinary dividends. Exactly $1,500 does not.
+    // Partner's Instructions (2025), PDF p. 15: box 5 on Form 1040 line 2b and box 6a on line 3b.
+    const under = fg(onePortfolioK1(partnershipId, `P`, { interest: `900`, ordinary: `1500`, qualified: `800` }));
+    expect(get(under, `/ordinaryDividends`).get.toString()).toBe(`1500.00`);
+    expect(get(under, `/requiresScheduleB`).get).toBe(false);
+    const g = fg(onePortfolioK1(partnershipId, `P`, { interest: `900`, ordinary: `1600`, qualified: `800` }));
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/requiresScheduleBForOrdinaryDividends`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIRow0Payer`).get).toBe(`Northwind Partners`);
+    expect(get(g, `/scheduleBPartIRow0Amount`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/scheduleBPartIIRow0Payer`).get).toBe(`Northwind Partners`);
+    expect(get(g, `/scheduleBPartIIRow0Amount`).get.toString()).toBe(`1600.00`);
+  });
+
+  it(`lists a 1099, then the estate, then the partnership on Schedule B Part I`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/interestIncome`,
+      `/requiresScheduleBForInterest`,
+      `/scheduleBPartIRow0Payer`,
+      `/scheduleBPartIRow0Amount`,
+      `/scheduleBPartIRow1Payer`,
+      `/scheduleBPartIRow1Amount`,
+      `/scheduleBPartIRow2Payer`,
+      `/scheduleBPartIRow2Amount`,
+    ];
+    // Form 1040 instr. (2025) p. 23: when Schedule B is required, line 2b is the sum of the rounded line 1
+    // amounts. $600 + $500 + $500 = $1,600, which is over $1,500. Instructions for Schedule B (2025) p. 1.
+    const g = fg({
+      ...partIIGate,
+      '/scheduleEHasPartIIIIncome': createBooleanWrapper(true),
+      '/scheduleEEstatesIsDone': createBooleanWrapper(true),
+      '/scheduleEEstates': createCollectionWrapper([estateId]),
+      ...estate(estateId, `0`, {
+        [`/scheduleEEstates/#${estateId}/box1`]: createDollarWrapper(`500`),
+      }),
+      '/scheduleEK1s': createCollectionWrapper([partnershipId]),
+      ...portfolioK1(partnershipId, `P`, { interest: `500`, ordinary: `0`, qualified: `0` }),
+      '/interestReports': createCollectionWrapper([interestId]),
+      [`/interestReports/#${interestId}/has1099`]: createBooleanWrapper(false),
+      [`/interestReports/#${interestId}/no1099Amount`]: createDollarWrapper(`600`),
+      [`/interestReports/#${interestId}/payer`]: createStringWrapper(`First National`),
+    });
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/requiresScheduleBForInterest`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIRow0Payer`).get).toBe(`First National`);
+    expect(get(g, `/scheduleBPartIRow0Amount`).get.toString()).toBe(`600.00`);
+    expect(get(g, `/scheduleBPartIRow1Payer`).get).toBe(`Harbor Trust`);
+    expect(get(g, `/scheduleBPartIRow1Amount`).get.toString()).toBe(`500.00`);
+    expect(get(g, `/scheduleBPartIRow2Payer`).get).toBe(`Northwind Partners`);
+    expect(get(g, `/scheduleBPartIRow2Amount`).get.toString()).toBe(`500.00`);
+  });
+
+  it(`requires Schedule B when two K-1 interest amounts total more than $1,500`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/interestIncome`,
+      `/requiresScheduleBForInterest`,
+      `/scheduleBPartIRow0Payer`,
+      `/scheduleBPartIRow0Amount`,
+      `/scheduleBPartIRow1Payer`,
+      `/scheduleBPartIRow1Amount`,
+    ];
+    // Instructions for Schedule B (2025) p. 1: interest over $1,500. $800 + $800 = $1,600.
+    const g = fg({
+      ...partIIGate,
+      '/scheduleEK1s': createCollectionWrapper([partnershipId, sCorpId]),
+      ...portfolioK1(partnershipId, `P`, { interest: `800`, ordinary: `0`, qualified: `0` }),
+      ...portfolioK1(sCorpId, `S`, { interest: `800`, ordinary: `0`, qualified: `0` }),
+    });
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/requiresScheduleBForInterest`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIRow0Payer`).get).toBe(`Northwind Partners`);
+    expect(get(g, `/scheduleBPartIRow0Amount`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/scheduleBPartIRow1Payer`).get).toBe(`Northwind Inc`);
+    expect(get(g, `/scheduleBPartIRow1Amount`).get.toString()).toBe(`800.00`);
+  });
+
+  it(`rounds a half dollar of box 5 up when Schedule B is not required`, ({ task }) => {
+    task.meta.testedFactPaths = [`/interestIncome`, `/requiresScheduleB`];
+    // Form 1040 instr. (2025) p. 23: round only the total when Schedule B is not required.
+    // 26 U.S.C. 6102(a): a fractional part of one-half dollar or more increases to one dollar.
+    const g = fg(onePortfolioK1(partnershipId, `P`, { interest: `10.50`, ordinary: `0`, qualified: `0` }));
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`11.00`);
+  });
+
+  it(`uses each rounded K-1 amount on line 2b when Schedule B is required`, ({ task }) => {
+    task.meta.testedFactPaths = [`/interestIncome`, `/requiresScheduleB`, `/scheduleEK1InterestRounded`];
+    // Instructions for Schedule B (2025) p. 1, Line 2: line 2 is the total of the line 1 amounts.
+    // Each line 1 amount is already in whole dollars. 26 U.S.C. 6102(a).
+    // $800.40 rounds to $800 and $800.40 rounds to $800, so line 2b is $1,600.
+    const g = fg({
+      ...partIIGate,
+      '/scheduleEK1s': createCollectionWrapper([partnershipId, sCorpId]),
+      ...portfolioK1(partnershipId, `P`, { interest: `800.40`, ordinary: `0`, qualified: `0` }),
+      ...portfolioK1(sCorpId, `S`, { interest: `800.40`, ordinary: `0`, qualified: `0` }),
+    });
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/scheduleEK1InterestRounded`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`1600.00`);
+  });
+
+  it(`leaves line 2b incomplete when a listed partnership's box 5 is blank`, ({ task }) => {
+    task.meta.testedFactPaths = [`/interestIncome`, `/scheduleEK1Interest`, `/ordinaryDividends`];
+    // A blank box is not zero. The sum stays incomplete so Form 1040 line 2b is not filed short.
+    const facts: Record<string, unknown> = {
+      ...onePortfolioK1(partnershipId, `P`, { interest: `0`, ordinary: `100`, qualified: `0` }),
+    };
+    delete facts[`/scheduleEK1s/#${partnershipId}/form1065Box5`];
+    const g = fg(facts);
+    expect(get(g, `/scheduleEK1Interest`).complete).toBe(false);
+    expect(get(g, `/interestIncome`).complete).toBe(false);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`100.00`);
+  });
+
+  it(`includes box 5 and box 6a on Form 8960 lines 1 and 2 above $200,000`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8960Line1`,
+      `/form8960Line2`,
+      `/form8960Line17`,
+      `/flowKnockoutForm8960Unsupported`,
+      `/agi`,
+    ];
+    // 26 U.S.C. 1411(c)(1)(A)(i). Wages $200,000 plus box 5 $900 and box 6a $1,200. MAGI $202,100.
+    // Line 15 is $2,100. Line 17 is 3.8% of $2,100 = $79.80, rounded to $80. 26 U.S.C. 1411(a)(1), 6102(a).
+    // Qualified dividends are already inside ordinary dividends. hadScheduleEIncome is false, so the Part I
+    // Form 8960 stop does not apply.
+    const g = fg(onePortfolioK1(partnershipId, `P`));
+    expect(get(g, `/agi`).get.toString()).toBe(`202100.00`);
+    expect(get(g, `/form8960Line1`).get.toString()).toBe(`900.00`);
+    expect(get(g, `/form8960Line2`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/form8960Line17`).get.toString()).toBe(`80.00`);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+  });
+
+  it(`stops the return when box 6b is larger than box 6a`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/qualifiedDividendsExceedOrdinary`,
+      `/flowKnockoutScheduleEPartIIQualifiedDividends`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, Box 6b: qualified dividends are a portion of box 6a.
+    const g = fg(onePortfolioK1(partnershipId, `P`, { interest: `0`, ordinary: `800`, qualified: `900` }));
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/qualifiedDividendsExceedOrdinary`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIQualifiedDividends`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`900.00`);
+  });
+
+  it(`stops the return when dividends include previously taxed earnings and profits`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/dividendIncludesPtep`,
+      `/flowKnockoutScheduleEPartIIPtep`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/scheduleEK1OrdinaryDividends`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, Boxes 6a and 6b: do not include PTEP on Form 1040 lines 3b
+    // and 3a. Use Schedule K-3, Part V. Shareholder's Instructions (2025), PDF p. 7, Boxes 5a and 5b.
+    // 26 U.S.C. 959(a). Schedule K-3, Part V, is not computed, so the exclusion is not subtracted.
+    const g = fg(
+      onePortfolioK1(partnershipId, `P`, portfolioBoxes, {
+        [`/scheduleEK1s/#${partnershipId}/dividendIncludesPtep`]: createBooleanWrapper(true),
+      })
+    );
+    expect(get(g, `/flowKnockoutScheduleEPartIIPtep`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEK1OrdinaryDividends`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1200.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`800.00`);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/isSupportedOrdinaryIncome`).get).toBe(false);
+  });
+
+  it(`prints an S corporation on Schedule B Part II when box 5a is over $1,500`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/ordinaryDividends`,
+      `/requiresScheduleB`,
+      `/requiresScheduleBForOrdinaryDividends`,
+      `/scheduleBPartIIRow0Payer`,
+      `/scheduleBPartIIRow0Amount`,
+    ];
+    // Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5a: report ordinary
+    // dividends on Form 1040 line 3b. Instructions for Schedule B (2025) p. 1: over $1,500. Exactly $1,500
+    // does not. The payer is the S corporation.
+    const g = fg(onePortfolioK1(sCorpId, `S`, { interest: `0`, ordinary: `1600`, qualified: `400` }));
+    expect(get(g, `/ordinaryDividends`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/qualifiedDividends`).get.toString()).toBe(`400.00`);
+    expect(get(g, `/requiresScheduleBForOrdinaryDividends`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIIRow0Payer`).get).toBe(`Northwind Inc`);
+    expect(get(g, `/scheduleBPartIIRow0Amount`).get.toString()).toBe(`1600.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+  });
+
+  it(`stops the return when box 6c dividend equivalents are reported`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/hasOtherK1Amount`,
+      `/flowKnockoutScheduleEPartIIOtherK1Amount`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, Box 6c: "Dividend equivalents aren't reported on Form 1040
+    // or 1040-SR." Box 6c is not Form 1040 line 3b. It is an amount other than boxes 5, 6a, and 6b.
+    const g = fg({
+      ...partIIGate,
+      '/scheduleEK1s': createCollectionWrapper([partnershipId]),
+      ...k1(partnershipId, `0`, `P`, {
+        [`/scheduleEK1s/#${partnershipId}/hasOtherK1Amount`]: createBooleanWrapper(true),
+      }),
+    });
+    expect(get(g, `/flowKnockoutScheduleEPartIIOtherK1Amount`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`stops the return when box 5 includes clean renewable energy bond interest`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest`,
+      `/scheduleEK1s/*/cleanRenewableEnergyBondInterestStops`,
+      `/flowKnockoutScheduleEPartIICleanRenewableEnergyBond`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+      `/interestIncome`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, Box 5: the partnership attaches a statement, and the partner
+    // must reduce basis by the interest from the credit for holders of clean renewable energy bonds.
+    // PDF p. 3, Line 4d, is that reduction. 26 U.S.C. 54. The worksheet is not computed. The interest stays
+    // on Form 1040 line 2b; it is not subtracted.
+    const g = fg(
+      onePortfolioK1(partnershipId, `P`, portfolioBoxes, {
+        [`/scheduleEK1s/#${partnershipId}/box5IncludesCleanRenewableEnergyBondInterest`]: createBooleanWrapper(true),
+      })
+    );
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/cleanRenewableEnergyBondInterestStops`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIICleanRenewableEnergyBond`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/isSupportedOrdinaryIncome`).get).toBe(false);
+    expect(get(g, `/interestIncome`).get.toString()).toBe(`900.00`);
   });
 });

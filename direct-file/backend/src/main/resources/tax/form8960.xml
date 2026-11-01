@@ -41,8 +41,11 @@
         and rents". i8960 (2026 draft) p. 7 (PDF p. 8), Line 1: "Enter your taxable interest. Include the
         applicable amount from your return: Form 1040 or 1040-SR, line 2b." interest /interestIncome is Form
         1040 line
-        2b, including Schedule K-1 (Form 1041) box 1. 26 U.S.C. 1411(c)(1)(A)(i) ("interest"). Schedule K-1
-        (Form 1041) (2025) page 2 reports box 1 on Form 1040 line 2b. Interest earned in the ordinary course
+        2b, including Schedule K-1 (Form 1041) box 1, Schedule K-1 (Form 1065) box 5, and Schedule K-1
+        (Form 1120-S) box 4. 26 U.S.C. 1411(c)(1)(A)(i) ("interest"). Schedule K-1 (Form 1041) (2025) page 2
+        reports box 1 on Form 1040 line 2b. Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF
+        p. 15, Box 5, and Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 4,
+        report that interest on line 2b. 26 U.S.C. 702(b); 1366(b). Interest earned in the ordinary course
         of a non-section 1411 trade or business (line 7
         adjustment) can only
         arise with a Schedule C, which /flowKnockoutForm8960Unsupported stops.
@@ -60,8 +63,10 @@
         ordinary dividends. Include the applicable amount from your return: Form 1040 or 1040-SR, line 3b."
         Wired to
         income /ordinaryDividends (Form 1040 line 3b), which is Form 1099-DIV box 1a plus Schedule K-1 (Form
-        1041) box 2a. 26 U.S.C. 1411(c)(1)(A)(i) ("dividends"). Schedule K-1 (Form 1041) (2025) page 2
-        reports box 2a on Form 1040 line 3b.
+        1041) box 2a, Schedule K-1 (Form 1065) box 6a, and Schedule K-1 (Form 1120-S) box 5a. 26 U.S.C.
+        1411(c)(1)(A)(i) ("dividends"). Schedule K-1 (Form 1041) (2025) page 2 reports box 2a on Form 1040
+        line 3b. Partner's Instructions (2025), PDF p. 15, Box 6a, and Shareholder's Instructions (2025),
+        PDF p. 7, Box 5a, report ordinary dividends on line 3b. 26 U.S.C. 702(b); 1366(b).
       </Description>
       <Export mef="true" />
       <Derived>

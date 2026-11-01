@@ -14,7 +14,12 @@
 
   Part II supported path (every entity on line 28): domestic partnership (P) or S corporation (S), column
   (c) unchecked; box 1 ordinary business income >= 0; material participation yes, so the amount is column
-  (k); no column (e) or (f); line 27 no. Form 1065 box 14 code A that is not from farming is added to
+  (k); no column (e) or (f); line 27 no. Form 1065 boxes 5, 6a, and 6b, and Form 1120-S boxes 4, 5a,
+  and 5b, are interest and dividends on Form 1040 lines 2b, 3b, and 3a, and on Schedule B when required.
+  They are not line 28. 26 U.S.C. 469(e)(1)(A): that portfolio income is not passive. Previously taxed
+  earnings and profits in the dividend boxes stop the return; the section 959 exclusion is not computed.
+  Form 1065 box 5 interest from the credit for holders of clean renewable energy bonds stops the return;
+  the partner basis worksheet reduction is not computed. Form 1065 box 14 code A that is not from farming is added to
   Schedule SE line 2 (26 U.S.C. 1402(a)). A reduction of that amount, farming or box 14 code B, a limited
   partner amount that is not only guaranteed payments for services (1402(a)(13)), a joint return, and
   Schedule C qualified business income together with that amount are stops. An S corporation still enters
@@ -1524,6 +1529,175 @@
       </Writable>
     </Fact>
 
+
+    <Fact path="/scheduleEK1s/*/form1065Box5">
+      <Name>Schedule K-1 (Form 1065) box 5 interest income</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1065sk1.pdf, SHA-256 659063e0aaa36e44), PDF p. 15, Box 5:
+        "Report interest income on Form 1040 or 1040-SR, line 2b." The same page, Portfolio Income:
+        portfolio income in boxes 5 through 9b "isn't subject to the passive activity limitations" and is
+        not entered on Schedule E line 28. 26 U.S.C. 469(e)(1)(A)
+        (https://www.law.cornell.edu/uscode/text/26/469): in determining the income or loss from any
+        activity, "there shall not be taken into account" "any gross income from interest, dividends,
+        annuities, or royalties not derived in the ordinary course of a trade or business." 26 U.S.C.
+        61(a)(4) (https://www.law.cornell.edu/uscode/text/26/61). 26 U.S.C. 702(b)
+        (https://www.law.cornell.edu/uscode/text/26/702): the character of an item in the distributive
+        share "shall be determined as if such item were realized directly from the source from which
+        realized by the partnership." Asked only for a partnership. Not a loss: minimum zero. Enter zero
+        when box 5 is blank.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box6a">
+      <Name>Schedule K-1 (Form 1065) box 6a ordinary dividends</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 6a: "Report ordinary
+        dividends on Form 1040 or 1040-SR, line 3b." 26 U.S.C. 469(e)(1)(A): ordinary dividends not derived
+        in the ordinary course of a trade or business are not taken into account as income from a passive
+        activity. 26 U.S.C. 61(a)(7). 26 U.S.C. 702(b). Not Schedule E line 28. Not a loss: minimum zero.
+        Enter zero when box 6a is blank. An amount attributable to
+        previously taxed earnings and profits is /scheduleEK1s/*/dividendIncludesPtep and stops the return.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box6b">
+      <Name>Schedule K-1 (Form 1065) box 6b qualified dividends</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 6b: "Report any
+        qualified dividends on Form 1040 or 1040-SR, line 3a." Qualified dividends are the portion of box
+        6a that qualifies. 26 U.S.C. 469(e)(1)(A): those dividends are not taken into account as income from
+        a passive activity. 26 U.S.C. 1(h)(11) (https://www.law.cornell.edu/uscode/text/26/1). 26 U.S.C.
+        702(a)(5) (https://www.law.cornell.edu/uscode/text/26/702) takes into account separately "dividends
+        with respect to which section 1(h)(11) ... applies." A box 6b larger than box 6a stops the return.
+        Not a loss: minimum zero. Enter zero when box 6b is blank.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1120sBox4">
+      <Name>Schedule K-1 (Form 1120-S) box 4 interest income</Name>
+      <Description>
+        Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1120ssk.pdf, SHA-256 fb6194da1d1f9e89), PDF p. 7, Box 4:
+        "Report interest income on Form 1040 or 1040-SR, line 2b." The same page, Portfolio Income:
+        portfolio income in boxes 4 through 8b is not subject to the passive activity limitations. 26
+        U.S.C. 469(e)(1)(A) (https://www.law.cornell.edu/uscode/text/26/469): in determining the income or
+        loss from any activity, "there shall not be taken into account" "any gross income from interest,
+        dividends, annuities, or royalties not derived in the ordinary course of a trade or business." 26
+        U.S.C. 61(a)(4). 26 U.S.C. 1366(b) (https://www.law.cornell.edu/uscode/text/26/1366): the character
+        of an item in the shareholder's pro rata share "shall be determined as if such item were realized
+        directly from the source from which realized by the corporation." 26 U.S.C. 1366(a)(1)(A) requires
+        separate treatment when it could affect the shareholder's tax. Not Schedule E line 28. Asked only
+        for an S corporation. Not a loss: minimum zero. Enter zero when box 4 is blank.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1120sBox5a">
+      <Name>Schedule K-1 (Form 1120-S) box 5a ordinary dividends</Name>
+      <Description>
+        Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5a: "Report
+        ordinary dividends on Form 1040 or 1040-SR, line 3b." 26 U.S.C. 469(e)(1)(A): ordinary dividends not
+        derived in the ordinary course of a trade or business are not taken into account as income from a
+        passive activity. 26 U.S.C. 61(a)(7). 26 U.S.C. 1366(b). Not Schedule E line 28. Not a loss: minimum
+        zero. Enter zero when box 5a is blank. An amount
+        attributable to previously taxed earnings and profits is /scheduleEK1s/*/dividendIncludesPtep and
+        stops the return.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1120sBox5b">
+      <Name>Schedule K-1 (Form 1120-S) box 5b qualified dividends</Name>
+      <Description>
+        Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5b: "Report any
+        qualified dividends on Form 1040 or 1040-SR, line 3a." Qualified dividends are the portion of box
+        5a that qualifies. 26 U.S.C. 469(e)(1)(A): those dividends are not taken into account as income from
+        a passive activity. 26 U.S.C. 1(h)(11). 26 U.S.C. 1366(a)(1)(A) and 1366(b). A box 5b larger than
+        box 5a stops the return. Not a loss: minimum zero. Enter zero when box 5b is blank.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/dividendIncludesPtep">
+      <Name>Ordinary or qualified dividends include previously taxed earnings and profits</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 6a: "Some of the
+        amounts reported in this box may be attributable to PTEP in annual PTEP accounts that you have
+        with respect to a foreign corporation and are therefore excludable from your gross income. Don't
+        include the amount attributable to PTEP in your annual PTEP accounts on Form 1040 or 1040-SR,
+        line 3b. Use Schedule K-3, Part V, to determine your share of distributions by foreign
+        corporations to the partnership that are attributable to PTEP in your annual PTEP accounts with
+        respect to the foreign corporations." Box 6b gives the same direction for line 3a. Shareholder's
+        Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5a: "The amount in box 5a may
+        be attributable to previously taxed earnings and profits (PTEP) in annual PTEP accounts that you
+        have with respect to a foreign corporation. You will need to determine the amount of the ordinary
+        dividends that are attributable to PTEP in your annual PTEP accounts." Box 5b is the same rule for
+        qualified dividends. 26 U.S.C. 959(a) (https://www.law.cornell.edu/uscode/text/26/959): earnings
+        and profits attributable to amounts included under section 951(a) "shall not ... be again included
+        in the gross income" of the United States shareholder. Schedule K-3, Part V, is not computed, so
+        the exclusion is not figured. A yes stops the return. Answer no when none of the ordinary or
+        qualified dividends are attributable to PTEP.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest">
+      <Name>Form 1065 box 5 includes clean renewable energy bond interest</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 5: "If the amount of
+        interest income included in box 5 includes interest from the credit for holders of clean renewable
+        energy bonds, the partnership will attach a statement to Schedule K-1 showing your share of interest
+        income from these credits. Because the basis of your interest in the partnership has been increased
+        by your share of the interest income from these credits, you must reduce your basis by the same
+        amount. See the line 4d instructions for the Worksheet for Adjusting the Basis of a Partner's
+        Interest in the Partnership." PDF p. 3, Line 4d: "Reduce interest income reported on this line by
+        any amount included in interest income with respect to the credit to holders of clean renewable
+        energy bonds." 26 U.S.C. 54 (https://www.law.cornell.edu/uscode/text/26/54) is the credit to holders
+        of clean renewable energy bonds. The basis worksheet is not computed, so a yes stops the return.
+        The interest still belongs on Form 1040 line 2b; this question does not subtract it. Asked only for
+        a partnership. Answer no when box 5 does not include that interest.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
     <Fact path="/scheduleEK1s/*/hasQbiStatement">
       <Name>Schedule K-1 has a section 199A statement (box 20 code Z or box 17 code V)</Name>
       <Description>
@@ -1540,17 +1714,21 @@
     </Fact>
 
     <Fact path="/scheduleEK1s/*/hasOtherK1Amount">
-      <Name>Any Schedule K-1 amount other than box 1</Name>
+      <Name>Any Schedule K-1 amount other than box 1, box 14 code A, and interest and dividends</Name>
       <Description>
-        Any box other than box 1 ordinary business income (loss) and, for a partnership, box 14 code A.
-        Box 4 guaranteed payments are always included. Answer yes when box 4 has an amount, including when
-        those payments are also in box 14 code A. 26 U.S.C. 707(c) guaranteed payments are separately stated
-        under 702(a). Box 14 code A is the self-employment amount under 26 U.S.C. 1402(a) and does not take
-        the place of box 4. The same yes covers interest, dividends, royalties, section 179, credits, and
-        other separately stated items. 26 U.S.C. 702(a)(1)-(7) and 1366(a)(1)(A) require those items to be
-        taken into account separately. They are not entered on Schedule E line 28 column (k) in this slice,
-        so any such amount stops the return. Answer no only when every other box is blank or zero. Box 14
-        code A is entered on its own line and, when supported, on Schedule SE line 2.
+        Any box other than box 1, box 14 code A, and the interest and dividend boxes. Those boxes are
+        Form 1065 boxes 5, 6a, and 6b, or Form 1120-S boxes 4, 5a, and 5b, and they are reported on Form
+        1040 lines 2b, 3b, and 3a. Previously taxed earnings and profits are a separate question
+        (/scheduleEK1s/*/dividendIncludesPtep), not this one. Interest from the credit for holders of clean
+        renewable energy bonds is /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest, not this
+        one. Box 4 guaranteed payments are always
+        included. Answer yes when box 4 has an amount, including when those payments are also in box 14
+        code A. 26 U.S.C. 707(c) guaranteed payments are separately stated under 702(a). Box 14 code A is
+        the self-employment amount under 26 U.S.C. 1402(a) and does not take the place of box 4. The same
+        yes covers royalties, capital gain, section 179, credits, and other separately stated items.
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 6c: "Dividend
+        equivalents aren't reported on Form 1040 or 1040-SR." Box 6c is a yes. 26 U.S.C. 702(a) and
+        1366(a)(1)(A). Answer no only when every such box is blank or zero.
       </Description>
       <Writable>
         <Boolean />
@@ -1650,6 +1828,163 @@
       </Derived>
     </Fact>
 
+
+    <Fact path="/scheduleEK1s/*/isSCorporation">
+      <Name>Schedule K-1 is Form 1120-S</Name>
+      <Description>
+        Line 28 column (b) is S. Interest is Form 1120-S box 4. Ordinary dividends are box 5a. Qualified
+        dividends are box 5b. A partnership is not an S corporation.
+      </Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="../entityType" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/scheduleEK1EntityTypeOptions">S</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/k1Interest">
+      <Name>Interest from this partnership or S corporation</Name>
+      <Description>
+        Form 1065 box 5 or Form 1120-S box 4, before rounding. Added to interest /interestIncome. Not
+        Schedule E line 28 column (k). Cites on /scheduleEK1s/*/form1065Box5 and
+        /scheduleEK1s/*/form1120sBox4. 26 U.S.C. 61(a)(4); 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isPartnership" />
+            </When>
+            <Then>
+              <Dependency path="../form1065Box5" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../isSCorporation" />
+            </When>
+            <Then>
+              <Dependency path="../form1120sBox4" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/k1OrdinaryDividends">
+      <Name>Ordinary dividends from this partnership or S corporation</Name>
+      <Description>
+        Form 1065 box 6a or Form 1120-S box 5a, before rounding. Added to income /ordinaryDividends. Not
+        Schedule E line 28 column (k). Cites on /scheduleEK1s/*/form1065Box6a and
+        /scheduleEK1s/*/form1120sBox5a. 26 U.S.C. 61(a)(7); 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isPartnership" />
+            </When>
+            <Then>
+              <Dependency path="../form1065Box6a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../isSCorporation" />
+            </When>
+            <Then>
+              <Dependency path="../form1120sBox5a" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/k1QualifiedDividends">
+      <Name>Qualified dividends from this partnership or S corporation</Name>
+      <Description>
+        Form 1065 box 6b or Form 1120-S box 5b, before rounding. Added to income /qualifiedDividends and
+        to the QDCG worksheet line 2 (scheduleD3 /qdcgLine2). Not Schedule E line 28. Cites on
+        /scheduleEK1s/*/form1065Box6b and /scheduleEK1s/*/form1120sBox5b. 26 U.S.C. 1(h)(11); 702(a)(5);
+        1366(b).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isPartnership" />
+            </When>
+            <Then>
+              <Dependency path="../form1065Box6b" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../isSCorporation" />
+            </When>
+            <Then>
+              <Dependency path="../form1120sBox5b" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/roundedK1Interest">
+      <Name>K-1 interest in whole dollars</Name>
+      <Description>
+        Whole-dollar interest for one Schedule B Part I line 1 row. Schedule B line 2 adds those rounded
+        amounts when Schedule B is required. 26 U.S.C. 6102(a)
+        (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of a dollar shall be
+        disregarded unless it amounts to one-half dollar or more, in which case it shall be increased to
+        one dollar."
+      </Description>
+      <Derived>
+        <Round>
+          <Dependency path="../k1Interest" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/roundedK1OrdinaryDividends">
+      <Name>K-1 ordinary dividends in whole dollars</Name>
+      <Description>
+        Whole-dollar ordinary dividends for one Schedule B Part II line 5 row. Line 6 is the rounded total
+        of ordinary dividends, not the sum of these rows. 26 U.S.C. 6102(a).
+      </Description>
+      <Derived>
+        <Round>
+          <Dependency path="../k1OrdinaryDividends" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/qualifiedDividendsExceedOrdinary">
+      <Name>Qualified dividends are larger than ordinary dividends</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 6b: qualified dividends
+        are reported from box 6b, which is the qualified portion of the ordinary dividends in box 6a. Box
+        6b cannot be larger than box 6a. Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025),
+        PDF p. 7, Box 5b, is the same relationship to box 5a. The same relationship as Form 1099-DIV box
+        1b and box 1a.
+      </Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../k1QualifiedDividends" />
+          </Left>
+          <Right>
+            <Dependency path="../k1OrdinaryDividends" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleEK1s/*/box14CodeAReductionStops">
       <Name>This partnership reduced box 14 code A</Name>
       <Description>True when a partnership answers yes on /scheduleEK1s/*/box14CodeAWasReduced.</Description>
@@ -1668,6 +2003,20 @@
         <All>
           <Dependency path="../isPartnership" />
           <Dependency path="../box14CodeAIsFarm" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/cleanRenewableEnergyBondInterestStops">
+      <Name>This partnership's box 5 includes clean renewable energy bond interest</Name>
+      <Description>
+        True when a partnership answers yes on /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest.
+        An S corporation is not asked. Partner's Instructions (2025), PDF p. 15, Box 5, and PDF p. 3, Line 4d.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <Dependency path="../box5IncludesCleanRenewableEnergyBondInterest" />
         </All>
       </Derived>
     </Fact>
@@ -1916,7 +2265,10 @@
         Instructions for Schedule E, PDF pp. 11-12: nonpassive income goes in columns (i) through (k). Column
         (k) is box
         1, rounded to whole dollars, when the filer materially participates and box 1 is zero or
-        positive. 26 U.S.C.
+        positive. Interest and dividends are not column (k). Partner's Instructions for Schedule K-1
+        (Form 1065) (2025), PDF p. 15, Box 5 and Boxes 6a and 6b, report them on Form 1040 lines 2b, 3b,
+        and 3a. Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Boxes 4, 5a,
+        and 5b, do the same. 26 U.S.C.
         6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of
         a dollar shall be disregarded
         unless it amounts to one-half dollar or more, in which case it shall be
@@ -2029,8 +2381,11 @@
       <Name>This K-1 is in the supported Part II slice</Name>
       <Description>
         Domestic partnership or S corporation, column (c) unchecked, not a PTP, not a trading business, box 1
-        at least zero, box 14 code A on the supported Schedule SE path, no section 199A statement, no other
-        K-1 amount, column (e) and column (f) unchecked, and material participation yes.
+        at least zero, box 14 code A on the supported Schedule SE path, no section 199A statement, no K-1
+        amount other than box 1, box 14 code A, and the interest and dividend boxes, no previously taxed
+        earnings and profits, no clean renewable energy bond interest in Form 1065 box 5, qualified
+        dividends not larger than ordinary dividends, column (e) and column (f) unchecked, and material
+        participation yes.
       </Description>
       <Derived>
         <All>
@@ -2065,6 +2420,24 @@
           <Not>
             <Dependency path="../anyAmountNotAtRisk" />
           </Not>
+          <Not>
+            <Dependency path="../dividendIncludesPtep" />
+          </Not>
+          <Not>
+            <Dependency path="../cleanRenewableEnergyBondInterestStops" />
+          </Not>
+          <Not>
+            <Dependency path="../qualifiedDividendsExceedOrdinary" />
+          </Not>
+          <IsComplete>
+            <Dependency path="../k1Interest" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../k1OrdinaryDividends" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../k1QualifiedDividends" />
+          </IsComplete>
           <IsComplete>
             <Dependency path="../entityType" />
           </IsComplete>
@@ -2118,6 +2491,9 @@
               <IsComplete>
                 <Dependency path="../box14CodeANotLimitedPartnerAmount" />
               </IsComplete>
+              <IsComplete>
+                <Dependency path="../box5IncludesCleanRenewableEnergyBondInterest" />
+              </IsComplete>
             </All>
           </Any>
           <IsComplete>
@@ -2131,6 +2507,18 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../anyAmountNotAtRisk" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../k1Interest" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../k1OrdinaryDividends" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../k1QualifiedDividends" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../dividendIncludesPtep" />
           </IsComplete>
         </All>
       </Derived>
@@ -2686,6 +3074,94 @@
             <Left>
               <Count>
                 <Dependency path="/scheduleEK1s/*/hasOtherK1Amount" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+
+    <Fact path="/flowKnockoutScheduleEPartIIPtep">
+      <Name>Knockout: previously taxed earnings and profits in K-1 dividends</Name>
+      <Description>
+        Any ordinary or qualified dividend attributable to previously taxed earnings and profits. The
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Boxes 6a and 6b, say not to
+        include that amount on Form 1040 lines 3b and 3a, and to use Schedule K-3, Part V, to determine
+        it. The Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Boxes 5a and
+        5b, require the same determination. 26 U.S.C. 959(a). Schedule K-3, Part V, is not computed, so
+        the exclusion is not figured and the return stops. Complete false when /scheduleEHasPartIIIncome
+        is false.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/dividendIncludesPtep" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIICleanRenewableEnergyBond">
+      <Name>Knockout: clean renewable energy bond interest in Form 1065 box 5</Name>
+      <Description>
+        Form 1065 box 5 includes interest from the credit for holders of clean renewable energy bonds.
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 5, require the partner
+        to reduce the basis of the partnership interest by that interest. PDF p. 3, Line 4d, is the line
+        of the partner basis worksheet that makes the reduction. 26 U.S.C. 54. The worksheet is not
+        computed, so the return stops. The interest is not subtracted from Form 1040 line 2b. An S
+        corporation is not asked. Complete false when /scheduleEHasPartIIIncome is false.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/cleanRenewableEnergyBondInterestStops" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIQualifiedDividends">
+      <Name>Knockout: K-1 qualified dividends larger than ordinary dividends</Name>
+      <Description>
+        Form 1065 box 6b is larger than box 6a, or Form 1120-S box 5b is larger than box 5a. Qualified
+        dividends are a portion of ordinary dividends. Partner's Instructions for Schedule K-1 (Form 1065)
+        (2025), PDF p. 15, Box 6b. Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF
+        p. 7, Box 5b. A larger qualified amount stops the return rather than reporting line 3a above line
+        3b. Complete false when /scheduleEHasPartIIIncome is false.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/qualifiedDividendsExceedOrdinary" />
               </Count>
             </Left>
             <Right>
@@ -4489,6 +4965,9 @@
           <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeAMfj" />
           <Dependency path="/flowKnockoutScheduleEPartIIQbiCode" />
           <Dependency path="/flowKnockoutScheduleEPartIIOtherK1Amount" />
+          <Dependency path="/flowKnockoutScheduleEPartIIPtep" />
+          <Dependency path="/flowKnockoutScheduleEPartIICleanRenewableEnergyBond" />
+          <Dependency path="/flowKnockoutScheduleEPartIIQualifiedDividends" />
           <Dependency path="/flowKnockoutScheduleEPartIIColumnE" />
           <Dependency path="/flowKnockoutScheduleEPartIIColumnF" />
           <Dependency path="/flowKnockoutScheduleEPartIIForeignOrPtp" />
@@ -4644,7 +5123,10 @@
         instruments
         or commodities. Material-participation box 1 that is not a trading business is not added
         to Form 8960 line 4a.
-        Passive, trading, PTP, and any other box stop the return.
+        Passive, trading, PTP, and any other box stop the return. Interest and dividends (Form 1065
+        boxes 5, 6a, and 6b, or Form 1120-S boxes 4, 5a, and 5b) are Form 1040 lines 2b, 3b, and 3a, not
+        line 28. Previously taxed earnings and profits in the dividend boxes stop the return. 26 U.S.C.
+        959(a).
 
         Qualified business income. A blank box 20 code Z or box
         17 code V leaves Form 8995 lines 6-9 at zero.
@@ -5396,6 +5878,271 @@
             <Dependency path="/scheduleEEstates" />
           </IsComplete>
         </All>
+      </Derived>
+    </Fact>
+
+
+    <Fact path="/scheduleEK1PortfolioReady">
+      <Name>Schedule E Part II partnership collection is complete for interest and dividends</Name>
+      <Description>
+        True only when the filer answered yes to a partnership or S corporation and /scheduleEK1s is
+        complete. While the question is unanswered or no, or the collection is not started, Form 1065
+        boxes 5, 6a, and 6b and Form 1120-S boxes 4, 5a, and 5b contribute $0 to Form 1040 lines 2b, 3b,
+        and 3a. A blank box on a listed entity leaves the sum incomplete so the line is not filed short.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/scheduleEHasPartIIIncome" />
+          </IsComplete>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <IsComplete>
+            <Dependency path="/scheduleEK1s" />
+          </IsComplete>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1Interest">
+      <Name>Partnership and S corporation K-1 interest, unrounded</Name>
+      <Description>
+        Sum of Form 1065 box 5 and Form 1120-S box 4 before rounding. Partner's Instructions for Schedule
+        K-1 (Form 1065) (2025), PDF p. 15, Box 5, and Shareholder's Instructions for Schedule K-1 (Form
+        1120-S) (2025), PDF p. 7, Box 4, report the amount on Form 1040 line 2b. Used by interest
+        /requiresScheduleBForInterest and, when Schedule B is not required, by interest /interestIncome.
+        26 U.S.C. 61(a)(4); 702(b); 1366(b). $0 when Part II is unanswered or no, or the partnership list
+        is not complete.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEK1PortfolioReady" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEK1s/*/k1Interest" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1InterestRounded">
+      <Name>Partnership and S corporation K-1 interest, sum of whole-dollar amounts</Name>
+      <Description>
+        Sum of each rounded K-1 interest amount. When Schedule B is required, Form 1040 line 2b is the sum
+        of the Schedule B Part I line 1 amounts, including these. Instructions for Schedule B (Form 1040)
+        (2025) p. 1, Line 2. $0 on the same gate as /scheduleEK1Interest. Does not depend on
+        /requiresScheduleB. 26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEK1PortfolioReady" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEK1s/*/roundedK1Interest" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1OrdinaryDividends">
+      <Name>Partnership and S corporation K-1 ordinary dividends, unrounded</Name>
+      <Description>
+        Sum of Form 1065 box 6a and Form 1120-S box 5a before rounding. Partner's Instructions (2025),
+        PDF p. 15, Box 6a, and Shareholder's Instructions (2025), PDF p. 7, Box 5a, report the amount on
+        Form 1040 line 3b. Added in income /ordinaryDividends. 26 U.S.C. 61(a)(7); 702(b); 1366(b). $0
+        on the same gate as /scheduleEK1Interest.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEK1PortfolioReady" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEK1s/*/k1OrdinaryDividends" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1QualifiedDividends">
+      <Name>Partnership and S corporation K-1 qualified dividends, unrounded</Name>
+      <Description>
+        Sum of Form 1065 box 6b and Form 1120-S box 5b before rounding. Partner's Instructions (2025),
+        PDF p. 15, Box 6b, and Shareholder's Instructions (2025), PDF p. 7, Box 5b, report the amount on
+        Form 1040 line 3a. Added in income /qualifiedDividends and scheduleD3 /qdcgLine2. 26 U.S.C.
+        1(h)(11); 702(a)(5); 1366(b). $0 on the same gate as /scheduleEK1Interest.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEK1PortfolioReady" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEK1s/*/k1QualifiedDividends" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1sWithInterest">
+      <Name>Partnerships and S corporations with K-1 interest</Name>
+      <Description>
+        Entities whose Form 1065 box 5 or Form 1120-S box 4 is greater than zero, and only when Part II
+        is yes and the collection is complete. A zero interest box is not a Schedule B Part I row.
+        Partner's Instructions (2025), PDF p. 15, Box 5. Shareholder's Instructions (2025), PDF p. 7,
+        Box 4.
+      </Description>
+      <Derived>
+        <Filter path="/scheduleEK1s">
+          <All>
+            <Dependency path="/scheduleEK1PortfolioReady" />
+            <GreaterThan>
+              <Left>
+                <Dependency path="k1Interest" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1sWithOrdinaryDividends">
+      <Name>Partnerships and S corporations with K-1 ordinary dividends</Name>
+      <Description>
+        Entities whose Form 1065 box 6a or Form 1120-S box 5a is greater than zero, and only when Part II
+        is yes and the collection is complete. A zero ordinary-dividend box is not a Schedule B Part II
+        row. Partner's Instructions (2025), PDF p. 15, Box 6a. Shareholder's Instructions (2025), PDF
+        p. 7, Box 5a.
+      </Description>
+      <Derived>
+        <Filter path="/scheduleEK1s">
+          <All>
+            <Dependency path="/scheduleEK1PortfolioReady" />
+            <GreaterThan>
+              <Left>
+                <Dependency path="k1OrdinaryDividends" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+        </Filter>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBK1InterestCount">
+      <Name>Count of partnerships and S corporations with K-1 interest</Name>
+      <Description>Zero while that filter is incomplete, so Form 1099-INT and estate rows still print.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleEK1sWithInterest" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency path="/scheduleEK1sWithInterest" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBK1OrdinaryDividendCount">
+      <Name>Count of partnerships and S corporations with K-1 ordinary dividends</Name>
+      <Description>Zero while that filter is incomplete, so Form 1099-DIV and estate rows still print.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+              </CollectionSize>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -6169,6 +6916,877 @@
           </Collection>
           <Index>
             <Int>14</Int>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+
+    <Fact path="/scheduleBPartIRow0K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 0</Name>
+      <Description>
+        Item 0 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>0</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow1K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 1</Name>
+      <Description>
+        Item 1 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>1</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow2K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 2</Name>
+      <Description>
+        Item 2 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>2</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow3K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 3</Name>
+      <Description>
+        Item 3 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>3</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow4K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 4</Name>
+      <Description>
+        Item 4 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>4</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow5K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 5</Name>
+      <Description>
+        Item 5 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>5</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow6K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 6</Name>
+      <Description>
+        Item 6 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>6</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow7K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 7</Name>
+      <Description>
+        Item 7 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>7</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow8K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 8</Name>
+      <Description>
+        Item 8 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>8</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow9K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 9</Name>
+      <Description>
+        Item 9 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>9</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow10K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 10</Name>
+      <Description>
+        Item 10 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>10</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow11K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 11</Name>
+      <Description>
+        Item 11 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>11</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow12K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 12</Name>
+      <Description>
+        Item 12 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>12</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIRow13K1Item">
+      <Name>Schedule B Part I line 1 partnership or S corporation 13</Name>
+      <Description>
+        Item 13 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithInterest" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>13</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBInterestReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox1Count" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow0K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 0</Name>
+      <Description>
+        Item 0 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>0</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow1K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 1</Name>
+      <Description>
+        Item 1 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>1</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow2K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 2</Name>
+      <Description>
+        Item 2 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>2</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow3K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 3</Name>
+      <Description>
+        Item 3 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>3</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow4K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 4</Name>
+      <Description>
+        Item 4 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>4</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow5K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 5</Name>
+      <Description>
+        Item 5 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>5</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow6K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 6</Name>
+      <Description>
+        Item 6 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>6</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow7K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 7</Name>
+      <Description>
+        Item 7 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>7</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow8K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 8</Name>
+      <Description>
+        Item 8 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>8</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow9K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 9</Name>
+      <Description>
+        Item 9 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>9</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow10K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 10</Name>
+      <Description>
+        Item 10 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>10</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow11K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 11</Name>
+      <Description>
+        Item 11 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>11</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow12K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 12</Name>
+      <Description>
+        Item 12 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>12</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow13K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 13</Name>
+      <Description>
+        Item 13 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>13</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIRow14K1Item">
+      <Name>Schedule B Part II line 5 partnership or S corporation 14</Name>
+      <Description>
+        Item 14 of the partnership and S corporation list used after Form 1099 rows and Schedule K-1
+        (Form 1041) rows. Out of range is incomplete and is not printed. Instructions for Schedule B
+        (Form 1040) (2025) p. 1, line 1 or line 5: list each payer. The payer is the partnership or S
+        corporation. 26 U.S.C. 702(b); 1366(b).
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency path="/scheduleEK1sWithOrdinaryDividends" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>14</Int>
+              </Minuend>
+              <Subtrahends>
+                <Dependency module="interest" path="/scheduleBDividendReportCount" />
+              </Subtrahends>
+              <Subtrahends>
+                <Dependency path="/scheduleBEstateBox2aCount" />
+              </Subtrahends>
+            </Subtract>
           </Index>
         </IndexOf>
       </Derived>

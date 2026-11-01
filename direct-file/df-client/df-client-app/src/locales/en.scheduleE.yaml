@@ -28,7 +28,8 @@ headings:
   /heading/income/schedule-e/estate-scope: Is this a foreign beneficiary, a foreign trust, or an inconsistent treatment?
   /heading/income/schedule-e/estate-interest-dividends: Enter interest and dividends from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-boxes: Enter the income from Schedule K-1 (Form 1041)
-  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 5, 6, 7, and 8?
+  /heading/income/schedule-e/estate-other:
+    Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 5, 6, 7, and 8?
   /heading/income/schedule-e/estate-limits: Do any loss limits apply to this estate or trust?
   /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC (Schedule Q, Form 1066)?
   /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
@@ -38,7 +39,9 @@ headings:
   /heading/income/schedule-e/k1-box1: Enter ordinary business income and whether you materially participated
   /heading/income/schedule-e/k1-box14: Enter self-employment earnings from Schedule K-1 (Form 1065), box 14, code A
   /heading/income/schedule-e/k1-box14-scope: Is this the amount that belongs on Schedule SE?
-  /heading/income/schedule-e/k1-other: Does this Schedule K-1 report anything besides box 1?
+  /heading/income/schedule-e/k1-portfolio-partnership: Enter interest and dividends from Schedule K-1 (Form 1065)
+  /heading/income/schedule-e/k1-portfolio-s-corp: Enter interest and dividends from Schedule K-1 (Form 1120-S)
+  /heading/income/schedule-e/k1-other: Does this Schedule K-1 report anything else?
   /heading/income/schedule-e/k1-columns: Do you have to check column (e) or column (f) on Schedule E line 28?
   /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support this Schedule K-1 situation
   /heading/knockout/schedule-c-k1-box14:
@@ -56,15 +59,15 @@ headings:
   /heading/income/schedule-e/property-name: What is the name of this rental?
   /heading/income/schedule-e/property-amounts: Enter this rental’s rents, royalties, and expenses
   /heading/income/schedule-e/property-participation: Did you materially participate in this rental?
-  /heading/income/schedule-e/property-safe-harbor: Are you relying on the rental real estate safe harbor for this property?
+  /heading/income/schedule-e/property-safe-harbor:
+    Are you relying on the rental real estate safe harbor for this property?
   /heading/income/schedule-e/property-aggregation: Is this rental part of an aggregated trade or business?
   /heading/income/schedule-e/property-suspended: Does this rental have a loss that is suspended this year?
   /heading/income/schedule-e/qbi-carryforward: Do you have a qualified business loss carryforward from a prior year?
   /heading/income/schedule-e/qbi-cooperative: Are you a patron of an agricultural or horticultural cooperative?
   /heading/knockout/schedule-e-trade-or-business:
     This tool doesn’t support a safe harbor statement, an aggregation, or a suspended loss for this rental
-  /heading/knockout/schedule-e-qbi-limit:
-    This tool can’t figure this qualified business income deduction
+  /heading/knockout/schedule-e-qbi-limit: This tool can’t figure this qualified business income deduction
   /heading/knockout/schedule-e-eitc:
     This tool can’t yet check the Earned Income Tax Credit with rental or royalty income
 info:
@@ -76,9 +79,10 @@ info:
     body: >-
       Answer yes if you were a partner, an S corporation shareholder, or a beneficiary of an estate or trust, even if
       you had no rental or royalty income and even if you did not actually receive the money. A partnership or S
-      corporation with only ordinary business income, where you materially participated, can be reported. Other Schedule
-      K-1 situations stop this return. A residual interest in a REMIC is a separate question. Do not answer yes here
-      only because you received Schedule Q (Form 1066).
+      corporation can be reported when you materially participated. Interest and ordinary and qualified dividends from
+      that Schedule K-1 can be reported on Form 1040. Previously taxed earnings and profits stop this return. Other
+      Schedule K-1 situations stop this return. A residual interest in a REMIC is a separate question. Do not answer yes
+      here only because you received Schedule Q (Form 1066).
   /info/income/schedule-e/part-ii-line-27:
     body: >-
       Answer yes if you are reporting a loss that was not allowed in a prior year because of the at-risk or basis
@@ -146,11 +150,30 @@ info:
       Schedule SE line 2 includes this amount when it is not from farming, you did not reduce it, and it is the right
       amount for a limited partner. A reduction needs an attached explanation. Farming and box 14 code B go on line 1a.
       A limited partner includes only guaranteed payments for services.
+  /info/income/schedule-e/k1-portfolio-partnership:
+    body: >-
+      Enter box 5 (interest), box 6a (ordinary dividends), and box 6b (qualified dividends). Enter 0 if a box is blank.
+      Box 6b cannot be larger than box 6a. These amounts go on Form 1040, not on Schedule E line 28. Interest goes on
+      line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a. Answer yes if box 5 includes
+      interest from the credit for holders of clean renewable energy bonds. The partnership attaches a statement, and
+      the basis of the partnership interest must be reduced by that interest. This return does not figure that
+      reduction. Answer yes to the last question if any of those dividends are previously taxed earnings and profits.
+      That amount is not included on lines 3b or 3a, and this return does not figure the exclusion.
+  /info/income/schedule-e/k1-portfolio-s-corp:
+    body: >-
+      Enter box 4 (interest), box 5a (ordinary dividends), and box 5b (qualified dividends). Enter 0 if a box is blank.
+      Box 5b cannot be larger than box 5a. These amounts go on Form 1040, not on Schedule E line 28. Interest goes on
+      line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a. Answer yes to the last question if
+      any of those dividends are previously taxed earnings and profits. That amount is not included on lines 3b or 3a,
+      and this return does not figure the exclusion.
   /info/income/schedule-e/k1-other:
     body: >-
       Answer yes to the first question if the K-1 includes a statement for box 20, code Z (Form 1065) or box 17, code V
-      (Form 1120-S). Answer yes to the second question if any box other than box 1, and other than box 14 code A, has an
-      amount. Box 4 guaranteed payments are a yes even when that amount is also included in box 14 code A.
+      (Form 1120-S). Answer yes to the second question if any box other than box 1, box 14 code A, and the interest and
+      dividend boxes has an amount. Those boxes are Form 1065 boxes 5, 6a, and 6b, or Form 1120-S boxes 4, 5a, and 5b.
+      Box 4 guaranteed payments are a yes even when that amount is also included in box 14 code A. Box 6c dividend
+      equivalents are a yes. They are not reported on Form 1040. The statement for clean renewable energy bond interest
+      in box 5 is the earlier partnership question, not this one.
   /info/income/schedule-e/k1-columns:
     body: >-
       Answer yes to the first question if you received a distribution, disposed of stock, or received a loan repayment
@@ -185,11 +208,13 @@ info:
       body:
         - p: >-
             This tool can report a domestic partnership or S corporation with ordinary business income when you
-            materially participated, including Schedule K-1 (Form 1065) box 14 code A that is not from farming. A loss,
-            a passive activity, a foreign partnership, a publicly traded partnership, a distribution or other basis
-            computation, farming, a reduction of that self-employment amount, a limited partner amount that is not only
-            guaranteed payments for services, a joint return with that amount, or any other K-1 amount needs forms this
-            tool doesn’t support yet. You’ll need another way to file this return.
+            materially participated, including interest and dividends from that Schedule K-1 and Schedule K-1 (Form
+            1065) box 14 code A that is not from farming. A loss, a passive activity, a foreign partnership, a publicly
+            traded partnership, a distribution or other basis computation, farming, a reduction of that self-employment
+            amount, a limited partner amount that is not only guaranteed payments for services, a joint return with that
+            amount, previously taxed earnings and profits, interest from the credit for holders of clean renewable
+            energy bonds, or any other K-1 amount needs forms this tool doesn’t support yet. You’ll need another way to
+            file this return.
   /info/knockout/schedule-c-k1-box14:
     alertText:
       body:
@@ -244,23 +269,23 @@ info:
             tool doesn’t include it in that test yet. You’ll need another way to file this return.
   /info/income/schedule-e/trade-or-business:
     body: >-
-      Answer yes if a rental is a section 162 trade or business, including property you rent to a trade or business
-      that you commonly control. You will enter each property. The qualified business income deduction is figured on
-      Form 8995. A Rev. Proc. 2019-38 safe harbor, an aggregation, a loss suspended this year, or property
-      amounts above the Schedule E totals stop the return.
+      Answer yes if a rental is a section 162 trade or business, including property you rent to a trade or business that
+      you commonly control. You will enter each property. The qualified business income deduction is figured on Form
+      8995. A Rev. Proc. 2019-38 safe harbor, an aggregation, a loss suspended this year, or property amounts above the
+      Schedule E totals stop the return.
   /info/income/schedule-e/properties:
     body: >-
-      Add one entry for each rental you treat as a section 162 trade or business. The name and the net income or loss
-      go on Form 8995, line 1. The Schedule E totals are entered on a later screen.
+      Add one entry for each rental you treat as a section 162 trade or business. The name and the net income or loss go
+      on Form 8995, line 1. The Schedule E totals are entered on a later screen.
   /info/income/schedule-e/property-name:
     body: >-
-      This name is Form 8995, line 1, column (a). Column (b) is your SSN or ITIN. It is left blank only if this
-      rental is aggregated.
+      This name is Form 8995, line 1, column (a). Column (b) is your SSN or ITIN. It is left blank only if this rental
+      is aggregated.
   /info/income/schedule-e/property-amounts:
     body: >-
-      Rents, royalties, and expenses for this property only. Net income or loss is Form 8995, line 1, column (c). It
-      is not reduced by self-employment tax. The return stops if these amounts, added across properties, are more
-      than the Schedule E totals, or if column (c) is more than Schedule E line 26.
+      Rents, royalties, and expenses for this property only. Net income or loss is Form 8995, line 1, column (c). It is
+      not reduced by self-employment tax. The return stops if these amounts, added across properties, are more than the
+      Schedule E totals, or if column (c) is more than Schedule E line 26.
   /info/income/schedule-e/property-participation:
     body: >-
       Material participation matters for the $400 minimum deduction on Form 8995, line 16. It is not required for the
@@ -290,18 +315,18 @@ info:
       body:
         - p: >-
             Rev. Proc. 2019-38 requires a statement this tool does not attach. An aggregation has to be reported on
-            Schedule B (Form 8995-A). A loss suspended under section 469 or another limitation is not qualified
-            business income this year. The return also stops if the section 162 rents, royalties, or expenses are
-            more than the Schedule E totals, or if Form 8995, line 1, column (c) is more than Schedule E line 26.
-            You’ll need another way to file this return.
+            Schedule B (Form 8995-A). A loss suspended under section 469 or another limitation is not qualified business
+            income this year. The return also stops if the section 162 rents, royalties, or expenses are more than the
+            Schedule E totals, or if Form 8995, line 1, column (c) is more than Schedule E line 26. You’ll need another
+            way to file this return.
   /info/knockout/schedule-e-qbi-limit:
     alertText:
       body:
         - p: >-
             This tool figures the qualified business income deduction only with the simplified Form 8995. It can’t
-            handle a prior-year loss carryforward, cooperative payments, taxable income above the Form 8995 limit, a
-            mix of trades you materially participate in and trades you don’t, or more than five trades or businesses.
-            You’ll need another way to file this return.
+            handle a prior-year loss carryforward, cooperative payments, taxable income above the Form 8995 limit, a mix
+            of trades you materially participate in and trades you don’t, or more than five trades or businesses. You’ll
+            need another way to file this return.
 fields:
   /hadScheduleEIncome:
     boolean:
@@ -501,6 +526,26 @@ fields:
     boolean:
       "yes": Yes, I am a limited partner and this amount is not only guaranteed payments for services
       "no": No, this is the right amount for Schedule SE
+  /scheduleEK1s/*/form1065Box5:
+    name: Box 5, interest income
+  /scheduleEK1s/*/form1065Box6a:
+    name: Box 6a, ordinary dividends
+  /scheduleEK1s/*/form1065Box6b:
+    name: Box 6b, qualified dividends
+  /scheduleEK1s/*/form1120sBox4:
+    name: Box 4, interest income
+  /scheduleEK1s/*/form1120sBox5a:
+    name: Box 5a, ordinary dividends
+  /scheduleEK1s/*/form1120sBox5b:
+    name: Box 5b, qualified dividends
+  /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest:
+    boolean:
+      "yes": Yes, box 5 includes interest from clean renewable energy bonds
+      "no": No, box 5 does not include that interest
+  /scheduleEK1s/*/dividendIncludesPtep:
+    boolean:
+      "yes": Yes, some of these dividends are previously taxed earnings and profits
+      "no": No, none of these dividends are previously taxed earnings and profits
   /scheduleEK1s/*/hasQbiStatement:
     boolean:
       "yes": Yes, there is a statement for box 20 code Z or box 17 code V
@@ -555,7 +600,8 @@ dataviews:
     /scheduleEAnyPropertyLoss: Did any single property have a loss?
     /scheduleEProvidesSubstantialServices:
       Did you provide substantial services, such as cleaning, linens, or maid service?
-    /scheduleERentalIsTradeOrBusiness: Is any rental a section 162 trade or business for the qualified business income deduction?
+    /scheduleERentalIsTradeOrBusiness:
+      Is any rental a section 162 trade or business for the qualified business income deduction?
     /scheduleEProperties/*/propertyName: Rental name
     /scheduleEProperties/*/writableRents: Rents received for this property
     /scheduleEProperties/*/writableRoyalties: Royalties received for this property
@@ -581,8 +627,18 @@ dataviews:
     /scheduleEK1s/*/box14CodeAIsFarm: Is this farm income, or do you have box 14 code B?
     /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount:
       Is box 14 code A more than guaranteed payments for services because you are a limited partner?
+    /scheduleEK1s/*/form1065Box5: Box 5, interest income
+    /scheduleEK1s/*/form1065Box6a: Box 6a, ordinary dividends
+    /scheduleEK1s/*/form1065Box6b: Box 6b, qualified dividends
+    /scheduleEK1s/*/form1120sBox4: Box 4, interest income
+    /scheduleEK1s/*/form1120sBox5a: Box 5a, ordinary dividends
+    /scheduleEK1s/*/form1120sBox5b: Box 5b, qualified dividends
+    /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest:
+      Does box 5 include interest from the credit for holders of clean renewable energy bonds?
+    /scheduleEK1s/*/dividendIncludesPtep: Do any of these dividends include previously taxed earnings and profits?
     /scheduleEK1s/*/hasQbiStatement: Is there a statement for box 20 code Z or box 17 code V?
-    /scheduleEK1s/*/hasOtherK1Amount: Does any box other than box 1 or box 14 code A have an amount?
+    /scheduleEK1s/*/hasOtherK1Amount:
+      Does any box other than box 1, box 14 code A, and the interest and dividend boxes have an amount?
     /scheduleEK1s/*/basisComputationRequired: Is column (e) checked?
     /scheduleEK1s/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/entityName: Name of the estate or trust
