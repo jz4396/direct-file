@@ -7,7 +7,8 @@
 // (married filing jointly, Florida, wages, standard deduction, AMTI inside the exemption phaseout),
 // profile J (full-year Florida resident, single: W-2, Form 1099-DIV boxes 1a, 1b, and 2a, and Schedule E
 // Part I rental income), and profile K (Florida full-year single, one Schedule C, Form 8995 with the line 14
-// income limitation).
+// income limitation), and profile L (Florida full-year single: W-2, Schedule C, and Form 1099-INT boxes 8 and 9,
+// with the box 9 amount on Form 6251 line 2g producing alternative minimum tax).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -183,6 +184,10 @@ import {
   profileJFlDividendsRental,
   profileKBusinessId,
   profileKFlSingleScheduleC,
+  profileLBusinessId,
+  profileLFlSinglePabInterest,
+  profileLInterestId,
+  profileLW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -2632,5 +2637,329 @@ describe(`golden end-to-end scenario (synthetic data): profile J, Florida, divid
       expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(false);
     }
     expectNotStopped(g);
+  });
+});
+
+// The only submission-blocking facts this return sets true. Form 8995 prints. Submission still stops because
+// there is no MeF mapping (/flowKnockoutForm8995WithoutTy2026Template).
+const PROFILE_L_STOPPED = [`/flowKnockoutForm8995WithoutTy2026Template`, `/flowIsKnockedOut`];
+
+describe(`golden end-to-end scenario (synthetic data): profile L, Florida single, W-2, Schedule C, Form 1099-INT boxes 8 and 9, Form 6251 line 2g`, () => {
+  // Single, Florida full-year resident [FL]; filer born 1987-11-08 (under 65, born after January 1, 1962), SSN
+  //   900-39-1014 (900 area, group 39, outside the ITIN ranges [EITC]). Address 123 Example St, Gainesville, FL
+  //   32601. Standard deduction. No qualified dividends and no capital gain, so the QDCG worksheet and Form 6251
+  //   Part III do not apply.
+  // W-2: box 1 $150,000, box 2 $37,000, box 3 $150,000, box 4 $9,300, box 5 $150,000, box 6 $2,175. No box 16 or 17.
+  //   Box 4 is 6.2% × 150,000 = 9,300 exactly. 26 U.S.C. 3101(a)
+  //   (https://www.law.cornell.edu/uscode/text/26/3101). Box 6 is 1.45% × 150,000 = 2,175 exactly [3101 (b)(1)].
+  //   This employer paid under $200,000, so box 6 has no 0.9% [3102 (f)(1)].
+  // Schedule C (line-item expenses): Example Advisory, line 1 $40,000, line 4 $0, line 7 $40,000, line 8
+  //   advertising $4,000, line 18 office expense $2,500, line 22 supplies $3,500, line 28 $10,000, line 31 net
+  //   profit $30,000. 26 U.S.C. 61, 162 (https://www.law.cornell.edu/uscode/text/26/162). 2026 Schedule C, line 31:
+  //   "If a profit, enter on both Schedule 1 (Form 1040), line 3, and on Schedule SE, line 2."
+  // Form 1099-INT, one payer (Example City Bond): box 1 $0, box 8 $40,000, box 9 $40,000. Boxes 10-13 blank.
+  //   Box 9 equals box 8, so it is included in box 8. Instructions for Form 6251 (2025),
+  //   https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 3, Line 2g: "Enter on line 2g interest income from 'specified
+  //   private activity bonds' reduced (but not below zero) by any deduction that would have been allowable if the
+  //   interest were includible in gross income for the regular tax. Each payer of this type of interest should send
+  //   you a Form 1099-INT showing the amount of this interest in box 9." No such deduction is collected. 26 U.S.C.
+  //   57(a)(5)(A) (https://www.law.cornell.edu/uscode/text/26/57): the preference is "interest on specified private
+  //   activity bonds reduced by any deduction (not allowable in computing the regular tax) which would have been
+  //   allowable if such interest were includible in gross income."
+  //   Form 1040 line 2a is box 8. 26 U.S.C. 103(a) (https://www.law.cornell.edu/uscode/text/26/103): "gross income
+  //   does not include interest on any State or local bond." [GI] p. 25, Line 2a: "your tax-exempt stated interest
+  //   should be shown in box 8 of Form 1099-INT ... Enter the total on line 2a." Line 2a is not in total income.
+  //   Taxable interest is $0, which is not over $1,500, so Schedule B is not required.
+  // Schedule SE, whole dollars, rounded half up at each line. Cents before that rounding, in parentheses.
+  //   Line 3 = 30,000. Line 4a = round(30,000 × 92.35%) = 27,705 (27,705.00). 26 U.S.C. 1402(a)(12).
+  //   Line 8a = box 3 = 150,000. Wage base $184,500 (2026 draft Instructions for Schedule SE, PDF p. 2, line 7
+  //   "$184,500"; 90 FR 49047, p. 49050). Line 9 = 184,500 − 150,000 = 34,500, which is more than line 6, so line 10
+  //   uses all of line 6. 26 U.S.C. 1402(b)(1).
+  //   Line 10 = round(27,705 × 12.4%) = round(3,435.42) = 3,435 (26 U.S.C. 1401(a)).
+  //   Line 11 = round(27,705 × 2.9%) = round(803.445) = 803 (26 U.S.C. 1401(b)(1)).
+  //   Line 12 = 3,435 + 803 = 4,238. Schedule 2 line 4.
+  //   Line 13 = round(4,238 × 50%) = 2,119 (2,119.00). 26 U.S.C. 164(f). Schedule 1 line 15.
+  // Form 1040: line 1a 150,000; line 2a 40,000; line 2b 0; Schedule 1 line 3 30,000; line 8 30,000; line 9 total
+  //   income 180,000. Line 10 adjustments 2,119. Line 11 AGI 177,881.
+  //   Line 12e standard deduction 16,100. [RP] p. 18 §4.14(1): "Unmarried Individuals (other than Surviving Spouses
+  //   and Heads of Households) ... $16,100". No additional amount for age and no Schedule 1-A enhanced senior
+  //   deduction. Line 13a is $0.
+  // Form 8995 (the PDF prints; submission still stops because there is no MeF mapping):
+  //   Line 1(i)(c) and line 2 = 30,000 − 2,119 = 27,881. Treas. Reg. 1.199A-3(b)(1)(vi).
+  //   Line 5 = round(20% × 27,881) = round(5,576.20) = 5,576. 26 U.S.C. 199A(b)(2)(A).
+  //   Lines 6 through 9 are $0. Line 10 = 5,576.
+  //   Line 11 = 177,881 − 16,100 = 161,781. Line 12 net capital gain $0. Line 13 = 161,781.
+  //   Line 14 = round(20% × 161,781) = round(32,356.20) = 32,356. 26 U.S.C. 199A(a)(2).
+  //   Line 15 = the smaller of line 10 and line 14 = 5,576. The qualified business income component binds.
+  //   AGI 177,881 is under the threshold for all other returns, $201,750. [RP] §3.26, PDF pp. 21-22: "For taxable
+  //   years beginning in 2026, the threshold amounts under § 199A(e)(2) ... are: ... All Other Returns $201,750
+  //   $276,750". Below that threshold, Form 8995 applies and the W-2 wage and UBIA limitation does not.
+  //   Line 16 minimum $400 (26 U.S.C. 199A(i); active QBI is at least $1,000) is less than 5,576, so line 17 =
+  //   5,576. That is Form 1040 line 13b.
+  //   Line 15 taxable income = 161,781 − 5,576 = 156,205.
+  // Line 16, $100,000 or more, so the Tax Computation Worksheet on the taxable income itself, not a Tax Table
+  //   midpoint. [GI] p. 36: "If your taxable income is less than $100,000, you must use the Tax Table". [RP] p. 11
+  //   §4.01 Table 3 (unmarried): "Over $105,700 but not over $201,775 $17,966 plus 24% of the excess over
+  //   $105,700". Excess = 156,205 − 105,700 = 50,505. 24% × 50,505 = 12,121.20. Tax = 17,966 + 12,121.20 =
+  //   30,087.20, which rounds to 30,087 (half a dollar up; 20 cents does not). [GI] p. 23.
+  // Form 6251 [6251] [55] [55d]. Line 1a = line 14 = 16,100 + 5,576 = 21,676 (no Schedule 1-A line 43). Line 1b =
+  //   AGI − line 1a = 177,881 − 21,676 = 156,205, the taxable income. Line 2a = the standard deduction 16,100
+  //   (26 U.S.C. 56(b)(1)(E), https://www.law.cornell.edu/uscode/text/26/56; the section 199A deduction is not added
+  //   back). Line 2g = box 9 = 40,000. Lines 2b-2f and 2h-3 are $0; /hasAmtPreferenceItems is no.
+  //   Line 4 AMTI = 156,205 + 16,100 + 40,000 = 212,305. That is under the unmarried phaseout threshold $500,000
+  //   [RP p. 17 §4.10], so line 5 is the full exemption $90,100 [RP p. 16 §4.10]. Line 6 = 212,305 − 90,100 =
+  //   122,205, which is not over $244,500 [RP p. 16 §4.10], so Part III is not used and line 7 = round(26% ×
+  //   122,205) = round(31,773.30) = 31,773. Line 8 is $0, so line 9 (tentative minimum tax) = 31,773. Line 10 is
+  //   the regular tax 30,087. Line 11 AMT = 31,773 − 30,087 = 1,686. 26 U.S.C. 55(a). Schedule 2 line 2.
+  //   "Who Must File" item 1 is met (line 7 greater than line 10), so Form 6251 is attached. i6251 (2025) p. 1.
+  //   A box 9 of $33,000 (still not more than box 8) is the boundary row: line 2g 33,000, line 4 AMTI 205,305,
+  //   line 6 115,205, line 7 round(26% × 115,205) = round(29,953.30) = 29,953, which is less than line 10, so
+  //   line 11 is $0 and Form 6251 is not required.
+  // Form 8959: Medicare wages 150,000 plus Schedule SE line 6 27,705 = 177,705, under the $200,000 single threshold
+  //   [3101 (b)(2)(C)]. Box 6 equals 1.45% of box 5, so line 24 is $0. Form 8959 is not required.
+  // Form 8960 [1411 (b)(3)]: AGI 177,881 is under $200,000, so line 17 is $0. Tax-exempt interest is not net
+  //   investment income (26 U.S.C. 1411(c)(1)(A)(i) reaches interest included in gross income; 26 U.S.C. 103(a)
+  //   excludes this interest). The Schedule C stop does not apply under the threshold.
+  // Schedule 2: line 2 1,686; line 4 4,238. Total tax = 30,087 + 1,686 + 4,238 = 36,011. Withholding 37,000.
+  //   Overpayment 989. Form 2210 line 4 is 36,011 and line 6 is 37,000, so line 7 is −989, which is less than
+  //   $1,000. Form 2210 (2026) draft p. 1: "If less than $1,000, stop; you don't owe a penalty. Don't file Form
+  //   2210." 26 U.S.C. 6654(e)(1). No Florida return [FL].
+  const g = graph(profileLFlSinglePabInterest);
+  const expectStoppedOnly = (fg: Fg) => {
+    const stopped = new Set(PROFILE_L_STOPPED);
+    for (const path of submissionBlockingFacts.filter((p) => !p.includes(`*`) && p !== `/flowIncomplete`)) {
+      const r = get(fg, path);
+      if (stopped.has(path)) {
+        expect(r.complete, path).toBe(true);
+        expect(r.get, path).toBe(true);
+      } else {
+        expect(r.complete && r.get === true, path).toBe(false);
+      }
+    }
+  };
+
+  it(`Schedule C, Schedule SE, and Schedule 1, with the wage base still above net earnings`, () => {
+    const biz = `/scheduleCBusinesses/#${profileLBusinessId}`;
+    const w2 = `/formW2s/#${profileLW2.id}`;
+    expect(get(g, `${biz}/businessName`).get).toBe(`Example Advisory`);
+    expect(get(g, `${biz}/usesLegacyExpenseBucket`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expectDollars(g, {
+      [`${biz}/line1GrossReceipts`]: `40000.00`,
+      [`${biz}/line4CostOfGoodsSold`]: `0.00`,
+      [`${biz}/line7GrossIncome`]: `40000.00`,
+      [`${biz}/line8Advertising`]: `4000.00`,
+      [`${biz}/line18OfficeExpense`]: `2500.00`,
+      [`${biz}/line22Supplies`]: `3500.00`,
+      [`${biz}/line28`]: `10000.00`,
+      [`${biz}/netProfitOrLoss`]: `30000.00`,
+      '/scheduleCNetProfitOrLoss': `30000.00`,
+      '/schedule1Line3': `30000.00`,
+      '/primaryFilerOasdiWagesTotal': `150000.00`,
+      '/primaryFilerSeRemainingSocialSecurityWageBase': `34500.00`,
+      '/primaryFilerSeNetEarnings': `27705.00`,
+      '/primaryFilerSeSocialSecurityTax': `3435.00`,
+      '/primaryFilerSeMedicareTax': `803.00`,
+      '/selfEmploymentTax': `4238.00`,
+      '/deductibleSelfEmploymentTax': `2119.00`,
+      '/schedule1Line15': `2119.00`,
+      '/schedule2Line4': `4238.00`,
+      [`${w2}/wages`]: `150000.00`,
+      [`${w2}/federalWithholding`]: `37000.00`,
+      [`${w2}/oasdiWages`]: `150000.00`,
+      [`${w2}/oasdiWithholding`]: `9300.00`,
+      [`${w2}/medicareWages`]: `150000.00`,
+      [`${w2}/medicareWithholding`]: `2175.00`,
+    });
+    expect(Number(get(g, `/primaryFilerSeNetEarnings`).get.toString())).toBeLessThan(
+      Number(get(g, `/primaryFilerSeRemainingSocialSecurityWageBase`).get.toString())
+    );
+  });
+
+  it(`Form 1040 line 2a is box 8 and is excluded from total income; Form 8995 line 10 binds`, () => {
+    const interestPath = `/interestReports/#${profileLInterestId}`;
+    expect(get(g, `${interestPath}/payer`).get.toString()).toBe(`Example City Bond`);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/flowKnockoutHasBonds`).get).toBe(false);
+    expect(get(g, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(false);
+    expect(get(g, `/form8995Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).get).toBe(false);
+    expect(get(g, `/form8995Line1iName`).get).toBe(`Example Advisory`);
+    expectDollars(g, {
+      [`${interestPath}/taxExemptInterest`]: `40000.00`,
+      [`${interestPath}/specifiedPrivateActivityBondInterest`]: `40000.00`,
+      '/taxExemptInterest': `40000.00`,
+      '/interestIncome': `0.00`,
+      '/wages': `150000.00`,
+      '/totalIncome': `180000.00`,
+      '/adjustmentsToIncome': `2119.00`,
+      '/agi': `177881.00`,
+      '/standardDeduction': `16100.00`,
+      '/schedule1ALine44': `0.00`,
+      '/form8995Line2': `27881.00`,
+      '/form8995Line5': `5576.00`,
+      '/form8995Line10': `5576.00`,
+      '/form8995Line11': `161781.00`,
+      '/form8995Line12': `0.00`,
+      '/form8995Line14': `32356.00`,
+      '/form8995Line15': `5576.00`,
+      '/form8995Line16': `400.00`,
+      '/form8995Line17': `5576.00`,
+      '/qualifiedBusinessIncomeDeduction': `5576.00`,
+      '/taxableIncome': `156205.00`,
+    });
+    expect(Number(get(g, `/form8995Line10`).get.toString())).toBeLessThan(
+      Number(get(g, `/form8995Line14`).get.toString())
+    );
+    // [RP p. 11 §4.01 Table 3] on 156,205: 17,966 + 24% × 50,505 = 30,087.20, which rounds to 30,087.
+    const taxCents = 17966 * 100 + (156205 - 105700) * 24;
+    expect(taxCents).toBe(3008720);
+    expect(taxCents % 100).toBe(20);
+    expect(get(g, `/tentativeTaxFromTaxableIncome`).get.toString()).toBe(`30087.00`);
+  });
+
+  it(`Form 6251 line 2g is box 9 and line 11 alternative minimum tax is $1,686`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItemsUnanswered`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtMfsAddBack`).get).toBe(false);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(true);
+    const line6 = Number(get(g, `/form6251Line6`).get.toString());
+    // 26% × 122,205 = 31,773.30, which rounds to 31,773. [6251] line 7; [55]; [RP p. 16 §4.10] breakpoint $244,500.
+    const tmtCents = line6 * 26;
+    expect(line6).toBe(122205);
+    expect(tmtCents).toBe(3177330);
+    expect(tmtCents % 100).toBe(30);
+    expectDollars(g, {
+      '/form6251ExemptionAmount': `90100.00`,
+      '/form6251PhaseoutThreshold': `500000.00`,
+      '/form6251Line1a': `21676.00`,
+      '/form6251Line1b': `156205.00`,
+      '/form6251Line2a': `16100.00`,
+      '/form6251Line2g': `40000.00`,
+      '/form6251Line4': `212305.00`,
+      '/form6251ExemptionReduction': `0.00`,
+      '/form6251Line5': `90100.00`,
+      '/form6251Line6': `122205.00`,
+      '/form6251Line7': `31773.00`,
+      '/form6251Line9': `31773.00`,
+      '/form6251Line10': `30087.00`,
+      '/amt': `1686.00`,
+      '/schedule2Line2': `1686.00`,
+    });
+    expect(get(g, `/form6251Line2g`).get.toString()).toBe(
+      get(g, `/interestReports/#${profileLInterestId}/specifiedPrivateActivityBondInterest`).get.toString()
+    );
+    const amti = Number(get(g, `/form6251Line4`).get.toString());
+    expect(amti).toBe(
+      Number(get(g, `/form6251Line1b`).get.toString()) +
+        Number(get(g, `/form6251Line2a`).get.toString()) +
+        Number(get(g, `/form6251Line2g`).get.toString())
+    );
+    expect(amti).toBeLessThan(500000);
+    expect(Number(get(g, `/amt`).get.toString())).toBe(31773 - 30087);
+  });
+
+  it(`the same return with box 9 at $0 has no alternative minimum tax`, () => {
+    const withoutBox9 = graph({
+      ...profileLFlSinglePabInterest,
+      [`/interestReports/#${profileLInterestId}/writableSpecifiedPrivateActivityBondInterest`]:
+        createDollarWrapper(`0`),
+    });
+    // Line 4 = 156,205 + 16,100 = 172,305. Line 6 = 172,305 − 90,100 = 82,205. round(26% × 82,205) =
+    // round(21,373.30) = 21,373, which is less than the regular tax 30,087, so line 11 is $0.
+    const line6Cents = 82205 * 26;
+    expect(line6Cents).toBe(2137330);
+    expect(line6Cents % 100).toBe(30);
+    expectDollars(withoutBox9, {
+      '/taxExemptInterest': `40000.00`,
+      '/taxableIncome': `156205.00`,
+      '/tentativeTaxFromTaxableIncome': `30087.00`,
+      '/form6251Line2g': `0.00`,
+      '/form6251Line4': `172305.00`,
+      '/form6251Line6': `82205.00`,
+      '/form6251Line7': `21373.00`,
+      '/form6251Line10': `30087.00`,
+      '/amt': `0.00`,
+    });
+    expect(get(withoutBox9, `/form6251Required`).get).toBe(false);
+  });
+
+  it(`box 9 of $33,000 is under the regular tax, so alternative minimum tax is $0`, () => {
+    const boundary = graph({
+      ...profileLFlSinglePabInterest,
+      [`/interestReports/#${profileLInterestId}/writableSpecifiedPrivateActivityBondInterest`]:
+        createDollarWrapper(`33000`),
+    });
+    // Box 9 is still not more than box 8 ($40,000). Line 2g = 33,000. Line 4 = 156,205 + 16,100 + 33,000 =
+    // 205,305. Line 6 = 205,305 − 90,100 = 115,205. round(26% × 115,205) = round(29,953.30) = 29,953, which is
+    // less than the regular tax 30,087, so line 11 is $0 and Form 6251 is not required. i6251 (2025) p. 1,
+    // "Who Must File" item 1.
+    const line6Cents = 115205 * 26;
+    expect(line6Cents).toBe(2995330);
+    expect(line6Cents % 100).toBe(30);
+    expect(get(boundary, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(false);
+    expectDollars(boundary, {
+      '/taxExemptInterest': `40000.00`,
+      '/taxableIncome': `156205.00`,
+      '/tentativeTaxFromTaxableIncome': `30087.00`,
+      '/form6251Line2g': `33000.00`,
+      '/form6251Line4': `205305.00`,
+      '/form6251Line6': `115205.00`,
+      '/form6251Line7': `29953.00`,
+      '/form6251Line10': `30087.00`,
+      '/amt': `0.00`,
+    });
+    expect(get(boundary, `/form6251Required`).get).toBe(false);
+    expect(Number(get(boundary, `/form6251Line7`).get.toString())).toBeLessThan(
+      Number(get(boundary, `/form6251Line10`).get.toString())
+    );
+  });
+
+  it(`box 9 larger than box 8 stops the return`, () => {
+    const over = graph({
+      ...profileLFlSinglePabInterest,
+      [`/interestReports/#${profileLInterestId}/writableSpecifiedPrivateActivityBondInterest`]:
+        createDollarWrapper(`40001`),
+    });
+    expect(get(over, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(true);
+    expect(get(over, `/flowKnockoutHasBonds`).get).toBe(false);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`);
+    expect(get(over, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`total tax, withholding, no Form 8959 or 8960, and the Form 2210 stop stays false`, () => {
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expect(get(g, `/form2210AskPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/livedInFl`).get).toBe(true);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expectDollars(g, {
+      '/form8959Line7': `0.00`,
+      '/form8960Line17': `0.00`,
+      '/totalTax': `36011.00`,
+      '/formW2Withholding': `37000.00`,
+      '/totalPayments': `37000.00`,
+      '/overpayment': `989.00`,
+      '/balanceDue': `0.00`,
+      '/form2210Line4': `36011.00`,
+      '/form2210Line6': `37000.00`,
+      '/form2210Line7': `-989.00`,
+    });
+    expectStoppedOnly(g);
   });
 });
