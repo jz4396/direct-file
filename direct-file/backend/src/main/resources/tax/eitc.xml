@@ -275,39 +275,62 @@
       </Derived>
     </Fact>
     <!--
-      #208: Schedule EIC has no TY2026 template yet (application.yaml maps the 2026 IRS1040EIC entry to the 2024 form).
-      Remove these two facts, the flow.xml entry and the knockout screen once the 2026 template and field map land.
+      #17: Schedule EIC prints (pdf/2026/IRS1040EIC). These facts stop the return only when an EIC qualifying child
+      is also another person's qualifying child. The 26 U.S.C. 152(c)(4) tie-breaker is not computed.
     -->
     <Fact path="/scheduleEicWithoutTy2026TemplateApplies">
-      <Name>The return claims the EIC with a qualifying child, so it needs a TY2026 Schedule EIC</Name>
-      <Description>#208: 26 U.S.C. 32(c)(3)(D)(i) https://www.law.cornell.edu/uscode/text/26/32: "A qualifying child
-        shall not be taken into account under subsection (b) unless the taxpayer includes the name, age, and TIN of the
-        qualifying child on the return of tax for the taxable year." 2026 Schedule EIC (Form 1040) draft
-        https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf (SHA-256
-        fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3), form page 1 (PDF p. 2): "Complete and attach
-        to Form 1040 or 1040-SR only if you have a qualifying child." Same draft, Instructions for Schedule EIC, page 2
-        (PDF p. 3), "Purpose of Schedule": "After you have figured your earned income credit (EIC), use Schedule EIC to
-        give the IRS information about your qualifying child(ren)." 2025 Instructions for Form 1040 (the 2026 edition
-        is
-        not posted yet) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf (SHA-256
-        482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a), lines 27a-27c, p. 40: "If you have at least
-        one child who meets the conditions to be your qualifying child for purposes of claiming the EIC, complete and
-        attach Schedule EIC, even if that child doesn't have a valid SSN." Worksheet A-2025 EIC-Line 27a, p. 46: "If
-        you
-        have a qualifying child, complete and attach Schedule EIC." Same condition as /pdfIncludeScheduleEic: an
-        earned
-        income credit other than $0 with at least one EIC qualifying child.</Description>
+      <Name>An EIC qualifying child is another person's qualifying child</Name>
+      <Description>#17: true when /pdfIncludeScheduleEic is true and at least one
+        /familyAndHousehold/*/eitcQualifyingChild is also /isQualifyingChildOfAnother. 26 U.S.C. 152(c)(4)
+        (https://www.law.cornell.edu/uscode/text/26/152): if an individual may be claimed as a qualifying child by two
+        or more taxpayers, the child is treated as the qualifying child of the parent, or, if that rule does not
+        apply, of the taxpayer with the highest adjusted gross income. 26 U.S.C. 32(c)(3)(A)
+        (https://www.law.cornell.edu/uscode/text/26/32) defines an EIC qualifying child by reference to section 152(c).
+        2025 Instructions for Form 1040 (the 2026 edition is not posted yet)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf (SHA-256
+        482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a), p. 44, "Qualifying child of more than one
+        person": "Even if a child meets the conditions to be the qualifying child of more than one person, only one
+        person can claim the child as a qualifying child" for the earned income credit (line 27a) and the other
+        benefits listed there. The parent, longer-residency, and higher-AGI rules on that page are not computed. 2026
+        Schedule EIC (Form 1040) draft https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf (SHA-256
+        fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3), page 2 (PDF p. 3): "If the child was married
+        or meets the conditions to be a qualifying child of another person (other than your spouse if filing a joint
+        return), special rules apply. For details, see Married child or Qualifying child of more than one person in
+        the instructions for Form 1040, line 27a." A qualifying child who is not another person's qualifying child
+        prints on Schedule EIC. Same draft, "Purpose of Schedule": "After you have figured your earned income credit
+        (EIC), use Schedule EIC to give the IRS information about your qualifying child(ren)." 2025 Instructions for
+        Form 1040, p. 40: "If you have at least one child who meets the conditions to be your qualifying child for
+        purposes of claiming the EIC, complete and attach Schedule EIC, even if that child doesn't have a valid
+        SSN."</Description>
       <Derived>
-        <Dependency path="/pdfIncludeScheduleEic" />
+        <All>
+          <Dependency path="/pdfIncludeScheduleEic" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Filter path="/familyAndHousehold">
+                  <All>
+                    <Dependency path="eitcQualifyingChild" />
+                    <Dependency path="isQualifyingChildOfAnother" />
+                  </All>
+                </Filter>
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
       </Derived>
     </Fact>
     <Fact path="/flowKnockoutScheduleEicWithoutTy2026Template">
-      <Name>Knockout: the return needs a TY2026 Schedule EIC, which this tool can't produce yet</Name>
-      <Description>#208: true when /scheduleEicWithoutTy2026TemplateApplies is complete and true. Complete and false
-        when it doesn't apply, so submission checks never see it incomplete. Kept until the tie-breaker rules for a
-        child who is the qualifying child of more than one person (26 U.S.C. 152(c)(4)) are fully modeled. Schedule 3-A
-        is attached when Form 1040 line 27a, 28, 29 or 30 has an amount (26 U.S.C. 32, 24(d), 25A(i), 23; schedule3A
-        /pdfIncludeSchedule3A). The 2026 Schedule EIC template itself is committed (pdf/2026/IRS1040EIC).</Description>
+      <Name>Knockout: an EIC qualifying child is another person's qualifying child</Name>
+      <Description>#17: true when /scheduleEicWithoutTy2026TemplateApplies is complete and true. Complete and false
+        when it doesn't apply, so submission checks never see it incomplete. The 26 U.S.C. 152(c)(4) tie-breaker is
+        not computed (2025 Instructions for Form 1040, p. 44, "Qualifying child of more than one person"; 2026
+        Schedule EIC draft, page 2). Schedule EIC prints for a qualifying child who is not another person's qualifying
+        child (pdf/2026/IRS1040EIC; 26 U.S.C. 32(c)(3)(D)(i)). Schedule 3-A is attached when Form 1040 line 27a, 28,
+        29 or 30 has an amount (26 U.S.C. 32, 24(d), 25A(i), 23; schedule3A /pdfIncludeSchedule3A).</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>

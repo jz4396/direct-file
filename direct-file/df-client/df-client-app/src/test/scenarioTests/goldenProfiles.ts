@@ -618,9 +618,9 @@ export const profileFPaAmtScheduleC = {
 /**
  * Profile G (issue #135 suggested profile 2): married filing jointly, Florida resident, two qualifying children.
  * Each spouse has $28,000 of W-2 wages. Each child has $3,000 of qualifying care expenses (Form 2441). Schedule 8812,
- * the child and dependent care credit, and the earned income credit for two children are all computed. The return
- * still stops on /flowKnockoutScheduleEicWithoutTy2026Template: a nonzero EIC with a qualifying child needs Schedule
- * EIC, and the tie-breaker for a child who is the qualifying child of more than one person is not fully modeled.
+ * the child and dependent care credit, and the earned income credit for two children are all computed. Neither child
+ * is another person's qualifying child, so Schedule EIC is live (#17). The return still stops when a child is the
+ * qualifying child of more than one person (26 U.S.C. 152(c)(4)), which this profile does not set.
  */
 const harper: Person = { first: `Harper`, last: `Example`, ssn: [`444`, `00`, `2001`], dob: `1985-06-12` };
 const reese: Person = { first: `Reese`, last: `Example`, ssn: [`444`, `00`, `2002`], dob: `1986-11-03` };

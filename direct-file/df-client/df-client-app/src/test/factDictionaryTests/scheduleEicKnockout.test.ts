@@ -1,9 +1,12 @@
-// #208: a return that claims the EIC with a qualifying child needs Schedule EIC, which has no TY2026 template yet.
-// - 26 U.S.C. 32(c)(3)(D)(i), https://www.law.cornell.edu/uscode/text/26/32: "A qualifying child shall not be taken
-//   into account under subsection (b) unless the taxpayer includes the name, age, and TIN of the qualifying child on
-//   the return of tax for the taxable year."
-// - 2026 draft Schedule EIC (https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf), form page 1: "Complete and attach to
-//   Form 1040 or 1040-SR only if you have a qualifying child."
+// #17: Schedule EIC prints for a qualifying-child EIC. The return stops only when that child is also another
+// person's qualifying child.
+// - 26 U.S.C. 152(c)(4), https://www.law.cornell.edu/uscode/text/26/152: a child who may be claimed by two or more
+//   taxpayers is the qualifying child of the parent, or otherwise of the taxpayer with the highest AGI.
+// - 2025 Instructions for Form 1040, https://www.irs.gov/pub/irs-pdf/i1040gi.pdf, p. 44, "Qualifying child of more
+//   than one person."
+// - 2026 draft Schedule EIC (https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf), page 2: special rules apply when the
+//   child "meets the conditions to be a qualifying child of another person." Page 1: "Complete and attach to Form
+//   1040 or 1040-SR only if you have a qualifying child." 26 U.S.C. 32(c)(3)(D)(i).
 // - EIC figures: Rev. Proc. 2025-32 sec. 4.06, p. 15 (one qualifying child: earned income amount $13,020, 34%,
 //   maximum $4,427); Schedule C earned income as in scheduleCEarnedIncomeCredits.test.ts (#117).
 import { describe, it, expect } from 'vitest';
@@ -19,8 +22,19 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { baseFilerData, filerWithW2NoDeductionsNoCreditsBaseData, makeChildData, primaryFilerId } from '../testData.js';
-import { goldenProfiles, profile5AmtAnd8959 } from '../scenarioTests/goldenProfiles.js';
+import {
+  baseFilerData,
+  filerWithW2NoDeductionsNoCreditsBaseData,
+  makeChildData,
+  makeW2Data,
+  primaryFilerId,
+} from '../testData.js';
+import {
+  goldenProfiles,
+  profile5AmtAnd8959,
+  profileGChild1Id,
+  profileGMfjTwoChildren,
+} from '../scenarioTests/goldenProfiles.js';
 import {
   submissionBlockingFacts,
   submissionBlockingFactsRequiringValue,
@@ -75,7 +89,7 @@ const graph = (data: Record<string, unknown>) => {
   return { get, str: (p: string) => get(p).get.toString() };
 };
 
-describe(`Schedule EIC without a TY2026 template (#208)`, () => {
+describe(`Schedule EIC live path and shared qualifying child (#17)`, () => {
   it(`is a submission-blocking input to /flowIsKnockedOut`, () => {
     expect(submissionBlockingFacts).toContain(KO);
     // Covered by /flowIsKnockedOut, which is the top-level fact the server requires to be false.
@@ -87,36 +101,44 @@ describe(`Schedule EIC without a TY2026 template (#208)`, () => {
   });
 
   it.each(Object.entries(goldenProfiles))(
-    `golden profile %s: the Schedule EIC knockout is complete, and true only for a nonzero EIC with a qualifying child`,
+    `golden profile %s: the Schedule EIC knockout is complete and false (no shared qualifying child)`,
     (name, profile) => {
       const { get } = graph(profile);
-      // Profile G claims the EIC for two qualifying children, so Schedule EIC applies and the return stops.
+      // Profile G claims the EIC for two qualifying children who are not another person's qualifying child.
       const schedule = name === `profileGMfjTwoChildren`;
       expect(get(`/pdfIncludeScheduleEic`).get, name).toBe(schedule);
       expect(get(KO).complete, name).toBe(true);
-      expect(get(KO).get, name).toBe(schedule);
+      expect(get(KO).get, name).toBe(false);
     }
   );
 
-  it(`every backend scenario: the knockout is complete, and true only with Schedule EIC`, () => {
+  it(`every backend scenario: the knockout is complete, and true only for a shared qualifying child`, () => {
     const folder = `./src/test/factDictionaryTests/backend-scenarios`;
     const files = fs.readdirSync(folder).filter((f) => f.endsWith(`.json`));
     expect(files.length).toBeGreaterThan(100);
     const knockedOut: string[] = [];
+    const live: string[] = [];
     for (const file of files) {
       const { get } = graph(JSON.parse(fs.readFileSync(`${folder}/${file}`, `utf-8`)).facts);
       const ko = get(KO);
       const schedule = get(`/pdfIncludeScheduleEic`);
+      const shared = get(`/scheduleEicWithoutTy2026TemplateApplies`);
       // The knockout is always complete. Two scenarios stop before the EIC questions (/eitcQualified has no
       // value), so /pdfIncludeScheduleEic is a placeholder false there and the knockout is complete and false.
       expect(ko.complete, file).toBe(true);
-      expect(ko.get, file).toBe(schedule.get);
-      if (ko.get) expect(schedule.complete, file).toBe(true);
-      if (ko.get) knockedOut.push(file);
+      expect(ko.get, file).toBe(shared.complete ? shared.get : false);
+      if (ko.get) {
+        expect(schedule.complete, file).toBe(true);
+        expect(schedule.get, file).toBe(true);
+        knockedOut.push(file);
+      } else if (schedule.complete && schedule.get) {
+        live.push(file);
+      }
     }
-    // Scenarios with an EIC qualifying child are knocked out; every other scenario is complete and false.
-    expect(knockedOut.length).toBeGreaterThan(0);
-    expect(knockedOut.length).toBeLessThan(files.length);
+    // Qualifying-child EIC prints. The one checked-in shared qualifying child is a QSS return that claims the
+    // child (writableCouldBeQualifyingChildOfAnother, tpClaims) and has a nonzero EIC, so the tie-breaker stops it.
+    expect(live.length).toBeGreaterThan(0);
+    expect(knockedOut).toEqual([`qss_35K_1 dependent-signed.json`]);
   });
 
   it(`ordinary return with no dependents: the knockout is complete and false`, ({ task }) => {
@@ -126,15 +148,55 @@ describe(`Schedule EIC without a TY2026 template (#208)`, () => {
     expect(get(KO).get).toBe(false);
   });
 
-  it(`EIC with one qualifying child: Schedule EIC is needed, so the return is knocked out`, ({ task }) => {
-    task.meta.testedFactPaths = [KO, `/flowIsKnockedOut`];
-    const { get, str } = graph({ ...single, ...withChild, ...scheduleC(15000) });
+  const stoppedBy = (get: (p: string) => { complete: boolean; get: unknown }) =>
+    submissionBlockingFacts.filter(
+      (p) =>
+        !p.includes(`*`) &&
+        p !== `/flowIncomplete` &&
+        p !== `/flowIsKnockedOut` &&
+        get(p).complete &&
+        get(p).get === true
+    );
+
+  it(`EIC with one qualifying child who is not another person's qualifying child: Schedule EIC is live`, ({ task }) => {
+    task.meta.testedFactPaths = [KO, `/pdfIncludeScheduleEic`];
+    // W-2 wages, not Schedule C. Form 8995 still blocks sign and submit whenever /form8995Required.
+    // This fixture does not finish every dependent and tax question, so /flowIsKnockedOut is not the claim
+    // here. The complete return that files is profile G, below.
+    const { get, str } = graph({ ...single, ...withChild, ...makeW2Data(15000) });
     expect(str(`/earnedIncomeCredit`)).toBe(`4427.00`);
     expect(str(`/numEitcQualifyingChildren`)).toBe(`1`);
     expect(get(`/pdfIncludeScheduleEic`).get).toBe(true);
+    expect(get(`/familyAndHousehold/#${childId}/isQualifyingChildOfAnother`).get).toBe(false);
     expect(get(KO).complete).toBe(true);
-    expect(get(KO).get).toBe(true);
-    expect(get(`/flowIsKnockedOut`).get).toBe(true);
+    expect(get(KO).get).toBe(false);
+  });
+
+  it(`profile G files with Schedule EIC, and the same return stops when a child is a shared qualifying child`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [KO, `/flowIsKnockedOut`];
+    const live = graph(profileGMfjTwoChildren);
+    expect(live.str(`/earnedIncomeCredit`)).toBe(`2079.00`);
+    expect(live.str(`/numEitcQualifyingChildren`)).toBe(`2`);
+    expect(live.get(`/pdfIncludeScheduleEic`).get).toBe(true);
+    expect(live.get(`/familyAndHousehold/#${profileGChild1Id}/isQualifyingChildOfAnother`).get).toBe(false);
+    expect(live.get(KO).get).toBe(false);
+    expect(stoppedBy(live.get)).toEqual([]);
+    expect(live.get(`/flowIsKnockedOut`).get).toBe(false);
+
+    const shared = graph({
+      ...profileGMfjTwoChildren,
+      [`/familyAndHousehold/#${profileGChild1Id}/writableCouldBeQualifyingChildOfAnother`]: createBooleanWrapper(true),
+    });
+    expect(shared.str(`/earnedIncomeCredit`)).toBe(`2079.00`);
+    expect(shared.get(`/familyAndHousehold/#${profileGChild1Id}/isQualifyingChildOfAnother`).get).toBe(true);
+    expect(shared.get(`/familyAndHousehold/#${profileGChild1Id}/eitcQualifyingChild`).get).toBe(true);
+    expect(shared.get(`/pdfIncludeScheduleEic`).get).toBe(true);
+    expect(shared.get(KO).complete).toBe(true);
+    expect(shared.get(KO).get).toBe(true);
+    expect(stoppedBy(shared.get)).toEqual([KO]);
+    expect(shared.get(`/flowIsKnockedOut`).get).toBe(true);
   });
 
   it(`EIC with no qualifying child: no Schedule EIC, the knockout is complete and false`, ({ task }) => {

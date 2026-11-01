@@ -179,7 +179,7 @@ class PrintRefusingKnockoutsTest {
     void listHoldsThePrintRefusingKnockoutsIncludingTheForm6251Stops() {
         List<String> expected = new ArrayList<>(List.of(
                 CODE_Q_KNOCKOUT, // Form 8949 code Q
-                SCHEDULE_EIC_KNOCKOUT, // Schedule EIC has no TY2026 template
+                SCHEDULE_EIC_KNOCKOUT, // EIC qualifying child who is another person's qualifying child
                 PA_NRH_KNOCKOUT, // PA Schedule NRH
                 PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
                 PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
@@ -711,7 +711,9 @@ class PrintRefusingKnockoutsTest {
 
     /**
      * Every backend scenario refuses exactly the knockouts its own facts call for, worked out here from the facts the
-     * knockouts read: Schedule EIC (/pdfIncludeScheduleEic). Form 8995 prints (#17) even though
+     * knockouts read: Schedule EIC when an EIC qualifying child is another person's qualifying child
+     * (/scheduleEicWithoutTy2026TemplateApplies; 26 U.S.C. 152(c)(4)). A qualifying-child EIC that is not a shared
+     * qualifying child prints Schedule EIC (#17). Form 8995 prints (#17) even though
      * /flowKnockoutForm8995WithoutTy2026Template still blocks submission. Form 8962 prints when
      * /needsToFileForm8962 is true (#88). A Form 8962 scenario that leaves the income-based special enrollment period
      * question unanswered still refuses through that stop. Schedule C and Schedule 3-A print (#239): a business no
@@ -734,6 +736,9 @@ class PrintRefusingKnockoutsTest {
         Resource[] files = new PathMatchingResourcePatternResolver().getResources("classpath:scenarios/*.json");
         assertTrue(files.length > 100, "scenarios found: " + files.length);
         int withScheduleEic = 0;
+        int withSharedQc = 0;
+        List<String> sharedQcScenarios = new ArrayList<>();
+        List<String> scheduleEicRefused = new ArrayList<>();
         int withSchedule3A = 0;
         int printed = 0;
         int form8962Refused = 0;
@@ -745,8 +750,17 @@ class PrintRefusingKnockoutsTest {
             List<String> expected = new ArrayList<>();
             Result<Object> schedule = graph.get("/pdfIncludeScheduleEic");
             if (schedule.complete() && Boolean.TRUE.equals(schedule.get())) {
-                expected.add(SCHEDULE_EIC_KNOCKOUT);
                 withScheduleEic++;
+            }
+            // #17: refuse only a Schedule EIC return whose qualifying child is another person's qualifying child.
+            Result<Object> sharedQc = graph.get("/scheduleEicWithoutTy2026TemplateApplies");
+            if (sharedQc.complete() && Boolean.TRUE.equals(sharedQc.get())) {
+                assertTrue(
+                        schedule.complete() && Boolean.TRUE.equals(schedule.get()),
+                        file.getFilename() + " shared QC is a Schedule EIC return");
+                expected.add(SCHEDULE_EIC_KNOCKOUT);
+                withSharedQc++;
+                sharedQcScenarios.add(file.getFilename());
             }
             Result<Object> form8962 = graph.get("/needsToFileForm8962");
             boolean files8962 = form8962.complete() && Boolean.TRUE.equals(form8962.get());
@@ -776,18 +790,35 @@ class PrintRefusingKnockoutsTest {
                 withSchedule3A++;
             }
             assertEquals(expected, PrintRefusingKnockouts.refusingPaths(graph), file.getFilename());
+            if (schedule.complete() && Boolean.TRUE.equals(schedule.get()) && !expected.isEmpty()) {
+                scheduleEicRefused.add(file.getFilename() + " " + expected);
+            }
             if (expected.isEmpty()) {
                 printed++;
             }
         }
         assertEquals(50, withScheduleEic, "scenarios with Schedule EIC");
+        // npe-form-2441-without-cdcc.json still refuses on the income-based special enrollment period question
+        // (26 U.S.C. 36B(c)(3)(A)(iii)), which is independent of Schedule EIC.
+        assertEquals(
+                Set.of(
+                        "npe-form-2441-without-cdcc.json [/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod]",
+                        "qss_35K_1 dependent-signed.json [" + SCHEDULE_EIC_KNOCKOUT + "]"),
+                Set.copyOf(scheduleEicRefused),
+                "Schedule EIC scenarios that still refuse");
+        // qss_35K_1 dependent-signed.json claims the EIC for a child who is another person's qualifying child
+        // (writableCouldBeQualifyingChildOfAnother and tpClaims). That is the shared-QC stop (#17).
+        assertEquals(1, withSharedQc, "scenarios knocked out for a shared qualifying child");
+        assertEquals(List.of("qss_35K_1 dependent-signed.json"), sharedQcScenarios);
         // #186: the screener answers complete the EIC or ACTC in mfj-11k, ticket-12386, ticket-6192-ctc and
         // ticket-6718, so those four now attach Schedule 3-A (they read incomplete before).
         assertEquals(63, withSchedule3A, "scenarios that attach Schedule 3-A");
         assertEquals(FORM_8962_SCENARIO_COUNT, form8962Refused, "scenarios with Form 8962");
         // #239: a return whose only refusal was Schedule 3-A now prints. #17: a return whose only refusal was Form
-        // 8995 now prints too. Qualifying-child EIC still stops on Schedule EIC.
-        assertEquals(106, printed, "scenarios that print");
+        // 8995 now prints too, and a qualifying-child EIC that is not a shared qualifying child prints Schedule EIC.
+        // Of the 50 Schedule EIC scenarios, qss still refuses for a shared qualifying child and
+        // npe-form-2441-without-cdcc still refuses for the special enrollment period, so 106 + 48.
+        assertEquals(154, printed, "scenarios that print");
     }
 
     /**

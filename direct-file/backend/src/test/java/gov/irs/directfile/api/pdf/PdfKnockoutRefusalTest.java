@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -35,11 +37,12 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * The printed package is the return, so a knockout that stops filing also stops the PDF. A return that claims the
  * earned income credit with a qualifying child needs Schedule EIC with each child's name, age and TIN (26 U.S.C.
- * 32(c)(3)(D)(i)). The 2026 Schedule EIC itself prints ({@link ScheduleEicTy2026PdfSmokeTest}), but {@link
- * PdfService#getTaxReturn} refuses that return rather than print an incomplete package. Schedule 3-A is pinned (#239)
- * and prints with an ACTC (Form 1040 line 28, 26 U.S.C. 24(d)). Returns without the Schedule EIC knockout still build
- * in English. A TY2026 Spanish print is refused when the resolved template is outside {@code pdf/2026/} and that form
- * has a 2026 English template (26 U.S.C. 6011(a)); language is not a fact.
+ * 32(c)(3)(D)(i)). That return prints ({@link ScheduleEicTy2026PdfSmokeTest}, #17) unless a child is another person's
+ * qualifying child. The 26 U.S.C. 152(c)(4) tie-breaker is not computed (2025 Instructions for Form 1040, p. 44,
+ * "Qualifying child of more than one person"; 2026 Schedule EIC draft, page 2). Schedule 3-A is pinned (#239) and
+ * prints with an ACTC (Form 1040 line 28, 26 U.S.C. 24(d)). A TY2026 Spanish print is refused when the resolved
+ * template is outside {@code pdf/2026/} and that form has a 2026 English template (26 U.S.C. 6011(a)); language is
+ * not a fact.
  */
 class PdfKnockoutRefusalTest {
     static final ObjectMapper MAPPER = new ObjectMapper();
@@ -111,23 +114,78 @@ class PdfKnockoutRefusalTest {
         Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 
+    static final String UNO = "/familyAndHousehold/#60c874b4-bb7b-4c82-8550-5555b2b585f8/";
+
+    /**
+     * #17: head of household, two qualifying children who are not another person's qualifying child, nonzero EIC.
+     * Schedule EIC prints with each child's name. 26 U.S.C. 32(c)(3)(D)(i). 2026 Schedule EIC draft, page 1:
+     * "Complete and attach to Form 1040 or 1040-SR only if you have a qualifying child."
+     */
     @Test
-    void eicWithQualifyingChildIsRefused() throws Exception {
+    void eicWithQualifyingChildPrintsScheduleEic() throws Exception {
         Map<String, FactTypeWithItem> facts = familyWithSsns();
         var graph = factGraphService.getGraph(facts);
         var eic = graph.get("/earnedIncomeCredit");
         assertTrue(eic.complete() && ((Number) eic.get()).doubleValue() > 0, "EIC is claimed: " + eic);
+        assertTrue(Boolean.TRUE.equals(graph.get("/pdfIncludeScheduleEic").get()), "Schedule EIC prints");
+        assertEquals(Boolean.FALSE, graph.get(UNO + "isQualifyingChildOfAnother").get());
+        assertKnockout(facts, false);
+        assertEquals(Boolean.FALSE, graph.get("/flowIsKnockedOut").get(), "/flowIsKnockedOut");
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph));
+
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn(facts), false);
+                PDDocument doc = Loader.loadPDF(in.readAllBytes())) {
+            assertTrue(doc.getNumberOfPages() > 0, "en package has pages");
+            String text = new PDFTextStripper().getText(doc);
+            assertTrue(text.contains("SCHEDULE EIC"), "Schedule EIC is in the package");
+            assertTrue(text.contains("Qualifying Child Information"), "Schedule EIC form page");
+            // The merger renames colliding fields, and widget values are not in the content stream.
+            // The child's name is the field on the Schedule EIC page (26 U.S.C. 32(c)(3)(D)(i)).
+            PDFTextStripper onePage = new PDFTextStripper();
+            int eicPage = -1;
+            for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                onePage.setStartPage(i + 1);
+                onePage.setEndPage(i + 1);
+                if (onePage.getText(doc).contains("Qualifying Child Information")) {
+                    assertEquals(-1, eicPage, "one Schedule EIC page");
+                    eicPage = i;
+                }
+            }
+            assertTrue(eicPage >= 0, "Schedule EIC page");
+            Map<String, String> fields = Ty2026PdfPackageTest.widgetValues(doc, Set.of(eicPage));
+            String child1 = "";
+            for (var e : fields.entrySet()) {
+                if (e.getKey().endsWith("f1_03[0]")) {
+                    child1 = e.getValue();
+                }
+            }
+            assertEquals("Uno E testerface", child1, fields.toString());
+        }
+        // Spanish is refused on the template (26 U.S.C. 6011(a)).
+        Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
+    }
+
+    /**
+     * #17: the same return stops when a qualifying child is another person's qualifying child. 26 U.S.C. 152(c)(4).
+     * 2025 Instructions for Form 1040, p. 44, "Qualifying child of more than one person." 2026 Schedule EIC draft,
+     * page 2: special rules apply, and this tool does not apply them.
+     */
+    @Test
+    void qualifyingChildOfAnotherPersonIsRefused() throws Exception {
+        Map<String, FactTypeWithItem> facts = familyWithSsns();
+        facts.put(UNO + "writableCouldBeQualifyingChildOfAnother", ScheduleEicTy2026PdfSmokeTest.bool(true));
+        var graph = factGraphService.getGraph(facts);
+        assertEquals(Boolean.TRUE, graph.get(UNO + "isQualifyingChildOfAnother").get(), "shared qualifying child");
+        assertEquals(Boolean.TRUE, graph.get(UNO + "eitcQualifyingChild").get(), "still an EIC qualifying child");
         assertTrue(Boolean.TRUE.equals(graph.get("/pdfIncludeScheduleEic").get()), "Schedule EIC would print");
         assertKnockout(facts, true);
-        assertTrue(Boolean.TRUE.equals(graph.get("/flowIsKnockedOut").get()), "/flowIsKnockedOut");
+        assertEquals(Boolean.TRUE, graph.get("/flowIsKnockedOut").get(), "/flowIsKnockedOut");
 
         SubmissionBlockingFactsResponseStatusException e = assertThrows(
                 SubmissionBlockingFactsResponseStatusException.class,
                 () -> pdfService.getTaxReturn("en", taxReturn(facts), false));
         assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
-        // Schedule 3-A prints with the EIC (#239). The qualifying-child return still stops on Schedule EIC.
         assertEquals(List.of(SCHEDULE_EIC_KNOCKOUT), e.getBody().getProperties().get("blockingFacts"));
-        // Spanish is refused on the template, before the knockout list is evaluated (26 U.S.C. 6011(a)).
         Ty2026SpanishTemplateRefusalTest.assertSpanishPrintRefused(pdfService, taxReturn(facts));
     }
 

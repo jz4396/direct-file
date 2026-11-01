@@ -40,10 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * the field map in pdf/2026/IRS1040EIC/en/configuration.yml. Draft-based field map: re-verify when the final form is
  * released.
  *
- * <p>The return package still refuses an EIC return with a qualifying child ({@link PdfKnockoutRefusalTest}) because
- * Schedule EIC's 26 U.S.C. 152(c)(4) tie-breaker is not computed. Schedule 3-A prints with the EIC or ACTC (#239). This
- * test fills Schedule EIC on its own, with the same configuration lookup, fact extraction and
- * {@link IrsScheduleEicPdfForm} that {@link PdfService#getTaxReturn} uses.
+ * <p>The return package prints this schedule ({@link PdfKnockoutRefusalTest}, #17). It still refuses the return when
+ * a child is another person's qualifying child, because the 26 U.S.C. 152(c)(4) tie-breaker is not computed. Schedule
+ * 3-A prints with the EIC or ACTC (#239). This test fills Schedule EIC on its own, with the same configuration
+ * lookup, fact extraction and {@link IrsScheduleEicPdfForm} that {@link PdfService#getTaxReturn} uses.
  *
  * <p>Golden end-to-end scenario (synthetic data): the head-of-household family scenario with group-00 test SSNs
  * ({@link PdfKnockoutRefusalTest#familyWithSsns}); the SSA never assigns group 00

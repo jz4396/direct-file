@@ -171,6 +171,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS8995", 1),
             Map.entry("IRS8889", 1),
             Map.entry("IRS8862", 3),
+            Map.entry("IRS1040EIC", 1),
             Map.entry("PA40", 2),
             Map.entry("PA40C", 2),
             Map.entry("PA40SP", 2),
@@ -191,11 +192,6 @@ class Ty2026PdfPackageTest {
                     "CDCC_CAREGIVERS_STATEMENT",
                     "pdf/2024 Form 2441 statement template; column (d) heading prints \"household employee in 2024?\""),
             Map.entry("IRS2441_DUE_DILIGENCE_STATEMENT", "pdf/2024 Form 2441 statement template; no 2026 template"),
-            Map.entry(
-                    "IRS1040EIC",
-                    "2026 draft template committed (ScheduleEicTy2026PdfSmokeTest), but an EIC return with a qualifying"
-                            + " child is refused by /flowKnockoutScheduleEicWithoutTy2026Template (26 U.S.C."
-                            + " 152(c)(4) tie-breaker). Schedule 3-A prints on the ACTC package (#239)."),
             Map.entry("FORM9000", "2021 Form 9000 template only (alternative media preference)"),
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
             Map.entry("CTC_DEPENDENTS_STATEMENT", "2024 Form 8862 statement template only"),
@@ -507,6 +503,9 @@ class Ty2026PdfPackageTest {
         printed.addAll(renderFacts(ptc, null, null).forms.keySet());
         // #89: more than four dependents. Instructions for Form 1040 (2025), PDF p. 17.
         printed.addAll(renderFacts(moreThanFourDependents(), null, null).forms.keySet());
+        // #17: qualifying-child EIC prints Schedule EIC when the child is not another person's qualifying child.
+        // 26 U.S.C. 32(c)(3)(D)(i); 2026 Schedule EIC draft, page 1. The shared-QC stop is PdfKnockoutRefusalTest.
+        printed.addAll(renderFacts(PdfKnockoutRefusalTest.familyWithSsns(), null, null).forms.keySet());
         assertEquals(PAGES.keySet(), printed, "forms printed across the scenarios");
         Set<String> notPrinted = new TreeSet<>(templates.keySet());
         notPrinted.removeAll(printed);
@@ -1030,8 +1029,8 @@ class Ty2026PdfPackageTest {
     }
 
     /**
-     * Keeps the earned income credit out of the family package so it covers Form 2441 and Schedule 8812 only (Schedule
-     * EIC has no TY2026 template yet, #208): the filer is in a two-year EIC disallowance period, 26 U.S.C.
+     * Keeps the earned income credit out of the family package so it covers Form 2441 and Schedule 8812 only. A
+     * qualifying-child EIC prints Schedule EIC (#17). The filer is in a two-year EIC disallowance period, 26 U.S.C.
      * 32(k)(1)(B)(ii) (https://www.law.cornell.edu/uscode/text/26/32), "the period of 2 taxable years after the most
      * recent taxable year for which there was a final determination that the taxpayer's claim of credit under this
      * section was due to reckless or intentional disregard of rules and regulations". The CTC disallowance facts

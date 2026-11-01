@@ -1,16 +1,18 @@
-# Schedule EIC without a TY2026 template (#208). Overlay merged by locales/featureLocales.ts.
+# Schedule EIC shared qualifying child (#17). Overlay merged by locales/featureLocales.ts.
+# 26 U.S.C. 152(c)(4). 2025 Instructions for Form 1040, p. 44, "Qualifying child of more than one person."
+# 2026 Schedule EIC draft, page 2: special rules apply when the child is a qualifying child of another person.
 headings:
   /heading/knockout/schedule-eic-without-ty2026-template:
-    Esta herramienta aún no puede preparar ni imprimir una declaración que reclame el Crédito tributario por ingreso
-    del trabajo con un hijo calificado
+    Esta herramienta aún no puede presentar una declaración que reclame el Crédito tributario por ingreso del trabajo
+    por un hijo que también es hijo calificado de otra persona
 info:
   /info/knockout/schedule-eic-without-ty2026-template:
     alertText:
       body:
         - p:
-            Para reclamar el Crédito tributario por ingreso del trabajo con un hijo calificado, su declaración debe
-            incluir el Anexo EIC con el nombre, el número de Seguro Social y el año de nacimiento de cada hijo
-            calificado. Esta herramienta aún no puede producir el Anexo EIC de 2026.
+            El Anexo EIC se adjunta cuando usted reclama el crédito por ingreso del trabajo por un hijo calificado. Si
+            ese hijo también es el hijo calificado de otra persona, reglas especiales deciden quién puede reclamarlo.
+            Esta herramienta aún no aplica esas reglas.
         - p: <Link1>Encuentre otras maneras de presentar sus impuestos federales.</Link1>
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
