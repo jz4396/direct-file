@@ -2152,8 +2152,10 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
     expect(get(n, `/paLine15`).get.toString()).toBe(`400.00`);
     expect(get(n, `/paLine18`).get.toString()).toBe(`400.00`);
   });
-  it(`box 2a capital gain distributions stop on the PA Schedule B knockout`, () => {
-    // PA-40 Schedule B line 10. PA Schedule B (2025) instructions, PDF p. 3, WHO MUST COMPLETE, and PDF p. 4, LINE 10.
+  it(`box 2a capital gain distributions are PA-40 line 3 and stop on the PA Schedule B knockout`, () => {
+    // PA-40 IN (2025) p. 32 and p. 33, line 10. PA Schedule B (2025) form line 12 enters line 6 plus line 10 on
+    // PA-40 line 3. Instructions PDF p. 3, WHO MUST COMPLETE: a line 10 amount requires the schedule, which is not
+    // printed.
     const n = stops(
       {
         ...profileHPaRentalDividends,
@@ -2161,9 +2163,16 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
       },
       `/flowKnockoutPaScheduleB`
     );
-    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(true);
+    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
     expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
-    expectDollars(n, { '/ordinaryDividends': `1800.00`, '/paLine3': `1800.00`, '/paLine6': `12000.00` });
+    expectDollars(n, {
+      '/ordinaryDividends': `1800.00`,
+      '/totalCapitalGainDistributions': `10.00`,
+      '/paScheduleBLine10': `10.00`,
+      '/paLine3': `1810.00`,
+      '/paLine5': `0.00`,
+      '/paLine6': `12000.00`,
+    });
   });
 });
 

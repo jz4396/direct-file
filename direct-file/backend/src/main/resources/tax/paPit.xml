@@ -137,25 +137,366 @@
         </GreaterOf>
       </Derived>
     </Fact>
+    <Fact path="/paScheduleBLine10">
+      <Name>PA Schedule B line 10 capital gains distributions</Name>
+      <Description>Form 1099-DIV box 2a, in whole dollars, reported on PA Schedule B line 10. PA-40 IN (2025),
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 15, LINE 3: "Report capital gains distributions from your mutual funds from Box 2a of your 1099-DIV as
+        PA-taxable dividend income, even though you report such distributions as capital gains on federal Schedule D."
+        p. 32: "Capital gains distributions are taxable as dividend income on Line 3. Do not report capital gains
+        distributions on PA Schedule D." p. 33, line 10: "Enter the amount of capital gains distributions included as
+        capital gains on federal Schedule D. If federal Schedule D is not required, enter the amount of capital gains
+        distributions reported directly on Schedule 1 of the federal return." PA-40 Schedule B (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
+        instructions, PDF p. 2, LINE 10: "Enter the amount of capital gains distributions included as capital gains on
+        federal Schedule D. If federal Schedule D is not required, enter the amount of capital gains distributions
+        reported directly on the federal return." That federal amount is dividends /totalCapitalGainDistributions:
+        Schedule D line 13 when Schedule D is required (Schedule D instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 2, "This amount is shown in box 2a of Form 1099-DIV"), otherwise
+        Form 1040 line 7a (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 33, Exception 1: "enter
+        your total capital gain distributions (from box 2a of Form(s) 1099-DIV) on line 7a"). It is the distribution,
+        not the net after a capital-loss carryover. The 2025 booklet's "Schedule 1" wording is the same amount this tool
+        reports on Form 1040 line 7a. Schedule B instructions, PDF p. 1: "Show money amounts in whole-dollars only.
+        Eliminate any amount less than $0.50 and increase any amount that is $0.50 or more to the next highest dollar."
+        $0 when the return is not a PA-40. A positive line 10 still requires the schedule, which is not printed
+        (/flowKnockoutPaScheduleB). This fact is the rounded combined total. Each spouse's own line 10 is
+        /paScheduleBTaxpayerLine10 or /paScheduleBSpouseLine10. 72 P.S. §7303(a)(5)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Round>
+                <Dependency module="dividends" path="/totalCapitalGainDistributions" />
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBTaxpayerDividendReports">
+      <Name>Taxpayer Form 1099-DIV reports for PA Schedule B</Name>
+      <Description>Form 1099-DIV reports whose /dividendReports/*/filer is the primary filer. PA-40 Schedule B (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
+        form, PDF p. 1: "If a separate PA Schedule B is prepared for a taxpayer and spouse, include only the taxpayer
+        or spouse share of the income for each line." Instructions, PDF p. 3: "Separate schedules must be completed for
+        a taxpayer and spouse if either has income on Lines 2 through 11 of PA Schedule B (not including subtotal Line
+        6)."</Description>
+      <Derived>
+        <Filter path="/dividendReports">
+          <Equal>
+            <Left>
+              <Dependency path="filer" />
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/primaryFiler" />
+            </Right>
+          </Equal>
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBSpouseDividendReports">
+      <Name>Spouse Form 1099-DIV reports for PA Schedule B</Name>
+      <Description>Form 1099-DIV reports whose /dividendReports/*/filer is the secondary filer. PA-40 Schedule B (2025)
+        instructions, PDF p. 4, LINE 1: "If filing a joint return and required to show the dividend income for a
+        taxpayer and spouse separately, enter only the taxpayer or spouse's portion of the dividend income reported on
+        Line 3b of the federal return."</Description>
+      <Derived>
+        <Filter path="/dividendReports">
+          <Equal>
+            <Left>
+              <Dependency path="filer" />
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/secondaryFiler" />
+            </Right>
+          </Equal>
+        </Filter>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBTaxpayerLine1">
+      <Name>PA Schedule B line 1, taxpayer</Name>
+      <Description>That filer's share of federal Form 1040 line 3b from Form 1099-DIV box 1a, in whole dollars. PA-40
+        IN (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 32: "Enter the amount of dividend income you reported on Line 3b of your federal Form 1040." PA-40 Schedule
+        B (2025) instructions, PDF p. 3: "Show money amounts in whole-dollars only. Eliminate any amount less than
+        $0.50 and increase any amount that is $0.50 or more to the next highest dollar." The whole-dollar amount is
+        Round of this filer's box 1a forms (/dividendReports/*/ordinaryDividends), not each form rounded and then
+        summed. Schedule K-1 (Form 1041) box 2a is in income /ordinaryDividends but not in /dividendReports, and that
+        income already stops a PA-40. $0 when /dividendReports is not complete.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency module="dividends" path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/paScheduleBTaxpayerDividendReports/*/ordinaryDividends" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBSpouseLine1">
+      <Name>PA Schedule B line 1, spouse</Name>
+      <Description>The spouse's share of federal Form 1040 line 3b from Form 1099-DIV box 1a, in whole dollars. Same
+        line 1 and whole-dollar rules as /paScheduleBTaxpayerLine1, limited to /dividendReports/*/filer equal to
+        /secondaryFiler. $0 when there is no spouse or /dividendReports is not complete.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <All>
+                  <IsComplete>
+                    <Dependency module="dividends" path="/dividendReports" />
+                  </IsComplete>
+                  <IsComplete>
+                    <Dependency module="filers" path="/secondaryFiler" />
+                  </IsComplete>
+                </All>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/paScheduleBSpouseDividendReports/*/ordinaryDividends" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBTaxpayerLine5">
+      <Name>PA Schedule B line 5, taxpayer</Name>
+      <Description>PA-40 Schedule B (2025) instructions, PDF p. 4, LINE 5: "Add the amounts on Lines 2, 3, and 4 and
+        enter the result." On a supported 1099-DIV those lines are $0: line 2 is federal Schedule K-1 dividend income,
+        line 3 is U.S. or PA obligation dividends (/paHasExemptObligationDividends stops the return), and line 4 is a
+        nonresident-period or nominee reduction (/flowKnockoutPaDividends and /flowKnockoutDividendNominee). This line
+        stays $0 rather than reducing line 6 for an amount the return does not compute.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBSpouseLine5">
+      <Name>PA Schedule B line 5, spouse</Name>
+      <Description>Same line 5 rule as /paScheduleBTaxpayerLine5. Lines 2, 3, and 4 are $0 on a supported 1099-DIV.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBTaxpayerLine6">
+      <Name>PA Schedule B line 6, taxpayer</Name>
+      <Description>PA-40 Schedule B (2025) instructions, PDF p. 4, LINE 6: "Subtract Line 5 from Line 1 and enter the
+        result. The amount reported for this line may be a negative number." Line 5 is $0, so this line equals line 1.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/paScheduleBTaxpayerLine1" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/paScheduleBTaxpayerLine5" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBSpouseLine6">
+      <Name>PA Schedule B line 6, spouse</Name>
+      <Description>PA-40 Schedule B (2025) instructions, PDF p. 4, LINE 6: line 1 minus line 5. Line 5 is $0, so this
+        line equals the spouse's line 1.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/paScheduleBSpouseLine1" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/paScheduleBSpouseLine5" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBTaxpayerLine10">
+      <Name>PA Schedule B line 10, taxpayer</Name>
+      <Description>That filer's Form 1099-DIV box 2a, in whole dollars. PA-40 Schedule B (2025) instructions, PDF p. 4,
+        LINE 10: "Enter the amount of capital gains distributions included as capital gains on federal Schedule D. If
+        federal Schedule D is not required, enter the amount of capital gains distributions reported directly on the
+        federal return." The federal amount is this filer's /dividendReports/*/capitalGainDistributions (the
+        distribution, not the net after a capital-loss carryover). Whole dollars: instructions PDF p. 3, drop under
+        $0.50 and round up $0.50 or more, applied to this filer's forms together. $0 when /dividendReports is not
+        complete. A positive line 10 still requires the schedule (/flowKnockoutPaScheduleB reads the rounded combined
+        total /paScheduleBLine10).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency module="dividends" path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/paScheduleBTaxpayerDividendReports/*/capitalGainDistributions" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBSpouseLine10">
+      <Name>PA Schedule B line 10, spouse</Name>
+      <Description>The spouse's Form 1099-DIV box 2a, in whole dollars. Same LINE 10 and whole-dollar rules as
+        /paScheduleBTaxpayerLine10, limited to /dividendReports/*/filer equal to /secondaryFiler. $0 when there is no
+        spouse or /dividendReports is not complete.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <All>
+                  <IsComplete>
+                    <Dependency module="dividends" path="/dividendReports" />
+                  </IsComplete>
+                  <IsComplete>
+                    <Dependency module="filers" path="/secondaryFiler" />
+                  </IsComplete>
+                </All>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/paScheduleBSpouseDividendReports/*/capitalGainDistributions" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBTaxpayerLine12">
+      <Name>PA Schedule B line 12, taxpayer</Name>
+      <Description>PA-40 Schedule B (2025) form line 12: "Total PA-Taxable Dividend Income. Add Lines 6, 7, 8, 9c, 10,
+        and 11. Enter on Line 3 of your PA-40." Instructions, PDF p. 5, LINE 12: "Add Lines 6, 7, 8, 9c, 10, and 11 and
+        enter the result. This amount cannot be a negative number." Lines 7, 8, 9c, and 11 are $0 on a supported
+        1099-DIV (exempt-interest dividends, box 12, stop on /flowKnockoutPaUnsupportedIncome; the other additions are
+        not collected). This line is line 6 plus line 10, not below $0.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Add>
+            <Dependency path="/paScheduleBTaxpayerLine6" />
+            <Dependency path="/paScheduleBTaxpayerLine10" />
+          </Add>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+    <Fact path="/paScheduleBSpouseLine12">
+      <Name>PA Schedule B line 12, spouse</Name>
+      <Description>The spouse's PA Schedule B line 12: line 6 plus line 10, not below $0. PA-40 Schedule B (2025)
+        instructions, PDF p. 5, LINE 12: "Include the total from Line 12 (or the combined Line 12 amounts for taxpayer
+        and spouse using the Married, Filing Jointly filing status) on Line 3 of the PA-40."</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Add>
+            <Dependency path="/paScheduleBSpouseLine6" />
+            <Dependency path="/paScheduleBSpouseLine10" />
+          </Add>
+        </GreaterOf>
+      </Derived>
+    </Fact>
     <Fact path="/paLine3">
       <Name>PA-40 line 3 dividends</Name>
       <Description>#78: PA-40 IN (2025),
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
         p. 15, LINE 3: "Report all dividend income received or credited during 2025." 72 P.S. §7303(a)
-        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(5). #86: PA Schedule
-        B line 1 (p. 32): "Enter the amount of dividend income you reported on Line 3b of your federal Form 1040."
-        (income /ordinaryDividends, Form 1099-DIV box 1a). p. 32: if there are no amounts for Lines 2 through 10 of PA
-        Schedule B, "you must report your income on Line 3 of the PA-40, but you do not have to submit PA Schedule B."
-        The adjustments that can arise from a supported 1099-DIV all stop the return instead: line 3 exempt U.S./PA
-        obligation dividends and line 4 nonresident-period dividends (/flowKnockoutPaDividends), line 7 exempt-interest
-        dividends (box 12 is Form 1040 line 2a, interest /taxExemptInterest, and stops a PA-40 on
-        /flowKnockoutPaUnsupportedIncome and /flowKnockoutPaScheduleA) and line 10 capital gains distributions,
-        which p. 32 makes "taxable as dividend income on Line 3" (box 2a, /flowKnockoutPaDividends). Return-of-capital
-        (box 3) is not in box 1a; p. 32: PA-taxable dividend income does not include "Distributions designated as return
-        of capital ... that reduce the basis of your stock". #135 part-year: p. 43, a nonresident does not pay PA income
-        tax on ordinary dividends, so line 3 is only the PA-residency-period part (/paPartYearResidentDividends, capped
-        at the federal amount). 1099-DIVs carry no dates, so the filer allocates. Unanswered, line 3 stays incomplete
-        (not $0). A positive nonresident portion is PA Schedule B line 4 and stops the return.</Description>
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(5). A full-year
+        PA-40 (/stateReturnIsPa) reports the sum of /paScheduleBTaxpayerLine12 and /paScheduleBSpouseLine12. PA-40
+        Schedule B (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
+        instructions, PDF p. 5, LINE 12: "Include the total from Line 12 (or the combined Line 12 amounts for taxpayer
+        and spouse using the Married, Filing Jointly filing status) on Line 3 of the PA-40." On a supported 1099-DIV,
+        lines 2, 3, 4, 7, 8, 9c, and 11 are $0, so each line 12 is that filer's line 1 (box 1a) plus line 10 (box 2a).
+        p. 32: if there are no amounts for Lines 2 through 10, "you must report your income on Line 3 of the PA-40, but
+        you do not have to submit PA Schedule B." A line 10 amount requires the schedule. The schedule is not printed
+        (/flowKnockoutPaScheduleB). Exempt U.S. or PA obligation dividends (line 3) still stop the return
+        (/flowKnockoutPaDividends) rather than overstating line 3. Line 7 exempt-interest dividends (box 12 is Form
+        1040 line 2a, interest /taxExemptInterest) stop a PA-40 on /flowKnockoutPaUnsupportedIncome and
+        /flowKnockoutPaScheduleA. Return-of-capital (box 3) is not in box 1a. p. 32: "Do not report capital gains
+        distributions on PA Schedule D," so box 2a is not /paLine5. #135 part-year: p. 43, a nonresident does not pay
+        PA income tax on ordinary dividends, so line 3 is only the PA-residency-period ordinary dividends
+        (/paPartYearResidentDividends, capped at income /ordinaryDividends). 1099-DIVs carry no dates, so the filer
+        allocates. Unanswered, line 3 stays incomplete (not $0). Line 10 is not added: the LINE 10 instruction is the
+        federal capital gain distribution and does not split it between the residency period and the nonresident
+        period. A nonresident-period capital gain distribution would be a line 4 reduction (instructions PDF p. 4,
+        LINE 4) that is not collected, so a part-year return with box 2a stops on /flowKnockoutPaDividends. A return
+        that is not a PA-40 keeps Form 1040 line 3b (income /ordinaryDividends) and does not add box 2a.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -165,7 +506,27 @@
               </Not>
             </When>
             <Then>
-              <Dependency module="income" path="/ordinaryDividends" />
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency module="stateReturn" path="/stateReturnIsPa" />
+                  </When>
+                  <Then>
+                    <Add>
+                      <Dependency path="/paScheduleBTaxpayerLine12" />
+                      <Dependency path="/paScheduleBSpouseLine12" />
+                    </Add>
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <Dependency module="income" path="/ordinaryDividends" />
+                  </Then>
+                </Case>
+              </Switch>
             </Then>
           </Case>
           <Case>
@@ -694,69 +1055,65 @@
     </Fact>
     <Fact path="/flowKnockoutPaDividends">
       <Name>Flow knockout: PA Schedule B adjustments to dividends</Name>
-      <Description>#86: PA-40 line 3 is federal Form 1040 line 3b only when PA Schedule B lines 2-10 are all $0 (PA-40
-        IN (2025)
+      <Description>#86: Stops the return, rather than overstating PA-40 line 3, when there are ordinary dividends and
+        (1) yes to /paHasExemptObligationDividends (PA Schedule B line 3, PA-40 IN (2025)
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
-        p. 32). Stops the return, rather than overstating line 3, when there are dividends and (1) yes to
-        /paHasExemptObligationDividends (PA Schedule B line 3, p. 32; the exempt part would also go on Schedule SP line
-        2), or (2) a PA/FL part-year resident whose ordinary dividends received while not a PA resident
-        (/paPartYearNonresidentDividends) are greater than $0: p. 43, "As a nonresident, you do not pay PA income tax on
-        ordinary interest, ordinary dividends", so that nonresident-period part is a PA Schedule B line 4 adjustment
-        (p.
-        32: "dividend income for a part-year resident taxpayer during the period the taxpayer was a nonresident")
-        and
-        Schedule SP line 6 non-PA income (p. 38). 1099-DIVs carry no dates; the filer allocates
-        (/paPartYearResidentDividends). When that amount equals the federal total, line 4 is $0 and this clause is
-        false. Unanswered, the nonresident amount stays incomplete, so this clause and /paLine3 stay incomplete (not
-        $0). An unanswered /paHasExemptObligationDividends on a return with dividends stays incomplete the same way;
-        or
-        (3) #86b: any Form
-        1099-DIV box 2a capital gain distributions. p. 32: "Capital gains distributions are taxable as
-        dividend income
-        on Line 3. Do not report capital gains distributions on PA Schedule D." PA Schedule B line 10:
-        "Enter the amount
-        of capital gains distributions included as capital gains on federal Schedule D. If federal
-        Schedule D is not
-        required, enter the amount of capital gains distributions reported directly on Schedule 1 of
-        the federal
-        return." A line 10 amount requires submitting PA Schedule B, which is not supported. PA-only: gated
-        on
-        stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5)
+        p. 32; the exempt part would also go on Schedule SP line 2), or (2) a PA/FL part-year resident whose ordinary
+        dividends received while not a PA resident (/paPartYearNonresidentDividends) are greater than $0: p. 43, "As a
+        nonresident, you do not pay PA income tax on ordinary interest, ordinary dividends", so that nonresident-period
+        part is a PA Schedule B line 4 adjustment (p. 32: "dividend income for a part-year resident taxpayer during the
+        period the taxpayer was a nonresident") and Schedule SP line 6 non-PA income (p. 38). 1099-DIVs carry no dates;
+        the filer allocates (/paPartYearResidentDividends). When that amount equals the federal total, line 4 is $0 and
+        this clause is false. Unanswered, the nonresident amount stays incomplete, so this clause and /paLine3 stay
+        incomplete (not $0). An unanswered /paHasExemptObligationDividends on a return with dividends stays incomplete
+        the same way. (3) A supported PA/FL part-year resident (/paPartYearSupported) with Form 1099-DIV box 2a greater
+        than $0 (dividends /totalCapitalGainDistributions, the unrounded total). This clause does not require box 1a
+        (dividends /hasDividendIncome): box 2a alone leaves /paLine3 at $0 and still stops here. PA-40 Schedule B (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
+        instructions, PDF p. 4, LINE 4, lists a nonresident-period amount as a reduction, and LINE 10 does not allocate
+        a capital gain distribution between the residency period and the nonresident period. /paLine3 therefore does
+        not add line 10 on a part-year return. This clause does not read /flowKnockoutPaScheduleB. It is complete when
+        /paPartYearSupported and box 2a are complete, including when there is no residency allocation to answer. A
+        full-year resident's box 2a is /paScheduleBTaxpayerLine10 and /paScheduleBSpouseLine10, included in /paLine3
+        through each line 12, and is not this stop. A positive line 10 still requires PA Schedule B, which is not
+        printed (/flowKnockoutPaScheduleB). PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5)
         (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
       <Derived>
-        <Any>
-          <All>
-            <Dependency module="stateReturn" path="/stateReturnPaFiled" />
-            <Dependency module="dividends" path="/hasDividendIncome" />
-            <Any>
-              <All>
-                <Dependency path="/paPartYearHasDividends" />
-                <GreaterThan>
-                  <Left>
-                    <Dependency path="/paPartYearNonresidentDividends" />
-                  </Left>
-                  <Right>
-                    <Dollar>0</Dollar>
-                  </Right>
-                </GreaterThan>
-              </All>
-              <Dependency path="/paHasExemptObligationDividends" />
-            </Any>
-          </All>
-          <All>
-            <Dependency module="stateReturn" path="/stateReturnPaFiled" />
-            <GreaterThan>
-              <Left>
-                <Dependency module="dividends" path="/totalCapitalGainDistributions" />
-              </Left>
-              <Right>
-                <Dollar>0</Dollar>
-              </Right>
-            </GreaterThan>
-          </All>
-        </Any>
+        <All>
+          <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+          <Any>
+            <All>
+              <Dependency module="dividends" path="/hasDividendIncome" />
+              <Any>
+                <All>
+                  <Dependency path="/paPartYearHasDividends" />
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="/paPartYearNonresidentDividends" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </GreaterThan>
+                </All>
+                <Dependency path="/paHasExemptObligationDividends" />
+              </Any>
+            </All>
+            <All>
+              <Dependency path="/paPartYearSupported" />
+              <GreaterThan>
+                <Left>
+                  <Dependency module="dividends" path="/totalCapitalGainDistributions" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThan>
+            </All>
+          </Any>
+        </All>
       </Derived>
     </Fact>
     <Fact path="/paHasUnsupportedItems">
@@ -1096,29 +1453,22 @@
         this clause is false (PA-40 line 3 is the federal amount; Schedule B is not required for the move). Unanswered,
         the nonresident amount stays incomplete, so this clause and /paLine3 stay incomplete (not $0). An unanswered
         /paHasExemptObligationDividends on a return with dividends stays incomplete the same way. Also any 1099-DIV
-        received as a nominee (dividends
-        /flowKnockoutDividendNominee, which also stops the federal return).
-        (3) Line 10
-        (PDF p. 4, LINE 10: "Enter the amount of capital gains distributions included as capital gains on
-        federal
-        Schedule D. If federal Schedule D is not required, enter the amount of capital gains distributions
-        reported
-        directly on the federal return."): any Form 1099-DIV box 2a amount (/totalCapitalGainDistributions
-        greater than
-        $0). The booklet ties the requirement to those cases, not to a dollar amount, so ordinary dividends with no
-        amount on those lines do not require PA Schedule B. Line 7 (PDF p. 4, LINE 7:
-        "exempt-interest dividends
-        reported in Box 12 of federal Form 1099-DIV") is Form 1040 line 2a (interest /taxExemptInterest) and stops a
-        PA-40 on /flowKnockoutPaUnsupportedIncome and /flowKnockoutPaScheduleA. Lines 2, 8, 9 and 11 (Schedule K-1
-        and PA RK-1 dividends,
-        Section 965 repatriation, other additions) come from 1099-DIV boxes or income that already
-        stop the return
-        (dividends /flowKnockoutDividendUnsupportedBoxes, which no longer includes box 12) or that this tool doesn't
-        collect.
-        /flowKnockoutPaDividends stops the same Line 3, Line 4 part-year and Line 10 cases with its own
-        explanation;
-        this fact is the single Schedule B test. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S.
-        §7303(a)(5)
+        received as a nominee (dividends /flowKnockoutDividendNominee, which also stops the federal return). (3) Line
+        10 (PDF p. 4, LINE 10: "Enter the amount of capital gains distributions included as capital gains on federal
+        Schedule D. If federal Schedule D is not required, enter the amount of capital gains distributions reported
+        directly on the federal return."): /paScheduleBLine10 greater than $0. For a full-year resident that rounded
+        combined total is included in PA-40 line 3 through each spouse's line 12 (/paLine3). A part-year return does
+        not add line 10 to /paLine3; box 2a on a part-year return also stops on /flowKnockoutPaDividends. The schedule
+        itself is not printed, so a line 10 amount still stops the return here. Whole dollars: instructions PDF p. 3,
+        an amount under $0.50 is $0 and does not require the schedule. The booklet ties the
+        requirement to those cases, not to a dollar threshold, so ordinary dividends with no amount on those lines do
+        not require PA Schedule B. Line 7 (PDF p. 4, LINE 7: "exempt-interest dividends reported in Box 12 of federal
+        Form 1099-DIV") is Form 1040 line 2a (interest /taxExemptInterest) and stops a PA-40 on
+        /flowKnockoutPaUnsupportedIncome and /flowKnockoutPaScheduleA. Lines 2, 8, 9 and 11 (Schedule K-1 and PA RK-1
+        dividends, Section 965 repatriation, other additions) come from 1099-DIV boxes or income that already stop the
+        return (dividends /flowKnockoutDividendUnsupportedBoxes, which no longer includes box 12) or that this tool
+        doesn't collect. /flowKnockoutPaDividends stops the Line 3 and Line 4 part-year cases. This fact is the Schedule
+        B test, including line 10. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5)
         (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
@@ -1144,7 +1494,7 @@
             <Dependency module="dividends" path="/flowKnockoutDividendNominee" />
             <GreaterThan>
               <Left>
-                <Dependency module="dividends" path="/totalCapitalGainDistributions" />
+                <Dependency path="/paScheduleBLine10" />
               </Left>
               <Right>
                 <Dollar>0</Dollar>
@@ -2032,7 +2382,9 @@
         IN (2025) p. 43: a nonresident does not pay PA income tax on ordinary dividends. PA-40 Schedule B (2025)
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
         PDF p. 4, LINE 4, lists "dividend income for a part-year resident taxpayer during the period the taxpayer was a
-        nonresident" as a line 4 example. Capped at federal ordinary dividends on /paLine3. PDF p. 3, WHO MUST COMPLETE:
+        nonresident" as a line 4 example. Capped at federal ordinary dividends (income /ordinaryDividends). /paLine3
+        for a part-year resident is this residency-period amount and does not add PA Schedule B line 10. A capital
+        gain distribution on a part-year return stops on /flowKnockoutPaDividends. PDF p. 3, WHO MUST COMPLETE:
         Schedule B is required only "if there are any amounts on Lines 2 through 11 (not including subtotal Line 6)."
         When this amount equals the federal total, that line 4 amount is $0.</Description>
       <Writable>
