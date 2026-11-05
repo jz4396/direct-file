@@ -47,12 +47,13 @@
 #                       part-year return has no G-L credit (Florida levies no income tax), so part-year printing needs
 #                       only the Residency Status oval and the from/to dates below.
 #   25                  use tax: /flowKnockoutPaUnsupportedItems.
-#   PA Schedules A, B, D are not produced. A return that needs one stops: /flowKnockoutPaScheduleA (p. 31: any amount
-#                       on Schedule A lines 2-15, e.g. 1099-INT box 3 or box 8 interest, or part-year interest),
-#                       /flowKnockoutPaScheduleB (p. 32: any amount on Schedule B lines 2-10)
-#                       and /flowKnockoutPaScheduleD (any sale, gain or loss; Schedule D instructions: "even if the only
-#                       transaction is to report a loss"). So line 5 and its loss oval stay mapped but are blank on any
-#                       return that reaches print.
+#   PA Schedules A and D are not produced. PA Schedule B prints only for the full-year, not-joint Form 1099-DIV
+#                       box 2a path (PA40B, /paScheduleBSupported). A return that needs another schedule stops:
+#                       /flowKnockoutPaScheduleA (p. 31: any amount on Schedule A lines 2-15, e.g. 1099-INT box 3 or
+#                       box 8 interest, or part-year interest), /flowKnockoutPaScheduleB (p. 32 and PA-40 B (2025) WHO
+#                       MUST COMPLETE: a Schedule B line this path does not print), and /flowKnockoutPaScheduleD (any
+#                       sale, gain or loss; Schedule D instructions: "even if the only transaction is to report a
+#                       loss"). So line 5 and its loss oval stay mapped but are blank on any return that reaches print.
 #   27, Code, REV-1630  penalties and interest: not computed; p. 23 says to enter penalties owed, which the department
 #                       otherwise bills. Line 28 therefore equals line 26.
 #   31-36               credit forward and refund donations: not offered; p. 24, "If you do not enter amounts on Lines
@@ -123,7 +124,7 @@ form:
   "1a. Gross Compensation": /paLine1a # p. 10, LINE 1a (W-2 box 16)
   "1c. Net Compensation": /paLine1c # 1a minus 1b
   "2. Interest Income": /paLine2 # p. 14, LINE 2; prints only when PA Schedule A is not required (/flowKnockoutPaScheduleA, p. 31)
-  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3. Full-year: sum of each spouse's PA Sch B line 12 (line 10 is that filer's 1099-DIV box 2a). A line 10 amount refuses the print (/flowKnockoutPaScheduleB). Part-year: residency-period ordinary dividends only; box 2a does not add line 10. $0 prints blank.
+  "3. Dividend  and Capital Gains Distributions Income": /paLine3 # p. 15, LINE 3. Full-year: sum of each spouse's PA Sch B line 12 (line 10 is that filer's 1099-DIV box 2a). The full-year not-joint taxpayer path prints PA-40 B (/paScheduleBSupported); every other line 10 refuses the print (/flowKnockoutPaScheduleB). Part-year: residency-period ordinary dividends only; box 2a does not add line 10. $0 prints blank.
   "4. Loss": ~pa40Line4Loss # p. 15, same loss oval; p. 17, LINE 4
   "4. Net Income or Loss from the Operation of a Business, etc": ~pa40Line4 # p. 17, LINE 4 (PA Sch C line 39: federal line 31 minus the meals add-back; $0 blank).
   "5. Loss": ~pa40Line5Loss # p. 15, "If entering a loss, fill in the oval next to the line"

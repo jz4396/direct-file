@@ -44,7 +44,8 @@ public final class PrintRefusingKnockouts {
             // as that spouse's line 10 (PA-40 IN (2025) p. 32 and p. 33). A part-year return with box 2a stops here,
             // including when box 1a is $0, and does not add line 10. Exempt-obligation dividends, a positive
             // nonresident-period ordinary-dividend allocation, or an unanswered allocation or exempt-obligation
-            // question also refuses the print (72 P.S. §7303(a)(5)).
+            // question also refuses the print (72 P.S. §7303(a)(5)). The full-year not-joint box 2a path does not
+            // stop here; it prints PA-40 B when /paScheduleBSupported is true.
             "/flowKnockoutPaDividends",
             // PA-40 lines 7, 8, 10, 14, 16, 22 (Schedule G-L), 23 and 25, and Form REV-459B. PA-40 IN (2025)
             // pp. 19-24. Line 15 estimated installment payments are computed (p. 21, LINE 15; 72 P.S. §7325).
@@ -67,11 +68,13 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutPaPartYear",
             // PA Schedule A is required and not produced. PA-40 IN (2025) p. 31. 72 P.S. §7303(a)(6).
             "/flowKnockoutPaScheduleA",
-            // PA Schedule B is required when lines 2-11 (not subtotal line 6) have an amount, including line 10
-            // capital gain distributions, and the schedule is not printed. For a full-year resident, line 10 is still
-            // included in PA-40 line 3. Whole dollars: box 2a under $0.50 rounds to $0 and does not require the
-            // schedule. PA-40 Schedule B (2025), WHO MUST COMPLETE. 72 P.S. §7303(a)(5). An unanswered
-            // exempt-obligation answer or part-year allocation stays incomplete.
+            // PA Schedule B is required when lines 2-11 (not subtotal line 6) have an amount. Complete false when the
+            // full-year, not-joint taxpayer box 2a path prints PA-40 B (/paScheduleBSupported). For a full-year
+            // resident, line 10 is included in PA-40 line 3 either way. Joint, spouse line 10, part-year, nominee,
+            // and exempt-obligation cases stay true. Whole dollars: box 2a under $0.50 rounds to $0 and does not
+            // require the schedule. PA-40 Schedule B (2025), WHO MUST COMPLETE. 72 P.S. §7303(a)(5). An unanswered
+            // exempt-obligation answer, when ordinary dividends are present, or an unanswered part-year allocation
+            // stays incomplete.
             "/flowKnockoutPaScheduleB",
             // PA Schedule C is required for business income. PA-40 IN (2025) p. 17, LINE 4: "You must use PA Schedule
             // C… Do not use federal Schedules C or F." False on the full-year line-item path, which prints PA-40 C.

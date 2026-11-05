@@ -2106,6 +2106,30 @@ describe(`golden end-to-end scenario (synthetic data): profile H, full-year PA, 
     expectDollars(n, { '/ordinaryDividends': `2501.00`, '/paLine3': `2501.00` });
     expectNotStopped(n);
   });
+  it(`box 2a on this full-year single return prints PA Schedule B and is PA-40 line 3`, () => {
+    // PA-40 IN (2025) p. 32 and p. 33, line 10. PA Schedule B (2025) form line 12 enters line 6 plus line 10 on
+    // PA-40 line 3. /paScheduleBSupported prints the taxpayer schedule. Instructions PDF p. 3, WHO MUST COMPLETE.
+    const n = graph({
+      ...profileHPaRentalDividends,
+      [`/dividendReports/#${profileHDividendId}/writableCapitalGainDistributions`]: createDollarWrapper(`10`),
+    });
+    expect(get(n, `/paScheduleBSupported`).get).toBe(true);
+    expect(get(n, `/flowKnockoutPaScheduleB`).get).toBe(false);
+    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expectDollars(n, {
+      '/ordinaryDividends': `1800.00`,
+      '/totalCapitalGainDistributions': `10.00`,
+      '/paScheduleBTaxpayerLine1': `1800.00`,
+      '/paScheduleBTaxpayerLine10': `10.00`,
+      '/paScheduleBTaxpayerLine12': `1810.00`,
+      '/paScheduleBLine10': `10.00`,
+      '/paLine3': `1810.00`,
+      '/paLine5': `0.00`,
+      '/paLine6': `12000.00`,
+    });
+    expectNotStopped(n);
+  });
 });
 
 describe(`golden end-to-end scenario (synthetic data): profile H negative rows (each stops the return)`, () => {
@@ -2151,28 +2175,6 @@ describe(`golden end-to-end scenario (synthetic data): profile H negative rows (
     expect(get(n, `/paLine15`).complete).toBe(true);
     expect(get(n, `/paLine15`).get.toString()).toBe(`400.00`);
     expect(get(n, `/paLine18`).get.toString()).toBe(`400.00`);
-  });
-  it(`box 2a capital gain distributions are PA-40 line 3 and stop on the PA Schedule B knockout`, () => {
-    // PA-40 IN (2025) p. 32 and p. 33, line 10. PA Schedule B (2025) form line 12 enters line 6 plus line 10 on
-    // PA-40 line 3. Instructions PDF p. 3, WHO MUST COMPLETE: a line 10 amount requires the schedule, which is not
-    // printed.
-    const n = stops(
-      {
-        ...profileHPaRentalDividends,
-        [`/dividendReports/#${profileHDividendId}/writableCapitalGainDistributions`]: createDollarWrapper(`10`),
-      },
-      `/flowKnockoutPaScheduleB`
-    );
-    expect(get(n, `/flowKnockoutPaDividends`).get).toBe(false);
-    expect(get(n, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
-    expectDollars(n, {
-      '/ordinaryDividends': `1800.00`,
-      '/totalCapitalGainDistributions': `10.00`,
-      '/paScheduleBLine10': `10.00`,
-      '/paLine3': `1810.00`,
-      '/paLine5': `0.00`,
-      '/paLine6': `12000.00`,
-    });
   });
 });
 

@@ -28,8 +28,10 @@
     income /capitalGainsOrLosses), otherwise Schedule D line 13 (scheduleD2 /scheduleDLine13); either way it reaches
     QDCG worksheet line 3 (scheduleD3 /qdcgLine3). On a full-year PA-40, box 2a is that filer's PA Schedule B line 10
     and PA-40 line 3 is the sum of each spouse's Schedule B line 12 (paPit /paScheduleBTaxpayerLine12,
-    /paScheduleBSpouseLine12, /paLine3). A part-year return with box 2a stops on paPit /flowKnockoutPaDividends,
-    including when box 1a is $0, and does not add line 10. PA Schedule B is not printed (paPit /flowKnockoutPaScheduleB).
+    /paScheduleBSpouseLine12, /paLine3). The full-year, not-joint return whose box 2a is only the taxpayer's prints
+    PA-40 B (paPit /paScheduleBSupported). A joint return, a spouse line 10, a nominee, or exempt-obligation dividends
+    still stop (paPit /flowKnockoutPaScheduleB). A part-year return with box 2a stops on paPit /flowKnockoutPaDividends,
+    including when box 1a is $0, and does not add line 10.
   Box 12 exempt-interest dividends are interest /taxExemptInterest (Form 1040 line 2a), not a stop.
   Box 13 specified private activity bond interest dividends are Form 6251 line 2g
   (form6251 /form6251Line2g). Box 13 cannot exceed box 12.

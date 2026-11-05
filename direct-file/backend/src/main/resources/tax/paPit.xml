@@ -158,8 +158,10 @@
         not the net after a capital-loss carryover. The 2025 booklet's "Schedule 1" wording is the same amount this tool
         reports on Form 1040 line 7a. Schedule B instructions, PDF p. 1: "Show money amounts in whole-dollars only.
         Eliminate any amount less than $0.50 and increase any amount that is $0.50 or more to the next highest dollar."
-        $0 when the return is not a PA-40. A positive line 10 still requires the schedule, which is not printed
-        (/flowKnockoutPaScheduleB). This fact is the rounded combined total. Each spouse's own line 10 is
+        $0 when the return is not a PA-40. A positive line 10 still requires the schedule. The full-year, not-joint
+        return whose box 2a is only the taxpayer's prints that schedule (/paScheduleBSupported). Every other positive
+        line 10 still stops (/flowKnockoutPaScheduleB). This fact is the rounded combined total. Each spouse's own
+        line 10 is
         /paScheduleBTaxpayerLine10 or /paScheduleBSpouseLine10. 72 P.S. §7303(a)(5)
         (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
@@ -471,6 +473,123 @@
         </GreaterOf>
       </Derived>
     </Fact>
+    <Fact path="/paScheduleBSupported">
+      <Name>PA Schedule B box 2a path is printed</Name>
+      <Description>#89: true only for the PA-40 B this tool prints. PA-40 B (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
+        PDF p. 3, WHO MUST COMPLETE: a resident includes the schedule when any of lines 2 through 11 (not subtotal line
+        6) has an amount. The printed amount is the taxpayer's line 10, whole-dollar Form 1099-DIV box 2a
+        (/paScheduleBTaxpayerLine10). The spouse's line 10 (/paScheduleBSpouseLine10) must be $0, because a second
+        schedule is not printed. The return must be a full-year Pennsylvania resident (/stateReturnIsPa), not married
+        filing jointly (PDF p. 3: separate taxpayer and spouse schedules unless the income is joint, and
+        joint-versus-separate is not collected), and not a nominee (line 4). When there are ordinary dividends,
+        /paHasExemptObligationDividends must be answered no (line 3). Box 2a with no ordinary dividends does not ask
+        that question. A joint return, a part-year return, a spouse line 10, a nominee, an exempt-obligation yes, or an
+        unanswered exempt-obligation question stays false or incomplete, and the print stays refused. $0.49 of box 2a
+        rounds to $0 and does not require the schedule (PA-40 IN (2025) p. 4). Line 12 on the printed page is
+        /paScheduleBTaxpayerLine12, which is the full-year PA-40 line 3 when the spouse's line 12 is $0. 72 P.S.
+        §7303(a)(5).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/paScheduleBTaxpayerLine10" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/paScheduleBSpouseLine10" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsPa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="dividends" path="/flowKnockoutDividendNominee" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="dividends" path="/hasDividendIncome" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/paHasExemptObligationDividends" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/paHasExemptObligationDividends" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/paHasExemptObligationDividends" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/paLine3">
       <Name>PA-40 line 3 dividends</Name>
       <Description>#78: PA-40 IN (2025),
@@ -484,7 +603,8 @@
         and spouse using the Married, Filing Jointly filing status) on Line 3 of the PA-40." On a supported 1099-DIV,
         lines 2, 3, 4, 7, 8, 9c, and 11 are $0, so each line 12 is that filer's line 1 (box 1a) plus line 10 (box 2a).
         p. 32: if there are no amounts for Lines 2 through 10, "you must report your income on Line 3 of the PA-40, but
-        you do not have to submit PA Schedule B." A line 10 amount requires the schedule. The schedule is not printed
+        you do not have to submit PA Schedule B." A line 10 amount requires the schedule. /paScheduleBSupported prints
+        the taxpayer's schedule when that is the whole line 10; every other line 10 still stops
         (/flowKnockoutPaScheduleB). Exempt U.S. or PA obligation dividends (line 3) still stop the return
         (/flowKnockoutPaDividends) rather than overstating line 3. Line 7 exempt-interest dividends (box 12 is Form
         1040 line 2a, interest /taxExemptInterest) stop a PA-40 on /flowKnockoutPaUnsupportedIncome and
@@ -1075,8 +1195,9 @@
         not add line 10 on a part-year return. This clause does not read /flowKnockoutPaScheduleB. It is complete when
         /paPartYearSupported and box 2a are complete, including when there is no residency allocation to answer. A
         full-year resident's box 2a is /paScheduleBTaxpayerLine10 and /paScheduleBSpouseLine10, included in /paLine3
-        through each line 12, and is not this stop. A positive line 10 still requires PA Schedule B, which is not
-        printed (/flowKnockoutPaScheduleB). PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5)
+        through each line 12, and is not this stop. A positive line 10 still requires PA Schedule B. The full-year
+        not-joint taxpayer schedule prints (/paScheduleBSupported); every other line 10 stops on
+        /flowKnockoutPaScheduleB. PA-only: gated on stateReturn /stateReturnPaFiled. 72 P.S. §7303(a)(5)
         (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
@@ -1431,8 +1552,8 @@
       </Derived>
     </Fact>
     <Fact path="/flowKnockoutPaScheduleB">
-      <Name>Flow knockout: PA Schedule B (dividends) is required and not produced</Name>
-      <Description>#123, #154, #125: PA Schedule B is required and this tool doesn't produce it. PA-40 Schedule B (2025) form
+      <Name>Flow knockout: PA Schedule B is required and not printed</Name>
+      <Description>#123, #154, #89: PA Schedule B is required and this return does not print it. PA-40 Schedule B (2025) form
         and instructions
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40b.pdf
         (SHA-256 c6d8f5cdd63045e1e40b6deeced2c80b23006b7700befe3b8f0c430f2b40a0d4), PDF p. 3, WHO MUST COMPLETE: "PA
@@ -1456,10 +1577,15 @@
         received as a nominee (dividends /flowKnockoutDividendNominee, which also stops the federal return). (3) Line
         10 (PDF p. 4, LINE 10: "Enter the amount of capital gains distributions included as capital gains on federal
         Schedule D. If federal Schedule D is not required, enter the amount of capital gains distributions reported
-        directly on the federal return."): /paScheduleBLine10 greater than $0. For a full-year resident that rounded
-        combined total is included in PA-40 line 3 through each spouse's line 12 (/paLine3). A part-year return does
-        not add line 10 to /paLine3; box 2a on a part-year return also stops on /flowKnockoutPaDividends. The schedule
-        itself is not printed, so a line 10 amount still stops the return here. Whole dollars: instructions PDF p. 3,
+        directly on the federal return."): /paScheduleBLine10 greater than $0 when /paScheduleBSupported is not true.
+        The printed path is a full-year resident who is not filing jointly, whose own line 10 is the whole-dollar box
+        2a and whose spouse's line 10 is $0, with exempt-obligation dividends answered no or not asked. For a full-year
+        resident the rounded combined total is included in PA-40 line 3 through each spouse's line 12 (/paLine3)
+        whether or not the schedule prints. A part-year return does not add line 10 to /paLine3; box 2a on a part-year
+        return also stops on /flowKnockoutPaDividends. A joint return, a spouse line 10, a nominee, or an
+        exempt-obligation yes still stops here. An unanswered exempt-obligation question, when ordinary dividends are
+        present, leaves /paScheduleBSupported incomplete, so this clause stays incomplete and the print is refused.
+        Whole dollars: instructions PDF p. 3,
         an amount under $0.50 is $0 and does not require the schedule. The booklet ties the
         requirement to those cases, not to a dollar threshold, so ordinary dividends with no amount on those lines do
         not require PA Schedule B. Line 7 (PDF p. 4, LINE 7: "exempt-interest dividends reported in Box 12 of federal
@@ -1492,14 +1618,19 @@
               </GreaterThan>
             </All>
             <Dependency module="dividends" path="/flowKnockoutDividendNominee" />
-            <GreaterThan>
-              <Left>
-                <Dependency path="/paScheduleBLine10" />
-              </Left>
-              <Right>
-                <Dollar>0</Dollar>
-              </Right>
-            </GreaterThan>
+            <All>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/paScheduleBLine10" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThan>
+              <Not>
+                <Dependency path="/paScheduleBSupported" />
+              </Not>
+            </All>
           </Any>
         </All>
       </Derived>
