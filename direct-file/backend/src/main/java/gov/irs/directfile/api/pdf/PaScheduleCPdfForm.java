@@ -1,11 +1,13 @@
 package gov.irs.directfile.api.pdf;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
 import gov.irs.directfile.api.pdf.load.PdfConfiguration;
 import gov.irs.directfile.models.FactEvaluationResult;
+import gov.irs.factgraph.types.Address;
 
 /**
  * PA-40 Schedule C (PA-40 C (EX) 03-26; see pdf/2026/PA40C/en/configuration.yml). One copy per Schedule C business.
@@ -36,6 +38,7 @@ class PaScheduleCPdfForm extends PaPdfForm {
         // Header. PA-40 IN (2025) p. 5: UPPER CASE. The year box is two digits; the form preprints "20".
         facts.put(PREFIX + "OwnerName", upper(facts, base + "/filer/fullName"));
         facts.put(PREFIX + "BusinessName", upper(facts, base + "/businessName"));
+        putHeader(facts, base);
         final String year = text(facts, "/taxYear");
         facts.put(PREFIX + "Year", year.length() >= 2 ? year.substring(year.length() - 2) : year);
 
@@ -67,5 +70,74 @@ class PaScheduleCPdfForm extends PaPdfForm {
                 net.filter(v -> v.signum() != 0).map(v -> paAmount(v.abs())).orElse(""));
         facts.put(PREFIX + "Line39Loss", net.map(v -> v.signum() < 0).orElse(false));
         return true;
+    }
+
+    /**
+     * PA-40 C (EX) 03-26 identification lines, in UPPER CASE (PA-40 IN (2025) p. 5). Activity and product are Schedule
+     * C line A, and the NAICS box is line B (2026 draft Instructions for Schedule C, PDF p. 4). The EIN is blank when
+     * the filer has none. The address is the return address when the business is conducted there, and the separate
+     * business address otherwise; an unanswered question stays blank. Accounting-method exports are swapped versus
+     * the printed (1)(2) order: cash is "2" and accrual is "1". Other is a form stop and is not exported. 26 U.S.C.
+     * 446(c). 2026 draft Instructions for Schedule C, PDF p. 5, Line F.
+     */
+    private static void putHeader(final FactEvaluationResult facts, final String base) {
+        facts.put(PREFIX + "Activity", upper(facts, base + "/principalBusinessActivity"));
+        facts.put(PREFIX + "Product", upper(facts, base + "/principalProductOrService"));
+        facts.put(PREFIX + "Ein", text(facts, base + "/lineDEmployerIdNumber"));
+        facts.put(PREFIX + "Naics", text(facts, base + "/principalBusinessCode"));
+
+        Address address = null;
+        if (isTrue(facts, base + "/businessConductedAtHome")) {
+            final Optional<Object> home = facts.getOptional("/address");
+            if (home.isPresent() && home.get() instanceof Address a) {
+                address = a;
+            }
+        } else {
+            final Optional<Object> separate = facts.getOptional(base + "/businessAddress");
+            if (separate.isPresent() && separate.get() instanceof Address a) {
+                address = a;
+            }
+        }
+        if (address == null) {
+            facts.put(PREFIX + "Street", "");
+            facts.put(PREFIX + "CityStateZip", "");
+        } else {
+            final String line2 = address.streetAddressLine2() == null
+                    ? ""
+                    : address.streetAddressLine2().trim();
+            final String street = address.streetAddress() == null
+                    ? ""
+                    : address.streetAddress().trim();
+            final String combined = line2.isEmpty() ? street : street + " " + line2;
+            facts.put(PREFIX + "Street", combined.toUpperCase(Locale.US));
+            final String city =
+                    (address.city() == null ? "" : address.city().trim()).toUpperCase(Locale.US);
+            final String state = (address.stateOrProvence() == null
+                            ? ""
+                            : address.stateOrProvence().trim())
+                    .toUpperCase(Locale.US);
+            final String zip = (address.postalCode() == null
+                            ? ""
+                            : address.postalCode().trim())
+                    .toUpperCase(Locale.US);
+            final String stateZip = (state + " " + zip).trim();
+            final String cityStateZip;
+            if (city.isEmpty()) {
+                cityStateZip = stateZip;
+            } else if (stateZip.isEmpty()) {
+                cityStateZip = city;
+            } else {
+                cityStateZip = city + ", " + stateZip;
+            }
+            facts.put(PREFIX + "CityStateZip", cityStateZip);
+        }
+
+        String method = "";
+        if (isTrue(facts, base + "/accountingMethodIsCash")) {
+            method = "2";
+        } else if (isTrue(facts, base + "/accountingMethodIsAccrual")) {
+            method = "1";
+        }
+        facts.put(PREFIX + "AccountingMethod", method);
     }
 }

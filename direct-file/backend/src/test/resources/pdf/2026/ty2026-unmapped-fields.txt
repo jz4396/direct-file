@@ -600,16 +600,6 @@ pdf/2026/IRS1040SA/en/f1040sa--dft.pdf	form1[0].Page2[0].f2_17[0]	Tx	17k. Deduct
 pdf/2026/IRS1040SA/en/f1040sa--dft.pdf	form1[0].Page2[0].f2_18[0]	Tx	17z. Add lines 17a through 17k.
 pdf/2026/IRS1040SA/en/f1040sa--dft.pdf	form1[0].Page2[0].c2_1[1]	Btn	18. Yes. Your deductions may be limited. See the Itemized Deductions Wor...
 pdf/2026/IRS1040SB/en/f1040sb--dft.pdf	topmostSubform[0].Page1[0].f1_32[0]	Tx	3. Excludable interest on series E E and I U.S. savings bonds issued aft...
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_3[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_4[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].BoxD[0].f1_6[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_7[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_8[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_9[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_10[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_11[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_1[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_1[1]	Btn	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_1[2]	Btn	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_12[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_3[0]	Btn	
@@ -624,9 +614,6 @@ pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrde
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_29[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_35[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_44[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_48[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Line30_ReadOrder[0].f1_49[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_50[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_9[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_10[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_11[0]	Tx	
@@ -835,7 +822,6 @@ pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_9[0]	Tx	2e. Net
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_10[0]	Tx	2f. Open parenthesis. Alternative tax net operating loss deduction. Clos...
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_12[0]	Tx	2h. Qualified small business stock, see instructions.
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_13[0]	Tx	2i. Exercise of incentive stock options (excess of A M T income over reg...
-pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_14[0]	Tx	2j. Estates and trusts (amount from Schedule K-1 (Form 1041), box 12, co...
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_15[0]	Tx	2k. Disposition of property (difference between A M T and regular tax ga...
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_16[0]	Tx	2l. Depreciation on assets placed in service after 1986 (difference betw...
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_17[0]	Tx	2m. Passive activities (difference between A M T and regular tax income ...
@@ -927,7 +913,6 @@ pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_32[0]	Tx	19b. H
 pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_33[0]	Tx	19c. Subtract line 19b from line 19a. If zero or less, enter 0.
 pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_34[0]	Tx	20. Enter the smaller of line 18c or line 19c.
 pdf/2026/IRS8960/en/f8960--dft.pdf	topmostSubform[0].Page1[0].f1_35[0]	Tx	21. Net investment income tax for estates and trusts. Multiply line 20 b...
-pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page1[0].f1_5[0]	Tx	2b. Enter the total of your dependents' modified A G I. See instructions...
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	Part I I. Premium Tax Credit Claim and Reconciliation of Advance Payment...
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_1[0]	Tx	Page 2. Part I V. Allocation of Policy Amounts. Complete the following i...
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_2[0]	Tx	(b) S S N of other taxpayer.
@@ -1022,14 +1007,7 @@ pdf/2026/PA40B/en/2025_pa-40b.pdf	9a. Enter the amount of total earnings and pro
 pdf/2026/PA40B/en/2025_pa-40b.pdf	9b. Enter the amount of total earnings and profits included in Line 9a reported in prior years. See the instructions	Tx	9b. Enter the amount of total earnings and profits included in Line 9a r...
 pdf/2026/PA40B/en/2025_pa-40b.pdf	7. Enter the amount of any tax exempt-interest dividends - See the instructions	Tx	7. Enter the amount of any tax exempt-interest dividends - See the instr...
 pdf/2026/PA40B/en/2025_pa-40b.pdf	9c. Enter the amount of the payments of earnings and profits included in Line 9a received in the current year. See the instructions	Tx	9c. Enter the amount of the payments of earnings and profits included in...
-pdf/2026/PA40C/en/pa-40c.pdf	Main business activity	Tx	Main business activity
-pdf/2026/PA40C/en/pa-40c.pdf	product or service	Tx	product or service
-pdf/2026/PA40C/en/pa-40c.pdf	Employer Identification Number	Tx	Employer Identification Number
-pdf/2026/PA40C/en/pa-40c.pdf	Business address (number & street)	Tx	Business address (number & street)
-pdf/2026/PA40C/en/pa-40c.pdf	City, State and Zip Code	Tx	City, State and Zip Code
 pdf/2026/PA40C/en/pa-40c.pdf	Sales Tax License Number (if applicable)	Tx	Sales Tax License Number (if applicable)
-pdf/2026/PA40C/en/pa-40c.pdf	F.  Accounting Method(s)	Btn	F. Accounting Method(s)
-pdf/2026/PA40C/en/pa-40c.pdf	Federal NAICS Code	Tx	Federal NAICS Code
 pdf/2026/PA40C/en/pa-40c.pdf	I.  Out of Business	Btn	I. Out of Business
 pdf/2026/PA40C/en/pa-40c.pdf	1. Total Section 179 depreciation	Tx	Total Section 179 depreciation
 pdf/2026/PA40C/en/pa-40c.pdf	2. Less: Section 179 depreciation included in Schedule C-1	Tx	Less: Section 179 depreciation included in Schedule C-1.

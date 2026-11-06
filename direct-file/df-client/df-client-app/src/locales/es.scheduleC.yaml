@@ -15,6 +15,11 @@ headings:
   /heading/income/schedule-c/material-participation: ¿Participó materialmente en este negocio?
   /heading/income/schedule-c/loop-intro: Agregue cada negocio o actividad esporádica
   /heading/income/schedule-c/business-basics: Infórmenos sobre este negocio
+  /heading/income/schedule-c/activity: ¿Cuál es el negocio o la profesión principal?
+  /heading/income/schedule-c/code: ¿Cuál es el código del negocio principal?
+  /heading/income/schedule-c/ein: ¿Este negocio tiene un número de identificación del empleador?
+  /heading/income/schedule-c/address: ¿Dónde está ubicado este negocio?
+  /heading/income/schedule-c/accounting-method: ¿Qué método de contabilidad usa este negocio?
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
   /heading/income/schedule-c/farm:
@@ -84,6 +89,7 @@ headings:
   /heading/income/schedule-c/part-v-more: "¿Tiene otro gasto adicional después de estos tres?"
   /heading/income/schedule-c/at-risk: "¿Toda su inversión en este negocio estuvo en riesgo?"
   /heading/knockout/schedule-c-out-of-scope: "Esta herramienta no puede completar este Anexo C"
+  /heading/knockout/schedule-c-accounting-method: "Esta herramienta no puede usar otro método de contabilidad"
 info:
   /info/income/schedule-c/intro:
     body: >-
@@ -100,6 +106,31 @@ info:
     body: >-
       Conteste que sí si vende productos a una cooperativa agrícola o de jardinería, o compra suministros por medio de
       ella, y recibe de ella dividendos de patrocinio u otros pagos calificados.
+  /info/income/schedule-c/activity:
+    body: >-
+      La línea A del Anexo C pide la actividad que produjo la fuente principal de ingresos de la línea 1, incluido el
+      campo general y el tipo de producto o servicio. Use la misma descripción en el PA-40 C.
+  /info/income/schedule-c/code:
+    body: >-
+      La línea B del Anexo C es un código de seis dígitos de la tabla de códigos de actividad comercial o profesional
+      principal en las instrucciones del Anexo C. No se puede ingresar un código que no esté en esa tabla. Ese código
+      también es el código NAICS federal en el PA-40 C.
+  /info/income/schedule-c/ein:
+    body: >-
+      Ingrese el número de identificación del empleador del Formulario SS-4. No ingrese un número de Seguro Social. Si
+      este negocio no tiene un EIN, conteste que no. La línea D y la casilla del EIN del PA-40 C quedan en blanco.
+  /info/income/schedule-c/address:
+    body: >-
+      Si operó este negocio desde su hogar en la dirección de la página 1 de su declaración federal, no tiene que
+      completar la línea E del Anexo C. Conteste que sí en ese caso. Pensilvania igual necesita la dirección completa
+      del negocio, que entonces es la dirección de su declaración. De lo contrario, ingrese la dirección de la calle del
+      negocio, no un apartado postal.
+  /info/income/schedule-c/accounting-method:
+    body: >-
+      La línea F del Anexo C es el método de efectivo, el de acumulación, u otro método permitido por el Código de
+      Impuestos Internos. El método debe reflejar claramente los ingresos. Esta herramienta puede completar el método de
+      efectivo o el de acumulación. Otro método detiene esta declaración. Nada se trata como efectivo hasta que usted
+      conteste.
   /info/income/schedule-c/material-participation:
     body: >-
       Usted participa materialmente si trabaja en el negocio de forma regular, continua y considerable. Por ejemplo,
@@ -337,6 +368,15 @@ info:
     body:
       "Conteste esto solo porque este negocio tiene una pérdida. Si toda su inversión estuvo en riesgo y participó
       materialmente, la pérdida puede declararse. Si parte no estuvo en riesgo, se requiere el Formulario 6198."
+  /info/knockout/schedule-c-accounting-method:
+    alertText:
+      body:
+        - p:
+            "La línea F del Anexo C permite el método de efectivo, un método de acumulación u otro método permitido por
+            el Código de Impuestos Internos. El método debe reflejar claramente los ingresos. Cambiar de método por lo
+            general requiere el Formulario 3115 y un ajuste de la sección 481(a). Esta herramienta calcula solo el
+            método de efectivo y el de acumulación, y no imprime la línea F (3). Tendrá que usar otra manera de
+            presentar esta declaración."
   /info/knockout/schedule-c-out-of-scope:
     alertText:
       body:
@@ -351,8 +391,8 @@ info:
             calcula, más de un negocio que usa el método simplificado, el Formulario 7205, comidas que no están
             limitadas al 50 por ciento, créditos por empleo, intereses que deben asignarse, amortización nueva, más de
             tres otros gastos, ingresos de la línea 6 de otro formulario, una pérdida en la que no participó
-            materialmente o una pérdida que no está totalmente en riesgo. Tendrá que usar otra manera de presentar esta
-            declaración."
+            materialmente, una pérdida que no está totalmente en riesgo, o un método de contabilidad distinto del de
+            efectivo o del de acumulación. Tendrá que usar otra manera de presentar esta declaración."
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -433,6 +473,39 @@ fields:
     item: "{{/filers/*/firstName}} {{/filers/*/lastName}}"
   /scheduleCBusinesses/*/businessName:
     name: Nombre del negocio o actividad esporádica
+  /scheduleCBusinesses/*/principalBusinessActivity:
+    name: Negocio o profesión principal
+  /scheduleCBusinesses/*/principalProductOrService:
+    name: Producto o servicio principal
+  /scheduleCBusinesses/*/principalBusinessCode:
+    name: Código de seis dígitos del negocio principal
+  /scheduleCBusinesses/*/hasEmployerIdNumber:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/employerIdNumber:
+    name: Número de identificación del empleador (EIN)
+    errorMessages:
+      InvalidEin: Debe verse como 00-0000000
+      InvalidPrefix: Asegúrese de que los primeros dos dígitos sean válidos
+  /scheduleCBusinesses/*/businessConductedAtHome:
+    boolean:
+      "yes": "Sí, está en la dirección de esta declaración"
+      "no": "No, tiene una dirección distinta"
+  /scheduleCBusinesses/*/businessAddress:
+    name: Dirección del negocio
+    country: País
+    streetAddress: Dirección
+    streetAddressLine2: Apartamento o suite
+    city: Ciudad
+    stateOrProvence: Estado
+    postalCode: Código postal
+  /scheduleCAccountingMethodOptions:
+    cash: Efectivo
+    accrual: Acumulación
+    other: Otro
+  /scheduleCBusinesses/*/accountingMethod:
+    name: Método de contabilidad
   /scheduleCBusinesses/*/writableGrossReceipts:
     name: "Línea 1, Ingresos brutos o ventas"
   /scheduleCBusinesses/*/writableTotalExpenses:
@@ -664,6 +737,14 @@ dataviews:
     /scheduleCBusinesses/*/materiallyParticipates: ¿Participó materialmente en este negocio?
     /scheduleCBusinesses/*/filer/fullName: ¿De quién es el negocio?
     /scheduleCBusinesses/*/businessName: Nombre del negocio o actividad esporádica
+    /scheduleCBusinesses/*/principalBusinessActivity: Negocio o profesión principal
+    /scheduleCBusinesses/*/principalProductOrService: Producto o servicio principal
+    /scheduleCBusinesses/*/principalBusinessCode: Código del negocio principal
+    /scheduleCBusinesses/*/hasEmployerIdNumber: ¿Este negocio tiene un número de identificación del empleador?
+    /scheduleCBusinesses/*/employerIdNumber: Número de identificación del empleador (EIN)
+    /scheduleCBusinesses/*/businessConductedAtHome: ¿Este negocio está en la dirección de su declaración?
+    /scheduleCBusinesses/*/businessAddress: Dirección del negocio
+    /scheduleCBusinesses/*/accountingMethod: Método de contabilidad
     /scheduleCBusinesses/*/writableGrossReceipts: Ingresos brutos o ventas
     /scheduleCBusinesses/*/writableTotalExpenses: Total de gastos del negocio
     /scheduleCBusinesses/*/writableReturnsAndAllowances: "Devoluciones y rebajas"

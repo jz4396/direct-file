@@ -12,6 +12,11 @@ headings:
   /heading/income/schedule-c/material-participation: Did you materially participate in this business?
   /heading/income/schedule-c/loop-intro: Add each business or gig activity
   /heading/income/schedule-c/business-basics: Tell us about this business
+  /heading/income/schedule-c/activity: What is the principal business or profession?
+  /heading/income/schedule-c/code: What is the principal business code?
+  /heading/income/schedule-c/ein: Does this business have an employer identification number?
+  /heading/income/schedule-c/address: Where is this business located?
+  /heading/income/schedule-c/accounting-method: What accounting method does this business use?
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
   /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
   /heading/income/schedule-c/farm:
@@ -75,6 +80,7 @@ headings:
   /heading/income/schedule-c/part-v-more: "Do you have another other expense after these three?"
   /heading/income/schedule-c/at-risk: "Was all of your investment in this business at risk?"
   /heading/knockout/schedule-c-out-of-scope: "This tool can’t complete this Schedule C"
+  /heading/knockout/schedule-c-accounting-method: "This tool can’t use another accounting method"
 info:
   /info/income/schedule-c/intro:
     body: >-
@@ -90,6 +96,29 @@ info:
     body: >-
       Answer yes if you sell products to, or buy supplies through, a farm or garden cooperative and get patronage
       dividends or other qualified payments from it.
+  /info/income/schedule-c/activity:
+    body: >-
+      Schedule C line A asks for the activity that provided the principal source of income on line 1, including the
+      general field and the type of product or service. Use the same description on PA-40 C.
+  /info/income/schedule-c/code:
+    body: >-
+      Schedule C line B is a six-digit code from the Principal Business or Professional Activity Codes chart in the
+      Schedule C instructions. A code that is not on that chart cannot be entered. That code is also the Federal NAICS
+      Code on PA-40 C.
+  /info/income/schedule-c/ein:
+    body: >-
+      Enter the employer identification number from Form SS-4. Do not enter a Social Security number. If this business
+      does not have an EIN, answer no. Line D and the PA-40 C EIN box stay blank.
+  /info/income/schedule-c/address:
+    body: >-
+      If you conducted this business from your home at the address on page 1 of your federal return, you do not have to
+      complete Schedule C line E. Answer yes in that case. Pennsylvania still needs the complete business address, which
+      is then the address on your return. Otherwise enter the business street address, not a post office box.
+  /info/income/schedule-c/accounting-method:
+    body: >-
+      Schedule C line F is cash, accrual, or another method permitted by the Internal Revenue Code. The method must
+      clearly reflect income. This tool can complete cash or accrual. Another method stops this return. Nothing here is
+      treated as cash until you answer.
   /info/income/schedule-c/material-participation:
     body: >-
       You materially participate if you work in the business on a regular, continuous, and substantial basis. For
@@ -300,6 +329,14 @@ info:
     body:
       "Answer this only because this business has a loss. If all of your investment was at risk and you materially
       participated, the loss can be reported. If some was not at risk, Form 6198 is required."
+  /info/knockout/schedule-c-accounting-method:
+    alertText:
+      body:
+        - p:
+            "Schedule C line F allows the cash method, an accrual method, or another method permitted by the Internal
+            Revenue Code. The method must clearly reflect income. Changing methods generally requires Form 3115 and a
+            section 481(a) adjustment. This tool figures cash and accrual only, and it does not print line F (3). You
+            will need another way to file this return."
   /info/knockout/schedule-c-out-of-scope:
     alertText:
       body:
@@ -312,8 +349,8 @@ info:
             rental use of the home, a prior Form 8829 carryover, a simplified method this tool does not figure, more
             than one business using the simplified method, Form 7205, meals that are not limited to 50 percent,
             employment credits, interest that must be allocated, new amortization, more than three other expenses, line
-            6 income from another form, a loss you did not materially participate in, or a loss that is not fully at
-            risk. You will need another way to file this return."
+            6 income from another form, a loss you did not materially participate in, a loss that is not fully at risk,
+            or an accounting method other than cash or accrual. You will need another way to file this return."
 fields:
   /hadSelfEmploymentIncome:
     boolean:
@@ -394,6 +431,39 @@ fields:
     item: "{{/filers/*/firstName}} {{/filers/*/lastName}}"
   /scheduleCBusinesses/*/businessName:
     name: Business or gig activity name
+  /scheduleCBusinesses/*/principalBusinessActivity:
+    name: Principal business or profession
+  /scheduleCBusinesses/*/principalProductOrService:
+    name: Principal product or service
+  /scheduleCBusinesses/*/principalBusinessCode:
+    name: Six-digit principal business code
+  /scheduleCBusinesses/*/hasEmployerIdNumber:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/employerIdNumber:
+    name: Employer identification number (EIN)
+    errorMessages:
+      InvalidEin: This should look like 00-0000000
+      InvalidPrefix: Please ensure the first two digits are valid
+  /scheduleCBusinesses/*/businessConductedAtHome:
+    boolean:
+      "yes": "Yes, it is at the address on this return"
+      "no": "No, it has a different address"
+  /scheduleCBusinesses/*/businessAddress:
+    name: Business address
+    country: Country
+    streetAddress: Street address
+    streetAddressLine2: Apartment or suite
+    city: City
+    stateOrProvence: State
+    postalCode: ZIP code
+  /scheduleCAccountingMethodOptions:
+    cash: Cash
+    accrual: Accrual
+    other: Other
+  /scheduleCBusinesses/*/accountingMethod:
+    name: Accounting method
   /scheduleCBusinesses/*/writableGrossReceipts:
     name: "Line 1, Gross receipts or sales"
   /scheduleCBusinesses/*/writableTotalExpenses:
@@ -623,6 +693,14 @@ dataviews:
     /scheduleCBusinesses/*/materiallyParticipates: Did you materially participate in this business?
     /scheduleCBusinesses/*/filer/fullName: Whose business is it?
     /scheduleCBusinesses/*/businessName: Business or gig activity name
+    /scheduleCBusinesses/*/principalBusinessActivity: Principal business or profession
+    /scheduleCBusinesses/*/principalProductOrService: Principal product or service
+    /scheduleCBusinesses/*/principalBusinessCode: Principal business code
+    /scheduleCBusinesses/*/hasEmployerIdNumber: Does this business have an employer identification number?
+    /scheduleCBusinesses/*/employerIdNumber: Employer identification number (EIN)
+    /scheduleCBusinesses/*/businessConductedAtHome: Is this business at the address on your return?
+    /scheduleCBusinesses/*/businessAddress: Business address
+    /scheduleCBusinesses/*/accountingMethod: Accounting method
     /scheduleCBusinesses/*/writableGrossReceipts: Gross receipts or sales
     /scheduleCBusinesses/*/writableTotalExpenses: Total business expenses
     /scheduleCBusinesses/*/writableReturnsAndAllowances: "Returns and allowances"

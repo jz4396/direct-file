@@ -1,12 +1,14 @@
 /* eslint-disable max-len */
 import { CollectionLoop, Screen, Subcategory, SubSubcategory } from '../../flowDeclarations.js';
 import {
+  Address,
   Boolean,
   CollectionItemManager,
   CollectionItemReference,
   ContextHeading,
   Dollar,
   DFAlert,
+  Ein,
   Enum,
   GenericString,
   Heading,
@@ -176,6 +178,53 @@ export const ScheduleCIncomeSubcategory = (
           <GenericString path='/scheduleCBusinesses/*/filer/fullName' displayOnlyOn='data-view' />
           <LimitingString path='/scheduleCBusinesses/*/businessName' />
           <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-activity'>
+          <Heading i18nKey='/heading/income/schedule-c/activity' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/activity' />
+          <LimitingString path='/scheduleCBusinesses/*/principalBusinessActivity' />
+          <LimitingString path='/scheduleCBusinesses/*/principalProductOrService' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-code'>
+          <Heading i18nKey='/heading/income/schedule-c/code' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/code' />
+          <LimitingString path='/scheduleCBusinesses/*/principalBusinessCode' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-ein'>
+          <Heading i18nKey='/heading/income/schedule-c/ein' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/ein' />
+          <Boolean path='/scheduleCBusinesses/*/hasEmployerIdNumber' />
+          <Ein path='/scheduleCBusinesses/*/employerIdNumber' condition='/scheduleCBusinesses/*/hasEmployerIdNumber' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-address'>
+          <Heading i18nKey='/heading/income/schedule-c/address' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/address' />
+          <Boolean path='/scheduleCBusinesses/*/businessConductedAtHome' />
+          <Address
+            path='/scheduleCBusinesses/*/businessAddress'
+            condition='/scheduleCBusinesses/*/businessAddressIsSeparate'
+            hintKey='/info/why-cant-i-change-country'
+          />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-accounting-method'>
+          <Heading i18nKey='/heading/income/schedule-c/accounting-method' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/accounting-method' />
+          <Enum path='/scheduleCBusinesses/*/accountingMethod' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen
+          route='schedule-c-accounting-method-knockout'
+          condition='/scheduleCBusinesses/*/accountingMethodIsOther'
+          isKnockout={true}
+        >
+          <IconDisplay name='ErrorOutline' size={9} isCentered />
+          <Heading i18nKey='/heading/knockout/schedule-c-accounting-method' />
+          <DFAlert i18nKey='/info/knockout/schedule-c-accounting-method' headingLevel='h2' type='warning' />
+          <KnockoutButton i18nKey='button.knockout' />
         </Screen>
         <Screen route='schedule-c-part-i'>
           <Heading i18nKey='/heading/income/schedule-c/part-i' />

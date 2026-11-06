@@ -12,8 +12,8 @@
     at 49047 and 49050: "The OASDI contribution and benefit base is $184,500 for remuneration paid in
     2026 and self-employment income earned in tax years beginning in 2026." —
     https://www.federalregister.gov/d/2025-19763 (PDF: https://www.govinfo.gov/content/pkg/FR-2025-11-03/pdf/2025-19763.pdf)
-  - Schedule C / SE instructions hubs: https://www.irs.gov/instructions/i1040sc
-    https://www.irs.gov/instructions/i1040sse
+  - Schedule C 2026 draft instructions: https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf
+    Schedule SE instructions hub: https://www.irs.gov/instructions/i1040sse
   - Part III cost of goods sold: 2026 Schedule C, PDF p. 2, lines 33-42 and line 4
     ("Cost of goods sold (from line 42)"), SHA-256
     cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4.
@@ -678,13 +678,606 @@
 
     <Fact path="/scheduleCBusinesses/*/businessName">
       <Name>Business name</Name>
-      <Description>Schedule C identifying information — principal business / professional activity name.</Description>
+      <Description>
+        Schedule C line C, "Business name. If no separate business name, leave blank." 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), PDF p. 1. This is not line A.
+      </Description>
       <Writable>
         <String />
         <Limit type="Match">
           <String><![CDATA[[\sA-Za-z0-9\-.,&']+]]></String>
         </Limit>
       </Writable>
+    </Fact>
+
+    <!--
+      Header lines A, B, D, E, and F (#89). Line C is businessName.
+      2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F
+      (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf). 26 U.S.C. 446(c) (https://www.law.cornell.edu/uscode/text/26/446).
+      PA-40 C (EX) 03-26, Identification Information: the same activity, the federal code, the FEIN (blank if
+      none), the complete business address, and the accounting-method oval. An unanswered required fact stays
+      incomplete and is not guessed. No EIN is not the filer's SSN. A business at the return address leaves
+      federal line E blank and still prints that address on PA-40 C. Line F other stops the return.
+    -->
+
+    <Fact path="/scheduleCBusinesses/*/principalBusinessActivity">
+      <Name>Principal business or profession</Name>
+      <Description>
+        Schedule C line A, the general field of the activity. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line A: "Describe the business or professional
+        activity that provided your principal source of income reported on line 1," including "the general field or
+        activity and the type of product or service."
+      </Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>75</Int>
+        </Limit>
+        <Limit type="Match">
+          <String><![CDATA[[\sA-Za-z0-9\-.,&']+]]></String>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/principalProductOrService">
+      <Name>Principal product or service</Name>
+      <Description>
+        The product or service included in Schedule C line A. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line A. PA-40 C (EX) 03-26 prints this in its
+        own box beside "Main business activity."
+      </Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>40</Int>
+        </Limit>
+        <Limit type="Match">
+          <String><![CDATA[[\sA-Za-z0-9\-.,&']+]]></String>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineAPrincipalBusiness">
+      <Name>Schedule C line A</Name>
+      <Description>
+        Line A text: the activity and the product or service. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line A, "including product or service."
+        Incomplete until both parts are answered.
+      </Description>
+      <Derived>
+        <Paste>
+          <Dependency path="../principalBusinessActivity" />
+          <Dependency path="../principalProductOrService" />
+        </Paste>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/principalBusinessCode">
+      <Name>Principal business code</Name>
+      <Description>
+        Schedule C line B. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line B: "Enter on line B the six-digit code
+        from the Principal Business or Professional Activity Codes chart at the end of these instructions." The
+        allowed set is that chart (draft PDF pp. 19-20). A six-digit code that is not on the chart is rejected.
+        The same code is the Federal NAICS Code on PA-40 C (EX) 03-26.
+      </Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>6</Int>
+        </Limit>
+        <Limit type="Match">
+          <String><![CDATA[112900|113000|114110|114210|115110|115210|115310|211120|211130|212110|212200|212300|213110|221000|236100|236200|237100|237210|237310|237990|238110|238120|238130|238140|238150|238160|238170|238190|238210|238220|238290|238310|238320|238330|238340|238350|238390|238910|238990|311110|311200|311300|311400|311500|311610|311710|311800|311900|312000|313000|314000|315000|316110|316210|316990|321000|322000|323100|324100|325100|325200|325300|325410|325500|325600|325900|326000|327100|327210|327300|327400|327900|331000|332000|333000|334000|335000|336000|337000|339110|339900|423100|423200|423300|423400|423500|423600|423700|423800|423910|423920|423930|423940|423990|424100|424210|424300|424400|424500|424600|424700|424800|424910|424920|424930|424940|424950|424990|425120|441110|441120|441210|441222|441227|441300|444110|444120|444140|444180|444200|445100|445132|445230|445240|445250|445290|445320|449110|449120|449210|455000|456110|456120|456130|456190|457100|457210|458110|458210|458310|458320|459110|459120|459130|459140|459210|459310|459410|459420|459510|459910|459920|459930|459990|481000|482110|483000|484110|484120|484200|485110|485210|485300|485410|485510|485990|486000|487000|488000|492000|493100|512100|512200|513000|516000|517000|518210|519200|522100|522200|522300|523150|523160|523210|523900|524210|524290|531100|531210|531310|531320|531390|532100|532210|532281|532282|532283|532284|532289|532310|532400|541100|541211|541213|541214|541219|541310|541320|541330|541340|541350|541360|541370|541380|541400|541510|541600|541700|541800|541910|541920|541930|541940|541990|561110|561210|561300|561410|561420|561430|561440|561450|561490|561500|561600|561710|561720|561730|561740|561790|561900|562000|611000|621111|621112|621210|621310|621320|621330|621340|621391|621399|621400|621510|621610|621900|622000|623000|624100|624200|624310|624410|711100|711210|711300|711410|711510|712100|713100|713200|713900|721100|721210|721310|722300|722410|722511|722513|722514|722515|811110|811120|811190|811210|811310|811410|811420|811430|811490|812111|812112|812113|812190|812210|812220|812310|812320|812330|812910|812920|812930|812990|813000|999000]]></String>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/hasEmployerIdNumber">
+      <Name>Business has an EIN</Name>
+      <Description>
+        Schedule C line D. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line D: enter the EIN from Form SS-4; do not
+        enter an SSN; if you do not have an EIN, leave line D blank. PA-40 C (EX) 03-26: if the business has no FEIN,
+        leave the EIN blank. Yes asks for the EIN. No prints a blank line D. Unanswered stays incomplete.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/employerIdNumber">
+      <Name>Employer identification number</Name>
+      <Description>
+        The EIN for Schedule C line D and PA-40 C. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line D. Not the filer's SSN, and not another
+        person's EIN.
+      </Description>
+      <Writable>
+        <EIN />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineDEmployerIdNumber">
+      <Name>Schedule C line D</Name>
+      <Description>
+        The EIN text when the filer has one. A complete "no" is a blank line D. Unanswered stays incomplete.
+        Yes without an EIN stays incomplete and prints blank; it is not treated as "no EIN." 2026 draft
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, Line D.
+      </Description>
+      <Derived>
+        <!-- Yes without a complete EIN matches neither case, so line D stays incomplete. -->
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../hasEmployerIdNumber" />
+              </Not>
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../employerIdNumber" />
+              </IsComplete>
+            </When>
+            <Then>
+              <AsString>
+                <Dependency path="../employerIdNumber" />
+              </AsString>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/businessConductedAtHome">
+      <Name>Business is conducted at the home address on the return</Name>
+      <Description>
+        Schedule C line E. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E: if you conducted the business from
+        your home at the address shown on page 1 of the return, you do not have to complete line E. Yes leaves
+        federal line E blank. PA-40 C (EX) 03-26 still asks for the complete business address, which is then the
+        address on the return. No asks for a separate business address.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/businessAddressIsSeparate">
+      <Name>Ask for a separate business address</Name>
+      <Description>
+        True only after the filer says the business is not at the address on the return. Unanswered is false, so
+        the address screen stays hidden and line E is not copied from the home address.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="../businessConductedAtHome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../businessConductedAtHome" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/businessAddress">
+      <Name>Business address</Name>
+      <Description>
+        Schedule C line E when the business is not conducted at the address on page 1 of the return. 2026 draft
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E: street
+        address, not a box number, and the suite or room number if any. Also the PA-40 C business address in that
+        case.
+      </Description>
+      <Writable>
+        <Address />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineEStreet">
+      <Name>Schedule C line E street</Name>
+      <Description>
+        Blank when the business is at the address on the return. Otherwise the business street. 2026 draft
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../businessConductedAtHome" />
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Not>
+                  <Dependency path="../businessConductedAtHome" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="../businessAddress" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../businessAddress/streetAddress" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineEApt">
+      <Name>Schedule C line E apartment</Name>
+      <Description>Line E suite, room, or apartment. Blank when the business is at the address on the return, or
+        when the separate address has no second line. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../businessConductedAtHome" />
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Not>
+                  <Dependency path="../businessConductedAtHome" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="../businessAddress" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../businessAddress/streetAddressLine2" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineECity">
+      <Name>Schedule C line E city</Name>
+      <Description>Line E city. Blank when the business is at the address on the return. 2026 draft Instructions
+        for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../businessConductedAtHome" />
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Not>
+                  <Dependency path="../businessConductedAtHome" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="../businessAddress" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../businessAddress/city" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineEState">
+      <Name>Schedule C line E state</Name>
+      <Description>Line E state. Blank when the business is at the address on the return. 2026 draft Instructions
+        for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../businessConductedAtHome" />
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Not>
+                  <Dependency path="../businessConductedAtHome" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="../businessAddress" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../businessAddress/stateOrProvence" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineEZip">
+      <Name>Schedule C line E ZIP code</Name>
+      <Description>Line E ZIP code. Blank when the business is at the address on the return. 2026 draft
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line E.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../businessConductedAtHome" />
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Not>
+                  <Dependency path="../businessConductedAtHome" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="../businessAddress" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../businessAddress/postalCode" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCAccountingMethodOptions">
+      <Name>Schedule C accounting methods</Name>
+      <Description>
+        Schedule C line F: cash, accrual, or other. 26 U.S.C. 446(c)
+        (https://www.law.cornell.edu/uscode/text/26/446). 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line F. Cash and accrual print. Other stops
+        the return. This tool does not file Form 3115 or figure a section 481(a) adjustment.
+      </Description>
+      <Derived>
+        <EnumOptions>
+          <String>cash</String>
+          <String>accrual</String>
+          <String>other</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/accountingMethod">
+      <Name>Accounting method</Name>
+      <Description>
+        Schedule C line F and PA-40 C accounting method. 26 U.S.C. 446(c). 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line F. Unanswered is not treated as cash.
+        Other is a form stop.
+      </Description>
+      <Writable>
+        <Enum optionsPath="/scheduleCAccountingMethodOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/accountingMethodIsCash">
+      <Name>Line F cash</Name>
+      <Description>Complete false until an accounting method is chosen. True only for cash. 2026 Schedule C, PDF
+        p. 1, line F (1).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="../accountingMethod" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../accountingMethod" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/scheduleCAccountingMethodOptions">cash</Enum>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/accountingMethodIsAccrual">
+      <Name>Line F accrual</Name>
+      <Description>Complete false until an accounting method is chosen. True only for accrual. 26 U.S.C. 446(c)(2).
+        2026 Schedule C, PDF p. 1, line F (2).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="../accountingMethod" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../accountingMethod" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/scheduleCAccountingMethodOptions">accrual</Enum>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/accountingMethodIsOther">
+      <Name>Line F other</Name>
+      <Description>Complete false until an accounting method is chosen. True only for other. That answer is a form
+        stop: line F (3) and the specify line are not printed, and Form 3115 is not filed. 26 U.S.C. 446(c)(3).
+        2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line F.
+        2026 Schedule C, PDF p. 1, line F (3).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="../accountingMethod" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../accountingMethod" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/scheduleCAccountingMethodOptions">other</Enum>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/headerIsComplete">
+      <Name>Schedule C header lines A through F are answered</Name>
+      <Description>
+        Activity, product or service, a code on the chart, EIN yes or no, home-address yes or no, and accounting
+        method. An EIN is required only after yes. A separate address is required only after no. Other is a
+        complete answer and a form stop; it is not printed. Missing answers are not defaulted. 2026 draft
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 and PDF p. 5.
+      </Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../principalBusinessActivity" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../principalProductOrService" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../principalBusinessCode" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasEmployerIdNumber" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../businessConductedAtHome" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../accountingMethod" />
+          </IsComplete>
+          <Any>
+            <Not>
+              <Dependency path="../hasEmployerIdNumber" />
+            </Not>
+            <IsComplete>
+              <Dependency path="../employerIdNumber" />
+            </IsComplete>
+          </Any>
+          <Any>
+            <Dependency path="../businessConductedAtHome" />
+            <IsComplete>
+              <Dependency path="../businessAddress" />
+            </IsComplete>
+          </Any>
+        </All>
+      </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/writableGrossReceipts">
@@ -835,9 +1428,10 @@
     <Fact path="/scheduleCBusinesses/*/isComplete">
       <Name>Schedule C business complete</Name>
       <Description>
-        Single-total path: name, gross receipts, the expense total, and material participation.
+        Single-total path: header lines A through F, name, gross receipts, the expense total, and material
+        participation.
         Line-item
-        path: name, material participation, Part I amounts, and every stop question.
+        path: header lines A through F, name, material participation, Part I amounts, and every stop question.
         A form stop completes the business
         without expense amounts. Otherwise the expense lines, line 7,
         line 28, and line 30 must be complete, and a loss needs the
@@ -850,6 +1444,7 @@
             <IsComplete>
               <Dependency path="../businessName" />
             </IsComplete>
+            <Dependency path="../headerIsComplete" />
             <IsComplete>
               <Dependency path="../writableGrossReceipts" />
             </IsComplete>
@@ -862,6 +1457,7 @@
             <IsComplete>
               <Dependency path="../businessName" />
             </IsComplete>
+            <Dependency path="../headerIsComplete" />
             <IsComplete>
               <Dependency path="../writableGrossReceipts" />
             </IsComplete>
@@ -925,6 +1521,77 @@
             </Any>
           </All>
         </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCHeaderBlocksSection">
+      <Name>A Schedule C business is missing header lines A through F</Name>
+      <Description>
+        False when the business list is unset or empty. True when a listed business has not finished lines A, B,
+        D, E, and F (line C is the business name). An unanswered required header fact makes this fact true, so
+        /scheduleCSectionIsComplete stays false and /flowIncomplete blocks submission. Nothing is invented for the
+        PDF. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4
+        and PDF p. 5.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCBusinesses" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleCBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Not>
+                      <Dependency path="/scheduleCBusinesses/*/headerIsComplete" />
+                    </Not>
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -4412,19 +5079,22 @@
 
     <Fact path="/scheduleCBusinesses/*/scheduleCFormStop">
       <Name>Schedule C business needs a form this tool does not compute</Name>
-      <Description>True when Part III cannot be figured (line 33c, a line 34 change, a 3-prior-year average over
-        $32,000,000, a tax shelter, line 42 below zero, line 35 different from last year's closing inventory, the
-        section 471(c) no-inventory method claimed together with Part III, or Part III amounts while the filer says
-        there is no inventory), or a vehicle, depreciation, depletion, equipment rent, Form 8829, shared space, rental
-        use of the home, a prior Form 8829 carryover, a simplified method this tool does not figure, more than one
-        simplified-method business, the line 27a
-        deduction, a non-50-percent meal, wage credits, interest that must be allocated, new amortization, a fourth Part
-        V line, or line 6 income that belongs on another form applies. A yes on any stop is enough; later blanks do
-        not turn it off. Cost or lower of cost or market, line 34 no, a 3-prior-year average that does not exceed
+      <Description>True when the accounting method is other (line F; this tool does not file Form 3115), when Part
+        III cannot be figured (line 33c, a line 34 change, a 3-prior-year average over $32,000,000, a tax shelter,
+        line 42 below zero, line 35 different from last year's closing inventory, the section 471(c) no-inventory
+        method claimed together with Part III, or Part III amounts while the filer says there is no inventory), or a
+        vehicle, depreciation, depletion, equipment rent, Form 8829, shared space, rental use of the home, a prior
+        Form 8829 carryover, a simplified method this tool does not figure, more than one simplified-method business,
+        the line 27a deduction, a non-50-percent meal, wage credits, interest that must be allocated, new
+        amortization, a fourth Part V line, or line 6 income that belongs on another form applies. A yes on any stop
+        is enough; later blanks do not turn it off. Cash, accrual, cost or lower of cost or market, line 34 no, a
+        3-prior-year average that does not exceed
         $32,000,000, the filer not a tax shelter, line 42 at least zero, and line 35 equal to last year's closing
-        inventory is not a stop.</Description>
+        inventory is not a stop. 26 U.S.C. 446(c). 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line F.</Description>
       <Derived>
         <Any>
+          <Dependency path="../accountingMethodIsOther" />
           <Dependency path="../partIIIStop" />
           <Dependency path="../hasCarTruckOrVehicleLoan" />
           <Dependency path="../hasDepreciationOrSection179" />
@@ -4584,16 +5254,20 @@
 
     <Fact path="/scheduleCBusinesses/*/isOutOfScope">
       <Name>This Schedule C business is out of scope</Name>
-      <Description>False when the line-item questions were not started, so a single expense total is not an out-of-scope
-        business. True when they were started and a form stop or a loss-limit stop applies.</Description>
+      <Description>True when the accounting method is other, including on a return that still uses the single
+        expense total. Otherwise false when the line-item questions were not started. True when they were started
+        and a form stop or a loss-limit stop applies. 2026 draft Instructions for Schedule C, PDF p. 5, Line F.</Description>
       <Derived>
-        <All>
-          <Dependency path="../itemizedStarted" />
-          <Any>
-            <Dependency path="../scheduleCFormStop" />
-            <Dependency path="../scheduleCLossLimitStop" />
-          </Any>
-        </All>
+        <Any>
+          <Dependency path="../accountingMethodIsOther" />
+          <All>
+            <Dependency path="../itemizedStarted" />
+            <Any>
+              <Dependency path="../scheduleCFormStop" />
+              <Dependency path="../scheduleCLossLimitStop" />
+            </Any>
+          </All>
+        </Any>
       </Derived>
     </Fact>
 
@@ -4611,7 +5285,11 @@
     <Fact path="/flowKnockoutScheduleCOutOfScope">
       <Name>Knockout: Schedule C line needs a form or loss limit not computed here</Name>
       <Description>
-        Stops filing and printing when a Schedule C business, after the line-item questions are started, has
+        An accounting method of other stops filing and printing even when the line-item questions were not started.
+        2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 5, Line F.
+        26 U.S.C. 446(c) (https://www.law.cornell.edu/uscode/text/26/446). This tool does not file Form 3115 or
+        figure a section 481(a) adjustment, and it does not print line F (3). After the line-item questions are
+        started, filing and printing also stop when a Schedule C business has
         Part III that this tool does not figure (line 33c Other, line 34 yes, a 3-prior-year average annual gross
         receipts amount greater than $32,000,000 under Rev. Proc. 2025-32 §4.30 and 26 U.S.C. 448(c), a tax shelter
         under 26 U.S.C. 448(d)(3), line 42 below zero, line 35 different from last year's closing inventory, the
@@ -4634,9 +5312,9 @@
         (Form 8582, 26 U.S.C. 469), or a loss that is not fully at risk (line 32b, Form 6198, 26
         U.S.C. 465).
         Complete and false when self-employment income was not asked, was answered no, there are no
-        businesses, or the business only has the single expense total. An unanswered line-item question on a
-        business
-        that was started stays incomplete, so that return is not treated as in scope.
+        businesses, or every business uses cash or accrual and only the single expense total. An other method on
+        that older path is still a stop. An unanswered line-item question on a business that was started stays
+        incomplete, so that return is not treated as in scope.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />

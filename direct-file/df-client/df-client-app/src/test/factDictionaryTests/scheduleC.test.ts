@@ -4,7 +4,9 @@ import {
   createCollectionItemWrapper,
   createCollectionWrapper,
   createDollarWrapper,
+  createEinWrapper,
   createEnumWrapper,
+  createPersistenceWrapper,
   createStringWrapper,
   createTinWrapper,
   createDayWrapper,
@@ -339,6 +341,135 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
       expect(fg.get(`/primaryFilerSeRemainingSocialSecurityWageBase` as ConcretePath).get.toString()).toBe(`34500.00`);
       // min(36,940, 34,500) × 12.4% = 4,278
       expect(fg.get(`/primaryFilerSeSocialSecurityTax` as ConcretePath).get.toString()).toBe(`4278.00`);
+    });
+
+    it(`header lines A through F stay incomplete until answered, then print the answered values`, ({ task }) => {
+      // 2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F.
+      // 26 U.S.C. 446(c). PA-40 C (EX) 03-26 uses the same activity, code, EIN, and address.
+      task.meta.testedFactPaths = [
+        `/scheduleCBusinesses/*/lineAPrincipalBusiness`,
+        `/scheduleCBusinesses/*/lineDEmployerIdNumber`,
+        `/scheduleCBusinesses/*/lineEStreet`,
+        `/scheduleCBusinesses/*/accountingMethodIsOther`,
+        `/scheduleCBusinesses/*/headerIsComplete`,
+        `/scheduleCHeaderBlocksSection`,
+        `/flowKnockoutScheduleCOutOfScope`,
+      ];
+      const b = `/scheduleCBusinesses/#${businessId}`;
+      const open = setupFactGraph({
+        ...baseSingle,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+        '/qbiIsCooperativePatron': createBooleanWrapper(false),
+        '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+        '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+        '/usesSeOptionalMethod': createBooleanWrapper(false),
+        '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+        '/hasNotarySeExclusion': createBooleanWrapper(false),
+        '/hadForm8919Wages': createBooleanWrapper(false),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        [`${b}/businessName`]: createStringWrapper(`Gig Work`),
+        [`${b}/writableGrossReceipts`]: createDollarWrapper(`1000`),
+        [`${b}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`${b}/materiallyParticipates`]: createBooleanWrapper(true),
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      }).factGraph;
+      const read = (path: string) => open.get(path as ConcretePath);
+      expect(read(`${b}/headerIsComplete`).get).toBe(false);
+      expect(read(`${b}/lineAPrincipalBusiness`).complete).toBe(false);
+      expect(read(`${b}/lineDEmployerIdNumber`).complete).toBe(false);
+      expect(read(`${b}/accountingMethodIsCash`).get).toBe(false);
+      expect(read(`/scheduleCHeaderBlocksSection`).get).toBe(true);
+      expect(read(`/scheduleCSectionIsComplete`).get).toBe(false);
+
+      const filled = setupFactGraph({
+        ...baseSingle,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+        '/qbiIsCooperativePatron': createBooleanWrapper(false),
+        '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+        '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+        '/usesSeOptionalMethod': createBooleanWrapper(false),
+        '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+        '/hasNotarySeExclusion': createBooleanWrapper(false),
+        '/hadForm8919Wages': createBooleanWrapper(false),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        [`${b}/businessName`]: createStringWrapper(`Gig Work`),
+        [`${b}/principalBusinessActivity`]: createStringWrapper(`Consulting`),
+        [`${b}/principalProductOrService`]: createStringWrapper(`Tax preparation`),
+        [`${b}/principalBusinessCode`]: createStringWrapper(`541213`),
+        [`${b}/hasEmployerIdNumber`]: createBooleanWrapper(true),
+        [`${b}/employerIdNumber`]: createEinWrapper(`12`, `3456789`),
+        [`${b}/businessConductedAtHome`]: createBooleanWrapper(false),
+        [`${b}/businessAddress`]: createPersistenceWrapper(`gov.irs.factgraph.persisters.AddressWrapper`, {
+          streetAddress: `200 Market`,
+          streetAddressLine2: `Suite 4`,
+          city: `Harrisburg`,
+          postalCode: `17101`,
+          stateOrProvence: `PA`,
+          country: ``,
+        }),
+        [`${b}/accountingMethod`]: createEnumWrapper(`cash`, `/scheduleCAccountingMethodOptions`),
+        [`${b}/writableGrossReceipts`]: createDollarWrapper(`1000`),
+        [`${b}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`${b}/materiallyParticipates`]: createBooleanWrapper(true),
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      }).factGraph;
+      const got = (path: string) => filled.get(path as ConcretePath);
+      expect(got(`${b}/lineAPrincipalBusiness`).get).toBe(`Consulting Tax preparation`);
+      expect(got(`${b}/lineDEmployerIdNumber`).get).toBe(`12-3456789`);
+      expect(got(`${b}/lineEStreet`).get).toBe(`200 Market`);
+      expect(got(`${b}/lineEApt`).get).toBe(`Suite 4`);
+      expect(got(`${b}/lineECity`).get).toBe(`Harrisburg`);
+      expect(got(`${b}/lineEState`).get).toBe(`PA`);
+      expect(got(`${b}/lineEZip`).get).toBe(`17101`);
+      expect(got(`${b}/accountingMethodIsCash`).get).toBe(true);
+      expect(got(`${b}/accountingMethodIsOther`).get).toBe(false);
+      expect(got(`${b}/headerIsComplete`).get).toBe(true);
+      expect(got(`/scheduleCHeaderBlocksSection`).get).toBe(false);
+      expect(got(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+
+      const atHome = setupFactGraph({
+        ...baseSingle,
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        [`${b}/hasEmployerIdNumber`]: createBooleanWrapper(false),
+        [`${b}/businessConductedAtHome`]: createBooleanWrapper(true),
+        [`${b}/principalBusinessActivity`]: createStringWrapper(`Consulting`),
+        [`${b}/principalProductOrService`]: createStringWrapper(`Tax preparation`),
+        [`${b}/principalBusinessCode`]: createStringWrapper(`541213`),
+        [`${b}/accountingMethod`]: createEnumWrapper(`accrual`, `/scheduleCAccountingMethodOptions`),
+      }).factGraph;
+      expect(atHome.get(`${b}/lineDEmployerIdNumber` as ConcretePath).get).toBe(``);
+      expect(atHome.get(`${b}/lineEStreet` as ConcretePath).get).toBe(``);
+      expect(atHome.get(`${b}/accountingMethodIsAccrual` as ConcretePath).get).toBe(true);
+      expect(atHome.get(`${b}/accountingMethodIsOther` as ConcretePath).get).toBe(false);
+
+      const offChart = setupFactGraph({
+        ...baseSingle,
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+      }).factGraph;
+      const codePath = `${b}/principalBusinessCode` as ConcretePath;
+      offChart.set(codePath, `000000`);
+      expect(offChart.save().limitViolations.filter((v) => v.factPath === codePath).length).toBe(1);
+      expect(offChart.get(codePath).complete).toBe(false);
+      offChart.set(codePath, `541213`);
+      expect(offChart.save().limitViolations.filter((v) => v.factPath === codePath).length).toBe(0);
+      expect(offChart.get(codePath).get).toBe(`541213`);
+
+      const other = setupFactGraph({
+        ...baseSingle,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        [`${b}/principalBusinessActivity`]: createStringWrapper(`Consulting`),
+        [`${b}/principalProductOrService`]: createStringWrapper(`Tax preparation`),
+        [`${b}/principalBusinessCode`]: createStringWrapper(`541213`),
+        [`${b}/hasEmployerIdNumber`]: createBooleanWrapper(false),
+        [`${b}/businessConductedAtHome`]: createBooleanWrapper(true),
+        [`${b}/accountingMethod`]: createEnumWrapper(`other`, `/scheduleCAccountingMethodOptions`),
+      }).factGraph;
+      expect(other.get(`${b}/accountingMethodIsOther` as ConcretePath).get).toBe(true);
+      expect(other.get(`${b}/scheduleCFormStop` as ConcretePath).get).toBe(true);
+      expect(other.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath).get).toBe(true);
     });
 
     it(`tips push wages past the base → remaining base floors at $0`, ({ task }) => {

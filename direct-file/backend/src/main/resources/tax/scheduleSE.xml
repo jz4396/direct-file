@@ -2515,15 +2515,13 @@
       <Name>Schedule C section complete</Name>
       <Description>
         Interview complete when there is no Schedule C and no nonzero Form 1065 box 14 code A, or when
-        Schedule C is finished, the Schedule SE out-of-scope questions are answered, church employee
-        income on line 5a is
-        complete, and the nonfarm optional method is not stopped for eligibility.
-        A yes on /hadChurchEmployeeIncome is
-        complete only after /churchEmployeeIncome is entered.
-        On a joint return, /hadSecondaryFilerChurchEmployeeIncome must be answered. A yes stops the
-        section: that income is not entered on the primary filer's line 5a. 26 U.S.C. 3121(w), 1402(b),
-        and 1402(j).
-        The credit conflict
+        Schedule C is finished, header lines A through F are answered on every business, the Schedule SE
+        out-of-scope questions are answered, church employee income on line 5a is complete, and the
+        nonfarm optional method is not stopped for eligibility. A yes on /hadChurchEmployeeIncome is
+        complete only after /churchEmployeeIncome is entered. On a joint return,
+        /hadSecondaryFilerChurchEmployeeIncome must be answered. A yes stops the section: that income
+        is not entered on the primary filer's line 5a. 26 U.S.C. 3121(w), 1402(b), and 1402(j). The
+        credit conflict
         (/flowKnockoutScheduleSENonfarmOptionalMethodCredits) is not part of this fact. A K-1-only
         return still has to
         answer those questions. 26 U.S.C. 1402(a) and 1402(j).
@@ -2580,6 +2578,9 @@
                 </Not>
                 <Not>
                   <Dependency path="/flowKnockoutScheduleSENonfarmOptionalMethod" />
+                </Not>
+                <Not>
+                  <Dependency module="scheduleC" path="/scheduleCHeaderBlocksSection" />
                 </Not>
               </All>
             </Then>

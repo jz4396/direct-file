@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,6 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,6 +35,7 @@ import gov.irs.factgraph.Graph;
 import gov.irs.factgraph.monads.Result;
 
 import gov.irs.directfile.api.loaders.domain.TaxFact;
+import gov.irs.directfile.api.loaders.processor.XmlProcessor;
 import gov.irs.directfile.models.FactTypeWithItem;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -99,7 +103,10 @@ public class SubmissionBlockingFactsTest {
         for (Resource xml : xmls) {
             Document doc;
             try (InputStream in = xml.getInputStream()) {
-                doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+                String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                doc = DocumentBuilderFactory.newInstance()
+                        .newDocumentBuilder()
+                        .parse(new InputSource(new StringReader(XmlProcessor.stripComments(text))));
             }
             NodeList facts = doc.getElementsByTagName("Fact");
             for (int i = 0; i < facts.getLength(); i++) {

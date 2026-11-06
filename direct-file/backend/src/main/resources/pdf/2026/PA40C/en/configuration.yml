@@ -7,9 +7,17 @@
 #
 # Field names are the PDF's own fully qualified AcroForm names (PDFBox getField). Each mapped box was checked against
 # the printed line caption beside it. Map only terminal fields. "4. Other Income" and "38. Total Expenses" are
-# parents; the amount fields are the longer names below. Accounting-method oval F is not mapped: its export values
-# do not follow the printed (1)(2)(3) order, and the accounting method is not collected.
-# PaScheduleCPdfForm fills the ~paC* pseudo-facts (upper case, year, inventory ovals, line 39 loss).
+# parents; the amount fields are the longer names below.
+# Header (#89), PA-40 C (EX) 03-26 Identification Information, and the 2026 draft Instructions for Schedule C
+# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F:
+#   A activity and product, C EIN (blank if none), D the complete address, Federal NAICS Code (Schedule C line B),
+#   and F accounting method. Line B (business name) was already mapped. Line E on this form is inventory, not the
+#   accounting method.
+# Accounting-method oval F export values do not follow the printed (1)(2)(3) order. The leftmost printed (1) Cash
+# widget exports 2, and the middle printed (2) Accrual widget exports 1. ~paCAccountingMethod is "2" or "1".
+# Other is a form stop and is not exported as 3. Unanswered stays blank and is not defaulted to cash.
+# 26 U.S.C. 446(c).
+# PaScheduleCPdfForm fills the ~paC* pseudo-facts (upper case, year, inventory ovals, line 39 loss, header).
 # Amounts: whole dollars rounded half-up (PA-40 IN (2025) p. 4), written as the form shows them (1,234.00); $0 prints
 # blank.
 #
@@ -35,8 +43,8 @@
 #   telephone 30, amortization 7, bad debts 8, bank charges 9 (a Part V "Bank fees" line stays on line 37),
 #   car and truck 10, depletion 12, depreciation and section 179 13, dues 14, freight 16, laundry 19,
 #   management fees 21, postage 24, IDC 34-36, start-up 36, Schedule C-2 (home office actual expenses; the federal
-#   safe harbor is not recognized and a home office stops the return), EIN, address, NAICS, sales-tax license,
-#   product, accounting method, out of business, and the federal at-risk checkboxes.
+#   safe harbor is not recognized and a home office stops the return), sales-tax license,
+#   out of business, and the federal at-risk checkboxes.
 includeForEach: /scheduleCBusinesses
 customMaps:
   template:
@@ -47,6 +55,15 @@ otherRequiredFacts:
   - /scheduleCBusinesses/*/usesLegacyExpenseBucket
   - /scheduleCBusinesses/*/filer/fullName
   - /scheduleCBusinesses/*/businessName
+  - /address
+  - /scheduleCBusinesses/*/principalBusinessActivity
+  - /scheduleCBusinesses/*/principalProductOrService
+  - /scheduleCBusinesses/*/principalBusinessCode
+  - /scheduleCBusinesses/*/lineDEmployerIdNumber
+  - /scheduleCBusinesses/*/businessConductedAtHome
+  - /scheduleCBusinesses/*/businessAddress
+  - /scheduleCBusinesses/*/accountingMethodIsCash
+  - /scheduleCBusinesses/*/accountingMethodIsAccrual
   - /scheduleCBusinesses/*/line33aCost
   - /scheduleCBusinesses/*/line33bLowerOfCostOrMarket
   - /scheduleCBusinesses/*/line34ChangeNo
@@ -60,6 +77,13 @@ form:
   "Name of Owner as shown PA tax return": ~paCOwnerName
   "Owner's Social Security Number": /scheduleCBusinesses/*/filer/tin
   "Business Name": ~paCBusinessName
+  "Main business activity": ~paCActivity
+  "product or service": ~paCProduct
+  "Employer Identification Number": ~paCEin
+  "Business address (number & street)": ~paCStreet
+  "City, State and Zip Code": ~paCCityStateZip
+  "Federal NAICS Code": ~paCNaics
+  "F.  Accounting Method(s)": ~paCAccountingMethod
   "E. Method(s)": ~paCInventoryMethod
   "C1. Yes/No": ~paCInventoryChange
   "C2. Yes/No": ~paCHomeOffice

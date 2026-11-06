@@ -72,7 +72,6 @@ direct-file/df-client/package-lock.json	GHSA-9jrq-w75r-8gcw	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-c2c7-rcm5-vvqj	npm	picomatch	2.3.1
 direct-file/df-client/package-lock.json	GHSA-c83g-rgw3-j3cx	npm	browserslist	4.24.2
 direct-file/df-client/package-lock.json	GHSA-c8p4-j97h-3vg8	npm	happy-dom	15.10.2
-direct-file/df-client/package-lock.json	GHSA-f23m-r3pf-42rh	npm	lodash	4.17.21
 direct-file/df-client/package-lock.json	GHSA-f65p-4m7j-42xc	npm	fast-uri	3.0.3
 direct-file/df-client/package-lock.json	GHSA-f886-m6hf-6m8v	npm	brace-expansion	1.1.11
 direct-file/df-client/package-lock.json	GHSA-f886-m6hf-6m8v	npm	brace-expansion	2.0.1
@@ -80,8 +79,6 @@ direct-file/df-client/package-lock.json	GHSA-fj3w-jwp8-x2g3	npm	fast-xml-parser	
 direct-file/df-client/package-lock.json	GHSA-fx2h-pf6j-xcff	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-fxqj-rqcc-2cmp	npm	postcss	8.4.47
 # GHSA-g3hv-75wg-m249 ambient minimatch globparts DoS; lockfiles unchanged.
-direct-file/df-client/package-lock.json	GHSA-g3hv-75wg-m249	npm	minimatch	3.1.2
-direct-file/df-client/package-lock.json	GHSA-g3hv-75wg-m249	npm	minimatch	5.1.6
 direct-file/df-client/package-lock.json	GHSA-g3hv-75wg-m249	npm	minimatch	9.0.5
 direct-file/df-client/package-lock.json	GHSA-g4jq-h2w9-997c	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-gh4j-gqv2-49f6	npm	fast-xml-parser	4.4.1
@@ -145,6 +142,7 @@ direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-5gvw-
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-5jmj-h7xm-6q6v	Maven	com.fasterxml.jackson.core:jackson-databind	2.17.3
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-5m62-pw8w-7w9f	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-5mp6-jrq3-r938	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
+direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-5v3h-fjv2-54fg	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-659m-px2c-25wj	Maven	org.springframework:spring-core	6.1.18
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-6hcq-hmm3-jj3c	Maven	org.springframework:spring-webmvc	6.1.18
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-6p4f-wcwh-5vvm	Maven	org.springframework:spring-webmvc	6.1.18
@@ -172,6 +170,7 @@ direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-h3gc-
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-h3qp-gqrc-q736	Maven	org.springframework:spring-webmvc	6.1.18
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-h3x4-894j-xpx5	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-h6fc-48rj-7qqh	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
+direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-h792-v28v-ppgr	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-hgj6-7826-r7m5	Maven	com.fasterxml.jackson.core:jackson-databind	2.17.3
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-hgrr-935x-pq79	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-j3rv-43j4-c7qm	Maven	com.fasterxml.jackson.core:jackson-databind	2.17.3
@@ -179,6 +178,7 @@ direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-jhq6-
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-jmp9-x22r-554x	Maven	org.springframework:spring-core	6.1.18
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-mgp5-rv84-w37q	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-mq64-j8f9-9gcj	Maven	org.springframework:spring-webmvc	6.1.18
+direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-mqg3-r7h5-24x4	Maven	org.apache.tomcat.embed:tomcat-embed-core	10.1.39
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-p47f-322f-whfh	Maven	ch.qos.logback:logback-core	1.5.18
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-p6pp-m3f8-5c89	Maven	com.fasterxml.jackson.core:jackson-core	2.17.3
 direct-file/libs/starters/irs-spring-boot-starter-boilerplate/pom.xml	GHSA-pc63-qcmh-9cmg	Maven	org.springframework:spring-webmvc	6.1.18
