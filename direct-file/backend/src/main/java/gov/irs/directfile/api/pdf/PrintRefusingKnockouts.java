@@ -28,8 +28,9 @@ public final class PrintRefusingKnockouts {
             // Form 8949 code Q (section 1202 exclusion): section 1202 gain is 28-percent rate gain
             // (26 U.S.C. 1(h)(4)(A)(ii), 1(h)(7)) on Schedule D line 18, which needs the Schedule D Tax Worksheet.
             "/flowKnockoutForm8949CodeQ",
-            // Schedule EIC has no TY2026 template; a qualifying child counts only if the return gives the child's
-            // name, age and TIN (26 U.S.C. 32(c)(3)(D)(i)), which Schedule EIC carries.
+            // An EIC qualifying child who is also another person's qualifying child. The 26 U.S.C. 152(c)(4)
+            // tie-breaker is not computed (2025 Instructions for Form 1040, p. 44; 2026 Schedule EIC draft, page 2).
+            // A qualifying child who is not another person's qualifying child prints on Schedule EIC (#17).
             "/flowKnockoutScheduleEicWithoutTy2026Template",
             // PA-source pay in the nonresident period of a PA/FL part-year return: PA-40 IN (2025) p. 43, "If your
             // employer does not report, or incorrectly reports, your PA-taxable compensation, you must use PA

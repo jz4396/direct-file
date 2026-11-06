@@ -1630,12 +1630,28 @@ describe(`golden end-to-end scenario (synthetic data): profile F negative rows (
   });
 });
 
-// The only submission-blocking fact this return sets true. Schedule EIC is required for a nonzero EIC with a
-// qualifying child, and /flowKnockoutScheduleEicWithoutTy2026Template stays until the §152(c)(4) tie-breaker is fully
-// modeled (eitc.xml). The credit itself is computed.
-const PROFILE_G_STOPPED = [`/flowKnockoutScheduleEicWithoutTy2026Template`, `/flowIsKnockedOut`];
+// Neither child is another person's qualifying child, so Schedule EIC does not stop the return (#17). The credit
+// itself is computed. 26 U.S.C. 152(c)(4) still stops a shared qualifying child (scheduleEicKnockout.test.ts).
+const PROFILE_G_STOPPED: string[] = [];
+
+const GOLDEN_PROFILE_G = path.join(
+  `..`,
+  `..`,
+  `backend`,
+  `src`,
+  `test`,
+  `resources`,
+  `submission-blocking`,
+  `golden-profileG-complete.json`
+);
 
 describe(`golden end-to-end scenario (synthetic data): profile G, MFJ, two children, Schedule 8812, Form 2441, EITC`, () => {
+  it(`golden-profileG-complete.json is the persisted profileGMfjTwoChildren return`, () => {
+    const exported = JSON.parse(fs.readFileSync(GOLDEN_PROFILE_G, `utf8`)).facts;
+    const persisted = JSON.parse(graph(profileGMfjTwoChildren).toJSON());
+    expect(exported).toEqual(persisted);
+  });
+
   // Married filing jointly, Florida resident [FL]. Harper Example, born 1985-06-12, SSN 444-00-2001. Reese Example,
   //   born 1986-11-03, SSN 444-00-2002. Robin Example, born 2018-04-12 (8 at year end), SSN 444-00-2003. Sky Example,
   //   born 2020-09-15 (6 at year end), SSN 444-00-2004. Each child lived in the home 12 months. Every SSN is group 00
@@ -1688,9 +1704,10 @@ describe(`golden end-to-end scenario (synthetic data): profile G, MFJ, two child
   //   which rounds to 2,079. The AGI column is the same amount, so line 27a is 2,079. 2026 Schedule EIC draft
   //   https://www.irs.gov/pub/irs-dft/f1040sei--dft.pdf (SHA-256
   //   fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3): "Complete and attach to Form 1040 or 1040-SR
-  //   only if you have a qualifying child." §32(c)(3)(D)(i) requires the child's name, age and TIN on the return. The
-  //   tool stops the return on /flowKnockoutScheduleEicWithoutTy2026Template because the §152(c)(4) tie-breaker is not
-  //   fully modeled. The dollars above are what the graph computes.
+  //   only if you have a qualifying child." §32(c)(3)(D)(i) requires the child's name, age and TIN on the return.
+  //   Neither child is another person's qualifying child, so Schedule EIC does not stop the return (#17). A shared
+  //   qualifying child still stops on /flowKnockoutScheduleEicWithoutTy2026Template (26 U.S.C. 152(c)(4); 2025
+  //   Instructions for Form 1040, p. 44). The dollars above are what the graph computes.
   // Form 1040: line 18 2,383; line 19 283; line 20 2,100; line 21 2,383; line 22 and line 24 0. Line 27a 2,079; line 28
   //   3,400; line 32a 5,479. Schedule 3-A (2026 draft, a filer who is a U.S. citizen and elects to receive the federal
   //   public benefit): line 2 5,479, line 5 0, line 6 5,479, line 8 amount 0, so Form 1040 line 32b is 0 and line 32c
@@ -1785,14 +1802,16 @@ describe(`golden end-to-end scenario (synthetic data): profile G, MFJ, two child
     expect(get(g, `/requiresForm8959`).get).toBe(false);
     expect(get(g, `/requiresForm8960`).get).toBe(false);
   });
-  it(`Florida resident: no state return; the return stops only because Schedule EIC is not produced`, () => {
+  it(`Florida resident: no state return; Schedule EIC does not stop the return`, () => {
     expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
     expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
     expect(get(g, `/flowKnockoutFloridaStateWithholding`).get).toBe(false);
     expect(get(g, `/pdfIncludeScheduleEic`).get).toBe(true);
-    expect(get(g, `/flowKnockoutScheduleEicWithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/familyAndHousehold/#${profileGChild1Id}/isQualifyingChildOfAnother`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEicWithoutTy2026Template`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEicWithoutTy2026Template`).get).toBe(false);
     expect(get(g, `/flowIsKnockedOut`).complete).toBe(true);
-    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
     expectStoppedOnly(g);
   });
 });
@@ -1822,7 +1841,7 @@ describe(`golden end-to-end scenario (synthetic data): profile G negative rows (
       '/additionalCtc': `3400.00`,
       '/earnedIncomeCredit': `2079.00`,
     });
-    expect(get(n, `/flowKnockoutScheduleEicWithoutTy2026Template`).get).toBe(true);
+    expect(get(n, `/flowKnockoutScheduleEicWithoutTy2026Template`).get).toBe(false);
   });
   it(`a household employee stops the return`, () => {
     const n = stops(

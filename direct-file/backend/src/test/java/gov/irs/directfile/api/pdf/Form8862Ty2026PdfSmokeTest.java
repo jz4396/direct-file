@@ -16,11 +16,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 
 import gov.irs.factgraph.Graph;
 
-import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusException;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.directfile.api.taxreturn.models.TaxReturn;
 import gov.irs.directfile.models.FactTypeWithItem;
@@ -33,7 +31,6 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePub
 import static gov.irs.directfile.api.pdf.Ty2026PdfPackageTest.checked;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -47,9 +44,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <ul>
  *   <li>EITC without qualifying children: single, $10,000 W-2, born 1987, prior EITC disallowance notice expired so
  *       Form 8862 is required ({@link #eitcWithoutChildren}). Public print includes Form 8862 Part II Section B.
- *   <li>EITC with qualifying children: {@code 8862-eitc-no-ctc.json} with group-00 test SSNs. Public print is refused
- *       only by {@code /flowKnockoutScheduleEicWithoutTy2026Template}; with that path left out of the refusal check,
- *       Form 8862 Part II Section A prints.
+ *   <li>EITC with qualifying children: {@code 8862-eitc-no-ctc.json} with group-00 test SSNs. The children are not
+ *       another person's qualifying child, so Schedule EIC prints (#17) and Form 8862 Part II Section A prints on
+ *       the public path.
  * </ul>
  *
  * CTC/ODC statement attachments and the Spanish Form 8862 stay on pdf/2024 templates.
@@ -159,7 +156,7 @@ class Form8862Ty2026PdfSmokeTest {
     }
 
     @Test
-    void eitcWithChildrenPrintsForm8862SectionAWhenScheduleEicKnockoutIsSkipped() throws Exception {
+    void eitcWithChildrenPrintsForm8862SectionAAndScheduleEic() throws Exception {
         FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
         PdfService pdfService = CreditFormsTy2026PdfSmokeTest.pdfService(fgs);
         Map<String, FactTypeWithItem> facts = eitcWithChildren();
@@ -173,24 +170,15 @@ class Form8862Ty2026PdfSmokeTest {
                 Boolean.FALSE,
                 graph.get("/form8862RequiredAndHasNoQualifyingChildren").get());
         assertEquals(Boolean.TRUE, graph.get("/pdfIncludeScheduleEic").get());
-        assertEquals(List.of(SCHEDULE_EIC_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(graph));
+        // #17: these children are not another person's qualifying child, so Schedule EIC does not refuse the print.
+        assertEquals(Boolean.FALSE, graph.get(SCHEDULE_EIC_KNOCKOUT).get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph));
 
         TaxReturn taxReturn = new TaxReturn();
         taxReturn.setTaxYear(2026);
         taxReturn.setFactsWithoutDirtyingEntity(facts);
-        SubmissionBlockingFactsResponseStatusException refused = assertThrows(
-                SubmissionBlockingFactsResponseStatusException.class,
-                () -> pdfService.getTaxReturn("en", taxReturn, false));
-        assertEquals(HttpStatus.BAD_REQUEST, refused.getStatusCode());
-        assertEquals(
-                List.of(SCHEDULE_EIC_KNOCKOUT),
-                refused.getBody().getProperties().get("blockingFacts"));
-
-        List<String> without = PrintRefusingKnockouts.FACT_PATHS.stream()
-                .filter(p -> !SCHEDULE_EIC_KNOCKOUT.equals(p))
-                .toList();
         byte[] bytes;
-        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false, without)) {
+        try (InputStream in = pdfService.getTaxReturn("en", taxReturn, false)) {
             bytes = in.readAllBytes();
         }
         String out = System.getProperty("pdf.smoke.out");
@@ -203,7 +191,7 @@ class Form8862Ty2026PdfSmokeTest {
             assertFalse(text.contains("The draft you are looking for begins on the next page"), "no draft cover");
 
             Map<String, String> f = fieldsOnPages(doc, FORM_8862_MARK);
-            assertFalse(f.isEmpty(), "Form 8862 prints when Schedule EIC is left out of the refusal check");
+            assertFalse(f.isEmpty(), "Form 8862 prints with Schedule EIC");
             assertTrue(checked(f, "Checkbox1_ReadOrder[0].c1_1[0]"), "line 2 EIC");
             assertTrue(checked(f, "c1_6[0]"), "Section A on");
             assertFalse(checked(f, "c1_6[1]"), "Section B off");
