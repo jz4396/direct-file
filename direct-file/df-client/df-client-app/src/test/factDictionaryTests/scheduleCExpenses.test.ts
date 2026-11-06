@@ -10,6 +10,7 @@ import {
   createStringWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
+import { filerWithW2NoDeductionsNoCreditsBaseData } from '../testData.js';
 
 const primaryFilerId = `959c03d1-af4a-447f-96aa-d19397048a44`;
 
@@ -344,6 +345,9 @@ describe(`Schedule C expense lines`, () => {
     const knockout = factGraph.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath);
     expect(knockout.complete).toBe(true);
     expect(knockout.get).toBe(false);
+    const form461 = factGraph.get(`/scheduleCNeedsForm461` as ConcretePath);
+    expect(form461.complete).toBe(true);
+    expect(form461.get).toBe(false);
   });
 
   it(`is complete and false when self-employment income was not asked`, () => {
@@ -351,6 +355,9 @@ describe(`Schedule C expense lines`, () => {
     const knockout = factGraph.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath);
     expect(knockout.complete).toBe(true);
     expect(knockout.get).toBe(false);
+    const form461 = factGraph.get(`/scheduleCNeedsForm461` as ConcretePath);
+    expect(form461.complete).toBe(true);
+    expect(form461.get).toBe(false);
   });
 
   function lineItemIncome(id: string, receipts: string) {
@@ -851,5 +858,177 @@ describe(`Schedule C Part III cost of goods sold`, () => {
     expect(stopped.get(p(biz2, `line4CostOfGoodsSold`)).complete).toBe(false);
     expect(stopped.get(`/scheduleCNetProfitOrLoss`).complete).toBe(false);
     expect(stopped.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+  });
+});
+
+/**
+ * Form 461 / 26 U.S.C. 461(l). Who Must File (ii), 2026 draft Instructions for Form 461, PDF p. 2: a loss of more
+ * than $128,000 on Form 461 line 2 (Schedule 1 line 3). Rev. Proc. 2025-32 §4.31, PDF p. 23: $256,000 ($512,000
+ * for a joint return). A loss equal to $128,000 still flows.
+ */
+describe(`Schedule C Form 461 excess business loss stop`, () => {
+  const w2Id = primaryFilerId;
+
+  function lineItemLoss(id: string, receipts: string, advertising: string, atRisk: boolean) {
+    const hasExpenses = advertising !== `0`;
+    return {
+      ...business(id, {
+        ...dollars(p(id, `writableGrossReceipts`), receipts),
+        ...dollars(p(id, `writableReturnsAndAllowances`), `0`),
+        ...dollars(p(id, `writableOtherIncome`), `0`),
+        ...(hasExpenses ? dollars(p(id, `writableAdvertising`), advertising) : {}),
+      }),
+      ...stops(id),
+      ...flag(p(id, `hasDeductibleExpenses`), hasExpenses),
+      ...(hasExpenses ? { [p(id, `expenseLinesChosen`)]: createMultEnumWrapper([`advertising`], options) } : {}),
+      ...(hasExpenses ? flag(p(id, `allInvestmentAtRisk`), atRisk) : {}),
+    };
+  }
+
+  function withWages(wages: string, facts: Record<string, unknown>) {
+    const { factGraph } = setupFactGraph({
+      ...filerWithW2NoDeductionsNoCreditsBaseData,
+      [`/formW2s/#${w2Id}/writableWages`]: createDollarWrapper(wages),
+      [`/formW2s/#${w2Id}/writableOasdiWages`]: createDollarWrapper(wages),
+      [`/formW2s/#${w2Id}/writableMedicareWages`]: createDollarWrapper(wages),
+      '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
+      '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      ...facts,
+    });
+    const get = (path: string) => factGraph.get(path as ConcretePath);
+    return { get };
+  }
+
+  it(`uses $128,000 on one line and $512,000 only for a joint return`, () => {
+    // 26 U.S.C. 461(l)(3)(A)(ii)(II): 200 percent only "in the case of a joint return."
+    // 2026 draft Form 461, PDF p. 2, line 15: "Enter $256,000 (or $512,000 if married filing jointly)."
+    const limit = (status: string) => {
+      const { factGraph } = setupFactGraph({
+        '/filingStatus': createEnumWrapper(status, `/filingStatusOptions`),
+      });
+      return {
+        line: factGraph.get(`/form461SingleLineLossLimit` as ConcretePath).get.toString(),
+        threshold: factGraph.get(`/excessBusinessLossThreshold` as ConcretePath).get.toString(),
+      };
+    };
+    for (const status of [`single`, `headOfHousehold`, `marriedFilingSeparately`, `qualifiedSurvivingSpouse`]) {
+      expect(limit(status)).toEqual({ line: `128000.00`, threshold: `256000.00` });
+    }
+    expect(limit(`marriedFilingJointly`)).toEqual({ line: `128000.00`, threshold: `512000.00` });
+  });
+
+  it(`is complete and false when self-employment was answered yes but no business is listed`, () => {
+    const { factGraph } = setupFactGraph({
+      '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+    });
+    const form461 = factGraph.get(`/scheduleCNeedsForm461` as ConcretePath);
+    expect(form461.complete).toBe(true);
+    expect(form461.get).toBe(false);
+    const knockout = factGraph.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath);
+    expect(knockout.complete).toBe(true);
+    expect(knockout.get).toBe(false);
+  });
+
+  it(`keeps a per-business form stop complete true before expense amounts are entered`, () => {
+    const { get } = base([biz], {
+      ...business(biz, dollars(p(biz, `writableGrossReceipts`), `5000`)),
+      ...stops(biz, { hasCarTruckOrVehicleLoan: true }),
+    });
+    expect(get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+    expect(get(`/scheduleCNeedsForm461`).complete).toBe(false);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+  });
+
+  it(`allows a line-item loss of exactly $128,000 and stops one dollar more`, () => {
+    // Synthetic scenario. W-2 $300,000. Material participation and all investment at risk.
+    // Schedule 1 line 3 of -$128,000 is not "more than $128,000," so AGI is $172,000.
+    const allowed = withWages(`300000`, {
+      '/scheduleCBusinesses': createCollectionWrapper([biz]),
+      ...lineItemLoss(biz, `0`, `128000`, true),
+    });
+    expect(allowed.get(`/scheduleCNetProfitOrLoss`).get.toString()).toBe(`-128000.00`);
+    expect(allowed.get(`/schedule1Line3`).get.toString()).toBe(`-128000.00`);
+    expect(allowed.get(`/scheduleCNeedsForm461`).get).toBe(false);
+    expect(allowed.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(allowed.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(allowed.get(`/agi`).complete).toBe(true);
+    expect(allowed.get(`/agi`).get.toString()).toBe(`172000.00`);
+
+    const stopped = withWages(`300000`, {
+      '/scheduleCBusinesses': createCollectionWrapper([biz]),
+      ...lineItemLoss(biz, `0`, `128001`, true),
+    });
+    expect(stopped.get(`/schedule1Line3`).get.toString()).toBe(`-128001.00`);
+    expect(stopped.get(`/scheduleCNeedsForm461`).get).toBe(true);
+    expect(stopped.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(stopped.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(stopped.get(`/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`stops a $256,001 line-item loss before that loss is filed against wages in the AMT phaseout range`, () => {
+    // Synthetic scenario. W-2 $600,000 is above the $500,000 unmarried AMT exemption phaseout.
+    // 26 U.S.C. 55(d)(2). Rev. Proc. 2025-32 §4.10, PDF p. 17. Form 461 is not computed, so the return stops
+    // instead of filing Schedule 1 line 3 of -$256,001 as an offset to those wages.
+    const { get } = withWages(`600000`, {
+      '/scheduleCBusinesses': createCollectionWrapper([biz]),
+      ...lineItemLoss(biz, `0`, `256001`, true),
+    });
+    expect(get(`/form6251PhaseoutThreshold`).get.toString()).toBe(`500000.00`);
+    expect(get(`/excessBusinessLossThreshold`).get.toString()).toBe(`256000.00`);
+    expect(get(`/schedule1Line3`).get.toString()).toBe(`-256001.00`);
+    expect(get(`/scheduleCNeedsForm461`).get).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(get(`/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`uses the Schedule 1 line 3 sum of more than one business`, () => {
+    // Form 461 line 2 is Schedule 1 line 3, not each Schedule C by itself.
+    const under = base([biz, biz2], {
+      ...lineItemLoss(biz, `0`, `70000`, true),
+      ...lineItemLoss(biz2, `0`, `58000`, true),
+    });
+    expect(under.get(`/schedule1Line3`).get.toString()).toBe(`-128000.00`);
+    expect(under.get(`/scheduleCNeedsForm461`).get).toBe(false);
+    expect(under.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+
+    const over = base([biz, biz2], {
+      ...lineItemLoss(biz, `0`, `70000`, true),
+      ...lineItemLoss(biz2, `0`, `58001`, true),
+    });
+    expect(over.get(`/schedule1Line3`).get.toString()).toBe(`-128001.00`);
+    expect(over.get(`/scheduleCNeedsForm461`).get).toBe(true);
+    expect(over.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+
+    const offset = base([biz, biz2], {
+      ...lineItemLoss(biz, `0`, `150000`, true),
+      ...lineItemLoss(biz2, `30000`, `0`, true),
+    });
+    expect(offset.get(`/schedule1Line3`).get.toString()).toBe(`-120000.00`);
+    expect(offset.get(`/scheduleCNeedsForm461`).get).toBe(false);
+    expect(offset.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`stops a single expense total once the loss is more than $128,000`, () => {
+    const atLimit = base([biz], {
+      ...business(biz, {
+        ...dollars(p(biz, `writableGrossReceipts`), `0`),
+        ...dollars(p(biz, `writableTotalExpenses`), `128000`),
+      }),
+    });
+    expect(atLimit.get(`/scheduleCNetProfitOrLoss`).get.toString()).toBe(`-128000.00`);
+    expect(atLimit.get(`/scheduleCNeedsForm461`).get).toBe(false);
+    expect(atLimit.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+
+    const over = base([biz], {
+      ...business(biz, {
+        ...dollars(p(biz, `writableGrossReceipts`), `0`),
+        ...dollars(p(biz, `writableTotalExpenses`), `128001`),
+      }),
+    });
+    expect(over.get(`/scheduleCNeedsForm461`).get).toBe(true);
+    expect(over.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
   });
 });

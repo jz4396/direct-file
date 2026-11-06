@@ -26,6 +26,9 @@
     PDF p. 23 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): the § 448(c) test "does not exceed $32,000,000."
   - QBI § 199A: computed on Form 8995 (form8995.xml, #87); cases it can't compute are knocked out —
     https://www.law.cornell.edu/uscode/text/26/199A
+  - Excess business loss: 26 U.S.C. 461(l) (https://www.law.cornell.edu/uscode/text/26/461). Rev. Proc. 2025-32
+    §4.31, PDF p. 23: the amount under § 461(l)(3)(A)(ii)(II) for 2026 is $256,000 ($512,000 for joint returns).
+    A Schedule 1 line 3 loss of more than $128,000 stops the return (Form 461, Who Must File (ii)).
 
   Implements gap: docs/tax/GAP-SCHEDULE-C.md (PR #3).
 -->
@@ -5282,6 +5285,136 @@
       </Derived>
     </Fact>
 
+    <Fact path="/form461SingleLineLossLimit">
+      <Name>Form 461 single-line loss amount that requires the form</Name>
+      <Description>
+        2026 draft Instructions for Form 461 (https://www.irs.gov/pub/irs-dft/i461--dft.pdf, SHA-256
+        e3ba90d00f657eed6b83a4555fc5acffb823401a4a6ddda29160fc33a8376399), PDF p. 2 (proof p. 1), Who Must File
+        (ii): "you would report a loss of more than $128,000 on any one of Form 461, lines 1 through 8." A loss
+        equal to $128,000 does not meet "more than." On a return that is not already stopped for Schedule E,
+        Schedule 1 (Form 1040), line 3 is Form 461, line 2, and it is the only one of those lines that can be a
+        loss here. 2026 draft Form 461 (https://www.irs.gov/pub/irs-dft/f461--dft.pdf, SHA-256
+        0acb9c3dd8b016a3458f60097733f3da0b5b460853d3e867fc2aa27c1bc8780b), PDF p. 2 (form p. 1), line 2: "Enter
+        amount from Schedule 1 (Form 1040), line 3."
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Dollar>128000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/excessBusinessLossThreshold">
+      <Name>Excess business loss threshold</Name>
+      <Description>
+        The amount in 26 U.S.C. 461(l)(3)(A)(ii)(II) (https://www.law.cornell.edu/uscode/text/26/461) for a
+        taxable year beginning in 2026. The statute's base is "$250,000 (200 percent of such amount in the case
+        of a joint return)." Rev. Proc. 2025-32 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf, SHA-256
+        e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b), §4.31, PDF p. 23: "For taxable years
+        beginning in 2026, in determining a taxpayer's excess business loss, the amount under
+        § 461(l)(3)(A)(ii)(II) is $256,000 ($512,000 for joint returns)." 2026 draft Form 461, PDF p. 2, line 15:
+        "Enter $256,000 (or $512,000 if married filing jointly)." Two hundred percent applies only "in the case
+        of a joint return," so qualifying surviving spouse is $256,000. Married filing jointly is
+        /isFilingStatusMFJ.
+      </Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dollar>512000</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>256000</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCNeedsForm461">
+      <Name>Schedule C loss requires Form 461</Name>
+      <Description>
+        True when the filer has Schedule C businesses and Schedule 1 (Form 1040), line 3 is a loss of more than
+        $128,000. That is Form 461, line 2, and Who Must File (ii) requires Form 461 to be attached to Form 1040.
+        The test is zero minus /scheduleCNetProfitOrLoss, compared with /form461SingleLineLossLimit, so one
+        business and several businesses use the same Schedule 1 line 3 total. The single expense total and the
+        line-item path both feed that total. A loss of exactly $128,000 is not more than the limit. Because
+        $128,000 is below both the $256,000 and the $512,000 amounts in 26 U.S.C. 461(l)(3)(A)(ii)(II), the same
+        stop also covers every return with a disallowed excess business loss (Who Must File (i); Rev. Proc.
+        2025-32 §4.31, PDF p. 23). 26 U.S.C. 461(l)(1)(B): "any excess business loss of the taxpayer for the
+        taxable year shall not be allowed." This fact does not add that loss back on Schedule 1, line 8p. 2026
+        draft Schedule 1 (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), PDF p. 2, line 8p: "Section 461(l)
+        excess business loss adjustment." Complete false when self-employment income was not asked, was answered
+        no, or there is no Schedule C business. Incomplete while the Schedule 1 line 3 total is still incomplete.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/hadSelfEmploymentIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadSelfEmploymentIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Dollar>0</Dollar>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/scheduleCNetProfitOrLoss" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Dependency path="/form461SingleLineLossLimit" />
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleCOutOfScope">
       <Name>Knockout: Schedule C line needs a form or loss limit not computed here</Name>
       <Description>
@@ -5310,9 +5443,16 @@
         line 6 income that belongs on Form 4136, 6478, or 4797, a loss without
         material participation
         (Form 8582, 26 U.S.C. 469), or a loss that is not fully at risk (line 32b, Form 6198, 26
-        U.S.C. 465).
+        U.S.C. 465). It is also true when Schedule 1 (Form 1040), line 3 (/scheduleCNetProfitOrLoss, Form 461
+        line 2) is a loss of more than $128,000. 2026 draft Instructions for Form 461
+        (https://www.irs.gov/pub/irs-dft/i461--dft.pdf), PDF p. 2, Who Must File (ii). 26 U.S.C. 461(l)
+        (https://www.law.cornell.edu/uscode/text/26/461). That check is /scheduleCNeedsForm461. The per-business
+        collection is the first operand, so a form stop stays complete true before expense amounts are entered.
+        While Schedule 1 line 3 is still incomplete and no business is already out of scope, the Form 461 check
+        is false, so an unstarted expense total is not a stop. Schedule 1 line 8p is not computed.
         Complete and false when self-employment income was not asked, was answered no, there are no
-        businesses, or every business uses cash or accrual and only the single expense total. An other method on
+        businesses, or every business uses cash or accrual and only the single expense total and Schedule 1
+        line 3 is not a loss of more than $128,000. An other method on
         that older path is still a stop. An unanswered line-item question on a business that was started stays
         incomplete, so that return is not treated as in scope.
       </Description>
@@ -5357,16 +5497,40 @@
               <True />
             </When>
             <Then>
-              <GreaterThan>
-                <Left>
-                  <CollectionSize>
-                    <Dependency path="/scheduleCOutOfScopeBusinesses" />
-                  </CollectionSize>
-                </Left>
-                <Right>
-                  <Int>0</Int>
-                </Right>
-              </GreaterThan>
+              <Any>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency path="/scheduleCOutOfScopeBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <Switch>
+                  <Case>
+                    <When>
+                      <Not>
+                        <IsComplete>
+                          <Dependency path="/scheduleCNetProfitOrLoss" />
+                        </IsComplete>
+                      </Not>
+                    </When>
+                    <Then>
+                      <False />
+                    </Then>
+                  </Case>
+                  <Case>
+                    <When>
+                      <True />
+                    </When>
+                    <Then>
+                      <Dependency path="/scheduleCNeedsForm461" />
+                    </Then>
+                  </Case>
+                </Switch>
+              </Any>
             </Then>
           </Case>
         </Switch>

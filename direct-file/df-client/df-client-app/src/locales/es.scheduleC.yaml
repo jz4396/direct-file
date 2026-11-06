@@ -391,8 +391,9 @@ info:
             calcula, más de un negocio que usa el método simplificado, el Formulario 7205, comidas que no están
             limitadas al 50 por ciento, créditos por empleo, intereses que deben asignarse, amortización nueva, más de
             tres otros gastos, ingresos de la línea 6 de otro formulario, una pérdida en la que no participó
-            materialmente, una pérdida que no está totalmente en riesgo, o un método de contabilidad distinto del de
-            efectivo o del de acumulación. Tendrá que usar otra manera de presentar esta declaración."
+            materialmente, una pérdida que no está totalmente en riesgo, una pérdida de más de $128,000 en la línea 3
+            del Anexo 1 (Formulario 1040) (Formulario 461, pérdida comercial excedente), o un método de contabilidad
+            distinto del de efectivo o del de acumulación. Tendrá que usar otra manera de presentar esta declaración."
 fields:
   /hadSelfEmploymentIncome:
     boolean:

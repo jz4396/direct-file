@@ -212,9 +212,16 @@ public final class PrintRefusingKnockouts {
             // are not 50 percent (PDF p. 11, 26 U.S.C. 274(n)), line 26 employment credits, lines 16a and 16c
             // interest allocation (PDF p. 9), Form 4562-B amortization (PDF p. 17), a loss without material
             // participation (Form 8582, 26 U.S.C. 469) or that is not fully at risk (line 32b, Form 6198,
-            // 26 U.S.C. 465). No path was added: this existing fact is the print-refuse fact for those stops.
-            // Complete false when the filer has no Schedule C, only the single expense total, or a supported
-            // simple Part III. An unanswered Part III question stays incomplete and refuses the print.
+            // 26 U.S.C. 465). The same fact refuses the print when Schedule 1 (Form 1040), line 3 is a loss of more
+            // than $128,000. That amount is Form 461, line 2. 2026 draft Instructions for Form 461, PDF p. 2, Who
+            // Must File (ii): "you would report a loss of more than $128,000 on any one of Form 461, lines 1 through
+            // 8." 26 U.S.C. 461(l)(1)(B): "any excess business loss of the taxpayer for the taxable year shall not be
+            // allowed." Rev. Proc. 2025-32 §4.31, PDF p. 23, sets the § 461(l)(3)(A)(ii)(II) amount at $256,000
+            // ($512,000 for joint returns). Schedule 1 line 8p is not computed. No path was added: this existing
+            // fact is the print-refuse fact for those stops.
+            // Complete false when the filer has no Schedule C, only the single expense total and Schedule 1 line 3
+            // is not a loss of more than $128,000, or a supported simple Part III. An unanswered Part III question
+            // stays incomplete and refuses the print.
             "/flowKnockoutScheduleCOutOfScope",
             // Schedule SE lines this tool does not compute. 2026 draft Schedule SE: lines 1a and 1b (farm and
             // Conservation Reserve Program payments; 26 U.S.C. 1402(a), 1402(a)(1)), Part II line 15 (farm optional
