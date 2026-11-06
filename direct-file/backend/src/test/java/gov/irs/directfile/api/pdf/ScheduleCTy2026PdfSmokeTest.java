@@ -17,6 +17,7 @@ import gov.irs.directfile.api.errors.SubmissionBlockingFactsResponseStatusExcept
 import gov.irs.directfile.models.FactTypeWithItem;
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.fieldsOnPages;
+import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
@@ -422,6 +423,56 @@ class ScheduleCTy2026PdfSmokeTest {
         facts.put(b + "writableInventoryOtherCosts", dollar(withWorksheet ? "50.00" : "0.00"));
         facts.put(b + "writableInventoryAtEnd", dollar(withWorksheet ? "1500.00" : "0.00"));
         return facts;
+    }
+
+    /**
+     * Single expense total. 2026 draft Instructions for Form 461, PDF p. 2, Who Must File (ii): a loss of more than
+     * $128,000 on Form 461, line 2 (Schedule 1 line 3). A loss of exactly $128,000 does not refuse the print.
+     * $256,001 (single) and $512,001 (married filing jointly) do. 26 U.S.C. 461(l). Rev. Proc. 2025-32 §4.31, PDF
+     * p. 23. No new print-refuse path was added.
+     */
+    @Test
+    void singleExpenseTotalAboveTheForm461LineLimitRefusesPublicPrint() throws Exception {
+        Map<String, String> atLimit = legacyLoss("170000.00", "128000.00", null);
+        Graph allowed = graphOf(atLimit);
+        assertEquals("128000.00", allowed.get("/form461SingleLineLossLimit").get().toString());
+        assertEquals("256000.00", allowed.get("/excessBusinessLossThreshold").get().toString());
+        assertEquals("-128000.00", allowed.get("/scheduleCNetProfitOrLoss").get().toString());
+        assertEquals(Boolean.FALSE, allowed.get("/scheduleCNeedsForm461").get());
+        assertFalse(
+                PrintRefusingKnockouts.refusingPaths(allowed).contains("/flowKnockoutScheduleCOutOfScope"),
+                "a loss of exactly $128,000 is not more than the Form 461 line 2 amount");
+        generatePublicPrint(atLimit);
+
+        assertForm461Refused(legacyLoss("170000.00", "128001.00", null));
+        assertForm461Refused(legacyLoss("170000.00", "256001.00", null));
+
+        Map<String, String> joint = legacyLoss("170000.00", "512001.00", "marriedFilingJointly");
+        Graph mfj = graphOf(joint);
+        assertEquals("512000.00", mfj.get("/excessBusinessLossThreshold").get().toString());
+        assertEquals(Boolean.TRUE, mfj.get("/scheduleCNeedsForm461").get());
+        assertForm461Refused(joint);
+    }
+
+    private static Map<String, String> legacyLoss(String wages, String expenses, String filingStatus) {
+        Map<String, String> facts = selfEmployed(wages, wages, "0.00");
+        facts.put(biz() + "writableTotalExpenses", dollar(expenses));
+        if (filingStatus != null) {
+            facts.put("/filingStatus", enumValue(filingStatus, "/filingStatusOptions"));
+        }
+        return facts;
+    }
+
+    private static void assertForm461Refused(Map<String, String> facts) throws Exception {
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(graphOf(facts)).contains("/flowKnockoutScheduleCOutOfScope"),
+                "Form 461 Who Must File stops public print");
+        SubmissionBlockingFactsResponseStatusException refused =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(facts));
+        assertTrue(
+                refused.getBody().getProperties().get("blockingFacts") instanceof List<?> blocking
+                        && blocking.contains("/flowKnockoutScheduleCOutOfScope"),
+                "public print lists the Schedule C stop");
     }
 
     private static String biz() {

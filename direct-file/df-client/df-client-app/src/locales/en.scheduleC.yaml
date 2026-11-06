@@ -350,7 +350,8 @@ info:
             than one business using the simplified method, Form 7205, meals that are not limited to 50 percent,
             employment credits, interest that must be allocated, new amortization, more than three other expenses, line
             6 income from another form, a loss you did not materially participate in, a loss that is not fully at risk,
-            or an accounting method other than cash or accrual. You will need another way to file this return."
+            a loss of more than $128,000 on Schedule 1 (Form 1040), line 3 (Form 461, excess business loss), or an
+            accounting method other than cash or accrual. You will need another way to file this return."
 fields:
   /hadSelfEmploymentIncome:
     boolean:

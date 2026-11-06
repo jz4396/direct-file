@@ -42,6 +42,7 @@ import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.amount;
 import static gov.irs.directfile.api.pdf.ScheduleSETy2026PdfSmokeTest.selfEmployed;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -553,6 +554,62 @@ class PaScheduleCTy2026PdfSmokeTest {
             is(p1, "City, State and Zip Code", "HARRISBURG, PA 17101", "home city");
             is(p1, "F.  Accounting Method(s)", "1", "F accrual exports 1");
         }
+    }
+
+    /**
+     * Full-year PA resident. A line-item Schedule C loss of exactly $128,000 prints PA-40 C and PA-40 line 4. One
+     * dollar more stops submission and public print. 2026 draft Instructions for Form 461, PDF p. 2, Who Must File
+     * (ii). 26 U.S.C. 461(l). 72 P.S. §7303(a)(2). PA-40 IN (2025) p. 17, LINE 4. A loss fills the oval and the
+     * amount box shows the size (p. 15).
+     */
+    @Test
+    void lineItemLossAtTheForm461LimitPrintsAndOneDollarMoreRefuses() throws Exception {
+        Map<String, String> allowed = lineItemLoss("170000.00", "128000.00");
+        Graph graph = graph(allowed);
+        assertEquals(Boolean.FALSE, graph.get("/scheduleCNeedsForm461").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutScheduleCOutOfScope").get());
+        assertEquals("-128000.00", graph.get("/paLine4").get().toString());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph));
+
+        byte[] bytes = generatePublicPrint(allowed);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PAGE1);
+            is(p1, "6. Advertising", "128,000.00", "line 6");
+            is(p1, "38. Total Expenses. Add Lines 6 through 37", "128,000.00", "line 38");
+            is(p1, "39. Net Profit of Loss", "128,000.00", "line 39 size of the loss");
+            assertNotEquals("Off", field(p1, "41. Loss"), "PA-40 C loss oval");
+            Map<String, String> pa = fieldsOnPages(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1);
+            is(pa, "4. Net Income or Loss from the Operation of a Business, etc", "128,000.00", "PA-40 line 4");
+            assertNotEquals("Off", PaPit40ScheduleSpTy2026PdfSmokeTest.field(pa, "4. Loss"), "PA-40 line 4 loss oval");
+        }
+
+        Map<String, String> over = lineItemLoss("170000.00", "128001.00");
+        Graph stopped = graph(over);
+        assertEquals(Boolean.TRUE, stopped.get("/scheduleCNeedsForm461").get());
+        assertEquals(Boolean.TRUE, stopped.get("/flowKnockoutScheduleCOutOfScope").get());
+        SubmissionBlockingFactsResponseStatusException refused =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(over));
+        assertTrue(
+                refused.getBody().getProperties().get("blockingFacts") instanceof List<?> blocking
+                        && blocking.contains("/flowKnockoutScheduleCOutOfScope"),
+                "a loss of $128,001 stops submission and public print");
+    }
+
+    /** Receipts of zero and advertising equal to {@code loss} dollars. Material participation and all at risk. */
+    private static Map<String, String> lineItemLoss(String wages, String loss) {
+        Map<String, String> facts = lineItemPa(wages, "0.00");
+        String b = biz();
+        facts.put(b + "hasDeductibleExpenses", bool(true));
+        facts.put(
+                b + "expenseLinesChosen",
+                "{\"$type\":\"gov.irs.factgraph.persisters.MultEnumWrapper\",\"item\":{\"enumOptionsPath\":\"/scheduleCExpenseLineOptions\",\"values\":[\"advertising\"]}}");
+        facts.put(b + "writableAdvertising", dollar(loss));
+        facts.put(b + "allInvestmentAtRisk", bool(true));
+        return facts;
+    }
+
+    private static String field(Map<String, String> fields, String name) {
+        return PaPit40ScheduleSpTy2026PdfSmokeTest.field(fields, name);
     }
 
     /** Other stops the return. The PA oval is not set to export 3. 26 U.S.C. 446(c). */
