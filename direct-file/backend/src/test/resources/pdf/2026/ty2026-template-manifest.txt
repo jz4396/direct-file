@@ -1,8 +1,6 @@
 # SHA-256, page count and field counts of every PDF template configured for tax year 2026 in application.yaml.
 # Generated and verified by Ty2026TemplateSwapHarnessTest; see its Javadoc before editing.
 # <sha256>  <classpath location>  pages=  mapped=  unmapped=
-bf1f0a76a39b12dfabd3fd1b721dc6f1f270c10dc1d575487037a1ffe1b28bef  pdf/2024/CDCC_CAREGIVERS_STATEMENT/en/2441_Additional-Care-Providers.pdf  pages=1  mapped=77  unmapped=0
-bafe2435bcbf7acb95abe5be9349889b61754af63f578e84560eabd4466d3c6f  pdf/2024/CDCC_QUALIFYING_PERSON_STATEMENT/en/irs2441_qualifying_persons_statement.pdf  pages=1  mapped=77  unmapped=0
 33ac3b8f3865671a1598ae9bf4359f06bc55369a6ad3886082785d8b16052b3f  pdf/2024/CTC_DEPENDENTS_STATEMENT/en/Additional_statement_for_Form_8862_-_Additional_Child_Tax_Credit.pdf  pages=1  mapped=100  unmapped=0
 d18851127e686ea3827dac97e0813211c8a3e4444d93bc5000588bedf3f3720e  pdf/2024/CTC_DEPENDENTS_STATEMENT/es/SPANISH_Additional_statement_for_Form_8862_-_Additional_Child_Tax_Credit.pdf  pages=1  mapped=100  unmapped=0
 fdedb9b0be88ee7f2b06b0f727ac9fdc537849446953194f894827271385de27  pdf/2024/DEPENDENTS_STATEMENT/es/1040_Dependientes_Adicionales.pdf  pages=1  mapped=115  unmapped=0
@@ -16,13 +14,14 @@ a57ced963ccc7e14dc5e199ac0ebac958abb1ea3b4e35bc07ed6b27d06db14e2  pdf/2024/IRS10
 edaed659fd890b23be223d30ac9a373d52cf403294a6fd4c735fd23387d8b5e6  pdf/2024/IRS1040S2/es/f1040s2s.pdf  pages=2  mapped=5  unmapped=55
 e39ec633a0d5c638b207f8df1facb9b370ccab03704eeb18a7f8585cb5f26de2  pdf/2024/IRS1040S3/es/f1040s3s.pdf  pages=1  mapped=10  unmapped=28
 14c104ac31ef451e8270854f9987575db86378078611203212d5dfe87603ab40  pdf/2024/IRS1040S8812/es/f1040s8s_accessible.pdf  pages=2  mapped=36  unmapped=5
-c4cd6bc9f764ed7292d482c7a15900ef6336ea86b3ece1dcd6cfe0de6a601133  pdf/2024/IRS2441_DUE_DILIGENCE_STATEMENT/en/irs2441_due_diligence_statement.pdf  pages=2  mapped=26  unmapped=0
 b0fe2d6f071f55b8a8d532331bf2d4a7448a3770820ce5dcfbc8d5dd4668a545  pdf/2024/IRS8862/es/f8862sp_accessible.pdf  pages=3  mapped=68  unmapped=41
 9acdb497b1acefe04cebf66c9a251dae3ddfaf875445febb457ea409429d9aef  pdf/2024/IRSW2/en/fw2.pdf  pages=1  mapped=36  unmapped=8
 0489bc6b754b85a393bb3d7190f1f1ec7c501289cedbf525457061df6074de96  pdf/2024/ODC_DEPENDENTS_STATEMENT/en/Additional_statement_for_Form_8862_-_Credit_for_other_dependents.pdf  pages=1  mapped=60  unmapped=0
 bc23aa51f00e0e15846427555f2281a3eb26bbcf09e3d26a35265155c5cc64e7  pdf/2024/ODC_DEPENDENTS_STATEMENT/es/SPANISH_Additional_statement_for_Form_8862_-_Credit_for_other_dependents.pdf  pages=1  mapped=60  unmapped=0
 26f474ae7c6caa4042bbb17177e2021ac971fbdf4a6754bac379e11713818142  pdf/2024/SCHEDULE_LEP/en/f1040lep-p.pdf  pages=1  mapped=23  unmapped=0
 68759fbaeb811546c88ff6f42c3b8b3bf59da048d80229d741e40ec6588a5822  pdf/2024/SCHEDULE_LEP/es/f1040les-p.pdf  pages=1  mapped=23  unmapped=0
+592f55f7d96d78bd300842ff4d615d07cb23197624047a39bbf6983dbde52103  pdf/2026/CDCC_CAREGIVERS_STATEMENT/en/irs2441-care-providers.pdf  pages=1  mapped=77  unmapped=0
+62d3a4babf0afab9e0f2b942c618f614088fc4c959d0d1d9d7eafdc1f0d37c3b  pdf/2026/CDCC_QUALIFYING_PERSON_STATEMENT/en/irs2441-qualifying-persons.pdf  pages=1  mapped=77  unmapped=0
 f07d1e2b435f4476f0c0bba76099466331bda668e11dd85fa297365cf601298c  pdf/2026/DEPENDENTS_STATEMENT/en/1040-additional-dependents.pdf  pages=1  mapped=209  unmapped=0
 e044e765ace334c76bda7910bd3193fc813c7789d06340124359b885c98d58d0  pdf/2026/IRS1040/en/f1040--dft.pdf  pages=3  mapped=147  unmapped=60
 fc9784fd1f64b2ea53e86d9a23a2b946f317c1bb92885e18f8a614252dcf7ef3  pdf/2026/IRS1040EIC/en/f1040sei--dft.pdf  pages=3  mapped=35  unmapped=3
@@ -39,6 +38,7 @@ cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4  pdf/2026/IRS10
 0bee231f1ecb2470fb884b1f9cee7707eddee8994ce479fc563850b2dd3c5aed  pdf/2026/IRS1040SE/en/f1040se--dft.pdf  pages=4  mapped=40  unmapped=153
 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c  pdf/2026/IRS1040SSE/en/f1040sse--dft.pdf  pages=3  mapped=19  unmapped=6
 67eca7567ce5ff06e72d40a07db487f406da33139e664c0c0d9c67a4e31e9385  pdf/2026/IRS2441/en/f2441--dft.pdf  pages=3  mapped=71  unmapped=1
+a259b62205344ad1db10ab22cd6c75e01fe6f3878d7757121cb455c08a3bb956  pdf/2026/IRS2441_DUE_DILIGENCE_STATEMENT/en/irs2441-due-diligence.pdf  pages=1  mapped=26  unmapped=0
 a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc  pdf/2026/IRS6251/en/f6251--dft.pdf  pages=3  mapped=39  unmapped=23
 fd783d1f46f1f286cd1d7a2cca8812fc2ec05760478359873e22ba9d05d5f3b5  pdf/2026/IRS8862/en/f8862.pdf  pages=3  mapped=68  unmapped=41
 97a6b5b3df449310dbfb1f9574edb06dd2009f1b04d86261bb1c88fc087c9e01  pdf/2026/IRS8880/en/f8880--dft.pdf  pages=3  mapped=20  unmapped=3
