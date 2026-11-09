@@ -17,15 +17,22 @@
 # 20b, 21-26, 27b, 28, 29, 30 (simplified method only), 31, 32, and the first three Part V lines plus line 48. A single
 # stored expense total still prints on line 28,
 # with lines 2, 4, and 6 at zero so lines 3, 5, and 7 equal line 1.
-# Header lines A, B, D, E, and F (cash and accrual) are mapped (#89). 2026 draft Instructions for Schedule C
-# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F.
+# Header lines A, B, D, E, F (cash and accrual), H, I, and J are mapped. 2026 draft Instructions for Schedule C
+# (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf, SHA-256
+# 27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9), PDF p. 4 Lines A, B, and D, PDF p. 5 Lines E and
+# F, and PDF p. 6 Lines H and I. 2026 Schedule C, PDF p. 1, line J, SHA-256
+# cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4: "If “Yes,” did you or will you file required
+# Form(s) 1099?"
 # Line A is the activity plus the product or service. Line B is a six-digit code from the chart at the end of those
 # instructions. Line D is the EIN, or blank when the filer has none (never an SSN). Line E is blank when the business
 # is at the address on page 1 of the return. Line F checks cash or accrual. Other (line F (3) and the specify line)
-# stops the return and is not mapped. An unanswered required fact prints blank and is not defaulted to cash.
-# 26 U.S.C. 446(c).
-# Not mapped, left blank (the return stops instead of printing a zero):
-#   H started or acquired this year, I/J Forms 1099, the line 1 statutory-employee checkbox.
+# stops the return and is not mapped. An unanswered required fact prints blank and is not defaulted to cash or to no.
+# 26 U.S.C. 446(c). Line H checks only after yes. Line I checks Yes or No only after that answer. Line J checks Yes or
+# No only when line I is Yes and line J is answered; when line I is No, line J is complete false and is not printed.
+# PDF p. 6, Line I: "For 2026, the information reporting threshold for certain payments reported on Forms 1099
+# increased from $600 to $2,000." 26 U.S.C. 6041(a), as amended by P.L. 119-21. These lines do not change net profit.
+# PA-40 C has no matching lines. Not mapped, left blank (the return stops instead of printing a zero):
+#   the line 1 statutory-employee checkbox.
 #   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
 #   line 20a equipment rent, line 27a (Form 7205),
 #   Part IV, and Part V lines 4-9.
@@ -63,6 +70,15 @@ form:
       # c1_1[2] and f1_12 stay blank. Other is a form stop, not a printed specify line. PDF p. 5, Line F.
       c1_2[0]: /scheduleCBusinesses/*/materiallyParticipates # G "Did you materially participate ... ? Yes"
       c1_2[1]: /scheduleCBusinesses/*/doesNotMateriallyParticipate # G "No"
+      # H. PDF p. 6, Line H. Unanswered or no leaves the box unchecked.
+      c1_3[0]: /scheduleCBusinesses/*/lineHChecked
+      # I. PDF p. 6, Line I. Neither box until the filer answers. No default No.
+      c1_4[0]: /scheduleCBusinesses/*/lineIYes
+      c1_4[1]: /scheduleCBusinesses/*/lineINo
+      # J. Form face, PDF p. 1: "If “Yes,” did you or will you file required Form(s) 1099?"
+      # Complete false, and not printed, when line I is No.
+      c1_5[0]: /scheduleCBusinesses/*/lineJYes
+      c1_5[1]: /scheduleCBusinesses/*/lineJNo
       f1_13[0]: /scheduleCBusinesses/*/line1GrossReceipts # 1 "Gross receipts or sales" (26 U.S.C. 61)
       f1_14[0]: /scheduleCBusinesses/*/line2ReturnsAndAllowances # 2 "Returns and allowances"
       f1_15[0]: /scheduleCBusinesses/*/line3 # 3 "Subtract line 2 from line 1"

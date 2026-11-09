@@ -694,13 +694,21 @@
     </Fact>
 
     <!--
-      Header lines A, B, D, E, and F (#89). Line C is businessName.
-      2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, and D, and PDF p. 5 Lines E and F
-      (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf). 26 U.S.C. 446(c) (https://www.law.cornell.edu/uscode/text/26/446).
+      Header lines A, B, D, E, and F (#89), and lines H, I, and J. Line C is businessName. Line G is material
+      participation.
+      2026 draft Instructions for Schedule C, PDF p. 4 Lines A, B, and D, PDF p. 5 Lines E and F, and PDF p. 6
+      Lines H and I (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf, SHA-256
+      27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9). 26 U.S.C. 446(c)
+      (https://www.law.cornell.edu/uscode/text/26/446). 26 U.S.C. 6041(a)
+      (https://www.law.cornell.edu/uscode/text/26/6041), as amended by P.L. 119-21.
+      2026 Schedule C, PDF p. 1, line J (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf, SHA-256
+      cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4): "If “Yes,” did you or will you file required
+      Form(s) 1099?"
       PA-40 C (EX) 03-26, Identification Information: the same activity, the federal code, the FEIN (blank if
-      none), the complete business address, and the accounting-method oval. An unanswered required fact stays
-      incomplete and is not guessed. No EIN is not the filer's SSN. A business at the return address leaves
-      federal line E blank and still prints that address on PA-40 C. Line F other stops the return.
+      none), the complete business address, and the accounting-method oval. PA-40 C has no matching lines for
+      federal H, I, or J. An unanswered required fact stays incomplete and is not guessed. No EIN is not the
+      filer's SSN. A business at the return address leaves federal line E blank and still prints that address on
+      PA-40 C. Line F other stops the return. Lines H, I, and J do not change net profit.
     -->
 
     <Fact path="/scheduleCBusinesses/*/principalBusinessActivity">
@@ -1237,13 +1245,154 @@
       </Derived>
     </Fact>
 
-    <Fact path="/scheduleCBusinesses/*/headerIsComplete">
-      <Name>Schedule C header lines A through F are answered</Name>
+    <Fact path="/scheduleCBusinesses/*/startedOrAcquiredThisYear">
+      <Name>Started or acquired this business in 2026</Name>
       <Description>
-        Activity, product or service, a code on the chart, EIN yes or no, home-address yes or no, and accounting
-        method. An EIN is required only after yes. A separate address is required only after no. Other is a
-        complete answer and a form stop; it is not printed. Missing answers are not defaulted. 2026 draft
-        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4 and PDF p. 5.
+        Schedule C line H. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf, SHA-256
+        27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9), PDF p. 6, Line H: "If you started or
+        acquired this business in 2026, check the box on line H. Also, check the box if you are reopening or
+        restarting this business after temporarily closing it, and you didn’t file a 2025 Schedule C for this
+        business." Required. Incomplete until answered. There is no default of no. Does not change net profit.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineHChecked">
+      <Name>Schedule C line H checkbox</Name>
+      <Description>
+        Complete true only after the filer answers yes. Complete false when the answer is no or still missing, so
+        the box is not checked and an unanswered line is not treated as no. 2026 Schedule C, PDF p. 1, line H
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf, SHA-256
+        cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4): "If you started or acquired this business
+        during 2026, check here."
+      </Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../startedOrAcquiredThisYear" />
+          </IsComplete>
+          <Dependency path="../startedOrAcquiredThisYear" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/madePaymentsRequiringForm1099">
+      <Name>Made a payment that requires Form 1099</Name>
+      <Description>
+        Schedule C line I. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf, SHA-256
+        27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9), PDF p. 6, Line I: "If you made any payment
+        in 2026 that would require you to file any Forms 1099, check the “Yes” box. Otherwise, check the “No”
+        box." "For 2026, the information reporting threshold for certain payments reported on Forms 1099 increased
+        from $600 to $2,000." 26 U.S.C. 6041(a) (https://www.law.cornell.edu/uscode/text/26/6041), as amended by
+        P.L. 119-21. Required. Incomplete until answered. There is no default of no. Does not change net profit.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineIYes">
+      <Name>Schedule C line I Yes</Name>
+      <Description>
+        Complete true only after line I is answered yes. Otherwise complete false, so neither the Yes box nor a
+        default No is printed while the question is unanswered. 2026 draft Instructions for Schedule C, PDF p. 6,
+        Line I.
+      </Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../madePaymentsRequiringForm1099" />
+          </IsComplete>
+          <Dependency path="../madePaymentsRequiringForm1099" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineINo">
+      <Name>Schedule C line I No</Name>
+      <Description>
+        Complete true only after line I is answered no. Complete false while line I is unanswered, so the No box
+        is not a default. 2026 draft Instructions for Schedule C, PDF p. 6, Line I: "Otherwise, check the “No”
+        box."
+      </Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../madePaymentsRequiringForm1099" />
+          </IsComplete>
+          <Not>
+            <Dependency path="../madePaymentsRequiringForm1099" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/willFileRequiredForms1099">
+      <Name>Will file required Forms 1099</Name>
+      <Description>
+        Schedule C line J, asked only when line I is yes. 2026 Schedule C, PDF p. 1, line J
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf, SHA-256
+        cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4): "If “Yes,” did you or will you file
+        required Form(s) 1099?" Required after line I is yes. Incomplete until answered. There is no default of
+        no. When line I is no, this answer is not used. Does not change net profit.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineJYes">
+      <Name>Schedule C line J Yes</Name>
+      <Description>
+        Complete true only when line I is yes and line J is answered yes. Complete false when line I is no, when
+        line I is unanswered, or when line J is unanswered, so line J is not printed in those cases. 2026 Schedule
+        C, PDF p. 1, line J.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../lineIYes" />
+          <IsComplete>
+            <Dependency path="../willFileRequiredForms1099" />
+          </IsComplete>
+          <Dependency path="../willFileRequiredForms1099" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/lineJNo">
+      <Name>Schedule C line J No</Name>
+      <Description>
+        Complete true only when line I is yes and line J is answered no. Complete false when line I is no, so line
+        J is not printed. Also complete false while line J is unanswered, so No is not a default. 2026 Schedule C,
+        PDF p. 1, line J: "If “Yes,” did you or will you file required Form(s) 1099?"
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../lineIYes" />
+          <IsComplete>
+            <Dependency path="../willFileRequiredForms1099" />
+          </IsComplete>
+          <Not>
+            <Dependency path="../willFileRequiredForms1099" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/headerIsComplete">
+      <Name>Schedule C header lines A through J are answered</Name>
+      <Description>
+        Activity, product or service, a code on the chart, EIN yes or no, home-address yes or no, accounting
+        method, line H, and line I. An EIN is required only after yes. A separate address is required only after
+        no. Line J is required only after line I is yes. When line I is no, line J is complete false and is not
+        printed. Other is a complete answer and a form stop; it is not printed. Missing answers are not defaulted.
+        Lines H, I, and J do not change net profit. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, PDF p. 5, and PDF p. 6. 2026 Schedule C, PDF
+        p. 1, line J.
       </Description>
       <Derived>
         <All>
@@ -1265,6 +1414,12 @@
           <IsComplete>
             <Dependency path="../accountingMethod" />
           </IsComplete>
+          <IsComplete>
+            <Dependency path="../startedOrAcquiredThisYear" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../madePaymentsRequiringForm1099" />
+          </IsComplete>
           <Any>
             <Not>
               <Dependency path="../hasEmployerIdNumber" />
@@ -1277,6 +1432,14 @@
             <Dependency path="../businessConductedAtHome" />
             <IsComplete>
               <Dependency path="../businessAddress" />
+            </IsComplete>
+          </Any>
+          <Any>
+            <Not>
+              <Dependency path="../madePaymentsRequiringForm1099" />
+            </Not>
+            <IsComplete>
+              <Dependency path="../willFileRequiredForms1099" />
             </IsComplete>
           </Any>
         </All>
@@ -1431,10 +1594,11 @@
     <Fact path="/scheduleCBusinesses/*/isComplete">
       <Name>Schedule C business complete</Name>
       <Description>
-        Single-total path: header lines A through F, name, gross receipts, the expense total, and material
-        participation.
+        Single-total path: header lines A through F and H, I, and J, name, gross receipts, the expense total, and
+        material participation.
         Line-item
-        path: header lines A through F, name, material participation, Part I amounts, and every stop question.
+        path: header lines A through F and H, I, and J, name, material participation, Part I amounts, and every stop
+        question.
         A form stop completes the business
         without expense amounts. Otherwise the expense lines, line 7,
         line 28, and line 30 must be complete, and a loss needs the
@@ -1528,13 +1692,14 @@
     </Fact>
 
     <Fact path="/scheduleCHeaderBlocksSection">
-      <Name>A Schedule C business is missing header lines A through F</Name>
+      <Name>A Schedule C business is missing a required header line</Name>
       <Description>
         False when the business list is unset or empty. True when a listed business has not finished lines A, B,
-        D, E, and F (line C is the business name). An unanswered required header fact makes this fact true, so
-        /scheduleCSectionIsComplete stays false and /flowIncomplete blocks submission. Nothing is invented for the
-        PDF. 2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4
-        and PDF p. 5.
+        D, E, F, H, and I (line C is the business name), or line J after line I is yes. An unanswered required
+        header fact makes this fact true, so /scheduleCSectionIsComplete stays false and /flowIncomplete blocks
+        submission. Nothing is invented for the PDF. Lines H, I, and J do not change net profit. 2026 draft
+        Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 4, PDF p. 5, and
+        PDF p. 6. 2026 Schedule C, PDF p. 1, line J.
       </Description>
       <Derived>
         <Switch>

@@ -226,6 +226,24 @@ export const ScheduleCIncomeSubcategory = (
           <DFAlert i18nKey='/info/knockout/schedule-c-accounting-method' headingLevel='h2' type='warning' />
           <KnockoutButton i18nKey='button.knockout' />
         </Screen>
+        <Screen route='schedule-c-started-or-acquired'>
+          <Heading i18nKey='/heading/income/schedule-c/started-or-acquired' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/started-or-acquired' />
+          <Boolean path='/scheduleCBusinesses/*/startedOrAcquiredThisYear' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-form-1099'>
+          <Heading i18nKey='/heading/income/schedule-c/form-1099' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/form-1099' />
+          <Boolean path='/scheduleCBusinesses/*/madePaymentsRequiringForm1099' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-file-1099' condition='/scheduleCBusinesses/*/madePaymentsRequiringForm1099'>
+          <Heading i18nKey='/heading/income/schedule-c/file-1099' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/file-1099' />
+          <Boolean path='/scheduleCBusinesses/*/willFileRequiredForms1099' />
+          <SaveAndOrContinueButton />
+        </Screen>
         <Screen route='schedule-c-part-i'>
           <Heading i18nKey='/heading/income/schedule-c/part-i' />
           <InfoDisplay i18nKey='/info/income/schedule-c/part-i' />
