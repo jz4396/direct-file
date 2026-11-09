@@ -22,6 +22,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.cents;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrintOf;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -193,6 +194,77 @@ class Form8959Form8960Ty2026PdfSmokeTest {
             for (String et : new String[] {"f1_28[0]", "f1_30[0]", "f1_34[0]", "f1_35[0]"}) {
                 blank(f, et, "estates and trusts lines 18a-21");
             }
+        }
+    }
+
+    /**
+     * Golden N (#135), public print path. The facts are {@code golden-profileN-complete.json}, the persisted client
+     * profile {@code profileNPaSingleAmt8959}: Finley Example, full-year Pennsylvania, school code 22275. One W-2,
+     * box 1 and box 5 $600,000, box 6 $12,300, box 16 $600,000, box 17 $18,420.
+     *
+     * <p>Form 8959 Part I is ($600,000 − $200,000) × 0.9% = $3,600. 26 U.S.C. §3101(b)(2); §1401(b)(2) threshold,
+     * statutory, not indexed. Part V is $12,300 − 1.45% × $600,000 = $3,600, Form 1040 line 25c.
+     *
+     * <p>Form 8960 prints because MAGI $600,000 is over the $200,000 threshold. Instructions for Form 8960 (2026)
+     * draft p. 1, Who Must File. Line 12 is $0, so line 17 is $0. 26 U.S.C. §1411(a)(1).
+     *
+     * <p>Form 6251 line 7 is $151,882 and line 10 is $173,134, so line 11 is $0. Instructions for Form 6251 (2025) p.
+     * 1, Who Must File, item 1 attaches the form only when line 7 is greater than line 10, so the page is not in the
+     * package. Rev. Proc. 2025-32 §4.10, PDF pp. 16–17; 26 U.S.C. §55(d)(1), (d)(3) as amended by P.L. 119-21 (50%,
+     * not 25%); §55(b)(1)(A).
+     *
+     * <p>PA-40 line 1a is box 16, $600,000. Line 12 is 600,000 × 3.07% = $18,420.00. 72 P.S. §7302. Line 13 is box 17,
+     * $18,420. Lines 26 and 29 are $0.
+     */
+    @Test
+    void goldenNPrintsPa40AndForm8959OnThePublicPath() throws Exception {
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileN-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> f8959 = fieldsOnPages(doc, "Form 8959 (2026)");
+            assertFalse(f8959.isEmpty(), "Form 8959 page printed");
+            assertTrue(field(f8959, "f1_1[0]").toUpperCase().contains("FINLEY"), "name");
+            amount(f8959, "f1_3[0]", 600000, "line 1 Medicare wages");
+            amount(f8959, "f1_7[0]", 200000, "line 5 threshold, single");
+            amount(f8959, "f1_8[0]", 400000, "line 6");
+            amount(f8959, "f1_9[0]", 3600, "line 7 = 400,000 x 0.9%");
+            amount(f8959, "f1_14[0]", 3600, "line 12");
+            amount(f8959, "f1_21[0]", 12300, "line 19 box 6");
+            amount(f8959, "f1_23[0]", 8700, "line 21 = 1.45% x 600,000");
+            amount(f8959, "f1_24[0]", 3600, "line 22");
+            amount(f8959, "f1_26[0]", 3600, "line 24 to Form 1040 line 25c");
+
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            assertFalse(f8960.isEmpty(), "Form 8960 page printed because MAGI is over the threshold");
+            amount(f8960, "f1_22[0]", 0, "line 12 net investment income");
+            amount(f8960, "f1_23[0]", 600000, "line 13 MAGI");
+            amount(f8960, "f1_24[0]", 200000, "line 14");
+            amount(f8960, "f1_25[0]", 400000, "line 15");
+            blank(f8960, "f1_26[0]", "line 16");
+            blank(f8960, "f1_27[0]", "line 17");
+
+            assertTrue(
+                    Form6251Ty2026PdfSmokeTest.form6251Fields(doc).isEmpty(),
+                    "Form 6251 is not attached when line 11 is $0");
+
+            assertTrue(
+                    PaPit40ScheduleSpTy2026PdfSmokeTest.pageWith(
+                            doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1),
+                    "PA-40 is in the package");
+            assertFalse(
+                    PaPit40ScheduleSpTy2026PdfSmokeTest.pageWith(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.SP_PAGE1),
+                    "no Schedule SP when line 21 is $0");
+            Map<String, String> pa = PaPit40ScheduleSpTy2026PdfSmokeTest.fieldsOnPages(
+                    doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1);
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(pa, "Residency Status", "1", "(R) Resident");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(pa, "1a. Gross Compensation", "600,000.00", "line 1a = box 16");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(pa, "11. Adjusted PA Taxable Income", "600,000.00", "line 11");
+            Map<String, String> p2 = PaPit40ScheduleSpTy2026PdfSmokeTest.fieldsOnPages(
+                    doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE2);
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(
+                    p2, "12. PA Tax Liability. Multiply Line 11 by 3.07%", "18,420.00", "line 12");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.is(p2, "13. Total PA Tax Withheld", "18,420.00", "line 13 = box 17");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.blank(p2, "26. TAX DUE", "line 26");
+            PaPit40ScheduleSpTy2026PdfSmokeTest.blank(p2, "29. OVERPAYMENT", "line 29");
         }
     }
 
