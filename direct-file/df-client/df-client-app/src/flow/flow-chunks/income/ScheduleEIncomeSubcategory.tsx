@@ -133,6 +133,13 @@ export const ScheduleEIncomeSubcategory = (
             <Dollar path='/scheduleEEstates/*/box2b' />
             <SaveAndOrContinueButton />
           </Screen>
+          <Screen route='schedule-e-estate-capital-gains'>
+            <Heading i18nKey='/heading/income/schedule-e/estate-capital-gains' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/estate-capital-gains' />
+            <Dollar path='/scheduleEEstates/*/box3' />
+            <Dollar path='/scheduleEEstates/*/box4a' />
+            <SaveAndOrContinueButton />
+          </Screen>
           <Screen route='schedule-e-estate-boxes'>
             <Heading i18nKey='/heading/income/schedule-e/estate-boxes' />
             <InfoDisplay i18nKey='/info/income/schedule-e/estate-boxes' />

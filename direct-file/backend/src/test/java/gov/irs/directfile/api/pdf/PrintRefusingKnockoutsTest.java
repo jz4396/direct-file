@@ -54,6 +54,7 @@ class PrintRefusingKnockoutsTest {
     static final String PA_SCHEDULE_B_KNOCKOUT = "/flowKnockoutPaScheduleB";
     static final String PA_SCHEDULE_C_KNOCKOUT = "/flowKnockoutPaScheduleC";
     static final String PA_SCHEDULE_D_KNOCKOUT = "/flowKnockoutPaScheduleD";
+    static final String PA_K1_1041_CAPITAL_GAIN_KNOCKOUT = "/flowKnockoutPaK11041CapitalGain";
     static final String FORM_2210_KNOCKOUT = "/flowKnockoutForm2210";
     static final String FORM_8962_UNRESOLVED_KNOCKOUT = "/flowKnockoutForm8962NeededOrUnresolved";
     static final List<String> PTC_KNOCKOUTS = List.of(
@@ -199,6 +200,7 @@ class PrintRefusingKnockoutsTest {
                 PA_SCHEDULE_B_KNOCKOUT, // PA Schedule B
                 PA_SCHEDULE_C_KNOCKOUT, // PA Schedule C required; no PA Sch C PDF in this slice
                 PA_SCHEDULE_D_KNOCKOUT, // PA Schedule D
+                PA_K1_1041_CAPITAL_GAIN_KNOCKOUT, // PA-40 line 7 / Schedule J; K-1 (Form 1041) box 3 or 4a
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(

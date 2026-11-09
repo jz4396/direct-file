@@ -27,9 +27,10 @@ headings:
   /heading/income/schedule-e/estate-name: What is the name of the estate or trust?
   /heading/income/schedule-e/estate-scope: Is this a foreign beneficiary, a foreign trust, or an inconsistent treatment?
   /heading/income/schedule-e/estate-interest-dividends: Enter interest and dividends from Schedule K-1 (Form 1041)
+  /heading/income/schedule-e/estate-capital-gains: Enter capital gain or loss from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-boxes: Enter the income from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-box12: Enter Schedule K-1 (Form 1041) box 12, code A
-  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J?
+  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J?
   /heading/income/schedule-e/estate-limits: Do any loss limits apply to this estate or trust?
   /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC (Schedule Q, Form 1066)?
   /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
@@ -102,6 +103,12 @@ info:
     body: >-
       Answer yes to foreign beneficiary if Schedule K-1 (Form 1041) item H says foreign beneficiary. Answer yes if the
       trust is a foreign trust, or if you are treating an item differently from the estate or trust.
+  /info/income/schedule-e/estate-capital-gains:
+    body: >-
+      Box 3 is net short-term capital gain or loss. It goes on Schedule D, line 5. Box 4a is net long-term capital
+      gain or loss. It goes on Schedule D, line 12. Enter a loss as a negative amount. Enter 0 if a box is blank.
+      Box 4b (28% rate gain) and box 4c (unrecaptured section 1250 gain) are not these boxes. Answer yes on the later
+      screen if box 4b, box 4c, or box 11 code C or D has an amount.
   /info/income/schedule-e/estate-interest-dividends:
     body: >-
       Enter box 1 (interest), box 2a (ordinary dividends), and box 2b (qualified dividends). Enter 0 if a box is blank.
@@ -120,8 +127,10 @@ info:
       has an amount. Code J is not line 2j and does not stop this return.
   /info/income/schedule-e/estate-other:
     body: >-
-      Answer yes for boxes 3, 4, 9, 10, 11, 13, and 14, including capital gain, deductions, and credits. Box 12 codes A
-      through J are the previous screen. Do not answer yes only because of code J.
+      Answer yes for boxes 4b and 4c, and for boxes 9, 10, 11, 13, and 14, including the 28% rate gain, unrecaptured
+      section 1250 gain, capital loss carryovers (box 11 codes C and D), deductions, and credits. Boxes 3 and 4a are
+      the capital gain screen. Box 12 codes A through J are the previous screen. Do not answer yes only because of
+      box 3, box 4a, or code J.
   /info/income/schedule-e/estate-limits:
     body: >-
       Answer yes to the first question if a basis limit applies. Answer yes to the second if any amount is not at risk.
@@ -444,6 +453,10 @@ fields:
     name: Box 2a, ordinary dividends
   /scheduleEEstates/*/box2b:
     name: Box 2b, qualified dividends
+  /scheduleEEstates/*/box3:
+    name: Box 3, net short-term capital gain
+  /scheduleEEstates/*/box4a:
+    name: Box 4a, net long-term capital gain
   /scheduleEEstates/*/box5:
     name: Box 5, other portfolio and nonbusiness income
   /scheduleEEstates/*/box6:
@@ -665,6 +678,8 @@ dataviews:
     /scheduleEEstates/*/box1: Box 1, interest income
     /scheduleEEstates/*/box2a: Box 2a, ordinary dividends
     /scheduleEEstates/*/box2b: Box 2b, qualified dividends
+    /scheduleEEstates/*/box3: Box 3, net short-term capital gain
+    /scheduleEEstates/*/box4a: Box 4a, net long-term capital gain
     /scheduleEEstates/*/box5: Box 5, other portfolio and nonbusiness income
     /scheduleEEstates/*/box6: Box 6, ordinary business income
     /scheduleEEstates/*/box7: Box 7, net rental real estate income
@@ -673,7 +688,7 @@ dataviews:
     /scheduleEEstates/*/box12CodeA: Box 12, code A, adjustment for minimum tax purposes
     /scheduleEEstates/*/hasBox12CodesBThroughI: Does box 12 have an amount for code B, C, D, E, F, G, H, or I?
     /scheduleEEstates/*/hasBox12CodeJ: Does box 12, code J, exclusion items, have an amount?
-    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J have an amount?
+    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J have an amount?
     /scheduleEEstates/*/basisLimitApplies: Does a basis limit apply?
     /scheduleEEstates/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/passiveDeductionOrLoss: Is there a passive deduction or loss?

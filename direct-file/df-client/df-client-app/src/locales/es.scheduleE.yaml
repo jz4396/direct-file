@@ -31,9 +31,10 @@ headings:
   /heading/income/schedule-e/estate-scope:
     ¿Es un beneficiario extranjero, un fideicomiso extranjero o un tratamiento distinto?
   /heading/income/schedule-e/estate-interest-dividends: Anote los intereses y dividendos del Anexo K-1 (Formulario 1041)
+  /heading/income/schedule-e/estate-capital-gains: Anote la ganancia o pérdida de capital del Anexo K-1 (Formulario 1041)
   /heading/income/schedule-e/estate-boxes: Anote el ingreso del Anexo K-1 (Formulario 1041)
   /heading/income/schedule-e/estate-box12: Anote la casilla 12, código A, del Anexo K-1 (Formulario 1041)
-  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 1, 2a, 2b, 5, 6, 7, 8 y los códigos A a J de la casilla 12?
+  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 1, 2a, 2b, 3, 4a, 5, 6, 7, 8 y los códigos A a J de la casilla 12?
   /heading/income/schedule-e/estate-limits: ¿Se aplica algún límite de pérdida a este caudal hereditario o fideicomiso?
   /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC (Anexo Q, Formulario 1066)?
   /heading/income/schedule-e/k1-intro: Agregue cada sociedad colectiva y sociedad anónima de tipo S
@@ -114,6 +115,13 @@ info:
       Conteste que sí a beneficiario extranjero si el punto H del Anexo K-1 (Formulario 1041) dice beneficiario
       extranjero. Conteste que sí si el fideicomiso es extranjero, o si trata una partida de forma distinta al caudal o
       fideicomiso.
+  /info/income/schedule-e/estate-capital-gains:
+    body: >-
+      La casilla 3 es la ganancia o pérdida neta de capital a corto plazo. Va en la línea 5 del Anexo D. La casilla 4a
+      es la ganancia o pérdida neta de capital a largo plazo. Va en la línea 12 del Anexo D. Anote una pérdida como
+      cantidad negativa. Anote 0 si una casilla está en blanco. La casilla 4b (ganancia a la tasa del 28%) y la casilla
+      4c (ganancia no recuperada de la sección 1250) no son estas casillas. Conteste que sí en la pantalla posterior si
+      la casilla 4b, la casilla 4c o el código C o D de la casilla 11 tiene una cantidad.
   /info/income/schedule-e/estate-interest-dividends:
     body: >-
       Anote la casilla 1 (intereses), la casilla 2a (dividendos ordinarios) y la casilla 2b (dividendos calificados).
@@ -134,8 +142,11 @@ info:
       no es la línea 2j y no detiene esta declaración.
   /info/income/schedule-e/estate-other:
     body: >-
-      Conteste que sí por las casillas 3, 4, 9, 10, 11, 13 y 14, incluso ganancia de capital, deducciones y créditos.
-      Los códigos A a J de la casilla 12 están en la pantalla anterior. No conteste que sí solo por el código J.
+      Conteste que sí por las casillas 4b y 4c, y por las casillas 9, 10, 11, 13 y 14, incluso la ganancia a la tasa
+      del 28%, la ganancia no recuperada de la sección 1250, los arrastres de pérdida de capital (códigos C y D de la
+      casilla 11), las deducciones y los créditos. Las casillas 3 y 4a están en la pantalla de ganancia de capital.
+      Los códigos A a J de la casilla 12 están en la pantalla anterior. No conteste que sí solo por la casilla 3, la
+      casilla 4a o el código J.
   /info/income/schedule-e/estate-limits:
     body: >-
       Conteste que sí a la primera pregunta si se aplica un límite de base. Conteste que sí a la segunda si alguna
@@ -477,6 +488,10 @@ fields:
     name: Casilla 2a, dividendos ordinarios
   /scheduleEEstates/*/box2b:
     name: Casilla 2b, dividendos calificados
+  /scheduleEEstates/*/box3:
+    name: Casilla 3, ganancia neta de capital a corto plazo
+  /scheduleEEstates/*/box4a:
+    name: Casilla 4a, ganancia neta de capital a largo plazo
   /scheduleEEstates/*/box5:
     name: Casilla 5, otro ingreso de cartera y no comercial
   /scheduleEEstates/*/box6:
@@ -701,6 +716,8 @@ dataviews:
     /scheduleEEstates/*/box1: Casilla 1, ingreso por intereses
     /scheduleEEstates/*/box2a: Casilla 2a, dividendos ordinarios
     /scheduleEEstates/*/box2b: Casilla 2b, dividendos calificados
+    /scheduleEEstates/*/box3: Casilla 3, ganancia neta de capital a corto plazo
+    /scheduleEEstates/*/box4a: Casilla 4a, ganancia neta de capital a largo plazo
     /scheduleEEstates/*/box5: Casilla 5, otro ingreso de cartera y no comercial
     /scheduleEEstates/*/box6: Casilla 6, ingreso ordinario del negocio
     /scheduleEEstates/*/box7: Casilla 7, ingreso neto de alquiler de bienes raíces
@@ -709,7 +726,7 @@ dataviews:
     /scheduleEEstates/*/box12CodeA: Casilla 12, código A, ajuste para fines del impuesto mínimo
     /scheduleEEstates/*/hasBox12CodesBThroughI: ¿La casilla 12 tiene una cantidad para el código B, C, D, E, F, G, H o I?
     /scheduleEEstates/*/hasBox12CodeJ: ¿La casilla 12, código J, partidas de exclusión, tiene una cantidad?
-    /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 5, 6, 7, 8 y los códigos A a J de la casilla 12 tiene una cantidad?
+    /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 3, 4a, 5, 6, 7, 8 y los códigos A a J de la casilla 12 tiene una cantidad?
     /scheduleEEstates/*/basisLimitApplies: ¿Se aplica un límite de base?
     /scheduleEEstates/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/passiveDeductionOrLoss: ¿Hay una deducción o pérdida pasiva?

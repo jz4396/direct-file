@@ -516,6 +516,8 @@ describe(`Form 6251 line 2j — Schedule K-1 (Form 1041) box 12 code A`, () => {
     [`/scheduleEEstates/#${estateId}/box1`]: createDollarWrapper(`0`),
     [`/scheduleEEstates/#${estateId}/box2a`]: createDollarWrapper(`0`),
     [`/scheduleEEstates/#${estateId}/box2b`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box3`]: createDollarWrapper(`0`),
+    [`/scheduleEEstates/#${estateId}/box4a`]: createDollarWrapper(`0`),
     [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`0`),
     [`/scheduleEEstates/#${estateId}/box6`]: createDollarWrapper(`0`),
     [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`0`),

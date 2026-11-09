@@ -543,6 +543,8 @@ class Form6251Ty2026PdfSmokeTest {
         m.put(p + "box1", dollar("0.00"));
         m.put(p + "box2a", dollar("0.00"));
         m.put(p + "box2b", dollar("0.00"));
+        m.put(p + "box3", dollar("0.00"));
+        m.put(p + "box4a", dollar("0.00"));
         m.put(p + "box5", dollar("0.00"));
         m.put(p + "box6", dollar("0.00"));
         m.put(p + "box7", dollar("0.00"));

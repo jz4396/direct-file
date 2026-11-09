@@ -411,13 +411,15 @@
       <Name>Requires Schedule D</Name>
       <Description>Schedule D is required when there is Form 8949 activity (Schedule D instr. (2025) p.11:
         complete Form
-        8949 before Schedule D lines 1b/2/3/8b/9/10) or a prior-year capital loss
-        carryover (Schedule D lines 6/14).</Description>
+        8949 before Schedule D lines 1b/2/3/8b/9/10), a prior-year capital loss
+        carryover (Schedule D lines 6/14), or a nonzero Schedule K-1 (Form 1041) box 3 or box 4a
+        (scheduleE /scheduleEHasEstateK1CapitalGain; 2026 draft Schedule D, PDF p. 2, lines 5 and 12).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Any>
           <Dependency path="/hasForm8949Transactions" />
           <Dependency path="/hasCapitalLossCarryover" />
+          <Dependency module="scheduleE" path="/scheduleEHasEstateK1CapitalGain" />
         </Any>
       </Derived>
     </Fact>

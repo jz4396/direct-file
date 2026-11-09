@@ -110,6 +110,24 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleDLine5">
+      <Name>Schedule D line 5 — net short-term gain or loss from Schedule K-1</Name>
+      <Description>2026 draft Schedule D (https://www.irs.gov/pub/irs-dft/f1040sd--dft.pdf, SHA-256
+        0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1), PDF p. 2, line 5: "Net short-term
+        gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s) K-1". This
+        line is the whole-dollar total of Schedule K-1 (Form 1041) box 3 (scheduleE
+        /scheduleEEstateK1NetShortTermCapitalGain). 2026 draft Schedule K-1 (Form 1041), PDF p. 3. Partnership
+        and S corporation capital gain still stops the return. 26 U.S.C. 6102(a). $0 when there is no estate
+        or trust.</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <ExportZero />
+      <Derived>
+        <Round>
+          <Dependency module="scheduleE" path="/scheduleEEstateK1NetShortTermCapitalGain" />
+        </Round>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleDLine6">
       <Name>Schedule D line 6 — short-term capital loss carryover</Name>
       <Description>Prior-year short-term capital loss carryover (Capital Loss Carryover Worksheet,
@@ -124,9 +142,10 @@
 
     <Fact path="/scheduleDLine7">
       <Name>Schedule D line 7 — net short-term capital gain or loss</Name>
-      <Description>Schedule D Part I line 7: combine lines 1a through 6 (lines 1a/4/5 = $0 in scope;
-        line 6 short-term
-        carryover is subtracted). Schedule D instr. (2025) p.10 (lines 6/14).</Description>
+      <Description>Schedule D Part I line 7: combine lines 1a through 6 (lines 1a and 4 are $0 in scope;
+        line 5 is Schedule K-1 (Form 1041) box 3; line 6 short-term
+        carryover is subtracted). 2026 draft Schedule D, PDF p. 2, line 7. Schedule D instr. (2025) p.10
+        (lines 6/14).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
@@ -137,6 +156,7 @@
                 <Dependency path="/scheduleDLine1b" />
                 <Dependency path="/scheduleDLine2" />
                 <Dependency path="/scheduleDLine3" />
+                <Dependency path="/scheduleDLine5" />
               </Add>
             </Minuend>
             <Subtrahends>
@@ -253,6 +273,24 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleDLine12">
+      <Name>Schedule D line 12 — net long-term gain or loss from Schedule K-1</Name>
+      <Description>2026 draft Schedule D (https://www.irs.gov/pub/irs-dft/f1040sd--dft.pdf, SHA-256
+        0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1), PDF p. 2, line 12: "Net long-term
+        gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s) K-1". This
+        line is the whole-dollar total of Schedule K-1 (Form 1041) box 4a (scheduleE
+        /scheduleEEstateK1NetLongTermCapitalGain). 2026 draft Schedule K-1 (Form 1041), PDF p. 3. Partnership
+        and S corporation capital gain still stops the return. 26 U.S.C. 6102(a). $0 when there is no estate
+        or trust. The QDCG worksheet reads line 15, which includes this line.</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <ExportZero />
+      <Derived>
+        <Round>
+          <Dependency module="scheduleE" path="/scheduleEEstateK1NetLongTermCapitalGain" />
+        </Round>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleDLine14">
       <Name>Schedule D line 14 — long-term capital loss carryover</Name>
       <Description>Prior-year long-term capital loss carryover (Capital Loss Carryover Worksheet,
@@ -302,9 +340,10 @@
 
     <Fact path="/scheduleDLine15">
       <Name>Schedule D line 15 — net long-term capital gain or loss</Name>
-      <Description>Schedule D Part II line 15: combine lines 8a through 14 (lines 8a/11/12/13 = $0 in scope;
-        line 14
-        long-term carryover is subtracted). Schedule D instr. (2025) p.10 (lines 6/14).</Description>
+      <Description>Schedule D Part II line 15: combine lines 8a through 14 (lines 8a and 11 are $0 in scope;
+        line 12 is Schedule K-1 (Form 1041) box 4a; line 13 is capital gain distributions; line 14
+        long-term carryover is subtracted). 2026 draft Schedule D, PDF p. 2, line 15. Schedule D instr.
+        (2025) p.10 (lines 6/14).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
@@ -315,6 +354,7 @@
                 <Dependency path="/scheduleDLine8b" />
                 <Dependency path="/scheduleDLine9" />
                 <Dependency path="/scheduleDLine10" />
+                <Dependency path="/scheduleDLine12" />
                 <Dependency path="/scheduleDLine13" />
               </Add>
             </Minuend>
