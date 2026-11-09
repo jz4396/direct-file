@@ -55,7 +55,8 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`),
       [`/dividendReports/#${id}/writableCapitalGainDistributions`]: createDollarWrapper(`10`),
     });
-    expect(at(g, `1099-div-box-2a`, task)).toRouteNextTo(`${path}/1099-div-box-3`);
+    expect(at(g, `1099-div-box-2a`, task)).toRouteNextTo(`${path}/1099-div-boxes-2e-2f`);
+    expect(at(g, `1099-div-boxes-2e-2f`, task)).toRouteNextTo(`${path}/1099-div-box-3`);
   });
   it(`box 3 asks about basis, and above basis routes to its knockout`, ({ task }) => {
     const box3 = { [`/dividendReports/#${id}/writableNondividendDistributions`]: createDollarWrapper(`50`) };
@@ -93,7 +94,7 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(true),
       '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
     });
-    expect(at(noCarry, `1099-div-box-5-carryforward`, task)).toRouteNextTo(`${path}/1099-div-box-7`);
+    expect(at(noCarry, `1099-div-box-5-carryforward`, task)).toRouteNextTo(`${path}/1099-div-box-6`);
     const carry = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/writableSection199ADividends`]: createDollarWrapper(`5`),
@@ -107,7 +108,23 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/section199ADividendsHoldingPeriodMet`]: createBooleanWrapper(false),
     });
     expect(at(notQualified, `1099-div-box-5-holding`, task)).toRouteNextTo(`${path}/1099-div-box-5-knockout`);
-    expect(at(base(`single`, ord), `1099-div-box-5`, task)).toRouteNextTo(`${path}/1099-div-box-7`);
+    expect(at(base(`single`, ord), `1099-div-box-5`, task)).toRouteNextTo(`${path}/1099-div-box-6`);
+    const atBox6 = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableInvestmentExpenses`]: createDollarWrapper(`500`),
+    });
+    expect(at(atBox6, `1099-div-box-6`, task)).toRouteNextTo(`${path}/1099-div-box-7`);
+    const overBox6 = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableInvestmentExpenses`]: createDollarWrapper(`501`),
+    });
+    expect(at(overBox6, `1099-div-box-6`, task)).toRouteNextTo(`${path}/1099-div-amounts-knockout`);
+    const overBox2e = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableSection897OrdinaryDividends`]: createDollarWrapper(`501`),
+    });
+    expect(at(overBox2e, `1099-div-box-6`, task)).toRouteNextTo(`${path}/1099-div-amounts-knockout`);
+    expect(at(base(`single`, ord), `1099-div-box-6`, task)).toRouteNextTo(`${path}/1099-div-box-7`);
     const box7 = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/writableForeignTaxPaid`]: createDollarWrapper(`5`),

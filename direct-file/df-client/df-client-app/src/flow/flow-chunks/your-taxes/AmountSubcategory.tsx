@@ -62,6 +62,17 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-dividends' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* #86: 1099-DIV box 6 is included in box 1a (26 U.S.C. 67(g)). No PA subtraction is pinned. */}
+      <Screen
+        route='pa-dividend-investment-expenses-knockout'
+        condition='/flowKnockoutPaDividendInvestmentExpenses'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-dividend-investment-expenses' />
+        <DFAlert i18nKey='/info/knockout/pa-dividend-investment-expenses' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='pa-unsupported-items' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-unsupported-items' />
         <InfoDisplay i18nKey='/info/your-taxes/amount/pa-unsupported-items' />

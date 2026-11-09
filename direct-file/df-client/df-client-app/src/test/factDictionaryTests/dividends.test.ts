@@ -1,5 +1,8 @@
-// #86: Form 1099-DIV boxes 1a, 1b, 2a, 3, 4, 5, 7, 12 and 13. Box 12 is Form 1040 line 2a, not line 3b.
-// Box 13 is Form 6251 line 2g and cannot exceed box 12.
+// #86: Form 1099-DIV boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 12 and 13. Box 12 is Form 1040 line 2a, not line 3b.
+// Box 13 is Form 6251 line 2g and cannot exceed box 12. Box 2e is the section 897 portion of box 1a and box 2f is
+// the section 897 portion of box 2a (26 U.S.C. 897(a)); neither is added again. Box 6 is included in box 1a and is
+// not deducted (26 U.S.C. 67(g)). A portion one dollar over its parent box stops the return. A nonzero box 6 on a
+// PA-40 stops the return. Boxes 2b, 2c, 2d and 8-11 still stop.
 // Form 1040 instr. (2025; the 2026 instructions are not yet posted) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
 // p. 26 line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
 // Form(s) 1099-DIV." p. 25 line 3a: "Enter your total qualified dividends on line 3a. Qualified dividends are also
@@ -46,7 +49,10 @@ type Div = {
   box1a: number;
   box1b?: number;
   box2a?: number;
+  box2e?: number;
+  box2f?: number;
   box3?: number;
+  box6?: number;
   box4?: number;
   box5?: number;
   box7?: number;
@@ -70,6 +76,9 @@ const divItem = (f: Div) => {
     [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`${f.box1a}`),
     ...opt(id, `QualifiedDividends`, f.box1b),
     ...opt(id, `CapitalGainDistributions`, f.box2a),
+    ...opt(id, `Section897OrdinaryDividends`, f.box2e),
+    ...opt(id, `Section897CapitalGain`, f.box2f),
+    ...opt(id, `InvestmentExpenses`, f.box6),
     ...opt(id, `NondividendDistributions`, f.box3),
     ...opt(id, `FederalTaxWithheld`, f.box4),
     ...opt(id, `Section199ADividends`, f.box5),
@@ -154,6 +163,7 @@ const FEDERAL_KOS = [
 const noKnockouts = (g: Fg) => {
   FEDERAL_KOS.forEach((k) => expect(get(g, k).get, k).toBe(false));
   expect(get(g, `/flowKnockoutPaDividends`).get).toBe(false);
+  expect(get(g, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(false);
   expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
 };
 const blocks = (g: Fg, k: string) => {
@@ -338,6 +348,105 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     blocks(build(divs({ box1a: 100, box1b: 150 })), `/flowKnockoutDividendAmountsInconsistent`);
     blocks(build(divs({ box1a: 100, box5: 150 })), `/flowKnockoutDividendAmountsInconsistent`);
   });
+  it(`box 2e at $0 and at box 1a does not change line 3b`, ({ task }) => {
+    // 26 U.S.C. 897(a). Form 1099-DIV instructions, box 2e: the portion of box 1a.
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/section897OrdinaryDividends`,
+      `/ordinaryDividends`,
+      `/flowKnockoutDividendAmountsInconsistent`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+    ];
+    const zero = build(divs({ box1a: 100, box2e: 0 }));
+    const atLimit = build(divs({ box1a: 100, box2e: 100 }));
+    const blank = build(divs({ box1a: 100 }));
+    for (const g of [zero, atLimit, blank]) {
+      expect(val(g, `/ordinaryDividends`)).toBe(`100.00`);
+      noKnockouts(g);
+    }
+    expect(val(zero, `/dividendReports/#${d1}/section897OrdinaryDividends`)).toBe(`0.00`);
+    expect(val(atLimit, `/dividendReports/#${d1}/section897OrdinaryDividends`)).toBe(`100.00`);
+    expect(val(blank, `/dividendReports/#${d1}/section897OrdinaryDividends`)).toBe(`0.00`);
+  });
+  it(`box 2e one dollar over box 1a stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/dividendReports/*/amountsInconsistent`, `/flowKnockoutDividendAmountsInconsistent`];
+    blocks(build(divs({ box1a: 100, box2e: 101 })), `/flowKnockoutDividendAmountsInconsistent`);
+    expect(get(build(divs({ box1a: 100, box2e: 101 })), `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+  });
+  it(`box 2f at $0 and at box 2a does not change Schedule D line 13 or line 7a`, ({ task }) => {
+    // 26 U.S.C. 897(a). Form 1099-DIV instructions, box 2f: the portion of box 2a.
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/section897CapitalGain`,
+      `/totalCapitalGainDistributions`,
+      `/scheduleDLine13`,
+      `/capitalGainsOrLosses`,
+    ];
+    const zero = build(divs({ box1a: 100, box2a: 40, box2f: 0 }));
+    const atLimit = build(divs({ box1a: 100, box2a: 40, box2f: 40 }));
+    const blank = build(divs({ box1a: 100, box2a: 40 }));
+    for (const g of [zero, atLimit, blank]) {
+      expect(val(g, `/totalCapitalGainDistributions`)).toBe(`40.00`);
+      expect(val(g, `/capitalGainsOrLosses`)).toBe(`40.00`);
+      expect(val(g, `/scheduleDLine13`)).toBe(`0.00`);
+      noKnockouts(g);
+    }
+    expect(val(atLimit, `/dividendReports/#${d1}/section897CapitalGain`)).toBe(`40.00`);
+    expect(val(zero, `/dividendReports/#${d1}/section897CapitalGain`)).toBe(`0.00`);
+  });
+  it(`box 2f one dollar over box 2a stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendAmountsInconsistent`];
+    blocks(build(divs({ box1a: 100, box2a: 40, box2f: 41 })), `/flowKnockoutDividendAmountsInconsistent`);
+    const overBlank2a = build(divs({ box1a: 100, box2f: 1 }));
+    blocks(overBlank2a, `/flowKnockoutDividendAmountsInconsistent`);
+  });
+  it(`box 6 at $0 and at box 1a is not deducted`, ({ task }) => {
+    // 26 U.S.C. 67(g). Form 1099-DIV instructions, box 6: included in box 1a.
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/investmentExpenses`,
+      `/ordinaryDividends`,
+      `/flowKnockoutDividendAmountsInconsistent`,
+    ];
+    const zero = build(divs({ box1a: 100, box6: 0 }));
+    const atLimit = build(divs({ box1a: 100, box6: 100 }));
+    const blank = build(divs({ box1a: 100 }));
+    for (const g of [zero, atLimit, blank]) {
+      expect(val(g, `/ordinaryDividends`)).toBe(`100.00`);
+      noKnockouts(g);
+    }
+    expect(val(zero, `/dividendReports/#${d1}/investmentExpenses`)).toBe(`0.00`);
+    expect(val(atLimit, `/dividendReports/#${d1}/investmentExpenses`)).toBe(`100.00`);
+    expect(val(blank, `/dividendReports/#${d1}/investmentExpenses`)).toBe(`0.00`);
+  });
+  it(`box 6 one dollar over box 1a stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendAmountsInconsistent`];
+    blocks(build(divs({ box1a: 100, box6: 101 })), `/flowKnockoutDividendAmountsInconsistent`);
+  });
+  it(`several 1099-DIVs keep each portion inside its own form`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/ordinaryDividends`,
+      `/totalCapitalGainDistributions`,
+      `/scheduleDLine13`,
+      `/flowKnockoutDividendAmountsInconsistent`,
+    ];
+    const g = build(
+      divs(
+        { box1a: 200, box2a: 40, box2e: 200, box2f: 40, box6: 10 },
+        { box1a: 50, box2a: 0, box2e: 0, box2f: 0, box6: 50 }
+      )
+    );
+    expect(val(g, `/ordinaryDividends`)).toBe(`250.00`);
+    expect(val(g, `/totalCapitalGainDistributions`)).toBe(`40.00`);
+    expect(val(g, `/capitalGainsOrLosses`)).toBe(`40.00`);
+    expect(val(g, `/dividendReports/#${d2}/investmentExpenses`)).toBe(`50.00`);
+    noKnockouts(g);
+    blocks(
+      build(divs({ box1a: 200, box2e: 200 }, { box1a: 50, box2e: 51 })),
+      `/flowKnockoutDividendAmountsInconsistent`
+    );
+    blocks(
+      build(divs({ box1a: 200, box2a: 40, box2f: 40 }, { box1a: 50, box2a: 10, box2f: 11 })),
+      `/flowKnockoutDividendAmountsInconsistent`
+    );
+  });
   it(`box 13 is Form 6251 line 2g and does not stop when it does not exceed box 12`, ({ task }) => {
     // Form 1099-DIV instructions, box 13: "Shows exempt-interest dividends subject to the alternative minimum tax.
     // This amount is included in box 12." 26 U.S.C. 57(a)(5).
@@ -358,9 +467,12 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
       `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`
     );
   });
-  it(`any other box (2b-2f, 6, 8-11, 14-16)`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`];
+  it(`boxes 2b, 2c, 2d and 8-11 still stop; boxes 2e, 2f and 6 do not`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
     blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
+    const supported = build(divs({ box1a: 100, box2a: 40, box2e: 100, box2f: 40, box6: 100, otherBoxes: false }));
+    expect(get(supported, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    noKnockouts(supported);
   });
   it(`received as nominee`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`];
@@ -413,6 +525,43 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
 
 describe(`PA-40 line 3 dividends (PA-40 IN (2025) p. 15 and PA Schedule B p. 32)`, () => {
   const paBuild = (extra: Record<string, unknown>) => build({ ...state(`pa`), ...extra });
+  it(`a full-year PA resident with box 6 stops; a Florida filer with the same box 6 does not`, ({ task }) => {
+    // 26 U.S.C. 67(g): box 6 is included in box 1a and is not a federal deduction. No PA subtraction is pinned.
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaDividendInvestmentExpenses`,
+      `/flowKnockoutStateReturn`,
+      `/ordinaryDividends`,
+      `/flowKnockoutDividendAmountsInconsistent`,
+    ];
+    const pa = paBuild(divs({ box1a: 100, box6: 25 }));
+    expect(get(pa, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(true);
+    expect(get(pa, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(pa, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(pa, `/flowKnockoutDividendAmountsInconsistent`).get).toBe(false);
+    expect(get(pa, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    expect(val(pa, `/ordinaryDividends`)).toBe(`100.00`);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutPaDividendInvestmentExpenses`);
+
+    const paZero = paBuild(divs({ box1a: 100, box6: 0 }));
+    expect(get(paZero, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(false);
+    expect(get(paZero, `/flowIsKnockedOut`).get).toBe(false);
+    expect(val(paZero, `/ordinaryDividends`)).toBe(`100.00`);
+
+    const paBlank = paBuild(divs({ box1a: 100 }));
+    expect(get(paBlank, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(false);
+    expect(get(paBlank, `/flowIsKnockedOut`).get).toBe(false);
+
+    const fl = build({ ...divs({ box1a: 100, box6: 25 }), ...state(`fl`) });
+    expect(get(fl, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(fl, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(false);
+    expect(val(fl, `/ordinaryDividends`)).toBe(`100.00`);
+    noKnockouts(fl);
+
+    const oneOfTwo = paBuild(divs({ box1a: 80, box6: 0 }, { box1a: 20, box6: 1 }));
+    expect(get(oneOfTwo, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(true);
+    expect(get(oneOfTwo, `/flowIsKnockedOut`).get).toBe(true);
+    expect(val(oneOfTwo, `/ordinaryDividends`)).toBe(`100.00`);
+  });
   it(`line 3 = federal Form 1040 line 3b; no Schedule B adjustment`, ({ task }) => {
     task.meta.testedFactPaths = [`/paLine3`, `/paAskExemptObligationDividends`, `/flowKnockoutPaDividends`];
     const g = paBuild({
@@ -688,6 +837,15 @@ describe(`#86b capital gain distributions and the QDCG Tax Worksheet`, () => {
     expect(val(g, `/capitalGainsOrLosses`)).toBe(`1000.00`);
     expect(val(g, `/qdcgLine3`)).toBe(`1000.00`); // "Yes. Enter the smaller of line 15 or line 16 of Schedule D."
     noKnockouts(g);
+    // Box 2f at box 2a is already in box 2a. Schedule D line 13 stays box 2a. 26 U.S.C. 897(a).
+    const with2f = build({
+      ...divs({ box1a: 500, box2a: 1200, box2e: 500, box2f: 1200, box6: 0 }),
+      '/writableLongTermCapitalLossCarryover': createDollarWrapper(`200`),
+    });
+    expect(val(with2f, `/totalCapitalGainDistributions`)).toBe(`1200.00`);
+    expect(val(with2f, `/scheduleDLine13`)).toBe(`1200.00`);
+    expect(val(with2f, `/ordinaryDividends`)).toBe(`500.00`);
+    noKnockouts(with2f);
   });
 
   it(`box 2a offset by a larger carryover: Schedule D loss, QDCG line 3 is $0`, () => {

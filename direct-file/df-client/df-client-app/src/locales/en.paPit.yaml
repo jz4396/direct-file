@@ -36,6 +36,8 @@ headings:
   /heading/your-taxes/amount/pa-exempt-obligation-dividends:
     Do any of your dividends come from U.S. government or Pennsylvania obligations?
   /heading/knockout/pa-dividends: This tool doesn’t yet support some of your dividends on a Pennsylvania return
+  /heading/knockout/pa-dividend-investment-expenses:
+    This tool doesn’t yet support box 6 investment expenses on a Pennsylvania return
   /heading/your-taxes/amount/pa-unreimbursed-employee-expenses:
     "For your {{/taxYear}} Pennsylvania return, do you want to deduct unreimbursed employee business expenses?"
   /heading/knockout/pa-unreimbursed-employee-expenses:
@@ -87,6 +89,16 @@ info:
             Your Pennsylvania dividends need an adjustment on PA Schedule B that this tool doesn’t figure yet, such as
             dividends from U.S. or Pennsylvania obligations, dividends received while you lived outside Pennsylvania, or
             capital gain distributions on a joint or part-year return.
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-dividend-investment-expenses:
+    alertText:
+      body:
+        - p:
+            Box 6 is your share of expenses of a mutual fund that isn’t offered to the public. That amount is already
+            included in your ordinary dividends. This tool doesn’t subtract it on a Pennsylvania return.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:

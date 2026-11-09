@@ -42,6 +42,8 @@ headings:
     ¿Alguno de sus dividendos proviene de obligaciones del gobierno de EE. UU. o de Pensilvania?
   /heading/knockout/pa-dividends:
     Esta herramienta aún no admite algunos de sus dividendos en una declaración de Pensilvania
+  /heading/knockout/pa-dividend-investment-expenses:
+    Esta herramienta aún no admite los gastos de inversión del encasillado 6 en una declaración de Pensilvania
   /heading/your-taxes/amount/pa-unreimbursed-employee-expenses:
     "Para su declaración de Pensilvania de {{/taxYear}}, ¿desea deducir gastos de negocio no reembolsados como empleado?"
   /heading/knockout/pa-unreimbursed-employee-expenses:
@@ -99,6 +101,16 @@ info:
             calcula, como dividendos de obligaciones de EE. UU. o de Pensilvania, dividendos recibidos mientras vivía
             fuera de Pensilvania, o distribuciones de ganancias de capital en una declaración conjunta o de residente
             parte del año.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-dividend-investment-expenses:
+    alertText:
+      body:
+        - p:
+            El encasillado 6 es su parte de los gastos de un fondo mutuo que no se ofrece al público. Esa cantidad ya
+            está incluida en sus dividendos ordinarios. Esta herramienta no la resta en una declaración de Pensilvania.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:

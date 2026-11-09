@@ -44,6 +44,8 @@ class PrintRefusingKnockoutsTest {
     static final String PA_NRH_KNOCKOUT = "/flowKnockoutPaNonresidentPaSourcePay";
     static final String PA_UE_KNOCKOUT = "/flowKnockoutPaUnreimbursedEmployeeExpenses";
     static final String PA_DIVIDENDS_KNOCKOUT = "/flowKnockoutPaDividends";
+    /** 1099-DIV box 6 on a PA-40. 26 U.S.C. 67(g). No PA subtraction is pinned. */
+    static final String PA_DIVIDEND_BOX6_KNOCKOUT = "/flowKnockoutPaDividendInvestmentExpenses";
     static final String PA_UNSUPPORTED_ITEMS_KNOCKOUT = "/flowKnockoutPaUnsupportedItems";
     static final String PA_UNSUPPORTED_INCOME_KNOCKOUT = "/flowKnockoutPaUnsupportedIncome";
     static final String PA_SP_KNOCKOUT = "/flowKnockoutPaSpUnsupported";
@@ -117,7 +119,10 @@ class PrintRefusingKnockoutsTest {
     static final String AMT_PREFERENCE_UNANSWERED_KNOCKOUT = "/flowKnockoutAmtPreferenceItemsUnanswered";
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
-    /** Form 1099-DIV boxes 2b-2f, 6, 8-11 and 14-16, including section 1202 and collectibles. Box 13 is line 2g. */
+    /**
+     * Form 1099-DIV boxes 2b-2d, 8-11 and 14-16, including section 1202 and collectibles. Boxes 2e, 2f and 6 are
+     * portions of box 1a or 2a. Box 13 is line 2g.
+     */
     static final String DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT = "/flowKnockoutDividendUnsupportedBoxes";
     /** 26 U.S.C. 301(c)(3)(A): box 3 above basis, reported on Form 8949. */
     static final String DIVIDEND_OVER_BASIS_KNOCKOUT = "/flowKnockoutNondividendDistributionsOverBasis";
@@ -183,6 +188,7 @@ class PrintRefusingKnockoutsTest {
                 PA_NRH_KNOCKOUT, // PA Schedule NRH
                 PA_UE_KNOCKOUT, // PA-40 line 1b / Schedule UE
                 PA_DIVIDENDS_KNOCKOUT, // PA-40 line 3 / Schedule B adjustments
+                PA_DIVIDEND_BOX6_KNOCKOUT, // PA-40 with 1099-DIV box 6 (26 U.S.C. 67(g); no PA subtraction pinned)
                 PA_UNSUPPORTED_ITEMS_KNOCKOUT, // PA-40 lines 7, 8, 10, 14, 16, REV-459B, 22, 23, 25.
                 // Line 15 is computed (p. 21, LINE 15; 72 P.S. §7325). Line 18 is p. 22.
                 PA_UNSUPPORTED_INCOME_KNOCKOUT, // line 4 stops for part-year/MFJ loss/tax shelter; line 6 for
@@ -220,13 +226,13 @@ class PrintRefusingKnockoutsTest {
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 (not lines 2g and 2j)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
-                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2f, 6, 8-11, 14-16
+                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2d, 8-11, 14-16
                 DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
                 DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
                 DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT, // box 5 that is not a qualified REIT dividend
                 DIVIDEND_FOREIGN_TAX_KNOCKOUT, // box 7 that needs Form 1116
                 DIVIDEND_NOMINEE_KNOCKOUT, // nominee dividends
-                DIVIDEND_INCONSISTENT_KNOCKOUT, // box 1b or 5 larger than box 1a
+                DIVIDEND_INCONSISTENT_KNOCKOUT, // box 1b, 2e, 5, or 6 larger than box 1a, or box 2f larger than box 2a
                 PAB_INTEREST_EXCEEDS_BOX_8, // 1099-INT box 9 larger than box 8
                 PAB_DIVIDENDS_EXCEED_BOX_12)); // 1099-DIV box 13 larger than box 12
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
@@ -241,7 +247,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(55, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(56, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -1294,6 +1300,57 @@ class PrintRefusingKnockoutsTest {
         assertEquals(
                 List.of(DIVIDEND_INCONSISTENT_KNOCKOUT),
                 PrintRefusingKnockouts.refusingPaths(fgs.getGraph(inconsistent)));
+
+        // Boxes 2e, 2f and 6 at the parent box are already in box 1a or box 2a. 26 U.S.C. 897(a), 67(g).
+        // The Florida golden return still prints, and lines 3b and 7a do not change.
+        Map<String, FactTypeWithItem> portions = commonDividendReturn(mapper);
+        putJson(
+                portions,
+                mapper,
+                div + "/writableSection897OrdinaryDividends",
+                ScheduleATy2026PdfSmokeTest.dollar("1000000.00"));
+        putJson(
+                portions,
+                mapper,
+                div + "/writableSection897CapitalGain",
+                ScheduleATy2026PdfSmokeTest.dollar("500.00"));
+        putJson(
+                portions,
+                mapper,
+                div + "/writableInvestmentExpenses",
+                ScheduleATy2026PdfSmokeTest.dollar("1000000.00"));
+        Graph atParent = fgs.getGraph(portions);
+        assertEquals("1000000.00", atParent.get("/ordinaryDividends").get().toString(), "line 3b unchanged");
+        assertEquals("500.00", atParent.get("/capitalGainsOrLosses").get().toString(), "line 7a unchanged");
+        assertEquals("500.00", atParent.get("/totalCapitalGainDistributions").get().toString(), "box 2a unchanged");
+        assertEquals("0.00", atParent.get("/scheduleDLine13").get().toString(), "Schedule D line 13 stays blank");
+        assertCompleteFalse(atParent, DIVIDEND_INCONSISTENT_KNOCKOUT);
+        assertCompleteFalse(atParent, DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT);
+        assertCompleteFalse(atParent, PA_DIVIDEND_BOX6_KNOCKOUT);
+        assertEquals(Boolean.FALSE, atParent.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(atParent), "2e, 2f and 6 at the parent box print");
+
+        Map<String, FactTypeWithItem> box2eOver = commonDividendReturn(mapper);
+        putJson(
+                box2eOver,
+                mapper,
+                div + "/writableSection897OrdinaryDividends",
+                ScheduleATy2026PdfSmokeTest.dollar("1000001.00"));
+        assertEquals(
+                List.of(DIVIDEND_INCONSISTENT_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(box2eOver)));
+
+        Map<String, FactTypeWithItem> box2fOver = commonDividendReturn(mapper);
+        putJson(box2fOver, mapper, div + "/writableSection897CapitalGain", ScheduleATy2026PdfSmokeTest.dollar("501.00"));
+        assertEquals(
+                List.of(DIVIDEND_INCONSISTENT_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(box2fOver)));
+
+        Map<String, FactTypeWithItem> box6Over = commonDividendReturn(mapper);
+        putJson(box6Over, mapper, div + "/writableInvestmentExpenses", ScheduleATy2026PdfSmokeTest.dollar("1000001.00"));
+        assertEquals(
+                List.of(DIVIDEND_INCONSISTENT_KNOCKOUT),
+                PrintRefusingKnockouts.refusingPaths(fgs.getGraph(box6Over)));
 
         Map<String, FactTypeWithItem> foreignAccount = commonDividendReturn(mapper);
         putJson(foreignAccount, mapper, "/hasForeignAccounts", ScheduleATy2026PdfSmokeTest.bool(true));

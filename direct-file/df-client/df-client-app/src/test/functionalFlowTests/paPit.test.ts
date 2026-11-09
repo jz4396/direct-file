@@ -97,7 +97,7 @@ describe(`PA-40 core (#78) flow`, () => {
 // have an amount. Ordinary dividends alone do not. The dividend screens before it don't stop the booklet cases.
 describe(`PA Schedule B dividend knockout (#154) flow`, () => {
   const divId = `15400000-0000-4000-8000-000000000001`;
-  const withDividends = (box1a: number, box2a?: number, exempt = false) => {
+  const withDividends = (box1a: number, box2a?: number, exempt = false, box6?: number) => {
     const { factGraph } = setupFactGraph({
       ...baseFilerData,
       ...makeW2Data(50000),
@@ -117,6 +117,9 @@ describe(`PA Schedule B dividend knockout (#154) flow`, () => {
       ...(box2a === undefined
         ? {}
         : { [`/dividendReports/#${divId}/writableCapitalGainDistributions`]: createDollarWrapper(`${box2a}`) }),
+      ...(box6 === undefined
+        ? {}
+        : { [`/dividendReports/#${divId}/writableInvestmentExpenses`]: createDollarWrapper(`${box6}`) }),
       [`/dividendReports/#${divId}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
       [`/dividendReports/#${divId}/receivedAsNominee`]: createBooleanWrapper(false),
       [`/dividendReports/#${divId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
@@ -141,5 +144,16 @@ describe(`PA Schedule B dividend knockout (#154) flow`, () => {
     expect(givenFacts(withDividends(100, 10, true)).atPath(`${path}/pa-unsupported-items`, null, task)).toRouteNextTo(
       `${path}/pa-schedule-b-knockout`
     );
+  });
+  it(`box 6 on a full-year PA return routes to the investment-expense knockout`, ({ task }) => {
+    // 26 U.S.C. 67(g). Box 6 is included in box 1a. No PA subtraction is pinned.
+    expect(
+      givenFacts(withDividends(100, undefined, false, 25)).atPath(`${path}/pa-exempt-obligation-dividends`, null, task)
+    ).toRouteNextTo(`${path}/pa-dividend-investment-expenses-knockout`);
+  });
+  it(`box 6 of $0 continues to the other Pennsylvania questions`, ({ task }) => {
+    expect(
+      givenFacts(withDividends(100, undefined, false, 0)).atPath(`${path}/pa-exempt-obligation-dividends`, null, task)
+    ).toRouteNextTo(`${path}/pa-unsupported-items`);
   });
 });

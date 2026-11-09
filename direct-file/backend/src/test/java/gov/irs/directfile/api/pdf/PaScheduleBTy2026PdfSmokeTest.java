@@ -115,6 +115,47 @@ class PaScheduleBTy2026PdfSmokeTest {
     }
 
     @Test
+    void section897BoxesAtTheParentDoNotChangeThePrintedSchedule() throws Exception {
+        // 26 U.S.C. 897(a). Box 2e is already in box 1a. Box 2f is already in box 2a. Box 6 of $0 is not a PA stop.
+        Map<String, String> facts = dividends("800.00", "200.00", true);
+        String p = "/dividendReports/#" + DIV + "/";
+        facts.put(p + "writableSection897OrdinaryDividends", dollar("800.00"));
+        facts.put(p + "writableSection897CapitalGain", dollar("200.00"));
+        facts.put(p + "writableInvestmentExpenses", dollar("0.00"));
+        Graph graph = graph(facts);
+        assertEquals("800.00", graph.get("/ordinaryDividends").get().toString());
+        assertEquals("200.00", graph.get("/totalCapitalGainDistributions").get().toString());
+        assertEquals("200.00", graph.get("/paScheduleBTaxpayerLine10").get().toString());
+        assertEquals("1000.00", graph.get("/paLine3").get().toString());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutPaDividendInvestmentExpenses").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutDividendAmountsInconsistent").get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph));
+
+        byte[] bytes = generatePublicPrint(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> b = fieldsOnPages(doc, PAGE);
+            is(b, LINE1, "800.00", "line 1");
+            is(b, LINE10, "200.00", "line 10");
+            is(b, LINE12, "1,000.00", "line 12");
+            is(fieldsOnPages(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1), PA_LINE3, "1,000.00", "PA-40 line 3");
+        }
+    }
+
+    @Test
+    void box6StopsAFullYearPaReturnAndDoesNotReduceLine3() throws Exception {
+        // 26 U.S.C. 67(g). Box 6 is included in box 1a and is not a federal deduction. No PA subtraction is pinned.
+        Map<String, String> facts = dividends("800.00", "200.00", true);
+        facts.put("/dividendReports/#" + DIV + "/writableInvestmentExpenses", dollar("25.00"));
+        Graph graph = graph(facts);
+        assertEquals("800.00", graph.get("/ordinaryDividends").get().toString(), "line 3b is not reduced");
+        assertEquals("1000.00", graph.get("/paLine3").get().toString(), "PA-40 line 3 is not reduced");
+        assertEquals(Boolean.TRUE, graph.get("/flowKnockoutPaDividendInvestmentExpenses").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutDividendAmountsInconsistent").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutDividendUnsupportedBoxes").get());
+        assertRefused(facts, "/flowKnockoutPaDividendInvestmentExpenses");
+    }
+
+    @Test
     void box2aOnlyPrintsLine10WithoutTheExemptQuestion() throws Exception {
         Map<String, String> facts = dividends("0.00", "10.00", false);
         Graph graph = graph(facts);
