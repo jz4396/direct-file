@@ -10,7 +10,9 @@
 // income limitation), and profile L (Florida full-year single: W-2, Schedule C, and Form 1099-INT boxes 8 and 9,
 // with the box 9 amount on Form 6251 line 2g producing alternative minimum tax), and profile M
 // (Golden M: full-year Pennsylvania resident, W-2 wages $60,000 with box 17 PA withholding $1,842,
-// and one Schedule C, so PA-40 and PA-40 C both print on the public path).
+// and one Schedule C, so PA-40 and PA-40 C both print on the public path), and profile N
+// (Golden N: full-year Pennsylvania resident, single, W-2 wages $600,000, Form 6251 exemption phaseout, and
+// Form 8959).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -123,7 +125,7 @@
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
 //      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
-//      the ITIN ranges). Profiles C and D use
+//      the ITIN ranges). Profile N uses 900-36-1015 (group 36, outside the ITIN ranges). Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
 //      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
@@ -194,6 +196,8 @@ import {
   profileMBusinessId,
   profileMPaScheduleC,
   profileMW2,
+  profileNPaSingleAmt8959,
+  profileNW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -3227,5 +3231,245 @@ describe(`golden end-to-end scenario (synthetic data): profile M negative row (s
     expect(get(n, `/flowKnockoutPaScheduleC`).complete).toBe(true);
     expect(get(n, `/flowKnockoutPaScheduleC`).get).toBe(true);
     expect(get(n, `/flowIsKnockedOut`).get).toBe(true);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile N, Golden N, full-year PA, Form 6251 phaseout, Form 8959`, () => {
+  // Finley Example. Single, full-year Pennsylvania resident [PA] [TRC]; born 1985-09-14 (under 65, after January 1,
+  //   1962), SSN 900-36-1015 (900 area, group 36, outside the ITIN ranges). Address 123 Example St, Harrisburg, PA
+  //   17101. School code 22275 (Harrisburg City, PA-40 IN (2025) pp. 46-47). One W-2. No interest, no dividends, no
+  //   sales. Standard deduction. No federal estimated payments.
+  // W-2: box 1 and box 5 $600,000. The cite names no federal withholding, so box 2 is $0. Box 3 is capped at
+  //   $184,500. Box 4 is 6.2% × 184,500 = 11,439 (26 U.S.C. 3101(a)). Box 6 is 1.45% × 600,000 + 0.9% × 400,000 =
+  //   8,700 + 3,600 = 12,300 [3101] [3102]. Box 16 is $600,000 (PA-40 line 1a, [PA] p. 10). Box 17 is 3.07% ×
+  //   600,000 = 18,420 (PA-40 line 13, [PA] p. 21; [TRC] 72 P.S. §7302).
+  // Form 1040: line 1a, line 9 and line 11 (AGI) 600,000. Line 12e standard deduction 16,100. Rev. Proc. 2025-32
+  //   §4.14(1), PDF p. 18: "Unmarried Individuals (other than Surviving Spouses and Heads of Households) ... $16,100"
+  //   (SHA-256 e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b). Born after January 1, 1962, so no
+  //   additional amount for age and no Schedule 1-A enhanced senior deduction. Line 15 taxable income 583,900.
+  //   Over $100,000, so the Tax Computation Worksheet [GI p. 36]. [RP] p. 11 §4.01 Table 3 (unmarried), PDF pp.
+  //   10–12: "Over $256,225 but not over $640,600 $58,448 plus 35% of the excess over $256,225": 58,448 + 35% ×
+  //   (583,900 − 256,225) = 58,448 + 35% × 327,675 = 58,448 + 114,686.25 = 173,134.25, which rounds to 173,134.
+  // Form 6251 [6251] [55] [55d]: line 1a 16,100; line 1b 583,900; line 2a 16,100 (the standard deduction; IRC
+  //   §56(b)(1)(E)). Line 4 AMTI 600,000 (taxable income + standard deduction). Line 5 exemption $90,100 − 50% ×
+  //   ($600,000 − $500,000) = $40,100. Rev. Proc. 2025-32 §4.10, PDF pp. 16–17: unmarried exemption $90,100, 28%
+  //   breakpoint $244,500, phaseout threshold $500,000. 26 U.S.C. §55(d)(1), (d)(3) as amended by P.L. 119-21 — 50%,
+  //   not 25%. Line 6 559,900. No capital gain and no qualified dividends, so Part III is not used. Tentative minimum
+  //   tax is 26% × $244,500 + 28% × ($559,900 − $244,500) = 63,570 + 88,312 = 151,882 (§55(b)(1)(A); Rev. Proc.
+  //   2025-32 §4.10). The same figure is 28% × 559,900 − 4,890 = 151,882 [6251 line 7]. Line 9 151,882. Line 10
+  //   regular tax 173,134. Line 11 AMT 0: 151,882 does not exceed 173,134. Schedule 2 line 2 is line 11.
+  //   Instructions for Form 6251 (2025), https://www.irs.gov/pub/irs-pdf/i6251.pdf p. 1, Who Must File, item 1:
+  //   attach the form when line 7 is greater than line 10. It is not, so /form6251Required is false and the public
+  //   print does not include Form 6251. The cite's acceptance line asked for those pages; the engine follows Who
+  //   Must File and is not overridden.
+  // Form 8959 [3101]: Part I ($600,000 − $200,000) × 0.9% = $3,600. 26 U.S.C. §3101(b)(2); §1401(b)(2) threshold,
+  //   statutory, not indexed. Line 1 600,000; threshold 200,000; line 6 400,000; line 7 and line 12 3,600 (Schedule 2
+  //   line 17b). No self-employment income, so line 18 is $0. Part V: line 19 box 6 12,300; line 21 1.45% × 600,000
+  //   = 8,700; line 22 and line 24 12,300 − 8,700 = 3,600, to Form 1040 line 25c.
+  // Form 8960 [1411] [8960]: no interest, dividends, or gain, so line 8 and line 12 are $0 and line 17 is $0. MAGI
+  //   $600,000 is over the $200,000 single threshold, so Who Must File attaches the form anyway. Instructions for
+  //   Form 8960 (2026) draft, https://www.irs.gov/pub/irs-dft/i8960--dft.pdf
+  //   (SHA-256 e0af7d344185a3dc0d50975261ab7cb3e7e0777d12c00cb2a91a83c61220cf40) p. 1: "Attach Form 8960 to your
+  //   return if your modified adjusted gross income (MAGI) is greater than the applicable threshold amount." Line
+  //   16 is the smaller of line 12 ($0) and line 15 ($400,000), so the 3.8% tax is $0 and Schedule 2 line 21 stays
+  //   the Form 8959 amount.
+  // Form 1040: line 16 173,134; line 17 0; line 18 173,134; line 22 173,134 (no credits; the TIN is not an SSN
+  //   [EITC]); line 23 3,600; line 24 total tax 176,734; line 25a 0; line 25c 3,600; line 33 payments 3,600; amount
+  //   owed 173,134. Form 2210 lines 4 and 7 are both at least $1,000, so a penalty is possible. Every Part II box is
+  //   no, so /flowKnockoutForm2210 is complete false and the IRS bills any penalty.
+  // PA-40 [PA] [TRC]. Residency oval (R). Line 1a = box 16 $600,000. Lines 1c, 9 and 11 $600,000 (no other class of
+  //   income; no standard deduction, [PA] p. 9). Line 12 = 600,000 × 3.07% = 18,420.00 exactly [PA p. 21, LINE 12;
+  //   72 P.S. §7302]. Line 13 = box 17 $18,420. Line 24 = 18,420. Line 26 $0. Line 29 $0. Schedule SP: eligibility
+  //   income is line 9, $600,000, above Table 1's 10 percent column ($8,750 for an unmarried claimant with no
+  //   dependent child, [PA] p. 39), so line 21 is $0 and Schedule SP is not in the package. 72 P.S. §7304.
+  const g = graph(profileNPaSingleAmt8959);
+
+  it(`Form 1040 income, the standard deduction, and line 16 tax`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`single`);
+    expect(get(g, `/itemizesDeductions`).get).toBe(false);
+    const taxable = Number(get(g, `/taxableIncome`).get.toString());
+    expect(taxable).toBe(583900);
+    // [RP] p. 11 §4.01 Table 3. 58,448 + 35% × 327,675 = 173,134.25, half a dollar not reached, so 173,134.
+    const regularCents = 58448 * 100 + (taxable - 256225) * 35;
+    expect(regularCents).toBe(17313425);
+    expect(get(g, `/tentativeTaxFromTaxableIncome`).get.toString()).toBe(`173134.00`);
+    expectDollars(g, {
+      '/wages': `600000.00`,
+      '/totalIncome': `600000.00`,
+      '/agi': `600000.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/taxableIncome': `583900.00`,
+      '/tentativeTaxFromTaxableIncome': `173134.00`,
+    });
+  });
+
+  it(`Form 6251 exemption phases to $40,100 and line 11 alternative minimum tax is $0`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItemsUnanswered`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtMfsAddBack`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtMfsAddBack`).get).toBe(false);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(false);
+    const amti = Number(get(g, `/form6251Line4`).get.toString());
+    // Inside the band [RP p. 17 §4.10]: threshold $500,000, complete phaseout $680,200.
+    expect(amti).toBe(600000);
+    expect(amti).toBeGreaterThan(500000);
+    expect(amti).toBeLessThan(680200);
+    // IRC §55(d)(1) exemption $90,100 [RP p. 16 §4.10], reduced by 50% of the excess over $500,000. 26 U.S.C.
+    // §55(d)(1), (d)(3) as amended by P.L. 119-21 — 50%, not 25% [55d].
+    const line5 = 90100 - 0.5 * (amti - 500000);
+    expect(line5).toBe(40100);
+    const line6 = amti - line5;
+    expect(line6).toBe(559900);
+    // 26% × $244,500 + 28% × ($559,900 − $244,500) = 151,882. §55(b)(1)(A); [RP] §4.10.
+    const tmtCents = 244500 * 26 + (line6 - 244500) * 28;
+    expect(tmtCents).toBe(15188200);
+    expect(get(g, `/form6251Line7`).get.toString()).toBe(`151882.00`);
+    expect(get(g, `/form6251Line10`).get.toString()).toBe(`173134.00`);
+    expectDollars(g, {
+      '/form6251ExemptionAmount': `90100.00`,
+      '/form6251PhaseoutThreshold': `500000.00`,
+      '/form6251Line1b': `583900.00`,
+      '/form6251Line2a': `16100.00`,
+      '/form6251Line4': `600000.00`,
+      '/form6251ExemptionReduction': `50000.00`,
+      '/form6251Line5': `40100.00`,
+      '/form6251Line6': `559900.00`,
+      '/form6251Line7': `151882.00`,
+      '/form6251Line9': `151882.00`,
+      '/form6251Line10': `173134.00`,
+      '/amt': `0.00`,
+      '/schedule2Line2': `0.00`,
+    });
+    // Who Must File item 1 is line 7 greater than line 10. 151,882 is not greater than 173,134.
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(false);
+  });
+
+  it(`Form 8959 Additional Medicare Tax is $3,600 and matches the extra 0.9% withheld`, () => {
+    expect(get(g, `/requiresForm8959`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS8959`) as string).get).toBe(true);
+    const line6 = Number(get(g, `/form8959Line6`).get.toString());
+    expect(line6).toBe(400000);
+    // ($600,000 − $200,000) × 0.9% = $3,600. 26 U.S.C. §3101(b)(2); §1401(b)(2) threshold, not indexed.
+    expect((line6 * 9) / 1000).toBe(3600);
+    const box6 = Number(get(g, `/formW2s/#${profileNW2.id}/medicareWithholding`).get.toString());
+    // 1.45% × $600,000 = $8,700. Box 6 $12,300 − $8,700 = $3,600, the extra 0.9%.
+    const regularMedicareCents = (600000 * 145) / 100;
+    expect(box6).toBe(12300);
+    expect(regularMedicareCents).toBe(870000);
+    expect(box6 * 100 - regularMedicareCents).toBe(360000);
+    expectDollars(g, {
+      '/form8959Line1': `600000.00`,
+      '/form8959Threshold': `200000.00`,
+      '/form8959Line6': `400000.00`,
+      '/form8959Line7': `3600.00`,
+      '/form8959Line12': `3600.00`,
+      '/form8959Line18': `0.00`,
+      '/line17bAdditionalMedicareTax': `3600.00`,
+      '/form8959Line19': `12300.00`,
+      '/form8959Line21': `8700.00`,
+      '/form8959Line22': `3600.00`,
+      '/form8959Line24': `3600.00`,
+      '/line21OfSchedule2': `3600.00`,
+      [`/formW2s/#${profileNW2.id}/oasdiWages`]: `184500.00`,
+      [`/formW2s/#${profileNW2.id}/oasdiWithholding`]: `11439.00`,
+      [`/formW2s/#${profileNW2.id}/medicareWages`]: `600000.00`,
+      [`/formW2s/#${profileNW2.id}/medicareWithholding`]: `12300.00`,
+    });
+    // MAGI is over $200,000, so Who Must File attaches Form 8960 even though net investment income is $0 [8960] [1411].
+    expect(get(g, `/requiresForm8960`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS8960`) as string).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expectDollars(g, {
+      '/form8960Line12': `0.00`,
+      '/form8960Line13': `600000.00`,
+      '/form8960Line14': `200000.00`,
+      '/form8960Line15': `400000.00`,
+      '/form8960Line16': `0.00`,
+      '/form8960Line17': `0.00`,
+      '/schedule2Line6NetInvestmentIncomeTax': `0.00`,
+    });
+    expect(get(g, `/flowKnockoutForm8959Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8959Unsupported`).get).toBe(false);
+  });
+
+  it(`Form 1040 total tax, payments, and amount owed`, () => {
+    expect(get(g, `/requiresSchedule2`).get).toBe(true);
+    expectDollars(g, {
+      '/totalAdditionalTaxesOwed': `0.00`,
+      '/totalTax': `176734.00`,
+      '/formW2Withholding': `0.00`,
+      '/otherFormWithholding': `3600.00`,
+      '/totalWithholding': `3600.00`,
+      '/estimatedAndFromLastYear': `0.00`,
+      '/totalPayments': `3600.00`,
+      '/overpayment': `0.00`,
+      '/balanceDue': `173134.00`,
+    });
+    expect(get(g, `/form2210AskPartII`).get).toBe(true);
+    expect(get(g, `/form2210ShowIrsWillBillNote`).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+  });
+
+  it(`PA-40 line 12 is $18,420 and withholding covers it`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPa`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(false);
+    expect(get(g, `/paResidencyStatusPartYear`).get).toBe(false);
+    expect(get(g, `/livedInFl`).get).toBe(false);
+    expect(get(g, `/paSchoolCode`).get).toBe(`22275`);
+    expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaPartYear`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`PA40`) as string).get).toBe(true);
+    const line11 = Number(get(g, `/paLine11`).get.toString());
+    expect(line11).toBe(600000);
+    // 72 P.S. §7302; [PA] p. 21, LINE 12. 600,000 × 0.0307 = 18,420.00 exactly.
+    expect((line11 * 307) / 10000).toBe(18420);
+    expectDollars(g, {
+      '/paLine1a': `600000.00`,
+      '/paLine1c': `600000.00`,
+      '/paLine9': `600000.00`,
+      '/paLine10': `0.00`,
+      '/paLine11': `600000.00`,
+      '/paLine12': `18420.00`,
+      '/paLine13': `18420.00`,
+      '/paLine15': `0.00`,
+      '/paLine21': `0.00`,
+      '/paLine24': `18420.00`,
+      '/paLine26': `0.00`,
+      '/paLine29': `0.00`,
+      '/stateTaxLiability': `18420.00`,
+      '/stateAmountOwed': `0.00`,
+      '/stateRefund': `0.00`,
+    });
+  });
+
+  it(`golden-profileN-complete.json is the persisted profileNPaSingleAmt8959 return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileN-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`nothing stops the return`, () => {
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
   });
 });

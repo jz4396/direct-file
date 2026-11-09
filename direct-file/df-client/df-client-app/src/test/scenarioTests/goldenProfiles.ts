@@ -10,7 +10,9 @@
 // income limitation), and profile L (Florida full-year single: W-2, Schedule C, and Form 1099-INT boxes 8 and 9,
 // with the box 9 amount on Form 6251 line 2g producing alternative minimum tax), and profile M
 // (Golden M: full-year Pennsylvania resident, W-2 wages $60,000 with box 17 PA withholding $1,842,
-// and one Schedule C, so PA-40 and PA-40 C both print on the public path).
+// and one Schedule C, so PA-40 and PA-40 C both print on the public path), and profile N
+// (Golden N: full-year Pennsylvania resident, single, one W-2 of $600,000, so PA-40, Form 6251 in the
+// exemption phaseout, and Form 8959 run on the same return).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -1049,6 +1051,47 @@ export const profileMPaScheduleC = {
   '/form2210FiledJointReturnPriorYear': createBooleanWrapper(false),
 };
 
+/**
+ * Profile N (Golden N, #135): full-year Pennsylvania resident, single, under 65. One W-2. Wages and Medicare wages
+ * $600,000. Social Security wages capped at $184,500. Box 6 is 1.45% × 600,000 + 0.9% × 400,000 = $12,300. Box 16
+ * is $600,000. Box 17 is 3.07% × 600,000 = $18,420. Standard deduction. No other income. The cite names no federal
+ * withholding, so box 2 is $0. Fixed id 13500000-0000-4000-8000-000000001701. The first golden that runs PA-40 with
+ * Form 6251 (exemption inside the phaseout) and Form 8959.
+ */
+const finley: Person = { first: `Finley`, last: `Example`, ssn: [`900`, `36`, `1015`], dob: `1985-09-14` };
+export const profileNW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001701`,
+  employer: `Example Payroll LLC`,
+  ein: [`00`, `0001701`],
+  box1: 600000,
+  // Not in the cite. $0 is no federal withholding, not a made-up payment.
+  box2: 0,
+  // The cite caps Social Security wages at $184,500.
+  box3: 184500,
+  // 6.2% × 184,500 = 11,439. 26 U.S.C. 3101(a).
+  box4: 11439,
+  box5: 600000,
+  // 1.45% × 600,000 = 8,700, plus 0.9% × (600,000 − 200,000) = 3,600. 26 U.S.C. 3101(b)(1), 3101(b)(2).
+  box6: 12300,
+  // PA-40 line 1a is box 16. Box 17 is PA-40 line 13. 72 P.S. §7302.
+  box16: 600000,
+  box17: 18420,
+};
+export const profileNPaSingleAmt8959 = {
+  ...single(finley, { street: `123 Example St`, city: `Harrisburg`, zip: `17101`, state: `PA` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+  '/paSchoolDistrictCode': createStringWrapper(`22275`),
+  '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+  ...w2s(finley.ssn, profileNW2),
+  // The cite has no estimated payments. Form 1040 line 26 stays $0. These are not PA-40 line 15.
+  '/paidEstimatedTaxesOrFromLastYear': createBooleanWrapper(false),
+  // Withholding is only the Form 8959 line 24 credit, so a penalty is possible. Every Part II box is no.
+  '/form2210WaiverRequested': createBooleanWrapper(false),
+  '/form2210AnnualizedIncome': createBooleanWrapper(false),
+  '/form2210WithholdingOnActualDates': createBooleanWrapper(false),
+  '/form2210FiledJointReturnPriorYear': createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1069,4 +1112,5 @@ export const goldenProfiles = {
   profileKFlSingleScheduleC,
   profileLFlSinglePabInterest,
   profileMPaScheduleC,
+  profileNPaSingleAmt8959,
 };
