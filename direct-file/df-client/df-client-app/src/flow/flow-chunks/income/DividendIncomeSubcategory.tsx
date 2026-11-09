@@ -20,12 +20,14 @@ import {
 import type { ConditionString } from '../../Condition.js';
 
 /**
- * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 3, 4, 5, 7, 12 and 13.
+ * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 12 and 13.
  * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4,
- * line 2a includes box 12. Qualified REIT dividends in box 5 are Form 8995 line 6 (26 U.S.C. 199A(b)(1)(B)). A no
+ * line 2a includes box 12. Box 2e is the section 897 portion of box 1a and box 2f is the section 897 portion of
+ * box 2a (26 U.S.C. 897(a)); neither is added again. Box 6 is included in box 1a and is not deducted
+ * (26 U.S.C. 67(g)). A portion larger than its parent box stops the return. A nonzero box 6 on a PA-40 stops
+ * the return. Qualified REIT dividends in box 5 are Form 8995 line 6 (26 U.S.C. 199A(b)(1)(B)). A no
  * to the 45-day holding period stops the return (26 CFR 1.199A-3(c)(2)(ii)). Box 13 is Form 6251 line 2g
- * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Every other box, and every case that can't be computed yet,
- * stops the return.
+ * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Boxes 2b, 2c, 2d, 8-11 and 14-16 still stop the return.
  * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
@@ -140,6 +142,13 @@ export const DividendIncomeSubcategory = (
           <Dollar path='/dividendReports/*/writableCapitalGainDistributions' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
+        <Screen route='1099-div-boxes-2e-2f'>
+          <Heading i18nKey='/heading/income/dividends/boxes-2e-2f' />
+          <InfoDisplay i18nKey='/info/income/dividends/boxes-2e-2f' />
+          <Dollar path='/dividendReports/*/writableSection897OrdinaryDividends' required={false} />
+          <Dollar path='/dividendReports/*/writableSection897CapitalGain' required={false} />
+          <SaveAndOrContinueButton />
+        </Screen>
         <Screen route='1099-div-box-3'>
           <Heading i18nKey='/heading/income/dividends/box-3' />
           <InfoDisplay i18nKey='/info/income/dividends/box-3' />
@@ -190,11 +199,13 @@ export const DividendIncomeSubcategory = (
           <Boolean path='/qbiHasPriorYearLossCarryforward' />
           <SaveAndOrContinueButton />
         </Screen>
-        {knockout(
-          `1099-div-box-5-qbi-knockout`,
-          `/section199ADividendsShowsQbiLimitKnockout`,
-          `schedule-c-qbi`
-        )}
+        {knockout(`1099-div-box-5-qbi-knockout`, `/section199ADividendsShowsQbiLimitKnockout`, `schedule-c-qbi`)}
+        <Screen route='1099-div-box-6'>
+          <Heading i18nKey='/heading/income/dividends/box-6' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-6' />
+          <Dollar path='/dividendReports/*/writableInvestmentExpenses' required={false} />
+          <SaveAndOrContinueButton />
+        </Screen>
         {knockout(
           `1099-div-amounts-knockout`,
           `/flowKnockoutDividendAmountsInconsistent`,

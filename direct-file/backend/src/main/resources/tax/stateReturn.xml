@@ -153,6 +153,7 @@
             <Any>
               <Dependency module="paPit" path="/flowKnockoutPaUnreimbursedEmployeeExpenses" />
               <Dependency module="paPit" path="/flowKnockoutPaDividends" />
+              <Dependency module="paPit" path="/flowKnockoutPaDividendInvestmentExpenses" />
               <Dependency module="paPit" path="/flowKnockoutPaUnsupportedItems" />
               <Dependency module="paPit" path="/flowKnockoutPaUnsupportedIncome" />
               <Dependency module="paPit" path="/flowKnockoutPaSpUnsupported" />

@@ -1237,6 +1237,68 @@
         </All>
       </Derived>
     </Fact>
+    <Fact path="/flowKnockoutPaDividendInvestmentExpenses">
+      <Name>Flow knockout: PA-40 with Form 1099-DIV box 6</Name>
+      <Description>#86: a PA-40 and any Form 1099-DIV box 6 greater than $0. Form 1099-DIV (Rev. December 2027) draft,
+        Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf PDF p. 5: "Box 6. Shows your share
+        of expenses of a nonpublicly offered RIC, generally a nonpublicly offered mutual fund. This amount is included
+        in box 1a." Federally there is no deduction: miscellaneous itemized deductions are disallowed, 26 U.S.C. 67(g)
+        (https://www.law.cornell.edu/uscode/text/26/67) (made permanent by P.L. 119-21), so box 1a and Form 1040 line 3b
+        are not reduced. No PA-40 instruction cite is pinned for whether Pennsylvania allows that expense as a
+        subtraction, so a PA-40 stops rather than guessing one. Blank or $0 does not stop. A return that is not a PA-40,
+        including a Florida return, is complete false. One Form 1099-DIV with box 6 greater than $0 stops the return
+        even when another Form 1099-DIV has box 6 of $0. PA-only: gated on stateReturn /stateReturnPaFiled.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency module="dividends" path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <GreaterThan>
+                      <Left>
+                        <Dependency module="dividends" path="/dividendReports/*/investmentExpenses" />
+                      </Left>
+                      <Right>
+                        <Dollar>0</Dollar>
+                      </Right>
+                    </GreaterThan>
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/paHasUnsupportedItems">
       <Name>Has PA-40 items this tool doesn't support</Name>
       <Description>#78: PA-40 (2025) line 7 (estate/trust, Schedule J), line 8 (gambling/lottery, Schedule T), line 10

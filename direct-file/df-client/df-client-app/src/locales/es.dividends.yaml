@@ -17,10 +17,13 @@ headings:
   /heading/income/dividends/boxes-1a-1b: Ingrese las cantidades de los <strong>encasillados 1a y 1b</strong>.
   /heading/income/dividends/holding-period: ¿Hay dividendos del encasillado 1b que en realidad no son calificados?
   /heading/income/dividends/box-2a: Ingrese la cantidad del <strong>encasillado 2a</strong>, si la hay.
+  /heading/income/dividends/boxes-2e-2f:
+    Ingrese las cantidades de los <strong>encasillados 2e y 2f</strong>, si las hay.
   /heading/income/dividends/box-3: Ingrese la cantidad del <strong>encasillado 3</strong>, si la hay.
   /heading/income/dividends/box-3-basis: ¿La cantidad del encasillado 3 es mayor que su costo (base) en las acciones?
   /heading/income/dividends/box-4: Ingrese la cantidad del <strong>encasillado 4</strong>, si la hay.
   /heading/income/dividends/box-5: Ingrese la cantidad del <strong>encasillado 5</strong>, si la hay.
+  /heading/income/dividends/box-6: Ingrese la cantidad del <strong>encasillado 6</strong>, si la hay.
   /heading/income/dividends/box-5-holding:
     ¿Tuvo cada acción de REIT más de 45 días alrededor de la fecha del dividendo y no tuvo que pagar el dividendo a otra
     persona?
@@ -91,6 +94,14 @@ info:
     body:
       El encasillado 2a es el total de distribuciones de ganancias de capital de un fondo mutuo o de un fideicomiso de
       inversión en bienes raíces.
+  /info/income/dividends/boxes-2e-2f:
+    body:
+      - p:
+          El encasillado 2e es la parte del encasillado 1a que es ganancia de la sección 897 por bienes inmuebles de EE.
+          UU. El encasillado 2f es la parte del encasillado 2a que es ganancia de la sección 897 por bienes inmuebles de
+          EE. UU. Estos encasillados aplican a personas extranjeras. Para una persona de EE. UU. ya están incluidos en
+          los encasillados 1a y 2a, así que no se suman otra vez. Ninguno puede ser mayor que el encasillado del que
+          proviene. Deje un encasillado en blanco si está vacío en su formulario.
   /info/income/dividends/box-3:
     body:
       El encasillado 3 es una devolución de capital (distribuciones que no son dividendos). No es ingreso hasta que
@@ -107,6 +118,12 @@ info:
       - p:
           El encasillado 5 es dividendos de la sección 199A. La parte que es un dividendo calificado de un REIT se
           declara en la línea 6 del Formulario 8995. Ya está incluida en el encasillado 1a.
+  /info/income/dividends/box-6:
+    body:
+      - p:
+          El encasillado 6 es su parte de los gastos de un fondo mutuo que no se ofrece al público. Ya está incluido en
+          el encasillado 1a y no es una deducción aparte. No puede ser mayor que el encasillado 1a. Déjelo en blanco si
+          está vacío en su formulario.
   /info/income/dividends/box-5-holding:
     body:
       - p:
@@ -130,9 +147,9 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Responda sí si su formulario muestra una cantidad en el encasillado 2b, 2c, 2d, 2e, 2f, 6, 9, 10, 14, 15 o
-          16, un país en el encasillado 8 o una marca en el encasillado 11 (requisito de declaración de FATCA). Los
-          encasillados 12 y 13 se ingresan en sus propias pantallas."
+          "Responda sí si su formulario muestra una cantidad en el encasillado 2b, 2c, 2d, 9, 10, 14, 15 o 16, un país
+          en el encasillado 8 o una marca en el encasillado 11 (requisito de declaración de FATCA). Los encasillados 2e,
+          2f, 6, 12 y 13 se ingresan en sus propias pantallas."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -172,9 +189,9 @@ info:
     alertText:
       body:
         - p:
-            Los encasillados 1b y 5 son partes del encasillado 1a, así que ninguno puede ser mayor que el encasillado
-            1a. Regrese y verifique las cantidades que ingresó. Si coinciden con su formulario, necesitará otra manera
-            de presentar esta declaración.
+            Los encasillados 1b, 2e, 5 y 6 son partes del encasillado 1a, y el encasillado 2f es parte del encasillado
+            2a, así que ninguno puede ser mayor que ese encasillado. Regrese y verifique las cantidades que ingresó. Si
+            coinciden con su formulario, necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-foreign-tax:
     alertText:
       body:
@@ -185,8 +202,8 @@ info:
     alertText:
       body:
         - p:
-            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 3, 4, 5, 7, 12 y 13 del Formulario 1099-DIV.
-            Necesitará otra manera de presentar esta declaración.
+            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 12 y 13 del Formulario
+            1099-DIV. Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-box-13-exceeds-box-12:
     alertText:
       body:
@@ -234,6 +251,12 @@ fields:
     name: <strong>Encasillado 1b</strong> - Dividendos calificados
   /dividendReports/*/writableCapitalGainDistributions:
     name: <strong>Encasillado 2a</strong> - Total de distribuciones de ganancias de capital
+  /dividendReports/*/writableSection897OrdinaryDividends:
+    name: <strong>Encasillado 2e</strong> - Dividendos ordinarios de la sección 897
+  /dividendReports/*/writableSection897CapitalGain:
+    name: <strong>Encasillado 2f</strong> - Ganancia de capital de la sección 897
+  /dividendReports/*/writableInvestmentExpenses:
+    name: <strong>Encasillado 6</strong> - Gastos de inversión
   /dividendReports/*/writableNondividendDistributions:
     name: <strong>Encasillado 3</strong> - Distribuciones que no son dividendos
   /dividendReports/*/writableFederalTaxWithheld:
@@ -261,6 +284,9 @@ dataviews:
     /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet: ¿Hay dividendos del encasillado 1b que no son calificados?
     /dividendReports/*/writableCapitalGainDistributions:
       Encasillado 2a - Total de distribuciones de ganancias de capital
+    /dividendReports/*/writableSection897OrdinaryDividends: Encasillado 2e - Dividendos ordinarios de la sección 897
+    /dividendReports/*/writableSection897CapitalGain: Encasillado 2f - Ganancia de capital de la sección 897
+    /dividendReports/*/writableInvestmentExpenses: Encasillado 6 - Gastos de inversión
     /dividendReports/*/writableNondividendDistributions: Encasillado 3 - Distribuciones que no son dividendos
     /dividendReports/*/nondividendDistributionsExceedBasis: ¿El encasillado 3 es mayor que su base?
     /dividendReports/*/writableFederalTaxWithheld: Encasillado 4 - Impuesto federal sobre el ingreso retenido
