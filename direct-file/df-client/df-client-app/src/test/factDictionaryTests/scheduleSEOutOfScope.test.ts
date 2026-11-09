@@ -59,6 +59,10 @@ const scheduleC = (extra: Record<string, unknown> = {}) => ({
   [`/scheduleCBusinesses/#${biz}/hasEmployerIdNumber`]: createBooleanWrapper(false),
   [`/scheduleCBusinesses/#${biz}/businessConductedAtHome`]: createBooleanWrapper(true),
   [`/scheduleCBusinesses/#${biz}/accountingMethod`]: createEnumWrapper(`cash`, `/scheduleCAccountingMethodOptions`),
+  // Explicit answers. Line H and line I stay incomplete until answered; there is no default of no.
+  // 2026 draft Instructions for Schedule C, PDF p. 6. Line J is not asked when line I is no.
+  [`/scheduleCBusinesses/#${biz}/startedOrAcquiredThisYear`]: createBooleanWrapper(false),
+  [`/scheduleCBusinesses/#${biz}/madePaymentsRequiringForm1099`]: createBooleanWrapper(false),
   [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`10000`),
   [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`2000`),
   [`/scheduleCBusinesses/#${biz}/materiallyParticipates`]: createBooleanWrapper(true),

@@ -410,6 +410,8 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
           country: ``,
         }),
         [`${b}/accountingMethod`]: createEnumWrapper(`cash`, `/scheduleCAccountingMethodOptions`),
+        [`${b}/startedOrAcquiredThisYear`]: createBooleanWrapper(false),
+        [`${b}/madePaymentsRequiringForm1099`]: createBooleanWrapper(false),
         [`${b}/writableGrossReceipts`]: createDollarWrapper(`1000`),
         [`${b}/writableTotalExpenses`]: createDollarWrapper(`0`),
         [`${b}/materiallyParticipates`]: createBooleanWrapper(true),
@@ -470,6 +472,159 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
       expect(other.get(`${b}/accountingMethodIsOther` as ConcretePath).get).toBe(true);
       expect(other.get(`${b}/scheduleCFormStop` as ConcretePath).get).toBe(true);
       expect(other.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath).get).toBe(true);
+    });
+
+    it(`header lines H, I, and J stay incomplete until answered and do not change net profit`, ({ task }) => {
+      // 2026 draft Instructions for Schedule C, PDF p. 6, Line H: "If you started or acquired this business in
+      // 2026, check the box on line H. Also, check the box if you are reopening or restarting this business after
+      // temporarily closing it, and you didn’t file a 2025 Schedule C for this business."
+      // PDF p. 6, Line I: "If you made any payment in 2026 that would require you to file any Forms 1099, check
+      // the “Yes” box. Otherwise, check the “No” box." "For 2026, the information reporting threshold for certain
+      // payments reported on Forms 1099 increased from $600 to $2,000." 26 U.S.C. 6041(a), as amended by P.L. 119-21.
+      // 2026 Schedule C, PDF p. 1, line J: "If “Yes,” did you or will you file required Form(s) 1099?"
+      task.meta.testedFactPaths = [
+        `/scheduleCBusinesses/*/startedOrAcquiredThisYear`,
+        `/scheduleCBusinesses/*/lineHChecked`,
+        `/scheduleCBusinesses/*/madePaymentsRequiringForm1099`,
+        `/scheduleCBusinesses/*/lineIYes`,
+        `/scheduleCBusinesses/*/lineINo`,
+        `/scheduleCBusinesses/*/willFileRequiredForms1099`,
+        `/scheduleCBusinesses/*/lineJYes`,
+        `/scheduleCBusinesses/*/lineJNo`,
+        `/scheduleCBusinesses/*/headerIsComplete`,
+        `/scheduleCNetProfitOrLoss`,
+      ];
+      const b = `/scheduleCBusinesses/#${businessId}`;
+      const b2id = `a59c03d1-af4a-447f-96aa-d19397048a02`;
+      const b2 = `/scheduleCBusinesses/#${b2id}`;
+      const headerAF = {
+        [`${b}/businessName`]: createStringWrapper(`Gig Work`),
+        [`${b}/principalBusinessActivity`]: createStringWrapper(`Consulting`),
+        [`${b}/principalProductOrService`]: createStringWrapper(`Tax preparation`),
+        [`${b}/principalBusinessCode`]: createStringWrapper(`541213`),
+        [`${b}/hasEmployerIdNumber`]: createBooleanWrapper(false),
+        [`${b}/businessConductedAtHome`]: createBooleanWrapper(true),
+        [`${b}/accountingMethod`]: createEnumWrapper(`cash`, `/scheduleCAccountingMethodOptions`),
+        [`${b}/writableGrossReceipts`]: createDollarWrapper(`1000`),
+        [`${b}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`${b}/materiallyParticipates`]: createBooleanWrapper(true),
+      };
+      const open = setupFactGraph({
+        ...baseSingle,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        ...headerAF,
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      }).factGraph;
+      const read = (path: string) => open.get(path as ConcretePath);
+      expect(read(`${b}/startedOrAcquiredThisYear`).complete).toBe(false);
+      expect(read(`${b}/madePaymentsRequiringForm1099`).complete).toBe(false);
+      expect(read(`${b}/willFileRequiredForms1099`).complete).toBe(false);
+      expect(read(`${b}/lineHChecked`).complete).toBe(true);
+      expect(read(`${b}/lineHChecked`).get).toBe(false);
+      expect(read(`${b}/lineIYes`).get).toBe(false);
+      expect(read(`${b}/lineINo`).get).toBe(false);
+      expect(read(`${b}/lineJYes`).complete).toBe(true);
+      expect(read(`${b}/lineJYes`).get).toBe(false);
+      expect(read(`${b}/lineJNo`).get).toBe(false);
+      expect(read(`${b}/headerIsComplete`).get).toBe(false);
+      expect(read(`/scheduleCNetProfitOrLoss`).get.toString()).toBe(`1000.00`);
+
+      const lineINo = setupFactGraph({
+        ...baseSingle,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        ...headerAF,
+        [`${b}/startedOrAcquiredThisYear`]: createBooleanWrapper(true),
+        [`${b}/madePaymentsRequiringForm1099`]: createBooleanWrapper(false),
+        [`${b}/willFileRequiredForms1099`]: createBooleanWrapper(true),
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      }).factGraph;
+      const noJ = (path: string) => lineINo.get(path as ConcretePath);
+      expect(noJ(`${b}/lineHChecked`).get).toBe(true);
+      expect(noJ(`${b}/lineIYes`).get).toBe(false);
+      expect(noJ(`${b}/lineINo`).get).toBe(true);
+      expect(noJ(`${b}/willFileRequiredForms1099`).complete).toBe(true);
+      expect(noJ(`${b}/lineJYes`).complete).toBe(true);
+      expect(noJ(`${b}/lineJYes`).get).toBe(false);
+      expect(noJ(`${b}/lineJNo`).complete).toBe(true);
+      expect(noJ(`${b}/lineJNo`).get).toBe(false);
+      expect(noJ(`${b}/headerIsComplete`).get).toBe(true);
+      expect(noJ(`/scheduleCHeaderBlocksSection`).get).toBe(false);
+      expect(noJ(`/scheduleCNetProfitOrLoss`).get.toString()).toBe(`1000.00`);
+      expect(noJ(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+
+      const lineJMissing = setupFactGraph({
+        ...baseSingle,
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        ...headerAF,
+        [`${b}/startedOrAcquiredThisYear`]: createBooleanWrapper(false),
+        [`${b}/madePaymentsRequiringForm1099`]: createBooleanWrapper(true),
+      }).factGraph;
+      expect(lineJMissing.get(`${b}/headerIsComplete` as ConcretePath).get).toBe(false);
+      expect(lineJMissing.get(`${b}/lineJYes` as ConcretePath).complete).toBe(true);
+      expect(lineJMissing.get(`${b}/lineJYes` as ConcretePath).get).toBe(false);
+      expect(lineJMissing.get(`${b}/lineJNo` as ConcretePath).get).toBe(false);
+      expect(lineJMissing.get(`${b}/willFileRequiredForms1099` as ConcretePath).complete).toBe(false);
+
+      const lineJNo = setupFactGraph({
+        ...baseSingle,
+        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
+        ...headerAF,
+        [`${b}/startedOrAcquiredThisYear`]: createBooleanWrapper(false),
+        [`${b}/madePaymentsRequiringForm1099`]: createBooleanWrapper(true),
+        [`${b}/willFileRequiredForms1099`]: createBooleanWrapper(false),
+      }).factGraph;
+      expect(lineJNo.get(`${b}/lineHChecked` as ConcretePath).get).toBe(false);
+      expect(lineJNo.get(`${b}/lineIYes` as ConcretePath).get).toBe(true);
+      expect(lineJNo.get(`${b}/lineINo` as ConcretePath).get).toBe(false);
+      expect(lineJNo.get(`${b}/lineJYes` as ConcretePath).get).toBe(false);
+      expect(lineJNo.get(`${b}/lineJNo` as ConcretePath).get).toBe(true);
+      expect(lineJNo.get(`${b}/headerIsComplete` as ConcretePath).get).toBe(true);
+      expect(lineJNo.get(`/scheduleCNetProfitOrLoss` as ConcretePath).get.toString()).toBe(`1000.00`);
+
+      const header2 = (prefix: string) => ({
+        [`${prefix}/businessName`]: createStringWrapper(prefix === b ? `Gig Work` : `Second Gig`),
+        [`${prefix}/principalBusinessActivity`]: createStringWrapper(`Consulting`),
+        [`${prefix}/principalProductOrService`]: createStringWrapper(`Tax preparation`),
+        [`${prefix}/principalBusinessCode`]: createStringWrapper(`541213`),
+        [`${prefix}/hasEmployerIdNumber`]: createBooleanWrapper(false),
+        [`${prefix}/businessConductedAtHome`]: createBooleanWrapper(true),
+        [`${prefix}/accountingMethod`]: createEnumWrapper(`cash`, `/scheduleCAccountingMethodOptions`),
+        [`${prefix}/materiallyParticipates`]: createBooleanWrapper(true),
+      });
+      const two = setupFactGraph({
+        ...baseSingle,
+        '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+        '/scheduleCBusinesses': createCollectionWrapper([businessId, b2id]),
+        ...header2(b),
+        [`${b}/writableGrossReceipts`]: createDollarWrapper(`1000`),
+        [`${b}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`${b}/startedOrAcquiredThisYear`]: createBooleanWrapper(true),
+        [`${b}/madePaymentsRequiringForm1099`]: createBooleanWrapper(true),
+        [`${b}/willFileRequiredForms1099`]: createBooleanWrapper(true),
+        ...header2(b2),
+        [`${b2}/writableGrossReceipts`]: createDollarWrapper(`500`),
+        [`${b2}/writableTotalExpenses`]: createDollarWrapper(`0`),
+        [`${b2}/startedOrAcquiredThisYear`]: createBooleanWrapper(false),
+        [`${b2}/madePaymentsRequiringForm1099`]: createBooleanWrapper(false),
+        '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      }).factGraph;
+      expect(two.get(`${b}/lineHChecked` as ConcretePath).get).toBe(true);
+      expect(two.get(`${b}/lineIYes` as ConcretePath).get).toBe(true);
+      expect(two.get(`${b}/lineJYes` as ConcretePath).get).toBe(true);
+      expect(two.get(`${b}/lineJNo` as ConcretePath).get).toBe(false);
+      expect(two.get(`${b2}/lineHChecked` as ConcretePath).get).toBe(false);
+      expect(two.get(`${b2}/lineINo` as ConcretePath).get).toBe(true);
+      expect(two.get(`${b2}/lineJYes` as ConcretePath).complete).toBe(true);
+      expect(two.get(`${b2}/lineJYes` as ConcretePath).get).toBe(false);
+      expect(two.get(`${b2}/lineJNo` as ConcretePath).get).toBe(false);
+      expect(two.get(`${b2}/willFileRequiredForms1099` as ConcretePath).complete).toBe(false);
+      expect(two.get(`${b}/headerIsComplete` as ConcretePath).get).toBe(true);
+      expect(two.get(`${b2}/headerIsComplete` as ConcretePath).get).toBe(true);
+      expect(two.get(`/scheduleCHeaderBlocksSection` as ConcretePath).get).toBe(false);
+      expect(two.get(`/scheduleCNetProfitOrLoss` as ConcretePath).get.toString()).toBe(`1500.00`);
+      expect(two.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath).get).toBe(false);
     });
 
     it(`tips push wages past the base → remaining base floors at $0`, ({ task }) => {

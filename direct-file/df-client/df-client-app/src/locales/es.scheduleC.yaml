@@ -20,6 +20,10 @@ headings:
   /heading/income/schedule-c/ein: ¿Este negocio tiene un número de identificación del empleador?
   /heading/income/schedule-c/address: ¿Dónde está ubicado este negocio?
   /heading/income/schedule-c/accounting-method: ¿Qué método de contabilidad usa este negocio?
+  /heading/income/schedule-c/started-or-acquired:
+    ¿Comenzó o adquirió este negocio en 2026, o lo está reiniciando después de un cierre temporal?
+  /heading/income/schedule-c/form-1099: ¿Hizo algún pago en 2026 que le obligue a presentar algún Formulario 1099?
+  /heading/income/schedule-c/file-1099: Si “Sí”, ¿presentó o presentará los Formularios 1099 requeridos?
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
   /heading/income/schedule-c/farm:
@@ -131,6 +135,20 @@ info:
       Impuestos Internos. El método debe reflejar claramente los ingresos. Esta herramienta puede completar el método de
       efectivo o el de acumulación. Otro método detiene esta declaración. Nada se trata como efectivo hasta que usted
       conteste.
+  /info/income/schedule-c/started-or-acquired:
+    body: >-
+      Si comenzó o adquirió este negocio en 2026, marque la casilla de la línea H. También márquela si está reabriendo o
+      reiniciando este negocio después de cerrarlo temporalmente y no presentó un Anexo C de 2025 para este negocio.
+      Conteste que sí o que no. Nada se trata como no hasta que usted conteste.
+  /info/income/schedule-c/form-1099:
+    body: >-
+      Si hizo algún pago en 2026 que le obligue a presentar algún Formulario 1099, marque “Sí”. De lo contrario, marque
+      “No”. Para 2026, el umbral de información para ciertos pagos declarados en los Formularios 1099 aumentó de $600 a
+      $2,000. Conteste que sí o que no. Nada se trata como no hasta que usted conteste.
+  /info/income/schedule-c/file-1099:
+    body: >-
+      Si “Sí”, ¿presentó o presentará los Formularios 1099 requeridos? Esta es la línea J del Anexo C. Se pregunta solo
+      cuando la línea I es “Sí”. Conteste que sí o que no. Nada se trata como no hasta que usted conteste.
   /info/income/schedule-c/material-participation:
     body: >-
       Usted participa materialmente si trabaja en el negocio de forma regular, continua y considerable. Por ejemplo,
@@ -507,6 +525,18 @@ fields:
     other: Otro
   /scheduleCBusinesses/*/accountingMethod:
     name: Método de contabilidad
+  /scheduleCBusinesses/*/startedOrAcquiredThisYear:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/madePaymentsRequiringForm1099:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/willFileRequiredForms1099:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
   /scheduleCBusinesses/*/writableGrossReceipts:
     name: "Línea 1, Ingresos brutos o ventas"
   /scheduleCBusinesses/*/writableTotalExpenses:
@@ -746,6 +776,11 @@ dataviews:
     /scheduleCBusinesses/*/businessConductedAtHome: ¿Este negocio está en la dirección de su declaración?
     /scheduleCBusinesses/*/businessAddress: Dirección del negocio
     /scheduleCBusinesses/*/accountingMethod: Método de contabilidad
+    /scheduleCBusinesses/*/startedOrAcquiredThisYear:
+      ¿Comenzó o adquirió este negocio en 2026, o lo está reiniciando después de un cierre temporal?
+    /scheduleCBusinesses/*/madePaymentsRequiringForm1099:
+      ¿Hizo algún pago en 2026 que le obligue a presentar algún Formulario 1099?
+    /scheduleCBusinesses/*/willFileRequiredForms1099: Si “Sí”, ¿presentó o presentará los Formularios 1099 requeridos?
     /scheduleCBusinesses/*/writableGrossReceipts: Ingresos brutos o ventas
     /scheduleCBusinesses/*/writableTotalExpenses: Total de gastos del negocio
     /scheduleCBusinesses/*/writableReturnsAndAllowances: "Devoluciones y rebajas"

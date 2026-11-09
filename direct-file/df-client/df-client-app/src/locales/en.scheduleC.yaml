@@ -17,6 +17,11 @@ headings:
   /heading/income/schedule-c/ein: Does this business have an employer identification number?
   /heading/income/schedule-c/address: Where is this business located?
   /heading/income/schedule-c/accounting-method: What accounting method does this business use?
+  /heading/income/schedule-c/started-or-acquired:
+    Did you start or acquire this business in 2026, or are you restarting it after a temporary closing?
+  /heading/income/schedule-c/form-1099:
+    Did you make any payment in 2026 that would require you to file any Forms 1099?
+  /heading/income/schedule-c/file-1099: If “Yes,” did you or will you file required Form(s) 1099?
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
   /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
   /heading/income/schedule-c/farm:
@@ -119,6 +124,20 @@ info:
       Schedule C line F is cash, accrual, or another method permitted by the Internal Revenue Code. The method must
       clearly reflect income. This tool can complete cash or accrual. Another method stops this return. Nothing here is
       treated as cash until you answer.
+  /info/income/schedule-c/started-or-acquired:
+    body: >-
+      If you started or acquired this business in 2026, check the box on line H. Also, check the box if you are
+      reopening or restarting this business after temporarily closing it, and you didn’t file a 2025 Schedule C for
+      this business. Answer yes or no. Nothing is treated as no until you answer.
+  /info/income/schedule-c/form-1099:
+    body: >-
+      If you made any payment in 2026 that would require you to file any Forms 1099, check the “Yes” box. Otherwise,
+      check the “No” box. For 2026, the information reporting threshold for certain payments reported on Forms 1099
+      increased from $600 to $2,000. Answer yes or no. Nothing is treated as no until you answer.
+  /info/income/schedule-c/file-1099:
+    body: >-
+      If “Yes,” did you or will you file required Form(s) 1099? This is Schedule C line J. It is asked only when line I
+      is Yes. Answer yes or no. Nothing is treated as no until you answer.
   /info/income/schedule-c/material-participation:
     body: >-
       You materially participate if you work in the business on a regular, continuous, and substantial basis. For
@@ -465,6 +484,18 @@ fields:
     other: Other
   /scheduleCBusinesses/*/accountingMethod:
     name: Accounting method
+  /scheduleCBusinesses/*/startedOrAcquiredThisYear:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/madePaymentsRequiringForm1099:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/willFileRequiredForms1099:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
   /scheduleCBusinesses/*/writableGrossReceipts:
     name: "Line 1, Gross receipts or sales"
   /scheduleCBusinesses/*/writableTotalExpenses:
@@ -702,6 +733,11 @@ dataviews:
     /scheduleCBusinesses/*/businessConductedAtHome: Is this business at the address on your return?
     /scheduleCBusinesses/*/businessAddress: Business address
     /scheduleCBusinesses/*/accountingMethod: Accounting method
+    /scheduleCBusinesses/*/startedOrAcquiredThisYear:
+      Did you start or acquire this business in 2026, or are you restarting it after a temporary closing?
+    /scheduleCBusinesses/*/madePaymentsRequiringForm1099:
+      Did you make any payment in 2026 that would require you to file any Forms 1099?
+    /scheduleCBusinesses/*/willFileRequiredForms1099: If “Yes,” did you or will you file required Form(s) 1099?
     /scheduleCBusinesses/*/writableGrossReceipts: Gross receipts or sales
     /scheduleCBusinesses/*/writableTotalExpenses: Total business expenses
     /scheduleCBusinesses/*/writableReturnsAndAllowances: "Returns and allowances"

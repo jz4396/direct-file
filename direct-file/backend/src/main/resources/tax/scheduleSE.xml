@@ -2515,7 +2515,8 @@
       <Name>Schedule C section complete</Name>
       <Description>
         Interview complete when there is no Schedule C and no nonzero Form 1065 box 14 code A, or when
-        Schedule C is finished, header lines A through F are answered on every business, the Schedule SE
+        Schedule C is finished, header lines A through F, H, and I are answered on every business, line J is
+        answered when line I is yes, the Schedule SE
         out-of-scope questions are answered, church employee income on line 5a is complete, and the
         nonfarm optional method is not stopped for eligibility. A yes on /hadChurchEmployeeIncome is
         complete only after /churchEmployeeIncome is entered. On a joint return,

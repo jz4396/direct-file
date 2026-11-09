@@ -54,9 +54,19 @@ Form 461 is not attached, and the disallowed amount is not added back on Schedul
 
 `/scheduleCNeedsForm461` is complete false when self-employment income was not asked, was answered no, or there is no Schedule C business.
 
+## Header lines H, I, and J
+
+Interview and print only. Answering them does not change net profit, Schedule 1 line 3, Schedule SE, or AGI. Each question is required and stays incomplete until answered. There is no default of no.
+
+Line H is one checkbox on each business. 2026 draft Instructions for Schedule C, PDF p. 6, Line H: "If you started or acquired this business in 2026, check the box on line H. Also, check the box if you are reopening or restarting this business after temporarily closing it, and you didn’t file a 2025 Schedule C for this business." Yes checks the box. No leaves it unchecked.
+
+Line I is Yes or No. Same PDF p. 6, Line I: "If you made any payment in 2026 that would require you to file any Forms 1099, check the “Yes” box. Otherwise, check the “No” box." "For 2026, the information reporting threshold for certain payments reported on Forms 1099 increased from $600 to $2,000." 26 U.S.C. 6041(a), as amended by P.L. 119-21. Neither box is checked until the filer answers.
+
+Line J is Yes or No, and it is asked only when line I is Yes. 2026 Schedule C, PDF p. 1, line J: "If “Yes,” did you or will you file required Form(s) 1099?" When line I is No, line J is complete false and is not printed. PA-40 C has no matching lines for federal H, I, or J. `PrintRefusingKnockouts` is unchanged.
+
 ## Out of scope (explicit)
 
-- Schedule C header items H, I, and J, and the line 1 statutory-employee checkbox. Lines A (activity, including product or service), B (a six-digit code from the 2026 draft chart), D (EIN, blank if none), E (business address, blank on the federal form when the business is at the address on the return), and F (cash or accrual) print (#89). Line F other stops the return and is not printed. Line C, the business name, already printed. The same facts fill PA-40 C main business activity, product or service, EIN, business address, Federal NAICS Code, and the cash or accrual oval. An unanswered required fact stays blank and blocks the section.
+- The line 1 statutory-employee checkbox. Lines A (activity, including product or service), B (a six-digit code from the 2026 draft chart), D (EIN, blank if none), E (business address, blank on the federal form when the business is at the address on the return), F (cash or accrual), H, I, and J print. Line F other stops the return and is not printed. Line C, the business name, already printed. The same facts fill PA-40 C main business activity, product or service, EIN, business address, Federal NAICS Code, and the cash or accrual oval. An unanswered required fact stays blank and blocks the section. PA-40 C has no matching lines for federal H, I, or J.
 - Part V lines 4 through 9 (a fourth other expense stops the return)
 - Form 461 itself, and Schedule 1 line 8p. A Schedule 1 line 3 loss of more than $128,000 stops the return (`/scheduleCNeedsForm461`) instead of attaching Form 461 or adding back a disallowed excess business loss
 - Statutory employees (already stopped on the Form W-2). Notary fees, the farm optional method, and farm income stop on `/flowKnockoutScheduleSEOutOfScope` instead of being left blank. The primary filer's church employee income is Schedule SE lines 5a and 5b (26 U.S.C. 3121(w), 1402(j)). The spouse's church employee income stops the return and is not entered on line 5a. The nonfarm optional method is computed when the filer elects it and the tests are met
@@ -94,6 +104,9 @@ Form 461 is not attached, and the disallowed amount is not added back on Schedul
 | Schedule C lines A, B, and D                                | 2026 draft Instructions for Schedule C, PDF p. 4                                                    | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf                                                                        |
 | Schedule C line E                                           | 2026 draft Instructions for Schedule C, PDF p. 5                                                    | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf                                                                        |
 | Schedule C line F                                           | 2026 draft Instructions for Schedule C, PDF p. 5; 26 U.S.C. 446(c). Other stops; cash and accrual print | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf                                                                    |
+| Schedule C line H                                           | 2026 draft Instructions for Schedule C, PDF p. 6, SHA-256 27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9 | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf                                                                    |
+| Schedule C line I and the $2,000 Form 1099 threshold        | 2026 draft Instructions for Schedule C, PDF p. 6; 26 U.S.C. 6041(a) as amended by P.L. 119-21 | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf                                                                    |
+| Schedule C line J                                           | 2026 Schedule C, PDF p. 1, SHA-256 cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4 | https://www.irs.gov/pub/irs-pdf/f1040sc.pdf                                                                         |
 | PA-40 C header (activity, EIN, address, NAICS, accounting method) | PA-40 C (EX) 03-26, Identification Information; PA-40 IN (2025) p. 5 (UPPER CASE)             | https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/pa-40c.pdf |
 | Part III and the small-business exception                   | 2026 draft Instructions for Schedule C, PDF pp. 16–17                                               | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf                                                                        |
 | Line 30 simplified method, $5 and 300 square feet           | 2026 draft Instructions for Schedule C, PDF pp. 12–14; Rev. Proc. 2013-13                           | https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf                                                                        |
@@ -147,6 +160,12 @@ Form 461 is not attached, and the disallowed amount is not added back on Schedul
 > 2026 draft Instructions for Schedule C, PDF p. 3: "Form 461 to report an excess business loss."
 
 > 2026 draft Schedule 1 (Form 1040), PDF p. 2, line 8p: "Section 461(l) excess business loss adjustment."
+
+> 2026 draft Instructions for Schedule C, PDF p. 6, Line H: "If you started or acquired this business in 2026, check the box on line H. Also, check the box if you are reopening or restarting this business after temporarily closing it, and you didn’t file a 2025 Schedule C for this business."
+
+> 2026 draft Instructions for Schedule C, PDF p. 6, Line I: "If you made any payment in 2026 that would require you to file any Forms 1099, check the “Yes” box. Otherwise, check the “No” box." "For 2026, the information reporting threshold for certain payments reported on Forms 1099 increased from $600 to $2,000."
+
+> 2026 Schedule C, PDF p. 1, line J: "If “Yes,” did you or will you file required Form(s) 1099?"
 
 A Schedule 1 line 3 loss of $128,000 with $300,000 of wages is AGI $172,000 and is not stopped. One dollar more stops the return. Two businesses of $70,000 and $58,000 of loss ($128,000 together) are not stopped. $70,000 and $58,001 are stopped. A $150,000 loss and a $30,000 profit are Schedule 1 line 3 of $120,000 and are not stopped.
 

@@ -1,12 +1,19 @@
 package gov.irs.directfile.api.pdf;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -93,6 +100,9 @@ class ScheduleCTy2026PdfSmokeTest {
             assertTrue(page.contains("Employer ID number"), "line D caption");
             assertTrue(page.contains("Business address"), "line E caption");
             assertTrue(page.contains("Accounting method"), "line F caption");
+            assertTrue(page.contains("started or acquired this business during 2026"), "line H caption");
+            assertTrue(page.contains("require you to file Form(s) 1099"), "line I caption");
+            assertTrue(page.contains("did you or will you file required Form(s) 1099"), "line J caption");
         }
     }
 
@@ -149,6 +159,100 @@ class ScheduleCTy2026PdfSmokeTest {
             blank(sc, "Page1[0].c1_1[0]", "F cash");
             assertTrue(checked(sc, "Page1[0].c1_1[1]"), "F accrual");
             blank(sc, "Page1[0].c1_1[2]", "F other");
+        }
+    }
+
+    /**
+     * Lines H, I, and J print, and line 31 is unchanged. 2026 draft Instructions for Schedule C
+     * (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf, SHA-256
+     * 27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9), PDF p. 6, Line H: "If you started or acquired
+     * this business in 2026, check the box on line H. Also, check the box if you are reopening or restarting this
+     * business after temporarily closing it, and you didn’t file a 2025 Schedule C for this business." PDF p. 6, Line
+     * I: "If you made any payment in 2026 that would require you to file any Forms 1099, check the “Yes” box.
+     * Otherwise, check the “No” box." "For 2026, the information reporting threshold for certain payments reported on
+     * Forms 1099 increased from $600 to $2,000." 26 U.S.C. 6041(a), as amended by P.L. 119-21. 2026 Schedule C, PDF p.
+     * 1, line J, SHA-256 cc44e7d1150e54d991835814c1191f60a32617730ca9e50e6f532b51293a86b4: "If “Yes,” did you or will
+     * you file required Form(s) 1099?" When line I is No, line J is not printed. PA-40 C has no matching lines.
+     * {@link PrintRefusingKnockouts#FACT_PATHS} is unchanged.
+     */
+    @Test
+    void headerLinesHIJPrintForOneBusinessAndForTwo() throws Exception {
+        assertTrue(
+                PrintRefusingKnockouts.FACT_PATHS.stream()
+                        .noneMatch(path -> path.contains("1099") || path.contains("lineH") || path.contains("Started")),
+                "PrintRefusingKnockouts unchanged");
+
+        Map<String, String> yes = selfEmployed("170000.00", "170000.00", "30000.00");
+        header(yes, "Consulting", "Tax preparation", "541213", false, null, null, true, "cash");
+        yes.put(biz() + "startedOrAcquiredThisYear", bool(true));
+        yes.put(biz() + "madePaymentsRequiringForm1099", bool(true));
+        yes.put(biz() + "willFileRequiredForms1099", bool(true));
+        byte[] yesBytes = generate(yes);
+        try (PDDocument doc = Loader.loadPDF(yesBytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            assertTrue(checked(sc, "Page1[0].c1_3[0]"), "H checked");
+            assertTrue(checked(sc, "Page1[0].c1_4[0]"), "I Yes");
+            blank(sc, "Page1[0].c1_4[1]", "I No");
+            assertTrue(checked(sc, "Page1[0].c1_5[0]"), "J Yes");
+            blank(sc, "Page1[0].c1_5[1]", "J No");
+            blank(sc, "Page1[0].Line1_ReadOrder[0].c1_6[0]", "statutory employee stays blank");
+            amount(sc, "Page1[0].f1_51[0]", 30000, "31 unchanged by H, I, and J");
+        }
+
+        Map<String, String> no = selfEmployed("170000.00", "170000.00", "30000.00");
+        header(no, "Consulting", "Tax preparation", "541213", false, null, null, true, "cash");
+        no.put(biz() + "startedOrAcquiredThisYear", bool(false));
+        no.put(biz() + "madePaymentsRequiringForm1099", bool(false));
+        byte[] noBytes = generate(no);
+        try (PDDocument doc = Loader.loadPDF(noBytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            blank(sc, "Page1[0].c1_3[0]", "H no");
+            blank(sc, "Page1[0].c1_4[0]", "I Yes");
+            assertTrue(checked(sc, "Page1[0].c1_4[1]"), "I No");
+            blank(sc, "Page1[0].c1_5[0]", "J Yes not printed");
+            blank(sc, "Page1[0].c1_5[1]", "J No not printed");
+            amount(sc, "Page1[0].f1_51[0]", 30000, "31 unchanged when I is No");
+        }
+
+        Map<String, String> two = selfEmployed("170000.00", "170000.00", "30000.00");
+        header(two, "Consulting", "Tax preparation", "541213", false, null, null, true, "cash");
+        two.put(biz() + "startedOrAcquiredThisYear", bool(true));
+        two.put(biz() + "madePaymentsRequiringForm1099", bool(true));
+        two.put(biz() + "willFileRequiredForms1099", bool(false));
+        String secondId = "b0000000-5e00-4000-8000-000000000002";
+        String second = "/scheduleCBusinesses/#" + secondId + "/";
+        two.put(
+                "/scheduleCBusinesses",
+                ScheduleATy2026PdfSmokeTest.collection(ScheduleSETy2026PdfSmokeTest.BIZ, secondId));
+        two.put(second + "filer", Form8959Form8960Ty2026PdfSmokeTest.collectionItem(ScheduleSETy2026PdfSmokeTest.W2));
+        two.put(second + "businessName", string("Second Consulting"));
+        two.put(second + "writableGrossReceipts", dollar("1000.00"));
+        two.put(second + "writableTotalExpenses", dollar("0.00"));
+        two.put(second + "principalBusinessActivity", string("Consulting"));
+        two.put(second + "principalProductOrService", string("Bookkeeping"));
+        two.put(second + "principalBusinessCode", string("541219"));
+        two.put(second + "hasEmployerIdNumber", bool(false));
+        two.put(second + "businessConductedAtHome", bool(true));
+        two.put(second + "accountingMethod", scheduleCEnum("accrual"));
+        two.put(second + "startedOrAcquiredThisYear", bool(false));
+        two.put(second + "madePaymentsRequiringForm1099", bool(false));
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(two, secondId);
+
+        byte[] twoBytes = generate(two);
+        try (PDDocument doc = Loader.loadPDF(twoBytes)) {
+            Map<String, String> first = scheduleCPageNamed(doc, "Synthetic Consulting");
+            Map<String, String> other = scheduleCPageNamed(doc, "Second Consulting");
+            assertTrue(checked(first, "Page1[0].c1_3[0]"), "first H");
+            assertTrue(checked(first, "Page1[0].c1_4[0]"), "first I Yes");
+            blank(first, "Page1[0].c1_5[0]", "first J Yes");
+            assertTrue(checked(first, "Page1[0].c1_5[1]"), "first J No");
+            amount(first, "Page1[0].f1_51[0]", 30000, "first line 31");
+            blank(other, "Page1[0].c1_3[0]", "second H");
+            blank(other, "Page1[0].c1_4[0]", "second I Yes");
+            assertTrue(checked(other, "Page1[0].c1_4[1]"), "second I No");
+            blank(other, "Page1[0].c1_5[0]", "second J not printed");
+            blank(other, "Page1[0].c1_5[1]", "second J not printed");
+            amount(other, "Page1[0].f1_51[0]", 1000, "second line 31");
         }
     }
 
@@ -553,6 +657,73 @@ class ScheduleCTy2026PdfSmokeTest {
         blank(sc, "Page1[0].c1_1[1]", "F accrual");
         blank(sc, "Page1[0].c1_1[2]", "F other");
         blank(sc, "Page1[0].f1_12[0]", "F specify");
+        blank(sc, "Page1[0].c1_3[0]", "H");
+        blank(sc, "Page1[0].c1_4[0]", "I Yes");
+        blank(sc, "Page1[0].c1_4[1]", "I No");
+        blank(sc, "Page1[0].c1_5[0]", "J Yes");
+        blank(sc, "Page1[0].c1_5[1]", "J No");
+    }
+
+    /** One Schedule C page whose business name contains {@code businessName}. A second copy's fields may be renamed. */
+    private static Map<String, String> scheduleCPageNamed(PDDocument doc, String businessName) throws Exception {
+        PDFTextStripper stripper = new PDFTextStripper();
+        var form = doc.getDocumentCatalog().getAcroForm();
+        Map<String, String> found = null;
+        StringBuilder seen = new StringBuilder();
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            stripper.setStartPage(i + 1);
+            stripper.setEndPage(i + 1);
+            if (!stripper.getText(doc).contains(SC_FOOTER)) {
+                continue;
+            }
+            Set<COSBase> widgets = new HashSet<>();
+            for (PDAnnotation annotation : doc.getPage(i).getAnnotations()) {
+                if (annotation instanceof PDAnnotationWidget widget) {
+                    widgets.add(widget.getCOSObject());
+                }
+            }
+            Map<String, String> values = new HashMap<>();
+            for (PDField field : form.getFieldTree()) {
+                if (field instanceof PDTerminalField terminal) {
+                    for (PDAnnotationWidget widget : terminal.getWidgets()) {
+                        if (widgets.contains(widget.getCOSObject())) {
+                            String value = field.getValueAsString();
+                            values.put(field.getFullyQualifiedName(), value == null ? "" : value.trim());
+                        }
+                    }
+                }
+            }
+            // A second copy's root field is renamed (PDFBox legacy merge), so match the partial name.
+            // Page 2 of Schedule C has the same footer and no business-name field.
+            String name = null;
+            for (var entry : values.entrySet()) {
+                if (entry.getKey().endsWith("f1_5[0]")) {
+                    name = entry.getValue();
+                }
+            }
+            seen.append("page ")
+                    .append(i + 1)
+                    .append(" name=")
+                    .append(name)
+                    .append(" keys=")
+                    .append(values.keySet())
+                    .append('\n');
+            if (name == null || !name.contains(businessName)) {
+                continue;
+            }
+            assertTrue(found == null, "one Schedule C page contains " + businessName);
+            Map<String, String> normalized = new HashMap<>();
+            for (var entry : values.entrySet()) {
+                int at = entry.getKey().lastIndexOf("Page1[0]");
+                if (at < 0) {
+                    at = entry.getKey().lastIndexOf("Page2[0]");
+                }
+                normalized.put(at >= 0 ? entry.getKey().substring(at) : entry.getKey(), entry.getValue());
+            }
+            found = normalized;
+        }
+        assertNotNull(found, "a Schedule C page contains " + businessName + "\n" + seen);
+        return found;
     }
 
     private static String scheduleCPage(PDDocument doc) throws Exception {
