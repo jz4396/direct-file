@@ -92,6 +92,12 @@ public final class PrintRefusingKnockouts {
             // PA Schedule D is required for any sale, exchange or disposition, including a loss. PA-40 IN (2025) p. 17
             // and PA Schedule D (2025), WHO MUST COMPLETE. 72 P.S. §7303(a)(3).
             "/flowKnockoutPaScheduleD",
+            // A nonzero Schedule K-1 (Form 1041) box 3 or box 4a on a PA-40. Federal Schedule D lines 5 and 12
+            // are not PA-40 line 5. PA-40 IN (2025) p. 19, LINE 7, reports estate or trust income on PA Schedule J
+            // from a PA-41 Schedule RK-1, and a beneficiary cannot report a loss. PA Schedule J is not produced.
+            // 72 P.S. §7303(a)(3) and §7303(a)(8). Complete false when the return is not a PA-40 or both totals
+            // are zero.
+            "/flowKnockoutPaK11041CapitalGain",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
@@ -160,8 +166,9 @@ public final class PrintRefusingKnockouts {
             // The supported path (domestic partnership or S corporation, nonnegative box 1 only, material
             // participation, no column (e) or (f), line 27 no) is complete false and may print. Supported
             // Part III column (f) (nonpassive Schedule K-1 (Form 1041) box 6 only) may print on the same
-            // path. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental activity
-            // passive without regard to material participation, so a nonzero box 8 refuses the print.
+            // path. Boxes 3 and 4a are Schedule D lines 5 and 12 and do not refuse this path. Boxes 4b and 4c
+            // still refuse it. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental
+            // activity passive without regard to material participation, so a nonzero box 8 refuses the print.
             // An unanswered question, or any out-of-scope K-1 (loss, passive, foreign, PTP, box 14 code A
             // that is not the supported nonfarm Form 1065 amount on Schedule SE line 2, a section 199A
             // statement, an out-of-scope estate or trust, Part IV), refuses the print. A REMIC

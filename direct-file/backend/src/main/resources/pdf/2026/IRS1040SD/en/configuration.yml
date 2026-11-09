@@ -10,8 +10,9 @@
 # AcroForm field names and tooltips re-read with pypdf from the committed 2026 draft.
 # Lines 1b/2/3/8b/9/10 print columns (d), (e), (g) and (h): the Form 8949 line 2 totals for that box pair (scheduleD.xml
 # /scheduleDLine1bProceeds etc.); line 13 capital gain distributions; lines 6/14 carryover; Part III lines 16, 17, 20,
-# 21 and 22 (scheduleD2.xml). Not mapped, left blank: lines 1a/8a (every sale is listed on Form 8949), 4/5/11/12 (no
-# Form 4797/6252/4684/6781/8824/2439 or Schedule K-1 input), 18/19 and 20 No (collectibles and unrecaptured section
+# 21 and 22 (scheduleD2.xml). Line 5 (f1_20) is Schedule K-1 (Form 1041) box 3. Line 12 (f1_40) is box 4a.
+# Not mapped, left blank: lines 1a/8a (every sale is listed on Form 8949), 4/11 (no
+# Form 4797/6252/4684/6781/8824/2439), 18/19 and 20 No (collectibles and unrecaptured section
 # 1250 gain stop the return, #21), and the qualified opportunity fund question (no input collected).
 # Draft cites (file page = PDF page incl. cover): p. 2 line 7 "Net short-term capital gain or (loss). Combine lines 1a
 # through 6 in column (h)"; p. 2 line 15 "Net long-term capital gain or (loss). Combine lines 8a through 14 in column (h)";
@@ -44,6 +45,7 @@ form:
           f1_16[0]: /scheduleDLine3CostBasis # (e)
           f1_17[0]: /scheduleDLine3Adjustment # (g)
           f1_18[0]: /scheduleDLine3 # (h)
+      f1_20[0]: /scheduleDLine5 # line 5 Schedule K-1 (Form 1041) box 3
       f1_21[0]: /scheduleDLine6
       f1_22[0]: /scheduleDLine7
       Table_PartII[0]:
@@ -62,7 +64,8 @@ form:
           f1_36[0]: /scheduleDLine10CostBasis # (e)
           f1_37[0]: /scheduleDLine10Adjustment # (g)
           f1_38[0]: /scheduleDLine10 # (h)
-      f1_41[0]: /scheduleDLine13 # line 13 capital gain distributions (#86b); f1_39/f1_40 are lines 11/12
+      f1_40[0]: /scheduleDLine12 # line 12 Schedule K-1 (Form 1041) box 4a; f1_39 is line 11 and stays blank
+      f1_41[0]: /scheduleDLine13 # line 13 capital gain distributions (#86b)
       f1_42[0]: /scheduleDLine14
       f1_43[0]: /scheduleDLine15
     Page2[0]:

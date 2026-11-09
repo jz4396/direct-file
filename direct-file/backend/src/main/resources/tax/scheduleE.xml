@@ -1307,9 +1307,9 @@
         and 662(a)
         (https://www.law.cornell.edu/uscode/text/26/662). A yes opens the Schedule K-1
         (Form 1041) interview. The
-        supported path is computed on line 37. A loss, passive activity,
-        box 5, box 7, box 8, any other box, a foreign
-        trust, Form 8082, a basis limit, an at-risk limit, or a
+        supported path is computed on line 37. Box 3 and box 4a are Schedule D lines 5 and 12, including a
+        loss. A loss on box 5, 6, 7, or 8, passive activity, box 5, box 7, box 8, boxes 4b and 4c, any other
+        box, a foreign trust, Form 8082, a basis limit, an at-risk limit, or a
         passive deduction stops the return. See
         /flowKnockoutScheduleEPartIII.
       </Description>
@@ -3432,6 +3432,42 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleEEstates/*/box3">
+      <Name>Schedule K-1 (Form 1041) box 3 net short-term capital gain</Name>
+      <Description>
+        2026 draft Schedule K-1 (Form 1041) (https://www.irs.gov/pub/irs-dft/f1041sk1--dft.pdf, SHA-256
+        7f859b4a8219adb4f290f81f6af11973ed1751bc693d9f877d098d50241daa96), PDF p. 3: "3. Net short-term
+        capital gain — Schedule D, line 5". 2026 draft Schedule D
+        (https://www.irs.gov/pub/irs-dft/f1040sd--dft.pdf, SHA-256
+        0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1), PDF p. 2, line 5: "Net
+        short-term gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s)
+        K-1". 26 U.S.C. 652(b) and 662(b) (https://www.law.cornell.edu/uscode/text/26/652) keep the
+        character. 26 U.S.C. 1222(5) and 1222(6). A loss is entered as a negative amount and is not a
+        Schedule E line 33 loss. Enter zero when box 3 is blank. Summed on scheduleD2 /scheduleDLine5.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box4a">
+      <Name>Schedule K-1 (Form 1041) box 4a net long-term capital gain</Name>
+      <Description>
+        2026 draft Schedule K-1 (Form 1041) (https://www.irs.gov/pub/irs-dft/f1041sk1--dft.pdf, SHA-256
+        7f859b4a8219adb4f290f81f6af11973ed1751bc693d9f877d098d50241daa96), PDF p. 3: "4a. Net long-term
+        capital gain — Schedule D, line 12". 2026 draft Schedule D
+        (https://www.irs.gov/pub/irs-dft/f1040sd--dft.pdf, SHA-256
+        0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1), PDF p. 2, line 12: "Net
+        long-term gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s)
+        K-1". 26 U.S.C. 652(b) and 662(b). 26 U.S.C. 1222(7) and 1222(8). A loss is entered as a negative
+        amount. Box 4b and box 4c are not this amount. Enter zero when box 4a is blank. Summed on
+        scheduleD2 /scheduleDLine12.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
     <Fact path="/scheduleEEstates/*/roundedBox1">
       <Name>Schedule K-1 (Form 1041) box 1 in whole dollars</Name>
       <Description>
@@ -3623,16 +3659,20 @@
     </Fact>
 
     <Fact path="/scheduleEEstates/*/hasOtherK1Amount">
-      <Name>Any Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J</Name>
+      <Name>Any Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J</Name>
       <Description>
-        Boxes 1, 2a, and 2b are entered above and reported on Form 1040 lines 2b, 3b, and 3a. Box 12 code
-        A is /scheduleEEstates/*/box12CodeA. Codes B through I are /scheduleEEstates/*/hasBox12CodesBThroughI.
-        Code J is /scheduleEEstates/*/hasBox12CodeJ and is not this question. Schedule K-1 (Form 1041) (2025)
-        page 2 sends boxes 3, 4a, 4b, and 4c to Schedule D, box 9 to Form 8582 or Schedule E columns (c) or
-        (e), box 10 to Schedule A, box 11 to Schedule 1, Schedule A, Schedule D, or Form 6251, box 13 to a
-        credit line, and box 14 to other forms, including code I (section 199A) and code H (Form 8960).
-        Those amounts are not entered. Answer no when every such box is blank or zero, even if code J has
-        an amount.
+        Boxes 1, 2a, and 2b are entered above and reported on Form 1040 lines 2b, 3b, and 3a. Box 3 is
+        /scheduleEEstates/*/box3 and is Schedule D line 5. Box 4a is /scheduleEEstates/*/box4a and is
+        Schedule D line 12. Box 12 code A is /scheduleEEstates/*/box12CodeA. Codes B through I are
+        /scheduleEEstates/*/hasBox12CodesBThroughI. Code J is /scheduleEEstates/*/hasBox12CodeJ and is not
+        this question. 2026 draft Schedule K-1 (Form 1041), PDF p. 3, still sends box 4b to the 28% Rate
+        Gain Worksheet line 4 and box 4c to the Unrecaptured Section 1250 Gain Worksheet line 11. Those
+        worksheets are not computed. Box 11 codes C and D are capital loss carryovers and are not Schedule D
+        lines 5 and 12. Box 9 goes to Form 8582 or Schedule E columns (c) or (e), box 10 to Schedule A, the
+        rest of box 11 to Schedule 1, Schedule A, or Form 6251, box 13 to a credit line, and box 14 to other
+        forms, including code I (section 199A) and code H (Form 8960). Answer yes when box 4b, box 4c, or
+        any of those boxes has an amount. Answer no when every such box is blank or zero, even if box 3,
+        box 4a, or code J has an amount.
       </Description>
       <Writable>
         <Boolean />
@@ -3990,12 +4030,13 @@
       <Description>
         Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 7,
         and
-        box 8 zero, box 6 at least zero, box 2b not larger than box 2a, box 12 codes B through I blank or
-        zero, no K-1 amount other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J, no basis
-        limit, no amount not at risk, and no passive deduction or loss. Box 12 code A is Form 6251 line 2j.
-        Box 12 code J is answered and is not a stop. Box 8 is a rental activity under 26 U.S.C. 469(c)(2)
-        and 469(c)(4) and is not on the supported path. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and
-        3a, not line 33.
+        box 8 zero, box 6 at least zero, box 2b not larger than box 2a, box 3 and box 4a answered (a gain, a
+        loss, or zero), box 12 codes B through I blank or zero, no K-1 amount other than boxes 1, 2a, 2b, 3,
+        4a, 5, 6, 7, 8, and box 12 codes A through J, no basis limit, no amount not at risk, and no passive
+        deduction or loss. Box 3 is Schedule D line 5. Box 4a is Schedule D line 12. Boxes 4b and 4c stay in
+        /scheduleEEstates/*/hasOtherK1Amount. Box 12 code A is Form 6251 line 2j. Box 12 code J is answered
+        and is not a stop. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is not on
+        the supported path. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a, not line 33.
       </Description>
       <Derived>
         <All>
@@ -4003,6 +4044,12 @@
           <Not>
             <Dependency path="../box2bExceedsBox2a" />
           </Not>
+          <IsComplete>
+            <Dependency path="../box3" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box4a" />
+          </IsComplete>
           <Not>
             <Dependency path="../isForeignBeneficiary" />
           </Not>
@@ -4097,6 +4144,12 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../box2b" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box3" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../box4a" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../box5" />
@@ -4712,12 +4765,274 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEEstateK1NetShortTermCapitalGain">
+      <Name>Schedule K-1 (Form 1041) box 3 total, unrounded</Name>
+      <Description>
+        Sum of box 3 before Schedule D rounding, including a loss. 2026 draft Schedule K-1 (Form 1041), PDF
+        p. 3, box 3, and 2026 draft Schedule D, PDF p. 2, line 5. 26 U.S.C. 652(b), 662(b), and 1222. $0 when
+        /scheduleEHasPartIIIncome or /scheduleEHasPartIIIIncome is unanswered or no, and when the estate list
+        is not started, so a return with no estate or trust does not leave Schedule D line 5 incomplete. A
+        started list with an unanswered box 3 leaves the sum incomplete. Cents stay in the sum. scheduleD2
+        /scheduleDLine5 rounds it. 26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/box3" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1NetLongTermCapitalGain">
+      <Name>Schedule K-1 (Form 1041) box 4a total, unrounded</Name>
+      <Description>
+        Sum of box 4a before Schedule D rounding, including a loss. 2026 draft Schedule K-1 (Form 1041), PDF
+        p. 3, box 4a, and 2026 draft Schedule D, PDF p. 2, line 12. 26 U.S.C. 652(b), 662(b), and 1222. $0
+        on the same gate as /scheduleEEstateK1NetShortTermCapitalGain. A started list with an unanswered box
+        4a leaves the sum incomplete. Cents stay in the sum. scheduleD2 /scheduleDLine12 rounds it.
+        26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/box4a" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1CapitalGainNonzero">
+      <Name>Schedule K-1 (Form 1041) box 3 or box 4a total is not zero</Name>
+      <Description>
+        True when the unrounded box 3 total or the unrounded box 4a total is not zero, including a loss and
+        including cents that round to zero on Schedule D. Incomplete when either total is incomplete, so a
+        PA-40 with an unanswered box 3 or box 4a stays incomplete. 2026 draft Schedule D, PDF p. 2, lines 5
+        and 12.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Not>
+            <Equal>
+              <Left>
+                <Dependency path="/scheduleEEstateK1NetShortTermCapitalGain" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </Equal>
+          </Not>
+          <Not>
+            <Equal>
+              <Left>
+                <Dependency path="/scheduleEEstateK1NetLongTermCapitalGain" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </Equal>
+          </Not>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEHasEstateK1CapitalGain">
+      <Name>Schedule K-1 (Form 1041) box 3 or box 4a is not zero</Name>
+      <Description>
+        True when the unrounded box 3 total or the unrounded box 4a total is not zero, including a loss.
+        Schedule D is then required (scheduleD /requiresScheduleD). Complete false when either total is not
+        yet complete, and when both are zero, so a return that has not reached Part III does not change
+        /requiresScheduleD. 2026 draft Schedule D, PDF p. 2, lines 5 and 12.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstateK1NetShortTermCapitalGain" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstateK1NetLongTermCapitalGain" />
+                </IsComplete>
+                <Any>
+                  <Not>
+                    <Equal>
+                      <Left>
+                        <Dependency path="/scheduleEEstateK1NetShortTermCapitalGain" />
+                      </Left>
+                      <Right>
+                        <Dollar>0</Dollar>
+                      </Right>
+                    </Equal>
+                  </Not>
+                  <Not>
+                    <Equal>
+                      <Left>
+                        <Dependency path="/scheduleEEstateK1NetLongTermCapitalGain" />
+                      </Left>
+                      <Right>
+                        <Dollar>0</Dollar>
+                      </Right>
+                    </Equal>
+                  </Not>
+                </Any>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleEPartIIIOtherK1Amount">
-      <Name>Knockout: Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 5, 6, 7, 8, and box 12 codes A through J</Name>
-      <Description>Capital gain (boxes 3, 4a, 4b, and 4c), deductions, credits, or box 14, including section 199A
-        code I and Form 8960 code H. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a. Box 12 code A is
-        Form 6251 line 2j. Codes B through I are /flowKnockoutScheduleEPartIIIBox12CodesBThroughI. Code J,
-        exclusion items for Form 8801, is /scheduleEEstates/*/hasBox12CodeJ and is not this stop. Cites on
+      <Name>Knockout: Schedule K-1 (Form 1041) amount other than boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J</Name>
+      <Description>Boxes 4b and 4c (28% rate gain and unrecaptured section 1250 gain), box 11 codes C and D
+        (capital loss carryovers), deductions, credits, or box 14, including section 199A code I and Form
+        8960 code H. Boxes 3 and 4a are Schedule D lines 5 and 12 and are not this stop. Boxes 1, 2a, and 2b
+        are Form 1040 lines 2b, 3b, and 3a. Box 12 code A is Form 6251 line 2j. Codes B through I are
+        /flowKnockoutScheduleEPartIIIBox12CodesBThroughI. Code J, exclusion items for Form 8801, is
+        /scheduleEEstates/*/hasBox12CodeJ and is not this stop. Cites on
         /scheduleEEstates/*/hasOtherK1Amount. Complete false when Part III is no.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4973,6 +5288,11 @@
         Boxes 1, 2a, and 2b are not line 33. Schedule K-1 (Form 1041) (2025) page 2 reports them on Form 1040
         lines 2b, 3b, and 3a. 26 U.S.C. 1411(c)(1)(A)(i) includes that interest and those ordinary dividends
         in net investment income (form8960 lines 1 and 2).
+
+        Boxes 3 and 4a are not line 33. 2026 draft Schedule K-1 (Form 1041), PDF p. 3, reports box 3 on
+        Schedule D line 5 and box 4a on Schedule D line 12. A gain or a loss is on the supported path.
+        26 U.S.C. 1411(c)(1)(A)(iii) includes that net gain on Form 8960 line 5a through Form 1040 line 7a.
+        Boxes 4b and 4c still stop the return.
 
         Box 12 code A is Form 6251 line 2j (/form6251Line2j), the sum of /scheduleEBox12CodeATotal rounded to
         the dollar. Beneficiary's Instructions for Schedule K-1 (Form 1041) (2025), PDF p. 3. 26 U.S.C. 59(c).
@@ -5302,7 +5622,7 @@
         Part IV is no, and when the supported Part II
         path is complete and Part IV is no. Part III may
         be no, or every estate or trust may be the supported path (line
-        37, box 6 only). True when any
+        37 from box 6, and Schedule D lines 5 and 12 from boxes 3 and 4a). True when any
         out-of-scope knockout is true. A yes with an empty or unfinished list, or a Part
         III yes with no
         finished estate or trust, stays incomplete so lines 32 and 37 are not filed as zero.

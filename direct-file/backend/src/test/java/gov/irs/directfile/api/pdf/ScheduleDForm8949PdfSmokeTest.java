@@ -230,6 +230,91 @@ class ScheduleDForm8949PdfSmokeTest {
         }
     }
 
+    /**
+     * Schedule K-1 (Form 1041) box 3 only. 2026 draft K-1, PDF p. 3, and 2026 draft Schedule D, PDF p. 2, line 5.
+     * No Form 8949 rows, so line 7 equals line 5.
+     */
+    @Test
+    void box3OnlyPrintsScheduleDLine5() throws Exception {
+        byte[] bytes = render(facts -> k1Estate(facts, "1200", "0", false, null), "schedule-d-k1-box3.pdf");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> byName = fields(doc);
+            assertEquals("1200", digits(byName, "Page1[0].f1_20[0]"), "Sch D line 5");
+            assertEquals("0", digits(byName, "Page1[0].f1_40[0]"), "Sch D line 12");
+            assertEquals(1, count(byName, "Page1[0].f1_22[0]", "1200"), "Sch D line 7");
+            assertEquals(1, count(byName, "Page2[0].f2_1[0]", "1200"), "Sch D line 16");
+            assertEquals(1, count(byName, "Page1[0].f1_70[0]", "1200"), "1040 line 7a");
+        }
+    }
+
+    /** Box 4a only. 2026 draft Schedule D, PDF p. 2, line 12. Line 15 and line 16 are that long-term gain. */
+    @Test
+    void box4aOnlyPrintsScheduleDLine12() throws Exception {
+        byte[] bytes = render(facts -> k1Estate(facts, "0", "3400", false, null), "schedule-d-k1-box4a.pdf");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> byName = fields(doc);
+            assertEquals("0", digits(byName, "Page1[0].f1_20[0]"), "Sch D line 5");
+            assertEquals("3400", digits(byName, "Page1[0].f1_40[0]"), "Sch D line 12");
+            assertEquals(1, count(byName, "Page1[0].f1_43[0]", "3400"), "Sch D line 15");
+            assertEquals(1, count(byName, "Page2[0].f2_1[0]", "3400"), "Sch D line 16");
+        }
+    }
+
+    /** Box 3 and box 4a. Line 16 is the sum. 2026 draft Schedule D, PDF p. 3, line 16. */
+    @Test
+    void box3AndBox4aPrintOnScheduleD() throws Exception {
+        byte[] bytes = render(facts -> k1Estate(facts, "1200", "3400", false, "fl"), "schedule-d-k1-both.pdf");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> byName = fields(doc);
+            assertEquals("1200", digits(byName, "Page1[0].f1_20[0]"), "Sch D line 5");
+            assertEquals("3400", digits(byName, "Page1[0].f1_40[0]"), "Sch D line 12");
+            assertEquals(1, count(byName, "Page1[0].f1_22[0]", "1200"), "Sch D line 7");
+            assertEquals(1, count(byName, "Page1[0].f1_43[0]", "3400"), "Sch D line 15");
+            assertEquals(1, count(byName, "Page2[0].f2_1[0]", "4600"), "Sch D line 16");
+        }
+    }
+
+    /** A box 3 loss stays on line 5. 26 U.S.C. 1211(b) does not reduce the loss below $3,000 here. */
+    @Test
+    void box3LossPrintsOnScheduleDLine5() throws Exception {
+        byte[] bytes = render(facts -> k1Estate(facts, "-2000", "0", false, "fl"), "schedule-d-k1-loss.pdf");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> byName = fields(doc);
+            assertTrue(value(byName, "Page1[0].f1_20[0]").contains("-"), byName::toString);
+            assertEquals("2000", digits(byName, "Page1[0].f1_20[0]"), "Sch D line 5");
+            assertEquals(1, count(byName, "Page1[0].f1_22[0]", "2000"), "Sch D line 7");
+            assertEquals(1, count(byName, "Page2[0].f2_4[0]", "2000"), "Sch D line 21");
+        }
+    }
+
+    /**
+     * Box 4b or 4c is still /scheduleEEstates/star/hasOtherK1Amount. The print is refused through
+     * /flowKnockoutScheduleEPartII. 2026 draft K-1, PDF p. 3, boxes 4b and 4c.
+     */
+    @Test
+    void box4bOr4cRefusesThePrint() throws Exception {
+        PdfService pdfService = pdfService();
+        TaxReturn taxReturn = taxReturn(facts -> k1Estate(facts, "1200", "3400", true, "fl"));
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class, () -> pdfService.getTaxReturn("en", taxReturn, false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(blockingFacts(e).contains("/flowKnockoutScheduleEPartII"), e.getBody().toString());
+    }
+
+    /**
+     * A full-year PA-40 with box 3 or box 4a stops. PA-40 IN (2025) p. 19, LINE 7, and PA Schedule J. A Florida
+     * filer with the same amounts prints (the both-boxes test).
+     */
+    @Test
+    void pennsylvaniaFullYearResidentWithBox3Or4aRefusesThePrint() throws Exception {
+        PdfService pdfService = pdfService();
+        TaxReturn taxReturn = taxReturn(facts -> k1Estate(facts, "1200", "0", false, "pa"));
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class, () -> pdfService.getTaxReturn("en", taxReturn, false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(blockingFacts(e).contains("/flowKnockoutPaK11041CapitalGain"), e.getBody().toString());
+    }
+
     /** Renders the synthetic return through the real PdfService after applying edit to its facts. */
     private static byte[] render(Consumer<ObjectNode> edit, String fileName) throws Exception {
         byte[] bytes;
@@ -321,6 +406,88 @@ class ScheduleDForm8949PdfSmokeTest {
             }
         }
         return "";
+    }
+
+    /**
+     * One supported Schedule K-1 (Form 1041) and no Form 8949 rows. residence is pa, fl, or null to leave the
+     * synthetic return's residence unset.
+     */
+    private static void k1Estate(ObjectNode facts, String box3, String box4a, boolean otherAmount, String residence) {
+        ((ObjectNode) facts.get("/form8949Transactions").get("item")).putArray("items");
+        bool(facts, "/hadScheduleEIncome", false);
+        bool(facts, "/scheduleEHasPartIIIncome", true);
+        bool(facts, "/scheduleEPartIILine27", false);
+        bool(facts, "/scheduleEHasPartIIIIncome", true);
+        bool(facts, "/scheduleEHasPartIVIncome", false);
+        bool(facts, "/scheduleEK1sIsDone", true);
+        bool(facts, "/scheduleEEstatesIsDone", true);
+        ObjectNode k1s = facts.putObject("/scheduleEK1s");
+        k1s.put("$type", "gov.irs.factgraph.persisters.CollectionWrapper");
+        k1s.putObject("item").putArray("items");
+        String id = "c8f2d3b1-2222-4333-8444-555566667777";
+        ObjectNode estates = facts.putObject("/scheduleEEstates");
+        estates.put("$type", "gov.irs.factgraph.persisters.CollectionWrapper");
+        estates.putObject("item").putArray("items").add(id);
+        String p = "/scheduleEEstates/#" + id + "/";
+        string(facts, p + "entityName", "Harbor Trust");
+        bool(facts, p + "isForeignBeneficiary", false);
+        bool(facts, p + "isForeignTrust", false);
+        bool(facts, p + "inconsistentTreatment", false);
+        dollar(facts, p + "box1", "0.00");
+        dollar(facts, p + "box2a", "0.00");
+        dollar(facts, p + "box2b", "0.00");
+        dollar(facts, p + "box3", box3);
+        dollar(facts, p + "box4a", box4a);
+        dollar(facts, p + "box5", "0.00");
+        dollar(facts, p + "box6", "0.00");
+        dollar(facts, p + "box7", "0.00");
+        dollar(facts, p + "box8", "0.00");
+        bool(facts, p + "materiallyParticipates", true);
+        dollar(facts, p + "box12CodeA", "0.00");
+        bool(facts, p + "hasBox12CodesBThroughI", false);
+        bool(facts, p + "hasBox12CodeJ", false);
+        bool(facts, p + "hasOtherK1Amount", otherAmount);
+        bool(facts, p + "basisLimitApplies", false);
+        bool(facts, p + "anyAmountNotAtRisk", false);
+        bool(facts, p + "passiveDeductionOrLoss", false);
+        if (residence != null) {
+            ObjectNode item = facts.putObject("/filerResidenceAndIncomeState")
+                    .put("$type", "gov.irs.factgraph.persisters.EnumWrapper")
+                    .putObject("item");
+            item.putArray("value").add(residence);
+            item.put("enumOptionsPath", "/scopedStateOptions");
+        }
+    }
+
+    private static void bool(ObjectNode facts, String path, boolean value) {
+        ObjectNode node = facts.has(path) ? (ObjectNode) facts.get(path) : facts.putObject(path);
+        node.put("$type", "gov.irs.factgraph.persisters.BooleanWrapper");
+        node.put("item", value);
+    }
+
+    private static void dollar(ObjectNode facts, String path, String value) {
+        ObjectNode node = facts.has(path) ? (ObjectNode) facts.get(path) : facts.putObject(path);
+        node.put("$type", "gov.irs.factgraph.persisters.DollarWrapper");
+        node.put("item", value);
+    }
+
+    private static void string(ObjectNode facts, String path, String value) {
+        ObjectNode node = facts.has(path) ? (ObjectNode) facts.get(path) : facts.putObject(path);
+        node.put("$type", "gov.irs.factgraph.persisters.StringWrapper");
+        node.put("item", value);
+    }
+
+    private static Map<String, String> fields(PDDocument doc) {
+        Map<String, String> byName = new java.util.HashMap<>();
+        for (PDField f : doc.getDocumentCatalog().getAcroForm().getFieldTree()) {
+            byName.put(f.getFullyQualifiedName(), f.getValueAsString());
+        }
+        return byName;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<String> blockingFacts(SubmissionBlockingFactsResponseStatusException e) {
+        return (List<String>) e.getBody().getProperties().get("blockingFacts");
     }
 
     /** Count fields whose name ends with the suffix (merge may rename/prefix) and whose value, digits only, matches. */

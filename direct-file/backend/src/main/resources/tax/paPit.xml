@@ -1757,6 +1757,70 @@
         </All>
       </Derived>
     </Fact>
+    <Fact path="/flowKnockoutPaK11041CapitalGain">
+      <Name>Flow knockout: PA-40 with Schedule K-1 (Form 1041) box 3 or 4a</Name>
+      <Description>A nonzero Schedule K-1 (Form 1041) box 3 or box 4a on a PA-40. 2026 draft Schedule K-1
+        (Form 1041), PDF p. 3, reports box 3 on federal Schedule D line 5 and box 4a on line 12. PA-40 IN
+        (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 17, LINE 5, is the sale, exchange, or disposition of property (PA Schedule D). p. 19, LINE 7.
+        ESTATE OR TRUST INCOME: "As a beneficiary of an estate or trust, you report the total PA-taxable
+        income that the estate or trust must distribute, pay, or credit to you on PA Schedule J." "You cannot
+        report a loss as a beneficiary for PA purposes." "If you received a federal Schedule K-1, you must
+        report only the total income, not taking into account any losses, shown on the federal Schedule K-1.
+        Add the total of income reported on federal Schedule K-1 as interest, dividends, long-term and
+        short-term gains..." "If you included any of these amounts on a PA schedule, other than PA Schedule J,
+        adjust your PA schedule(s) accordingly." The beneficiary should receive a PA-41 Schedule RK-1. PA
+        Schedule J is not produced, and /paLine7 is $0, so a nonzero federal box 3 or 4a would leave line 7
+        blank or would be mistaken for line 5. A loss is nonzero and stops too. Complete false when the
+        return is not a PA-40, when Part III has not started, and when both totals are zero. An unanswered
+        box 3 or 4a on a PA-40 stays incomplete and refuses the print. 72 P.S. §7303(a)(3) and §7303(a)(8)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEEstateK1CapitalGainNonzero" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleEEstateK1CapitalGainNonzero" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEEstateK1CapitalGainNonzero" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/flowKnockoutPaScheduleC">
       <Name>Flow knockout: PA Schedule C is not printed for this Schedule C</Name>
       <Description>PA-40 IN (2025),

@@ -76,6 +76,8 @@ headings:
   /heading/knockout/pa-schedule-b: This tool doesn’t yet support PA Schedule B for your dividend income
   /heading/knockout/pa-schedule-c: This tool doesn’t yet support PA Schedule C for your business income
   /heading/knockout/pa-schedule-d: This tool doesn’t yet support sales of property on a Pennsylvania return
+  /heading/knockout/pa-k1-1041-capital-gain:
+    This tool doesn’t yet support estate or trust capital gain on a Pennsylvania return
 info:
   /info/your-taxes/amount/pa-exempt-obligation-dividends:
     body:
@@ -282,6 +284,17 @@ info:
         - p:
             Your Pennsylvania return needs PA Schedule D for any sale of stocks, bonds or other property, even one with
             a loss, and this tool can’t fill it out yet.
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-k1-1041-capital-gain:
+    alertText:
+      body:
+        - p:
+            Schedule K-1 (Form 1041) box 3 or box 4a is estate or trust income. On a PA-40 that amount is reported on
+            line 7, Estate or Trust Income, using PA Schedule J and the PA-41 Schedule RK-1. It is not PA-40 line 5.
+            A beneficiary cannot report a loss. This tool doesn’t fill out PA Schedule J yet.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
