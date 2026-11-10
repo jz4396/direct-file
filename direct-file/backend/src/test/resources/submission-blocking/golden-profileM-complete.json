@@ -429,7 +429,11 @@
         "items": []
       }
     },
-    "/scheduleCBusinesses/#13500000-0000-4000-8000-000000001601/hasVehicleMachineryEquipmentRent": {
+    "/scheduleCBusinesses/#13500000-0000-4000-8000-000000001601/hasVehicleRentOrLease": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/scheduleCBusinesses/#13500000-0000-4000-8000-000000001601/hasMachineryOrEquipmentRent": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
     },

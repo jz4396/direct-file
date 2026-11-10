@@ -13,8 +13,9 @@
 # practiced as a sole proprietor." 2026 Schedule C, line 31: "If a profit, enter on both Schedule 1 (Form 1040),
 # line 3, and on Schedule SE, line 2." Net earnings from self-employment: 26 U.S.C. 1402(a).
 #
-# Supported lines (26 U.S.C. 61, 162, 274(n) for meals, and 280A(c)(5) for line 30): 1-8, 10, 11, 14-16a, 16c, 17-19,
-# 20b, 21-26, 27b, 28, 29, 30 (simplified method only), 31, 32, and the first three Part V lines plus line 48. A single
+# Supported lines (26 U.S.C. 61, 162, 162(a)(3) for line 20a, 274(n) for meals, and 280A(c)(5) for line 30): 1-8, 10,
+# 11, 14-16a, 16c, 17-19, 20a (machinery and equipment that is not a vehicle), 20b, 21-26, 27b, 28, 29, 30 (simplified
+# method only), 31, 32, and the first three Part V lines plus line 48. A single
 # stored expense total still prints on line 28,
 # with lines 2, 4, and 6 at zero so lines 3, 5, and 7 equal line 1.
 # Header lines A, B, D, E, F (cash and accrual), H, I, and J are mapped. 2026 draft Instructions for Schedule C
@@ -34,7 +35,8 @@
 # PA-40 C has no matching lines. Not mapped, left blank (the return stops instead of printing a zero):
 #   the line 1 statutory-employee checkbox.
 #   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
-#   line 20a equipment rent, line 27a (Form 7205),
+#   a vehicle lease on line 20a (inclusion amount, Pub. 463 ch. 4; listed property, 26 U.S.C. 280F(c) and 280F(d)(4)),
+#   line 27a (Form 7205),
 #   Part IV, and Part V lines 4-9.
 # Line 30 is the simplified method when it applies: $5 times allowable square feet (not more than 300), not more than
 # line 29. 2026 draft Instructions for Schedule C, PDF p. 14. Line 30(a) and 30(b) are the home and business areas.
@@ -97,6 +99,9 @@ form:
         f1_32[0]: /scheduleCBusinesses/*/line17LegalAndProfessional # 17
       f1_33[0]: /scheduleCBusinesses/*/line18OfficeExpense # 18
       f1_34[0]: /scheduleCBusinesses/*/line19PensionAndProfitSharing # 19
+      # 20a. 2026 draft Instructions for Schedule C, PDF p. 9: business-use portion of machinery and equipment rent.
+      # A vehicle lease is not mapped. 26 U.S.C. 162(a)(3). $0 prints blank.
+      f1_35[0]: /scheduleCBusinesses/*/line20aMachineryEquipmentRent
       f1_36[0]: /scheduleCBusinesses/*/line20bRentOtherProperty # 20b
       f1_37[0]: /scheduleCBusinesses/*/line21RepairsAndMaintenance # 21
       f1_38[0]: /scheduleCBusinesses/*/line22Supplies # 22

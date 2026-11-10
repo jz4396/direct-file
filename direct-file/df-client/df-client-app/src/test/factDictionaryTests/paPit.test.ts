@@ -485,7 +485,8 @@ const schCMeals = (meals: string) => {
     `hasCarTruckOrVehicleLoan`,
     `hasDepreciationOrSection179`,
     `hasDepletion`,
-    `hasVehicleMachineryEquipmentRent`,
+    `hasVehicleRentOrLease`,
+    `hasMachineryOrEquipmentRent`,
     `hasHomeOffice`,
     `hasEnergyEfficientBuildingsDeduction`,
   ];
@@ -509,7 +510,8 @@ const schCSimplePartIII = () => {
     `hasCarTruckOrVehicleLoan`,
     `hasDepreciationOrSection179`,
     `hasDepletion`,
-    `hasVehicleMachineryEquipmentRent`,
+    `hasVehicleRentOrLease`,
+    `hasMachineryOrEquipmentRent`,
     `hasHomeOffice`,
     `hasEnergyEfficientBuildingsDeduction`,
   ];

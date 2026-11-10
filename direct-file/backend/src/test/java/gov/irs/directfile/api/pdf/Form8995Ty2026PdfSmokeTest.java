@@ -162,7 +162,8 @@ class Form8995Ty2026PdfSmokeTest {
             "hasCarTruckOrVehicleLoan",
             "hasDepreciationOrSection179",
             "hasDepletion",
-            "hasVehicleMachineryEquipmentRent",
+            "hasVehicleRentOrLease",
+            "hasMachineryOrEquipmentRent",
             "hasHomeOffice",
             "hasEnergyEfficientBuildingsDeduction"
         }) {

@@ -172,6 +172,7 @@ class PaScheduleCTy2026PdfSmokeTest {
             is(p1, "5. Total Income", "20,000.00", "line 5");
             blank(p1, "30. Telephone", "telephone stays blank");
             blank(p1, "32. Utilities", "utilities not collected");
+            blank(p1, "25. Rent on business property", "no rent");
             blank(p1, "38. Total Expenses. Add Lines 6 through 37", "no expenses");
             is(p1, "39. Net Profit of Loss", "20,000.00", "line 39");
             is(p1, "41. Loss", "Off", "profit");
@@ -185,6 +186,32 @@ class PaScheduleCTy2026PdfSmokeTest {
                     "4. Net Income or Loss from the Operation of a Business, etc",
                     "20,000.00",
                     "PA-40 line 4 = line 39");
+        }
+    }
+
+    /**
+     * PA-40 C line 25 is federal line 20a plus federal line 20b. Machinery and equipment rent of $3,000, with no line
+     * 20b, is line 25 and line 38, and line 39 is $3,000 lower. 72 P.S. §7303(a)(2). A vehicle lease is not included.
+     */
+    @Test
+    void machineryEquipmentRentPrintsOnLine25() throws Exception {
+        Map<String, String> facts = lineItemPa("50000.00", "20000.00");
+        String b = biz();
+        facts.put(b + "hasMachineryOrEquipmentRent", bool(true));
+        facts.put(b + "writableMachineryEquipmentRent", dollar("3000.00"));
+
+        Graph graph = graph(facts);
+        assertEquals("3000.00", graph.get(b + "line20aMachineryEquipmentRent").get().toString());
+        assertEquals("3000.00", graph.get(b + "paRentOnBusinessProperty").get().toString());
+        assertEquals("17000.00", graph.get(b + "netProfitOrLoss").get().toString());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutScheduleCOutOfScope").get());
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> p1 = fieldsOnPages(doc, PAGE1);
+            is(p1, "25. Rent on business property", "3,000.00", "line 25");
+            is(p1, "38. Total Expenses. Add Lines 6 through 37", "3,000.00", "line 38");
+            is(p1, "39. Net Profit of Loss", "17,000.00", "line 39");
         }
     }
 
@@ -454,7 +481,8 @@ class PaScheduleCTy2026PdfSmokeTest {
             "hasCarTruckOrVehicleLoan",
             "hasDepreciationOrSection179",
             "hasDepletion",
-            "hasVehicleMachineryEquipmentRent",
+            "hasVehicleRentOrLease",
+            "hasMachineryOrEquipmentRent",
             "hasHomeOffice",
             "hasEnergyEfficientBuildingsDeduction"
         }) {

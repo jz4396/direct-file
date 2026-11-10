@@ -221,8 +221,10 @@ public final class PrintRefusingKnockouts {
             // shelter, line 42 below zero, line 35 different from last year's closing inventory, the section 471(c)
             // no-inventory method claimed while Part III is required, or Part III filled in after a no to inventory.
             // Also lines 9 and 16b vehicle expenses
-            // (PDF pp. 2 and 7, Form 4562), line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, line 20a
-            // equipment rent, line 30 home office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that
+            // (PDF pp. 2 and 7, Form 4562), line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, a vehicle
+            // lease on line 20a (inclusion amount, Pub. 463 ch. 4; listed property, 26 U.S.C. 280F(c) and
+            // 280F(d)(4)). Machinery and equipment rent that is not a vehicle prints on line 20a and does not refuse
+            // the print. Line 30 home office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that
             // are not 50 percent (PDF p. 11, 26 U.S.C. 274(n)), line 26 employment credits, lines 16a and 16c
             // interest allocation (PDF p. 9), Form 4562-B amortization (PDF p. 17), a loss without material
             // participation (Form 8582, 26 U.S.C. 469) or that is not fully at risk (line 32b, Form 6198,
