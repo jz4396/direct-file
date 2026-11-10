@@ -12,7 +12,10 @@
 // (Golden M: full-year Pennsylvania resident, W-2 wages $60,000 with box 17 PA withholding $1,842,
 // and one Schedule C, so PA-40 and PA-40 C both print on the public path), and profile N
 // (Golden N: full-year Pennsylvania resident, single, one W-2 of $600,000, so PA-40, Form 6251 in the
-// exemption phaseout, and Form 8959 run on the same return).
+// exemption phaseout, and Form 8959 run on the same return), and profile O
+// (Golden O: full-year Florida resident, single, W-2 wages $150,000, Form 1099-DIV boxes 1a, 1b, 2a, 2f, and 6,
+// and Schedule K-1 (Form 1041) boxes 3 and 4a, through Schedule D and the qualified dividends and capital gain
+// tax worksheet in the 24% bracket, with an AMT check).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -1092,6 +1095,73 @@ export const profileNPaSingleAmt8959 = {
   '/form2210FiledJointReturnPriorYear': createBooleanWrapper(false),
 };
 
+/**
+ * Profile O (Golden O, #135): full-year Florida resident, single, under 65, no dependents, standard deduction.
+ * One W-2: box 1 $150,000, box 2 $28,000, boxes 3 and 5 $150,000, no box 17. One Form 1099-DIV: box 1a $5,000,
+ * box 1b $5,000, box 2a $3,000, box 2f $1,000 (section 897, informational), box 6 $200 (no deduction under
+ * 26 U.S.C. 67(g)). One domestic Schedule K-1 (Form 1041): box 3 −$2,000, box 4a $10,000, every other box $0.
+ * Part III is asked only after the Schedule K-1 question is yes, and a trust-only return finishes that list with
+ * no partnership or S corporation. Florida because a Pennsylvania return stops on these capital gains
+ * (/flowKnockoutPaK11041CapitalGain). Fixed ids in the 13500000-0000-4000-8000-0000000018xx range.
+ */
+const emery: Person = { first: `Emery`, last: `Example`, ssn: [`900`, `35`, `1016`], dob: `1990-06-18` };
+export const profileODividendId = `13500000-0000-4000-8000-000000001802`;
+export const profileOEstateId = `13500000-0000-4000-8000-000000001803`;
+export const profileOW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001801`,
+  employer: `Example Ledger LLC`,
+  ein: [`00`, `0001801`],
+  box1: 150000,
+  box2: 28000,
+  box3: 150000,
+  // 6.2% × 150,000 = 9,300 exactly. 26 U.S.C. 3101(a). The wage base is above this wage.
+  box4: 9300,
+  box5: 150000,
+  // 1.45% × 150,000 = 2,175 exactly. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000).
+  box6: 2175,
+};
+export const profileOFlQdcgK1 = {
+  ...single(emery, { street: `123 Example St`, city: `Sarasota`, zip: `34236`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  ...w2s(emery.ssn, profileOW2),
+  ...qualifiedDividends(profileODividendId, `Example Dividend Fund`, 5000, 5000, 3000),
+  // Box 2f is the section 897 portion of box 2a. It is not added again. 26 U.S.C. 897(a).
+  [`/dividendReports/#${profileODividendId}/writableSection897CapitalGain`]: createDollarWrapper(`1000`),
+  // Box 6 is already in box 1a. 26 U.S.C. 67(g) disallows the miscellaneous itemized deduction.
+  [`/dividendReports/#${profileODividendId}/writableInvestmentExpenses`]: createDollarWrapper(`200`),
+  // No rental. The K-1 question is yes so Part III is reached. No partnership or S corporation is listed.
+  '/hadScheduleEIncome': createBooleanWrapper(false),
+  '/scheduleEHasPartIIIncome': createBooleanWrapper(true),
+  '/scheduleEPartIILine27': createBooleanWrapper(false),
+  '/scheduleEHasPartIIIIncome': createBooleanWrapper(true),
+  '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
+  '/scheduleEK1s': createCollectionWrapper([]),
+  '/scheduleEK1sIsDone': createBooleanWrapper(true),
+  '/scheduleEEstates': createCollectionWrapper([profileOEstateId]),
+  '/scheduleEEstatesIsDone': createBooleanWrapper(true),
+  [`/scheduleEEstates/#${profileOEstateId}/entityName`]: createStringWrapper(`Example Estate`),
+  [`/scheduleEEstates/#${profileOEstateId}/isForeignBeneficiary`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/isForeignTrust`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/inconsistentTreatment`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/box1`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/box2a`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/box2b`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/box3`]: createDollarWrapper(`-2000`),
+  [`/scheduleEEstates/#${profileOEstateId}/box4a`]: createDollarWrapper(`10000`),
+  [`/scheduleEEstates/#${profileOEstateId}/box5`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/box6`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/box7`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/box8`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleEEstates/#${profileOEstateId}/box12CodeA`]: createDollarWrapper(`0`),
+  [`/scheduleEEstates/#${profileOEstateId}/hasBox12CodesBThroughI`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/hasBox12CodeJ`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/hasOtherK1Amount`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/basisLimitApplies`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/anyAmountNotAtRisk`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${profileOEstateId}/passiveDeductionOrLoss`]: createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1113,4 +1183,5 @@ export const goldenProfiles = {
   profileLFlSinglePabInterest,
   profileMPaScheduleC,
   profileNPaSingleAmt8959,
+  profileOFlQdcgK1,
 };

@@ -12,7 +12,10 @@
 // (Golden M: full-year Pennsylvania resident, W-2 wages $60,000 with box 17 PA withholding $1,842,
 // and one Schedule C, so PA-40 and PA-40 C both print on the public path), and profile N
 // (Golden N: full-year Pennsylvania resident, single, W-2 wages $600,000, Form 6251 exemption phaseout, and
-// Form 8959).
+// Form 8959), and profile O
+// (Golden O: full-year Florida resident, single, W-2 wages $150,000, Form 1099-DIV boxes 1a, 1b, 2a, 2f, and 6,
+// and Schedule K-1 (Form 1041) boxes 3 and 4a, through Schedule D and the qualified dividends and capital gain
+// tax worksheet in the 24% bracket, with an AMT check).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -125,7 +128,8 @@
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
 //      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
-//      the ITIN ranges). Profile N uses 900-36-1015 (group 36, outside the ITIN ranges). Profiles C and D use
+//      the ITIN ranges). Profile N uses 900-36-1015 (group 36, outside the ITIN ranges). Profile O uses
+//      900-35-1016 (group 35, outside the ITIN ranges). Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
 //      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
@@ -198,6 +202,10 @@ import {
   profileMW2,
   profileNPaSingleAmt8959,
   profileNW2,
+  profileODividendId,
+  profileOEstateId,
+  profileOFlQdcgK1,
+  profileOW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -3469,6 +3477,225 @@ describe(`golden end-to-end scenario (synthetic data): profile N, Golden N, full
   });
 
   it(`nothing stops the return`, () => {
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile O, Golden O, Florida, QDCG worksheet, Schedule D`, () => {
+  // Emery Example. Single, full-year Florida resident [FL]; born 1990-06-18 (under 65, after January 1, 1962),
+  //   SSN 900-35-1016 (900 area, group 35, outside the ITIN ranges [EITC]). Address 123 Example St, Sarasota, FL
+  //   34236. No dependents. Standard deduction. No interest. No Form 8949 sale (/soldCapitalAssets is no).
+  // W-2: box 1 $150,000, box 2 $28,000, boxes 3 and 5 $150,000, no box 17. Box 4 is 6.2% × 150,000 = 9,300
+  //   (26 U.S.C. 3101(a)). Box 6 is 1.45% × 150,000 = 2,175 [3101 (b)(1)]. This employer paid under $200,000, so
+  //   box 6 has no 0.9% [3102 (f)(1)].
+  // Form 1099-DIV, one payer (Example Dividend Fund): box 1a $5,000, box 1b $5,000, box 2a $3,000, box 2f $1,000,
+  //   box 6 $200. Box 1b is not larger than box 1a. Holding period met. Box 2f is the section 897 portion of box 2a
+  //   and is not added again (26 U.S.C. 897(a)). Box 6 is already in box 1a. Miscellaneous itemized deductions are
+  //   disallowed, 26 U.S.C. 67(g), so box 6 is not a deduction. No box 2b, 2c, 2d, nominee, or other unsupported box.
+  // Schedule K-1 (Form 1041), one domestic estate (Example Estate): box 3 −$2,000, box 4a $10,000, every other box
+  //   $0. 2026 draft Schedule K-1 (Form 1041) reports box 3 on Schedule D line 5 and box 4a on Schedule D line 12
+  //   [SD]. They are not Schedule E line 33. Part III is asked only after the Schedule K-1 question is yes, and a
+  //   trust-only return finishes that list with no partnership or S corporation. Florida because a Pennsylvania
+  //   return stops on these capital gains (/flowKnockoutPaK11041CapitalGain).
+  // Schedule D [SD]: line 5 −2,000; line 7 −2,000 (lines 1a through 4 and the line 6 carryover are $0); line 12
+  //   10,000; line 13 3,000 (box 2a; box 2f is not added); line 15 13,000; line 16 11,000. Lines 15 and 16 are both
+  //   gains, so the QDCG worksheet applies and the Schedule D Tax Worksheet does not (lines 18 and 19 are $0).
+  // Schedule B Part II is required because ordinary dividends are over $1,500. [GI] p. 26, Line 3b.
+  // Form 1040: line 1a 150,000; line 3a 5,000; line 3b 5,000; line 7a 11,000; line 8 0 (Schedule 1 line 5 is $0);
+  //   line 9 and line 11 (AGI) 166,000. No adjustments. Line 12 standard deduction 16,100 [RP p. 18 §4.14(1):
+  //   "Unmarried Individuals (other than Surviving Spouses and Heads of Households) ... $16,100"]. Line 15 taxable
+  //   income 149,900. Over $100,000, so the Tax Computation Worksheet [GI p. 36], not the Tax Table.
+  // QDCG worksheet [GI p. 38]. §1(j)(5)(B) amounts: docs/tax/TY2026-PARAMETERS.md, Rev. Proc. 2025-32 §4.03 p. 13,
+  //   unmarried $49,450 / $545,500.
+  //   1) 149,900  2) 5,000  3) smaller of Schedule D line 15 and line 16 = 11,000  4) 16,000  5) 133,900
+  //   6) 49,450  7) 49,450  8) 49,450, which is all ordinary, so the 0% amount on line 9 is 0
+  //   10) 16,000  11) 0  12) 16,000  13) 545,500  14) 149,900  15) 133,900  16) 16,000  17) 16,000
+  //   18) 16,000 × 15% = 2,400  19) 16,000  20) 0  21) 0
+  //   22) tax on 133,900 [RP p. 11 §4.01 Table 3]: "Over $105,700 but not over $201,775 $17,966 plus 24% of the
+  //   excess over $105,700": 17,966 + 24% × (133,900 − 105,700) = 17,966 + 24% × 28,200 = 17,966 + 6,768 = 24,734
+  //   23) 24,734 + 2,400 = 27,134
+  //   24) tax on 149,900: 17,966 + 24% × (149,900 − 105,700) = 17,966 + 24% × 44,200 = 17,966 + 10,608 = 28,574
+  //   25) smaller = 27,134, which is Form 1040 line 16.
+  // Form 6251 [6251] [55] [RP p. 16 §4.10]: line 1b 149,900; line 2a 16,100 (the standard deduction add-back);
+  //   line 4 AMTI 166,000. Exemption $90,100. AMTI is under the $500,000 phaseout threshold [RP p. 17], so line 5
+  //   stays 90,100 and line 6 is 75,900. Qualified dividends and gains on both Schedule D lines 15 and 16 make line
+  //   7 use Part III. Line 12 is 75,900. Line 13 is worksheet line 4, 16,000. Line 17 is 59,900. Line 18 is
+  //   26% × 59,900 = 15,574. Line 20 is worksheet line 5, 133,900, which is already over the $49,450 zero-rate
+  //   amount, so line 21 and the 0% amount on line 23 are $0. Line 30 is 16,000. Line 31 is 16,000 × 15% = 2,400.
+  //   Line 33 is $0, so line 34 is $0. Line 38 is 15,574 + 2,400 = 17,974. Line 39 is 26% × 75,900 = 19,734.
+  //   Line 40, and line 7, is the smaller, 17,974. Line 10 is the regular tax, 27,134. Line 11 AMT is $0.
+  //   Who Must File, item 1 (line 7 greater than line 10) is not met, so Form 6251 is not required.
+  // Form 8960 [1411 (b)(3)]: MAGI 166,000 is under the $200,000 single threshold, so no Form 8960. Form 8959
+  //   [3101 (b)(2)]: Medicare wages 150,000 are under $200,000, so no Form 8959.
+  // Total tax 27,134; withholding 28,000; refund 866. Form 2210 line 7 is 27,134 − 28,000 = −866, under $1,000, so
+  //   no penalty and Form 2210 is not filed. EITC is $0 [EITC]. No qualifying child, so the child tax credit is $0.
+  //   No Florida return [FL].
+  const g = graph(profileOFlQdcgK1);
+
+  it(`Schedule D lines 5, 7, 12, 13, 15, and 16, and Schedule 1 line 5 stays $0`, () => {
+    expect(get(g, `/requiresScheduleD`).get).toBe(true);
+    expect(get(g, `/scheduleEHasEstateK1CapitalGain`).get).toBe(true);
+    expect(get(g, `/scheduleEEstates/#${profileOEstateId}/isSupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaK11041CapitalGain`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaK11041CapitalGain`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS1040SD`) as string).get).toBe(true);
+    expectDollars(g, {
+      '/scheduleDLine5': `-2000.00`,
+      '/scheduleDLine7': `-2000.00`,
+      '/scheduleDLine12': `10000.00`,
+      '/scheduleDLine13': `3000.00`,
+      '/scheduleDLine15': `13000.00`,
+      '/scheduleDLine16': `11000.00`,
+      '/capitalGainsOrLosses': `11000.00`,
+      '/scheduleEPartIIILine37': `0.00`,
+      '/scheduleELine41': `0.00`,
+      '/schedule1Line5': `0.00`,
+    });
+  });
+
+  it(`box 2f and box 6 stay off Schedule A and every deduction line`, () => {
+    expect(get(g, `/itemizesDeductions`).get).toBe(false);
+    expect(get(g, `/flowKnockoutDividendAmountsInconsistent`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutDividendAmountsInconsistent`).get).toBe(false);
+    expect(get(g, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaDividendInvestmentExpenses`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(false);
+    expectDollars(g, {
+      [`/dividendReports/#${profileODividendId}/section897CapitalGain`]: `1000.00`,
+      [`/dividendReports/#${profileODividendId}/investmentExpenses`]: `200.00`,
+      [`/dividendReports/#${profileODividendId}/capitalGainDistributions`]: `3000.00`,
+      [`/dividendReports/#${profileODividendId}/ordinaryDividends`]: `5000.00`,
+      '/totalCapitalGainDistributions': `3000.00`,
+      '/ordinaryDividends': `5000.00`,
+      '/qualifiedDividends': `5000.00`,
+      '/adjustmentsToIncome': `0.00`,
+      '/qualifiedBusinessIncomeDeduction': `0.00`,
+      '/schedule1Line5': `0.00`,
+      '/otherIncome': `0.00`,
+    });
+    // The standard deduction is used. Box 6 is not an itemized deduction. 26 U.S.C. 67(g).
+    expect(get(g, `/standardOrItemizedDeductions`).get.toString()).toBe(`16100.00`);
+  });
+
+  it(`Form 1040 income and the QDCG worksheet in the 24% bracket`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`single`);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(true);
+    expect(get(g, `/requiresScheduleBForOrdinaryDividends`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS1040SB`) as string).get).toBe(true);
+    const taxable = Number(get(g, `/taxableIncome`).get.toString());
+    expect(taxable).toBe(149900);
+    // [RP] p. 11 §4.01 Table 3. 17,966 + 24% × 44,200 = 28,574 exactly, before the worksheet reduces it.
+    const regularCents = 17966 * 100 + (taxable - 105700) * 24;
+    expect(regularCents).toBe(2857400);
+    const line5 = Number(get(g, `/qdcgLine5`).get.toString());
+    expect(line5).toBe(133900);
+    // 17,966 + 24% × 28,200 = 24,734 exactly.
+    const line22Cents = 17966 * 100 + (line5 - 105700) * 24;
+    expect(line22Cents).toBe(2473400);
+    expectDollars(g, {
+      '/wages': `150000.00`,
+      '/qualifiedDividends': `5000.00`,
+      '/ordinaryDividends': `5000.00`,
+      '/capitalGainsOrLosses': `11000.00`,
+      '/totalIncome': `166000.00`,
+      '/agi': `166000.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/taxableIncome': `149900.00`,
+      '/qdcgLine1': `149900.00`,
+      '/qdcgLine2': `5000.00`,
+      '/qdcgLine3': `11000.00`,
+      '/qdcgLine4': `16000.00`,
+      '/qdcgLine5': `133900.00`,
+      '/qdcgLine6': `49450.00`,
+      '/qdcgLine7': `49450.00`,
+      '/qdcgLine8': `49450.00`,
+      '/qdcgLine9': `0.00`,
+      '/qdcgLine13': `545500.00`,
+      '/qdcgLine17': `16000.00`,
+      '/qdcgLine18': `2400.00`,
+      '/qdcgLine21': `0.00`,
+      '/qdcgLine22': `24734.00`,
+      '/qdcgLine23': `27134.00`,
+      '/qdcgLine24': `28574.00`,
+      '/qdcgLine25': `27134.00`,
+      '/tentativeTaxFromTaxableIncome': `27134.00`,
+    });
+  });
+
+  it(`Form 6251 AMT is $0 and the form is not attached; no NIIT and no Additional Medicare Tax`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(true);
+    const amti = Number(get(g, `/form6251Line4`).get.toString());
+    expect(amti).toBe(166000);
+    expect(amti).toBeLessThan(500000);
+    const exemption = Number(get(g, `/form6251ExemptionAmount`).get.toString());
+    expect(exemption).toBe(90100);
+    const line6 = amti - exemption;
+    expect(line6).toBe(75900);
+    // Part III line 18: 26% × (75,900 − 16,000) = 15,574. Line 31: 16,000 × 15% = 2,400. Line 38 = 17,974.
+    // Line 39: 26% × 75,900 = 19,734. Line 7 is the smaller, 17,974, which does not exceed line 10.
+    expect(line6 * 26).toBe(1973400);
+    expect((line6 - 16000) * 26 + 16000 * 15).toBe(1797400);
+    expectDollars(g, {
+      '/form6251Line1b': `149900.00`,
+      '/form6251Line2a': `16100.00`,
+      '/form6251Line2j': `0.00`,
+      '/form6251Line4': `166000.00`,
+      '/form6251ExemptionAmount': `90100.00`,
+      '/form6251Line5': `90100.00`,
+      '/form6251Line6': `75900.00`,
+      '/form6251Line7': `17974.00`,
+      '/form6251Line9': `17974.00`,
+      '/form6251Line10': `27134.00`,
+      '/amt': `0.00`,
+      '/schedule2Line2': `0.00`,
+    });
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS8960`) as string).get).toBe(false);
+    expectDollars(g, {
+      '/form8960Line14': `200000.00`,
+      '/form8960Line17': `0.00`,
+      '/form8959Line7': `0.00`,
+      [`/formW2s/#${profileOW2.id}/medicareWages`]: `150000.00`,
+      [`/formW2s/#${profileOW2.id}/medicareWithholding`]: `2175.00`,
+    });
+  });
+
+  it(`total tax is $27,134 and the refund is $866, with no Florida return`, () => {
+    expect(get(g, `/requiresSchedule2`).get).toBe(false);
+    expect(get(g, `/form2210AskPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expectDollars(g, {
+      '/totalTax': `27134.00`,
+      '/formW2Withholding': `28000.00`,
+      '/totalWithholding': `28000.00`,
+      '/totalPayments': `28000.00`,
+      '/overpayment': `866.00`,
+      '/balanceDue': `0.00`,
+      '/form2210Line4': `27134.00`,
+      '/form2210Line6': `28000.00`,
+      '/form2210Line7': `-866.00`,
+    });
+    expect(get(g, `/livedInFl`).get).toBe(true);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    for (const p of [`/stateTaxLiability`, `/stateRefund`, `/stateAmountOwed`]) {
+      expect(get(g, p).complete, p).toBe(false);
+    }
+    for (const form of [`PA40`, `PA40SP`]) {
+      expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(false);
+    }
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
     expectNotStopped(g);
   });
