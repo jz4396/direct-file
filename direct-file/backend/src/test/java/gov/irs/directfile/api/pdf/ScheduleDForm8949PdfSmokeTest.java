@@ -450,6 +450,7 @@ class ScheduleDForm8949PdfSmokeTest {
         bool(facts, p + "basisLimitApplies", false);
         bool(facts, p + "anyAmountNotAtRisk", false);
         bool(facts, p + "passiveDeductionOrLoss", false);
+        bool(facts, p + "hasPriorYearUnallowedPassiveLoss", false);
         if (residence != null) {
             ObjectNode item = facts.putObject("/filerResidenceAndIncomeState")
                     .put("$type", "gov.irs.factgraph.persisters.EnumWrapper")

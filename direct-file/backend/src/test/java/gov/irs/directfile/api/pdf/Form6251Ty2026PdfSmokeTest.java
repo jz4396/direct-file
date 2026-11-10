@@ -557,6 +557,7 @@ class Form6251Ty2026PdfSmokeTest {
         m.put(p + "basisLimitApplies", bool(false));
         m.put(p + "anyAmountNotAtRisk", bool(false));
         m.put(p + "passiveDeductionOrLoss", bool(false));
+        m.put(p + "hasPriorYearUnallowedPassiveLoss", bool(false));
     }
 
     /**

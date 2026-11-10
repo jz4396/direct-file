@@ -206,6 +206,7 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIINotMaterialParticipation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBox5" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBox7" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIPriorYearPassiveLoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBox8" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIBox2b" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIOtherK1Amount" />

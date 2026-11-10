@@ -167,6 +167,12 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-k1-1041-capital-gain' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      <Screen route='pa-k1-1041-box-7-knockout' condition='/flowKnockoutPaK11041Box7' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-k1-1041-box-7' />
+        <DFAlert i18nKey='/info/knockout/pa-k1-1041-box-7' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       {/* PA-40 line 15. Lines 14, 16, 17 and Form REV-459B stay stopped. */}
       <Screen route='pa-estimated-installment-payments' condition='/stateReturnPaFiled'>
         <Heading i18nKey='/heading/your-taxes/amount/pa-estimated-installment-payments' />

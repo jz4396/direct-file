@@ -113,11 +113,14 @@ form:
       Table_Line33c-f[0]:
         RowA[0]:
           # f2_55[0]: column (c). A passive deduction refuses the print.
-          # f2_56[0]: column (d). A nonzero box 8 refuses the print. A supported row is zero and prints blank.
+          # Nonnegative Schedule K-1 (Form 1041) box 7. 26 U.S.C. 469(c)(2). $0 prints blank.
+          f2_56[0]: /scheduleEEstates/[0]/columnD # "(d) Passive income from Schedule K-1."
           # f2_57[0]: column (e). A deduction or loss refuses the print.
           f2_58[0]: /scheduleEEstates/[0]/columnF # "(f) Other income from Schedule K-1."
         RowB[0]:
-          # f2_59[0] / f2_60[0] / f2_61[0]: columns (c), (d), and (e). Same as row A.
+          # f2_59[0]: column (c). A passive deduction refuses the print.
+          f2_60[0]: /scheduleEEstates/[1]/columnD # "Row: B. Column: (d) Passive income from Schedule K-1."
+          # f2_61[0]: column (e). A deduction or loss refuses the print.
           f2_62[0]: /scheduleEEstates/[1]/columnF # "Row: B. Column: (f) Other income from Schedule K-1."
       f2_64[0]: /scheduleEPartIIILine34aColumnD # "34a. (d) Passive income from Schedule K-1."
       f2_66[0]: /scheduleEPartIIILine34aColumnF # "34a. (f) Other income from Schedule K-1."

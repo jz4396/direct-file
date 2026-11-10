@@ -530,6 +530,7 @@ describe(`Form 6251 line 2j — Schedule K-1 (Form 1041) box 12 code A`, () => {
     [`/scheduleEEstates/#${estateId}/basisLimitApplies`]: createBooleanWrapper(false),
     [`/scheduleEEstates/#${estateId}/anyAmountNotAtRisk`]: createBooleanWrapper(false),
     [`/scheduleEEstates/#${estateId}/passiveDeductionOrLoss`]: createBooleanWrapper(false),
+    [`/scheduleEEstates/#${estateId}/hasPriorYearUnallowedPassiveLoss`]: createBooleanWrapper(false),
   });
 
   it(`line 2j $50,000 moves AMT from $0 to $2,208 and Form 6251 is required`, ({ task }) => {
