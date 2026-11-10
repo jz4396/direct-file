@@ -51,6 +51,12 @@
           <Dependency module="formW2s" path="/flowKnockoutThirdPartySickPay" />
           <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
           <Dependency module="formW2s" path="/flowKnockoutFloridaStateWithholding" />
+          <!-- #93: W-2 box 17 stops for full-year TX, NV, SD, WY, and AK, each modeled on the Florida stop. -->
+          <Dependency module="formW2s" path="/flowKnockoutTexasStateWithholding" />
+          <Dependency module="formW2s" path="/flowKnockoutNevadaStateWithholding" />
+          <Dependency module="formW2s" path="/flowKnockoutSouthDakotaStateWithholding" />
+          <Dependency module="formW2s" path="/flowKnockoutWyomingStateWithholding" />
+          <Dependency module="formW2s" path="/flowKnockoutAlaskaStateWithholding" />
           <Dependency module="formW2s" path="/flowKnockoutNonQualifiedPlans" />
           <Dependency module="form8959" path="/flowKnockoutForm8959Unsupported" />
           <Dependency module="formW2s" path="/hasABox14NYRRTAValueWeKnockout" />

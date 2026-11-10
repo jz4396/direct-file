@@ -321,6 +321,28 @@ export const AboutYouSubcategory = (
         <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-fl-info' />
         <SaveAndOrContinueButton />
       </Screen>
+      {/* #93: full-year TX, NV, SD, and WY follow the Florida no-state-return note. Alaska's note is after the
+          existing Permanent Fund Dividend breather so that breather stays the next screen from the PFD question. */}
+      <Screen route='state-breather-tx' condition='/livedInTx'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='state-breather-nv' condition='/livedInNv'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='state-breather-sd' condition='/livedInSd'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='state-breather-wy' condition='/livedInWy'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='state-breather-nj' condition='/livedInNj'>
         <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-nj' />
         <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-nj-info' />
@@ -358,6 +380,12 @@ export const AboutYouSubcategory = (
           i18nKey='/info/you-and-your-family/about-you/breather-1099-misc-pfd'
           batches={[`alaska-permanent-fund-0`]}
         />
+        <SaveAndOrContinueButton />
+      </Screen>
+      {/* #93: Alaska has no state return (AS 43.20.012(a)(1)–(2)). The Permanent Fund Dividend stays federal income only. */}
+      <Screen route='state-breather-ak' condition='/livedInAk'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
         <SaveAndOrContinueButton />
       </Screen>
     </SubSubcategory>

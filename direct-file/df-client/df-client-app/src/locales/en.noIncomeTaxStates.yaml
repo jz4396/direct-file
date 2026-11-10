@@ -1,0 +1,17 @@
+# Refs #93. No-income-tax state notes for full-year TX, NV, SD, WY, and AK.
+# Cites live on the facts: Tex. Const. art. VIII, §24-a; Nev. Const. art. 10, §1(9);
+# AS 43.20.012(a)(1)–(2); SD Department of Revenue (https://dor.sd.gov/individuals/taxes/);
+# State of Wyoming (https://www.wyo.gov/about-wyoming).
+headings:
+  /heading/you-and-your-family/about-you/state-breather-no-income-tax: Your state has no state income tax return.
+  /heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko: >-
+    Direct File doesn’t support W-2s with state income tax withheld when your state has no individual income tax.
+info:
+  /info/you-and-your-family/about-you/state-breather-no-income-tax-info:
+    body: >-
+      Your state doesn’t tax the income of individuals, so you don’t need to file a state income tax return. You only
+      need to file your federal return.
+  /info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko:
+    body: >-
+      Your state has no individual income tax to withhold, but one of your W-2s shows state income tax withheld in box
+      17. That withholding is an employer error, and Direct File doesn’t compute a refund of it.

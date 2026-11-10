@@ -2411,6 +2411,83 @@
       </Derived>
     </Fact>
 
+    <Fact path="/livedInTx">
+      <Name>The filer(s) lives in Texas</Name>
+      <Description>Tex. Const. art. VIII, §24-a (personal income tax prohibited; https://tcss.legis.texas.gov). The
+        Texas Comptroller has no individual income tax return. Full-year Texas residents follow the Florida
+        no-state-return path. Used to scope the Texas W-2 box 17 stop. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">tx</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/livedInNv">
+      <Name>The filer(s) lives in Nevada</Name>
+      <Description>Nev. Const. art. 10, §1(9): "No income tax shall be levied upon the wages or personal income of
+        natural persons." Full-year Nevada residents follow the Florida no-state-return path. Used to scope the
+        Nevada W-2 box 17 stop. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">nv</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/livedInSd">
+      <Name>The filer(s) lives in South Dakota</Name>
+      <Description>SD Department of Revenue: "South Dakota is one of seven states that does not impose a state income
+        tax" (https://dor.sd.gov/individuals/taxes/). Full-year South Dakota residents follow the Florida
+        no-state-return path. Used to scope the South Dakota W-2 box 17 stop. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">sd</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/livedInWy">
+      <Name>The filer(s) lives in Wyoming</Name>
+      <Description>State of Wyoming: "Wyoming does not possess an individual or corporate income tax"
+        (https://www.wyo.gov/about-wyoming). Wyo. Stat. Title 39 has no individual income tax chapter. Full-year
+        Wyoming residents follow the Florida no-state-return path. Used to scope the Wyoming W-2 box 17 stop.
+        Refs #93.</Description>
+      <Export downstreamFacts="true" />
+
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">wy</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
     <Fact path="/livedInNj">
       <Name>The filer(s) lives in New Jersey</Name>
       <Description>We support a special set of Box 14 codes for New Jersey, so we need to condition
@@ -2519,7 +2596,11 @@
     </Fact>
 
     <Fact path="/livedInAk">
-      <Description>Lived in Alaska</Description>
+      <Description>AS 43.20.012(a)(1)–(2): "The tax imposed by this chapter does not apply to (1) an individual; (2) a
+        fiduciary" (https://www.akleg.gov/basis/statutes.asp?media=print&amp;secStart=43.20.012&amp;secEnd=43.20.012).
+        The individual tax was repealed by ch. 2 SSSLA 1980. The Permanent Fund Dividend stays federal income only
+        (Schedule 1 line 8g). There's no state return. Full-year Alaska residents follow the Florida no-state-return
+        path (/stateReturnIsAk). Refs #93.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Equal>
@@ -2713,7 +2794,9 @@
     </Fact>
 
     <Fact path="/filerResidenceOrIncomeStateOutOfScope">
-      <Description>The primary filer earned income either in none of our in scope states or multiple</Description>
+      <Description>The primary filer earned income either in none of our in scope states or multiple. Refs #93:
+        full-year TX, NV, SD, WY, and AK are in scope the same way FL is (one scoped state). WA, TN, and NH stay
+        stops, as does moreThanOne (part-year or multistate) unless the existing PA/FL part-year path applies.</Description>
       <Derived>
         <Any>
           <Equal>
@@ -2730,6 +2813,35 @@
             </Left>
             <Right>
               <Enum optionsPath="/scopedStateOptions">moreThanOne</Enum>
+            </Right>
+          </Equal>
+          <!-- #93: WA, TN, and NH stay stops. Don't add them to the in-scope set.
+               WA has a capital-gains excise (RCW 82.87).
+               NH's Interest and Dividends tax was repealed for periods after 12/31/2024. That's a later slice
+               with its own cite check.
+               TN gets its own cite check in that later slice. -->
+          <Equal>
+            <Left>
+              <Dependency path="/filerResidenceAndIncomeState" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/scopedStateOptions">wa</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/filerResidenceAndIncomeState" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/scopedStateOptions">tn</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/filerResidenceAndIncomeState" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/scopedStateOptions">nh</Enum>
             </Right>
           </Equal>
         </Any>
@@ -3286,13 +3398,41 @@
               <Enum optionsPath="/primaryFilerW2And1099IntStateOptions">anotherState</Enum>
             </Right>
           </Equal>
+          <!-- #93: same WA, TN, and NH stops as /filerResidenceOrIncomeStateOutOfScope, so the Alaska PFD
+               question is skipped and the filer hits the out-of-scope stop. -->
+          <Equal>
+            <Left>
+              <Dependency path="/filerResidenceAndIncomeState" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/scopedStateOptions">wa</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/filerResidenceAndIncomeState" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/scopedStateOptions">tn</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/filerResidenceAndIncomeState" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/scopedStateOptions">nh</Enum>
+            </Right>
+          </Equal>
         </Any>
       </Derived>
     </Fact>
 
     <Fact path="/hasIncomeInScope">
       <Name>Flow: Filer Has Income In-Scope</Name>
-      <Description>The filer has only earned income in ONE of our in-scope states</Description>
+      <Description>The filer has only earned income in ONE of our in-scope states. Refs #93: full-year TX, NV, SD,
+        WY, and AK are in scope wherever FL is (this fact, via /filerResidenceOrIncomeStateOutOfScope). WA, TN, and
+        NH are not. moreThanOne stays a stop unless /paPartYearSupported.</Description>
       <Derived>
         <Not>
           <Any>

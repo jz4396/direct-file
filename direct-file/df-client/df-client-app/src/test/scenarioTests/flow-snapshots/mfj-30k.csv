@@ -10,6 +10,7 @@ Subcategory: /flow/you-and-your-family/about-you
 /flow/you-and-your-family/about-you/about-you-state-residency-scope?%2FprimaryFiler=2688f236-cf3f-4ded-a921-07d6bc88e374
 /flow/you-and-your-family/about-you/about-you-state-income-form?%2FprimaryFiler=2688f236-cf3f-4ded-a921-07d6bc88e374
 /flow/you-and-your-family/about-you/about-you-state-income-1099-misc-pfd?%2FprimaryFiler=2688f236-cf3f-4ded-a921-07d6bc88e374
+/flow/you-and-your-family/about-you/state-breather-nv?%2FprimaryFiler=2688f236-cf3f-4ded-a921-07d6bc88e374
 /flow/you-and-your-family/about-you/about-you-tin?%2FprimaryFiler=2688f236-cf3f-4ded-a921-07d6bc88e374
 /flow/you-and-your-family/about-you/about-you-ssn-valid-for-work?%2FprimaryFiler=2688f236-cf3f-4ded-a921-07d6bc88e374
 /flow/you-and-your-family/about-you/about-you-ip-pin-input-review?%2FprimaryFiler=2688f236-cf3f-4ded-a921-07d6bc88e374
@@ -109,6 +110,7 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-add-box-13-options?%2FformW2s=1848833b-6ab9-43d1-8726-36fedfdd97b3
 /flow/income/jobs/w2-has-box-14?%2FformW2s=1848833b-6ab9-43d1-8726-36fedfdd97b3
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=1848833b-6ab9-43d1-8726-36fedfdd97b3
+/flow/income/jobs/w2-nv-state-withholding-ko?%2FformW2s=1848833b-6ab9-43d1-8726-36fedfdd97b3
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=1848833b-6ab9-43d1-8726-36fedfdd97b3
 /flow/income/jobs/w2-unreported-tips?%2FformW2s=1848833b-6ab9-43d1-8726-36fedfdd97b3
 /flow/income/jobs/jobs-loop-intro-data-import?%2FformW2s=bed2e17d-f3d9-48b4-b805-3953e0beae58
@@ -127,6 +129,7 @@ Subcategory: /flow/income/jobs
 /flow/income/jobs/w2-add-box-13-options?%2FformW2s=bed2e17d-f3d9-48b4-b805-3953e0beae58
 /flow/income/jobs/w2-has-box-14?%2FformW2s=bed2e17d-f3d9-48b4-b805-3953e0beae58
 /flow/income/jobs/w2-add-boxes-15-20?%2FformW2s=bed2e17d-f3d9-48b4-b805-3953e0beae58
+/flow/income/jobs/w2-nv-state-withholding-ko?%2FformW2s=bed2e17d-f3d9-48b4-b805-3953e0beae58
 /flow/income/jobs/w2-nonstandard-corrected?%2FformW2s=bed2e17d-f3d9-48b4-b805-3953e0beae58
 /flow/income/jobs/w2-unreported-tips?%2FformW2s=bed2e17d-f3d9-48b4-b805-3953e0beae58
 Subcategory: /flow/income/unemployment

@@ -137,6 +137,51 @@
               <Dependency module="filers" path="/filerResidenceAndIncomeState" />
             </Right>
           </Equal>
+          <!-- #93: Tex. Const. art. VIII, §24-a (personal income tax prohibited; https://tcss.legis.texas.gov). The Texas Comptroller has no individual income tax return. -->
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">tx</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <!-- #93: Nev. Const. art. 10, §1(9): "No income tax shall be levied upon the wages or personal income of natural persons." -->
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">nv</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <!-- #93: SD Department of Revenue: "South Dakota is one of seven states that does not impose a state income tax" (https://dor.sd.gov/individuals/taxes/). -->
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">sd</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <!-- #93: State of Wyoming: "Wyoming does not possess an individual or corporate income tax" (https://www.wyo.gov/about-wyoming). Wyo. Stat. Title 39 has no individual income tax chapter. -->
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">wy</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
+          <!-- #93: AS 43.20.012(a)(1)–(2): "The tax imposed by this chapter does not apply to (1) an individual; (2) a fiduciary" (https://www.akleg.gov/basis/statutes.asp?media=print&amp;secStart=43.20.012&amp;secEnd=43.20.012). The individual tax was repealed by ch. 2 SSSLA 1980. The Permanent Fund Dividend stays federal income only (Schedule 1 line 8g). There's no state return. -->
+          <Equal>
+            <Left>
+              <Enum optionsPath="/scopedStateOptions">ak</Enum>
+            </Left>
+            <Right>
+              <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+            </Right>
+          </Equal>
         </Any>
       </Derived>
     </Fact>
