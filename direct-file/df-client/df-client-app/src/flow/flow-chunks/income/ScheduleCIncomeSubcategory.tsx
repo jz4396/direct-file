@@ -319,10 +319,22 @@ export const ScheduleCIncomeSubcategory = (
           <Boolean path='/scheduleCBusinesses/*/hasDepletion' />
           <SaveAndOrContinueButton />
         </Screen>
+        <Screen route='schedule-c-vehicle-lease'>
+          <Heading i18nKey='/heading/income/schedule-c/vehicle-lease' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/vehicle-lease' />
+          <Boolean path='/scheduleCBusinesses/*/hasVehicleRentOrLease' />
+          <SaveAndOrContinueButton />
+        </Screen>
         <Screen route='schedule-c-equipment-rent'>
           <Heading i18nKey='/heading/income/schedule-c/equipment-rent' />
           <InfoDisplay i18nKey='/info/income/schedule-c/equipment-rent' />
-          <Boolean path='/scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent' />
+          <Boolean path='/scheduleCBusinesses/*/hasMachineryOrEquipmentRent' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-equipment-rent-amount' condition='/scheduleCBusinesses/*/hasMachineryOrEquipmentRent'>
+          <Heading i18nKey='/heading/income/schedule-c/equipment-rent-amount' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/equipment-rent-amount' />
+          <Dollar path='/scheduleCBusinesses/*/writableMachineryEquipmentRent' />
           <SaveAndOrContinueButton />
         </Screen>
         <Screen route='schedule-c-home-office'>

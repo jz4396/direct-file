@@ -1597,7 +1597,8 @@
         Single-total path: header lines A through F and H, I, and J, name, gross receipts, the expense total, and
         material participation.
         Line-item
-        path: header lines A through F and H, I, and J, name, material participation, Part I amounts, and every stop
+        path: header lines A through F and H, I, and J, name, material participation, Part I amounts, both line 20a
+        questions, and every stop
         question.
         A form stop completes the business
         without expense amounts. Otherwise the expense lines, line 7,
@@ -1647,7 +1648,10 @@
               <Dependency path="../hasDepletion" />
             </IsComplete>
             <IsComplete>
-              <Dependency path="../hasVehicleMachineryEquipmentRent" />
+              <Dependency path="../hasVehicleRentOrLease" />
+            </IsComplete>
+            <IsComplete>
+              <Dependency path="../hasMachineryOrEquipmentRent" />
             </IsComplete>
             <IsComplete>
               <Dependency path="../hasHomeOffice" />
@@ -2718,13 +2722,78 @@
       </Writable>
     </Fact>
 
-    <Fact path="/scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent">
-      <Name>Rent of vehicles, machinery, or equipment</Name>
-      <Description>Schedule C line 20a. Rent of vehicles, machinery, and equipment can require an inclusion amount and
-        Form 4562 for listed property. Yes stops the return. Line 20a stays blank.</Description>
+    <Fact path="/scheduleCBusinesses/*/hasVehicleRentOrLease">
+      <Name>Rent or lease of a vehicle</Name>
+      <Description>Schedule C line 20a, the vehicle part. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 9, Line 20a: "But if you leased a vehicle for a
+        term of 30 days or more, you may have to reduce your deduction by the inclusion amount. See Leasing a Car in
+        chapter 4 of Pub. 463." A vehicle is listed property under 26 U.S.C. 280F(d)(4)
+        (https://www.law.cornell.edu/uscode/text/26/280F), and 26 U.S.C. 280F(c) limits the deduction for leased
+        listed property. This tool does not compute that inclusion amount and does not file Form 4562 for the lease.
+        Yes stops the return. The vehicle portion of line 20a stays blank.</Description>
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/hasMachineryOrEquipmentRent">
+      <Name>Rent of machinery or equipment that is not a vehicle</Name>
+      <Description>Schedule C line 20a, machinery and equipment that is not a vehicle. 2026 draft Instructions for
+        Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 9, Line 20a: "If you rented or leased
+        vehicles, machinery, or equipment, enter on line 20a the business-use portion of your rental cost."
+        Deductible under 26 U.S.C. 162(a)(3) (https://www.law.cornell.edu/uscode/text/26/162). Yes asks for that
+        business-use portion. Leasing property that is not listed property does not require Form 4562. 26 U.S.C.
+        280F(d)(4).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableMachineryEquipmentRent">
+      <Name>Business-use portion of machinery and equipment rent</Name>
+      <Description>Schedule C line 20a. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 9, Line 20a: enter the business-use portion of the
+        rental cost. Deductible under 26 U.S.C. 162(a)(3) (https://www.law.cornell.edu/uscode/text/26/162). 2026
+        Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 20a. Not a vehicle lease.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line20aMachineryEquipmentRent">
+      <Name>Schedule C line 20a</Name>
+      <Description>Line 20a amount included in line 28. The business-use portion of rent for machinery and equipment
+        that is not a vehicle. Zero when that rent was not claimed. Incomplete when the question or the amount is
+        still blank. A vehicle lease is not included. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 9, Line 20a. 26 U.S.C. 162(a)(3)
+        (https://www.law.cornell.edu/uscode/text/26/162).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../hasMachineryOrEquipmentRent" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableMachineryEquipmentRent" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableMachineryEquipmentRent" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/hasHomeOffice">
@@ -3086,7 +3155,13 @@
             <Dependency path="../hasDepletion" />
           </IsComplete>
           <IsComplete>
-            <Dependency path="../hasVehicleMachineryEquipmentRent" />
+            <Dependency path="../hasVehicleRentOrLease" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasMachineryOrEquipmentRent" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableMachineryEquipmentRent" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasHomeOffice" />
@@ -3337,8 +3412,9 @@
     <Fact path="/scheduleCBusinesses/*/hasDeductibleExpenses">
       <Name>Has deductible business expenses</Name>
       <Description>Whether this business has ordinary and necessary expenses under 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162). No makes every Part II line and line 28 zero. Yes requires at
-        least one line.</Description>
+        (https://www.law.cornell.edu/uscode/text/26/162), other than machinery and equipment rent already entered on
+        line 20a. No makes every checklist line zero. Line 28 is still line 20a when that rent applies. Yes requires
+        at least one checklist line. Line 20b is a checklist line and is not changed.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -4704,6 +4780,22 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCBusinesses/*/paRentOnBusinessProperty">
+      <Name>PA Schedule C line 25 rent</Name>
+      <Description>PA-40 C (EX) 03-26 line 25, Rent on business property. Federal Schedule C line 20a (machinery and
+        equipment that is not a vehicle) plus federal line 20b, the same place line 20b already prints. A vehicle
+        lease is a stop and is not included. Line 20b is unchanged. 72 P.S. §7303(a)(2)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="../line20aMachineryEquipmentRent" />
+            <Dependency path="../line20bRentOtherProperty" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCBusinesses/*/paTotalExpenses">
       <Name>PA Schedule C line 38 total expenses</Name>
       <Description>PA-40 C (EX) 03-26 line 38, the sum of lines 6 through 37. Federal Schedule C line 28
@@ -5064,19 +5156,42 @@
     <Fact path="/scheduleCBusinesses/*/line28">
       <Name>Schedule C line 28</Name>
       <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 28: total expenses
-        before expenses for business use of home. Sum of the supported lines. Zero when the filer has no deductible
-        expenses. Incomplete when expenses were claimed but no line was selected, or a selected amount is still blank.
-        26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162).</Description>
+        before expenses for business use of home. Sum of the supported lines, including line 20a. Zero when the filer
+        has no checklist expenses and no machinery or equipment rent. Line 20a alone is line 28 when the checklist is
+        no. Incomplete when the line 20a question or amount is blank, when expenses were claimed but no line was
+        selected, or a selected amount is still blank. 26 U.S.C. 162(a)
+        (https://www.law.cornell.edu/uscode/text/26/162).</Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <Not>
-                <Dependency path="../hasDeductibleExpenses" />
-              </Not>
+              <All>
+                <Not>
+                  <Dependency path="../hasDeductibleExpenses" />
+                </Not>
+                <Not>
+                  <Dependency path="../hasMachineryOrEquipmentRent" />
+                </Not>
+              </All>
             </When>
             <Then>
               <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Not>
+                  <Dependency path="../hasDeductibleExpenses" />
+                </Not>
+                <Dependency path="../hasMachineryOrEquipmentRent" />
+                <IsComplete>
+                  <Dependency path="../line20aMachineryEquipmentRent" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../line20aMachineryEquipmentRent" />
             </Then>
           </Case>
           <Case>
@@ -5096,6 +5211,7 @@
                   <Dependency path="../line17LegalAndProfessional" />
                   <Dependency path="../line18OfficeExpense" />
                   <Dependency path="../line19PensionAndProfitSharing" />
+                  <Dependency path="../line20aMachineryEquipmentRent" />
                   <Dependency path="../line20bRentOtherProperty" />
                   <Dependency path="../line21RepairsAndMaintenance" />
                   <Dependency path="../line22Supplies" />
@@ -5251,7 +5367,7 @@
         III cannot be figured (line 33c, a line 34 change, a 3-prior-year average over $32,000,000, a tax shelter,
         line 42 below zero, line 35 different from last year's closing inventory, the section 471(c) no-inventory
         method claimed together with Part III, or Part III amounts while the filer says there is no inventory), or a
-        vehicle, depreciation, depletion, equipment rent, Form 8829, shared space, rental use of the home, a prior
+        vehicle, depreciation, depletion, a vehicle lease, Form 8829, shared space, rental use of the home, a prior
         Form 8829 carryover, a simplified method this tool does not figure, more than one simplified-method business,
         the line 27a deduction, a non-50-percent meal, wage credits, interest that must be allocated, new
         amortization, a fourth Part V line, or line 6 income that belongs on another form applies. A yes on any stop
@@ -5267,7 +5383,7 @@
           <Dependency path="../hasCarTruckOrVehicleLoan" />
           <Dependency path="../hasDepreciationOrSection179" />
           <Dependency path="../hasDepletion" />
-          <Dependency path="../hasVehicleMachineryEquipmentRent" />
+          <Dependency path="../hasVehicleRentOrLease" />
           <All>
             <Dependency path="../hasHomeOffice" />
             <Not>
@@ -5595,7 +5711,7 @@
         to inventory), car or truck expenses or vehicle-loan interest
         (lines 9 and 16b, Form 4562),
         depreciation
-        or section 179 (line 13, Form 4562), depletion (line 12), rent of vehicles or equipment
+        or section 179 (line 13, Form 4562), depletion (line 12), rent or lease of a vehicle
         (line 20a), Form 8829, shared space, rental use of the home, a prior Form 8829 carryover, a simplified method
         that is not $5 times at most 300 square feet limited by line 29, or more than one business using the simplified
         method (line 30), the energy efficient

@@ -839,7 +839,8 @@ const profileKScheduleCStops = [
   `hasCarTruckOrVehicleLoan`,
   `hasDepreciationOrSection179`,
   `hasDepletion`,
-  `hasVehicleMachineryEquipmentRent`,
+  `hasVehicleRentOrLease`,
+  `hasMachineryOrEquipmentRent`,
   `hasHomeOffice`,
   `hasEnergyEfficientBuildingsDeduction`,
 ];
@@ -920,7 +921,8 @@ const profileLScheduleCStops = [
   `hasCarTruckOrVehicleLoan`,
   `hasDepreciationOrSection179`,
   `hasDepletion`,
-  `hasVehicleMachineryEquipmentRent`,
+  `hasVehicleRentOrLease`,
+  `hasMachineryOrEquipmentRent`,
   `hasHomeOffice`,
   `hasEnergyEfficientBuildingsDeduction`,
 ];
@@ -999,7 +1001,8 @@ const profileMScheduleCStops = [
   `hasCarTruckOrVehicleLoan`,
   `hasDepreciationOrSection179`,
   `hasDepletion`,
-  `hasVehicleMachineryEquipmentRent`,
+  `hasVehicleRentOrLease`,
+  `hasMachineryOrEquipmentRent`,
   `hasHomeOffice`,
   `hasEnergyEfficientBuildingsDeduction`,
 ];

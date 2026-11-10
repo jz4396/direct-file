@@ -64,7 +64,9 @@ headings:
     "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
   /heading/income/schedule-c/depreciation: "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
   /heading/income/schedule-c/depletion: "¿Este negocio tuvo una deducción por agotamiento?"
-  /heading/income/schedule-c/equipment-rent: "¿Este negocio alquiló vehículos, maquinaria o equipo?"
+  /heading/income/schedule-c/vehicle-lease: "¿Este negocio alquiló o arrendó un vehículo?"
+  /heading/income/schedule-c/equipment-rent: "¿Este negocio alquiló maquinaria o equipo que no es un vehículo?"
+  /heading/income/schedule-c/equipment-rent-amount: "Ingrese la parte del alquiler que corresponde al negocio"
   /heading/income/schedule-c/home-office: "¿Usó su hogar para este negocio?"
   /heading/income/schedule-c/home-office-method: "¿Quiere usar el método simplificado para este hogar?"
   /heading/income/schedule-c/home-office-same-area:
@@ -307,8 +309,18 @@ info:
       Formulario 4562."
   /info/income/schedule-c/depletion:
     body: "Conteste que sí si reclama agotamiento en la línea 12."
+  /info/income/schedule-c/vehicle-lease:
+    body:
+      "Conteste que sí si este negocio alquiló o arrendó un automóvil, camión u otro vehículo. Un arrendamiento de 30
+      días o más puede requerir un monto de inclusión. Esta herramienta no puede calcular ese monto."
   /info/income/schedule-c/equipment-rent:
-    body: "Conteste que sí si alquiló vehículos, maquinaria y equipo (línea 20a)."
+    body:
+      "Conteste que sí si alquiló maquinaria o equipo que no es un vehículo. La pantalla siguiente pide la parte del
+      alquiler que corresponde al negocio. Ese monto es la línea 20a del Anexo C."
+  /info/income/schedule-c/equipment-rent-amount:
+    body:
+      "Ingrese solo la parte del alquiler que fue para este negocio. Ese monto va en la línea 20a del Anexo C y se
+      incluye en el total de gastos."
   /info/income/schedule-c/home-office:
     body:
       "Conteste que sí si reclama gastos por el uso comercial de su hogar en la línea 30 del Anexo C. Conteste que no si
@@ -404,7 +416,8 @@ info:
             el inventario, ingresos brutos anuales promedio de los 3 años anteriores de más de $32,000,000, un refugio
             fiscal, un costo de mercancías vendidas menor que cero, un inventario inicial distinto del inventario final
             del año pasado, una declaración de que no lleva inventario mientras la Parte III sigue llena, gastos de
-            vehículo, depreciación, agotamiento, alquiler de equipo, el Formulario 8829, espacio compartido, uso del
+            vehículo, depreciación, agotamiento, el alquiler o arrendamiento de un vehículo, el Formulario 8829, espacio
+            compartido, uso del
             hogar como alquiler, un traslado previo del Formulario 8829, un método simplificado que esta herramienta no
             calcula, más de un negocio que usa el método simplificado, el Formulario 7205, comidas que no están
             limitadas al 50 por ciento, créditos por empleo, intereses que deben asignarse, amortización nueva, más de
@@ -670,10 +683,16 @@ fields:
     boolean:
       "yes": "Sí"
       "no": "No"
-  /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent:
+  /scheduleCBusinesses/*/hasVehicleRentOrLease:
     boolean:
       "yes": "Sí"
       "no": "No"
+  /scheduleCBusinesses/*/hasMachineryOrEquipmentRent:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/writableMachineryEquipmentRent:
+    name: "Línea 20a, parte del alquiler de maquinaria y equipo que corresponde al negocio"
   /scheduleCBusinesses/*/hasHomeOffice:
     boolean:
       "yes": "Sí"
@@ -807,7 +826,11 @@ dataviews:
     /scheduleCBusinesses/*/hasDepreciationOrSection179:
       "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
     /scheduleCBusinesses/*/hasDepletion: "¿Este negocio tuvo una deducción por agotamiento?"
-    /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent: "¿Este negocio alquiló vehículos, maquinaria o equipo?"
+    /scheduleCBusinesses/*/hasVehicleRentOrLease: "¿Este negocio alquiló o arrendó un vehículo?"
+    /scheduleCBusinesses/*/hasMachineryOrEquipmentRent:
+      "¿Este negocio alquiló maquinaria o equipo que no es un vehículo?"
+    /scheduleCBusinesses/*/writableMachineryEquipmentRent:
+      "Parte del alquiler de maquinaria y equipo que corresponde al negocio"
     /scheduleCBusinesses/*/hasHomeOffice: "¿Usó su hogar para este negocio?"
     /scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod: "¿Quiere usar el método simplificado para este hogar?"
     /scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear:

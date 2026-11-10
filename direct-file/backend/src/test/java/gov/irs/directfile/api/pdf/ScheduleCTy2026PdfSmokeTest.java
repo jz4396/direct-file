@@ -294,7 +294,8 @@ class ScheduleCTy2026PdfSmokeTest {
             "hasCarTruckOrVehicleLoan",
             "hasDepreciationOrSection179",
             "hasDepletion",
-            "hasVehicleMachineryEquipmentRent",
+            "hasVehicleRentOrLease",
+            "hasMachineryOrEquipmentRent",
             "hasHomeOffice",
             "hasEnergyEfficientBuildingsDeduction"
         }) {
@@ -324,6 +325,7 @@ class ScheduleCTy2026PdfSmokeTest {
             amount(sc, "Page1[0].f1_19[0]", 9700, "7");
             amount(sc, "Page1[0].Lines8-16c_ReadOrder[0].f1_20[0]", 100, "8");
             blank(sc, "Page1[0].Lines8-16c_ReadOrder[0].f1_21[0]", "9 vehicle stays blank");
+            blank(sc, "Page1[0].f1_35[0]", "20a zero");
             amount(sc, "Page1[0].f1_41[0]", 100, "24b half of 200");
             amount(sc, "Page1[0].f1_45[0]", 40, "27b");
             amount(sc, "Page1[0].f1_46[0]", 240, "28");
@@ -345,6 +347,116 @@ class ScheduleCTy2026PdfSmokeTest {
     }
 
     /**
+     * Line 20a. 2026 draft Instructions for Schedule C, PDF p. 9: enter the business-use portion of machinery and
+     * equipment rent. $3,000 is line 20a and line 28, and line 31 is $3,000 lower. Schedule SE line 2 is line 31.
+     * 26 U.S.C. 162(a)(3). Line 20b stays blank. A zero amount prints blank and does not change line 31.
+     */
+    @Test
+    void machineryEquipmentRentPrintsOnLine20aAndLowersLine31() throws Exception {
+        var facts = selfEmployed("170000.00", "170000.00", "10000.00");
+        String b = "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/";
+        facts.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+        facts.put(b + "writableOtherIncome", dollar("0.00"));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasCarTruckOrVehicleLoan",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasVehicleRentOrLease",
+            "hasHomeOffice",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            facts.put(b + stop, bool(false));
+        }
+        facts.put(b + "hasMachineryOrEquipmentRent", bool(true));
+        facts.put(b + "writableMachineryEquipmentRent", dollar("3000.00"));
+        facts.put(b + "hasDeductibleExpenses", bool(false));
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            amount(sc, "Page1[0].f1_35[0]", 3000, "20a");
+            blank(sc, "Page1[0].f1_36[0]", "20b unchanged");
+            amount(sc, "Page1[0].f1_46[0]", 3000, "28");
+            amount(sc, "Page1[0].f1_47[0]", 7000, "29");
+            amount(sc, "Page1[0].f1_51[0]", 7000, "31 is $3,000 lower");
+            Map<String, String> se = fieldsOnPages(doc, ScheduleSETy2026PdfSmokeTest.SE_FOOTER);
+            amount(se, "Page1[0].f1_5[0]", 7000, "Schedule SE line 2");
+        }
+
+        facts.put(b + "writableMachineryEquipmentRent", dollar("0.00"));
+        byte[] zero = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(zero)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            blank(sc, "Page1[0].f1_35[0]", "20a zero prints blank");
+            blank(sc, "Page1[0].f1_46[0]", "28 zero");
+            amount(sc, "Page1[0].f1_51[0]", 10000, "31 not reduced");
+        }
+    }
+
+    /**
+     * A vehicle lease still stops the return. 2026 draft Instructions for Schedule C, PDF p. 9, Line 20a, and Pub. 463
+     * chapter 4 (inclusion amount). Listed property: 26 U.S.C. 280F(c) and 280F(d)(4). A blank machinery amount, and
+     * an unanswered machinery question, stay incomplete and refuse the print. No new print-refuse path was added.
+     */
+    @Test
+    void vehicleLeaseStopsAndABlankEquipmentAmountStaysIncomplete() throws Exception {
+        var leased = selfEmployed("170000.00", "170000.00", "10000.00");
+        String b = biz();
+        leased.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+        leased.put(b + "writableOtherIncome", dollar("0.00"));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasCarTruckOrVehicleLoan",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasMachineryOrEquipmentRent",
+            "hasHomeOffice",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            leased.put(b + stop, bool(false));
+        }
+        leased.put(b + "hasVehicleRentOrLease", bool(true));
+        leased.put(b + "hasDeductibleExpenses", bool(false));
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(graphOf(leased)).contains("/flowKnockoutScheduleCOutOfScope"),
+                "a vehicle lease refuses the print");
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(leased));
+        assertTrue(
+                e.getBody().getProperties().get("blockingFacts") instanceof List<?> blocking
+                        && blocking.contains("/flowKnockoutScheduleCOutOfScope"),
+                "public print lists the Schedule C stop");
+
+        var blankAmount = selfEmployed("170000.00", "170000.00", "10000.00");
+        blankAmount.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+        blankAmount.put(b + "writableOtherIncome", dollar("0.00"));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasCarTruckOrVehicleLoan",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasVehicleRentOrLease",
+            "hasHomeOffice",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            blankAmount.put(b + stop, bool(false));
+        }
+        blankAmount.put(b + "hasMachineryOrEquipmentRent", bool(true));
+        blankAmount.put(b + "hasDeductibleExpenses", bool(false));
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(graphOf(blankAmount))
+                        .contains("/flowKnockoutScheduleCOutOfScope"),
+                "a blank line 20a amount refuses the print");
+
+        blankAmount.remove(b + "hasMachineryOrEquipmentRent");
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(graphOf(blankAmount))
+                        .contains("/flowKnockoutScheduleCOutOfScope"),
+                "an unanswered machinery question refuses the print");
+    }
+
+    /**
      * Simplified method. 2026 draft Instructions for Schedule C, PDF p. 14: $5 times allowable square feet, not more
      * than 300, and not more than worksheet line 1. Here line 29 is $10,000 and the business area is 100 square feet,
      * so line 30 is $500 and line 31 is $9,500. Line 30(b) is the area actually used.
@@ -360,7 +472,8 @@ class ScheduleCTy2026PdfSmokeTest {
             "hasCarTruckOrVehicleLoan",
             "hasDepreciationOrSection179",
             "hasDepletion",
-            "hasVehicleMachineryEquipmentRent",
+            "hasVehicleRentOrLease",
+            "hasMachineryOrEquipmentRent",
             "hasEnergyEfficientBuildingsDeduction"
         }) {
             facts.put(b + stop, bool(false));
@@ -505,7 +618,8 @@ class ScheduleCTy2026PdfSmokeTest {
             "hasCarTruckOrVehicleLoan",
             "hasDepreciationOrSection179",
             "hasDepletion",
-            "hasVehicleMachineryEquipmentRent",
+            "hasVehicleRentOrLease",
+            "hasMachineryOrEquipmentRent",
             "hasHomeOffice",
             "hasEnergyEfficientBuildingsDeduction"
         }) {

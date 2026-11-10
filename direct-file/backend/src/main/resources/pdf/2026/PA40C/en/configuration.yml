@@ -33,7 +33,8 @@
 # Mapped from the federal line-item facts, by caption rather than by equal line numbers:
 #   1a-1c, 2, 3, 4, 5 from federal lines 1-7.
 #   6 advertising, 11 commissions, 15 employee benefits, 17 insurance, 18 interest (16a + 16c),
-#   20 legal, 22 office supplies (federal line 18), 23 pension, 25 rent (federal 20b), 26 repairs,
+#   20 legal, 22 office supplies (federal line 18), 23 pension, 25 rent (federal line 20a machinery and
+#   equipment that is not a vehicle, plus federal line 20b), 26 repairs,
 #   27 subcontractor fees (federal line 11), 28 supplies (federal line 22), 29 taxes,
 #   31 travel and entertainment (federal 24a + 24b + the meals add-back), 32 utilities (federal line 25 only),
 #   33 wages, 37a-37c and the line 37 total, 38 total expenses (federal line 28 + the meals add-back),
@@ -102,7 +103,7 @@ form:
   "20. Legal & professional services": /scheduleCBusinesses/*/line17LegalAndProfessional
   "22. Office supplies": /scheduleCBusinesses/*/line18OfficeExpense
   "23. Pension & profit-sharing plans": /scheduleCBusinesses/*/line19PensionAndProfitSharing
-  "25. Rent on business property": /scheduleCBusinesses/*/line20bRentOtherProperty
+  "25. Rent on business property": /scheduleCBusinesses/*/paRentOnBusinessProperty
   "26. Repairs": /scheduleCBusinesses/*/line21RepairsAndMaintenance
   "27. Subcontractor fees": /scheduleCBusinesses/*/line11ContractLabor
   "28. Supplies": /scheduleCBusinesses/*/line22Supplies

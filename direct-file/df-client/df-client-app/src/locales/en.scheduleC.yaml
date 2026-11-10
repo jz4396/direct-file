@@ -56,7 +56,9 @@ headings:
   /heading/income/schedule-c/vehicle: "Did this business have car, truck, or vehicle-loan expenses?"
   /heading/income/schedule-c/depreciation: "Did this business have depreciation or a section 179 deduction?"
   /heading/income/schedule-c/depletion: "Did this business have a depletion deduction?"
-  /heading/income/schedule-c/equipment-rent: "Did this business rent vehicles, machinery, or equipment?"
+  /heading/income/schedule-c/vehicle-lease: "Did this business rent or lease a vehicle?"
+  /heading/income/schedule-c/equipment-rent: "Did this business rent machinery or equipment that is not a vehicle?"
+  /heading/income/schedule-c/equipment-rent-amount: "Enter the business-use portion of that rent"
   /heading/income/schedule-c/home-office: "Did you use your home for this business?"
   /heading/income/schedule-c/home-office-method: "Do you want to use the simplified method for this home?"
   /heading/income/schedule-c/home-office-same-area:
@@ -277,8 +279,18 @@ info:
     body: "Answer yes if line 13 applies. Depreciation and the section 179 deduction need Form 4562."
   /info/income/schedule-c/depletion:
     body: "Answer yes if you claim depletion on line 12."
+  /info/income/schedule-c/vehicle-lease:
+    body:
+      "Answer yes if this business rented or leased a car, truck, or other vehicle. A lease of 30 days or more can
+      require an inclusion amount. This tool cannot figure that amount."
   /info/income/schedule-c/equipment-rent:
-    body: "Answer yes for rent of vehicles, machinery, and equipment (line 20a)."
+    body:
+      "Answer yes for rent of machinery or equipment that is not a vehicle. The next screen asks for the business-use
+      portion. That amount is Schedule C line 20a."
+  /info/income/schedule-c/equipment-rent-amount:
+    body:
+      "Enter only the part of the rent that was for this business. That amount goes on Schedule C line 20a and is
+      included in total expenses."
   /info/income/schedule-c/home-office:
     body:
       "Answer yes if you claim expenses for business use of your home on Schedule C line 30. Answer no if you do not.
@@ -364,7 +376,7 @@ info:
             other than cost or lower of cost or market, a change in how inventory was valued, average annual gross
             receipts for the 3 prior tax years over $32,000,000, a tax shelter, cost of goods sold below zero, beginning
             inventory different from last year's closing inventory, a claim that you do not keep inventory while Part
-            III is still filled in, vehicle expenses, depreciation, depletion, equipment rent, Form 8829, shared space,
+            III is still filled in, vehicle expenses, depreciation, depletion, a vehicle lease, Form 8829, shared space,
             rental use of the home, a prior Form 8829 carryover, a simplified method this tool does not figure, more
             than one business using the simplified method, Form 7205, meals that are not limited to 50 percent,
             employment credits, interest that must be allocated, new amortization, more than three other expenses, line
@@ -629,10 +641,16 @@ fields:
     boolean:
       "yes": "Yes"
       "no": "No"
-  /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent:
+  /scheduleCBusinesses/*/hasVehicleRentOrLease:
     boolean:
       "yes": "Yes"
       "no": "No"
+  /scheduleCBusinesses/*/hasMachineryOrEquipmentRent:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/writableMachineryEquipmentRent:
+    name: "Line 20a, business-use portion of machinery and equipment rent"
   /scheduleCBusinesses/*/hasHomeOffice:
     boolean:
       "yes": "Yes"
@@ -763,7 +781,11 @@ dataviews:
     /scheduleCBusinesses/*/hasDepreciationOrSection179:
       "Did this business have depreciation or a section 179 deduction?"
     /scheduleCBusinesses/*/hasDepletion: "Did this business have a depletion deduction?"
-    /scheduleCBusinesses/*/hasVehicleMachineryEquipmentRent: "Did this business rent vehicles, machinery, or equipment?"
+    /scheduleCBusinesses/*/hasVehicleRentOrLease: "Did this business rent or lease a vehicle?"
+    /scheduleCBusinesses/*/hasMachineryOrEquipmentRent:
+      "Did this business rent machinery or equipment that is not a vehicle?"
+    /scheduleCBusinesses/*/writableMachineryEquipmentRent:
+      "Business-use portion of machinery and equipment rent"
     /scheduleCBusinesses/*/hasHomeOffice: "Did you use your home for this business?"
     /scheduleCBusinesses/*/homeOfficeUsesSimplifiedMethod: "Do you want to use the simplified method for this home?"
     /scheduleCBusinesses/*/simplifiedMethodSameAreaAllYear:

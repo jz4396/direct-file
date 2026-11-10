@@ -27,7 +27,8 @@ const stopsOff = {
   hasCarTruckOrVehicleLoan: false,
   hasDepreciationOrSection179: false,
   hasDepletion: false,
-  hasVehicleMachineryEquipmentRent: false,
+  hasVehicleRentOrLease: false,
+  hasMachineryOrEquipmentRent: false,
   hasHomeOffice: false,
   hasEnergyEfficientBuildingsDeduction: false,
 };
@@ -858,6 +859,138 @@ describe(`Schedule C Part III cost of goods sold`, () => {
     expect(stopped.get(p(biz2, `line4CostOfGoodsSold`)).complete).toBe(false);
     expect(stopped.get(`/scheduleCNetProfitOrLoss`).complete).toBe(false);
     expect(stopped.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+  });
+});
+
+/**
+ * Schedule C line 20a. 2026 draft Instructions for Schedule C
+ * (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 9, Line 20a. Machinery and equipment rent that is not a
+ * vehicle is the business-use portion, deductible under 26 U.S.C. 162(a)(3). A vehicle lease still stops: Pub. 463
+ * ch. 4 inclusion amount, and listed property under 26 U.S.C. 280F(c) and 280F(d)(4).
+ */
+describe(`Schedule C line 20a machinery and equipment rent`, () => {
+  const receipts = {
+    ...dollars(p(biz, `writableGrossReceipts`), `10000`),
+    ...dollars(p(biz, `writableReturnsAndAllowances`), `0`),
+    ...dollars(p(biz, `writableOtherIncome`), `0`),
+  };
+
+  it(`puts $3,000 on line 20a and line 28 and lowers line 31, and Schedule SE line 2 follows`, () => {
+    const { get } = base([biz], {
+      ...business(biz, {
+        ...receipts,
+        ...dollars(p(biz, `writableMachineryEquipmentRent`), `3000`),
+      }),
+      ...stops(biz, { hasMachineryOrEquipmentRent: true }),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+      '/usesSeOptionalMethod': createBooleanWrapper(false),
+    });
+    expect(get(p(biz, `line20aMachineryEquipmentRent`)).get.toString()).toBe(`3000.00`);
+    expect(get(p(biz, `line20bRentOtherProperty`)).get.toString()).toBe(`0.00`);
+    expect(get(p(biz, `line28`)).get.toString()).toBe(`3000.00`);
+    expect(get(p(biz, `line29TentativeProfit`)).get.toString()).toBe(`7000.00`);
+    expect(get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`7000.00`);
+    expect(get(`/scheduleCNetProfitOrLoss`).get.toString()).toBe(`7000.00`);
+    expect(get(`/schedule1Line3`).get.toString()).toBe(`7000.00`);
+    expect(get(`/primaryFilerSeNetProfit`).get.toString()).toBe(`7000.00`);
+    expect(get(`/primaryFilerSeReportedNetProfit`).get.toString()).toBe(`7000.00`);
+    expect(get(p(biz, `paRentOnBusinessProperty`)).get.toString()).toBe(`3000.00`);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`adds line 20a to line 20b and leaves line 20b unchanged`, () => {
+    const { get } = base([biz], {
+      ...business(biz, {
+        ...receipts,
+        ...dollars(p(biz, `writableMachineryEquipmentRent`), `3000`),
+        ...dollars(p(biz, `writableRentOtherBusinessProperty`), `400`),
+      }),
+      ...stops(biz, { hasMachineryOrEquipmentRent: true }),
+      ...flag(p(biz, `hasDeductibleExpenses`), true),
+      [p(biz, `expenseLinesChosen`)]: createMultEnumWrapper([`rentOtherBusinessProperty`], options),
+    });
+    expect(get(p(biz, `line20aMachineryEquipmentRent`)).get.toString()).toBe(`3000.00`);
+    expect(get(p(biz, `line20bRentOtherProperty`)).get.toString()).toBe(`400.00`);
+    expect(get(p(biz, `line28`)).get.toString()).toBe(`3400.00`);
+    expect(get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`6600.00`);
+    expect(get(p(biz, `paRentOnBusinessProperty`)).get.toString()).toBe(`3400.00`);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`treats an answer of no and an entered zero as zero`, () => {
+    const none = base([biz], {
+      ...business(biz, receipts),
+      ...stops(biz),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    });
+    expect(none.get(p(biz, `line20aMachineryEquipmentRent`)).get.toString()).toBe(`0.00`);
+    expect(none.get(p(biz, `line28`)).get.toString()).toBe(`0.00`);
+    expect(none.get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`10000.00`);
+    expect(none.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(none.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+
+    const zero = base([biz], {
+      ...business(biz, {
+        ...receipts,
+        ...dollars(p(biz, `writableMachineryEquipmentRent`), `0`),
+      }),
+      ...stops(biz, { hasMachineryOrEquipmentRent: true }),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    });
+    expect(zero.get(p(biz, `line20aMachineryEquipmentRent`)).get.toString()).toBe(`0.00`);
+    expect(zero.get(p(biz, `line28`)).get.toString()).toBe(`0.00`);
+    expect(zero.get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`10000.00`);
+    expect(zero.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(zero.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`stays incomplete when the amount is blank or the question is unanswered`, () => {
+    const blank = base([biz], {
+      ...business(biz, receipts),
+      ...stops(biz, { hasMachineryOrEquipmentRent: true }),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    });
+    expect(blank.get(p(biz, `line20aMachineryEquipmentRent`)).complete).toBe(false);
+    expect(blank.get(p(biz, `line28`)).complete).toBe(false);
+    expect(blank.get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+    expect(blank.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(false);
+
+    const { [p(biz, `hasMachineryOrEquipmentRent`)]: omittedMachinery, ...withoutMachinery } = {
+      ...business(biz, receipts),
+      ...stops(biz),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    };
+    void omittedMachinery;
+    const unanswered = base([biz], withoutMachinery);
+    expect(unanswered.get(p(biz, `line20aMachineryEquipmentRent`)).complete).toBe(false);
+    expect(unanswered.get(p(biz, `line28`)).complete).toBe(false);
+    expect(unanswered.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(false);
+
+    const { [p(biz, `hasVehicleRentOrLease`)]: omittedVehicle, ...withoutVehicle } = {
+      ...business(biz, receipts),
+      ...stops(biz),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    };
+    void omittedVehicle;
+    const vehicleUnanswered = base([biz], withoutVehicle);
+    expect(vehicleUnanswered.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(false);
+  });
+
+  it(`still stops a vehicle lease`, () => {
+    const { get } = base([biz], {
+      ...business(biz, {
+        ...receipts,
+        ...dollars(p(biz, `writableMachineryEquipmentRent`), `3000`),
+      }),
+      ...stops(biz, { hasVehicleRentOrLease: true, hasMachineryOrEquipmentRent: true }),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    });
+    expect(get(p(biz, `line20aMachineryEquipmentRent`)).get.toString()).toBe(`3000.00`);
+    expect(get(p(biz, `scheduleCFormStop`)).get).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
   });
 });
 
