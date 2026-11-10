@@ -11,10 +11,8 @@
 //     (https://dor.sd.gov/individuals/taxes/).
 // WY: State of Wyoming: "Wyoming does not possess an individual or corporate income tax"
 //     (https://www.wyo.gov/about-wyoming). Wyo. Stat. Title 39 has no individual income tax chapter.
-// WA stays a stop: WA has a capital-gains excise (RCW 82.87).
-// NH's Interest and Dividends tax was repealed for periods after 12/31/2024. That's a later slice
-// with its own cite check.
-// TN gets its own cite check in that later slice.
+// On main, /filerResidenceOrIncomeStateOutOfScope is true only for noneOfThese and moreThanOne.
+// WA, TN, and NH are in scope, and this slice leaves them as they are on main.
 import fs from 'fs';
 import path from 'path';
 import { describe, it, expect } from 'vitest';
@@ -90,10 +88,6 @@ const CITES = [
     `(https://dor.sd.gov/individuals/taxes/).`,
   `State of Wyoming: "Wyoming does not possess an individual or corporate income tax" ` +
     `(https://www.wyo.gov/about-wyoming). Wyo. Stat. Title 39 has no individual income tax chapter.`,
-  `WA has a capital-gains excise (RCW 82.87).`,
-  `NH's Interest and Dividends tax was repealed for periods after 12/31/2024. ` +
-    `That's a later slice with its own cite check.`,
-  `TN gets its own cite check in that later slice.`,
 ];
 
 const xmlText = () => {
@@ -170,7 +164,7 @@ describe(`No-income-tax states other than Florida (Refs #93)`, () => {
     });
   }
 
-  it(`WA, TN, and NH residents still hit the unsupported-state stop`, ({ task }) => {
+  it(`WA, TN, and NH residents stay in scope, the same as on main`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/flowKnockoutUnsupportedState`,
       `/filerResidenceOrIncomeStateOutOfScope`,
@@ -178,11 +172,10 @@ describe(`No-income-tax states other than Florida (Refs #93)`, () => {
     ];
     for (const st of [`wa`, `tn`, `nh`] as const) {
       const { factGraph } = setupFactGraph({ ...baseFilerData, ...residentOf(st), ...w2() });
-      expect(get(factGraph, `/filerResidenceOrIncomeStateOutOfScope`).get, st).toBe(true);
-      expect(get(factGraph, `/filerResidenceOrIncomeOrW2StateOutOfScope`).get, st).toBe(true);
-      expect(get(factGraph, `/hasIncomeInScope`).get, st).toBe(false);
-      expect(get(factGraph, `/flowKnockoutUnsupportedState`).get, st).toBe(true);
-      expect(get(factGraph, `/flowIsKnockedOut`).get, st).toBe(true);
+      expect(get(factGraph, `/filerResidenceOrIncomeStateOutOfScope`).get, st).toBe(false);
+      expect(get(factGraph, `/filerResidenceOrIncomeOrW2StateOutOfScope`).get, st).toBe(false);
+      expect(get(factGraph, `/hasIncomeInScope`).get, st).toBe(true);
+      expect(get(factGraph, `/flowKnockoutUnsupportedState`).get, st).toBe(false);
       expect(get(factGraph, `/stateReturnComputed`).get, st).toBe(false);
       for (const row of STATES) {
         expect(get(factGraph, row.stateReturn).get, `${st} ${row.stateReturn}`).toBe(false);

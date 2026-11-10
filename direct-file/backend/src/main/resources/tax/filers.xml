@@ -2795,8 +2795,10 @@
 
     <Fact path="/filerResidenceOrIncomeStateOutOfScope">
       <Description>The primary filer earned income either in none of our in scope states or multiple. Refs #93:
-        full-year TX, NV, SD, WY, and AK are in scope the same way FL is (one scoped state). WA, TN, and NH stay
-        stops, as does moreThanOne (part-year or multistate) unless the existing PA/FL part-year path applies.</Description>
+        full-year TX, NV, SD, WY, and AK are in scope the same way FL is (one scoped state). On main this fact is
+        true only for noneOfThese and moreThanOne. WA, TN, and NH are in scope, and this slice leaves them as they
+        are on main. Whether they get their own no-return facts is a later slice. moreThanOne is a stop unless the
+        existing PA/FL part-year path applies.</Description>
       <Derived>
         <Any>
           <Equal>
@@ -2813,35 +2815,6 @@
             </Left>
             <Right>
               <Enum optionsPath="/scopedStateOptions">moreThanOne</Enum>
-            </Right>
-          </Equal>
-          <!-- #93: WA, TN, and NH stay stops. Don't add them to the in-scope set.
-               WA has a capital-gains excise (RCW 82.87).
-               NH's Interest and Dividends tax was repealed for periods after 12/31/2024. That's a later slice
-               with its own cite check.
-               TN gets its own cite check in that later slice. -->
-          <Equal>
-            <Left>
-              <Dependency path="/filerResidenceAndIncomeState" />
-            </Left>
-            <Right>
-              <Enum optionsPath="/scopedStateOptions">wa</Enum>
-            </Right>
-          </Equal>
-          <Equal>
-            <Left>
-              <Dependency path="/filerResidenceAndIncomeState" />
-            </Left>
-            <Right>
-              <Enum optionsPath="/scopedStateOptions">tn</Enum>
-            </Right>
-          </Equal>
-          <Equal>
-            <Left>
-              <Dependency path="/filerResidenceAndIncomeState" />
-            </Left>
-            <Right>
-              <Enum optionsPath="/scopedStateOptions">nh</Enum>
             </Right>
           </Equal>
         </Any>
@@ -3398,32 +3371,6 @@
               <Enum optionsPath="/primaryFilerW2And1099IntStateOptions">anotherState</Enum>
             </Right>
           </Equal>
-          <!-- #93: same WA, TN, and NH stops as /filerResidenceOrIncomeStateOutOfScope, so the Alaska PFD
-               question is skipped and the filer hits the out-of-scope stop. -->
-          <Equal>
-            <Left>
-              <Dependency path="/filerResidenceAndIncomeState" />
-            </Left>
-            <Right>
-              <Enum optionsPath="/scopedStateOptions">wa</Enum>
-            </Right>
-          </Equal>
-          <Equal>
-            <Left>
-              <Dependency path="/filerResidenceAndIncomeState" />
-            </Left>
-            <Right>
-              <Enum optionsPath="/scopedStateOptions">tn</Enum>
-            </Right>
-          </Equal>
-          <Equal>
-            <Left>
-              <Dependency path="/filerResidenceAndIncomeState" />
-            </Left>
-            <Right>
-              <Enum optionsPath="/scopedStateOptions">nh</Enum>
-            </Right>
-          </Equal>
         </Any>
       </Derived>
     </Fact>
@@ -3432,7 +3379,8 @@
       <Name>Flow: Filer Has Income In-Scope</Name>
       <Description>The filer has only earned income in ONE of our in-scope states. Refs #93: full-year TX, NV, SD,
         WY, and AK are in scope wherever FL is (this fact, via /filerResidenceOrIncomeStateOutOfScope). WA, TN, and
-        NH are not. moreThanOne stays a stop unless /paPartYearSupported.</Description>
+        NH are in scope on main, and this slice leaves them unchanged. moreThanOne is a stop unless
+        /paPartYearSupported.</Description>
       <Derived>
         <Not>
           <Any>
