@@ -1821,6 +1821,68 @@
         </Switch>
       </Derived>
     </Fact>
+    <Fact path="/flowKnockoutPaK11041Box7">
+      <Name>Flow knockout: PA-40 with Schedule K-1 (Form 1041) box 7</Name>
+      <Description>
+        A nonzero Schedule K-1 (Form 1041) box 7 on any PA-40 (full-year or PA/FL part-year). Schedule K-1
+        (Form 1041) (2025) page 2 reports box 7 on federal Schedule E line 33, column (d) or (f). 26 U.S.C.
+        469(c)(2) puts a nonnegative amount in column (d). PA-40 IN (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 19, LINE 7, ESTATE OR TRUST INCOME: "As a beneficiary of an estate or trust, you report the total
+        PA-taxable income that the estate or trust must distribute, pay, or credit to you on PA Schedule J."
+        "You cannot report a loss as a beneficiary for PA purposes." The beneficiary should receive a PA-41
+        Schedule RK-1. PA Schedule J is not produced, and /paLine7 is $0, so a nonzero federal box 7 would
+        leave line 7 blank. A loss is nonzero and stops too. Same treatment as
+        /flowKnockoutPaK11041CapitalGain. Complete false when the return is not a PA-40, when Part III has
+        not started, and when box 7 is zero. An unanswered box 7 on a PA-40 stays incomplete and refuses the
+        print. 72 P.S. §7303(a)(8)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).
+      </Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEEstateK1Box7Nonzero" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleEEstateK1Box7Nonzero" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEEstateK1Box7Nonzero" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/flowKnockoutPaScheduleC">
       <Name>Flow knockout: PA Schedule C is not printed for this Schedule C</Name>
       <Description>PA-40 IN (2025),

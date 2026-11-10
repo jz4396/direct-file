@@ -9,7 +9,15 @@ import {
 } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { baseFilerData, filerWithRefundDueData, primaryFilerId, uuid } from '../testData.js';
+import {
+  baseFilerData,
+  filerWithRefundDueData,
+  filerWithW2NoDeductionsNoCreditsBaseData,
+  makeW2Data,
+  primaryFilerId,
+  singleFilerData,
+  uuid,
+} from '../testData.js';
 
 /**
  * Schedule E Part I MVP (#38). Cites live in backend/src/main/resources/tax/scheduleE.xml:
@@ -17,8 +25,10 @@ import { baseFilerData, filerWithRefundDueData, primaryFilerId, uuid } from '../
  * knockouts: 469 / 465 / 461(l) (loss), Form 4562 (depreciation), 280A (personal use), 32(i)(2)(C).
  * Part II (#85): line 28 column (k) for domestic partnership or S corporation box 1, material participation.
  * Part III (#85): line 33 column (f) for domestic estate or trust box 6 with material participation.
- * Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make it passive, so a nonzero amount
- * is column (d) and stops the return. Box 12 code A is Form 6251 line 2j. Codes B through I stop the return.
+ * Nonnegative box 7 is line 33 column (d) and Schedule 1 line 5. A loss and a prior-year unallowed passive
+ * loss stop the return. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make it passive, so a
+ * nonzero amount is column (d) and stops the return. Box 12 code A is Form 6251 line 2j. Codes B through I
+ * stop the return.
  * Part IV is an explicit stop, including a Schedule Q holder who
  * has no Part II income. Line 39 stays incomplete when the answer is yes.
  */
@@ -381,6 +391,7 @@ const partIIKnockouts = [
   `/flowKnockoutScheduleEPartIIINotMaterialParticipation`,
   `/flowKnockoutScheduleEPartIIIBox5`,
   `/flowKnockoutScheduleEPartIIIBox7`,
+  `/flowKnockoutScheduleEPartIIIPriorYearPassiveLoss`,
   `/flowKnockoutScheduleEPartIIIBox8`,
   `/flowKnockoutScheduleEPartIIIBox2b`,
   `/flowKnockoutScheduleEPartIIIBox12CodesBThroughI`,
@@ -542,7 +553,7 @@ describe(`Schedule E Part II ordinary income (#85)`, () => {
 
 const estateId = `c8f2d3b1-2222-4333-8444-555566667777`;
 const estate2Id = `c8f2d3b1-2222-4333-8444-555566667778`;
-/** Supported Part III estate: domestic, box 6 only, material participation. Box 8 is zero. Box 12 code A is zero. */
+/** Supported Part III estate: domestic, nonnegative box 6 and box 7, material participation, no carryover. */
 const estate = (id: string, box6: string, extra: Record<string, unknown> = {}) => ({
   [`/scheduleEEstates/#${id}/entityName`]: createStringWrapper(`Harbor Trust`),
   [`/scheduleEEstates/#${id}/isForeignBeneficiary`]: createBooleanWrapper(false),
@@ -565,6 +576,7 @@ const estate = (id: string, box6: string, extra: Record<string, unknown> = {}) =
   [`/scheduleEEstates/#${id}/basisLimitApplies`]: createBooleanWrapper(false),
   [`/scheduleEEstates/#${id}/anyAmountNotAtRisk`]: createBooleanWrapper(false),
   [`/scheduleEEstates/#${id}/passiveDeductionOrLoss`]: createBooleanWrapper(false),
+  [`/scheduleEEstates/#${id}/hasPriorYearUnallowedPassiveLoss`]: createBooleanWrapper(false),
   ...extra,
 });
 const partIIIGate = {
@@ -826,9 +838,9 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
       { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`500`) },
     ],
     [
-      `box 7 rental real estate`,
+      `box 7 rental real estate loss`,
       `/flowKnockoutScheduleEPartIIIBox7`,
-      { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`500`) },
+      { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`-1`) },
     ],
     [
       `box 8 other rental income`,
@@ -896,17 +908,192 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
     expect(get(g, `/flowKnockoutScheduleEPartIIIBox5`).get).toBe(true);
   });
 
-  it(`keeps nonnegative box 7 in column (d) while the return is stopped`, ({ task }) => {
+  it(`reports nonnegative box 7 in column (d), Schedule 1 line 5, and Form 8960 line 4a`, ({ task }) => {
     task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/columnD`,
       `/scheduleEPartIIILine34aColumnD`,
       `/scheduleEPartIIILine37`,
+      `/schedule1Line5`,
+      `/scheduleEPartIIIBox7ColumnD`,
+      `/form8960Line4a`,
       `/flowKnockoutScheduleEPartIIIBox7`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowIsKnockedOut`,
     ];
-    // 26 U.S.C. 469(c)(2). Schedule E line 43 is not computed.
-    const g = fg(oneEstate(`9000`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`500`) }));
-    expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`500.00`);
-    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`9500.00`);
-    expect(get(g, `/flowKnockoutScheduleEPartIIIBox7`).get).toBe(true);
+    // Schedule K-1 (Form 1041) (2025) page 2: box 7 goes on Schedule E line 33, column (d) or (f).
+    // 26 U.S.C. 469(c)(2) puts rental real estate in column (d). A positive amount is not a passive
+    // activity deduction, so Form 8582 is not filed. 2025 Instructions for Form 8582, PDF p. 1, Who Must File.
+    const base = fg();
+    const g = fg(oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`4000`) }));
+    expect(get(g, `/scheduleEEstates/#${estateId}/columnD`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/scheduleEPartIIIBox7ColumnD`).get.toString()).toBe(`4000.00`);
+    expect(Number(get(g, `/form8960Line4a`).get.toString())).toBe(
+      Number(get(base, `/form8960Line4a`).get.toString()) + 4000
+    );
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox7`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIPriorYearPassiveLoss`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`a single Florida filer with box 7 of $4,000 and MAGI over $200,000 shows it on Form 8960 line 4a`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/form8960Line4a`,
+      `/form8960Line13`,
+      `/form8960MagiOverThreshold`,
+      `/flowKnockoutForm8960Unsupported`,
+      `/flowKnockoutPaK11041Box7`,
+      `/flowIsKnockedOut`,
+    ];
+    // 26 U.S.C. 1411(b): the threshold is $200,000 for a single filer. 26 U.S.C. 1411(c)(1)(A)(i) includes
+    // the rent once it is on Schedule 1 line 5. No Schedule C and no Schedule E Part I, so
+    // /flowKnockoutForm8960Unsupported stays false.
+    const minimal = Object.fromEntries(
+      Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+    );
+    const g = setupFactGraph({
+      ...minimal,
+      ...baseFilerData,
+      ...singleFilerData,
+      [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+      '/flowHasSeenDeductions': createBooleanWrapper(true),
+      ...makeW2Data(210000),
+      '/interestReports': createCollectionWrapper([]),
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`4000`) }),
+      ...residence(`fl`),
+    }).factGraph;
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/form8960Line4a`).get.toString()).toBe(`4000.00`);
+    expect(Number(get(g, `/form8960Line13`).get.toString())).toBeGreaterThan(200000);
+    expect(get(g, `/form8960MagiOverThreshold`).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaK11041Box7`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`box 7 of zero stays in column (d) at zero and does not stop the return`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/columnD`,
+      `/scheduleEPartIIILine37`,
+      `/scheduleEPartIIIBox7ColumnD`,
+      `/flowKnockoutScheduleEPartIIIBox7`,
+      `/flowKnockoutPaK11041Box7`,
+    ];
+    const g = fg(oneEstate(`0`));
+    expect(get(g, `/scheduleEEstates/#${estateId}/columnD`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEPartIIIBox7ColumnD`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox7`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaK11041Box7`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`leaves line 37 and the box 7 knockout incomplete when box 7 is blank`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEPartIIILine37`,
+      `/scheduleEPartIIIBox7ColumnD`,
+      `/flowKnockoutScheduleEPartIIIBox7`,
+      `/flowKnockoutScheduleEPartIII`,
+    ];
+    const facts = oneEstate(`0`) as Record<string, unknown>;
+    delete facts[`/scheduleEEstates/#${estateId}/box7`];
+    const g = fg(facts);
+    expect(get(g, `/scheduleEPartIIILine37`).complete).toBe(false);
+    expect(get(g, `/scheduleEPartIIIBox7ColumnD`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox7`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).complete).toBe(false);
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).complete).toBe(false);
+  });
+
+  it(`stops a prior-year unallowed passive loss even when box 7 is positive`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss`,
+      `/flowKnockoutScheduleEPartIIIPriorYearPassiveLoss`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // 2025 Instructions for Form 8582, PDF p. 1, Who Must File: prior year unallowed losses are passive
+    // activity deductions. Form 8582 is not computed.
+    const g = fg(
+      oneEstate(`0`, {
+        [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`4000`),
+        [`/scheduleEEstates/#${estateId}/hasPriorYearUnallowedPassiveLoss`]: createBooleanWrapper(true),
+      })
+    );
+    expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIPriorYearPassiveLoss`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).get).toBe(false);
+  });
+
+  it(`stops any PA-40 with a nonzero box 7, including cents that round to zero`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaK11041Box7`,
+      `/flowKnockoutStateReturn`,
+      `/flowIsKnockedOut`,
+      `/scheduleEPartIIILine34aColumnD`,
+    ];
+    // PA-40 IN (2025) p. 19, LINE 7, ESTATE OR TRUST INCOME, reports the amount on PA Schedule J. A
+    // beneficiary cannot report a loss. 72 P.S. §7303(a)(8).
+    const fullYear = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`4000`) }),
+      ...residence(`pa`),
+    });
+    expect(get(fullYear, `/flowKnockoutPaK11041Box7`).get).toBe(true);
+    expect(get(fullYear, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(fullYear, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(fullYear, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`4000.00`);
+    const loss = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`-1`) }),
+      ...residence(`pa`),
+    });
+    expect(get(loss, `/flowKnockoutPaK11041Box7`).get).toBe(true);
+    const cents = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`0.40`) }),
+      ...residence(`pa`),
+    });
+    expect(get(cents, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`0.00`);
+    expect(get(cents, `/flowKnockoutPaK11041Box7`).get).toBe(true);
+    const partYear = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`4000`) }),
+      '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+      '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+      '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+    });
+    expect(get(partYear, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(partYear, `/flowKnockoutPaK11041Box7`).get).toBe(true);
+    const zero = fg({ ...oneEstate(`0`), ...residence(`pa`) });
+    expect(get(zero, `/flowKnockoutPaK11041Box7`).get).toBe(false);
+  });
+
+  it(`lets a Florida filer report box 7`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaK11041Box7`,
+      `/scheduleEPartIIILine37`,
+      `/schedule1Line5`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Fla. Const. art. VII, sec. 5(a): no personal income tax. The federal Schedule E lines still apply.
+    const g = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`4000`) }),
+      ...residence(`fl`),
+    });
+    expect(get(g, `/flowKnockoutPaK11041Box7`).get).toBe(false);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`4000.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
 
   it(`a box 6 loss leaves line 37 incomplete`, ({ task }) => {

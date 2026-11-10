@@ -88,6 +88,8 @@ headings:
   /heading/knockout/pa-schedule-d: Esta herramienta aún no admite ventas de bienes en una declaración de Pensilvania
   /heading/knockout/pa-k1-1041-capital-gain:
     Esta herramienta aún no admite la ganancia de capital de un caudal o fideicomiso en una declaración de Pensilvania
+  /heading/knockout/pa-k1-1041-box-7:
+    Esta herramienta aún no admite el ingreso de alquiler de bienes raíces de un caudal o fideicomiso en una declaración de Pensilvania
 info:
   /info/your-taxes/amount/pa-exempt-obligation-dividends:
     body:
@@ -319,6 +321,18 @@ info:
             fideicomiso. En el PA-40 esa cantidad se declara en la línea 7, Ingreso de caudal hereditario o
             fideicomiso, con el Anexo J de PA y el Anexo RK-1 del PA-41. No es la línea 5 del PA-40. Un beneficiario
             no puede declarar una pérdida. Esta herramienta aún no completa el Anexo J de PA.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-k1-1041-box-7:
+    alertText:
+      body:
+        - p:
+            La casilla 7 del Anexo K-1 (Formulario 1041) es el ingreso neto de alquiler de bienes raíces de un caudal
+            hereditario o fideicomiso. En el PA-40 esa cantidad se declara en la línea 7, Ingreso de caudal hereditario
+            o fideicomiso, con el Anexo J de PA y el Anexo RK-1 del PA-41. Un beneficiario no puede declarar una
+            pérdida. Esta herramienta aún no completa el Anexo J de PA.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:

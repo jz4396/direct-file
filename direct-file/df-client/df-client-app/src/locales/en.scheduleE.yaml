@@ -118,7 +118,8 @@ info:
     body: >-
       Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. Answer yes to material participation if you were involved
       on a regular, continuous, and substantial basis. Box 6 goes in column (f) when you materially participate. Box 7
-      and box 8 are rental income and stop this return.
+      is net rental real estate income. An amount greater than zero goes in column (d). A loss stops this return. Box 8
+      is other rental income and stops this return.
   /info/income/schedule-e/estate-box12:
     body: >-
       Code A is the adjustment for minimum tax purposes. It goes on Form 6251, line 2j. Enter 0 if code A is blank.
@@ -134,7 +135,8 @@ info:
   /info/income/schedule-e/estate-limits:
     body: >-
       Answer yes to the first question if a basis limit applies. Answer yes to the second if any amount is not at risk.
-      Answer yes to the third if you have a passive deduction or loss.
+      Answer yes to the third if you have a passive deduction or loss. Answer yes to the last question if you have a
+      prior-year unallowed passive activity loss. That loss is reported on Form 8582, which this return does not file.
   /info/income/schedule-e/part-iv:
     body: >-
       Answer yes if you hold a residual interest in a real estate mortgage investment conduit (REMIC), even if you have
@@ -495,6 +497,10 @@ fields:
     boolean:
       "yes": Yes, there is a passive deduction or loss
       "no": "No"
+  /scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss:
+    boolean:
+      "yes": Yes, I have a prior-year unallowed passive loss
+      "no": No, I do not have a prior-year unallowed passive loss
   /scheduleEEstates:
     controls:
       add: Add another estate or trust
@@ -692,3 +698,4 @@ dataviews:
     /scheduleEEstates/*/basisLimitApplies: Does a basis limit apply?
     /scheduleEEstates/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/passiveDeductionOrLoss: Is there a passive deduction or loss?
+    /scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss: Do you have a prior-year unallowed passive loss?

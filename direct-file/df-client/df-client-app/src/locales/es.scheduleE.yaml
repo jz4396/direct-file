@@ -132,7 +132,9 @@ info:
     body: >-
       Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Conteste que sí a la participación
       importante si intervino de forma regular, continua y considerable. La casilla 6 va en la columna (f) si participó
-      de forma importante. Las casillas 7 y 8 son ingreso de alquiler y detienen esta declaración.
+      de forma importante. La casilla 7 es el ingreso neto de alquiler de bienes raíces. Una cantidad mayor que cero va
+      en la columna (d). Una pérdida detiene esta declaración. La casilla 8 es otro ingreso de alquiler y detiene esta
+      declaración.
   /info/income/schedule-e/estate-box12:
     body: >-
       El código A es el ajuste para fines del impuesto mínimo. Va en la línea 2j del Formulario 6251. Anote 0 si el
@@ -150,7 +152,9 @@ info:
   /info/income/schedule-e/estate-limits:
     body: >-
       Conteste que sí a la primera pregunta si se aplica un límite de base. Conteste que sí a la segunda si alguna
-      cantidad no está en riesgo. Conteste que sí a la tercera si tiene una deducción o pérdida pasiva.
+      cantidad no está en riesgo. Conteste que sí a la tercera si tiene una deducción o pérdida pasiva. Conteste que sí
+      a la última pregunta si tiene una pérdida pasiva no permitida de un año anterior. Esa pérdida se declara en el
+      Formulario 8582, que esta declaración no presenta.
   /info/income/schedule-e/part-iv:
     body: >-
       Conteste que sí si tiene una participación residual en un conducto de inversión hipotecaria inmobiliaria (REMIC),
@@ -530,6 +534,10 @@ fields:
     boolean:
       "yes": Sí, hay una deducción o pérdida pasiva
       "no": "No"
+  /scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss:
+    boolean:
+      "yes": Sí, tengo una pérdida pasiva no permitida de un año anterior
+      "no": No, no tengo una pérdida pasiva no permitida de un año anterior
   /scheduleEEstates:
     controls:
       add: Agregar otro caudal hereditario o fideicomiso
@@ -730,3 +738,4 @@ dataviews:
     /scheduleEEstates/*/basisLimitApplies: ¿Se aplica un límite de base?
     /scheduleEEstates/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/passiveDeductionOrLoss: ¿Hay una deducción o pérdida pasiva?
+    /scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss: ¿Tiene una pérdida pasiva no permitida de un año anterior?

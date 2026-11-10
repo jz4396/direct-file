@@ -27,7 +27,11 @@
 
   Part III supported path (every estate or trust on line 33): domestic beneficiary, not a foreign trust,
   no Form 8082 inconsistent treatment. Schedule K-1 (Form 1041) box 6 is at least zero and the filer
-  materially participates, so that amount is line 33 column (f). Box 5, box 7, and box 8 are zero. Box 8
+  materially participates, so that amount is line 33 column (f). Box 7 (net rental real estate income)
+  at least zero is line 33 column (d): Schedule K-1 (Form 1041) (2025) page 2 reports box 7 on
+  "Schedule E, line 33, column (d) or (f)", and 26 U.S.C. 469(c)(2) makes rental real estate passive.
+  A negative box 7 stops the return. A prior-year unallowed passive loss stops the return (2025
+  Instructions for Form 8582, PDF p. 1, Who Must File). Box 5 and box 8 are zero. Box 8
   is other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity,
   and 469(c)(4) applies that rule without regard to material participation. It is not 469(c)(7) rental
   real estate professional income. A nonzero box 8 is column (d) and stops the return. Box 1 interest,
@@ -1308,7 +1312,8 @@
         (https://www.law.cornell.edu/uscode/text/26/662). A yes opens the Schedule K-1
         (Form 1041) interview. The
         supported path is computed on line 37. Box 3 and box 4a are Schedule D lines 5 and 12, including a
-        loss. A loss on box 5, 6, 7, or 8, passive activity, box 5, box 7, box 8, boxes 4b and 4c, any other
+        loss. Nonnegative box 7 is line 33 column (d). A loss on box 5, 6, 7, or 8, passive activity, box 5,
+        box 8, a prior-year unallowed passive loss, boxes 4b and 4c, any other
         box, a foreign trust, Form 8082, a basis limit, an at-risk limit, or a
         passive deduction stops the return. See
         /flowKnockoutScheduleEPartIII.
@@ -3552,13 +3557,18 @@
     <Fact path="/scheduleEEstates/*/box7">
       <Name>Schedule K-1 (Form 1041) box 7 net rental real estate income</Name>
       <Description>
-        Schedule K-1 (Form 1041) (2025) page 2: box 7 is reported on "Schedule E, line 33, column (d) or
-        (f)".
+        Schedule K-1 (Form 1041) (2025) page 2: box 7 goes on "Schedule E, line 33, column (d) or (f)."
         26 U.S.C. 469(c)(2) (https://www.law.cornell.edu/uscode/text/26/469): a rental real estate activity is
         a
-        passive activity. Schedule E (2026) draft, PDF p. 4, line 43 is the real estate professional
-        reconciliation and
-        is not computed. Any nonzero amount stops the return (Form 8582).
+        passive activity, so a nonnegative amount is column (d), not column (f). Schedule E (2026) draft,
+        PDF p. 4, line 43 is the real estate professional reconciliation and is not computed. An amount
+        greater than zero is line 33 column (d), then lines 34a, 35, and 37, Schedule 1 line 5, and Form
+        8960 line 4a. 26 U.S.C. 1411(c)(1)(A)(i). An amount less than zero stops the return. 2025
+        Instructions for Form 8582 (https://www.irs.gov/pub/irs-pdf/i8582.pdf), PDF p. 1, Who Must File:
+        "Form 8582 is filed by individuals, estates, and trusts who have passive activity deductions
+        (including prior year unallowed losses)." A prior-year unallowed passive loss is
+        /scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss and stops the return. No Form 8582 is filed
+        for a positive amount with no prior-year unallowed passive loss. Zero is column (d) of zero.
       </Description>
       <Writable>
         <Dollar />
@@ -3801,6 +3811,10 @@
 
     <Fact path="/scheduleEEstates/*/box7Nonzero">
       <Name>Box 7 is not zero</Name>
+      <Description>
+        Unrounded Schedule K-1 (Form 1041) box 7, including a loss and including cents that round to zero on
+        Schedule E. Used by the PA-40 stop. 72 P.S. §7303(a)(8).
+      </Description>
       <Derived>
         <Not>
           <Equal>
@@ -3812,6 +3826,73 @@
             </Right>
           </Equal>
         </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box7Negative">
+      <Name>Box 7 is a loss</Name>
+      <Description>
+        Schedule K-1 (Form 1041) box 7 less than zero. 26 U.S.C. 469(a)(1)
+        (https://www.law.cornell.edu/uscode/text/26/469). Form 8582 is not computed. 2025 Instructions for
+        Form 8582 (https://www.irs.gov/pub/irs-pdf/i8582.pdf), PDF p. 1, Who Must File: "Form 8582 is filed
+        by individuals, estates, and trusts who have passive activity deductions (including prior year
+        unallowed losses)."
+      </Description>
+      <Derived>
+        <LessThan>
+          <Left>
+            <Dependency path="../box7" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </LessThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss">
+      <Name>Prior-year unallowed passive activity loss</Name>
+      <Description>
+        2025 Instructions for Form 8582 (https://www.irs.gov/pub/irs-pdf/i8582.pdf), PDF p. 1, Who Must File:
+        "Form 8582 is filed by individuals, estates, and trusts who have passive activity deductions
+        (including prior year unallowed losses)." A yes stops the return. Form 8582 is not computed. Answer
+        no when there is no prior-year unallowed passive loss, including when box 7 is positive and there is
+        no carryover. Schedule E line 27 (/scheduleEPartIILine27) is the Part II question and is a separate
+        stop. Part I suspended losses stay on /scheduleEProperties/*/hasSuspendedPassiveLoss.
+      </Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box7ColumnD">
+      <Name>Box 7 on Schedule E line 33 column (d), whole dollars</Name>
+      <Description>
+        Schedule K-1 (Form 1041) (2025) page 2: box 7 goes on "Schedule E, line 33, column (d) or (f)."
+        26 U.S.C. 469(c)(2) puts a nonnegative amount in column (d). Whole dollars, 26 U.S.C. 6102(a). A
+        loss leaves this amount incomplete. Box 8 is not included.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="../box7" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Round>
+                <Dependency path="../box7" />
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -3931,11 +4012,11 @@
       <Name>Line 33 column (d) passive income</Name>
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (d): "Passive income from Schedule K-1". Nonnegative box 7
-        and box 8 are reported here whether or not the filer materially participates. 26 U.S.C. 469(c)(2) and
-        469(c)(4).
-        A passive filer also reports nonnegative box 6. A filed return has column (d) at zero
-        because passive income, box
-        7, and box 8 stop the return.
+        and box 8 are reported here whether or not the filer materially participates. Schedule K-1 (Form
+        1041) (2025) page 2: box 7 goes on "Schedule E, line 33, column (d) or (f)." 26 U.S.C. 469(c)(2)
+        puts rental real estate in column (d). 26 U.S.C. 469(c)(4) does the same for box 8.
+        A passive filer also reports nonnegative box 6. A filed return may have nonnegative box 7 here.
+        Box 8 and a passive filer still stop the return. A loss leaves this amount incomplete.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -4028,12 +4109,13 @@
     <Fact path="/scheduleEEstates/*/isSupported">
       <Name>This estate or trust is in the supported Part III slice</Name>
       <Description>
-        Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 7,
-        and
-        box 8 zero, box 6 at least zero, box 2b not larger than box 2a, box 3 and box 4a answered (a gain, a
+        Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5 and
+        box 8 zero, box 6 and box 7 at least zero, no prior-year unallowed passive loss, box 2b not larger
+        than box 2a, box 3 and box 4a answered (a gain, a
         loss, or zero), box 12 codes B through I blank or zero, no K-1 amount other than boxes 1, 2a, 2b, 3,
         4a, 5, 6, 7, 8, and box 12 codes A through J, no basis limit, no amount not at risk, and no passive
-        deduction or loss. Box 3 is Schedule D line 5. Box 4a is Schedule D line 12. Boxes 4b and 4c stay in
+        deduction or loss. Nonnegative box 7 is line 33 column (d). Box 3 is Schedule D line 5. Box 4a is
+        Schedule D line 12. Boxes 4b and 4c stay in
         /scheduleEEstates/*/hasOtherK1Amount. Box 12 code A is Form 6251 line 2j. Box 12 code J is answered
         and is not a stop. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is not on
         the supported path. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a, not line 33.
@@ -4067,14 +4149,17 @@
               <Dollar>0</Dollar>
             </Right>
           </Equal>
-          <Equal>
+          <GreaterThanOrEqual>
             <Left>
               <Dependency path="../box7" />
             </Left>
             <Right>
               <Dollar>0</Dollar>
             </Right>
-          </Equal>
+          </GreaterThanOrEqual>
+          <Not>
+            <Dependency path="../hasPriorYearUnallowedPassiveLoss" />
+          </Not>
           <GreaterThanOrEqual>
             <Left>
               <Dependency path="../box6" />
@@ -4187,6 +4272,9 @@
           <IsComplete>
             <Dependency path="../passiveDeductionOrLoss" />
           </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasPriorYearUnallowedPassiveLoss" />
+          </IsComplete>
         </All>
       </Derived>
     </Fact>
@@ -4285,8 +4373,11 @@
 
     <Fact path="/scheduleEPartIIILine34aColumnD">
       <Name>Schedule E line 34a column (d)</Name>
-      <Description>Sum of line 33 column (d). On a return that can be filed this is zero. Same completeness rule as
-        column (f).</Description>
+      <Description>
+        Sum of line 33 column (d). Schedule E (2026) draft, PDF p. 3, line 34a: "Totals" of column (d).
+        Nonnegative Schedule K-1 (Form 1041) box 7 is included. 26 U.S.C. 469(c)(2). Same completeness rule as
+        column (f). $0 when Part III does not apply.
+      </Description>
       <Export downstreamFacts="true" />
       <ExportZero />
       <Derived>
@@ -4389,6 +4480,191 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEPartIIIBox7ColumnD">
+      <Name>Schedule E line 33 column (d) from Schedule K-1 (Form 1041) box 7</Name>
+      <Description>
+        Whole-dollar nonnegative box 7, the column (d) amount that is net investment income. Schedule K-1
+        (Form 1041) (2025) page 2: box 7 goes on "Schedule E, line 33, column (d) or (f)." 26 U.S.C. 469(c)(2)
+        puts it in column (d). 26 U.S.C. 1411(c)(1)(A)(i) includes that rent on Form 8960 line 4a once it is
+        on Schedule E line 37 and Schedule 1 line 5. Box 6 and box 8 are not included. $0 when Part III does
+        not apply. Incomplete when a listed box 7 is a loss or unanswered, so a loss is not entered as zero.
+        26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleEEstates" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleEEstates/*/box7ColumnD" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1Box7">
+      <Name>Schedule K-1 (Form 1041) box 7 total, unrounded</Name>
+      <Description>
+        Sum of box 7 before Schedule E rounding, including a loss. Schedule K-1 (Form 1041) (2025) page 2.
+        $0 when /scheduleEHasPartIIIncome or /scheduleEHasPartIIIIncome is unanswered or no, and when the
+        estate list is not started, so a return with no estate or trust does not leave the PA-40 stop
+        incomplete. A started list with an unanswered box 7 leaves the sum incomplete. Cents stay in the sum.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEEstates" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEEstates/*/box7" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstateK1Box7Nonzero">
+      <Name>Schedule K-1 (Form 1041) box 7 total is not zero</Name>
+      <Description>
+        True when the unrounded box 7 total is not zero, including a loss and including cents that round to
+        zero on Schedule E. Incomplete when the total is incomplete, so a PA-40 with an unanswered box 7
+        stays incomplete. Schedule K-1 (Form 1041) (2025) page 2. 72 P.S. §7303(a)(8).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Not>
+          <Equal>
+            <Left>
+              <Dependency path="/scheduleEEstateK1Box7" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </Equal>
+        </Not>
       </Derived>
     </Fact>
 
@@ -4579,9 +4855,14 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleEPartIIIBox7">
-      <Name>Knockout: Schedule K-1 (Form 1041) box 7</Name>
-      <Description>Net rental real estate income. 26 U.S.C. 469(c)(2). Form 8582 and Schedule E line 43 are not
-        computed. Complete false when Part III is no.</Description>
+      <Name>Knockout: Schedule K-1 (Form 1041) box 7 loss</Name>
+      <Description>
+        Net rental real estate income less than zero. Schedule K-1 (Form 1041) (2025) page 2 reports box 7 on
+        Schedule E line 33, column (d) or (f). 26 U.S.C. 469(c)(2) makes a nonnegative amount column (d), and
+        that amount does not stop the return. A loss needs Form 8582. 26 U.S.C. 469(a)(1). 2025 Instructions
+        for Form 8582, PDF p. 1, Who Must File. Schedule E line 43 is not computed. Complete false when Part
+        III is no.
+      </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -4591,7 +4872,36 @@
           <GreaterThan>
             <Left>
               <Count>
-                <Dependency path="/scheduleEEstates/*/box7Nonzero" />
+                <Dependency path="/scheduleEEstates/*/box7Negative" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIIPriorYearPassiveLoss">
+      <Name>Knockout: prior-year unallowed passive activity loss</Name>
+      <Description>
+        2025 Instructions for Form 8582 (https://www.irs.gov/pub/irs-pdf/i8582.pdf), PDF p. 1, Who Must File:
+        "Form 8582 is filed by individuals, estates, and trusts who have passive activity deductions (including
+        prior year unallowed losses)." A yes on /scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss stops the
+        return. Form 8582 is not computed. A positive box 7 with this answer no does not stop. Complete false
+        when Part III is no.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <Dependency path="/scheduleEHasPartIIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEEstates/*/hasPriorYearUnallowedPassiveLoss" />
               </Count>
             </Left>
             <Right>
@@ -5185,6 +5495,7 @@
           <Dependency path="/flowKnockoutScheduleEPartIIINotMaterialParticipation" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox5" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox7" />
+          <Dependency path="/flowKnockoutScheduleEPartIIIPriorYearPassiveLoss" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox8" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox2b" />
           <Dependency path="/flowKnockoutScheduleEPartIIIBox12CodesBThroughI" />
@@ -5202,7 +5513,8 @@
       <Name>Schedule E Part III supported path is complete</Name>
       <Description>
         The filer answered yes, at least one estate or trust is listed, every row is complete, and every row
-        is supported nonpassive income from box 6. Box 8 is not supported. 26 U.S.C. 469(c)(2) and 469(c)(4).
+        is supported. Nonpassive box 6 is column (f). Nonnegative box 7 is column (d). Box 8 is not supported.
+        26 U.S.C. 469(c)(2) and 469(c)(4). A prior-year unallowed passive loss is not supported.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -5273,11 +5585,13 @@
         (loss). Combine
         lines 35 and 36." 26 U.S.C. 652(a) and 662(a).
 
-        Not net investment income. 26 U.S.C. 1411(c)(2) includes a passive
-        activity. Material-participation
-        box 6 is not added to Form 8960 line 4a. Box 8 is passive under 469(c)(2) and
+        Net investment income. 26 U.S.C. 1411(c)(1)(A)(i) includes rents. Nonnegative box 7 is on Schedule E
+        line 37 and Schedule 1 line 5, and form8960 /form8960Line4a includes that amount
+        (/scheduleEPartIIIBox7ColumnD). Material-participation box 6 is not 26 U.S.C. 1411(c)(2) net
+        investment income and is not added. Box 8 is passive under 469(c)(2) and
         469(c)(4), is not on
-        line 4a, and stops the return. Box 5 and box 7 stop the return.
+        line 4a, and stops the return. Box 5 stops the return. A negative box 7 stops the return. A
+        prior-year unallowed passive loss stops the return.
 
         Not self-employment. A
         beneficiary's share of estate or trust income is not entered on Schedule SE.

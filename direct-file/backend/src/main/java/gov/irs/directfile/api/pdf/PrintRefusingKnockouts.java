@@ -98,6 +98,12 @@ public final class PrintRefusingKnockouts {
             // 72 P.S. §7303(a)(3) and §7303(a)(8). Complete false when the return is not a PA-40 or both totals
             // are zero.
             "/flowKnockoutPaK11041CapitalGain",
+            // A nonzero Schedule K-1 (Form 1041) box 7 on any PA-40. Federal Schedule E line 33 column (d)
+            // is not PA-40 line 6. PA-40 IN (2025) p. 19, LINE 7, reports estate or trust income on PA
+            // Schedule J from a PA-41 Schedule RK-1, and a beneficiary cannot report a loss. PA Schedule J
+            // is not produced. 72 P.S. §7303(a)(8). Complete false when the return is not a PA-40 or box 7
+            // is zero.
+            "/flowKnockoutPaK11041Box7",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
@@ -167,7 +173,9 @@ public final class PrintRefusingKnockouts {
             // participation, no column (e) or (f), line 27 no) is complete false and may print. Supported
             // Part III column (f) (nonpassive Schedule K-1 (Form 1041) box 6 only) may print on the same
             // path. Boxes 3 and 4a are Schedule D lines 5 and 12 and do not refuse this path. Boxes 4b and 4c
-            // still refuse it. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental
+            // still refuse it. Nonnegative box 7 is column (d) and may print. A negative box 7 and a
+            // prior-year unallowed passive loss refuse the print (2025 Instructions for Form 8582, PDF p. 1,
+            // Who Must File). Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental
             // activity passive without regard to material participation, so a nonzero box 8 refuses the print.
             // An unanswered question, or any out-of-scope K-1 (loss, passive, foreign, PTP, box 14 code A
             // that is not the supported nonfarm Form 1065 amount on Schedule SE line 2, a section 199A

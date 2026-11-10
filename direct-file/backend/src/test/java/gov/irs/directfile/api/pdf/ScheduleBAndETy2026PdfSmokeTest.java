@@ -175,6 +175,7 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "basisLimitApplies", bool(false));
         m.put(p + "anyAmountNotAtRisk", bool(false));
         m.put(p + "passiveDeductionOrLoss", bool(false));
+        m.put(p + "hasPriorYearUnallowedPassiveLoss", bool(false));
     }
 
     /** Part I $8,500 plus one supported estate, box 6 $9,000. Line 41 = $17,500. */
@@ -458,6 +459,89 @@ class ScheduleBAndETy2026PdfSmokeTest {
         estate(third, ESTATE_2, "Cedar Trust", "2500.00");
         estate(third, thirdId, "Elm Trust", "100.00");
         refuses(third, SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT);
+
+        Map<String, String> box7Loss = floridaBox7("4000.00");
+        box7Loss.put("/scheduleEEstates/#" + ESTATE + "/box7", dollar("-1.00"));
+        refuses(box7Loss, SCHEDULE_E_PART_II_KNOCKOUT);
+
+        Map<String, String> carryover = floridaBox7("4000.00");
+        carryover.put("/scheduleEEstates/#" + ESTATE + "/hasPriorYearUnallowedPassiveLoss", bool(true));
+        refuses(carryover, SCHEDULE_E_PART_II_KNOCKOUT);
+
+        Map<String, String> blankBox7 = floridaBox7("0.00");
+        blankBox7.remove("/scheduleEEstates/#" + ESTATE + "/box7");
+        refuses(blankBox7, SCHEDULE_E_PART_II_KNOCKOUT);
+    }
+
+    /**
+     * Florida single filer, no Schedule E Part I. Schedule K-1 (Form 1041) box 7 of $4,000 is line 33 column (d),
+     * line 37, Schedule 1 line 5, and Form 8960 line 4a. Wages are $210,000, so MAGI is over the $200,000 single
+     * threshold. 26 U.S.C. 469(c)(2); 26 U.S.C. 1411(b); 26 U.S.C. 1411(c)(1)(A)(i). A zero box 7 prints column (d)
+     * blank. A PA-40 with the same box 7 refuses the print. PA-40 IN (2025) p. 19, LINE 7. 72 P.S. §7303(a)(8).
+     */
+    @Test
+    void scheduleEPartIIIBox7PrintsColumnDAndForm8960Line4a() throws Exception {
+        byte[] bytes = generate(floridaBox7("4000.00"));
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertEquals(
+                    "Harbor Trust",
+                    ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
+            amount(se, "f2_56[0]", 4000, "line 33A column (d)");
+            blank(se, "f2_58[0]", "line 33A column (f)");
+            amount(se, "f2_64[0]", 4000, "line 34a column (d)");
+            amount(se, "f2_71[0]", 4000, "line 35");
+            amount(se, "f2_73[0]", 4000, "line 37");
+            amount(se, "f3_4[0]", 4000, "line 41");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "f1_09[0]", 4000, "Schedule 1 line 5");
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            amount(f8960, "f1_6[0]", 4000, "Form 8960 line 4a");
+        }
+
+        byte[] zeroBytes = generate(floridaBox7("0.00"));
+        try (PDDocument doc = Loader.loadPDF(zeroBytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            blank(se, "f2_56[0]", "line 33A column (d) is blank at zero");
+            blank(se, "f2_73[0]", "line 37 is blank at zero");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            blank(s1, "f1_09[0]", "Schedule 1 line 5 is blank at zero");
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            blank(f8960, "f1_6[0]", "Form 8960 line 4a is blank at zero");
+        }
+
+        Map<String, String> pa = floridaBox7("4000.00");
+        pa.put("/filerResidenceAndIncomeState", enumValue("pa", "/scopedStateOptions"));
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(pa));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(
+                e.getBody().getProperties().get("blockingFacts").toString().contains("/flowKnockoutPaK11041Box7"),
+                e.getBody().toString());
+    }
+
+    /**
+     * No Schedule E Part I. Wages $210,000 keep MAGI over the single $200,000 threshold without Part I rents, so
+     * Form 8960 is not the unsupported-income stop. Box 7 is the only Schedule E amount.
+     */
+    static Map<String, String> floridaBox7(String box7) {
+        Map<String, String> m = new HashMap<>();
+        m.put("/formW2s/#" + W2 + "/writableWages", dollar("210000.00"));
+        m.put("/formW2s/#" + W2 + "/writableMedicareWages", dollar("210000.00"));
+        m.put("/formW2s/#" + W2 + "/writableMedicareWithholding", dollar("3045.00"));
+        m.put("/form8949Transactions", EMPTY_COLLECTION);
+        m.put("/soldCapitalAssets", bool(false));
+        standardDeduction(m);
+        m.put("/hadScheduleEIncome", bool(false));
+        partIIGate(m);
+        m.put("/scheduleEHasPartIIIIncome", bool(true));
+        m.put("/scheduleEEstatesIsDone", bool(true));
+        m.put("/scheduleEK1s", EMPTY_COLLECTION);
+        m.put("/scheduleEEstates", collection(ESTATE));
+        estate(m, ESTATE, "Harbor Trust", "0.00");
+        m.put("/scheduleEEstates/#" + ESTATE + "/box7", dollar(box7));
+        m.put("/filerResidenceAndIncomeState", enumValue("fl", "/scopedStateOptions"));
+        return syntheticFiler(m);
     }
 
     @Test
