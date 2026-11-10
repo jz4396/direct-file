@@ -5669,6 +5669,133 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutTexasStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a Texas resident's W-2</Name>
+      <Description>Tex. Const. art. VIII, §24-a (personal income tax prohibited; https://tcss.legis.texas.gov). The
+        Texas Comptroller has no individual income tax return. None of these states has an individual income tax to
+        withhold for, so state withholding there is an employer error we don't compute a refund for. A Texas
+        resident's W-2 should show $0 in box 17. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInTx" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNevadaStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a Nevada resident's W-2</Name>
+      <Description>Nev. Const. art. 10, §1(9): "No income tax shall be levied upon the wages or personal income of
+        natural persons." None of these states has an individual income tax to withhold for, so state withholding
+        there is an employer error we don't compute a refund for. A Nevada resident's W-2 should show $0 in box 17.
+        Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInNv" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutSouthDakotaStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a South Dakota resident's W-2</Name>
+      <Description>SD Department of Revenue: "South Dakota is one of seven states that does not impose a state income
+        tax" (https://dor.sd.gov/individuals/taxes/). None of these states has an individual income tax to withhold
+        for, so state withholding there is an employer error we don't compute a refund for. A South Dakota resident's
+        W-2 should show $0 in box 17. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInSd" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutWyomingStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a Wyoming resident's W-2</Name>
+      <Description>State of Wyoming: "Wyoming does not possess an individual or corporate income tax"
+        (https://www.wyo.gov/about-wyoming). Wyo. Stat. Title 39 has no individual income tax chapter. None of these
+        states has an individual income tax to withhold for, so state withholding there is an employer error we don't
+        compute a refund for. A Wyoming resident's W-2 should show $0 in box 17. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInWy" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAlaskaStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on an Alaska resident's W-2</Name>
+      <Description>AS 43.20.012(a)(1)–(2): "The tax imposed by this chapter does not apply to (1) an individual; (2) a
+        fiduciary" (https://www.akleg.gov/basis/statutes.asp?media=print&amp;secStart=43.20.012&amp;secEnd=43.20.012).
+        The individual tax was repealed by ch. 2 SSSLA 1980. The Permanent Fund Dividend stays federal income only
+        (Schedule 1 line 8g). There's no state return. None of these states has an individual income tax to withhold
+        for, so state withholding there is an employer error we don't compute a refund for. An Alaska resident's W-2
+        should show $0 in box 17. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInAk" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/formW2s/*/hasStateWithholding">
       <Name>W-2 box 17 is greater than zero</Name>
       <Derived>

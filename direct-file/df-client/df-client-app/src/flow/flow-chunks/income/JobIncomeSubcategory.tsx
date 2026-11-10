@@ -936,6 +936,42 @@ export const JobIncomeSubcategory = (
         <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* #93: W-2 box 17 > 0 stops for TX, NV, SD, WY, and AK, each modeled on the Florida stop. */}
+      <Screen route='w2-tx-state-withholding-ko' condition='/flowKnockoutTexasStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='w2-nv-state-withholding-ko' condition='/flowKnockoutNevadaStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='w2-sd-state-withholding-ko' condition='/flowKnockoutSouthDakotaStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='w2-wy-state-withholding-ko' condition='/flowKnockoutWyomingStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='w2-ak-state-withholding-ko' condition='/flowKnockoutAlaskaStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='w2-other-state-ko' condition='/flowKnockoutBox15IncomeFromDifferentState' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/income/jobs/w2-other-state-ko' />

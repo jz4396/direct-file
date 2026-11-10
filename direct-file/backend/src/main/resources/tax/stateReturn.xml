@@ -7,7 +7,7 @@
       - /stateReturnComputed: Any of the computed states.
       - /stateTaxLiability, /stateTaxWithheld, /stateRefund, /stateAmountOwed: Switch per state onto that state's module.
       - /flowKnockoutStateReturn: Any of All(/stateReturnIs{XX}, that state's knockouts); BlockSubmissionOnTrue, in /flowIsKnockedOut.
-      A no-income-tax state (FL, #103) has only /stateReturnIsFl; it adds nothing to the Switches or /stateReturnComputed.
+      A no-income-tax state (FL, #103; TX, NV, SD, WY, and AK, #93) has only /stateReturnIs{Xx}; it adds nothing to the Switches or /stateReturnComputed.
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
@@ -39,6 +39,64 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Dependency module="filers" path="/livedInFl" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsTx">
+      <Name>State: Texas (no state income tax return)</Name>
+      <Description>#93 state framework: Texas resident (filers /livedInTx). Tex. Const. art. VIII, §24-a (personal
+        income tax prohibited; https://tcss.legis.texas.gov). The Texas Comptroller has no individual income tax
+        return. There is no state return: Texas is not in /stateReturnComputed or the Switches. Its W-2 box 17 stop
+        (/flowKnockoutTexasStateWithholding, formW2s) is wired directly into /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInTx" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsNv">
+      <Name>State: Nevada (no state income tax return)</Name>
+      <Description>#93 state framework: Nevada resident (filers /livedInNv). Nev. Const. art. 10, §1(9): "No income tax
+        shall be levied upon the wages or personal income of natural persons." There is no state return: Nevada is not
+        in /stateReturnComputed or the Switches. Its W-2 box 17 stop (/flowKnockoutNevadaStateWithholding, formW2s)
+        is wired directly into /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInNv" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsSd">
+      <Name>State: South Dakota (no state income tax return)</Name>
+      <Description>#93 state framework: South Dakota resident (filers /livedInSd). SD Department of Revenue: "South
+        Dakota is one of seven states that does not impose a state income tax" (https://dor.sd.gov/individuals/taxes/).
+        There is no state return: South Dakota is not in /stateReturnComputed or the Switches. Its W-2 box 17 stop
+        (/flowKnockoutSouthDakotaStateWithholding, formW2s) is wired directly into /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInSd" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsWy">
+      <Name>State: Wyoming (no state income tax return)</Name>
+      <Description>#93 state framework: Wyoming resident (filers /livedInWy). State of Wyoming: "Wyoming does not
+        possess an individual or corporate income tax" (https://www.wyo.gov/about-wyoming). Wyo. Stat. Title 39 has no
+        individual income tax chapter. There is no state return: Wyoming is not in /stateReturnComputed or the
+        Switches. Its W-2 box 17 stop (/flowKnockoutWyomingStateWithholding, formW2s) is wired directly into
+        /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInWy" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsAk">
+      <Name>State: Alaska (no state income tax return)</Name>
+      <Description>#93 state framework: Alaska resident (filers /livedInAk). AS 43.20.012(a)(1)–(2): "The tax imposed
+        by this chapter does not apply to (1) an individual; (2) a fiduciary"
+        (https://www.akleg.gov/basis/statutes.asp?media=print&amp;secStart=43.20.012&amp;secEnd=43.20.012). The
+        individual tax was repealed by ch. 2 SSSLA 1980. The Permanent Fund Dividend stays federal income only
+        (Schedule 1 line 8g). There's no state return: Alaska is not in /stateReturnComputed or the Switches. Its W-2
+        box 17 stop (/flowKnockoutAlaskaStateWithholding, formW2s) is wired directly into /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInAk" />
       </Derived>
     </Fact>
     <Fact path="/stateReturnIsPaPartYear">

@@ -1,0 +1,17 @@
+# Refs #93. Notas para residentes de todo el año de TX, NV, SD, WY y AK.
+headings:
+  /heading/you-and-your-family/about-you/state-breather-no-income-tax: >-
+    Tu estado no tiene declaración estatal de impuestos sobre los ingresos.
+  /heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko: >-
+    Direct File aún no acepta formularios W-2 con impuestos estatales retenidos cuando tu estado no tiene impuesto sobre
+    los ingresos de las personas.
+info:
+  /info/you-and-your-family/about-you/state-breather-no-income-tax-info:
+    body: >-
+      Tu estado no cobra impuestos sobre los ingresos de las personas, así que no necesitas presentar una declaración
+      estatal de impuestos sobre los ingresos. Solo necesitas presentar tu declaración federal.
+  /info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko:
+    body: >-
+      Tu estado no tiene un impuesto sobre los ingresos de las personas que se pueda retener, pero uno de tus
+      formularios W-2 muestra impuestos estatales retenidos en la casilla 17. Esa retención es un error del empleador, y
+      Direct File no calcula un reembolso de ella.
