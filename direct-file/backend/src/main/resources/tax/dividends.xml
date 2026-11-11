@@ -9,7 +9,9 @@
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
       (PA handling lives in paPit.xml: per-spouse Schedule B lines 1, 5, 6, 10, and 12, /paLine3, and
       /flowKnockoutPaScheduleB).
-  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 12 and 13 per form.
+  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 and 13 per form.
+  Box 11 (FATCA filing requirement) is not a stop by itself. A check asks income /requiredToFileForm8938
+  (26 U.S.C. 6038D). Yes stops because Form 8938 is not produced. No proceeds.
   Boxes 2e, 2f and 6 are portions already included in box 1a or box 2a. They are not added again.
   Schedule B Part II line 5 rows: 1099-DIV payers first (/dividendReports/*/payer and
     /dividendReports/*/roundedOrdinaryDividends), then Schedule K-1 (Form 1041) box 2a
@@ -37,7 +39,9 @@
   Box 13 specified private activity bond interest dividends are Form 6251 line 2g
   (form6251 /form6251Line2g). Box 13 cannot exceed box 12.
   Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut, and PrintRefusingKnockouts), never zeroed:
-    boxes 2b-2d, 8-11, 14-16                     -> /flowKnockoutDividendUnsupportedBoxes
+    boxes 2b-2d, 8-10, 14-16                     -> /flowKnockoutDividendUnsupportedBoxes
+    box 11 FATCA checked, Form 8938 required     -> income /scheduleBPartIIIOutOfScope
+                                                   (interest /flowKnockoutScheduleBPartIII)
     box 13 larger than box 12                    -> /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12
     box 3 above the stock's basis                -> /flowKnockoutNondividendDistributionsOverBasis
     box 1b not meeting the holding period        -> /flowKnockoutQualifiedDividendsHoldingPeriod
@@ -728,19 +732,125 @@
 
     <Fact path="/dividendReports/*/hasUnsupportedBoxes">
       <Name>1099-DIV has an amount in an unsupported box</Name>
-      <Description>Yes if the form has an amount in box 2b, 2c, 2d, 9, 10, 14, 15 or 16, a country in box 8, or box 11
-        (FATCA) checked. Box 2e is section 897 ordinary dividends (/dividendReports/*/section897OrdinaryDividends),
-        box 2f is section 897 capital gain (/dividendReports/*/section897CapitalGain), and box 6 is investment
-        expenses (/dividendReports/*/investmentExpenses). Box 12 is exempt-interest dividends
+      <Description>Yes if the form has an amount in box 2b, 2c, 2d, 9, 10, 14, 15 or 16, or a country in box 8. Box 11
+        (FATCA filing requirement) is /dividendReports/*/fatcaFilingRequirement and is not one of these boxes. Box 2e
+        is section 897 ordinary dividends (/dividendReports/*/section897OrdinaryDividends), box 2f is section 897
+        capital gain (/dividendReports/*/section897CapitalGain), and box 6 is investment expenses
+        (/dividendReports/*/investmentExpenses). Box 12 is exempt-interest dividends
         (/dividendReports/*/exemptInterestDividends) and box 13 is specified private activity bond interest dividends
         (/dividendReports/*/specifiedPrivateActivityBondInterestDividends). None of those is one of these boxes. Form
         1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured section 1250 gain", 2c "Section 1202
-        gain", 2d "Collectibles (28%) gain", boxes 9-10 liquidation distributions, box 11 FATCA, boxes 14-16 state tax
-        withheld. Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
+        gain", 2d "Collectibles (28%) gain", boxes 9-10 liquidation distributions, boxes 14-16 state tax withheld.
+        Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/fatcaFilingRequirement">
+      <Name>1099-DIV box 11 FATCA filing requirement</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: "If the Foreign Account Tax Compliance Act (FATCA)
+        filing requirement box is checked, the payer is reporting on this Form 1099 to satisfy its account reporting
+        requirement under chapter 4 of the Internal Revenue Code. You may also have a filing requirement. See the
+        Instructions for Form 8938." The check is the payer's chapter 4 report. It is not, by itself, a requirement
+        that the filer file Form 8938, and it is not /dividendReports/*/hasUnsupportedBoxes. A check asks income
+        /requiredToFileForm8938 (26 U.S.C. 6038D, https://www.law.cornell.edu/uscode/text/26/6038D) when Schedule B
+        line 7a question 1 is not Yes. Yes stops because Form 8938 is not produced. No proceeds. Instructions for
+        Form 8938, specified individuals living in the United States: unmarried, more than $50,000 on the last day of
+        the tax year or more than $75,000 at any time during the tax year. Those thresholds are not computed.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/hasDividendFatcaFilingRequirement">
+      <Name>Any 1099-DIV has box 11 checked</Name>
+      <Description>True when any Form 1099-DIV has box 11 (FATCA filing requirement) checked. Form 1099-DIV
+        (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf,
+        Box 11. Complete false when no form is entered, every box 11 is unchecked, or box 11 has not been answered.
+        An unchecked or unanswered box 11 does not ask income /requiredToFileForm8938 unless Schedule B line 7a
+        question 1 is Yes.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <All>
+                      <IsComplete>
+                        <Dependency path="/dividendReports/*/fatcaFilingRequirement" />
+                      </IsComplete>
+                      <Dependency path="/dividendReports/*/fatcaFilingRequirement" />
+                    </All>
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/askForm8938BecauseBox11">
+      <Name>Ask Form 8938 because this 1099-DIV box 11 is checked</Name>
+      <Description>True when this form's box 11 is checked and Schedule B line 7a question 1 is not Yes. Line 7a Yes
+        already asks income /requiredToFileForm8938. Form 1099-DIV (Rev. December 2027) draft, Instructions for
+        Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11. 26 U.S.C. 6038D.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../fatcaFilingRequirement" />
+          <Any>
+            <Not>
+              <IsComplete>
+                <Dependency module="income" path="/hasForeignAccounts" />
+              </IsComplete>
+            </Not>
+            <Not>
+              <Dependency module="income" path="/hasForeignAccounts" />
+            </Not>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/form8938StopsReturn">
+      <Name>This 1099-DIV box 11 and Form 8938 Yes stop the return</Name>
+      <Description>True when this form's box 11 is checked and income /requiredToFileForm8938 is Yes. Form 8938 is not
+        produced (26 U.S.C. 6038D). Complete false when box 11 is unchecked or unanswered, or Form 8938 has not been
+        answered. The interview knockout is interest /flowKnockoutScheduleBPartIII. Form 1099-DIV (Rev. December 2027)
+        draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../fatcaFilingRequirement" />
+          </IsComplete>
+          <Dependency path="../fatcaFilingRequirement" />
+          <IsComplete>
+            <Dependency module="income" path="/requiredToFileForm8938" />
+          </IsComplete>
+          <Dependency module="income" path="/requiredToFileForm8938" />
+        </All>
+      </Derived>
     </Fact>
 
     <Fact path="/dividendReports/*/receivedAsNominee">
@@ -1364,11 +1474,15 @@
       <Description>Yes to /dividendReports/*/hasUnsupportedBoxes. Boxes 2b-2d need the Schedule D Tax Worksheet or Form
         8949/Schedule D (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1
         requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202
-        gain), or box 2d (collectibles (28%) gain)"), boxes 9-10 are liquidation distributions (basis recovery), box 11
-        FATCA may require Form 8938, and boxes 14-16 are state withholding. Box 2e and box 2f are section 897 portions
-        of box 1a and box 2a (26 U.S.C. 897(a)); they are not this stop and are not added again. Box 6 is included in
-        box 1a and is not deducted (26 U.S.C. 67(g)); it is not this stop. A box 2e, 2f or 6 larger than its parent box
-        stops at /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40 stops at paPit
+        gain), or box 2d (collectibles (28%) gain)"), boxes 9-10 are liquidation distributions (basis recovery), and
+        boxes 14-16 are state withholding. Box 8 is a foreign country. Box 11 (FATCA filing requirement) is not this
+        stop. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: the payer is reporting to satisfy its chapter 4
+        account reporting requirement. A check asks income /requiredToFileForm8938 (26 U.S.C. 6038D). Yes stops
+        because Form 8938 is not produced. No proceeds. Box 2e and box 2f are section 897 portions of box 1a and box
+        2a (26 U.S.C. 897(a)); they are not this stop and are not added again. Box 6 is included in box 1a and is not
+        deducted (26 U.S.C. 67(g)); it is not this stop. A box 2e, 2f or 6 larger than its parent box stops at
+        /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40 stops at paPit
         /flowKnockoutPaDividendInvestmentExpenses. Box 12 exempt-interest dividends are Form 1040 line 2a
         (/totalExemptInterestDividends). Box 13 specified private activity bond interest dividends are Form 6251 line
         2g (26 U.S.C. 57(a)(5), /totalSpecifiedPrivateActivityBondInterestDividends). Neither is this stop. None of the

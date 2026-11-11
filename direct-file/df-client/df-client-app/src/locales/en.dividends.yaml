@@ -27,6 +27,7 @@ headings:
   /heading/income/dividends/box-7: Enter the amount from <strong>box 7</strong>, if any.
   /heading/income/dividends/box-12: Enter the amount from <strong>box 12</strong>, if any.
   /heading/income/dividends/box-13: Enter the amount from <strong>box 13</strong>, if any.
+  /heading/income/dividends/box-11: Is the FATCA filing requirement box (box 11) checked?
   /heading/income/dividends/unsupported-boxes: Does this 1099-DIV show anything in any other box?
   /heading/income/dividends/nominee: Did you receive any of these dividends for someone else (as a nominee)?
   /heading/knockout/dividends-holding-period: This tool doesn’t yet support box 1b dividends that aren’t qualified
@@ -130,11 +131,28 @@ info:
       - p:
           Box 13 is the part of box 12 from specified private activity bonds. It is included in box 12 and is reported
           on Form 6251, line 2g. It cannot be more than box 12. Leave box 13 blank if it’s empty on your form.
+  /info/income/dividends/box-11:
+    body:
+      - p:
+          If box 11 is checked, the payer is reporting on this Form 1099-DIV to satisfy its account reporting
+          requirement under chapter 4 of the Internal Revenue Code. You may also have a filing requirement. See the
+          Instructions for Form 8938. A check in box 11 is not, by itself, a reason to stop.
+  /info/income/dividends/form-8938:
+    body:
+      - p:
+          Box 11 means the payer met its own reporting requirement. You may still have to file Form 8938, Statement of
+          Specified Foreign Financial Assets, with your tax return.
+      - p:
+          A specified individual living in the United States who is unmarried has to file Form 8938 when the total
+          value of specified foreign financial assets is more than $50,000 on the last day of the year or more than
+          $75,000 at any time during the year. Direct File does not compute that test and does not file Form 8938. If
+          you are required to file it, you can’t finish in Direct File.
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Answer yes if your form shows an amount in box 2b, 2c, 2d, 9, 10, 14, 15, or 16, a country in box 8, or a
-          check in box 11 (FATCA filing requirement). Boxes 2e, 2f, 6, 12, and 13 are entered on their own screens."
+          "Answer yes if your form shows an amount in box 2b, 2c, 2d, 9, 10, 14, 15, or 16, or a country in box 8. Box
+          11 (FATCA filing requirement) is asked on its own screen. Boxes 2e, 2f, 6, 12, and 13 are entered on their
+          own screens."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -183,8 +201,8 @@ info:
     alertText:
       body:
         - p:
-            This tool supports only boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 12, and 13 of Form 1099-DIV. You’ll need
-            another way to file this return.
+            This tool supports only boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 11, 12, and 13 of Form 1099-DIV. You’ll
+            need another way to file this return.
   /info/knockout/dividends-box-13-exceeds-box-12:
     alertText:
       body:
@@ -247,6 +265,8 @@ fields:
     name: <strong>Box 12</strong> - Exempt-interest dividends
   /dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends:
     name: <strong>Box 13</strong> - Specified private activity bond interest dividends
+  /dividendReports/*/fatcaFilingRequirement:
+    name: <strong>Box 11</strong> - FATCA filing requirement
 checklist:
   /flow/income/dividends:
     heading: Dividends (Form 1099-DIV)
@@ -275,6 +295,7 @@ dataviews:
     /dividendReports/*/writableExemptInterestDividends: Box 12 - Exempt-interest dividends
     /dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends:
       Box 13 - Specified private activity bond interest dividends
+    /dividendReports/*/fatcaFilingRequirement: Box 11 - FATCA filing requirement
     /dividendReports/*/hasUnsupportedBoxes: Does this 1099-DIV show anything in another box?
     /dividendReports/*/receivedAsNominee: Did you receive any of these dividends as a nominee?
     primaryFiler: Your dividends

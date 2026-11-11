@@ -9483,6 +9483,10 @@ info:
       - p: >-
           Puede que tengas que presentar el Formulario 8938 con tu declaración aunque no tengas que presentar el
           Formulario 114 de FinCEN. Si tienes que presentar el Formulario 8938, no puedes terminar en Direct File.
+      - p: >-
+          Una persona especificada que vive en los Estados Unidos y no está casada tiene que presentar el Formulario
+          8938 cuando el valor total de los activos financieros extranjeros especificados es más de $50,000 el último
+          día del año o más de $75,000 en cualquier momento durante el año. Direct File no calcula esa prueba.
   /info/income/income-sources/foreign-trusts-grantor:
     body:
       - p: >-

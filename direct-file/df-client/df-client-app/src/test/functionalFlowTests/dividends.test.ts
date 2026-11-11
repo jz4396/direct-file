@@ -149,19 +149,51 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(`80`),
     });
     expect(at(box12, `1099-div-box-12`, task)).toRouteNextTo(`${path}/1099-div-box-13`);
-    expect(at(box12, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    expect(at(box12, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-box-11`);
     const box13 = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(`80`),
       [`/dividendReports/#${id}/writableSpecifiedPrivateActivityBondInterestDividends`]: createDollarWrapper(`80`),
     });
-    expect(at(box13, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    expect(at(box13, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-box-11`);
     const box13Over = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(`80`),
       [`/dividendReports/#${id}/writableSpecifiedPrivateActivityBondInterestDividends`]: createDollarWrapper(`81`),
     });
     expect(at(box13Over, `1099-div-box-13`, task)).toRouteNextTo(`${path}/1099-div-box-13-knockout`);
+  });
+  it(`box 11 checked asks Form 8938; unchecked does not; Yes stops and No continues`, ({ task }) => {
+    // Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, Box 11. 26 U.S.C. 6038D.
+    const ord = { [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`) };
+    const unchecked = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(false),
+    });
+    expect(at(unchecked, `1099-div-box-11`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    const checked = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
+    });
+    expect(at(checked, `1099-div-box-11`, task)).toRouteNextTo(`${path}/1099-div-form-8938`);
+    const form8938No = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
+      '/requiredToFileForm8938': createBooleanWrapper(false),
+    });
+    expect(at(form8938No, `1099-div-form-8938`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    const form8938Yes = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
+      '/requiredToFileForm8938': createBooleanWrapper(true),
+    });
+    expect(at(form8938Yes, `1099-div-form-8938`, task)).toRouteNextTo(`${path}/1099-div-form-8938-knockout`);
+    const line7aYes = base(`single`, {
+      ...ord,
+      '/hasForeignAccounts': createBooleanWrapper(true),
+      [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
+    });
+    expect(at(line7aYes, `1099-div-box-11`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
   });
   it(`other boxes and nominee answers route to their knockouts`, ({ task }) => {
     const ord = { [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`) };

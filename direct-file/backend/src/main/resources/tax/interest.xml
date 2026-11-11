@@ -1445,15 +1445,14 @@
 
     <Fact path="/scheduleBPartIIIAnswered">
       <Name>Schedule B Part III questions are answered</Name>
-      <Description>True when Part III is answered far enough to print or to stop. A Yes on line 8, or a Yes on
-        Form 8938
-        after line 7a question 1 is Yes, ends the questions. A No on line 7a still needs line 8. A Yes
-        on line 7a needs
-        question 2, line 7b when FinCEN Form 114 is required, a Yes that every country fits, Form 8938 No,
-        and line 8 No.
-        No, because the countries do not fit, ends the questions.
-        An unanswered question is not
-        "No". 2026 draft Instructions for Schedule B PDF pp. 3–4.</Description>
+      <Description>True when Part III is answered far enough to print or to stop. A Yes on line 8, a Yes on
+        Form 8938 after line 7a question 1 is Yes, or a Yes on Form 8938 after a checked 1099-DIV box 11, ends the
+        questions. A No on line 7a still needs line 8. When box 11 is checked, Form 8938 must be No as well. A Yes
+        on line 7a needs question 2, line 7b when FinCEN Form 114 is required, a Yes that every country fits, Form
+        8938 No, and line 8 No. No, because the countries do not fit, ends the questions. An unanswered question is
+        not "No", including an unanswered Form 8938 question after a checked box 11. Form 1099-DIV (Rev. December
+        2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11.
+        26 U.S.C. 6038D. 2026 draft Instructions for Schedule B PDF pp. 3–4.</Description>
       <Derived>
         <Any>
           <All>
@@ -1467,6 +1466,16 @@
               <Dependency module="income" path="/hasForeignTrustsTransactions" />
             </IsComplete>
             <Dependency module="income" path="/hasForeignTrustsTransactions" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
+            </IsComplete>
+            <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
+            <IsComplete>
+              <Dependency module="income" path="/requiredToFileForm8938" />
+            </IsComplete>
+            <Dependency module="income" path="/requiredToFileForm8938" />
           </All>
           <All>
             <IsComplete>
@@ -1486,6 +1495,19 @@
                 <IsComplete>
                   <Dependency module="income" path="/hasForeignTrustsTransactions" />
                 </IsComplete>
+                <Any>
+                  <Not>
+                    <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
+                  </Not>
+                  <All>
+                    <IsComplete>
+                      <Dependency module="income" path="/requiredToFileForm8938" />
+                    </IsComplete>
+                    <Not>
+                      <Dependency module="income" path="/requiredToFileForm8938" />
+                    </Not>
+                  </All>
+                </Any>
               </All>
               <All>
                 <Dependency module="income" path="/hasForeignAccounts" />
@@ -1571,13 +1593,19 @@
         Line 8: Form 3520 (26
         U.S.C. 6048). Form 8938 and Form 3520 are not produced, so those Yes answers refuse
         the print. PDF p. 4, Line 7b: "Attach a separate statement if you need more space." That statement is not
-        produced, so No on whether the countries fit refuses the print and stops the return. Question 2
+        produced, so No on whether the countries fit refuses the print and stops the return. A checked 1099-DIV
+        box 11 with Form 8938 Yes also refuses the print and stops the return, even when line 7a is No. Form
+        1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11. Form 8938 unanswered after that check refuses
+        the print and does not knock the interview out. Form 8938 No, with line 8 No, prints. Question 2
         unanswered, line 7b blank when FinCEN Form 114 is required, or that fit question unanswered, also
         refuses the print.
         An unanswered line 7a or
         line 8 is not "No", including when interest and ordinary dividends are not over
         $1,500. Exactly $1,500 with every
-        asked Part III question "No" still prints.</Description>
+        asked Part III question "No" still prints. Instructions for Form 8938, specified individuals living in the
+        United States: unmarried, more than $50,000 on the last day of the tax year or more than $75,000 at any
+        time during the tax year. Those thresholds are not computed.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1615,6 +1643,23 @@
                   <Dependency module="income" path="/hasForeignAccounts" />
                 </IsComplete>
                 <Dependency module="income" path="/hasForeignAccounts" />
+                <IsComplete>
+                  <Dependency module="income" path="/requiredToFileForm8938" />
+                </IsComplete>
+                <Dependency module="income" path="/requiredToFileForm8938" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
+                </IsComplete>
+                <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
                 <IsComplete>
                   <Dependency module="income" path="/requiredToFileForm8938" />
                 </IsComplete>
@@ -1676,18 +1721,16 @@
     <Fact path="/flowKnockoutScheduleBPartIII">
       <Name>Knockout: Schedule B Part III foreign account or trust</Name>
       <Description>True only when Schedule B line 8 is Yes, Form 8938 is required after line 7a question 1 is Yes,
-        or the countries do not fit on line 7b.
-        Wired into /flowIsKnockedOut. A Yes on line 7a question 1 or question 2 does not knock the
-        interview out: those
-        answers print. An unanswered Part III, including an unanswered question 2, is complete
-        false here. The print
-        still fails closed through /flowPrintRefuseScheduleBPartIII. 2026 draft Instructions
-        PDF pp. 3–4 (FinCEN Form
-        114, 31 U.S.C. 5314; Form 8938, 26 U.S.C. 6038D; Form 3520, 26 U.S.C. 6048).
-        Complete false when the supported
-        Part III answers are in place, including exactly $1,500 with every asked
-        question No (2026 draft Instructions PDF
-        p. 2: "over $1,500").</Description>
+        Form 8938 is required after a checked 1099-DIV box 11 (even when line 7a is No), or the countries do not fit
+        on line 7b. Wired into /flowIsKnockedOut. A Yes on line 7a question 1 or question 2 does not knock the
+        interview out: those answers print. A checked box 11 does not knock the interview out until Form 8938 is Yes.
+        An unanswered Part III, including an unanswered question 2 or an unanswered Form 8938 question, is complete
+        false here. The print still fails closed through /flowPrintRefuseScheduleBPartIII. Form 1099-DIV
+        (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf,
+        Box 11. 2026 draft Instructions PDF pp. 3–4 (FinCEN Form 114, 31 U.S.C. 5314; Form 8938, 26 U.S.C. 6038D;
+        Form 3520, 26 U.S.C. 6048). Complete false when the supported Part III answers are in place, including
+        exactly $1,500 with every asked question No (2026 draft Instructions PDF p. 2: "over $1,500"), and including
+        box 11 checked with Form 8938 No and line 8 No.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>

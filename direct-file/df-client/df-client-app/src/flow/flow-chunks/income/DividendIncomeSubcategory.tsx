@@ -20,14 +20,15 @@ import {
 import type { ConditionString } from '../../Condition.js';
 
 /**
- * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 12 and 13.
+ * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 and 13.
  * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4,
  * line 2a includes box 12. Box 2e is the section 897 portion of box 1a and box 2f is the section 897 portion of
  * box 2a (26 U.S.C. 897(a)); neither is added again. Box 6 is included in box 1a and is not deducted
  * (26 U.S.C. 67(g)). A portion larger than its parent box stops the return. A nonzero box 6 on a PA-40 stops
  * the return. Qualified REIT dividends in box 5 are Form 8995 line 6 (26 U.S.C. 199A(b)(1)(B)). A no
  * to the 45-day holding period stops the return (26 CFR 1.199A-3(c)(2)(ii)). Box 13 is Form 6251 line 2g
- * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Boxes 2b, 2c, 2d, 8-11 and 14-16 still stop the return.
+ * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Box 11 (FATCA) asks /requiredToFileForm8938. Yes stops.
+ * No proceeds. Boxes 2b, 2c, 2d, 8-10 and 14-16 still stop the return.
  * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
@@ -241,6 +242,26 @@ export const DividendIncomeSubcategory = (
           `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`,
           `dividends-box-13-exceeds-box-12`
         )}
+        <Screen route='1099-div-box-11'>
+          <Heading i18nKey='/heading/income/dividends/box-11' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-11' />
+          <Boolean path='/dividendReports/*/fatcaFilingRequirement' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='1099-div-form-8938' condition='/dividendReports/*/askForm8938BecauseBox11'>
+          <Heading
+            i18nKey='/heading/income/income-sources/form-8938-required'
+            condition={{ operator: `isFalse`, condition: `/isFilingStatusMFJ` }}
+          />
+          <Heading
+            i18nKey='/heading/income/income-sources/form-8938-required-mfj'
+            condition='/isFilingStatusMFJ'
+          />
+          <InfoDisplay i18nKey='/info/income/dividends/form-8938' />
+          <Boolean path='/requiredToFileForm8938' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        {knockout(`1099-div-form-8938-knockout`, `/dividendReports/*/form8938StopsReturn`, `foreign-accounts-trusts`)}
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />
           <InfoDisplay i18nKey='/info/income/dividends/unsupported-boxes' />
