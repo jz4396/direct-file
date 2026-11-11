@@ -118,6 +118,10 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `premium share of a reported total: 1/3 of time-and-a-half, 1/4 of double time, or 1/2 of the premium (§ 225(c)(1) excess over the regular rate)`,
   },
+  '/flowKnockoutWashingtonCapitalGainsTax': {
+    kind: `structural`,
+    reason: `greater-than stop at the RCW 82.87.060(1) statutory $250,000 standard deduction floor, not the higher amount indexed under RCW 82.87.150 (WA DOR: $278,000 for 2025; the 2026 figure is not yet published). Deliberately not a tax-year parameter. The WA return is not produced. Refs #93.`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,

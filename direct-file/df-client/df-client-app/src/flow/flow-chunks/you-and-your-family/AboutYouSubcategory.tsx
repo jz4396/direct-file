@@ -343,6 +343,22 @@ export const AboutYouSubcategory = (
         <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
         <SaveAndOrContinueButton />
       </Screen>
+      {/* #93 slice 2: full-year WA, TN, and NH follow the same no-state-return note. */}
+      <Screen route='state-breather-wa' condition='/livedInWa'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='state-breather-tn' condition='/livedInTn'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='state-breather-nh' condition='/livedInNh'>
+        <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-no-income-tax' />
+        <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-no-income-tax-info' />
+        <SaveAndOrContinueButton />
+      </Screen>
       <Screen route='state-breather-nj' condition='/livedInNj'>
         <Heading i18nKey='/heading/you-and-your-family/about-you/state-breather-nj' />
         <InfoDisplay i18nKey='/info/you-and-your-family/about-you/state-breather-nj-info' />

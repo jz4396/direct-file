@@ -2565,11 +2565,53 @@
       <Name>The filer(s) lives in Washington State</Name>
       <Description>Washington has a Working Families Tax Credit, so we need a condition to send the
         filer(s) to the
-        website in order to check their eligibility.</Description>
+        website in order to check their eligibility. Full-year Washington residents also follow the Florida
+        no-state-return path (/stateReturnIsWa). RCW 82.87.040 imposes the tax on WA long-term capital gains; the WA
+        return is not produced. Refs #93.</Description>
       <Derived>
         <Equal>
           <Left>
             <Enum optionsPath="/scopedStateOptions">wa</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/livedInTn">
+      <Name>The filer(s) lives in Tennessee</Name>
+      <Description>Hall income tax (Tenn. Code Ann. §67-2-101 et seq.) "is fully repealed for tax years beginning
+        January 1, 2021" — TN DOR Notice #17-09 (Pub. Ch. 181, §13),
+        https://www.tn.gov/content/dam/tn/revenue/documents/notices/income/income17-09.pdf. Full-year Tennessee
+        residents follow the Florida no-state-return path. No stop beyond W-2 box 17. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">tn</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/livedInNh">
+      <Name>The filer(s) lives in New Hampshire</Name>
+      <Description>RSA ch. 77 repealed by 2021, 91:99, II, eff. Jan. 1, 2025
+        (https://gc.nh.gov/rsa/html/V/77/77-mrg.htm). NH DRA: "The I&amp;D Tax was repealed for taxable periods
+        beginning after December 31, 2024" (https://www.revenue.nh.gov/taxes-glance/interest-dividends-tax), and "The
+        State of New Hampshire does not have an income tax on an individual's reported W-2 wages." There is no TY2026
+        I&amp;D residue, so an I&amp;D stop would block valid returns. Full-year New Hampshire residents follow the
+        Florida no-state-return path. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">nh</Enum>
           </Left>
           <Right>
             <Dependency path="/filerResidenceAndIncomeState" />
@@ -2795,10 +2837,10 @@
 
     <Fact path="/filerResidenceOrIncomeStateOutOfScope">
       <Description>The primary filer earned income either in none of our in scope states or multiple. Refs #93:
-        full-year TX, NV, SD, WY, and AK are in scope the same way FL is (one scoped state). On main this fact is
-        true only for noneOfThese and moreThanOne. WA, TN, and NH are in scope, and this slice leaves them as they
-        are on main. Whether they get their own no-return facts is a later slice. moreThanOne is a stop unless the
-        existing PA/FL part-year path applies.</Description>
+        full-year TX, NV, SD, WY, AK, WA, TN, and NH are in scope the same way FL is (one scoped state). This fact is
+        true only for noneOfThese and moreThanOne. The WA, TN, and NH no-return facts (/stateReturnIsWa,
+        /stateReturnIsTn, /stateReturnIsNh) do not change that. moreThanOne is a stop unless the existing PA/FL
+        part-year path applies.</Description>
       <Derived>
         <Any>
           <Equal>
@@ -3378,8 +3420,8 @@
     <Fact path="/hasIncomeInScope">
       <Name>Flow: Filer Has Income In-Scope</Name>
       <Description>The filer has only earned income in ONE of our in-scope states. Refs #93: full-year TX, NV, SD,
-        WY, and AK are in scope wherever FL is (this fact, via /filerResidenceOrIncomeStateOutOfScope). WA, TN, and
-        NH are in scope on main, and this slice leaves them unchanged. moreThanOne is a stop unless
+        WY, AK, WA, TN, and NH are in scope wherever FL is (this fact, via /filerResidenceOrIncomeStateOutOfScope).
+        The WA, TN, and NH no-return facts do not change when this is true. moreThanOne is a stop unless
         /paPartYearSupported.</Description>
       <Derived>
         <Not>

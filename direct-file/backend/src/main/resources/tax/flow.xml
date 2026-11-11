@@ -57,6 +57,10 @@
           <Dependency module="formW2s" path="/flowKnockoutSouthDakotaStateWithholding" />
           <Dependency module="formW2s" path="/flowKnockoutWyomingStateWithholding" />
           <Dependency module="formW2s" path="/flowKnockoutAlaskaStateWithholding" />
+          <!-- #93 slice 2: W-2 box 17 stops for full-year WA, TN, and NH, each modeled on the Texas stop. -->
+          <Dependency module="formW2s" path="/flowKnockoutWashingtonStateWithholding" />
+          <Dependency module="formW2s" path="/flowKnockoutTennesseeStateWithholding" />
+          <Dependency module="formW2s" path="/flowKnockoutNewHampshireStateWithholding" />
           <Dependency module="formW2s" path="/flowKnockoutNonQualifiedPlans" />
           <Dependency module="form8959" path="/flowKnockoutForm8959Unsupported" />
           <Dependency module="formW2s" path="/hasABox14NYRRTAValueWeKnockout" />
@@ -171,6 +175,8 @@
           <Dependency module="scheduleD" path="/flowKnockoutCollectibles" />
           <Dependency module="scheduleD" path="/flowKnockoutUnrecaptured1250Gain" />
           <Dependency module="scheduleD" path="/flowKnockoutForm8949CodeQ" />
+          <!-- #93: WA capital gains excise. RCW 82.87.040; RCW 82.87.060(1) $250,000 standard deduction. The WA return is not produced. -->
+          <Dependency module="stateReturn" path="/flowKnockoutWashingtonCapitalGainsTax" />
           <Dependency module="form6251" path="/flowKnockoutAmtPreferenceItems" />
           <Dependency module="form6251" path="/flowKnockoutAmtPreferenceItemsUnanswered" />
           <Dependency module="form6251" path="/flowKnockoutAmtMfsAddBack" />

@@ -1,10 +1,17 @@
-# Refs #93. Notas para residentes de todo el año de TX, NV, SD, WY y AK.
+# Refs #93. Notas para residentes de todo el año de TX, NV, SD, WY, AK, WA, TN y NH.
+# RCW 82.87.040 y RCW 82.87.060(1): no se produce la declaración de Washington.
+# Tenn. Code Ann. §67-2-101 et seq. RSA ch. 77 derogado (2021, 91:99, II): no hay un stop de Interest & Dividends.
+subsubcategories:
+  /flow/your-taxes/amount:
+    wa-capital-gains: Ganancias de capital de Washington
 headings:
   /heading/you-and-your-family/about-you/state-breather-no-income-tax: >-
     Tu estado no tiene declaración estatal de impuestos sobre los ingresos.
   /heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko: >-
     Direct File aún no acepta formularios W-2 con impuestos estatales retenidos cuando tu estado no tiene impuesto sobre
     los ingresos de las personas.
+  /heading/knockout/income/wa-capital-gains-ko: >-
+    Direct File no produce una declaración de ganancias de capital de Washington.
 info:
   /info/you-and-your-family/about-you/state-breather-no-income-tax-info:
     body: >-
@@ -15,3 +22,8 @@ info:
       Tu estado no tiene un impuesto sobre los ingresos de las personas que se pueda retener, pero uno de tus
       formularios W-2 muestra impuestos estatales retenidos en la casilla 17. Esa retención es un error del empleador, y
       Direct File no calcula un reembolso de ella.
+  /info/knockout/income/wa-capital-gains-ko:
+    body: >-
+      Washington cobra un impuesto sobre las ganancias de capital a largo plazo que superan una deducción estándar de
+      $250,000. Tu ganancia neta federal a largo plazo supera ese monto, y Direct File no produce la declaración de
+      Washington.

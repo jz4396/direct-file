@@ -142,6 +142,11 @@ class PrintRefusingKnockoutsTest {
     static final String PAB_INTEREST_EXCEEDS_BOX_8 = "/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8";
     /** 1099-DIV box 13 larger than box 12. 26 U.S.C. 57(a)(5). */
     static final String PAB_DIVIDENDS_EXCEED_BOX_12 = "/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12";
+    /**
+     * RCW 82.87.040; RCW 82.87.060(1) $250,000 standard deduction, indexed under RCW 82.87.150. The WA return is not
+     * produced.
+     */
+    static final String WASHINGTON_CAPITAL_GAINS_KNOCKOUT = "/flowKnockoutWashingtonCapitalGainsTax";
 
     static final String DIVIDEND_ID = "13500000-0000-4000-8000-000000000502";
     /**
@@ -238,7 +243,8 @@ class PrintRefusingKnockoutsTest {
                 DIVIDEND_NOMINEE_KNOCKOUT, // nominee dividends
                 DIVIDEND_INCONSISTENT_KNOCKOUT, // box 1b, 2e, 5, or 6 larger than box 1a, or box 2f larger than box 2a
                 PAB_INTEREST_EXCEEDS_BOX_8, // 1099-INT box 9 larger than box 8
-                PAB_DIVIDENDS_EXCEED_BOX_12)); // 1099-DIV box 13 larger than box 12
+                PAB_DIVIDENDS_EXCEED_BOX_12, // 1099-DIV box 13 larger than box 12
+                WASHINGTON_CAPITAL_GAINS_KNOCKOUT)); // RCW 82.87.060(1): WA long-term gain over $250,000
         assertEquals(expected, PrintRefusingKnockouts.FACT_PATHS);
         // #123 adds the PA-40 and Schedule SP stops besides NRH. #89 adds the Form 6251 stops, including the
         // unanswered preference question when the form is required. #246 adds /flowKnockoutScheduleEPartII.
@@ -251,7 +257,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(58, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(59, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
