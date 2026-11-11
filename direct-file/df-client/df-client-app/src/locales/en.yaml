@@ -4681,6 +4681,10 @@ info:
       - p:
           You may have to file Form 8938 with your tax return even if you do not have to file FinCEN Form 114. If you
           are required to file Form 8938, you can’t finish in Direct File.
+      - p:
+          A specified individual living in the United States who is unmarried has to file Form 8938 when the total
+          value of specified foreign financial assets is more than $50,000 on the last day of the year or more than
+          $75,000 at any time during the year. Direct File does not compute that test.
   /info/income/income-sources/foreign-trusts-grantor:
     body:
       - p:

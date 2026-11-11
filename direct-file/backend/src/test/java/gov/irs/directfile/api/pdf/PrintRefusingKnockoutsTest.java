@@ -122,8 +122,8 @@ class PrintRefusingKnockoutsTest {
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
     /**
-     * Form 1099-DIV boxes 2b-2d, 8-11 and 14-16, including section 1202 and collectibles. Boxes 2e, 2f and 6 are
-     * portions of box 1a or 2a. Box 13 is line 2g.
+     * Form 1099-DIV boxes 2b-2d, 8-10 and 14-16, including section 1202 and collectibles. Box 11 (FATCA) asks Form
+     * 8938 and is not this stop. Boxes 2e, 2f and 6 are portions of box 1a or 2a. Box 13 is line 2g.
      */
     static final String DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT = "/flowKnockoutDividendUnsupportedBoxes";
     /** 26 U.S.C. 301(c)(3)(A): box 3 above basis, reported on Form 8949. */
@@ -230,7 +230,7 @@ class PrintRefusingKnockoutsTest {
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 (not lines 2g and 2j)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
-                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2d, 8-11, 14-16
+                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2d, 8-10, 14-16 (not box 11)
                 DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
                 DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
                 DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT, // box 5 that is not a qualified REIT dividend
@@ -1470,6 +1470,48 @@ class PrintRefusingKnockoutsTest {
         assertEquals(Boolean.FALSE, answeredNo.get("/flowIsKnockedOut").get());
         assertEquals(
                 List.of(), PrintRefusingKnockouts.refusingPaths(answeredNo), "exactly $1,500 with Part III No prints");
+
+        // Box 11 checked is not a stop. Form 8938 No prints Schedule B. Form 8938 Yes stops. Form 1099-DIV
+        // (Rev. December 2027) draft, Instructions for Recipient, Box 11. 26 U.S.C. 6038D.
+        Map<String, FactTypeWithItem> box11No = commonDividendReturn(mapper);
+        putJson(box11No, mapper, div + "/fatcaFilingRequirement", ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(box11No, mapper, "/requiredToFileForm8938", ScheduleATy2026PdfSmokeTest.bool(false));
+        Graph box11Proceeds = fgs.getGraph(box11No);
+        assertEquals("1000000.00", box11Proceeds.get("/ordinaryDividends").get().toString());
+        assertEquals(Boolean.TRUE, box11Proceeds.get("/requiresScheduleB").get());
+        assertEquals(Boolean.TRUE, box11Proceeds.get("/hasDividendFatcaFilingRequirement").get());
+        assertEquals(Boolean.TRUE, box11Proceeds.get("/flowShouldAskForm8938").get());
+        assertEquals(Boolean.FALSE, box11Proceeds.get("/scheduleBPartIIIOutOfScope").get());
+        assertEquals(Boolean.TRUE, box11Proceeds.get("/scheduleBPartIIIAnswered").get());
+        assertCompleteFalse(box11Proceeds, SCHEDULE_B_PART_III_PRINT_REFUSE);
+        assertCompleteFalse(box11Proceeds, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
+        assertCompleteFalse(box11Proceeds, DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT);
+        assertEquals(Boolean.FALSE, box11Proceeds.get("/flowIsKnockedOut").get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(box11Proceeds), "box 11 and Form 8938 No prints");
+
+        Map<String, FactTypeWithItem> box11Yes = commonDividendReturn(mapper);
+        putJson(box11Yes, mapper, div + "/fatcaFilingRequirement", ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(box11Yes, mapper, "/requiredToFileForm8938", ScheduleATy2026PdfSmokeTest.bool(true));
+        Graph box11Stops = fgs.getGraph(box11Yes);
+        assertEquals(Boolean.TRUE, box11Stops.get("/scheduleBPartIIIOutOfScope").get());
+        assertEquals(Boolean.TRUE, box11Stops.get(SCHEDULE_B_PART_III_PRINT_REFUSE).get());
+        assertEquals(Boolean.TRUE, box11Stops.get(SCHEDULE_B_PART_III_FLOW_KNOCKOUT).get());
+        assertEquals(Boolean.TRUE, box11Stops.get("/flowIsKnockedOut").get());
+        assertCompleteFalse(box11Stops, DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT);
+        assertEquals(List.of(SCHEDULE_B_PART_III_PRINT_REFUSE), PrintRefusingKnockouts.refusingPaths(box11Stops));
+
+        Map<String, FactTypeWithItem> box11Open = commonDividendReturn(mapper);
+        putJson(box11Open, mapper, div + "/fatcaFilingRequirement", ScheduleATy2026PdfSmokeTest.bool(true));
+        Graph box11Unanswered = fgs.getGraph(box11Open);
+        assertEquals(Boolean.FALSE, box11Unanswered.get("/scheduleBPartIIIAnswered").get());
+        assertEquals(Boolean.FALSE, box11Unanswered.get("/scheduleBPartIIIOutOfScope").get());
+        assertEquals(Boolean.TRUE, box11Unanswered.get(SCHEDULE_B_PART_III_PRINT_REFUSE).get());
+        assertCompleteFalse(box11Unanswered, SCHEDULE_B_PART_III_FLOW_KNOCKOUT);
+        assertNotFlowKnockedOut(box11Unanswered);
+
+        Graph box11Unchecked = fgs.getGraph(commonDividendReturn(mapper));
+        assertEquals(Boolean.FALSE, box11Unchecked.get("/hasDividendFatcaFilingRequirement").get());
+        assertEquals(Boolean.FALSE, box11Unchecked.get("/flowShouldAskForm8938").get());
     }
 
     /** Unanswered Part III leaves /flowIsKnockedOut incomplete or false. It must not be a complete true. */

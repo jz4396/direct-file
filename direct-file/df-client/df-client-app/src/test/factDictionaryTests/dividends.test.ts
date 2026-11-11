@@ -2,7 +2,11 @@
 // Box 13 is Form 6251 line 2g and cannot exceed box 12. Box 2e is the section 897 portion of box 1a and box 2f is
 // the section 897 portion of box 2a (26 U.S.C. 897(a)); neither is added again. Box 6 is included in box 1a and is
 // not deducted (26 U.S.C. 67(g)). A portion one dollar over its parent box stops the return. A nonzero box 6 on a
-// PA-40 stops the return. Boxes 2b, 2c, 2d and 8-11 still stop.
+// PA-40 stops the return. Boxes 2b, 2c, 2d, 8, 9, 10 and 14-16 still stop. Box 11 (FATCA filing requirement) does
+// not stop by itself: it asks /requiredToFileForm8938. Yes stops (26 U.S.C. 6038D). No proceeds. Form 1099-DIV
+// (Rev. December 2027) draft, Instructions for Recipient, Box 11. Instructions for Form 8938: a specified individual
+// living in the United States who is unmarried files when specified foreign financial assets are more than $50,000
+// on the last day of the year or more than $75,000 at any time. Those thresholds are not computed.
 // Form 1040 instr. (2025; the 2026 instructions are not yet posted) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
 // p. 26 line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
 // Form(s) 1099-DIV." p. 25 line 3a: "Enter your total qualified dividends on line 3a. Qualified dividends are also
@@ -61,6 +65,7 @@ type Div = {
   holdingNotMet?: boolean;
   overBasis?: boolean;
   otherBoxes?: boolean;
+  box11?: boolean;
   nominee?: boolean;
   ftcOk?: boolean;
   reitHoldingMet?: boolean;
@@ -106,6 +111,9 @@ const divItem = (f: Div) => {
       ? { [`/dividendReports/#${id}/nondividendDistributionsExceedBasis`]: createBooleanWrapper(f.overBasis ?? false) }
       : {}),
     [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(f.otherBoxes ?? false),
+    ...(f.box11 === undefined
+      ? {}
+      : { [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(f.box11) }),
     [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(f.nominee ?? false),
     [`/dividendReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
   };
@@ -467,12 +475,136 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
       `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`
     );
   });
-  it(`boxes 2b, 2c, 2d and 8-11 still stop; boxes 2e, 2f and 6 do not`, ({ task }) => {
+  it(`boxes 2b, 2c, 2d, 8, 9, 10 and 14-16 still stop; box 11, 2e, 2f and 6 do not`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
     blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
     const supported = build(divs({ box1a: 100, box2a: 40, box2e: 100, box2f: 40, box6: 100, otherBoxes: false }));
     expect(get(supported, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
     noKnockouts(supported);
+  });
+  it(`box 11 checked and Form 8938 No prints Schedule B and does not stop`, ({ task }) => {
+    // Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient, Box 11. 26 U.S.C. 6038D.
+    // Instructions for Form 8938: unmarried specified individual living in the United States, more than $50,000 on
+    // the last day of the year or more than $75,000 at any time. Those thresholds are not computed.
+    task.meta.testedFactPaths = [
+      `/hasDividendFatcaFilingRequirement`,
+      `/dividendReports/*/askForm8938BecauseBox11`,
+      `/flowShouldAskForm8938`,
+      `/scheduleBPartIIIOutOfScope`,
+      `/scheduleBPartIIIAnswered`,
+      `/flowPrintRefuseScheduleBPartIII`,
+      `/flowKnockoutScheduleBPartIII`,
+      `/requiresScheduleB`,
+      `/dividendReports/*/roundedOrdinaryDividends`,
+    ];
+    const g = build({
+      ...divs({ box1a: 2000, box11: true }),
+      '/requiredToFileForm8938': createBooleanWrapper(false),
+    });
+    expect(val(g, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(g, `/dividendReports/#${d1}/roundedOrdinaryDividends`)).toBe(`2000.00`);
+    expect(val(g, `/dividendReports/#${d1}/payer`)).toBe(`Index Fund Co`);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/hasDividendFatcaFilingRequirement`).get).toBe(true);
+    expect(get(g, `/dividendReports/#${d1}/askForm8938BecauseBox11`).get).toBe(true);
+    expect(get(g, `/flowShouldAskForm8938`).get).toBe(true);
+    expect(get(g, `/dividendReports/#${d1}/form8938StopsReturn`).get).toBe(false);
+    expect(get(g, `/scheduleBPartIIIOutOfScope`).get).toBe(false);
+    expect(get(g, `/scheduleBPartIIIAnswered`).get).toBe(true);
+    expect(get(g, `/flowPrintRefuseScheduleBPartIII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    noKnockouts(g);
+  });
+  it(`box 11 checked and Form 8938 Yes stops`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/form8938StopsReturn`,
+      `/scheduleBPartIIIOutOfScope`,
+      `/flowKnockoutScheduleBPartIII`,
+      `/flowPrintRefuseScheduleBPartIII`,
+    ];
+    const g = build({
+      ...divs({ box1a: 2000, box11: true }),
+      '/requiredToFileForm8938': createBooleanWrapper(true),
+    });
+    expect(val(g, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(get(g, `/dividendReports/#${d1}/form8938StopsReturn`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIIIOutOfScope`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIIIAnswered`).get).toBe(true);
+    expect(get(g, `/flowPrintRefuseScheduleBPartIII`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutScheduleBPartIII`);
+  });
+  it(`box 11 unchecked does not ask Form 8938 when line 7a is No`, ({ task }) => {
+    task.meta.testedFactPaths = [`/hasDividendFatcaFilingRequirement`, `/flowShouldAskForm8938`];
+    const unchecked = build(divs({ box1a: 2000, box11: false }));
+    expect(get(unchecked, `/hasDividendFatcaFilingRequirement`).complete).toBe(true);
+    expect(get(unchecked, `/hasDividendFatcaFilingRequirement`).get).toBe(false);
+    expect(get(unchecked, `/flowShouldAskForm8938`).get).toBe(false);
+    expect(get(unchecked, `/dividendReports/#${d1}/askForm8938BecauseBox11`).get).toBe(false);
+    expect(get(unchecked, `/scheduleBPartIIIAnswered`).get).toBe(true);
+    expect(get(unchecked, `/flowPrintRefuseScheduleBPartIII`).get).toBe(false);
+    noKnockouts(unchecked);
+    const unanswered = build(divs({ box1a: 2000 }));
+    expect(get(unanswered, `/hasDividendFatcaFilingRequirement`).get).toBe(false);
+    expect(get(unanswered, `/flowShouldAskForm8938`).get).toBe(false);
+  });
+  it(`box 11 checked with Form 8938 unanswered refuses the print and does not knock out`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleBPartIIIAnswered`,
+      `/flowPrintRefuseScheduleBPartIII`,
+      `/flowKnockoutScheduleBPartIII`,
+      `/scheduleBPartIIIOutOfScope`,
+    ];
+    const g = build(divs({ box1a: 2000, box11: true }));
+    expect(get(g, `/flowShouldAskForm8938`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIIIAnswered`).get).toBe(false);
+    expect(get(g, `/scheduleBPartIIIOutOfScope`).complete).toBe(true);
+    expect(get(g, `/scheduleBPartIIIOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowPrintRefuseScheduleBPartIII`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleBPartIII`).get).toBe(false);
+    const knockedOut = get(g, `/flowIsKnockedOut`);
+    expect(knockedOut.complete && knockedOut.get === true).toBe(false);
+  });
+  it(`line 7a Yes still asks Form 8938 and still stops on Yes when box 11 is unchecked`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowShouldAskForm8938`, `/flowKnockoutScheduleBPartIII`];
+    const asks = build({
+      ...divs({ box1a: 100, box11: false }),
+      '/hasForeignAccounts': createBooleanWrapper(true),
+      '/requiredToFileFinCENForm114': createBooleanWrapper(false),
+    });
+    expect(get(asks, `/flowShouldAskForm8938`).get).toBe(true);
+    expect(get(asks, `/dividendReports/#${d1}/askForm8938BecauseBox11`).get).toBe(false);
+    const stops = build({
+      ...divs({ box1a: 100, box11: false }),
+      '/hasForeignAccounts': createBooleanWrapper(true),
+      '/requiredToFileFinCENForm114': createBooleanWrapper(false),
+      '/requiredToFileForm8938': createBooleanWrapper(true),
+    });
+    expect(get(stops, `/scheduleBPartIIIOutOfScope`).get).toBe(true);
+    expect(get(stops, `/flowKnockoutScheduleBPartIII`).get).toBe(true);
+    expect(get(stops, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(stops, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    const alreadyAsked = build({
+      ...divs({ box1a: 100, box11: true }),
+      '/hasForeignAccounts': createBooleanWrapper(true),
+      '/requiredToFileFinCENForm114': createBooleanWrapper(false),
+      '/requiredToFileForm8938': createBooleanWrapper(false),
+    });
+    expect(get(alreadyAsked, `/flowShouldAskForm8938`).get).toBe(true);
+    expect(get(alreadyAsked, `/dividendReports/#${d1}/askForm8938BecauseBox11`).get).toBe(false);
+    expect(get(alreadyAsked, `/flowKnockoutScheduleBPartIII`).get).toBe(false);
+  });
+  it(`a later 1099-DIV with box 11 checked asks Form 8938 once that form is reached`, ({ task }) => {
+    task.meta.testedFactPaths = [`/hasDividendFatcaFilingRequirement`, `/dividendReports/*/askForm8938BecauseBox11`];
+    const g = build(divs({ box1a: 100, box11: false }, { box1a: 50, box11: true }));
+    expect(get(g, `/hasDividendFatcaFilingRequirement`).get).toBe(true);
+    expect(get(g, `/dividendReports/#${d1}/askForm8938BecauseBox11`).get).toBe(false);
+    expect(get(g, `/dividendReports/#${d2}/askForm8938BecauseBox11`).get).toBe(true);
+    expect(get(g, `/flowShouldAskForm8938`).get).toBe(true);
   });
   it(`received as nominee`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`];

@@ -276,9 +276,16 @@
         required to file
         Form 8938, Statement of Specified Foreign Financial Assets, with your income tax return."
         26 U.S.C. 6038D. Asked
-        after line 7a question 1 is Yes. Yes stops the return. Form 8938 is not produced.
-        No, with question 2 answered
-        and line 8 No, prints Schedule B.</Description>
+        when Schedule B line 7a question 1 is Yes, or when any Form 1099-DIV has box 11 (FATCA filing requirement)
+        checked (dividends /hasDividendFatcaFilingRequirement). Form 1099-DIV (Rev. December 2027) draft,
+        Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: "If the Foreign
+        Account Tax Compliance Act (FATCA) filing requirement box is checked, the payer is reporting on this Form
+        1099 to satisfy its account reporting requirement under chapter 4 of the Internal Revenue Code. You may also
+        have a filing requirement. See the Instructions for Form 8938." Instructions for Form 8938, specified
+        individuals living in the United States: unmarried, more than $50,000 on the last day of the tax year or
+        more than $75,000 at any time during the tax year. Those thresholds are not computed. Yes stops the return.
+        Form 8938 is not produced. No proceeds. No, with question 2 answered and line 8 No, prints Schedule B. The
+        same No, when line 7a is No and box 11 is checked, also prints Schedule B.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -286,11 +293,14 @@
 
     <Fact path="/scheduleBPartIIIOutOfScope">
       <Name>Schedule B Part III stop</Name>
-      <Description>True when line 8 is Yes, Form 8938 is required after a Yes on line 7a, or the country list
-        does not fit on line 7b. 2026 draft Instructions PDF p. 4, Line 7b: "Attach a separate statement if you need
-        more space." That statement is not produced. PDF p. 4, Line 8 (Form 3520, 26 U.S.C. 6048) and PDF p. 3,
-        Form 8938 (26 U.S.C. 6038D). A Yes on line 7a question 1 or question 2 is not this stop. Complete false when
-        those answers are No or have not been given.</Description>
+      <Description>True when line 8 is Yes, Form 8938 is required after a Yes on line 7a, Form 8938 is required
+        after a checked 1099-DIV box 11 even when line 7a is No, or the country list does not fit on line 7b.
+        2026 draft Instructions PDF p. 4, Line 7b: "Attach a separate statement if you need more space." That
+        statement is not produced. PDF p. 4, Line 8 (Form 3520, 26 U.S.C. 6048) and PDF p. 3, Form 8938
+        (26 U.S.C. 6038D). Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11. A Yes on line 7a question 1 or question 2 is not
+        this stop. A checked box 11 is not this stop until Form 8938 is Yes. Complete false when those answers are
+        No or have not been given, including when box 11 is unchecked or unanswered.</Description>
       <Derived>
         <Any>
           <All>
@@ -310,6 +320,16 @@
               <Dependency path="/hasForeignAccounts" />
             </IsComplete>
             <Dependency path="/hasForeignAccounts" />
+            <IsComplete>
+              <Dependency path="/requiredToFileForm8938" />
+            </IsComplete>
+            <Dependency path="/requiredToFileForm8938" />
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
+            </IsComplete>
+            <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
             <IsComplete>
               <Dependency path="/requiredToFileForm8938" />
             </IsComplete>
@@ -362,40 +382,71 @@
 
     <Fact path="/flowShouldAskForm8938">
       <Name>Ask whether Form 8938 is required</Name>
-      <Description>Asked after line 7a question 1 is Yes and question 2 is answered. When question 2 is Yes, line 7b
-        must name a country and every country must fit on the two lines. 2026 draft Instructions PDF p. 3, Form 8938
-        tip, and PDF p. 4, Line 7b.</Description>
+      <Description>Asked after line 7a question 1 is Yes and question 2 is answered, or when line 7a question 1 is
+        No and any Form 1099-DIV has box 11 checked (dividends /hasDividendFatcaFilingRequirement). When question 2
+        is Yes, line 7b must name a country and every country must fit on the two lines. Box 11 does not change that
+        line 7a order. An unchecked or unanswered box 11 does not ask this question when line 7a is No. Form 1099-DIV
+        (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf,
+        Box 11. 2026 draft Instructions PDF p. 3, Form 8938 tip, and PDF p. 4, Line 7b. 26 U.S.C. 6038D.
+        Instructions for Form 8938, specified individuals living in the United States: unmarried, more than $50,000
+        on the last day of the tax year or more than $75,000 at any time during the tax year. Those thresholds are
+        not computed.</Description>
       <Derived>
-        <All>
-          <Dependency path="/hasForeignAccounts" />
-          <IsComplete>
-            <Dependency path="/requiredToFileFinCENForm114" />
-          </IsComplete>
-          <Any>
-            <Not>
+        <Any>
+          <All>
+            <Dependency path="/hasForeignAccounts" />
+            <IsComplete>
               <Dependency path="/requiredToFileFinCENForm114" />
+            </IsComplete>
+            <Any>
+              <Not>
+                <Dependency path="/requiredToFileFinCENForm114" />
+              </Not>
+              <All>
+                <Dependency path="/foreignAccountCountryLine1Provided" />
+                <Dependency path="/foreignAccountCountriesFitOnLine7b" />
+              </All>
+            </Any>
+          </All>
+          <All>
+            <IsComplete>
+              <Dependency path="/hasForeignAccounts" />
+            </IsComplete>
+            <Not>
+              <Dependency path="/hasForeignAccounts" />
             </Not>
-            <All>
-              <Dependency path="/foreignAccountCountryLine1Provided" />
-              <Dependency path="/foreignAccountCountriesFitOnLine7b" />
-            </All>
-          </Any>
-        </All>
+            <Dependency module="dividends" path="/hasDividendFatcaFilingRequirement" />
+          </All>
+        </Any>
       </Derived>
     </Fact>
 
     <Fact path="/flowShouldAskScheduleBLine8">
       <Name>Ask Schedule B line 8</Name>
-      <Description>Line 8 is asked when line 7a is No, or when line 7a is Yes, question 2 is answered, line 7b
-        is filled
-        in if FinCEN Form 114 is required, and Form 8938 is not required. A Yes on Form 8938 stops
-        before line 8. 2026
-        draft Schedule B Part III.</Description>
+      <Description>Line 8 is asked when line 7a is No and Form 8938 is not required, or when line 7a is Yes,
+        question 2 is answered, line 7b is filled in if FinCEN Form 114 is required, and Form 8938 is not required.
+        A Yes on Form 8938 stops before line 8, including when the question was asked because a 1099-DIV box 11 is
+        checked and line 7a is No. 2026 draft Schedule B Part III. 26 U.S.C. 6038D.</Description>
       <Derived>
         <Any>
-          <Not>
-            <Dependency path="/hasForeignAccounts" />
-          </Not>
+          <All>
+            <Not>
+              <Dependency path="/hasForeignAccounts" />
+            </Not>
+            <Any>
+              <Not>
+                <Dependency path="/flowShouldAskForm8938" />
+              </Not>
+              <All>
+                <IsComplete>
+                  <Dependency path="/requiredToFileForm8938" />
+                </IsComplete>
+                <Not>
+                  <Dependency path="/requiredToFileForm8938" />
+                </Not>
+              </All>
+            </Any>
+          </All>
           <All>
             <Dependency path="/flowShouldAskForm8938" />
             <IsComplete>
