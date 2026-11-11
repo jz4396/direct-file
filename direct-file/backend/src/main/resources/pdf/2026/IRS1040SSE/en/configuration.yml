@@ -54,12 +54,22 @@
 #           blank and line 6 is line 5b (/primaryFilerSeReportedLine4c). The secondary filer's church
 #           employee income is not these lines.
 #   8b   Form 4137 unreported tips: stops the return (unreportedTips /flowKnockoutUnreportedTips).
-#   8c   Form 8919 wages (/hadForm8919Wages). income /wagesFrom8919 is $0. Notary fees excluded under
-#        26 U.S.C. 1402(c)(1) (/hasNotarySeExclusion) are not subtracted from line 3.
+#   8c   Form 8919 wages (/hadForm8919Wages). income /wagesFrom8919 is $0.
+#        Notary net profit (26 U.S.C. 1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5,
+#        Line 2 item 2) is subtracted on line 3 (/primaryFilerSeReportedLine3). The draft PDF has no
+#        field for the dotted line left of line 3 (f1_6 is line 3 itself). Irs1040SsePdfForm stamps
+#        "Exempt—Notary $X" there when /scheduleCPrimaryFilerNotaryNetProfit is more than zero and the nonfarm
+#        optional method does not apply. A notary-only return, a notary loss, and a notary amount
+#        above Schedule C line 31 still refuse the print (/flowKnockoutScheduleSEOutOfScope).
 # $0 amounts print blank (FactGraphService zero suppression). With line 8a at or above $184,500 the form says skip
 # lines 8b through 10; /scheduleSELine8d, /primaryFilerSeRemainingSocialSecurityWageBase and /primaryFilerSeSocialSecurityTax are then $0, so
 # lines 8d, 9 and 10 print blank.
 includeWhen: /primaryFilerSeTaxApplies
+# Read for the line 3 dotted-line stamp. Not mapped to an AcroForm field. $0 is suppressed and the
+# stamp is skipped. 26 U.S.C. 1402(c)(1). 2026 draft Instructions for Schedule SE, PDF p. 5.
+otherRequiredFacts:
+  - /scheduleCPrimaryFilerNotaryNetProfit
+  - /primaryFilerNonfarmOptionalMethodApplies
 customMaps:
   template:
     skipLeadingPages: "1"
@@ -70,7 +80,7 @@ form:
       f1_2[0]: /primaryFiler/tin # "Social security number of person with self-employment income"
       # Line 2 is Schedule C line 31 plus nonfarm Form 1065 box 14 code A (26 U.S.C. 1402(a)).
       f1_5[0]: /primaryFilerSeReportedNetProfit # 2 "Net profit or (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming). Skip line 2 if you use the nonfarm optional method"
-      f1_6[0]: /primaryFilerSeReportedNetProfit # 3 "Combine lines 1a, 1b, and 2"
+      f1_6[0]: /primaryFilerSeReportedLine3 # 3 "Combine lines 1a, 1b, and 2" minus notary net profit (26 U.S.C. 1402(c)(1))
       f1_7[0]: /primaryFilerSeReportedLine4a # 4a "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235)"
       f1_8[0]: /primaryFilerSeLine4b # 4b "If you elect one or both of the optional methods, enter the total of lines 15 and 17 here"
       f1_9[0]: /primaryFilerSeReportedLine4c # 4c "Combine lines 4a and 4b. If less than $400 ... Exception: If less than $400 and you had church employee income, enter -0- and continue"

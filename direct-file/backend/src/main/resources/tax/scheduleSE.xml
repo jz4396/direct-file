@@ -111,59 +111,39 @@
     <!-- ========== Schedule SE for the primary filer (#118) ========== -->
 
     <Fact path="/primaryFilerSeNetProfit">
-      <Name>Primary filer: Schedule SE line 3</Name>
+      <Name>Primary filer: Schedule SE line 2</Name>
       <Description>
         Primary filer's Schedule C net profit or (loss) plus nonfarm Schedule K-1 (Form 1065) box 14 code A.
-        The sum can be a loss. 2026 draft Schedule SE
-        (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 2: "Net profit or
-        (loss) from
-        Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than farming)";
-        line 3: "Combine lines
-        1a, 1b, and 2". Line 1a is farm profit, including farm partnerships' box 14
-        code A. Farm profit, the farm
-        optional method, ministry or a Form 4361 or 4029 exemption, notary
-        fees, and Form 8919 wages
-        stop the return
-        (/flowKnockoutScheduleSEOutOfScope) instead of being entered as zero.
-        The primary filer's church employee income is lines 5a and 5b
-        (/primaryFilerSeLine5a and /primaryFilerSeLine5b), not line 3.
-        26 U.S.C. 3121(w) and 1402(j)(1)(B). The secondary filer's church employee income is not line 5a.
-        The nonfarm optional
-        method skips line 2 when /primaryFilerNonfarmOptionalMethodApplies
-        is true. An election that is not allowed stops
-        the return
-        (/flowKnockoutScheduleSENonfarmOptionalMethod).
-        Box 14 code A is scheduleE
-        /scheduleEK1Box14CodeANonfarmTotal. A reduction, farming, a
-        limited-partner amount that is not only guaranteed
-        payments (26 U.S.C. 1402(a)(13)), a joint
-        return, or an S corporation amount stops the return (scheduleE
-        /flowKnockoutScheduleEPartIIBox14CodeA and the matching stops; 2026 draft Instructions for
-        Schedule SE, PDF p. 5,
-        Partnership Income or Loss) instead of filing line 2 without the amount or
-        on the wrong spouse's Schedule SE.
-        Schedule C qualified business income together with a nonzero
-        box 14 code A stops the return (form8995
-        /flowKnockoutScheduleCQbiAndK1Box14CodeA) because the
-        deductible part of self-employment tax is not split between
-        the trades (Treas. Reg.
-        1.199A-3(b)(1)(vi)). An unanswered K-1
-        question also stops the print (scheduleE
-        /flowKnockoutScheduleEPartII).
-        With lines 1a and 1b blank, line 3 equals
-        line 2, so
-        the same amount is
-        printed on
-        both. Line 4a is $0 when this amount is not more than zero. Each spouse
-        files their own Schedule SE:
-        2026 draft
-        Instructions for
-        Schedule SE
-        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        The sum can be a loss. 2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf,
+        SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), PDF p. 2, line 2: "Net
+        profit or (loss) from Schedule C, line 31; and Schedule K-1 (Form 1065), box 14, code A (other than
+        farming)"; line 3: "Combine lines 1a, 1b, and 2". This fact is line 2. Line 3 is
+        /primaryFilerSeLine3, which subtracts notary net profit (26 U.S.C. 1402(c)(1); 2026 draft
+        Instructions for Schedule SE, PDF p. 5, Line 2 item 2). Line 1a is farm profit, including farm
+        partnerships' box 14 code A. Farm profit, the farm optional method, ministry or a Form 4361 or 4029
+        exemption, and Form 8919 wages stop the return (/flowKnockoutScheduleSEOutOfScope) instead of being
+        entered as zero. A notary-only return, a notary amount on a loss, and a notary amount above line 31
+        still stop. The primary filer's church employee income is lines 5a and 5b (/primaryFilerSeLine5a and
+        /primaryFilerSeLine5b), not line 3. 26 U.S.C. 3121(w) and 1402(j)(1)(B). The secondary filer's
+        church employee income is not line 5a. The nonfarm optional method skips line 2 when
+        /primaryFilerNonfarmOptionalMethodApplies is true. An election that is not allowed stops the return
+        (/flowKnockoutScheduleSENonfarmOptionalMethod). Box 14 code A is scheduleE
+        /scheduleEK1Box14CodeANonfarmTotal. A reduction, farming, a limited-partner amount that is not only
+        guaranteed payments (26 U.S.C. 1402(a)(13)), a joint return, or an S corporation amount stops the
+        return (scheduleE /flowKnockoutScheduleEPartIIBox14CodeA and the matching stops; 2026 draft
+        Instructions for Schedule SE, PDF p. 5, Partnership Income or Loss) instead of filing line 2 without
+        the amount or on the wrong spouse's Schedule SE. Schedule C qualified business income together with
+        a nonzero box 14 code A stops the return (form8995 /flowKnockoutScheduleCQbiAndK1Box14CodeA) because
+        the deductible part of self-employment tax is not split between the trades (Treas. Reg.
+        1.199A-3(b)(1)(vi)). An unanswered K-1 question also stops the print (scheduleE
+        /flowKnockoutScheduleEPartII). With lines 1a and 1b blank and no notary net profit, line 3 equals
+        line 2. A notary net profit is subtracted on line 3 only. Line 2 keeps the Schedule C and Schedule
+        K-1 total. Line 4a is $0 when line 3 is not more than zero. Each spouse files their own Schedule SE:
+        2026 draft Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
         8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
-        self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all
-        businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
+        self-employment income, each must file a separate Schedule SE. Include the total profits or losses
+        from all businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040),
+        line 4."
       </Description>
       <Derived>
         <Add>
@@ -173,15 +153,41 @@
       </Derived>
     </Fact>
 
+    <Fact path="/primaryFilerSeLine3">
+      <Name>Primary filer: Schedule SE line 3</Name>
+      <Description>
+        Lines 1a, 1b, and 2 minus notary net profit. Lines 1a and 1b are blank, so this is
+        /primaryFilerSeNetProfit minus /scheduleCPrimaryFilerNotaryNetProfit. 2026 draft Schedule SE, PDF p.
+        2, line 3: "Combine lines 1a, 1b, and 2." 2026 draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 5, Line 2 item 2: subtract
+        the notary net profit from the total of lines 1a, 1b, and 2, and enter the result on line 3. 26
+        U.S.C. 1402(c)(1) (https://www.law.cornell.edu/uscode/text/26/1402#c_1). Line 4a, line 4c, line 6,
+        line 10, line 12, and the Schedule 1 deduction use this amount. $0 notary leaves line 3 equal to
+        line 2.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/primaryFilerSeNetProfit" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNotaryNetProfit" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
     <Fact path="/primaryFilerSeNetEarnings">
       <Name>Primary filer: net earnings from self-employment (Schedule SE line 4a)</Name>
       <Description>
         2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4a: "If line 3 is more than zero,
-        multiply line 3 by 92.35% (0.9235)". Otherwise line 4a is $0, including when line 2 is a loss. 26 U.S.C.
-        1402(a)(12)
-        (https://www.law.cornell.edu/uscode/text/26/1402#a_12): the deduction equals net earnings times one-half of the
-        sum of the 1401(a) and (b) rates, so 1 - (12.4% + 2.9%) / 2 = 0.9235.
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 4a: "If line 3 is more than
+        zero, multiply line 3 by 92.35% (0.9235)". Otherwise line 4a is $0, including when line 2 is a loss.
+        26 U.S.C. 1402(a)(12) (https://www.law.cornell.edu/uscode/text/26/1402#a_12): the deduction equals
+        net earnings times one-half of the sum of the 1401(a) and (b) rates, so 1 - (12.4% + 2.9%) / 2 =
+        0.9235.
       </Description>
       <TaxYear>2026</TaxYear>
       <Derived>
@@ -190,7 +196,7 @@
             <When>
               <GreaterThan>
                 <Left>
-                  <Dependency path="/primaryFilerSeNetProfit" />
+                  <Dependency path="/primaryFilerSeLine3" />
                 </Left>
                 <Right>
                   <Dollar>0</Dollar>
@@ -200,7 +206,7 @@
             <Then>
               <Round>
                 <Multiply>
-                  <Dependency path="/primaryFilerSeNetProfit" />
+                  <Dependency path="/primaryFilerSeLine3" />
                   <Rational>9235/10000</Rational>
                 </Multiply>
               </Round>
@@ -482,11 +488,11 @@
     </Fact>
 
     <Fact path="/primaryFilerSeReportedNetProfit">
-      <Name>Primary filer: Schedule SE lines 2 and 3</Name>
+      <Name>Primary filer: Schedule SE line 2 as reported</Name>
       <Description>
-        2026 draft Schedule SE, line 2: "Skip line 2 if you use the nonfarm optional method." With
-        lines 1a and 1b blank, line 3 equals line 2. When /primaryFilerNonfarmOptionalMethodApplies
-        is true, both are $0. Otherwise this is /primaryFilerSeNetProfit.
+        2026 draft Schedule SE, line 2: "Skip line 2 if you use the nonfarm optional method." When
+        /primaryFilerNonfarmOptionalMethodApplies is true, line 2 is $0. Otherwise this is
+        /primaryFilerSeNetProfit, including notary net profit. Line 3 is /primaryFilerSeReportedLine3.
       </Description>
       <Derived>
         <Switch>
@@ -504,6 +510,37 @@
             </When>
             <Then>
               <Dependency path="/primaryFilerSeNetProfit" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerSeReportedLine3">
+      <Name>Primary filer: Schedule SE line 3 as reported</Name>
+      <Description>
+        2026 draft Schedule SE, line 3: "Combine lines 1a, 1b, and 2." Notary net profit is subtracted (26
+        U.S.C. 1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2). When
+        /primaryFilerNonfarmOptionalMethodApplies is true, line 2 is skipped and line 3 is $0. Otherwise
+        this is /primaryFilerSeLine3.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/primaryFilerSeLine3" />
             </Then>
           </Case>
         </Switch>
@@ -1171,22 +1208,32 @@
     <Fact path="/secondaryFilerSeNetProfit">
       <Name>Secondary filer: Schedule SE line 3</Name>
       <Description>
-        Secondary filer's Schedule C net profit or (loss) from all of their businesses (2026 draft Schedule
-        SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
-        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
-        1a, 1b, and 2"),
-        floored at $0 for the regular method. The nonfarm optional method, when
-        /secondaryFilerNonfarmOptionalMethodApplies is true, skips this amount and uses Part II
-        line 17. The farm optional method stops the return. Each spouse files their own Schedule SE:
-        2026 draft
-        Instructions for Schedule SE (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        Secondary filer's Schedule C net profit or (loss) from all of their businesses, minus that filer's
+        notary net profit (26 U.S.C. 1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2
+        item 2), floored at $0 (2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf,
+        SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
+        1a, 1b, and 2"). The nonfarm optional method, when /secondaryFilerNonfarmOptionalMethodApplies is
+        true, skips this amount and uses Part II line 17. The farm optional method stops the return. Each
+        spouse files their own Schedule SE: 2026 draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
         8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
-        self-employment income, each must file a separate Schedule SE. Include the total profits or losses from all
-        businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040), line 4."
+        self-employment income, each must file a separate Schedule SE. Include the total profits or losses
+        from all businesses on Form 1040 or 1040-SR. Enter the combined SE tax on Schedule 2 (Form 1040),
+        line 4."
       </Description>
       <Derived>
         <GreaterOf>
-          <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+          <Subtract>
+            <Minuend>
+              <GreaterOf>
+                <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+                <Dollar>0</Dollar>
+              </GreaterOf>
+            </Minuend>
+            <Subtrahends>
+              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNotaryNetProfit" />
+            </Subtrahends>
+          </Subtract>
           <Dollar>0</Dollar>
         </GreaterOf>
       </Derived>
@@ -1866,10 +1913,10 @@
       <Name>Schedule SE out-of-scope questions apply</Name>
       <Description>
         Farm profit (Schedule F, lines 1a and 1b), church employee income, an optional method, ministry or a
-        Form 4361 or Form 4029 exemption, notary fees, and Form 8919 wages are asked when the filer has
-        Schedule C self-employment income or a nonzero Schedule K-1 (Form 1065) box 14 code A. 26 U.S.C.
-        1402(a). A K-1-only return still has net earnings from that box. Complete false when neither applies,
-        including when /hadSelfEmploymentIncome is unanswered and box 14 code A is not nonzero.
+        Form 4361 or Form 4029 exemption, and Form 8919 wages are asked when the filer has Schedule C
+        self-employment income or a nonzero Schedule K-1 (Form 1065) box 14 code A. 26 U.S.C. 1402(a). A
+        K-1-only return still has net earnings from that box. Complete false when neither applies, including
+        when /hadSelfEmploymentIncome is unanswered and box 14 code A is not nonzero.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2022,17 +2069,171 @@
     <Fact path="/hasNotarySeExclusion">
       <Name>Notary fees excluded from self-employment tax</Name>
       <Description>
-        Yes when the filer has notary fees excluded from net earnings. 26 U.S.C. 1402(c)(1)
-        (https://www.law.cornell.edu/uscode/text/26/1402#c_1): the performance of the functions of a
-        public office is not
-        a trade or business. The Schedule SE instructions subtract those fees from
-        line 3 or require "Exempt—Notary."
-        This tool does not make that subtraction.
+        Kept so a saved return still loads. The interview no longer asks this. Notary net profit is
+        /scheduleCBusinesses/*/notaryNetProfit. 26 U.S.C. 1402(c)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#c_1): the performance of the functions of a public
+        office is not a trade or business. 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2,
+        subtract that net profit on line 3. A saved yes with no per-business amount still stops, because the
+        amount to subtract is unknown.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/notaryYesWithoutAmountStops">
+      <Name>Saved notary yes with no amount</Name>
+      <Description>
+        True when /hasNotarySeExclusion is yes and no Schedule C has a notary amount. The amount to subtract
+        is unknown, so the return stops. An unanswered or no answer does not stop. 26 U.S.C. 1402(c)(1).
+        2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+      </Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/hasNotarySeExclusion" />
+          </IsComplete>
+          <Dependency path="/hasNotarySeExclusion" />
+          <Not>
+            <GreaterThan>
+              <Left>
+                <Dependency module="scheduleC" path="/scheduleCNotaryNetProfit" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/primaryFilerNotaryOnlyStop">
+      <Name>Primary filer notary income with other net earnings under $400</Name>
+      <Description>
+        True when the primary filer has notary net profit and, after subtracting it, line 4a is under $400,
+        and line 5b is not more than zero. Schedule 2 (Form 1040) line 4 checkbox 3 ("EN") is not mapped, so
+        that return stops instead of skipping Schedule SE. Church employee income on line 5b is other income
+        subject to SE tax, so it does not use this stop. 26 U.S.C. 1402(b)(2) and 1402(c)(1). 2026 draft
+        Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+      </Description>
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNotaryNetProfit" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <LessThan>
+            <Left>
+              <Dependency path="/primaryFilerSeNetEarnings" />
+            </Left>
+            <Right>
+              <Dependency path="/seNetEarningsThreshold" />
+            </Right>
+          </LessThan>
+          <Not>
+            <GreaterThan>
+              <Left>
+                <Dependency path="/primaryFilerSeLine5b" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerNotaryOnlyStop">
+      <Name>Secondary filer notary income with other net earnings under $400</Name>
+      <Description>
+        The same $400 test for the secondary filer's notary net profit. 26 U.S.C. 1402(b)(2) and 1402(c)(1).
+        2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2. That spouse's church employee
+        income is not line 5b; a yes to it stops on its own.
+      </Description>
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNotaryNetProfit" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <LessThan>
+            <Left>
+              <Dependency path="/secondaryFilerSeNetEarnings" />
+            </Left>
+            <Right>
+              <Dependency path="/seNetEarningsThreshold" />
+            </Right>
+          </LessThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/notaryWithOptionalMethodStops">
+      <Name>Notary net profit together with the nonfarm optional method</Name>
+      <Description>
+        The nonfarm optional method skips line 2, so line 3 is $0 and the notary subtraction is not made. A
+        notary amount on a return where the method applies stops. 26 U.S.C. 1402(a), 1402(c)(1), and
+        1402(l). 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2, and PDF p. 3, line 2.
+      </Description>
+      <Derived>
+        <Any>
+          <All>
+            <GreaterThan>
+              <Left>
+                <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNotaryNetProfit" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+            <Dependency path="/primaryFilerNonfarmOptionalMethodApplies" />
+          </All>
+          <All>
+            <GreaterThan>
+              <Left>
+                <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNotaryNetProfit" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+            <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/notarySeExclusionStopsReturn">
+      <Name>Notary exclusion still stops this return</Name>
+      <Description>
+        Stops for a notary amount above Schedule C line 31 (including a positive amount on a loss), notary
+        income whose other net earnings after the subtraction are under $400, notary income when the nonfarm
+        optional method applies, or a saved yes with no amount. A notary profit with other net earnings of
+        $400 or more is subtracted on line 3 and does not stop. Each business's amount is subtracted on the
+        owner's Schedule SE. 26 U.S.C. 1402(b)(2) and 1402(c)(1). 2026 draft Instructions for Schedule SE,
+        PDF p. 5, Line 2 item 2.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Dependency module="scheduleC" path="/scheduleCNotaryExceedsLine31" />
+          <Dependency path="/primaryFilerNotaryOnlyStop" />
+          <Dependency path="/secondaryFilerNotaryOnlyStop" />
+          <Dependency path="/notaryWithOptionalMethodStops" />
+          <Dependency path="/notaryYesWithoutAmountStops" />
+        </Any>
+      </Derived>
     </Fact>
 
     <Fact path="/hadForm8919Wages">
@@ -2056,29 +2257,24 @@
     <Fact path="/flowKnockoutScheduleSEOutOfScope">
       <Name>Knockout: Schedule SE line this tool does not compute</Name>
       <Description>
-        Stops filing and printing when /scheduleSEOutOfScopeQuestionsApply is true and the filer answers
-        yes
-        to farm profit, Conservation Reserve Program payments, or the farm optional method
-        (Schedule SE lines 1a, 1b, and
-        Part II line 15; 26 U.S.C. 1402(a), 1402(a)(1), and 1402(l)),
-        ministry or a Form 4361
-        or Form 4029 exemption
-        (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), notary fees excluded as a
-        public office (1402(c)(1)), or Form 8919
-        wages (line 8c), or the secondary filer's church employee income (26 U.S.C. 3121(w), 1402(j)).
-        The nonfarm optional method is
-        /flowKnockoutScheduleSENonfarmOptionalMethod, not this fact. The
-        gate is Schedule C
-        self-employment income or a nonzero Schedule K-1 (Form 1065) box 14 code A. Complete and false
-        when that gate is not true, including when /hadSelfEmploymentIncome is unanswered and box 14
-        code A is not
-        nonzero, and when every stopping question is answered no. A yes for the primary filer's church
-        employee income does not stop the return; lines 5a and 5b are computed. A yes for the spouse
-        stops the return, because that income is not entered on the primary filer's line 5a. On a
-        return that is not married filing jointly the spouse question is not asked. An unanswered
-        question while the
-        gate is true stays incomplete, so the
-        stopping lines are not filed as zero.
+        Stops filing and printing when /scheduleSEOutOfScopeQuestionsApply is true and the filer answers yes
+        to farm profit, Conservation Reserve Program payments, or the farm optional method (Schedule SE
+        lines 1a, 1b, and Part II line 15; 26 U.S.C. 1402(a), 1402(a)(1), and 1402(l)), ministry or a Form
+        4361 or Form 4029 exemption (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)), or Form 8919 wages (line
+        8c), or the secondary filer's church employee income (26 U.S.C. 3121(w), 1402(j)). Notary fees
+        (1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2) are subtracted on
+        line 3 when the filer has other net earnings of $400 or more. A notary-only return (other net
+        earnings after that subtraction under $400; Schedule 2 line 4 checkbox 3 "EN" is not mapped), a
+        notary amount on a Schedule C loss or above line 31, and a saved yes with no amount still stop
+        (/notarySeExclusionStopsReturn). The nonfarm optional method is
+        /flowKnockoutScheduleSENonfarmOptionalMethod, not this fact. The gate is Schedule C self-employment
+        income or a nonzero Schedule K-1 (Form 1065) box 14 code A. Complete and false when that gate is not
+        true, including when /hadSelfEmploymentIncome is unanswered and box 14 code A is not nonzero, and
+        when every stopping question is answered no. A yes for the primary filer's church employee income
+        does not stop the return; lines 5a and 5b are computed. A yes for the spouse stops the return,
+        because that income is not entered on the primary filer's line 5a. On a return that is not married
+        filing jointly the spouse question is not asked. An unanswered question while the gate is true stays
+        incomplete, so the stopping lines are not filed as zero.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -2164,18 +2360,6 @@
             <When>
               <Not>
                 <IsComplete>
-                  <Dependency path="/hasNotarySeExclusion" />
-                </IsComplete>
-              </Not>
-            </When>
-            <Then>
-              <Dependency path="/hasNotarySeExclusion" />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Not>
-                <IsComplete>
                   <Dependency path="/hadForm8919Wages" />
                 </IsComplete>
               </Not>
@@ -2192,7 +2376,7 @@
               <Any>
                 <Dependency path="/hadFarmSelfEmploymentIncome" />
                 <Dependency path="/hasMinisterOrSeExemption" />
-                <Dependency path="/hasNotarySeExclusion" />
+                <Dependency path="/notarySeExclusionStopsReturn" />
                 <Dependency path="/hadForm8919Wages" />
                 <All>
                   <IsComplete>
@@ -2453,8 +2637,10 @@
         Schedule SE line 3 minus line 13, not line 4b. 2026 draft Instructions for Form 2441, PDF p. 5,
         lines 4 and 5: "If you use either optional method to figure net earnings, subtract any deduction
         you claim on Schedule 1 (Form 1040), line 15, from the total of the amounts shown on Schedule SE
-        (Form 1040), lines 3 and 4b." /scheduleCNetProfitForEarnedIncome stays Schedule C line 31 minus
-        the deductible part of self-employment tax, so an election that applies cannot be filed with
+        (Form 1040), lines 3 and 4b." /scheduleCNetProfitForEarnedIncome is each filer's Schedule C line 31
+        minus that filer's notary net profit minus that filer's deductible part of self-employment tax.
+        Notary net profit is $0 when unanswered, so an election with no notary is still line 31 minus the
+        deductible part. An election that applies cannot be filed with
         /isReceivingEitc, /isReceivingActc, or /cdccQualified. Not part of /scheduleCSectionIsComplete:
         those credits are asked later, and an unanswered credit must not leave the Schedule C section
         incomplete. Complete false when neither filer's method applies, including when the election is

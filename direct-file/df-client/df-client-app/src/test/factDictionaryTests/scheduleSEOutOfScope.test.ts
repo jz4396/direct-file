@@ -570,4 +570,166 @@ describe(`Schedule SE out-of-scope lines`, () => {
     expect(read(stray, `/primaryFilerSeLine5a`).get.toString()).toBe(`0.00`);
     expect(read(stray, KO).get).toBe(false);
   });
+
+  it(`notary profit with other self-employment income is subtracted on line 3`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/primaryFilerSeLine3`,
+      `/primaryFilerSeNetEarnings`,
+      `/primaryFilerSeReportedLine3`,
+      `/primaryFilerSeSocialSecurityTax`,
+      `/primaryFilerSeMedicareTax`,
+      `/selfEmploymentTax`,
+      `/deductibleSelfEmploymentTax`,
+      KO,
+    ];
+    // Schedule C line 31 $20,000, of which $3,000 is notary net profit. Line 2 stays $20,000. Line 3 is $17,000.
+    // round(17,000 × 0.9235) = round(15,699.50) = 15,700. 26 U.S.C. 1402(a)(12), 1402(c)(1).
+    // 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+    // round(15,700 × 0.124) = round(1,946.80) = 1,947. round(15,700 × 0.029) = round(455.30) = 455.
+    // Line 12 is 2,402. Half is 1,201. 26 U.S.C. 1401(a), 1401(b)(1), 164(f)(1).
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`20000.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`0.00`),
+        [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`3000.00`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeNetProfit`).get.toString()).toBe(`20000.00`);
+    expect(read(g, `/primaryFilerSeLine3`).get.toString()).toBe(`17000.00`);
+    expect(read(g, `/primaryFilerSeReportedLine3`).get.toString()).toBe(`17000.00`);
+    expect(read(g, `/primaryFilerSeNetEarnings`).get.toString()).toBe(`15700.00`);
+    expect(read(g, `/primaryFilerSeLine4c`).get.toString()).toBe(`15700.00`);
+    expect(read(g, `/primaryFilerSeIncome`).get.toString()).toBe(`15700.00`);
+    expect(read(g, `/primaryFilerSeSocialSecurityTax`).get.toString()).toBe(`1947.00`);
+    expect(read(g, `/primaryFilerSeMedicareTax`).get.toString()).toBe(`455.00`);
+    expect(read(g, `/selfEmploymentTax`).get.toString()).toBe(`2402.00`);
+    expect(read(g, `/deductibleSelfEmploymentTax`).get.toString()).toBe(`1201.00`);
+    expect(read(g, KO).complete).toBe(true);
+    expect(read(g, KO).get).toBe(false);
+  });
+
+  it(`an explicit notary amount of zero matches an unanswered amount`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerSeLine3`, `/primaryFilerSeNetEarnings`, `/selfEmploymentTax`];
+    // $0 notary leaves line 3 equal to line 2. 26 U.S.C. 1402(c)(1).
+    const unset = fg({ ...noW2, ...scheduleC() });
+    const zero = fg({
+      ...noW2,
+      ...scheduleC({ [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`0.00`) }),
+    });
+    for (const path of [
+      `/primaryFilerSeLine3`,
+      `/primaryFilerSeNetEarnings`,
+      `/selfEmploymentTax`,
+      `/primaryFilerSeReportedLine3`,
+    ]) {
+      expect(read(zero, path).get.toString()).toBe(read(unset, path).get.toString());
+    }
+    expect(read(zero, `/primaryFilerSeLine3`).get.toString()).toBe(`8000.00`);
+    expect(read(zero, KO).get).toBe(false);
+  });
+
+  it(`notary-only income stops because Schedule 2 checkbox 3 is not mapped`, ({ task }) => {
+    task.meta.testedFactPaths = [KO, `/flowIsKnockedOut`, `/primaryFilerNotaryOnlyStop`];
+    // The whole $20,000 is notary net profit. Other net earnings are under $400. 26 U.S.C. 1402(b)(2), 1402(c)(1).
+    // 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2: check Schedule 2 line 4 box 3 and enter "EN".
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`20000.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`0.00`),
+        [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`20000.00`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeLine3`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerNotaryOnlyStop`).get).toBe(true);
+    expect(read(g, KO).complete).toBe(true);
+    expect(read(g, KO).get).toBe(true);
+    expect(read(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`a notary amount on a Schedule C loss stops`, ({ task }) => {
+    task.meta.testedFactPaths = [KO, `/scheduleCNotaryExceedsLine31`];
+    // Line 31 is a $1,000 loss. A $500 notary amount is above that line. 26 U.S.C. 1402(c)(1).
+    // 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`1000.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`2000.00`),
+        [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`500.00`),
+      }),
+    });
+    expect(read(g, `/scheduleCNetProfitOrLoss`).get.toString()).toBe(`-1000.00`);
+    expect(read(g, `/scheduleCNotaryExceedsLine31`).get).toBe(true);
+    expect(read(g, KO).get).toBe(true);
+    expect(read(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`a notary amount above a profit on line 31 stops`, ({ task }) => {
+    task.meta.testedFactPaths = [KO, `/scheduleCNotaryExceedsLine31`];
+    // 26 U.S.C. 1402(c)(1). The subtracted amount is the notary net profit from Schedule C, so it cannot exceed line 31.
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`20000.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`0.00`),
+        [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`20001.00`),
+      }),
+    });
+    expect(read(g, `/scheduleCNotaryExceedsLine31`).get).toBe(true);
+    expect(read(g, KO).get).toBe(true);
+  });
+
+  it(`other net earnings under $400 after the notary subtraction stop, and $400 or more do not`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerNotaryOnlyStop`, `/primaryFilerSeNetEarnings`, KO];
+    // $20,000 profit and $19,700 notary: line 3 is $300. round(300 × 0.9235) = 277, under $400. 26 U.S.C. 1402(b)(2).
+    const under = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`20000.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`0.00`),
+        [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`19700.00`),
+      }),
+    });
+    expect(read(under, `/primaryFilerSeLine3`).get.toString()).toBe(`300.00`);
+    expect(read(under, `/primaryFilerSeNetEarnings`).get.toString()).toBe(`277.00`);
+    expect(read(under, `/primaryFilerNotaryOnlyStop`).get).toBe(true);
+    expect(read(under, KO).get).toBe(true);
+    // $19,500 notary: line 3 is $500. round(500 × 0.9235) = 462, which is at least $400.
+    const over = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`20000.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`0.00`),
+        [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`19500.00`),
+      }),
+    });
+    expect(read(over, `/primaryFilerSeLine3`).get.toString()).toBe(`500.00`);
+    expect(read(over, `/primaryFilerSeNetEarnings`).get.toString()).toBe(`462.00`);
+    expect(read(over, `/primaryFilerNotaryOnlyStop`).get).toBe(false);
+    expect(read(over, KO).get).toBe(false);
+  });
+
+  it(`church employee income keeps a notary-only Schedule C on Schedule SE`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerNotaryOnlyStop`, `/primaryFilerSeLine5b`, `/primaryFilerSeIncome`, KO];
+    // All $20,000 is notary, so line 3 is $0. Church wages $1,000 give line 5b $924, which is other income subject to
+    // self-employment tax. 26 U.S.C. 1402(c)(1), 1402(j)(2)(B). Line 6 is line 5b.
+    const g = fg({
+      ...noW2,
+      ...scheduleC({
+        [`/scheduleCBusinesses/#${biz}/writableGrossReceipts`]: createDollarWrapper(`20000.00`),
+        [`/scheduleCBusinesses/#${biz}/writableTotalExpenses`]: createDollarWrapper(`0.00`),
+        [`/scheduleCBusinesses/#${biz}/notaryNetProfit`]: createDollarWrapper(`20000.00`),
+        '/hadChurchEmployeeIncome': createBooleanWrapper(true),
+        '/churchEmployeeIncome': createDollarWrapper(`1000.00`),
+      }),
+    });
+    expect(read(g, `/primaryFilerSeLine3`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerSeLine5b`).get.toString()).toBe(`924.00`);
+    expect(read(g, `/primaryFilerSeReportedLine4c`).get.toString()).toBe(`0.00`);
+    expect(read(g, `/primaryFilerSeIncome`).get.toString()).toBe(`924.00`);
+    expect(read(g, `/primaryFilerNotaryOnlyStop`).get).toBe(false);
+    expect(read(g, KO).get).toBe(false);
+  });
 });

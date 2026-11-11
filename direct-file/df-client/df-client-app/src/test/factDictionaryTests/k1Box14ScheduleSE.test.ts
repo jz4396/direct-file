@@ -255,8 +255,9 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
 
   it(`minister, farm, notary, and Form 8919 stops still apply`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutScheduleSEOutOfScope`];
-    // 26 U.S.C. 1402(a)(8), 1402(a)(14), 1402(c)(4), 1402(e), 1402(g), 1402(l). Church employee
-    // income is lines 5a and 5b (1402(j)), not this stop.
+    // 26 U.S.C. 1402(a)(8), 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(l). A saved
+    // notary yes with no per-business amount still stops. Church employee income is lines 5a and 5b
+    // (1402(j)), not this stop.
     const rows = partII([partnershipId], k1(partnershipId, `8000`));
     for (const path of seQuestions.filter((q) => q !== `/usesSeOptionalMethod` && q !== `/hadChurchEmployeeIncome`)) {
       const g = fg({
@@ -314,13 +315,13 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
       `schedule-c-church-employee`,
       `schedule-c-optional-method`,
       `schedule-c-minister`,
-      `schedule-c-notary`,
       `schedule-c-form-8919`,
     ]) {
       expect(screens.screensByRoute.get(`/flow/income/schedule-c/${route}`)?.conditions).toEqual([
         `/scheduleSEOutOfScopeQuestionsApply`,
       ]);
     }
+    expect(screens.screensByRoute.get(`/flow/income/schedule-c/schedule-c-notary-amount`)).toBeTruthy();
     expect(screens.screensByRoute.get(`/flow/income/schedule-c/schedule-c-church-employee-amount`)?.conditions).toEqual(
       [`/hadChurchEmployeeIncome`]
     );

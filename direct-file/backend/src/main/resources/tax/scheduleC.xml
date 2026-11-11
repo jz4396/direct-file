@@ -533,6 +533,148 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCNotaryNetProfit">
+      <Name>Notary net profit on every Schedule C</Name>
+      <Description>
+        Sum of each business's notary net profit. An unanswered amount is $0. 26 U.S.C. 1402(c)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#c_1). 2026 draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 5, Line 2 item 2.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleCBusinesses/*/notaryNetProfitForSe" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSecondaryFilerNotaryNetProfit">
+      <Name>Secondary filer's notary net profit</Name>
+      <Description>
+        Notary net profit on businesses the secondary filer owns. $0 when the return is not a joint return.
+        Subtracted on that spouse's Schedule SE line 3. 26 U.S.C. 1402(c)(1). 2026 draft Instructions for
+        Schedule SE, PDF p. 5, Line 2 item 2.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleCSecondaryFilerBusinesses/*/notaryNetProfitForSe" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCPrimaryFilerNotaryNetProfit">
+      <Name>Primary filer's notary net profit</Name>
+      <Description>
+        Notary net profit on the primary filer's Schedule C businesses: the total minus the secondary
+        filer's amount. The business owner defaults to the primary filer. Subtracted on that filer's
+        Schedule SE line 3. 26 U.S.C. 1402(c)(1). 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2
+        item 2.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/scheduleCNotaryNetProfit" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/scheduleCSecondaryFilerNotaryNetProfit" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCNotaryExceedsLine31">
+      <Name>A notary amount is above Schedule C line 31</Name>
+      <Description>
+        True when any business has a notary net profit greater than its line 31. That includes a positive
+        amount on a loss. 26 U.S.C. 1402(c)(1). 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2
+        item 2: the amount is the net profit as a notary public from Schedule C. An unanswered amount is $0
+        and does not stop.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleCBusinesses/*/notaryExceedsLine31" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleCSpouseBusiness">
       <Name>Knockout: spouse-owned Schedule C business</Name>
       <Description>
@@ -613,7 +755,8 @@
         (formW2s /flowKnockoutStatutoryEmployee), and
         farm income, the farm optional method, church employee income,
         ministry or Forms 4361
-        and 4029, notary fees, and Form 8919 wages (scheduleSE
+        and 4029, a notary-only return or a notary amount on a loss or above line 31, and Form 8919 wages
+        (scheduleSE
         /flowKnockoutScheduleSEOutOfScope). The nonfarm optional method is figured on Schedule SE
         unless the election fails the dollar or prior-year tests (scheduleSE
         /flowKnockoutScheduleSENonfarmOptionalMethod). An election that applies together with the
@@ -1588,6 +1731,87 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/notaryNetProfit">
+      <Name>Notary net profit included in this Schedule C</Name>
+      <Description>
+        Net profit from services as a notary public included in this business's line 31. At least $0. Not
+        more than line 31 when line 31 is zero or a profit. A positive amount on a loss, or an amount
+        greater than line 31, stops the return. 26 U.S.C. 1402(c)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#c_1): the performance of the functions of a public
+        office is not a trade or business. 2026 draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 5, Line 2 item 2: "Fees
+        received for services performed as a notary public." An unanswered amount is treated as $0 by
+        /scheduleCBusinesses/*/notaryNetProfitForSe.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/notaryNetProfitForSe">
+      <Name>Notary net profit used on Schedule SE</Name>
+      <Description>
+        The entered notary net profit, or $0 when it has not been answered. 26 U.S.C. 1402(c)(1). 2026 draft
+        Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../notaryNetProfit" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../notaryNetProfit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/notaryExceedsLine31">
+      <Name>This business's notary amount is above line 31</Name>
+      <Description>
+        True when the notary net profit is more than zero and more than line 31. A loss is below zero, so
+        any positive notary amount on a loss is above line 31. $0 is not above line 31. 26 U.S.C.
+        1402(c)(1). 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+      </Description>
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency path="../notaryNetProfitForSe" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency path="../notaryNetProfitForSe" />
+            </Left>
+            <Right>
+              <Dependency path="../netProfitOrLoss" />
+            </Right>
+          </GreaterThan>
+        </All>
       </Derived>
     </Fact>
 
@@ -5890,45 +6114,56 @@
     <Fact path="/scheduleCNetProfitForEarnedIncome">
       <Name>Schedule C net profit included in earned income</Name>
       <Description>
-        Earned income from self-employment for the EITC, CDCC and ACTC = Schedule C net profit (Schedule SE
-        line 3)
-        minus the deductible part of SE tax (Schedule 1 line 15, Schedule SE line 13), 26 U.S.C. 32(c)(2)(A)(ii)
-        (https://www.law.cornell.edu/uscode/text/26/32#c_2_A): "net earnings from self-employment ... determined with
-        regard to the deduction allowed to the taxpayer by section 164(f)". Instructions for Form 1040 (2025), PDF
-        p. 47,
-        EIC Worksheet B, Part 1: "1a. Enter the amount from Schedule SE, Part I, line 3. ... d. Enter the
-        amount from
-        Schedule SE, Part I, line 13. ... e. Subtract line 1d from line 1c." Under $400 of net earnings no
-        SE tax
-        applies, so this is the Schedule C line 31 net profit (Worksheet B Part 2, line 2b). 2026 draft
-        Instructions for
-        Form 2441, PDF p. 5, lines 4 and 5: "2. The amount shown on Schedule SE (Form 1040), line 3,
-        minus any deduction
-        you claim on Schedule 1 (Form 1040), line 15." The same page: "If you use either optional
-        method to figure net earnings, subtract any deduction you claim on Schedule 1 (Form 1040),
-        line 15, from the total of the amounts shown on Schedule SE (Form 1040), lines 3 and 4b."
-        The nonfarm optional method skips line 3 and puts the elected amount on line 4b. That line
-        4b amount is not added here. This stays Schedule C net profit minus the deductible part of
-        self-employment tax. An election that applies together with the earned income credit, the
-        additional child tax credit, or the child and dependent care credit stops the return
-        (scheduleSE /flowKnockoutScheduleSENonfarmOptionalMethodCredits). #117: floored at $0
-        because a loss is not
-        modeled; a loss stops
-        the return wherever it would change a credit (/flowKnockoutScheduleCEarnedIncomeCredits).
+        Earned income from self-employment for the EITC, CDCC and ACTC, each filer's own amount added
+        together. For each filer it is that filer's Schedule C net profit minus that filer's notary net
+        profit minus that filer's deductible part of SE tax (that filer's Schedule SE line 13), floored at
+        $0. 26 U.S.C. 32(c)(2)(A)(ii) (https://www.law.cornell.edu/uscode/text/26/32#c_2_A): earned income
+        includes "net earnings from self-employment ... (within the meaning of section 1402(a)) ...
+        determined with regard to the deduction allowed to the taxpayer by section 164(f)". 26 U.S.C.
+        1402(c)(1) (https://www.law.cornell.edu/uscode/text/26/1402#c_1) excludes the functions of a public
+        office, including notary fees, from that trade or business. Instructions for Form 1040 (2025), PDF
+        p. 47, EIC Worksheet B, Part 1: "1a. Enter the amount from Schedule SE, Part I, line 3" (line 3 is
+        already net of notary; 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2). "d. Enter
+        the amount from Schedule SE, Part I, line 13. ... e. Subtract line 1d from line 1c." Part 2 (net
+        earnings under $400) line 2b is Schedule C line 31; the notary net profit is still removed, because
+        32(c)(2)(A)(ii) uses 1402(a). 2026 draft Instructions for Form 2441, PDF p. 5, lines 4 and 5: "2.
+        The amount shown on Schedule SE (Form 1040), line 3, minus any deduction you claim on Schedule 1
+        (Form 1040), line 15." The nonfarm optional method skips line 3 and puts the elected amount on line
+        4b. That line 4b amount is not added here. With no notary, this is still Schedule C line 31 minus
+        the deductible part of self-employment tax. An election that applies together with the earned
+        income credit, the additional child tax credit, or the child and dependent care credit stops the
+        return (scheduleSE /flowKnockoutScheduleSENonfarmOptionalMethodCredits). #117: floored at $0
+        because a loss is not modeled; a loss stops the return wherever it would change a credit
+        (/flowKnockoutScheduleCEarnedIncomeCredits).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
-        <GreaterOf>
-          <Subtract>
-            <Minuend>
-              <Dependency path="/scheduleCNetProfitOrLoss" />
-            </Minuend>
-            <Subtrahends>
-              <Dependency module="scheduleSE" path="/deductibleSelfEmploymentTax" />
-            </Subtrahends>
-          </Subtract>
-          <Dollar>0</Dollar>
-        </GreaterOf>
+        <Add>
+          <GreaterOf>
+            <Subtract>
+              <Minuend>
+                <Dependency path="/scheduleCPrimaryFilerNetProfitOrLoss" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/scheduleCPrimaryFilerNotaryNetProfit" />
+                <Dependency module="scheduleSE" path="/primaryFilerDeductibleSelfEmploymentTax" />
+              </Subtrahends>
+            </Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+          <GreaterOf>
+            <Subtract>
+              <Minuend>
+                <Dependency path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/scheduleCSecondaryFilerNotaryNetProfit" />
+                <Dependency module="scheduleSE" path="/secondaryFilerDeductibleSelfEmploymentTax" />
+              </Subtrahends>
+            </Subtract>
+            <Dollar>0</Dollar>
+          </GreaterOf>
+        </Add>
       </Derived>
     </Fact>
 

@@ -1,13 +1,24 @@
 package gov.irs.directfile.api.pdf;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
@@ -165,6 +176,84 @@ class ScheduleSETy2026PdfSmokeTest {
 
             String text = new PDFTextStripper().getText(doc);
             assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheet dropped");
+            assertFalse(text.contains("Exempt\u2014Notary"), "no notary annotation when the amount is $0");
+        }
+    }
+
+    /**
+     * Schedule C line 31 $20,000, of which $3,000 is notary net profit. Line 2 stays $20,000 and line 3 is $17,000.
+     * round(17,000 × 0.9235) = 15,700. 26 U.S.C. 1402(a)(12), 1402(c)(1). 2026 draft Instructions for Schedule SE,
+     * PDF p. 5, Line 2 item 2. The draft PDF has no field for the dotted line, so the annotation is stamped there.
+     */
+    @Test
+    void notaryProfitIsSubtractedOnLine3AndStampedOnTheDottedLine() throws Exception {
+        Map<String, String> facts = selfEmployed("170000.00", "170000.00", "20000.00");
+        facts.put("/scheduleCBusinesses/#" + BIZ + "/notaryNetProfit", dollar("3000.00"));
+        byte[] bytes = generate(facts);
+        String out = System.getProperty("pdf.smoke.out");
+        if (out != null) {
+            Files.write(Path.of(out, "schedule-se-ty2026-notary.pdf"), bytes);
+        }
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            amount(se, "Page1[0].f1_5[0]", 20000, "2 keeps Schedule C line 31");
+            amount(se, "Page1[0].f1_6[0]", 17000, "3 = 20,000 - 3,000");
+            amount(se, "Page1[0].f1_7[0]", 15700, "4a = 17,000 x 92.35%");
+            // The form's dotted leaders share this baseline, so a text stripper interleaves the dots with the stamp.
+            // The content stream has the stamp's own position. f1_6, line 3, starts at x = 505.
+            String annotation = Irs1040SsePdfForm.exemptNotaryAnnotation(new BigDecimal("3000.00"));
+            float[] at = stampOrigin(doc, annotation);
+            float width = new PDType1Font(Standard14Fonts.FontName.HELVETICA).getStringWidth(annotation)
+                    / 1000f
+                    * Irs1040SsePdfForm.FONT_SIZE;
+            assertTrue(at[0] + width < 505f, "annotation ends left of the line 3 box, was " + (at[0] + width));
+            assertTrue(at[1] > 516f && at[1] < 528f, "annotation baseline " + at[1]);
+        }
+    }
+
+    /** Origin of the "Exempt—Notary" text operator, from the page content stream. */
+    static float[] stampOrigin(PDDocument doc, String annotation) throws IOException {
+        String hex = winAnsiHex(annotation);
+        Pattern operator = Pattern.compile("([0-9.]+) ([0-9.]+) Td\\s*<" + hex + "> Tj");
+        for (PDPage page : doc.getPages()) {
+            Iterator<PDStream> streams = page.getContentStreams();
+            while (streams.hasNext()) {
+                String data = new String(streams.next().toByteArray(), StandardCharsets.ISO_8859_1);
+                Matcher matcher = operator.matcher(data);
+                if (matcher.find()) {
+                    return new float[] {Float.parseFloat(matcher.group(1)), Float.parseFloat(matcher.group(2))};
+                }
+            }
+        }
+        throw new AssertionError("dotted-line annotation was not stamped");
+    }
+
+    /** WinAnsi hex of the stamp, including the em dash at byte 0x97. */
+    static String winAnsiHex(String text) {
+        byte[] bytes = text.getBytes(Charset.forName("Cp1252"));
+        StringBuilder hex = new StringBuilder();
+        for (byte b : bytes) {
+            hex.append(String.format("%02X", b));
+        }
+        return hex.toString();
+    }
+
+    /** An entered $0 is the same line 2 and line 3 as leaving the notary amount unanswered. */
+    @Test
+    void zeroNotaryPrintsTheSameLine3AsAnUnansweredAmount() throws Exception {
+        byte[] omitted = generate(selfEmployed("170000.00", "170000.00", "20000.00"));
+        Map<String, String> zeroFacts = selfEmployed("170000.00", "170000.00", "20000.00");
+        zeroFacts.put("/scheduleCBusinesses/#" + BIZ + "/notaryNetProfit", dollar("0.00"));
+        byte[] zero = generate(zeroFacts);
+        try (PDDocument omittedDoc = Loader.loadPDF(omitted);
+                PDDocument zeroDoc = Loader.loadPDF(zero)) {
+            Map<String, String> omittedFields = fieldsOnPages(omittedDoc, SE_FOOTER);
+            Map<String, String> zeroFields = fieldsOnPages(zeroDoc, SE_FOOTER);
+            amount(omittedFields, "Page1[0].f1_5[0]", 20000, "2");
+            amount(omittedFields, "Page1[0].f1_6[0]", 20000, "3");
+            amount(zeroFields, "Page1[0].f1_5[0]", 20000, "2 with $0 notary");
+            amount(zeroFields, "Page1[0].f1_6[0]", 20000, "3 with $0 notary");
+            assertFalse(new PDFTextStripper().getText(zeroDoc).contains("Exempt\u2014Notary"));
         }
     }
 

@@ -65,8 +65,8 @@ abstract class PdfTemplate {
             // ASN 16 (#89 / #124: 2026 Schedule R final)
             new PdfForm("SCHEDULE_R"),
 
-            // ASN 17 (#89: 2026 draft Schedule SE)
-            new PdfForm("IRS1040SSE"),
+            // ASN 17 (#89: 2026 draft Schedule SE). Stamps the line 3 "Exempt—Notary" dotted entry.
+            new Irs1040SsePdfForm("IRS1040SSE"),
 
             // ASN 21. #124 SWAP: the three statements are repo-built with the 2026 draft Form 2441 headings.
             new Irs2441PdfForm("IRS2441"),

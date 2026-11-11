@@ -44,7 +44,7 @@ headings:
     ¿Es usted ministro, miembro de una orden religiosa o practicante de la Ciencia Cristiana, o tiene una exención del
     Formulario 4361 o 4029?
   /heading/income/schedule-c/notary:
-    ¿Tiene honorarios de notario que están excluidos del impuesto sobre el trabajo por cuenta propia?
+    ¿Cuánto de la ganancia neta de este negocio proviene de servicios como notario público?
   /heading/income/schedule-c/form-8919: ¿Tuvo salarios declarados en el Formulario 8919?
   /heading/knockout/schedule-se-out-of-scope:
     Esta herramienta no puede calcular este impuesto sobre el trabajo por cuenta propia
@@ -214,8 +214,12 @@ info:
       una exención aprobada del Formulario 4361 o 4029. La vivienda y la exención no se calculan aquí.
   /info/income/schedule-c/notary:
     body: >-
-      Los honorarios de notario por un cargo público están excluidos del impuesto sobre el trabajo por cuenta propia.
-      Conteste que sí si necesita esa exclusión. Esta herramienta no puede restar esos honorarios.
+      Los honorarios por servicios como notario público no están sujetos al impuesto sobre el trabajo por cuenta
+      propia. Ingrese la ganancia neta incluida en la línea 31 del Anexo C de este negocio. Use $0 si ninguna parte de
+      la ganancia proviene de ese trabajo. La cantidad no puede ser mayor que la línea 31. Si este es su único ingreso
+      sujeto al impuesto sobre el trabajo por cuenta propia, o la cantidad está en una pérdida, esta herramienta no
+      puede terminar la declaración. Si tiene otras ganancias netas de $400 o más, la cantidad se resta en la línea 3
+      del Anexo SE y se imprime "Exempt—Notary" en la línea punteada junto a la línea 3.
   /info/income/schedule-c/form-8919:
     body: >-
       Los salarios del Formulario 8919 van en la línea 8c del Anexo SE. Conteste que sí si los tiene. Las propinas no
@@ -226,7 +230,9 @@ info:
         - p: >-
             Esta declaración necesita una línea del Anexo SE que esta herramienta no calcula. Eso incluye ingresos de
             agricultura, pagos del Programa de Reservas para la Conservación, el método opcional de agricultura, el
-            ministerio o una exención del Formulario 4361 o 4029, honorarios de notario, salarios del Formulario 8919 o
+            ministerio o una exención del Formulario 4361 o 4029, ingresos de notario sin otras ganancias netas de $400
+            o más, una cantidad de notario en una pérdida o por encima de la línea 31 del Anexo C, salarios del
+            Formulario 8919 o
             los ingresos como empleado de una iglesia de su cónyuge. Tendrá que usar otra manera de presentar esta
             declaración.
   /info/knockout/schedule-se-nonfarm-optional-method:
@@ -552,6 +558,8 @@ fields:
       "no": "No"
   /scheduleCBusinesses/*/writableGrossReceipts:
     name: "Línea 1, Ingresos brutos o ventas"
+  /scheduleCBusinesses/*/notaryNetProfit:
+    name: "Ganancia neta de notario incluida en la línea 31"
   /scheduleCBusinesses/*/writableTotalExpenses:
     name: "Línea 28, Total de gastos del negocio"
   /scheduleCExpenseLineOptions:
@@ -801,6 +809,7 @@ dataviews:
       ¿Hizo algún pago en 2026 que le obligue a presentar algún Formulario 1099?
     /scheduleCBusinesses/*/willFileRequiredForms1099: Si “Sí”, ¿presentó o presentará los Formularios 1099 requeridos?
     /scheduleCBusinesses/*/writableGrossReceipts: Ingresos brutos o ventas
+    /scheduleCBusinesses/*/notaryNetProfit: Ganancia neta de notario incluida en la línea 31
     /scheduleCBusinesses/*/writableTotalExpenses: Total de gastos del negocio
     /scheduleCBusinesses/*/writableReturnsAndAllowances: "Devoluciones y rebajas"
     /scheduleCBusinesses/*/writableOtherIncome: "Otros ingresos"
