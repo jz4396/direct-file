@@ -37,6 +37,7 @@ direct-file/df-client/package-lock.json	GHSA-3ppc-4f35-3m26	npm	minimatch	3.1.2
 direct-file/df-client/package-lock.json	GHSA-3ppc-4f35-3m26	npm	minimatch	5.1.6
 direct-file/df-client/package-lock.json	GHSA-3ppc-4f35-3m26	npm	minimatch	9.0.5
 direct-file/df-client/package-lock.json	GHSA-3v7f-55p6-f55p	npm	picomatch	2.3.1
+direct-file/df-client/package-lock.json	GHSA-474x-hrwr-fgx4	npm	fast-xml-parser	4.4.1
 direct-file/df-client/package-lock.json	GHSA-4c8g-83qw-93j6	npm	fast-uri	3.0.3
 direct-file/df-client/package-lock.json	GHSA-4r4m-qw57-chr8	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-4w7w-66w2-5vf9	npm	vite	5.4.15
