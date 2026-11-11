@@ -250,7 +250,11 @@ public final class PrintRefusingKnockouts {
             // Schedule SE lines this tool does not compute. 2026 draft Schedule SE: lines 1a and 1b (farm and
             // Conservation Reserve Program payments; 26 U.S.C. 1402(a), 1402(a)(1)), Part II line 15 (farm optional
             // method; 1402(a), 1402(l)), checkbox A and ministry (1402(a)(8), 1402(c)(4), 1402(e), 1402(g)),
-            // notary fees (1402(c)(1)), and line 8c (Form 8919). The primary filer's lines 5a and 5b (church
+            // and line 8c (Form 8919). Notary net profit (1402(c)(1); 2026 draft Instructions for Schedule SE,
+            // PDF p. 5, Line 2 item 2) is subtracted on line 3 when other net earnings are $400 or more, and
+            // "Exempt—Notary" is stamped on the dotted line. A notary-only return, a notary amount on a loss,
+            // and a notary amount above Schedule C line 31 still refuse the print through this fact. The primary
+            // filer's lines 5a and 5b (church
             // employee income; 26 U.S.C. 3121(w), 1402(a)(12), 1402(a)(14), 1402(j)) are computed and do not refuse
             // the print. The secondary filer's church employee income is not entered on line 5a. A yes on a joint
             // return refuses the print. Complete false when there is no Schedule C self-employment income and no

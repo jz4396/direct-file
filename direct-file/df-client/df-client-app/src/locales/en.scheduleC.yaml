@@ -39,7 +39,7 @@ headings:
   /heading/income/schedule-c/minister:
     Are you a minister, a member of a religious order, or a Christian Science practitioner, or do you have a Form 4361
     or Form 4029 exemption?
-  /heading/income/schedule-c/notary: Do you have notary fees that are excluded from self-employment tax?
+  /heading/income/schedule-c/notary: How much of this business's net profit is from services as a notary public?
   /heading/income/schedule-c/form-8919: Did you have wages reported on Form 8919?
   /heading/knockout/schedule-se-out-of-scope: This tool can’t figure this self-employment tax
   /heading/knockout/schedule-se-nonfarm-optional-method: This tool can’t use the nonfarm optional method on this return
@@ -195,8 +195,11 @@ info:
       have an approved Form 4361 or Form 4029 exemption. Housing and the exemption are not figured here.
   /info/income/schedule-c/notary:
     body: >-
-      Notary fees for a public office are excluded from self-employment tax. Answer yes if you need that exclusion. This
-      tool cannot subtract those fees.
+      Fees for services as a notary public are not subject to self-employment tax. Enter the net profit included in
+      this business's Schedule C line 31. Use $0 if none of the profit is from that work. The amount cannot be more
+      than line 31. If this is your only income subject to self-employment tax, or the amount is on a loss, this tool
+      cannot finish the return. If you have other net earnings of $400 or more, the amount is subtracted on Schedule SE
+      line 3 and "Exempt—Notary" is printed on the dotted line next to line 3.
   /info/income/schedule-c/form-8919:
     body: >-
       Form 8919 wages go on Schedule SE line 8c. Answer yes if you have them. Unreported tips on Form 4137 are a
@@ -207,8 +210,8 @@ info:
         - p: >-
             This return needs a Schedule SE line this tool does not figure. That includes farm income, Conservation
             Reserve Program payments, the farm optional method, ministry or a Form 4361 or Form 4029 exemption, notary
-            fees, Form 8919 wages, or your spouse's church employee income. You will need another way to file this
-            return.
+            income with no other net earnings of $400 or more, a notary amount on a loss or above Schedule C line 31,
+            Form 8919 wages, or your spouse's church employee income. You will need another way to file this return.
   /info/knockout/schedule-se-nonfarm-optional-method:
     alertText:
       body:
@@ -510,6 +513,8 @@ fields:
       "no": "No"
   /scheduleCBusinesses/*/writableGrossReceipts:
     name: "Line 1, Gross receipts or sales"
+  /scheduleCBusinesses/*/notaryNetProfit:
+    name: "Notary net profit included in line 31"
   /scheduleCBusinesses/*/writableTotalExpenses:
     name: "Line 28, Total business expenses"
   /scheduleCExpenseLineOptions:
@@ -757,6 +762,7 @@ dataviews:
       Did you make any payment in 2026 that would require you to file any Forms 1099?
     /scheduleCBusinesses/*/willFileRequiredForms1099: If “Yes,” did you or will you file required Form(s) 1099?
     /scheduleCBusinesses/*/writableGrossReceipts: Gross receipts or sales
+    /scheduleCBusinesses/*/notaryNetProfit: Notary net profit included in line 31
     /scheduleCBusinesses/*/writableTotalExpenses: Total business expenses
     /scheduleCBusinesses/*/writableReturnsAndAllowances: "Returns and allowances"
     /scheduleCBusinesses/*/writableOtherIncome: "Other income"

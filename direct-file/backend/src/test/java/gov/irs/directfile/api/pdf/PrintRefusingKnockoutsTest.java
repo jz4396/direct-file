@@ -961,6 +961,47 @@ class PrintRefusingKnockoutsTest {
     }
 
     /**
+     * Notary net profit with other net earnings of $400 or more is subtracted on line 3 and does not refuse the print.
+     * Notary-only income and a notary amount on a loss still refuse it. 26 U.S.C. 1402(b)(2), 1402(c)(1). 2026 draft
+     * Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+     */
+    @Test
+    void notaryWithOtherSelfEmploymentIncomePrintsAndNotaryOnlyOrALossRefuses() throws Exception {
+        FactGraphService fgs = CreditFormsTy2026PdfSmokeTest.factGraphService();
+        String biz = "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/notaryNetProfit";
+        String ko = SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT;
+
+        Map<String, String> mixed =
+                new HashMap<>(ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "20000.00"));
+        mixed.put(biz, ScheduleATy2026PdfSmokeTest.dollar("3000.00"));
+        Graph computed = fgs.getGraph(smoke(mixed));
+        assertEquals("17000.00", computed.get("/primaryFilerSeLine3").get().toString());
+        assertEquals(
+                "15700.00", computed.get("/primaryFilerSeNetEarnings").get().toString());
+        assertEquals(Boolean.FALSE, computed.get(ko).get());
+        assertFalse(PrintRefusingKnockouts.refusingPaths(computed).contains(ko));
+
+        Map<String, String> only =
+                new HashMap<>(ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "20000.00"));
+        only.put(biz, ScheduleATy2026PdfSmokeTest.dollar("20000.00"));
+        Graph notaryOnly = fgs.getGraph(smoke(only));
+        assertEquals(Boolean.TRUE, notaryOnly.get(ko).get());
+        assertTrue(PrintRefusingKnockouts.refusingPaths(notaryOnly).contains(ko));
+
+        Map<String, String> loss =
+                new HashMap<>(ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "1000.00"));
+        loss.put(
+                "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/writableTotalExpenses",
+                ScheduleATy2026PdfSmokeTest.dollar("2000.00"));
+        loss.put(biz, ScheduleATy2026PdfSmokeTest.dollar("500.00"));
+        Graph notaryLoss = fgs.getGraph(smoke(loss));
+        assertEquals(
+                Boolean.TRUE, notaryLoss.get("/scheduleCNotaryExceedsLine31").get());
+        assertEquals(Boolean.TRUE, notaryLoss.get(ko).get());
+        assertTrue(PrintRefusingKnockouts.refusingPaths(notaryLoss).contains(ko));
+    }
+
+    /**
      * #17: Form 8995 prints (2026 draft, ASN 55). #87: the same fact still blocks sign and submit because there is no
      * MeF mapping (Instructions for Form 1040 (2025) draft, PDF p. 35, "Attach whichever form you use (Form 8995 or
      * 8995-A) to your return."). Schedule C itself prints (#239). An ACTC return (2026 draft Form 1040 lines 32a-32c,

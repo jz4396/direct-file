@@ -156,6 +156,7 @@ class PdfForm extends PdfTemplate {
                         fieldsToFitToWidth(pdfConfig));
                 skipLeadingPages(newPdfDocument, pdfConfig);
                 skipTrailingPages(newPdfDocument, pdfConfig);
+                afterFieldsFilled(newPdfDocument, facts);
                 results.add(newPdfDocument);
             }
 
@@ -177,6 +178,7 @@ class PdfForm extends PdfTemplate {
                                     fieldsToFitToWidth(pdfConfig));
                             skipLeadingPages(newPdfDocument, pdfConfig);
                             skipTrailingPages(newPdfDocument, pdfConfig);
+                            afterFieldsFilled(newPdfDocument, facts);
                             results.add(newPdfDocument);
                         }
                     }
@@ -299,6 +301,14 @@ class PdfForm extends PdfTemplate {
                 }
             }
         });
+    }
+
+    /**
+     * Text the AcroForm has no field for. Schedule SE stamps "Exempt—Notary" on the dotted line left of line 3.
+     * 26 U.S.C. 1402(c)(1). 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+     */
+    protected void afterFieldsFilled(final PDDocument document, final FactEvaluationResult facts) throws IOException {
+        // Default forms already have a field for every printed amount.
     }
 
     /*

@@ -130,12 +130,6 @@ export const ScheduleCIncomeSubcategory = (
         <Boolean path='/hasMinisterOrSeExemption' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-c-notary' condition='/scheduleSEOutOfScopeQuestionsApply'>
-        <Heading i18nKey='/heading/income/schedule-c/notary' />
-        <InfoDisplay i18nKey='/info/income/schedule-c/notary' />
-        <Boolean path='/hasNotarySeExclusion' />
-        <SaveAndOrContinueButton />
-      </Screen>
       <Screen route='schedule-c-form-8919' condition='/scheduleSEOutOfScopeQuestionsApply'>
         <Heading i18nKey='/heading/income/schedule-c/form-8919' />
         <InfoDisplay i18nKey='/info/income/schedule-c/form-8919' />
@@ -550,6 +544,12 @@ export const ScheduleCIncomeSubcategory = (
           <Heading i18nKey='/heading/income/schedule-c/at-risk' />
           <InfoDisplay i18nKey='/info/income/schedule-c/at-risk' />
           <Boolean path='/scheduleCBusinesses/*/allInvestmentAtRisk' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-notary-amount'>
+          <Heading i18nKey='/heading/income/schedule-c/notary' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/notary' />
+          <Dollar path='/scheduleCBusinesses/*/notaryNetProfit' />
           <SaveAndOrContinueButton />
         </Screen>
       </SubSubcategory>
