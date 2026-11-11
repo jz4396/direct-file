@@ -15,7 +15,9 @@
 // Form 8959), and profile O
 // (Golden O: full-year Florida resident, single, W-2 wages $150,000, Form 1099-DIV boxes 1a, 1b, 2a, 2f, and 6,
 // and Schedule K-1 (Form 1041) boxes 3 and 4a, through Schedule D and the qualified dividends and capital gain
-// tax worksheet in the 24% bracket, with an AMT check).
+// tax worksheet in the 24% bracket, with an AMT check), and profile P
+// (Golden P: full-year Alaska resident, single, W-2 wages $55,000 and the $1,200 Alaska Permanent Fund Dividend
+// on Schedule 1 line 8g, with no state return).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -129,7 +131,8 @@
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
 //      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
 //      the ITIN ranges). Profile N uses 900-36-1015 (group 36, outside the ITIN ranges). Profile O uses
-//      900-35-1016 (group 35, outside the ITIN ranges). Profiles C and D use
+//      900-35-1016 (group 35, outside the ITIN ranges). Profile P uses 900-33-1017 (group 33, outside the ITIN
+//      ranges). Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
 //      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
@@ -137,6 +140,18 @@
 //      is above that amount too, so EITC is $0 on both. Profile G is under the two-child joint completed phaseout and
 //      its EITC is computed in that block. The other profiles have no child, so their CTC is $0. Profile F's child tax
 //      credit is reduced by the §24(b) phaseout.
+// [AK] AS 43.20.012(a)(1)–(2): "The tax imposed by this chapter does not apply to (1) an individual; (2) a fiduciary"
+//      (https://www.akleg.gov/basis/statutes.asp?media=print&secStart=43.20.012&secEnd=43.20.012). The individual tax
+//      was repealed by ch. 2 SSSLA 1980. The Permanent Fund Dividend stays federal income only (Schedule 1 line 8g).
+//      There's no state return. Full-year Alaska follows the Florida no-state-return path (/stateReturnIsAk). A W-2
+//      box 17 above $0 stops the return (/flowKnockoutAlaskaStateWithholding).
+// [PFD] Alaska Department of Revenue press release 26-004 (Sept. 18, 2026),
+//      https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf: "Alaskans
+//      will begin receiving their 2026 Alaska Permanent Fund Dividend (PFD) of $1,000.00, with an additional $200.00
+//      energy relief payment." /alaskaPfdAmount is that $1,200 (constants3.xml). 2026 draft Schedule 1
+//      (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 1, line 8g: "Alaska Permanent Fund dividends";
+//      line 9: "Total other income. Add lines 8a through 8z"; line 10: "Combine lines 1 through 7 and 9. Enter here
+//      and on Form 1040, 1040-SR, or 1040-NR, line 8."
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -206,6 +221,9 @@ import {
   profileOEstateId,
   profileOFlQdcgK1,
   profileOW2,
+  profilePAkSinglePfd,
+  profilePPfdId,
+  profilePW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -3696,6 +3714,174 @@ describe(`golden end-to-end scenario (synthetic data): profile O, Golden O, Flor
     for (const form of [`PA40`, `PA40SP`]) {
       expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(false);
     }
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile P, Golden P, full-year AK, Schedule 1 line 8g`, () => {
+  // Sloane Example. Single, full-year Alaska resident [AK]; born 1988-03-09 (under 65, after January 1, 1962, and 38
+  //   at the end of 2026), SSN 900-33-1017 (900 area, group 33, outside the ITIN ranges [EITC]). Address 123 Example
+  //   St, Anchorage, AK 99501. Not blind. No dependents. Standard deduction. No interest, no dividends, no capital
+  //   gain, no Schedule C.
+  // W-2: box 1 $55,000, box 2 $5,000, boxes 3 and 5 $55,000, boxes 16 and 17 blank. Box 4 is 6.2% × 55,000 = 3,410
+  //   (26 U.S.C. 3101(a)). Box 6 is 1.45% × 55,000 = 797.50 [3101 (b)(1)]. This employer paid under $200,000, so
+  //   box 6 has no 0.9% [3102 (f)(1)].
+  // Form 1099-MISC, one form, box 3 $1,200, box 4 $0. Every Form 1099-MISC is an Alaska PFD
+  //   (/form1099Miscs/*/isAlaskaPfd is derived true). $1,200 is the 2026 PFD: $1,000 plus a $200 energy relief
+  //   payment [PFD]. /receivedAlaskaPfd is yes.
+  // Schedule 1 [PFD]: line 8g (/alaskaPfdIncome) 1,200; line 9 (/schedule1TotalOtherIncome) 1,200; lines 1 through 7
+  //   are $0, so line 10 (/otherIncome) 1,200. That is Form 1040 line 8.
+  // Form 1040: line 1a 55,000; line 8 1,200; line 9 and line 11 (AGI) 56,200. No adjustments. Line 12 standard
+  //   deduction 16,100 [RP p. 18 §4.14(1): "Unmarried Individuals (other than Surviving Spouses and Heads of
+  //   Households) ... $16,100"]. Line 15 taxable income 40,100. Under $100,000, so the Tax Table [GI p. 36], not the
+  //   Tax Computation Worksheet. Row 40,100–40,150, midpoint 40,125 [GI p. 69]. [RP] p. 11 §4.01 Table 3: "Over
+  //   $12,400 but not over $50,400 $1,240 plus 12% of the excess over $12,400": 1,240 + 12% × (40,125 − 12,400) =
+  //   1,240 + 12% × 27,725 = 1,240 + 3,327 = 4,567. Withholding 5,000. Refund 5,000 − 4,567 = 433.
+  // EITC is $0 [EITC]: no qualifying child, and AGI $56,200 is over the $19,540 completed phaseout. The 900-area TIN
+  //   is not an SSN either. NIIT is $0 [1411 (b)(3)]: MAGI $56,200 is under the $200,000 single threshold, so no
+  //   Form 8960. Form 8959 [3101 (b)(2)]: Medicare wages $55,000 are under $200,000. AMT is $0 and Form 6251 is not
+  //   required: AMTI is taxable income $40,100 plus the $16,100 standard-deduction add-back, $56,200, which is under
+  //   the $90,100 exemption [RP p. 16 §4.10], so line 7 is not greater than line 10. No Schedule B (no interest or
+  //   ordinary dividends over $1,500). No
+  //   Schedule D. No Alaska return [AK]. Box 17 is blank, so /flowKnockoutAlaskaStateWithholding stays false.
+  const g = graph(profilePAkSinglePfd);
+
+  it(`golden-profileP-complete.json is the persisted profilePAkSinglePfd return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileP-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`Schedule 1 line 8g is $1,200 and line 10 is $1,200`, () => {
+    expect(get(g, `/receivedAlaskaPfd`).get).toBe(true);
+    expect(get(g, `/eligibleForApf`).get).toBe(true);
+    expect(get(g, `/form1099Miscs/#${profilePPfdId}/isAlaskaPfd`).get).toBe(true);
+    expect(get(g, `/form1099Miscs/#${profilePPfdId}/isComplete`).get).toBe(true);
+    expect(get(g, `/isApfSectionComplete`).get).toBe(true);
+    expect(get(g, `/hasAlaskaPfdIncome`).get).toBe(true);
+    expect(get(g, `/requiresSchedule1`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS1040S1`) as string).get).toBe(true);
+    expect(get(g, `/alaskaPfdAmountDividendPortion`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/alaskaPfdAmountEnergyReliefPaymentPortion`).get.toString()).toBe(`200.00`);
+    expect(get(g, `/alaskaPfdAmount`).get.toString()).toBe(`1200.00`);
+    expectDollars(g, {
+      [`/form1099Miscs/#${profilePPfdId}/writableOtherIncome`]: `1200.00`,
+      '/alaskaPfdIncome': `1200.00`,
+      '/schedule1TotalOtherIncome': `1200.00`,
+      '/unemploymentCompensation': `0.00`,
+      '/schedule1Line3': `0.00`,
+      '/schedule1Line5': `0.00`,
+      '/otherIncome': `1200.00`,
+      '/adjustmentsToIncome': `0.00`,
+    });
+  });
+
+  it(`Form 1040 AGI is $56,200, taxable income is $40,100, and the Tax Table tax is $4,567`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`single`);
+    expect(get(g, `/primaryFiler/isBlind`).get).toBe(false);
+    expect(get(g, `/requiresScheduleB`).complete).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/requiresScheduleD`).complete).toBe(true);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS1040SB`) as string).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS1040SD`) as string).get).toBe(false);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(false);
+    const taxable = Number(get(g, `/taxableIncome`).get.toString());
+    expect(taxable).toBe(40100);
+    // [GI] p. 69: tax on the row midpoint. 40,100 is the start of row 40,100–40,150, midpoint 40,125.
+    const midpoint = Math.floor(taxable / 50) * 50 + 25;
+    expect(midpoint).toBe(40125);
+    // [RP] p. 11 §4.01 Table 3. 1,240 + 12% × 27,725 = 4,567 exactly.
+    const taxCents = 1240 * 100 + (midpoint - 12400) * 12;
+    expect(taxCents).toBe(456700);
+    expectDollars(g, {
+      '/wages': `55000.00`,
+      '/otherIncome': `1200.00`,
+      '/totalIncome': `56200.00`,
+      '/adjustmentsToIncome': `0.00`,
+      '/agi': `56200.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/taxableIncome': `40100.00`,
+      '/tentativeTaxFromTaxableIncome': `4567.00`,
+    });
+  });
+
+  it(`EITC, NIIT, and AMT are $0, and Form 6251 is not required`, () => {
+    expect(get(g, `/eitcQualified`).get).toBe(false);
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS8960`) as string).get).toBe(false);
+    expect(get(g, `/requiresSchedule2`).get).toBe(false);
+    const amti = Number(get(g, `/form6251Line4`).get.toString());
+    expect(amti).toBe(56200);
+    expect(amti).toBeLessThan(90100);
+    expectDollars(g, {
+      '/earnedIncomeCredit': `0.00`,
+      '/totalCtc': `0.00`,
+      '/form8960Line14': `200000.00`,
+      '/form8960Line17': `0.00`,
+      '/form8959Line7': `0.00`,
+      '/form6251Line2a': `16100.00`,
+      '/form6251Line4': `56200.00`,
+      '/form6251ExemptionAmount': `90100.00`,
+      '/amt': `0.00`,
+      '/schedule2Line2': `0.00`,
+      [`/formW2s/#${profilePW2.id}/medicareWages`]: `55000.00`,
+      // Writable box 6 is the exact 1.45%, $797.50. The derived box 6 rounds half up to a whole dollar.
+      [`/formW2s/#${profilePW2.id}/medicareWithholding`]: `798.00`,
+    });
+  });
+
+  it(`withholding is $5,000 and the refund is $433, with no Alaska return and no box 17 stop`, () => {
+    expect(get(g, `/form2210AskPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/dueRefund`).get).toBe(true);
+    expectDollars(g, {
+      '/totalTax': `4567.00`,
+      '/formW2Withholding': `5000.00`,
+      '/form1099MiscFederalIncomeTaxWithheld': `0.00`,
+      '/totalWithholding': `5000.00`,
+      '/totalPayments': `5000.00`,
+      '/overpayment': `433.00`,
+      '/balanceDue': `0.00`,
+      '/appliedToNextYearEstimated': `0.00`,
+      '/form2210Line4': `4567.00`,
+      '/form2210Line6': `5000.00`,
+      '/form2210Line7': `-433.00`,
+    });
+    expect(get(g, `/livedInAk`).get).toBe(true);
+    expect(get(g, `/livedInFl`).get).toBe(false);
+    expect(get(g, `/stateReturnIsAk`).get).toBe(true);
+    expect(get(g, `/stateReturnIsFl`).get).toBe(false);
+    expect(get(g, `/stateReturnIsPa`).get).toBe(false);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/hasNoStateIncomeTax`).get).toBe(true);
+    expect(get(g, `/flowKnockoutAlaskaStateWithholding`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAlaskaStateWithholding`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowKnockoutUnsupportedState`).get).toBe(false);
+    for (const p of [`/stateTaxLiability`, `/stateRefund`, `/stateAmountOwed`]) {
+      expect(get(g, p).complete, p).toBe(false);
+    }
+    for (const form of [`PA40`, `IRS1040SB`, `IRS1040SD`, `IRS6251`, `IRS8960`]) {
+      expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(false);
+    }
+    expect(get(g, pdfIncludeWhen(`IRS1040`) as string).get).toBe(true);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
     expectNotStopped(g);
   });

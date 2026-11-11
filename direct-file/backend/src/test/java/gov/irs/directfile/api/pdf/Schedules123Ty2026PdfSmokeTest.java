@@ -31,6 +31,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.cents;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.collection;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.dollar;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generate;
+import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.generatePublicPrintOf;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -326,6 +327,74 @@ class Schedules123Ty2026PdfSmokeTest {
             Map<String, String> s2 = page(doc, SCH2);
             blank(s2, "f1_16[0]", "Schedule 2 line 5");
             assertTrue(!"1".equals(any(s2, "c1_6[0]")), "Schedule 2 line 5 box not checked");
+        }
+    }
+
+    /**
+     * Golden P (#135), public print path. The facts are {@code golden-profileP-complete.json}, the persisted client
+     * profile {@code profilePAkSinglePfd}: Sloane Example, full-year Alaska, single. One W-2, box 1 $55,000, box 2
+     * $5,000, boxes 16 and 17 blank. One Form 1099-MISC box 3 $1,200, the 2026 Alaska Permanent Fund Dividend.
+     *
+     * <p>Schedule 1 line 8g is $1,200. Line 9 is $1,200. Lines 1 through 7 are blank, so line 10 is $1,200. 2026 draft
+     * Schedule 1, form page 1. Alaska Department of Revenue press release 26-004: the 2026 dividend is $1,000.00 plus a
+     * $200.00 energy relief payment.
+     *
+     * <p>Form 1040 line 1a is $55,000. Line 8 is $1,200. Line 9 and line 11 are $56,200. Line 12e is the $16,100
+     * standard deduction. Rev. Proc. 2025-32 §4.14(1), PDF p. 18. Line 15 is $40,100. The Tax Table row is
+     * $40,100–$40,150; the tax on the $40,125 midpoint is $1,240 + 12% × ($40,125 − $12,400) = $4,567. Rev. Proc.
+     * 2025-32 §4.01 Table 3, PDF p. 11. Instructions for Form 1040 (2025), PDF pp. 36 and 69. Line 25a is $5,000. Line
+     * 34 and line 35a are the $433 refund.
+     *
+     * <p>No Schedule B, Schedule D, Form 6251, Form 8960, or PA-40. AS 43.20.012(a)(1)–(2): Alaska has no individual
+     * income tax return. The Permanent Fund Dividend stays federal income only.
+     */
+    @Test
+    void goldenPPrintsForm1040AndSchedule1OnThePublicPath() throws Exception {
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileP-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> s1 = page(doc, SCH1);
+            assertTrue(field(s1, "f1_01[0]").toUpperCase().contains("SLOANE"), "Schedule 1 name");
+            assertTrue(field(s1, "f1_01[0]").toUpperCase().contains("EXAMPLE"), "Schedule 1 last name");
+            blank(s1, "f1_07[0]", "Schedule 1 line 3 (no Schedule C)");
+            blank(s1, "f1_09[0]", "Schedule 1 line 5 (no Schedule E)");
+            blank(s1, "f1_12[0]", "Schedule 1 line 7 (no unemployment)");
+            amount(s1, "f1_19[0]", 1200, "Schedule 1 line 8g Alaska Permanent Fund dividends");
+            amount(s1, "f1_37[0]", 1200, "Schedule 1 line 9");
+            amount(s1, "f1_38[0]", 1200, "Schedule 1 line 10");
+            blank2(s1, "f2_05[0]", "Schedule 1 line 15 (no Schedule SE)");
+            blank2(s1, "f2_30[0]", "Schedule 1 line 26 ($0)");
+
+            Map<String, String> f = fieldsOnPages(doc, F1040);
+            assertTrue(any(f, "f1_14[0]").toUpperCase().contains("SLOANE"), "Form 1040 first name");
+            amount2(f, "f1_47[0]", 55000, "Form 1040 line 1a wages");
+            amount2(f, "f1_72[0]", 1200, "Form 1040 line 8");
+            amount2(f, "f1_73[0]", 56200, "Form 1040 line 9");
+            blank2(f, "f1_74[0]", "Form 1040 line 10 ($0 adjustments)");
+            amount2(f, "f1_75[0]", 56200, "Form 1040 line 11a AGI");
+            amount2(f, "f2_01[0]", 56200, "Form 1040 line 11b AGI");
+            amount2(f, "f2_02[0]", 16100, "Form 1040 line 12e standard deduction");
+            amount2(f, "f2_07[0]", 40100, "Form 1040 line 15 taxable income");
+            amount2(f, "f2_09[0]", 4567, "Form 1040 line 16 tax");
+            amount2(f, "f2_17[0]", 4567, "Form 1040 line 24a total tax");
+            amount2(f, "f2_20[0]", 5000, "Form 1040 line 25a withholding");
+            blank2(f, "f2_26[0]", "Form 1040 line 27a EITC ($0)");
+            amount2(f, "f2_23[0]", 5000, "Form 1040 line 25d");
+            amount2(f, "f2_34[0]", 5000, "Form 1040 line 33 payments");
+            amount2(f, "f2_35[0]", 433, "Form 1040 line 34 overpayment");
+            amount2(f, "f2_36[0]", 433, "Form 1040 line 35a refund");
+
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("Schedule B (Form 1040) 2026"), "no Schedule B");
+            assertFalse(text.contains("Schedule D (Form 1040) 2026"), "no Schedule D");
+            assertFalse(text.contains("Form 8960 (2026)"), "no Form 8960");
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheets dropped");
+            assertTrue(
+                    Form6251Ty2026PdfSmokeTest.form6251Fields(doc).isEmpty(),
+                    "Form 6251 is not attached when AMT is $0");
+            assertFalse(
+                    PaPit40ScheduleSpTy2026PdfSmokeTest.pageWith(
+                            doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1),
+                    "no PA-40 for a full-year Alaska resident");
         }
     }
 }

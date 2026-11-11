@@ -15,7 +15,9 @@
 // exemption phaseout, and Form 8959 run on the same return), and profile O
 // (Golden O: full-year Florida resident, single, W-2 wages $150,000, Form 1099-DIV boxes 1a, 1b, 2a, 2f, and 6,
 // and Schedule K-1 (Form 1041) boxes 3 and 4a, through Schedule D and the qualified dividends and capital gain
-// tax worksheet in the 24% bracket, with an AMT check).
+// tax worksheet in the 24% bracket, with an AMT check), and profile P
+// (Golden P: full-year Alaska resident, single, W-2 wages $55,000 and the $1,200 Alaska Permanent Fund Dividend
+// on Schedule 1 line 8g, with no state return).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -1165,6 +1167,45 @@ export const profileOFlQdcgK1 = {
   [`/scheduleEEstates/#${profileOEstateId}/passiveDeductionOrLoss`]: createBooleanWrapper(false),
 };
 
+/**
+ * Profile P (Golden P, #135): full-year Alaska resident, single, under 65, not blind, no dependents, standard
+ * deduction. One W-2: box 1 $55,000, box 2 $5,000, boxes 3 and 5 $55,000, boxes 16 and 17 blank. One Form 1099-MISC
+ * box 3 $1,200, the 2026 Alaska Permanent Fund Dividend ($1,000) plus the $200 energy relief payment
+ * (/alaskaPfdAmount). Every Form 1099-MISC in this tool is an Alaska PFD (isAlaskaPfd is derived true). No state
+ * return: Alaska follows the no-state-return path (/stateReturnIsAk). Fixed ids in the
+ * 13500000-0000-4000-8000-0000000019xx range.
+ */
+const sloane: Person = { first: `Sloane`, last: `Example`, ssn: [`900`, `33`, `1017`], dob: `1988-03-09` };
+export const profilePPfdId = `13500000-0000-4000-8000-000000001902`;
+export const profilePW2: W2 = {
+  id: `13500000-0000-4000-8000-000000001901`,
+  employer: `Example North Payroll LLC`,
+  ein: [`00`, `0001901`],
+  box1: 55000,
+  box2: 5000,
+  box3: 55000,
+  // 6.2% × 55,000 = 3,410 exactly. 26 U.S.C. 3101(a). The wage base is above this wage.
+  box4: 3410,
+  box5: 55000,
+  // 1.45% × 55,000 = 797.50 exactly. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000).
+  box6: 797.5,
+};
+export const profilePAkSinglePfd = {
+  ...single(sloane, { street: `123 Example St`, city: `Anchorage`, zip: `99501`, state: `AK` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`ak`, `/scopedStateOptions`),
+  '/receivedAlaskaPfd': createBooleanWrapper(true),
+  ...w2s(sloane.ssn, profilePW2),
+  '/form1099Miscs': createCollectionWrapper([profilePPfdId]),
+  [`/form1099Miscs/#${profilePPfdId}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  // Made-up payer name. The $1,200 is box 3. The payer TIN is not stored: the fixture SSN check reads every /tin,
+  // and an EIN does not have an SSN area and group. /alaskaPfdIncome sums box 3 only.
+  [`/form1099Miscs/#${profilePPfdId}/payer`]: createStringWrapper(`Example Permanent Fund`),
+  [`/form1099Miscs/#${profilePPfdId}/writableOtherIncome`]: createDollarWrapper(`1200.00`),
+  [`/form1099Miscs/#${profilePPfdId}/writableFederalWithholding`]: createDollarWrapper(`0.00`),
+  [`/form1099Miscs/#${profilePPfdId}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+  '/hasCompletedApfSection': createBooleanWrapper(true),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1187,4 +1228,5 @@ export const goldenProfiles = {
   profileMPaScheduleC,
   profileNPaSingleAmt8959,
   profileOFlQdcgK1,
+  profilePAkSinglePfd,
 };
