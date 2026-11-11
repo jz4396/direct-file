@@ -2637,8 +2637,10 @@
         Schedule SE line 3 minus line 13, not line 4b. 2026 draft Instructions for Form 2441, PDF p. 5,
         lines 4 and 5: "If you use either optional method to figure net earnings, subtract any deduction
         you claim on Schedule 1 (Form 1040), line 15, from the total of the amounts shown on Schedule SE
-        (Form 1040), lines 3 and 4b." /scheduleCNetProfitForEarnedIncome stays Schedule C line 31 minus
-        the deductible part of self-employment tax, so an election that applies cannot be filed with
+        (Form 1040), lines 3 and 4b." /scheduleCNetProfitForEarnedIncome is each filer's Schedule C line 31
+        minus that filer's notary net profit minus that filer's deductible part of self-employment tax.
+        Notary net profit is $0 when unanswered, so an election with no notary is still line 31 minus the
+        deductible part. An election that applies cannot be filed with
         /isReceivingEitc, /isReceivingActc, or /cdccQualified. Not part of /scheduleCSectionIsComplete:
         those credits are asked later, and an unanswered credit must not leave the Schedule C section
         incomplete. Complete false when neither filer's method applies, including when the election is

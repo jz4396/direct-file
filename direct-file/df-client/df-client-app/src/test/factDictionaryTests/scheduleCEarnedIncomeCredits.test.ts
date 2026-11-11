@@ -136,6 +136,59 @@ describe(`Schedule C earned income for the EITC and CDCC (#117)`, () => {
     expect(get(KO).get).toBe(false);
   });
 
+  it(`$20,000 Schedule C profit with $3,000 notary: earned income is $15,799 and the EITC uses it`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleCNetProfitForEarnedIncome`,
+      `/eitcEarnedIncomeWithoutCombatPay`,
+      `/earnedIncomeCredit`,
+      `/earnedIncomeWithAllCombatPay`,
+      `/primaryFilerEarnedIncomeForCdccBase`,
+    ];
+    // Line 31 stays $20,000. Notary net profit of $3,000 is subtracted on Schedule SE line 3, so line 3 is
+    // $17,000. 26 U.S.C. 1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2.
+    // round(17,000 × 0.9235) = 15,700. round(15,700 × 0.124) = 1,947. round(15,700 × 0.029) = 455.
+    // Self-employment tax is 2,402. Line 13 is round(2,402 × 0.50) = 1,201.
+    // EIC Worksheet B (2025 Form 1040 instructions, PDF p. 47) Part 1 line 1a is Schedule SE line 3 and line
+    // 1e is line 3 minus line 13: 17,000 − 1,201 = 15,799. 26 U.S.C. 32(c)(2)(A)(ii) uses net earnings under
+    // 1402(a), which excludes notary fees, including Worksheet B Part 2 line 2 when net earnings are under $400.
+    // Each filer's amount is floored at $0 and the two are added. The secondary filer has none.
+    const notary = graph({
+      ...single,
+      ...withChild,
+      ...scheduleC(20000, 0),
+      [`/scheduleCBusinesses/#${businessId}/notaryNetProfit`]: createDollarWrapper(`3000.00`),
+    });
+    expect(notary.str(`/scheduleCNetProfitOrLoss`)).toBe(`20000.00`);
+    expect(notary.str(`/primaryFilerSeLine3`)).toBe(`17000.00`);
+    expect(notary.str(`/deductibleSelfEmploymentTax`)).toBe(`1201.00`);
+    expect(notary.str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`15799.00`);
+    expect(notary.str(`/eitcEarnedIncomeWithoutCombatPay`)).toBe(`15799.00`);
+    expect(notary.str(`/earnedIncomeWithAllCombatPay`)).toBe(`15799.00`);
+    expect(notary.str(`/primaryFilerEarnedIncomeForCdccBase`)).toBe(`15799.00`);
+    // $15,799 is above the $13,020 earned-income amount for one child, and AGI $18,799 (20,000 − 1,201) is
+    // under the $23,890 phaseout start, so the credit on that earned income is the maximum. Rev. Proc.
+    // 2025-32 §4.06: 34% of $13,020 is $4,427.
+    expect(notary.str(`/agi`)).toBe(`18799.00`);
+    expect(notary.str(`/earnedIncomeCredit`)).toBe(`4427.00`);
+    expect(notary.get(KO).get).toBe(false);
+
+    // No notary: line 3 stays $20,000. round(20,000 × 0.9235) = 18,470. round(18,470 × 0.124) = 2,290.
+    // round(18,470 × 0.029) = 536. Self-employment tax is 2,826. Line 13 is 1,413. Earned income is
+    // 20,000 − 1,413 = 18,587. An explicit $0 matches leaving the amount unanswered.
+    const unset = graph({ ...single, ...withChild, ...scheduleC(20000, 0) });
+    const zero = graph({
+      ...single,
+      ...withChild,
+      ...scheduleC(20000, 0),
+      [`/scheduleCBusinesses/#${businessId}/notaryNetProfit`]: createDollarWrapper(`0.00`),
+    });
+    for (const g of [unset, zero]) {
+      expect(g.str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`18587.00`);
+      expect(g.str(`/eitcEarnedIncomeWithoutCombatPay`)).toBe(`18587.00`);
+      expect(g.str(`/earnedIncomeCredit`)).toBe(`4427.00`);
+    }
+  });
+
   it(`net earnings under $400: no SE tax, so earned income is the $300 net profit`, ({ task }) => {
     task.meta.testedFactPaths = [`/eitcEarnedIncomeWithoutCombatPay`, KO];
     const { get, str } = graph({ ...single, ...withChild, ...scheduleC(500, 200) });
