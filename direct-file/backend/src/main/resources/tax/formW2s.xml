@@ -5796,6 +5796,84 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutWashingtonStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a Washington resident's W-2</Name>
+      <Description>None of the three imposes a wage income tax, so withholding there is out of scope. RCW 82.87.040
+        imposes the tax on WA long-term capital gains, not on wages. A Washington resident's W-2 should show $0 in box
+        17. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInWa" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutTennesseeStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a Tennessee resident's W-2</Name>
+      <Description>None of the three imposes a wage income tax, so withholding there is out of scope. Hall income tax
+        (Tenn. Code Ann. §67-2-101 et seq.) "is fully repealed for tax years beginning January 1, 2021" — TN DOR Notice
+        #17-09 (Pub. Ch. 181, §13),
+        https://www.tn.gov/content/dam/tn/revenue/documents/notices/income/income17-09.pdf. A Tennessee resident's W-2
+        should show $0 in box 17. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInTn" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNewHampshireStateWithholding">
+      <Name>Flow Knockout: state income tax withheld on a New Hampshire resident's W-2</Name>
+      <Description>None of the three imposes a wage income tax, so withholding there is out of scope. "The State of New
+        Hampshire does not have an income tax on an individual's reported W-2 wages." RSA ch. 77 repealed by 2021,
+        91:99, II, eff. Jan. 1, 2025 (https://gc.nh.gov/rsa/html/V/77/77-mrg.htm). NH DRA: "The I&amp;D Tax was repealed
+        for taxable periods beginning after December 31, 2024"
+        (https://www.revenue.nh.gov/taxes-glance/interest-dividends-tax). There is no TY2026 I&amp;D residue, so an
+        I&amp;D stop would block valid returns. A New Hampshire resident's W-2 should show $0 in box 17. Refs
+        #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <Dependency module="filers" path="/livedInNh" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/hasStateWithholding" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/formW2s/*/hasStateWithholding">
       <Name>W-2 box 17 is greater than zero</Name>
       <Derived>

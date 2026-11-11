@@ -7,7 +7,7 @@
       - /stateReturnComputed: Any of the computed states.
       - /stateTaxLiability, /stateTaxWithheld, /stateRefund, /stateAmountOwed: Switch per state onto that state's module.
       - /flowKnockoutStateReturn: Any of All(/stateReturnIs{XX}, that state's knockouts); BlockSubmissionOnTrue, in /flowIsKnockedOut.
-      A no-income-tax state (FL, #103; TX, NV, SD, WY, and AK, #93) has only /stateReturnIs{Xx}; it adds nothing to the Switches or /stateReturnComputed.
+      A no-income-tax state (FL, #103; TX, NV, SD, WY, AK, WA, TN, and NH, #93) has only /stateReturnIs{Xx}; it adds nothing to the Switches or /stateReturnComputed.
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
@@ -97,6 +97,99 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Dependency module="filers" path="/livedInAk" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsWa">
+      <Name>State: Washington (no state income tax return)</Name>
+      <Description>#93 state framework: Washington resident (filers /livedInWa). RCW 82.87.040 imposes the tax on WA
+        long-term capital gains. RCW 82.87.060(1): "A standard deduction of $250,000 per individual, or in the case of
+        spouses or domestic partners, their combined standard deduction is limited to $250,000…", indexed under RCW
+        82.87.150 (WA DOR: "The standard deduction for 2025 is $278,000"; 2026 figure not yet published). There is no
+        state income tax return: Washington is not in /stateReturnComputed or the Switches. The WA return is not
+        produced. Net long-term gain over the $250,000 statutory floor stops at /flowKnockoutWashingtonCapitalGainsTax
+        (never computed). Its W-2 box 17 stop (/flowKnockoutWashingtonStateWithholding, formW2s) is wired directly into
+        /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInWa" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsTn">
+      <Name>State: Tennessee (no state income tax return)</Name>
+      <Description>#93 state framework: Tennessee resident (filers /livedInTn). Hall income tax (Tenn. Code Ann.
+        §67-2-101 et seq.) "is fully repealed for tax years beginning January 1, 2021" — TN DOR Notice #17-09 (Pub. Ch.
+        181, §13), https://www.tn.gov/content/dam/tn/revenue/documents/notices/income/income17-09.pdf. There is no state
+        return: Tennessee is not in /stateReturnComputed or the Switches. No stop beyond W-2 box 17
+        (/flowKnockoutTennesseeStateWithholding, formW2s), wired directly into /flowIsKnockedOut.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInTn" />
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsNh">
+      <Name>State: New Hampshire (no state income tax return)</Name>
+      <Description>#93 state framework: New Hampshire resident (filers /livedInNh). RSA ch. 77 repealed by 2021, 91:99,
+        II, eff. Jan. 1, 2025 (https://gc.nh.gov/rsa/html/V/77/77-mrg.htm). NH DRA: "The I&amp;D Tax was repealed for
+        taxable periods beginning after December 31, 2024"
+        (https://www.revenue.nh.gov/taxes-glance/interest-dividends-tax), and "The State of New Hampshire does not have
+        an income tax on an individual's reported W-2 wages." There is no TY2026 I&amp;D residue, so an I&amp;D stop
+        would block valid returns. There is no state return: New Hampshire is not in /stateReturnComputed or the
+        Switches. Its W-2 box 17 stop (/flowKnockoutNewHampshireStateWithholding, formW2s) is wired directly into
+        /flowIsKnockedOut. There is no Interest and Dividends stop.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="filers" path="/livedInNh" />
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutWashingtonCapitalGainsTax">
+      <Name>Flow Knockout: Washington capital gains excise tax</Name>
+      <Description>RCW 82.87.040 imposes the tax on WA long-term capital gains. RCW 82.87.060(1): "A standard deduction
+        of $250,000 per individual, or in the case of spouses or domestic partners, their combined standard deduction
+        is limited to $250,000…", indexed under RCW 82.87.150 (WA DOR: "The standard deduction for 2025 is $278,000";
+        2026 figure not yet published). Stop when /stateReturnIsWa and federal net long-term gain exceeds $250,000
+        (statutory floor; deliberately conservative since the indexed amount is higher). Use /scheduleDLine15 when
+        Schedule D is present (/requiresScheduleD), otherwise dividends /totalCapitalGainDistributions. Married filing
+        jointly uses the combined amount against the same single $250,000. The WA return is not produced. Block
+        submission and the printed package. Refs #93.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="/stateReturnIsWa" />
+          </IsComplete>
+          <Dependency path="/stateReturnIsWa" />
+          <GreaterThan>
+            <Left>
+              <Switch>
+                <Case>
+                  <When>
+                    <All>
+                      <IsComplete>
+                        <Dependency module="scheduleD" path="/requiresScheduleD" />
+                      </IsComplete>
+                      <Dependency module="scheduleD" path="/requiresScheduleD" />
+                    </All>
+                  </When>
+                  <Then>
+                    <Dependency module="scheduleD2" path="/scheduleDLine15" />
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <Dependency module="dividends" path="/totalCapitalGainDistributions" />
+                  </Then>
+                </Case>
+              </Switch>
+            </Left>
+            <Right>
+              <Dollar>250000</Dollar>
+            </Right>
+          </GreaterThan>
+        </All>
       </Derived>
     </Fact>
     <Fact path="/stateReturnIsPaPartYear">

@@ -336,7 +336,16 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8",
             // 1099-DIV box 13 larger than box 12. Instructions for Form 1099-DIV, box 13: "This amount is included in
             // box 12." 26 U.S.C. 57(a)(5). Form 6251 line 2g is not filed from that form.
-            "/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12");
+            "/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12",
+            // Washington capital gains excise. RCW 82.87.040 imposes the tax on WA long-term capital gains.
+            // RCW 82.87.060(1): "A standard deduction of $250,000 per individual, or in the case of spouses or
+            // domestic partners, their combined standard deduction is limited to $250,000…", indexed under RCW
+            // 82.87.150 (WA DOR: "The standard deduction for 2025 is $278,000"; 2026 figure not yet published).
+            // Stop when federal net long-term gain exceeds $250,000 (statutory floor; deliberately conservative
+            // since the indexed amount is higher). Schedule D line 15 when Schedule D is present, otherwise
+            // total capital gain distributions. Married filing jointly uses the combined amount against the same
+            // single $250,000. The WA return is not produced.
+            "/flowKnockoutWashingtonCapitalGainsTax");
 
     private PrintRefusingKnockouts() {}
 

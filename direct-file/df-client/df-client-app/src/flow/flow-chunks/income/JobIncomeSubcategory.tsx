@@ -972,6 +972,32 @@ export const JobIncomeSubcategory = (
         <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      {/* #93 slice 2: W-2 box 17 > 0 stops for WA, TN, and NH, each modeled on the Texas stop. */}
+      <Screen route='w2-wa-state-withholding-ko' condition='/flowKnockoutWashingtonStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='w2-tn-state-withholding-ko' condition='/flowKnockoutTennesseeStateWithholding' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen
+        route='w2-nh-state-withholding-ko'
+        condition='/flowKnockoutNewHampshireStateWithholding'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/jobs/w2-no-income-tax-state-withholding-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='w2-other-state-ko' condition='/flowKnockoutBox15IncomeFromDifferentState' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/income/jobs/w2-other-state-ko' />

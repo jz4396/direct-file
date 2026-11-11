@@ -1,11 +1,18 @@
-# Refs #93. No-income-tax state notes for full-year TX, NV, SD, WY, and AK.
+# Refs #93. No-income-tax state notes for full-year TX, NV, SD, WY, AK, WA, TN, and NH.
 # Cites live on the facts: Tex. Const. art. VIII, §24-a; Nev. Const. art. 10, §1(9);
 # AS 43.20.012(a)(1)–(2); SD Department of Revenue (https://dor.sd.gov/individuals/taxes/);
-# State of Wyoming (https://www.wyo.gov/about-wyoming).
+# State of Wyoming (https://www.wyo.gov/about-wyoming);
+# RCW 82.87.040 and RCW 82.87.060(1) (WA capital gains; the WA return is not produced);
+# Tenn. Code Ann. §67-2-101 et seq., TN DOR Notice #17-09;
+# RSA ch. 77 repealed by 2021, 91:99, II (no NH Interest & Dividends stop).
+subsubcategories:
+  /flow/your-taxes/amount:
+    wa-capital-gains: Washington capital gains
 headings:
   /heading/you-and-your-family/about-you/state-breather-no-income-tax: Your state has no state income tax return.
   /heading/knockout/income/jobs/w2-no-income-tax-state-withholding-ko: >-
     Direct File doesn’t support W-2s with state income tax withheld when your state has no individual income tax.
+  /heading/knockout/income/wa-capital-gains-ko: Direct File doesn’t produce a Washington capital gains return.
 info:
   /info/you-and-your-family/about-you/state-breather-no-income-tax-info:
     body: >-
@@ -15,3 +22,7 @@ info:
     body: >-
       Your state has no individual income tax to withhold, but one of your W-2s shows state income tax withheld in box
       17. That withholding is an employer error, and Direct File doesn’t compute a refund of it.
+  /info/knockout/income/wa-capital-gains-ko:
+    body: >-
+      Washington taxes long-term capital gains above a $250,000 standard deduction. Your federal net long-term capital
+      gain is over that amount, and Direct File doesn’t produce the Washington return.

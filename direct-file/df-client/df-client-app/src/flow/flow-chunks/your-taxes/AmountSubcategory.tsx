@@ -23,6 +23,16 @@ export const AmountSubcategory = (
     route='amount'
     completeIf={[`/flowHasSeenAmount`, `/form2210PartIIIsComplete`, `/schedule3AQuestionsComplete`]}
   >
+    {/* #93: WA capital gains excise. RCW 82.87.040; RCW 82.87.060(1) $250,000. The WA return is not produced. */}
+    <SubSubcategory route='wa-capital-gains' hidden={true}>
+      <Screen route='wa-capital-gains-ko' condition='/flowKnockoutWashingtonCapitalGainsTax' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/income/wa-capital-gains-ko' />
+        <InfoDisplay i18nKey='/info/knockout/income/wa-capital-gains-ko' />
+        <DFAlert i18nKey='/info/knockout/generic-other-ways-to-file' headingLevel='h2' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     {/* #78 PA-40 core: full-year PA residents. */}
     <SubSubcategory route='pa-40'>
       {/* #123 PA-40 School Code (PA-40 IN p. 5): the district where the filer lived on Dec. 31. */}
