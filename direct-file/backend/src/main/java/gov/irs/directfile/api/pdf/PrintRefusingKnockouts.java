@@ -302,15 +302,16 @@ public final class PrintRefusingKnockouts {
             // Rev. Proc. 2025-32 §4.10 complete phaseout amount for a married individual filing a separate return
             // (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 17). Printing line 4 without it understates AMTI.
             "/flowKnockoutAmtMfsAddBack",
-            // Form 1099-DIV boxes this return does not compute (2b-2d, 8-11, 14-16). Box 2e and box 2f are section
-            // 897 portions of box 1a and box 2a (26 U.S.C. 897(a)) and are not added again. Box 6 is included in box
-            // 1a and is not deducted (26 U.S.C. 67(g)). A portion larger than its parent box is
+            // Form 1099-DIV boxes this return does not compute (2c, 2d, 8-10, 14-16). Box 2b is unrecaptured section
+            // 1250 gain already inside box 2a and is Schedule D line 19. Box 2e and box 2f are section 897 portions of
+            // box 1a and box 2a (26 U.S.C. 897(a)) and are not added again. Box 6 is included in box 1a and is not
+            // deducted (26 U.S.C. 67(g)). A portion larger than its parent box is
             // /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40 is
             // /flowKnockoutPaDividendInvestmentExpenses. Box 12 is Form 1040 line 2a. Box 13 is Form 6251 line 2g.
             // Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1,
-            // requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c
-            // (section 1202 gain), or box 2d (collectibles (28%) gain)". 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6),
-            // 1(h)(7). Printing only box 2a would drop those amounts.
+            // requires that none of the forms have an amount in box 2c (section 1202 gain) or box 2d (collectibles
+            // (28%) gain). An amount in box 2b makes Schedule D required. 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6),
+            // 1(h)(7). Printing only box 2a would drop boxes 2c and 2d.
             "/flowKnockoutDividendUnsupportedBoxes",
             // Box 3 above basis is capital gain. 26 U.S.C. 301(c)(3)(A). Form 1040 instr. (2025) p. 26, Nondividend
             // Distributions: "After you get back all of your cost (or other basis), you must report these

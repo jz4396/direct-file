@@ -4,8 +4,8 @@ headings:
   /heading/knockout/capital-assets: Esta herramienta todavía no admite declarar ventas de acciones, activos digitales (criptomonedas) u otros bienes de capital
   /heading/income/income-sources/collectibles: "En {{/taxYear}}, ¿tuvo ganancia de artículos de colección (28%), que aparece en la casilla 2d de un Formulario 1099-DIV o en un Anexo K-1?"
   /heading/knockout/collectibles: Esta herramienta todavía no admite ganancias de artículos de colección
-  /heading/income/income-sources/unrecaptured-1250-gain: "En {{/taxYear}}, ¿tuvo ganancia no recuperada de la sección 1250, que aparece en la casilla 2b de un Formulario 1099-DIV o en un Anexo K-1?"
-  /heading/knockout/unrecaptured-1250-gain: Esta herramienta todavía no admite la ganancia no recuperada de la sección 1250
+  /heading/income/income-sources/unrecaptured-1250-gain: "En {{/taxYear}}, ¿tuvo ganancia no recuperada de la sección 1250 por una venta de bienes inmuebles, una venta a plazos, el Formulario 4797, el Formulario 2439 o un Anexo K-1, distinta de la cantidad del encasillado 2b de un Formulario 1099-DIV?"
+  /heading/knockout/unrecaptured-1250-gain: Esta herramienta todavía no admite la ganancia no recuperada de la sección 1250 del Formulario 4797, de una venta a plazos o de un Anexo K-1
 info:
   /info/income/income-sources/capital-assets-sold:
     body: Los bienes de capital incluyen acciones, bonos, participaciones en fondos mutuos, activos digitales como criptomonedas y bienes que tiene como inversión. Las ventas se declaran en el Formulario 8949 y el Anexo D.
@@ -24,7 +24,7 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/income/income-sources/unrecaptured-1250-gain:
-    body: Revise la casilla 2b (Ganancia no recuperada de la sección 1250) de cualquier Formulario 1099-DIV y cualquier Anexo K-1 de una sociedad colectiva, sociedad anónima de tipo S, caudal hereditario o fideicomiso. Esta ganancia proviene de bienes inmuebles depreciables y puede tributar hasta un 25%.
+    body: Ingrese el encasillado 2b del Formulario 1099-DIV con ese formulario. Responda sí si tiene ganancia no recuperada de la sección 1250 por una venta de bienes inmuebles, una venta a plazos, el Formulario 4797, el Formulario 2439 o un Anexo K-1. Esas líneas de la hoja de trabajo no se calculan. Esta ganancia puede tributar hasta un 25%.
   /info/knockout/unrecaptured-1250-gain:
     alertText:
       body:

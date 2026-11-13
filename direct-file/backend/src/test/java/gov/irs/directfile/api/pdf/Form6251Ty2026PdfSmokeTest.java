@@ -332,7 +332,8 @@ class Form6251Ty2026PdfSmokeTest {
 
     /**
      * Each mapped amount field's tooltip on the 2026 draft names the line the field map fills. Lines that are a stop
-     * (2b-2f, 2h, 2i, 2k-2t, 3, 8, 14, 35-37) stay unmapped, so they cannot print $0. Lines 2g and 2j are mapped.
+     * (2b-2f, 2h, 2i, 2k-2t, 3, 8) stay unmapped, so they cannot print $0. Lines 2g and 2j are mapped. Lines 14 and
+     * 35-37 are mapped for Form 1099-DIV box 2b and stay blank when line 14 is zero.
      */
     @Test
     void mappedFieldTooltipsNameTheComputedLinesAndUnsupportedLinesStayUnmapped() throws Exception {
@@ -353,6 +354,7 @@ class Form6251Ty2026PdfSmokeTest {
         expected.put("f1_33[0]", "11. A M T");
         expected.put("f2_1[0]", "12. Enter the amount from Form 6251, line 6");
         expected.put("f2_2[0]", "13. Enter the amount from line 4");
+        expected.put("f2_3[0]", "14. Enter the amount from Schedule D");
         expected.put("f2_4[0]", "15. If you did not complete a Schedule D Tax Worksheet");
         expected.put("f2_5[0]", "16. Enter the smaller of line 12 or line 15");
         expected.put("f2_6[0]", "17. Subtract line 16 from line 12");
@@ -373,6 +375,9 @@ class Form6251Ty2026PdfSmokeTest {
         expected.put("f2_21[0]", "32. Add lines 23 and 30");
         expected.put("f2_22[0]", "33. Subtract line 32 from line 22");
         expected.put("f2_23[0]", "34. Multiply line 33 by 20%");
+        expected.put("f2_24[0]", "35. Add lines 17, 32, and 33");
+        expected.put("f2_25[0]", "36. Subtract line 35 from line 12");
+        expected.put("f2_26[0]", "37. Multiply line 36 by 25%");
         expected.put("f2_27[0]", "38. Add lines 18, 31, 34, and 37");
         expected.put("f2_28[0]", "39. If line 12 is $244,500 or less");
         expected.put("f2_29[0]", "40. Enter the smaller of line 38 or line 39");
@@ -396,11 +401,7 @@ class Form6251Ty2026PdfSmokeTest {
                 "f1_23[0]",
                 "f1_24[0]",
                 "f1_25[0]",
-                "f1_30[0]",
-                "f2_3[0]",
-                "f2_24[0]",
-                "f2_25[0]",
-                "f2_26[0]");
+                "f1_30[0]");
 
         String config = new String(
                 new ClassPathResource("pdf/2026/IRS6251/en/configuration.yml").getContentAsByteArray(),

@@ -7,7 +7,8 @@
       wired from Schedule D lines 15/16 (Schedule D line 20 / instr. p.15 points here).
       Preferential rates IRC §1(h)(1)(B)–(D): 0% / 15% / 20%.
       Breakpoints (lines 6 and 13) reuse PR #2 constants4.xml: Rev. Proc. 2025-32 §4.03 p.13.
-      Out of scope: Schedule D Tax Worksheet (28% collectibles / unrecaptured §1250 gain).
+      Schedule D Tax Worksheet (2026 draft Instructions for Schedule D) applies when Schedule D line 19 is more
+      than zero and lines 15 and 16 are both gains. 28% rate gain (line 18) and Form 4952 still stop.
     -->
 
     <Fact path="/qdcgLine1">
@@ -354,30 +355,48 @@
         any of the following applies. • You reported qualified dividends on Form 1040 or 1040-SR, line 3a. • You don't
         have to file Schedule D and you reported capital gain distributions on Form 1040 or 1040-SR, line 7a. • You are
         filing Schedule D, and Schedule D, lines 15 and 16, are both more than zero." Each bullet makes worksheet line 4
-        (lines 2 + 3) more than $0, so this is line 4 &gt; 0. The Schedule D Tax Worksheet (Schedule D lines 18/19 more
-        than $0, or Form 4952 line 4g) and Form 2555 are out of scope.</Description>
+        (lines 2 + 3) more than $0, so this is line 4 &gt; 0, and the Schedule D Tax Worksheet does not apply.
+        2026 draft Instructions for Schedule D, https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf, Schedule D Tax
+        Worksheet: use that worksheet, not this one, when line 18 or line 19 of Schedule D is more than zero and
+        lines 15 and 16 are gains, or Form 4952 line 4g has an amount. Line 18 and Form 4952 still stop. Line 19 is
+        /usesScheduleDTaxWorksheet. Form 2555 is out of scope.</Description>
       <Derived>
-        <GreaterThan>
-          <Left>
-            <Dependency path="/qdcgLine4" />
-          </Left>
-          <Right>
-            <Dollar>0</Dollar>
-          </Right>
-        </GreaterThan>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/qdcgLine4" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Not>
+            <Dependency path="/usesScheduleDTaxWorksheet" />
+          </Not>
+        </All>
       </Derived>
     </Fact>
 
     <Fact path="/tentativeTaxFromTaxableIncome">
       <Name>Tentative tax from taxable income</Name>
-      <Description>Tax as reported on Form 1040 line 16: QDCG Tax Worksheet—Line 16 (Form 1040 instr. (2025) p.38) line
-        25 when it applies, otherwise Tax Table / Tax Computation Worksheet on line 15 (Rev. Proc. 2025-32 §4.01
-        pp.10–12 rates).</Description>
+      <Description>Tax as reported on Form 1040 line 16. Schedule D Tax Worksheet line 47 when Schedule D line 19 is
+        more than zero and lines 15 and 16 are both gains (2026 draft Instructions for Schedule D,
+        https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf). Otherwise QDCG Tax Worksheet—Line 16 (Form 1040 instr.
+        (2025) p.38) line 25 when it applies, otherwise Tax Table / Tax Computation Worksheet on line 15 (Rev. Proc.
+        2025-32 §4.01 pp.10–12 rates).</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
         <Round>
           <Switch>
+            <Case>
+              <When>
+                <Dependency path="/usesScheduleDTaxWorksheet" />
+              </When>
+              <Then>
+                <Dependency path="/schDTaxWsLine47" />
+              </Then>
+            </Case>
             <Case>
               <When>
                 <Dependency path="/usesQdcgTaxWorksheet" />
@@ -1330,6 +1349,1557 @@
               </Then>
             </Case>
           </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+
+      <Fact path="/usesScheduleDTaxWorksheet">
+      <Name>Uses the Schedule D Tax Worksheet</Name>
+      <Description>2026 draft Instructions for Schedule D, https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf, Schedule D
+        Tax Worksheet: "Complete this worksheet only if line 18 or line 19 of Schedule D is more than zero and lines 15
+        and 16 of Schedule D are gains or if you file Form 4952 and you have an amount on line 4g, even if you don't
+        need to file Schedule D. Otherwise, complete the Qualified Dividends and Capital Gain Tax Worksheet". Line 18
+        stays zero because section 1202 gain and collectibles still stop. Form 4952 still stops, so line 4g never
+        applies. Schedule D line 19 is entered only when lines 15 and 16 are both gains, so line 19 more than zero is
+        the whole gate. The total of Form 1099-DIV box 2b is tested first so this fact is complete and false, and the
+        QDCG worksheet is unchanged, when box 2b is $0 even if Schedule D is still incomplete. 26 U.S.C. 1(h)(1)(E).
+      </Description>
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="dividends" path="/totalUnrecapturedSection1250Gain" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="scheduleD2" path="/scheduleDLine19" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine1">
+      <Name>Schedule D Tax Worksheet line 1</Name>
+      <Description>2026 draft Instructions for Schedule D, Schedule D Tax Worksheet line 1: taxable income from Form
+        1040 line 15. Form 2555 is not collected.</Description>
+      <Derived>
+        <Dependency module="taxCalculations" path="/taxableIncome" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine2">
+      <Name>Schedule D Tax Worksheet line 2</Name>
+      <Description>Schedule D Tax Worksheet line 2: qualified dividends from Form 1040 line 3a.</Description>
+      <Derived>
+        <Dependency path="/qdcgLine2" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine6">
+      <Name>Schedule D Tax Worksheet line 6</Name>
+      <Description>Schedule D Tax Worksheet lines 3 through 6. Lines 3 and 4 are Form 4952 lines 4g and 4e, both $0
+        because Form 4952 stops the return. Line 5 is line 3 minus line 4, floored at zero, so $0. Line 6 is line 2
+        minus line 5, floored at zero: qualified dividends.</Description>
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/schDTaxWsLine2" />
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine7">
+      <Name>Schedule D Tax Worksheet line 7</Name>
+      <Description>Schedule D Tax Worksheet line 7: the smaller of Schedule D line 15 or line 16. The worksheet is used
+        only when both are gains. A loss or zero is entered as zero so it is not subtracted as a negative.</Description>
+      <Derived>
+        <GreaterOf>
+          <LesserOf>
+            <Dependency module="scheduleD2" path="/scheduleDLine15" />
+            <Dependency module="scheduleD2" path="/scheduleDLine16" />
+          </LesserOf>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine9">
+      <Name>Schedule D Tax Worksheet line 9</Name>
+      <Description>Schedule D Tax Worksheet lines 8 and 9. Line 8 is the smaller of Form 4952 lines 4g and 4e, which is
+        $0. Line 9 is line 7 minus line 8, floored at zero.</Description>
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/schDTaxWsLine7" />
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine10">
+      <Name>Schedule D Tax Worksheet line 10</Name>
+      <Description>Schedule D Tax Worksheet line 10: add lines 6 and 9.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/schDTaxWsLine6" />
+          <Dependency path="/schDTaxWsLine9" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine11">
+      <Name>Schedule D Tax Worksheet line 11</Name>
+      <Description>Schedule D Tax Worksheet line 11: add Schedule D lines 18 and 19. Line 18 is $0 because section 1202
+        gain and collectibles still stop.</Description>
+      <Derived>
+        <Dependency module="scheduleD2" path="/scheduleDLine19" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine12">
+      <Name>Schedule D Tax Worksheet line 12</Name>
+      <Description>Schedule D Tax Worksheet line 12: the smaller of line 9 or line 11.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine9" />
+          <Dependency path="/schDTaxWsLine11" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine13">
+      <Name>Schedule D Tax Worksheet line 13</Name>
+      <Description>Schedule D Tax Worksheet line 13: subtract line 12 from line 10. This is the gain taxed at 0%, 15%,
+        or 20%. Form 6251 line 13 uses this amount when this worksheet applies.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/schDTaxWsLine10" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/schDTaxWsLine12" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine14">
+      <Name>Schedule D Tax Worksheet line 14</Name>
+      <Description>Schedule D Tax Worksheet line 14: subtract line 13 from line 1. If zero or less, enter -0-. Form
+        6251 line 20 uses this amount when this worksheet applies.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/schDTaxWsLine1" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schDTaxWsLine13" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine15">
+      <Name>Schedule D Tax Worksheet line 15</Name>
+      <Description>Schedule D Tax Worksheet line 15: the 0% maximum. The 2026 draft prints the 2025 amounts ($48,350,
+        $96,700, and $64,750). TY2026 uses Rev. Proc. 2025-32 section 4.03 via /capGainsZeroRateAmount, the same
+        amounts the QDCG worksheet uses.</Description>
+      <Derived>
+        <Dependency module="scheduleD" path="/capGainsZeroRateAmount" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine16">
+      <Name>Schedule D Tax Worksheet line 16</Name>
+      <Description>Schedule D Tax Worksheet line 16: the smaller of line 1 or line 15.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine1" />
+          <Dependency path="/schDTaxWsLine15" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine17">
+      <Name>Schedule D Tax Worksheet line 17</Name>
+      <Description>Schedule D Tax Worksheet line 17: the smaller of line 14 or line 16.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine14" />
+          <Dependency path="/schDTaxWsLine16" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine18">
+      <Name>Schedule D Tax Worksheet line 18</Name>
+      <Description>Schedule D Tax Worksheet line 18: subtract line 10 from line 1. If zero or less, enter -0-.</Description>
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/schDTaxWsLine1" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schDTaxWsLine10" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine19">
+      <Name>Schedule D Tax Worksheet line 19</Name>
+      <Description>Schedule D Tax Worksheet line 19: the smaller of line 1 or the top of the 24% ordinary bracket.
+        The 2026 draft prints the 2025 amounts ($197,300 and $394,600). TY2026 uses Rev. Proc. 2025-32 section 4.01
+        via /ordinaryIncome25PercentThreshold. 26 U.S.C. 1(h)(1)(E) taxes unrecaptured section 1250 gain at a maximum
+        of 25%, so ordinary income above this threshold is what makes the 25% slice larger than the ordinary rate.
+      </Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine1" />
+          <Dependency module="scheduleD" path="/ordinaryIncome25PercentThreshold" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine20">
+      <Name>Schedule D Tax Worksheet line 20</Name>
+      <Description>Schedule D Tax Worksheet line 20: the smaller of line 14 or line 19.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine14" />
+          <Dependency path="/schDTaxWsLine19" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine21">
+      <Name>Schedule D Tax Worksheet line 21</Name>
+      <Description>Schedule D Tax Worksheet line 21: the larger of line 18 or line 20. Form 6251 line 27 uses this
+        amount when this worksheet applies. Line 44 figures the tax on this amount.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/schDTaxWsLine18" />
+          <Dependency path="/schDTaxWsLine20" />
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine22">
+      <Name>Schedule D Tax Worksheet line 22</Name>
+      <Description>Schedule D Tax Worksheet line 22: subtract line 17 from line 16. This amount is taxed at 0%.</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/schDTaxWsLine16" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/schDTaxWsLine17" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine23">
+      <Name>Schedule D Tax Worksheet line 23</Name>
+      <Description>Schedule D Tax Worksheet line 23: the smaller of line 1 or line 13. Skipped, and not used below,
+        when line 1 equals line 16.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine1" />
+          <Dependency path="/schDTaxWsLine13" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine25">
+      <Name>Schedule D Tax Worksheet line 25</Name>
+      <Description>Schedule D Tax Worksheet lines 24 and 25. Line 24 is line 22. Line 25 is line 23 minus line 24,
+        floored at zero.</Description>
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/schDTaxWsLine23" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schDTaxWsLine22" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine26">
+      <Name>Schedule D Tax Worksheet line 26</Name>
+      <Description>Schedule D Tax Worksheet line 26: the 15% maximum. The 2026 draft prints the 2025 amounts
+        ($533,400, $300,000, $600,050, and $566,700). TY2026 uses Rev. Proc. 2025-32 section 4.03 via
+        /capGains15RateAmount.</Description>
+      <Derived>
+        <Dependency module="scheduleD" path="/capGains15RateAmount" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine27">
+      <Name>Schedule D Tax Worksheet line 27</Name>
+      <Description>Schedule D Tax Worksheet line 27: the smaller of line 1 or line 26.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine1" />
+          <Dependency path="/schDTaxWsLine26" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine28">
+      <Name>Schedule D Tax Worksheet line 28</Name>
+      <Description>Schedule D Tax Worksheet line 28: add lines 21 and 22.</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/schDTaxWsLine21" />
+          <Dependency path="/schDTaxWsLine22" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine29">
+      <Name>Schedule D Tax Worksheet line 29</Name>
+      <Description>Schedule D Tax Worksheet line 29: subtract line 28 from line 27. If zero or less, enter -0-.</Description>
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/schDTaxWsLine27" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schDTaxWsLine28" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine30">
+      <Name>Schedule D Tax Worksheet line 30</Name>
+      <Description>Schedule D Tax Worksheet line 30: the smaller of line 25 or line 29.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine25" />
+          <Dependency path="/schDTaxWsLine29" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine31">
+      <Name>Schedule D Tax Worksheet line 31</Name>
+      <Description>Schedule D Tax Worksheet line 31: multiply line 30 by 15% (0.15). If line 1 and line 16 are the
+        same, skip lines 23 through 43, so this line is zero. 26 U.S.C. 1(h)(1)(C).</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="/schDTaxWsLine1" />
+                </Left>
+                <Right>
+                  <Dependency path="/schDTaxWsLine16" />
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Multiply>
+                <Rational>15/100</Rational>
+                <Dependency path="/schDTaxWsLine30" />
+              </Multiply>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine32">
+      <Name>Schedule D Tax Worksheet line 32</Name>
+      <Description>Schedule D Tax Worksheet line 32: add lines 24 and 30. Line 24 is line 22.</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/schDTaxWsLine22" />
+          <Dependency path="/schDTaxWsLine30" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine33">
+      <Name>Schedule D Tax Worksheet line 33</Name>
+      <Description>Schedule D Tax Worksheet line 33: subtract line 32 from line 23. If zero or less, enter -0-.</Description>
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/schDTaxWsLine23" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/schDTaxWsLine32" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine34">
+      <Name>Schedule D Tax Worksheet line 34</Name>
+      <Description>Schedule D Tax Worksheet line 34: multiply line 33 by 20% (0.20). Zero when lines 23 through 43 are
+        skipped (line 1 equals line 16) or lines 33 through 43 are skipped (line 1 equals line 32). 26 U.S.C.
+        1(h)(1)(D).</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Any>
+                <Equal>
+                  <Left>
+                    <Dependency path="/schDTaxWsLine1" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/schDTaxWsLine16" />
+                  </Right>
+                </Equal>
+                <Equal>
+                  <Left>
+                    <Dependency path="/schDTaxWsLine1" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/schDTaxWsLine32" />
+                  </Right>
+                </Equal>
+              </Any>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Multiply>
+                <Rational>20/100</Rational>
+                <Dependency path="/schDTaxWsLine33" />
+              </Multiply>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine35">
+      <Name>Schedule D Tax Worksheet line 35</Name>
+      <Description>Schedule D Tax Worksheet line 35: the smaller of line 9 or Schedule D line 19.</Description>
+      <Derived>
+        <LesserOf>
+          <Dependency path="/schDTaxWsLine9" />
+          <Dependency module="scheduleD2" path="/scheduleDLine19" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine39">
+      <Name>Schedule D Tax Worksheet line 39</Name>
+      <Description>Schedule D Tax Worksheet lines 36 through 39. Line 36 is line 10 plus line 21. Line 37 is line 1.
+        Line 38 is line 36 minus line 37, floored at zero. Line 39 is line 35 minus line 38, floored at zero. This is
+        the unrecaptured section 1250 gain taxed at 25%.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/schDTaxWsLine35" />
+            </Minuend>
+            <Subtrahends>
+              <GreaterOf>
+                <Subtract>
+                  <Minuend>
+                    <Add>
+                      <Dependency path="/schDTaxWsLine10" />
+                      <Dependency path="/schDTaxWsLine21" />
+                    </Add>
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency path="/schDTaxWsLine1" />
+                  </Subtrahends>
+                </Subtract>
+                <Dollar>0</Dollar>
+              </GreaterOf>
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine40">
+      <Name>Schedule D Tax Worksheet line 40</Name>
+      <Description>Schedule D Tax Worksheet line 40: multiply line 39 by 25% (0.25). Zero when lines 23 through 43 or
+        lines 33 through 43 are skipped, or when Schedule D line 19 is zero or blank (skip lines 35 through 40).
+        26 U.S.C. 1(h)(1)(E) and 1(h)(6).</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Any>
+                <Equal>
+                  <Left>
+                    <Dependency path="/schDTaxWsLine1" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/schDTaxWsLine16" />
+                  </Right>
+                </Equal>
+                <Equal>
+                  <Left>
+                    <Dependency path="/schDTaxWsLine1" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/schDTaxWsLine32" />
+                  </Right>
+                </Equal>
+                <Not>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency module="scheduleD2" path="/scheduleDLine19" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </GreaterThan>
+                </Not>
+              </Any>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Multiply>
+                <Rational>25/100</Rational>
+                <Dependency path="/schDTaxWsLine39" />
+              </Multiply>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine43">
+      <Name>Schedule D Tax Worksheet line 43</Name>
+      <Description>Schedule D Tax Worksheet lines 41 through 43 multiply the 28% rate gain by 28%. Schedule D line 18
+        is zero because section 1202 gain and collectibles still stop, so those lines are skipped and this line is
+        zero. 26 U.S.C. 1(h)(1)(F).</Description>
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+<Fact path="/schDTaxWsRoundedLine21">
+      <Name>Rounded Schedule D Tax Worksheet line 21</Name>
+      <Description>Schedule D Tax Worksheet line 44 uses the Tax Table when line 21 is less than $100,000. This fact selects the midpoint of the Tax Table row, the same way /qdcgRoundedLine5 does for QDCG line 5. Generated copy; the input is line 21.</Description>
+      <Derived>
+        <Switch><!-- No tax if you've got no taxable income -->
+          <Case>
+            <When>
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency path="/schDTaxWsLine21" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </LessThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case><!-- There are three hardcoded midpoints for income less than $25 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/schDTaxWsLine21" />
+                </Left>
+                <Right>
+                  <Dollar>5</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>2.50</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/schDTaxWsLine21" />
+                </Left>
+                <Right>
+                  <Dollar>15</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>10</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/schDTaxWsLine21" />
+                </Left>
+                <Right>
+                  <Dollar>25</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Dollar>20</Dollar>
+            </Then>
+          </Case><!-- The tax tables use increments of $25 for income between $25 and $3,000 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/schDTaxWsLine21" />
+                </Left>
+                <Right>
+                  <Dollar>3000</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <StepwiseMultiply>
+                  <Multiplicand>
+                    <Dependency path="/schDTaxWsLine21" />
+                  </Multiplicand>
+                  <Rate>
+                    <Rational>25/25</Rational><!-- $25 for every whole $25 of income -->
+                  </Rate>
+                </StepwiseMultiply>
+                <Dollar>12.50</Dollar><!-- Add $12.50 to find the midpoint of the row -->
+              </Add>
+            </Then>
+          </Case><!-- The tax tables use increments of $50 for income between $3,000 and $100,000 -->
+          <Case>
+            <When>
+              <LessThan>
+                <Left>
+                  <Dependency path="/schDTaxWsLine21" />
+                </Left>
+                <Right>
+                  <Dollar>100000</Dollar>
+                </Right>
+              </LessThan>
+            </When>
+            <Then>
+              <Add>
+                <StepwiseMultiply>
+                  <Multiplicand>
+                    <Dependency path="/schDTaxWsLine21" />
+                  </Multiplicand>
+                  <Rate>
+                    <Rational>50/50</Rational><!-- $50 for every whole $50 of income -->
+                  </Rate>
+                </StepwiseMultiply>
+                <Dollar>25</Dollar><!-- Add $25 to find the midpoint of the row -->
+              </Add>
+            </Then>
+          </Case><!-- Income of $100,000 and over uses the tax computation worksheet -->
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/schDTaxWsLine21" />
+                </Left>
+                <Right>
+                  <Dollar>100000</Dollar>
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Dependency path="/schDTaxWsLine21" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+<Fact path="/schDTaxWsLine44">
+      <Name>Schedule D Tax Worksheet line 44</Name>
+      <Description>2026 draft Instructions for Schedule D, https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf, Schedule D Tax Worksheet line 44: figure the tax on line 21. Tax Table under $100,000; Tax Computation Worksheet at $100,000 or more. Same 26 U.S.C. 1(j)(2) tables as /qdcgLine22 (generated copy, input swapped to line 21). Rev. Proc. 2025-32 section 4.01.</Description><!-- Rev. Proc. 2025-32 §4.01 pp.10–12 — all four §1(j)(2) tables -->
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Round>
+          <Switch><!-- MARRIED FILING JOINTLY AND QUALIFIED SURVIVING SPOUSE — Table 1 §1(j)(2)(A) p.10 -->
+            <Case>
+              <When>
+                <Any>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                  <Dependency module="filingStatus" path="/isFilingStatusQSS" />
+                </Any>
+              </When>
+              <Then>
+                <Switch><!-- Not over $24,800: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>24800</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/schDTaxWsRoundedLine21" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $24,800 but not over $100,800:$2,480 plus 12% of the excess over $24,800 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>100800</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>2480</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>24800</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $100,800 but not over $211,400:$11,600 plus 22% of the excess over $100,800 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>211400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>11600</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>100800</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $211,400 but not over $403,550:$35,932 plus 24% of the excess over $211,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>403550</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>35932</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>211400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $403,550 but not over $512,450:$82,048 plus 32% of the excess over $403,550 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>512450</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>82048</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>403550</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $512,450 but not over $768,700:$116,896 plus 35% of the excess over $512,450 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>768700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>116896</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>512450</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $768,700:$206,583.50 plus 37% of the excess over $768,700 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>768700</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>206583.50</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>768700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case><!-- HEAD OF HOUSEHOLD — Table 2 §1(j)(2)(B) pp.10–11 -->
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusHOH" />
+              </When>
+              <Then>
+                <Switch><!-- Not over $17,700: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>17700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/schDTaxWsRoundedLine21" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $17,700 but not over $67,450:$1770 plus 12% of the excess over $17,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>67450</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>1770</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>17700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $67,450 but not over $105,700:$7740 plus 22% of the excess over $67,450 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>105700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>7740</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>67450</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $105,700 but not over $201,750:$16155 plus 24% of the excess over $105,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>201750</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>16155</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>105700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $201,750 but not over $256,200:$39207 plus 32% of the excess over $201,750 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>256200</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>39207</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>201750</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $256,200 but not over $640,600:$56631 plus 35% of the excess over $256,200 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>56631</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>256200</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $640,600:$191171 plus 37% of the excess over $640,600 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>191171</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>640600</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case><!-- SINGLE — Table 3 §1(j)(2)(C) pp.11–12 -->
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+              </When>
+              <Then>
+                <Switch><!-- Not over $12,400: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>12400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/schDTaxWsRoundedLine21" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $12,400 but not over $50,400:$1240 plus 12% of the excess over $12,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>50400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>1240</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>12400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $50,400 but not over $105,700:$5800 plus 22% of the excess over $50,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>105700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>5800</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>50400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $105,700 but not over $201,775:$17966 plus 24% of the excess over $105,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>201775</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>17966</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>105700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $201,775 but not over $256,225:$41024 plus 32% of the excess over $201,775 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>256225</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>41024</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>201775</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $256,225 but not over $640,600:$58448 plus 35% of the excess over $256,225 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>58448</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>256225</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $640,600:$192979.25 plus 37% of the excess over $640,600 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>640600</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>192979.25</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>640600</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case><!-- MARRIED FILING SEPARATELY — Table 4 §1(j)(2)(D) p.12 -->
+            <Case>
+              <When>
+                <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+              </When>
+              <Then>
+                <Switch><!-- Not over $12,400: 10% of the taxable income -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>12400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Multiply>
+                        <Rational>10/100</Rational>
+                        <Dependency path="/schDTaxWsRoundedLine21" />
+                      </Multiply>
+                    </Then>
+                  </Case><!-- Over $12,400 but not over $50,400:$1240 plus 12% of the excess over $12,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>50400</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>1240</Dollar>
+                        <Multiply>
+                          <Rational>12/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>12400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $50,400 but not over $105,700:$5800 plus 22% of the excess over $50,400 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>105700</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>5800</Dollar>
+                        <Multiply>
+                          <Rational>22/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>50400</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $105,700 but not over $201,775:$17966 plus 24% of the excess over $105,700 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>201775</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>17966</Dollar>
+                        <Multiply>
+                          <Rational>24/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>105700</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $201,775 but not over $256,225:$41024 plus 32% of the excess over $201,775 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>256225</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>41024</Dollar>
+                        <Multiply>
+                          <Rational>32/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>201775</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $256,225 but not over $384,350:$58448 plus 35% of the excess over $256,225 -->
+                  <Case>
+                    <When>
+                      <LessThanOrEqual>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>384350</Dollar>
+                        </Right>
+                      </LessThanOrEqual>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>58448</Dollar>
+                        <Multiply>
+                          <Rational>35/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>256225</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case><!-- Over $384,350:$103291.75 plus 37% of the excess over $384,350 -->
+                  <Case>
+                    <When>
+                      <GreaterThan>
+                        <Left>
+                          <Dependency path="/schDTaxWsRoundedLine21" />
+                        </Left>
+                        <Right>
+                          <Dollar>384350</Dollar>
+                        </Right>
+                      </GreaterThan>
+                    </When>
+                    <Then>
+                      <Add>
+                        <Dollar>103291.75</Dollar>
+                        <Multiply>
+                          <Rational>37/100</Rational>
+                          <Subtract>
+                            <Minuend>
+                              <Dependency path="/schDTaxWsRoundedLine21" />
+                            </Minuend>
+                            <Subtrahends>
+                              <Dollar>384350</Dollar>
+                            </Subtrahends>
+                          </Subtract>
+                        </Multiply>
+                      </Add>
+                    </Then>
+                  </Case>
+                </Switch>
+              </Then>
+            </Case>
+          </Switch>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine45">
+      <Name>Schedule D Tax Worksheet line 45</Name>
+      <Description>Schedule D Tax Worksheet line 45: add lines 31, 34, 40, 43, and 44.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/schDTaxWsLine31" />
+          <Dependency path="/schDTaxWsLine34" />
+          <Dependency path="/schDTaxWsLine40" />
+          <Dependency path="/schDTaxWsLine43" />
+          <Dependency path="/schDTaxWsLine44" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine46">
+      <Name>Schedule D Tax Worksheet line 46</Name>
+      <Description>Schedule D Tax Worksheet line 46: the tax on line 1. Tax Table under $100,000; Tax Computation
+        Worksheet at $100,000 or more. Same amount as /taxOnTaxableIncomeRegularRates.</Description>
+      <Derived>
+        <Dependency module="taxCalculations" path="/taxOnTaxableIncomeRegularRates" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine47">
+      <Name>Schedule D Tax Worksheet line 47</Name>
+      <Description>Schedule D Tax Worksheet line 47: the smaller of line 45 or line 46. This is Form 1040 line 16 when
+        /usesScheduleDTaxWorksheet is true. Whole dollars.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <LesserOf>
+            <Dependency path="/schDTaxWsLine45" />
+            <Dependency path="/schDTaxWsLine46" />
+          </LesserOf>
         </Round>
       </Derived>
     </Fact>

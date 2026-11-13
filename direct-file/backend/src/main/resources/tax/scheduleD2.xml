@@ -491,29 +491,134 @@
       </Derived>
     </Fact>
 
+    <Fact path="/unrecaptured1250WsLine11">
+      <Name>Unrecaptured Section 1250 Gain Worksheet line 11</Name>
+      <Description>2026 draft Instructions for Schedule D, https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf,
+        Unrecaptured Section 1250 Gain Worksheet line 11: the total of all amounts reported as unrecaptured section
+        1250 gain on a Schedule K-1, Form 1099-DIV, or Form 2439. On a supported return the only source is Form
+        1099-DIV box 2b (dividends /totalUnrecapturedSection1250Gain), in whole dollars. Schedule K-1, Form 2439, and
+        Form 1099-R still stop. Lines 1 through 10 and line 12 are $0 on that path: Form 4797 line 7, installment
+        sales (Form 6252), and a sale of a partnership interest stop at scheduleD /flowKnockoutUnrecaptured1250Gain
+        rather than being half-filled.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Dependency module="dividends" path="/totalUnrecapturedSection1250Gain" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/unrecaptured1250WsLine17">
+      <Name>Unrecaptured Section 1250 Gain Worksheet line 17</Name>
+      <Description>2026 draft Instructions for Schedule D, Unrecaptured Section 1250 Gain Worksheet lines 14 through
+        17. Line 14 is the 28% Rate Gain Worksheet, which is $0 because section 1202 gain, collectibles, and Form
+        1099-DIV boxes 2c and 2d still stop. Line 15 is the loss on Schedule D line 7, entered as a negative amount,
+        or $0 when line 7 is zero or a gain. Line 16 is the long-term capital loss carryover from Schedule D line 14,
+        entered as a negative amount. Schedule K-1 (Form 1041) box 11 code D stops, so it is not added. Line 17 is
+        the loss from combining those lines, entered as a positive amount, or $0 when the combination is zero or a
+        gain. With line 14 at $0 that positive amount is a Schedule D line 7 loss, if any, plus Schedule D line 14.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <GreaterOf>
+            <Dollar>0</Dollar>
+            <Subtract>
+              <Minuend>
+                <Dollar>0</Dollar>
+              </Minuend>
+              <Subtrahends>
+                <Dependency path="/scheduleDLine7" />
+              </Subtrahends>
+            </Subtract>
+          </GreaterOf>
+          <Dependency path="/scheduleDLine14" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/unrecaptured1250WsLine18">
+      <Name>Unrecaptured Section 1250 Gain Worksheet line 18</Name>
+      <Description>2026 draft Instructions for Schedule D, Unrecaptured Section 1250 Gain Worksheet line 18: subtract
+        line 17 from line 13. Line 13 is the sum of lines 9 through 12, which on a supported return is line 11. If
+        zero or less, enter -0-. If more than zero, enter the result on Schedule D line 19.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dollar>0</Dollar>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/unrecaptured1250WsLine11" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/unrecaptured1250WsLine17" />
+            </Subtrahends>
+          </Subtract>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleDLine19">
+      <Name>Schedule D line 19 — unrecaptured section 1250 gain</Name>
+      <Description>2026 draft Schedule D line 19 and 2026 draft Instructions for Schedule D, Unrecaptured Section
+        1250 Gain Worksheet line 18. Entered only when line 17 is Yes (lines 15 and 16 are both gains). Otherwise the
+        form skips lines 18 through 21 and this line is $0. 26 U.S.C. 1(h)(1)(E), 1(h)(6). Not added to line 13:
+        Form 1099-DIV box 2b is already inside box 2a. No ExportZero: the form says "if any," so a zero prints blank.
+      </Description>
+      <Export downstreamFacts="true" mef="true" />
+      <Derived>
+        <!-- IsComplete first so an unanswered capital-assets screener (line 17 still incomplete) yields a complete
+             $0. All is complete and false as soon as IsComplete is false, so this does not depend on line 7. -->
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleDLine17Yes" />
+                </IsComplete>
+                <Dependency path="/scheduleDLine17Yes" />
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/unrecaptured1250WsLine18" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleDLine20Yes">
       <Name>Schedule D line 20 Yes: lines 18 and 19 zero or blank, no Form 4952</Name>
-      <Description>Checked only when line 17 is Yes and lines 18 and 19 are provably zero: every input this
-        tool knows
-        that can put an amount on them is complete and false. Line 18 (28% rate gain, IRC §1(h)(4)):
-        collectibles gain
-        (scheduleD /flowKnockoutCollectibles) and section 1202 gain, IRC §1(h)(4)(A)(ii) and
-        §1(h)(7) (scheduleD
-        /flowKnockoutForm8949CodeQ, Form 8949 code Q). Line 19 (unrecaptured section 1250
-        gain, IRC §1(h)(6)): scheduleD
-        /flowKnockoutUnrecaptured1250Gain. Both: Form 1099-DIV boxes 2b, 2c and
-        2d (dividends
-        /flowKnockoutDividendUnsupportedBoxes). Each of those stops the return, so on a supported
-        return lines 18 and 19
-        print blank. Form 4952 is never filed: investment interest (Schedule A line 9,
-        IRC 163(d)) stops the return (#37
-        /flowKnockoutScheduleAUnsupported). The tax is then figured on the
-        Qualified Dividends and Capital Gain Tax
-        Worksheet (scheduleD3.xml), matching this box; line 20 No
-        (Schedule D Tax Worksheet) is never checked.</Description>
+      <Description>Checked when line 17 is Yes, line 19 is not more than zero, and every other input that can put an
+        amount on line 18 or line 19 is complete and false. Line 18 (28% rate gain, 26 U.S.C. 1(h)(4)): collectibles
+        gain (scheduleD /flowKnockoutCollectibles) and section 1202 gain (scheduleD /flowKnockoutForm8949CodeQ). Other
+        unrecaptured section 1250 gain (scheduleD /flowKnockoutUnrecaptured1250Gain) and Form 1099-DIV boxes 2c, 2d,
+        8-10, and 14-16 (dividends /flowKnockoutDividendUnsupportedBoxes) still stop. Form 1099-DIV box 2b is Schedule
+        D line 19. When that line is more than zero, line 20 No is checked and tax is figured on the Schedule D Tax
+        Worksheet (scheduleD3 /usesScheduleDTaxWorksheet). When line 19 is zero, tax is figured on the Qualified
+        Dividends and Capital Gain Tax Worksheet, matching this box. Form 4952 is never filed: investment interest
+        stops the return.</Description>
       <Derived>
         <All>
           <Dependency path="/scheduleDLine17Yes" />
+          <Not>
+            <GreaterThan>
+              <Left>
+                <Dependency path="/scheduleDLine19" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </Not>
           <IsComplete>
             <Dependency module="scheduleD" path="/flowKnockoutCollectibles" />
           </IsComplete>
@@ -538,6 +643,27 @@
           <Not>
             <Dependency module="dividends" path="/flowKnockoutDividendUnsupportedBoxes" />
           </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleDLine20No">
+      <Name>Schedule D line 20 No: use the Schedule D Tax Worksheet</Name>
+      <Description>2026 draft Schedule D line 20: "Are lines 18 and 19 both zero or blank and you are not filing Form
+        4952?" No when line 17 is Yes and line 18 or line 19 is more than zero. Line 18 stays zero because section
+        1202 gain and collectibles still stop. Form 4952 still stops. So this box is line 19 more than zero.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="/scheduleDLine17Yes" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="/scheduleDLine19" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
         </All>
       </Derived>
     </Fact>

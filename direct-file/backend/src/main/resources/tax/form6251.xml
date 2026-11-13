@@ -347,10 +347,14 @@
         Statement (3) is scheduleE /flowKnockoutScheduleEPartIIIBox12CodesBThroughI: codes B through I stop the return,
         so a filed return has no box 12 code B, C, D, E, or F and uses the regular tax amounts. Under (2) only AMT
         QDCG worksheet lines 2-4 are needed, and they don't depend on line 1, so line 13 is still scheduleD3
-        /qdcgLine4. Line 14 (Schedule D line 19) and the Schedule D Tax Worksheet stop the return, so lines 35-37 are
-        skipped. Form 2555 is not collected. Tested in dividends.test.ts (#86b Form 6251 Part III). IRC §55(b)(3).</Description>
+        /qdcgLine4 when the QDCG worksheet applies. When the Schedule D Tax Worksheet applies, line 13 is that
+        worksheet's line 13, line 14 is Schedule D line 19, and lines 35-37 compute the 25% slice. Form 2555 is not
+        collected. Tested in dividends.test.ts. 26 U.S.C. 55(b)(3).</Description>
       <Derived>
-        <Dependency module="scheduleD3" path="/usesQdcgTaxWorksheet" />
+        <Any>
+          <Dependency module="scheduleD3" path="/usesQdcgTaxWorksheet" />
+          <Dependency module="scheduleD3" path="/usesScheduleDTaxWorksheet" />
+        </Any>
       </Derived>
     </Fact>
     <Fact path="/form6251Line12">
@@ -363,20 +367,75 @@
     </Fact>
     <Fact path="/form6251Line13">
       <Name>Form 6251 line 13</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 13: "Enter the
-        amount from line 4 of the Qualified Dividends and Capital Gain Tax Worksheet". No AMT refiguring needed in scope
-        (no AMT basis adjustments).</Description>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 13: "Enter the
+        amount from line 4 of the Qualified Dividends and Capital Gain Tax Worksheet or the amount from line 13 of the
+        Schedule D Tax Worksheet in the Instructions for Schedule D (Form 1040), whichever applies (as refigured for
+        the AMT, if necessary)." No AMT refiguring is needed in scope (no AMT basis adjustments), so this is the
+        regular-tax amount: scheduleD3 /schDTaxWsLine13 when /usesScheduleDTaxWorksheet, otherwise /qdcgLine4.
+      </Description>
       <Derived>
-        <Dependency module="scheduleD3" path="/qdcgLine4" />
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="scheduleD3" path="/usesScheduleDTaxWorksheet" />
+            </When>
+            <Then>
+              <Dependency module="scheduleD3" path="/schDTaxWsLine13" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency module="scheduleD3" path="/qdcgLine4" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Line14">
+      <Name>Form 6251 line 14</Name>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 14: "Enter the
+        amount from Schedule D (Form 1040), line 19 (as refigured for the AMT, if necessary)." No AMT refiguring is
+        needed in scope, so this is scheduleD2 /scheduleDLine19. $0 when line 19 is blank. No ExportZero: a zero
+        prints blank, and lines 35-37 are skipped when this line is zero or blank.</Description>
+      <Derived>
+        <Dependency module="scheduleD2" path="/scheduleDLine19" />
       </Derived>
     </Fact>
     <Fact path="/form6251Line15">
       <Name>Form 6251 line 15</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 15: "If you
-        did not complete a Schedule D Tax Worksheet for the regular tax or the AMT, enter the amount from line 13."
-        (Line 14, Schedule D line 19, is $0: unrecaptured §1250 gain knocks out.)</Description>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 15: "If you did
+        not complete a Schedule D Tax Worksheet for the regular tax or the AMT, enter the amount from line 13.
+        Otherwise, add lines 13 and 14, and enter the smaller of that result or the amount from line 10 of the
+        Schedule D Tax Worksheet (as refigured for the AMT, if necessary)." No AMT refiguring is needed in scope.
+      </Description>
       <Derived>
-        <Dependency path="/form6251Line13" />
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="scheduleD3" path="/usesScheduleDTaxWorksheet" />
+            </When>
+            <Then>
+              <LesserOf>
+                <Add>
+                  <Dependency path="/form6251Line13" />
+                  <Dependency path="/form6251Line14" />
+                </Add>
+                <Dependency module="scheduleD3" path="/schDTaxWsLine10" />
+              </LesserOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/form6251Line13" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
     <Fact path="/form6251Line16">
@@ -475,10 +534,30 @@
     </Fact>
     <Fact path="/form6251Line20">
       <Name>Form 6251 line 20</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 20: "Enter the
-        amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet".</Description>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 20: "Enter the
+        amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet or the amount from line 14 of the
+        Schedule D Tax Worksheet, whichever applies (as figured for the regular tax)." The third branch (Form 1040
+        line 15) does not apply on a return that completes Part III, because Part III runs only when one of those
+        worksheets applies.</Description>
       <Derived>
-        <Dependency module="scheduleD3" path="/qdcgLine5" />
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="scheduleD3" path="/usesScheduleDTaxWorksheet" />
+            </When>
+            <Then>
+              <Dependency module="scheduleD3" path="/schDTaxWsLine14" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency module="scheduleD3" path="/qdcgLine5" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
     <Fact path="/form6251Line21">
@@ -549,10 +628,28 @@
     </Fact>
     <Fact path="/form6251Line27">
       <Name>Form 6251 line 27</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 27: "Enter the
-        amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet".</Description>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 27: "Enter the
+        amount from line 5 of the Qualified Dividends and Capital Gain Tax Worksheet or the amount from line 21 of the
+        Schedule D Tax Worksheet, whichever applies (as figured for the regular tax)."</Description>
       <Derived>
-        <Dependency module="scheduleD3" path="/qdcgLine5" />
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="scheduleD3" path="/usesScheduleDTaxWorksheet" />
+            </When>
+            <Then>
+              <Dependency module="scheduleD3" path="/schDTaxWsLine21" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency module="scheduleD3" path="/qdcgLine5" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
     <Fact path="/form6251Line28">
@@ -659,8 +756,8 @@
         shall be increased by $1" (IRC §6102(a)(2), https://www.law.cornell.edu/uscode/text/26/6102). Form 1040 instr.
         (2025), https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23, Rounding Off to Whole Dollars: "If you do round to
         whole dollars, you must round all amounts." Every other amount on this return is whole dollars, so Part III is
-        too; line 38 then adds the amounts as entered on lines 18, 31 and 34, and line 40 compares the entered lines 38
-        and 39.</Description>
+        too; line 38 then adds the amounts as entered on lines 18, 31, 34 and 37, and line 40 compares the entered
+        lines 38 and 39.</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Round>
@@ -671,15 +768,83 @@
         </Round>
       </Derived>
     </Fact>
+    <Fact path="/form6251Line35">
+      <Name>Form 6251 line 35</Name>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 35: "Add lines 17,
+        32, and 33." Skipped on the form when line 14 is zero or blank, or when lines 32 and 12 are the same.</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/form6251Line17" />
+          <Dependency path="/form6251Line32" />
+          <Dependency path="/form6251Line33" />
+        </Add>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Line36">
+      <Name>Form 6251 line 36</Name>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 36: "Subtract line
+        35 from line 12."</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/form6251Line12" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/form6251Line35" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+    <Fact path="/form6251Line37">
+      <Name>Form 6251 line 37</Name>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 37: "Multiply line
+        36 by 25% (0.25)." 26 U.S.C. 55(b)(3). Zero when line 14 is zero or blank, because the form skips lines 35
+        through 37. Whole dollars, half a dollar up, the same way as lines 18, 31 and 34. When line 14 is zero this
+        fact is $0 without reading line 36, so line 38 is unchanged on a return that uses the QDCG worksheet.</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/form6251Line14" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Round>
+                <Multiply>
+                  <Rational>25/100</Rational>
+                  <Dependency path="/form6251Line36" />
+                </Multiply>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/form6251Line38">
       <Name>Form 6251 line 38</Name>
-      <Description>#77: Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 38: "Add lines
-        18, 31, 34, and 37" (line 37 = 0).</Description>
+      <Description>Form 6251 (2026) draft, https://www.irs.gov/pub/irs-dft/f6251--dft.pdf p. 2, line 38: "Add lines
+        18, 31, 34, and 37." Line 37 is $0 when line 14 is zero or blank.</Description>
       <Derived>
         <Add>
           <Dependency path="/form6251Line18" />
           <Dependency path="/form6251Line31" />
           <Dependency path="/form6251Line34" />
+          <Dependency path="/form6251Line37" />
         </Add>
       </Derived>
     </Fact>

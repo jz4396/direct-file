@@ -4,8 +4,8 @@ headings:
   /heading/knockout/capital-assets: This tool doesn’t yet support reporting sales of stock, digital assets (crypto), or other capital assets
   /heading/income/income-sources/collectibles: "In {{/taxYear}}, did you have collectibles (28%) gain, shown in box 2d of a Form 1099-DIV or on a Schedule K-1?"
   /heading/knockout/collectibles: This tool doesn’t yet support collectibles gain
-  /heading/income/income-sources/unrecaptured-1250-gain: "In {{/taxYear}}, did you have unrecaptured section 1250 gain, shown in box 2b of a Form 1099-DIV or on a Schedule K-1?"
-  /heading/knockout/unrecaptured-1250-gain: This tool doesn’t yet support unrecaptured section 1250 gain
+  /heading/income/income-sources/unrecaptured-1250-gain: "In {{/taxYear}}, did you have unrecaptured section 1250 gain from a sale of real property, an installment sale, Form 4797, Form 2439, or a Schedule K-1, other than the amount in box 2b of a Form 1099-DIV?"
+  /heading/knockout/unrecaptured-1250-gain: This tool doesn’t yet support unrecaptured section 1250 gain from Form 4797, an installment sale, or a Schedule K-1
 info:
   /info/income/income-sources/capital-assets-sold:
     body: Capital assets include stocks, bonds, mutual fund shares, digital assets such as cryptocurrency, and property you hold for investment. Sales are reported on Form 8949 and Schedule D.
@@ -24,7 +24,7 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/income/income-sources/unrecaptured-1250-gain:
-    body: Check box 2b (Unrecaptured Sec. 1250 gain) on any Form 1099-DIV, and any Schedule K-1 from a partnership, S corporation, estate, or trust. This gain comes from depreciable real property and can be taxed at up to 25%.
+    body: Enter Form 1099-DIV box 2b with that form. Answer yes if you have unrecaptured section 1250 gain from a sale of real property, an installment sale, Form 4797, Form 2439, or a Schedule K-1. Those worksheet lines are not computed. This gain can be taxed at up to 25%.
   /info/knockout/unrecaptured-1250-gain:
     alertText:
       body:

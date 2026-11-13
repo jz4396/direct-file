@@ -17,6 +17,7 @@ headings:
   /heading/income/dividends/boxes-1a-1b: Ingrese las cantidades de los <strong>encasillados 1a y 1b</strong>.
   /heading/income/dividends/holding-period: ¿Hay dividendos del encasillado 1b que en realidad no son calificados?
   /heading/income/dividends/box-2a: Ingrese la cantidad del <strong>encasillado 2a</strong>, si la hay.
+  /heading/income/dividends/box-2b: Ingrese la cantidad del <strong>encasillado 2b</strong>, si la hay.
   /heading/income/dividends/boxes-2e-2f:
     Ingrese las cantidades de los <strong>encasillados 2e y 2f</strong>, si las hay.
   /heading/income/dividends/box-3: Ingrese la cantidad del <strong>encasillado 3</strong>, si la hay.
@@ -95,6 +96,12 @@ info:
     body:
       El encasillado 2a es el total de distribuciones de ganancias de capital de un fondo mutuo o de un fideicomiso de
       inversión en bienes raíces.
+  /info/income/dividends/box-2b:
+    body:
+      - p:
+          El encasillado 2b es la parte del encasillado 2a que es ganancia no recuperada de la sección 1250 por bienes
+          inmuebles depreciables. Ya está incluido en el encasillado 2a, así que no se suma otra vez. No puede ser mayor
+          que el encasillado 2a. Déjelo en blanco si está vacío en su formulario.
   /info/income/dividends/boxes-2e-2f:
     body:
       - p:
@@ -165,9 +172,9 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Responda sí si su formulario muestra una cantidad en el encasillado 2b, 2c, 2d, 9, 10, 14, 15 o 16, o un
+          "Responda sí si su formulario muestra una cantidad en el encasillado 2c, 2d, 9, 10, 14, 15 o 16, o un
           país en el encasillado 8. El encasillado 11 (requisito de presentación de FATCA) se pregunta en su propia
-          pantalla. Los encasillados 2e, 2f, 6, 12 y 13 se ingresan en sus propias pantallas."
+          pantalla. Los encasillados 2b, 2e, 2f, 6, 12 y 13 se ingresan en sus propias pantallas."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -207,9 +214,9 @@ info:
     alertText:
       body:
         - p:
-            Los encasillados 1b, 2e, 5 y 6 son partes del encasillado 1a, y el encasillado 2f es parte del encasillado
-            2a, así que ninguno puede ser mayor que ese encasillado. Regrese y verifique las cantidades que ingresó. Si
-            coinciden con su formulario, necesitará otra manera de presentar esta declaración.
+            Los encasillados 1b, 2e, 5 y 6 son partes del encasillado 1a, y los encasillados 2b y 2f son partes del
+            encasillado 2a, así que ninguno puede ser mayor que ese encasillado. Regrese y verifique las cantidades que
+            ingresó. Si coinciden con su formulario, necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-foreign-tax:
     alertText:
       body:
@@ -220,7 +227,7 @@ info:
     alertText:
       body:
         - p:
-            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 y 13 del
+            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 2b, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 y 13 del
             Formulario 1099-DIV. Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-box-13-exceeds-box-12:
     alertText:
@@ -269,6 +276,8 @@ fields:
     name: <strong>Encasillado 1b</strong> - Dividendos calificados
   /dividendReports/*/writableCapitalGainDistributions:
     name: <strong>Encasillado 2a</strong> - Total de distribuciones de ganancias de capital
+  /dividendReports/*/writableUnrecapturedSection1250Gain:
+    name: <strong>Encasillado 2b</strong> - Ganancia no recuperada de la sección 1250
   /dividendReports/*/writableSection897OrdinaryDividends:
     name: <strong>Encasillado 2e</strong> - Dividendos ordinarios de la sección 897
   /dividendReports/*/writableSection897CapitalGain:
@@ -304,6 +313,8 @@ dataviews:
     /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet: ¿Hay dividendos del encasillado 1b que no son calificados?
     /dividendReports/*/writableCapitalGainDistributions:
       Encasillado 2a - Total de distribuciones de ganancias de capital
+    /dividendReports/*/writableUnrecapturedSection1250Gain:
+      Encasillado 2b - Ganancia no recuperada de la sección 1250
     /dividendReports/*/writableSection897OrdinaryDividends: Encasillado 2e - Dividendos ordinarios de la sección 897
     /dividendReports/*/writableSection897CapitalGain: Encasillado 2f - Ganancia de capital de la sección 897
     /dividendReports/*/writableInvestmentExpenses: Encasillado 6 - Gastos de inversión
