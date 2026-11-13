@@ -142,6 +142,18 @@ describe(`IL-1040 full-year resident, W-2 wages only (#93 slice 3)`, () => {
     expect(val(g, `/stateRefund`)).toBe(`567.00`);
   });
 
+  it(`rounds Line 12 from the exact product: 50,010 stays 2,475 and 51,000 rounds up to 2,525`, ({ task }) => {
+    task.meta.testedFactPaths = [`/ilLine11`, `/ilLine12`];
+    // 52,935 − 2,925 = 50,010. 50,010 × 0.0495 = 2,475.495, which drops to 2,475.
+    const under = build(singleFilerData, w2(52935, 0));
+    expect(val(under, `/ilLine11`)).toBe(`50010.00`);
+    expect(val(under, `/ilLine12`)).toBe(`2475.00`);
+    // 53,925 − 2,925 = 51,000. 51,000 × 0.0495 = 2,524.50, which rounds up to 2,525.
+    const half = build(singleFilerData, w2(53925, 0));
+    expect(val(half, `/ilLine11`)).toBe(`51000.00`);
+    expect(val(half, `/ilLine12`)).toBe(`2525.00`);
+  });
+
   it(`exemption stays at the limit and is zero one dollar above it`, () => {
     const atLimit = build(singleFilerData, w2(250000, 0));
     expect(val(atLimit, `/ilLine10`)).toBe(`2925.00`);

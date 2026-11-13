@@ -15,9 +15,8 @@
       Ill. Const. art. IX, § 3(a) (one rate). Illinois has no local individual income tax.
       A stop below is BlockSubmissionOnTrue and print-refusing. The arithmetic is the full-year form; Schedule NR
       and the other stopped schedules are not modeled, and a stop refuses submission and the PDF.
-      Line 12 keeps cents through the multiply, then rounds half-up. Dollar×Rational is scaled to cents (half-even)
-      before that round, which matches 52,075 × 0.0495 = 2,577.7125 → 2,578. A product whose exact cents are
-      49.5 through 49.9 can round up a dollar; this wages-only slice does not add an operator to avoid that.
+      Line 12 rounds the exact product once: under 50 cents drops, 50 through 99 cents rounds up.
+      Dollar×Rational scales to cents (half-even) before Round, so /ilLine12 corrects that second step.
     -->
 
     <Fact path="/ilBasicExemption">
@@ -557,11 +556,10 @@
       </Derived>
     </Fact>
 
-    <Fact path="/ilLine12">
-      <Name>IL-1040 Line 12 income tax</Name>
-      <Description>Line 11 times 4.95 percent, then round. Under 50 cents drops; 50 through 99 cents rounds up.
-        35 ILCS 5/201. 52,075 × 0.0495 = 2,577.7125, which rounds to 2,578.</Description>
-      <Export downstreamFacts="true" />
+    <Fact path="/ilLine12CentRound">
+      <Name>IL-1040 Line 12 after the cent-then-dollar round</Name>
+      <Description>Round(Line 11 × 4.95%). Dollar×Rational scales to cents half-even before Round half-up, so a
+        product whose exact fraction is .4950 through .4995 becomes .50 and then rounds up a dollar.</Description>
       <Derived>
         <Round>
           <Multiply>
@@ -569,6 +567,71 @@
             <Dependency path="/ilTaxRate" />
           </Multiply>
         </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine12Times100">
+      <Name>One hundred times the exact IL-1040 Line 12</Name>
+      <Description>Line 11 × 99/20. That is 100 × Line 11 × 0.0495, and for a whole-dollar Line 11 it is exact in
+        cents. 35 ILCS 5/201.</Description>
+      <Derived>
+        <Multiply>
+          <Dependency path="/ilLine11" />
+          <Rational>99/20</Rational>
+        </Multiply>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine12">
+      <Name>IL-1040 Line 12 income tax</Name>
+      <Description>Line 11 times 4.95 percent, rounded once. Under 50 cents drops; 50 through 99 cents rounds up.
+        35 ILCS 5/201. 2025 IL-1040 instructions. 52,075 × 0.0495 = 2,577.7125, which rounds to 2,578.
+        50,010 × 0.0495 = 2,475.495, which stays 2,475. 51,000 × 0.0495 = 2,524.50, which rounds to 2,525.
+        The cent-then-dollar result is one dollar high when it exceeds this exact product by more than 50 cents.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply>
+                        <Dependency path="/ilLine12CentRound" />
+                        <Int>100</Int>
+                      </Multiply>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/ilLine12Times100" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Dollar>50</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine12CentRound" />
+                </Minuend>
+                <Subtrahends>
+                  <Dollar>1</Dollar>
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/ilLine12CentRound" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
