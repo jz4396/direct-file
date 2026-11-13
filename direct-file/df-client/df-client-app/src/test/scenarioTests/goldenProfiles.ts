@@ -17,7 +17,9 @@
 // and Schedule K-1 (Form 1041) boxes 3 and 4a, through Schedule D and the qualified dividends and capital gain
 // tax worksheet in the 24% bracket, with an AMT check), and profile P
 // (Golden P: full-year Alaska resident, single, W-2 wages $55,000 and the $1,200 Alaska Permanent Fund Dividend
-// on Schedule 1 line 8g, with no state return).
+// on Schedule 1 line 8g, with no state return), and profile Q
+// (Golden Q: full-year Pennsylvania resident, married filing jointly, two qualifying children under 17 for the
+// Child Tax Credit and Form 8812, one W-2, standard deduction, no Form 2441).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -64,6 +66,10 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2002`,
   `444-00-2003`,
   `444-00-2004`,
+  `444-00-2005`,
+  `444-00-2006`,
+  `444-00-2007`,
+  `444-00-2008`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1206,6 +1212,71 @@ export const profilePAkSinglePfd = {
   '/hasCompletedApfSection': createBooleanWrapper(true),
 };
 
+/**
+ * Profile Q (Golden Q, #135): full-year Pennsylvania resident, married filing jointly, both spouses under 65 and not
+ * blind, standard deduction. Two qualifying children under 17, both qualifying for the Child Tax Credit and Form 8812.
+ * No Form 2441. One W-2 on the primary: box 1 $80,000, boxes 3 and 5 $80,000, box 2 $4,000, box 16 $80,000, box 17
+ * $2,456. Spouse has no W-2. No other income.
+ *
+ * SSNs are group 00 (444-00-2005 through 444-00-2008), the same kind Golden G uses. Tin.isSSN is false for every area
+ * starting with 9, and IRC §24(h)(7) allows no child tax credit unless the return includes an SSN for at least one
+ * spouse and for the qualifying child. Group 00 is never assigned by SSA. A 900-area number would make the credit $0.
+ * Fixed ids in the 13500000-0000-4000-8000-0000000020xx range. School code 22275 (Harrisburg City).
+ */
+const nolan: Person = { first: `Nolan`, last: `Example`, ssn: [`444`, `00`, `2005`], dob: `1984-05-20` };
+const remy: Person = { first: `Remy`, last: `Example`, ssn: [`444`, `00`, `2006`], dob: `1986-08-14` };
+export const profileQChild1Id = `13500000-0000-4000-8000-000000002002`;
+export const profileQChild2Id = `13500000-0000-4000-8000-000000002003`;
+const profileQChild = (id: string, dob: string, first: string, serial: string) => ({
+  ...makeChildData(id, dob),
+  [`/familyAndHousehold/#${id}/firstName`]: createStringWrapper(first),
+  [`/familyAndHousehold/#${id}/writableMiddleInitial`]: createStringWrapper(``),
+  [`/familyAndHousehold/#${id}/lastName`]: createStringWrapper(`Example`),
+  [`/familyAndHousehold/#${id}/monthsLivedWithTPInUS`]: createEnumWrapper(`twelve`, `/monthsLivedWithTPInUSOptions`),
+  [`/familyAndHousehold/#${id}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial }),
+  [`/familyAndHousehold/#${id}/hasIpPin`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${id}/unableToCareForSelf`]: createBooleanWrapper(false),
+});
+export const profileQW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002001`,
+  employer: `Example Keystone Payroll LLC`,
+  ein: [`00`, `0002001`],
+  box1: 80000,
+  box2: 4000,
+  box3: 80000,
+  // 6.2% × 80,000 = 4,960. 26 U.S.C. 3101(a). The wage base is above this wage.
+  box4: 4960,
+  box5: 80000,
+  // 1.45% × 80,000 = 1,160. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 1160,
+  // PA-40 line 1a is box 16. Box 17 is PA-40 line 13. 80,000 × 3.07% = 2,456. 72 P.S. §7302.
+  box16: 80000,
+  box17: 2456,
+  filerId: primaryFilerId,
+  tin: nolan.ssn,
+};
+export const profileQPaMfjTwoChildren = {
+  ...single(nolan, { street: `123 Example St`, city: `Harrisburg`, zip: `17101`, state: `PA` }),
+  ...mfjFilerData,
+  ...spouse(remy),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(nolan.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+  '/paSchoolDistrictCode': createStringWrapper(`22275`),
+  '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`noForms`, `/primaryFilerW2And1099IntStateOptions`),
+  '/familyAndHousehold': createCollectionWrapper([profileQChild1Id, profileQChild2Id]),
+  ...profileQChild(profileQChild1Id, `2017-03-08`, `Willa`, `2007`),
+  ...profileQChild(profileQChild2Id, `2019-11-22`, `Kit`, `2008`),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(false),
+  '/receivedImproperClaims': createBooleanWrapper(false),
+  '/eitcQcOfAnother': createBooleanWrapper(false),
+  '/eitcHadImproperClaims': createBooleanWrapper(false),
+  ...w2s(nolan.ssn, profileQW2),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1229,4 +1300,5 @@ export const goldenProfiles = {
   profileNPaSingleAmt8959,
   profileOFlQdcgK1,
   profilePAkSinglePfd,
+  profileQPaMfjTwoChildren,
 };

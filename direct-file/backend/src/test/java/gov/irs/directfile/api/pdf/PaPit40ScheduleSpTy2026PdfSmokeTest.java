@@ -699,4 +699,127 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
             assertFalse(pageWith(doc, SP_PAGE1), "no Schedule SP");
         }
     }
+
+    /**
+     * Golden Q (#135), public print path. The facts are {@code golden-profileQ-complete.json}, the persisted client
+     * profile {@code profileQPaMfjTwoChildren}: Nolan and Remy Example, full-year Pennsylvania, school code 22275, two
+     * qualifying children (Willa and Kit). One W-2, box 1 $80,000, box 2 $4,000, box 16 $80,000, box 17 $2,456. No
+     * Form 2441.
+     *
+     * <p>Form 1040 line 11 is $80,000. Line 12e is the $32,200 joint standard deduction. Rev. Proc. 2025-32 §4.14(1),
+     * PDF p. 18. Line 15 is $47,800. The Tax Table row is $47,800–$47,850; the tax on the $47,825 midpoint is $2,480 +
+     * 12% × ($47,825 − $24,800) = $5,243. Rev. Proc. 2025-32 §4.01 Table 1, PDF pp. 10–11. Instructions for Form 1040
+     * (2025), PDF pp. 36 and 69. Schedule 8812 line 5 is 2 × $2,200 = $4,400. Rev. Proc. 2025-32 §4.05, PDF p. 14. The
+     * joint phaseout starts at $400,000, 26 U.S.C. §24(h)(3). Line 14 is $4,400, so line 22 and line 24 are $843. Line
+     * 25a is $4,000. Line 34 and line 35a are the $3,157 refund. The earned income credit is $0: AGI is over the
+     * $65,899 completed phaseout for a joint return with two children. Rev. Proc. 2025-32 §4.06, PDF p. 15. No
+     * additional child tax credit.
+     *
+     * <p>PA-40 line 1a is box 16, $80,000. Lines 2–6 print blank ($0). Line 12 is 80,000 × 3.07% = $2,456.00. 72 P.S.
+     * §7302. Line 13 is box 17, $2,456. Lines 26 and 29 are $0. Schedule SP is not in the package: eligibility income
+     * $80,000 is above Table 2's 10 percent column for two dependent children. 72 P.S. §7304. PA-40 IN (2025) p. 39.
+     *
+     * <p>Group-00 test SSNs (the SSA never assigns group 00). A 9xx area is not an SSN, and 26 U.S.C. §24(h)(7)
+     * requires one for the credit. The same pattern is Golden G.
+     */
+    @Test
+    void goldenQPrintsForm1040Schedule8812AndPa40OnThePublicPath() throws Exception {
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileQ-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> f = fieldsOnPages(doc, Schedules123Ty2026PdfSmokeTest.F1040);
+            assertTrue(
+                    Schedules123Ty2026PdfSmokeTest.any(f, "f1_14[0]").toUpperCase().contains("NOLAN"),
+                    "Form 1040 first name");
+            assertTrue(
+                    Schedules123Ty2026PdfSmokeTest.any(f, "f1_17[0]").toUpperCase().contains("REMY"),
+                    "Form 1040 spouse first name");
+            // Page1 c1_8[1] is MFJ. HOH-QSS_ReadOrder also has a c1_8[1] (qualifying surviving spouse), so the
+            // short name is not unique. The export value is the PDF's on-state, not a locked literal.
+            assertEquals("Off", field(f, "Page1[0].c1_8[0]"), "single is not checked");
+            assertFalse(
+                    Set.of("", "Off").contains(field(f, "Page1[0].c1_8[1]")), "married filing jointly is checked");
+            assertEquals("Off", field(f, "Page1[0].c1_8[2]"), "married filing separately is not checked");
+            assertEquals("Willa", Schedules123Ty2026PdfSmokeTest.any(f, "f1_31[0]"), "dependent 1");
+            assertEquals("Kit", Schedules123Ty2026PdfSmokeTest.any(f, "f1_32[0]"), "dependent 2");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_47[0]", 80000, "Form 1040 line 1a wages");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_73[0]", 80000, "Form 1040 line 9");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f1_74[0]", "Form 1040 line 10 ($0 adjustments)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_75[0]", 80000, "Form 1040 line 11a AGI");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_01[0]", 80000, "Form 1040 line 11b AGI");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_02[0]", 32200, "Form 1040 line 12e standard deduction");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_07[0]", 47800, "Form 1040 line 15 taxable income");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_09[0]", 5243, "Form 1040 line 16 tax");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_12[0]", 4400, "Form 1040 line 19 child tax credit");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_15[0]", 843, "Form 1040 line 22 tax after credits");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_17[0]", 843, "Form 1040 line 24a total tax");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_20[0]", 4000, "Form 1040 line 25a withholding");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f2_26[0]", "Form 1040 line 27a EITC ($0)");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f2_27[0]", "Form 1040 line 28 additional child tax credit ($0)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_23[0]", 4000, "Form 1040 line 25d");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_34[0]", 4000, "Form 1040 line 33 payments");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_35[0]", 3157, "Form 1040 line 34 overpayment");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_36[0]", 3157, "Form 1040 line 35a refund");
+
+            List<String> texts = CreditFormsTy2026PdfSmokeTest.pageTexts(doc);
+            List<Integer> p8812 = CreditFormsTy2026PdfSmokeTest.pages(texts, CreditFormsTy2026PdfSmokeTest::is8812);
+            assertEquals(2, p8812.size(), "Schedule 8812 prints both pages");
+            Map<String, String> s8812 = CreditFormsTy2026PdfSmokeTest.fieldsOn(doc, p8812);
+            assertEquals("2", CreditFormsTy2026PdfSmokeTest.field(s8812, "Page1[0].f1_9[0]"), "line 4 children");
+            assertEquals(
+                    440000,
+                    CreditFormsTy2026PdfSmokeTest.amt(s8812, "Page1[0].f1_10[0]"),
+                    "line 5 = 2 x $2,200");
+            assertEquals(
+                    40000000,
+                    CreditFormsTy2026PdfSmokeTest.amt(s8812, "Page1[0].f1_14[0]"),
+                    "line 9 joint phaseout threshold");
+            assertEquals(
+                    440000, CreditFormsTy2026PdfSmokeTest.amt(s8812, "Page1[0].f1_17[0]"), "line 12");
+            assertEquals(
+                    440000, CreditFormsTy2026PdfSmokeTest.amt(s8812, "Page1[0].f1_19[0]"), "line 14");
+            assertEquals("", CreditFormsTy2026PdfSmokeTest.field(s8812, "Page2[0].f2_16[0]"), "line 27 no ACTC");
+
+            Map<String, String> pa = fieldsOnPages(doc, PA40_PAGE1);
+            is(pa, "Residency Status", "1", "(R) Resident");
+            is(pa, "Filing Status", "2", "(J) Married, filing jointly");
+            is(pa, "Enter five digit School Code from list on pags 42 & 43", "22275", "school code");
+            is(pa, "Name of School District", "HARRISBURG CITY", "school district name");
+            is(pa, "1a. Gross Compensation", "80,000.00", "line 1a = box 16");
+            is(pa, "1c. Net Compensation", "80,000.00", "line 1c");
+            blank(pa, "2. Interest Income", "line 2");
+            blank(pa, "3. Dividend  and Capital Gains Distributions Income", "line 3");
+            is(pa, "4. Loss", "Off", "line 4 loss oval");
+            blank(pa, "4. Net Income or Loss from the Operation of a Business, etc", "line 4");
+            is(pa, "5. Loss", "Off", "line 5 loss oval");
+            blank(pa, "5. Net Gain or Loss from Sale, etc. of Property", "line 5");
+            is(pa, "6. Loss", "Off", "line 6 loss oval");
+            blank(pa, "6. Net Income or Loss from Rents, etc", "line 6");
+            is(pa, "9. Total PA Taxable Income", "80,000.00", "line 9");
+            is(pa, "11. Adjusted PA Taxable Income", "80,000.00", "line 11");
+            Map<String, String> p2 = fieldsOnPages(doc, PA40_PAGE2);
+            is(p2, "12. PA Tax Liability. Multiply Line 11 by 3.07%", "2,456.00", "line 12");
+            is(p2, "13. Total PA Tax Withheld", "2,456.00", "line 13 = box 17");
+            is(p2, "24. Total Payments and Credits", "2,456.00", "line 24");
+            is(p2, "Tax Forgiveness", "Off", "line 19a (Schedule SP does not apply)");
+            blank(p2, "21. Tax Forgiveness Credit", "line 21");
+            blank(p2, "26. TAX DUE", "line 26");
+            blank(p2, "29. OVERPAYMENT", "line 29");
+            assertTrue(fieldsOnPages(doc, SP_PAGE1).isEmpty(), "no Schedule SP");
+
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("Schedule B (Form 1040) 2026"), "no Schedule B");
+            assertFalse(text.contains("Schedule C (Form 1040) 2026"), "no Schedule C");
+            assertFalse(text.contains("Schedule D (Form 1040) 2026"), "no Schedule D");
+            assertFalse(text.contains("Schedule E (Form 1040) 2026"), "no Schedule E");
+            assertTrue(
+                    CreditFormsTy2026PdfSmokeTest.pages(texts, CreditFormsTy2026PdfSmokeTest::is2441)
+                            .isEmpty(),
+                    "no Form 2441");
+            assertFalse(text.contains("Form 8960 (2026)"), "no Form 8960");
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheets dropped");
+            assertTrue(Form6251Ty2026PdfSmokeTest.form6251Fields(doc).isEmpty(), "Form 6251 is not attached");
+            assertTrue(
+                    fieldsOnPages(doc, "Qualifying Child Information").isEmpty(), "no Schedule EIC when the EIC is $0");
+        }
+    }
 }

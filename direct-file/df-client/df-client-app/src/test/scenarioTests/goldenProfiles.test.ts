@@ -17,7 +17,9 @@
 // and Schedule K-1 (Form 1041) boxes 3 and 4a, through Schedule D and the qualified dividends and capital gain
 // tax worksheet in the 24% bracket, with an AMT check), and profile P
 // (Golden P: full-year Alaska resident, single, W-2 wages $55,000 and the $1,200 Alaska Permanent Fund Dividend
-// on Schedule 1 line 8g, with no state return).
+// on Schedule 1 line 8g, with no state return), and profile Q
+// (Golden Q: full-year Pennsylvania resident, married filing jointly, two qualifying children, Form 8812, no
+// Form 2441).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -224,6 +226,10 @@ import {
   profilePAkSinglePfd,
   profilePPfdId,
   profilePW2,
+  profileQChild1Id,
+  profileQChild2Id,
+  profileQPaMfjTwoChildren,
+  profileQW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -286,15 +292,20 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
     }
     expect(checked).toBeGreaterThan(0);
   });
-  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; only profile G gets EITC, and only profiles D, F, and G get CTC`, () => {
+  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; only profile G gets EITC, and only profiles D, F, G, and Q get CTC`, () => {
     for (const [name, facts] of Object.entries(goldenProfiles)) {
       const g = graph(facts);
       const groupZero =
         name.startsWith(`profileC`) ||
         name.startsWith(`profileD`) ||
         name.startsWith(`profileF`) ||
-        name.startsWith(`profileG`);
-      const hasChild = name.startsWith(`profileD`) || name.startsWith(`profileF`) || name.startsWith(`profileG`);
+        name.startsWith(`profileG`) ||
+        name.startsWith(`profileQ`);
+      const hasChild =
+        name.startsWith(`profileD`) ||
+        name.startsWith(`profileF`) ||
+        name.startsWith(`profileG`) ||
+        name.startsWith(`profileQ`);
       expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(groupZero);
       expect(get(g, `/primaryFiler/tin/isITIN`).get, name).toBe(false);
       if (name.startsWith(`profileG`)) {
@@ -3882,6 +3893,180 @@ describe(`golden end-to-end scenario (synthetic data): profile P, Golden P, full
       expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(false);
     }
     expect(get(g, pdfIncludeWhen(`IRS1040`) as string).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile Q, Golden Q, full-year PA, MFJ, two children, Form 8812`, () => {
+  // Nolan Example, born 1984-05-20, and Remy Example, born 1986-08-14. Married filing jointly, both under 65, not
+  //   blind. Full-year Pennsylvania [PA] [TRC]. Address 123 Example St, Harrisburg, PA 17101. School code 22275
+  //   (Harrisburg City, PA-40 IN (2025) pp. 46-47). Standard deduction. No interest, no dividends, no sales, no
+  //   Schedule C, no Form 2441.
+  // Willa Example, born 2017-03-08 (9 at year end). Kit Example, born 2019-11-22 (7 at year end). Each lived in the
+  //   home 12 months and is a qualifying child for the Child Tax Credit. SSNs are group 00 (444-00-2005 through
+  //   444-00-2008) [SSA]. A 9xx area is not an SSN (Tin.isSSN), and IRC §24(h)(7) requires an SSN for a spouse and
+  //   for each qualifying child. The same group-00 pattern is Golden G.
+  // One W-2, Nolan only. Box 1, box 3, box 5, and box 16 $80,000. Box 2 $4,000. Box 4 is 6.2% × 80,000 = 4,960
+  //   (26 U.S.C. 3101(a)). Box 6 is 1.45% × 80,000 = 1,160 [3101] [3102]. Box 17 is 3.07% × 80,000 = 2,456
+  //   (PA-40 line 13, [PA] p. 21; [TRC] 72 P.S. §7302). Remy has no W-2. No other income.
+  // Form 1040: line 1a, line 9, and line 11 (AGI) 80,000. Line 12e standard deduction 32,200. Rev. Proc. 2025-32
+  //   §4.14(1), PDF p. 18: "Married Individuals Filing Joint Returns and Surviving Spouses ... $32,200". Neither
+  //   spouse is 65 or older or blind, so no additional amount. Line 15 taxable income 47,800.
+  // Line 16, Tax Table [GI p. 36]. The $47,800–$47,850 row's midpoint is $47,825. [RP] pp. 10–11 §4.01 Table 1
+  //   (joint): "Over $24,800 but not over $100,800 $2,480 plus 12% of the excess over $24,800".
+  //   2,480 + 12% × (47,825 − 24,800) = 2,480 + 12% × 23,025 = 2,480 + 2,763 = 5,243.
+  // Schedule 8812, IRC §24. Two qualifying children under 17. [RP] p. 14 §4.05(1): "the maximum amount of the credit
+  //   allowed under § 24(a) is $2,200." Line 5 = 2 × 2,200 = 4,400. §24(h)(3): the joint phaseout threshold is
+  //   $400,000. AGI is under that, so the phaseout is 0 and line 12 is 4,400. No credit ahead of the child tax
+  //   credit. Credit Limit Worksheet A line 13 is line 18, 5,243. Line 14 (Form 1040 line 19) is the smaller of
+  //   4,400 and 5,243 = 4,400. Nothing remains for the additional child tax credit, so line 27 and Form 1040 line 28
+  //   are 0.
+  // Form 1040: line 22 = 5,243 − 4,400 = 843. Line 24 total tax 843. Line 25a 4,000. Line 33 payments 4,000. Line 34
+  //   overpayment 3,157. No Schedule 3-A: the earned income credit and the additional child tax credit are both 0.
+  // EITC, IRC §32. [RP] p. 15 §4.06: Completed Phaseout Amount (Married Filing Jointly), two children, $65,899.
+  //   AGI $80,000 is over that amount, so the credit is $0. The children are still qualifying children; the credit
+  //   is $0 because of the phaseout, and Schedule EIC is not attached.
+  // Form 6251: AMT $0 (AMTI is wages, under the joint exemption). Form 8960: NIIT $0 (MAGI under the $250,000 joint
+  //   threshold, 26 U.S.C. §1411(b)). No Schedule B, C, D, or E.
+  // PA-40 [PA] [TRC]. Residency oval (R). Filing status (J). Line 1a = box 16 $80,000. Lines 2–8 $0. Lines 1c, 9,
+  //   and 11 $80,000 (no standard deduction, [PA] p. 9). Line 12 = 80,000 × 3.07% = 2,456.00 exactly. Line 13 = box
+  //   17 $2,456. Line 24 = 2,456. Lines 26 and 29 $0. Schedule SP: eligibility income is line 9, $80,000. Table 2
+  //   (married) for two dependent children is $13,000 + 2 × $9,500 = $32,000 at 100%, and the 10% column is $2,250
+  //   above that ([PA] p. 39). $80,000 is above it, so line 21 is $0 and Schedule SP is not in the package.
+  //   72 P.S. §7304.
+  const g = graph(profileQPaMfjTwoChildren);
+
+  it(`Form 1040 income, the standard deduction, and line 16 tax`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`marriedFilingJointly`);
+    expect(get(g, `/itemizesDeductions`).get).toBe(false);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/secondaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/familyAndHousehold/#${profileQChild1Id}/tin/isSSN` as string).get).toBe(true);
+    expect(get(g, `/familyAndHousehold/#${profileQChild2Id}/tin/isSSN` as string).get).toBe(true);
+    expect(get(g, `/ctcEligibleDependents`).get.toString()).toBe(`2`);
+    const taxable = Number(get(g, `/taxableIncome`).get.toString());
+    expect(taxable).toBe(47800);
+    // [RP] pp. 10–11 §4.01 Table 1. Midpoint $47,825. 2,480 + 12% × 23,025 = 5,243 exactly.
+    const taxCents = 2480 * 100 + (47825 - 24800) * 12;
+    expect(taxCents).toBe(524300);
+    expectDollars(g, {
+      '/wages': `80000.00`,
+      '/totalIncome': `80000.00`,
+      '/agi': `80000.00`,
+      '/standardOrItemizedDeductions': `32200.00`,
+      '/taxableIncome': `47800.00`,
+      '/tentativeTaxFromTaxableIncome': `5243.00`,
+    });
+  });
+
+  it(`Schedule 8812 child tax credit is $4,400 and there is no additional child tax credit`, () => {
+    expect(get(g, `/pdfIncludeSchedule8812`).get).toBe(true);
+    expect(get(g, `/shouldSubmitForm2441`).get).toBe(false);
+    expectDollars(g, {
+      '/totalPotentialCtc': `4400.00`,
+      '/dependentCreditPhaseoutThreshold': `400000.00`,
+      '/dependentCreditPhaseout': `0.00`,
+      '/dependentCreditLessPhaseout': `4400.00`,
+      '/sched8812CreditLimit': `5243.00`,
+      '/totalCtcAndOdc': `4400.00`,
+      '/totalCtc': `4400.00`,
+      '/totalOdc': `0.00`,
+      '/remainingCtcAndOdc': `0.00`,
+      '/additionalCtc': `0.00`,
+    });
+  });
+
+  it(`EITC is $0 because AGI is over the $65,899 MFJ two-child phaseout`, () => {
+    expect(get(g, `/numEitcQualifyingChildren`).get.toString()).toBe(`2`);
+    expect(get(g, `/eitcMfjLimitWithTwoChildren`).get.toString()).toBe(`65899.00`);
+    expect(Number(get(g, `/agi`).get.toString())).toBeGreaterThan(65899);
+    expectDollars(g, { '/earnedIncomeCredit': `0.00` });
+    expect(get(g, `/pdfIncludeScheduleEic`).get).toBe(false);
+    expect(get(g, `/pdfIncludeSchedule3A`).get).toBe(false);
+  });
+
+  it(`Form 1040 tax after the child tax credit, withholding, and refund`, () => {
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/hasScheduleCBusinesses`).get).toBe(false);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, `/pdfIncludeScheduleE`).get).toBe(false);
+    expectDollars(g, {
+      '/amt': `0.00`,
+      '/nonRefundableCredits': `4400.00`,
+      '/taxLessNonRefundableCredits': `843.00`,
+      '/line21OfSchedule2': `0.00`,
+      '/totalTax': `843.00`,
+      '/formW2Withholding': `4000.00`,
+      '/totalWithholding': `4000.00`,
+      '/totalPayments': `4000.00`,
+      '/overpayment': `3157.00`,
+      '/balanceDue': `0.00`,
+      [`/formW2s/#${profileQW2.id}/oasdiWages`]: `80000.00`,
+      [`/formW2s/#${profileQW2.id}/oasdiWithholding`]: `4960.00`,
+      [`/formW2s/#${profileQW2.id}/medicareWages`]: `80000.00`,
+      [`/formW2s/#${profileQW2.id}/medicareWithholding`]: `1160.00`,
+    });
+  });
+
+  it(`PA-40 tax is $2,456, withholding covers it, and Schedule SP does not apply`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPa`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(false);
+    expect(get(g, `/paSchoolCode`).get).toBe(`22275`);
+    expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`PA40`) as string).get).toBe(true);
+    const line11 = Number(get(g, `/paLine11`).get.toString());
+    expect(line11).toBe(80000);
+    // 72 P.S. §7302; [PA] p. 21, LINE 12. 80,000 × 0.0307 = 2,456.00 exactly.
+    expect((line11 * 307) / 10000).toBe(2456);
+    expectDollars(g, {
+      '/paLine1a': `80000.00`,
+      '/paLine1c': `80000.00`,
+      '/paLine2': `0.00`,
+      '/paLine3': `0.00`,
+      '/paLine4': `0.00`,
+      '/paLine5': `0.00`,
+      '/paLine6': `0.00`,
+      '/paLine7': `0.00`,
+      '/paLine8': `0.00`,
+      '/paLine9': `80000.00`,
+      '/paLine10': `0.00`,
+      '/paLine11': `80000.00`,
+      '/paLine12': `2456.00`,
+      '/paLine13': `2456.00`,
+      '/paLine15': `0.00`,
+      '/paLine21': `0.00`,
+      '/paLine24': `2456.00`,
+      '/paLine26': `0.00`,
+      '/paLine29': `0.00`,
+      '/stateTaxLiability': `2456.00`,
+      '/stateAmountOwed': `0.00`,
+      '/stateRefund': `0.00`,
+    });
+  });
+
+  it(`golden-profileQ-complete.json is the persisted profileQPaMfjTwoChildren return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileQ-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`nothing stops the return`, () => {
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
     expectNotStopped(g);
   });
