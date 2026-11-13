@@ -116,6 +116,7 @@ form:
           # Nonnegative Schedule K-1 (Form 1041) box 7. 26 U.S.C. 469(c)(2). $0 prints blank.
           f2_56[0]: /scheduleEEstates/[0]/columnD # "(d) Passive income from Schedule K-1."
           # f2_57[0]: column (e). A deduction or loss refuses the print.
+          # Nonnegative box 5 plus material-participation box 6. Form 8960 takes box 5 only.
           f2_58[0]: /scheduleEEstates/[0]/columnF # "(f) Other income from Schedule K-1."
         RowB[0]:
           # f2_59[0]: column (c). A passive deduction refuses the print.

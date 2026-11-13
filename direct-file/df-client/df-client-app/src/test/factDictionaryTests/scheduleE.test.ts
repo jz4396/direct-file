@@ -24,9 +24,10 @@ import {
  * Schedule E (2026 draft) lines 3, 4, 20, 21, 26 -> Schedule 1 line 5; 26 U.S.C. 61(a)(5)-(6), 212;
  * knockouts: 469 / 465 / 461(l) (loss), Form 4562 (depreciation), 280A (personal use), 32(i)(2)(C).
  * Part II (#85): line 28 column (k) for domestic partnership or S corporation box 1, material participation.
- * Part III (#85): line 33 column (f) for domestic estate or trust box 6 with material participation.
- * Nonnegative box 7 is line 33 column (d) and Schedule 1 line 5. A loss and a prior-year unallowed passive
- * loss stop the return. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make it passive, so a
+ * Part III (#85): line 33 column (f) for domestic estate or trust box 6 with material participation, plus
+ * nonnegative box 5. Nonnegative box 7 is line 33 column (d) and Schedule 1 line 5. A loss and a prior-year
+ * unallowed passive loss stop the return. Box 5 is net investment income on Form 8960. Material-participation
+ * box 6 is not. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make it passive, so a
  * nonzero amount is column (d) and stops the return. Box 12 code A is Form 6251 line 2j. Codes B through I
  * stop the return.
  * Part IV is an explicit stop, including a Schedule Q holder who
@@ -833,9 +834,9 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
       { [`/scheduleEEstates/#${estateId}/materiallyParticipates`]: createBooleanWrapper(false) },
     ],
     [
-      `box 5 portfolio income`,
+      `box 5 loss`,
       `/flowKnockoutScheduleEPartIIIBox5`,
-      { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`500`) },
+      { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`-1`) },
     ],
     [
       `box 7 rental real estate loss`,
@@ -900,12 +901,146 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
     });
   }
 
-  it(`keeps nonnegative box 5 in column (f) while the return is stopped`, ({ task }) => {
-    task.meta.testedFactPaths = [`/scheduleEPartIIILine37`, `/flowKnockoutScheduleEPartIIIBox5`];
-    // Schedule K-1 (Form 1041) (2025) page 2 reports box 5 in column (f). 26 U.S.C. 1411(c)(1)(A)(i).
-    const g = fg(oneEstate(`9000`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`500`) }));
-    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`9500.00`);
+  it(`reports nonnegative box 5 in column (f), Schedule 1 line 5, and Form 8960`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box5ColumnF`,
+      `/scheduleEPartIIILine33AColumnF`,
+      `/scheduleEPartIIILine34aColumnF`,
+      `/scheduleEPartIIILine37`,
+      `/schedule1Line5`,
+      `/scheduleEPartIIIBox5ColumnF`,
+      `/form8960Line4a`,
+      `/flowKnockoutScheduleEPartIIIBox5`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowIsKnockedOut`,
+    ];
+    // 2026 draft Schedule K-1 (Form 1041), page 2: box 5 is reported on Schedule E line 33, column (f).
+    // 26 U.S.C. 469(e)(1)(A). 26 U.S.C. 1411(c)(1)(A). Other supported boxes are zero.
+    const base = fg();
+    const g = fg(oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`1000`) }));
+    expect(get(g, `/scheduleEEstates/#${estateId}/box5ColumnF`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEEstates/#${estateId}/columnF`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEPartIIILine33AColumnF`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEPartIIILine34aColumnF`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEPartIIIBox5ColumnF`).get.toString()).toBe(`1000.00`);
+    expect(Number(get(g, `/form8960Line4a`).get.toString())).toBe(
+      Number(get(base, `/form8960Line4a`).get.toString()) + 1000
+    );
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox5`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`adds nonnegative box 5 to material-participation box 6 on column (f) and keeps box 6 off Form 8960`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box5ColumnF`,
+      `/scheduleEEstates/*/box6ColumnF`,
+      `/scheduleEEstates/*/columnF`,
+      `/scheduleEPartIIILine33AColumnF`,
+      `/scheduleEPartIIILine37`,
+      `/schedule1Line5`,
+      `/scheduleEPartIIIBox5ColumnF`,
+      `/form8960Line4a`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Column (f) is box 5 $1,000 plus material-participation box 6 $5,000. 26 U.S.C. 1411(c)(2) leaves the
+    // $5,000 off Form 8960. 26 U.S.C. 1411(c)(1)(A) includes the $1,000.
+    const base = fg();
+    const g = fg(oneEstate(`5000`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`1000`) }));
+    expect(get(g, `/scheduleEEstates/#${estateId}/box5ColumnF`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEEstates/#${estateId}/box6ColumnF`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/scheduleEEstates/#${estateId}/columnF`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/scheduleEPartIIILine33AColumnF`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/scheduleEPartIIIBox5ColumnF`).get.toString()).toBe(`1000.00`);
+    expect(Number(get(g, `/form8960Line4a`).get.toString())).toBe(
+      Number(get(base, `/form8960Line4a`).get.toString()) + 1000
+    );
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox5`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`stops a negative box 5 and leaves line 37 incomplete`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box5Negative`,
+      `/flowKnockoutScheduleEPartIIIBox5`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/scheduleEPartIIILine37`,
+      `/flowIsKnockedOut`,
+    ];
+    const g = fg(oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`-1`) }));
+    expect(get(g, `/scheduleEEstates/#${estateId}/box5Negative`).get).toBe(true);
+    expect(get(g, `/scheduleEPartIIILine37`).complete).toBe(false);
     expect(get(g, `/flowKnockoutScheduleEPartIIIBox5`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).get).toBe(false);
+  });
+
+  it(`stops a PA-40 with nonzero box 5 and leaves PA-40 line 7 at zero`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstateK1Box5Nonzero`,
+      `/flowKnockoutPaUnsupportedItems`,
+      `/paLine7`,
+      `/flowKnockoutStateReturn`,
+      `/flowIsKnockedOut`,
+      `/scheduleEPartIIILine33AColumnF`,
+    ];
+    // PA-40 IN (2025) p. 19, LINE 7, ESTATE OR TRUST INCOME, is PA Schedule J. 72 P.S. §7303(a)(8).
+    // /paLine7 stays $0. The stop is /flowKnockoutPaUnsupportedItems, including when the filer answered no.
+    const paNo = {
+      '/paHasUnsupportedItems': createBooleanWrapper(false),
+      '/paHasEstimatedInstallmentPayments': createBooleanWrapper(false),
+    };
+    const fullYear = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`1000`) }),
+      ...residence(`pa`),
+      ...paNo,
+    });
+    expect(get(fullYear, `/scheduleEEstateK1Box5Nonzero`).get).toBe(true);
+    expect(get(fullYear, `/paLine7`).get.toString()).toBe(`0.00`);
+    expect(get(fullYear, `/flowKnockoutPaUnsupportedItems`).get).toBe(true);
+    expect(get(fullYear, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(fullYear, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(fullYear, `/scheduleEPartIIILine33AColumnF`).get.toString()).toBe(`1000.00`);
+    const cents = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`0.40`) }),
+      ...residence(`pa`),
+      ...paNo,
+    });
+    expect(get(cents, `/scheduleEPartIIILine33AColumnF`).get.toString()).toBe(`0.00`);
+    expect(get(cents, `/scheduleEEstateK1Box5Nonzero`).get).toBe(true);
+    expect(get(cents, `/paLine7`).get.toString()).toBe(`0.00`);
+    expect(get(cents, `/flowKnockoutPaUnsupportedItems`).get).toBe(true);
+    const loss = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`-1`) }),
+      ...residence(`pa`),
+      ...paNo,
+    });
+    expect(get(loss, `/flowKnockoutPaUnsupportedItems`).get).toBe(true);
+    expect(get(loss, `/paLine7`).get.toString()).toBe(`0.00`);
+    const zero = fg({ ...oneEstate(`0`), ...residence(`pa`), ...paNo });
+    expect(get(zero, `/scheduleEEstateK1Box5Nonzero`).get).toBe(false);
+    expect(get(zero, `/flowKnockoutPaUnsupportedItems`).get).toBe(false);
+    expect(get(zero, `/paLine7`).get.toString()).toBe(`0.00`);
+    expect(get(zero, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    const florida = fg({
+      ...oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box5`]: createDollarWrapper(`1000`) }),
+      ...residence(`fl`),
+    });
+    expect(get(florida, `/flowKnockoutPaUnsupportedItems`).get).toBe(false);
+    expect(get(florida, `/scheduleEPartIIILine33AColumnF`).get.toString()).toBe(`1000.00`);
+    expect(get(florida, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(florida, `/flowIsKnockedOut`).get).toBe(false);
   });
 
   it(`reports nonnegative box 7 in column (d), Schedule 1 line 5, and Form 8960 line 4a`, ({ task }) => {

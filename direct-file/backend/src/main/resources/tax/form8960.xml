@@ -23,10 +23,12 @@
       469(c)(7) rental real estate professional income. It stops the return and is not on line 4a.
       Schedule K-1 (Form 1041) box 1 and box 2a are on lines 1 and 2 (Form 1040 lines 2b and 3b;
       26 U.S.C. 1411(c)(1)(A)(i)). Nonnegative box 7 is on line 4a through Schedule E line 37 and Schedule 1
-      line 5 (scheduleE /scheduleEPartIIIBox7ColumnD). A negative box 7, a prior-year unallowed passive loss,
-      passive income other than that box 7, a trading business, a PTP, boxes 3, 4a, 4b, 4c, 5, 8,
-      and 9 through 14 (including box 14 code I and code H), and Part IV stop the return
-      (scheduleE /flowKnockoutScheduleEPartII). Boxes 3 and 4a reach line 5a through Schedule D.
+      line 5 (scheduleE /scheduleEPartIIIBox7ColumnD). Nonnegative box 5, other portfolio and nonbusiness
+      income, is on the same line (scheduleE /scheduleEPartIIIBox5ColumnF). 26 U.S.C. 469(e)(1)(A);
+      26 U.S.C. 1411(c)(1)(A). Material-participation box 6 is not included. A negative box 5, a negative
+      box 7, a prior-year unallowed passive loss, passive income other than that box 7, a trading business,
+      a PTP, boxes 3, 4a, 4b, 4c, 8, and 9 through 14 (including box 14 code I and code H), and Part IV stop
+      the return (scheduleE /flowKnockoutScheduleEPartII). Boxes 3 and 4a reach line 5a through Schedule D.
     line 3 nonqualified annuities (1099-R code D) -> form1099Rs /knockoutForForm1099RDistributionCode (pre-existing)
     line 13 Form 2555 / CFC / PFIC MAGI adjustments: not collected anywhere in the app (no inputs exist)
 -->
@@ -115,16 +117,20 @@
         same and is not added. Nonnegative Schedule K-1 (Form 1041) box 7 is on Schedule E line 37 and
         Schedule 1 line 5. Schedule K-1 (Form 1041) (2025) page 2 reports box 7 on Schedule E line 33,
         column (d) or (f). 26 U.S.C. 469(c)(2) puts it in column (d). 26 U.S.C. 1411(c)(1)(A)(i) includes
-        that rent, so /scheduleEPartIIIBox7ColumnD is added here. Box 8 is a rental activity
+        that rent, so /scheduleEPartIIIBox7ColumnD is added here. Nonnegative Schedule K-1 (Form 1041) box 5
+        is Schedule E line 33 column (f) and Schedule 1 line 5. 2026 draft Schedule K-1 (Form 1041), page 2,
+        reports box 5 on "Schedule E, line 33, column (f)." 26 U.S.C. 469(e)(1)(A). 26 U.S.C. 1411(c)(1)(A)
+        includes that portfolio income, so /scheduleEPartIIIBox5ColumnF is added here. Material-participation
+        box 6 stays off this line. 26 U.S.C. 1411(c)(2). Box 8 is a rental activity
         under 26 U.S.C. 469(c)(2) and 469(c)(4), is not
-        469(c)(7) income, stops the return, and is not on line 4a. Box 5,
+        469(c)(7) income, stops the return, and is not on line 4a. A negative box 5,
         a negative box 7, a prior-year unallowed passive loss, box 8, other passive amounts, and
         Part IV stop the return. line 6
         (farm) is not supported. Whenever Schedule C or
         Part I is present and MAGI is over the threshold, the line 4b
         trade-or-business adjustment can't be computed and
-        /flowKnockoutForm8960Unsupported stops the return. Positive box 7 with no Schedule C and no Part I
-        does not.
+        /flowKnockoutForm8960Unsupported stops the return. Positive box 5 or box 7 with no Schedule C and no
+        Part I does not.
       </Description>
       <Export mef="true" />
       <Derived>
@@ -132,6 +138,7 @@
           <Dependency module="scheduleC" path="/scheduleCNetProfitOrLoss" />
           <Dependency module="scheduleE" path="/scheduleENetIncome" />
           <Dependency module="scheduleE" path="/scheduleEPartIIIBox7ColumnD" />
+          <Dependency module="scheduleE" path="/scheduleEPartIIIBox5ColumnF" />
         </Add>
       </Derived>
     </Fact>
@@ -479,14 +486,17 @@
         U.S.C. 1411(c)(2) and is not on line 4a. Schedule E line 37 nonpassive box 6 is not 1411(c)(2) net
         investment
         income and is not on line 4a. Nonnegative Schedule K-1 (Form 1041) box 7 is on line 4a
-        (26 U.S.C. 1411(c)(1)(A)(i); scheduleE /scheduleEPartIIIBox7ColumnD). Box 8 is other rental income.
+        (26 U.S.C. 1411(c)(1)(A)(i); scheduleE /scheduleEPartIIIBox7ColumnD). Nonnegative box 5 is on the
+        same line (26 U.S.C. 1411(c)(1)(A); 26 U.S.C. 469(e)(1)(A); scheduleE /scheduleEPartIIIBox5ColumnF).
+        Box 8 is other rental income.
         26 U.S.C. 469(c)(2) and
         469(c)(4) make it passive
         without regard to material participation. It is not 469(c)(7) rental real
         estate professional income, it is not
-        on line 4a, and it stops the return. A negative box 7 and a prior-year unallowed passive loss stop
+        on line 4a, and it stops the return. A negative box 5, a negative box 7, and a prior-year unallowed
+        passive loss stop
         the return. Other passive K-1 income, a
-        trading business, a PTP, boxes 4b and 4c, box 5,
+        trading business, a PTP, boxes 4b and 4c,
         box 8, and boxes 9 through 14 (including box 14 code I and code H), and Part IV stop the return.
         Boxes 3 and 4a are Schedule D lines 5 and 12 and reach line 5a through Form 1040 line 7a. Schedule
         K-1 (Form 1041) box 1 and box 2a are lines 1 and 2. scheduleE
