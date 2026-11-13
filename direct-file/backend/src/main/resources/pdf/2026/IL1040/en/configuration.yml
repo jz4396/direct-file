@@ -1,0 +1,98 @@
+# #93 slice 3: Form IL-1040. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# The 2026 vendor draft has no AcroForm:
+# https://tax.illinois.gov/content/dam/soi/en/web/tax/taxprofessionals/draft-forms/documents/iit-draft-forms/2026-iit-vendor-forms-and-instructions/2026-il-1040-vendor.pdf
+# The 2025 fillable IL-1040 has the same line numbers. Amounts are tax year 2026 ($2,925 / $5,850, rate 4.95%).
+# Source: https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040.pdf
+# SHA-256 7af662f99b31f6aa0d00df5ae93c2a50c4c15e01a0c1dcf5f722fc0bde0799cd
+# Included when /stateReturnIsIl. Stops in ilPit refuse the package, so the zero lines below are the supported entry.
+# Line 21 prints 0, not a blank. Whole dollars, comma grouping, no decimals.
+# Il1040PdfForm fills the ~il1040* pseudo-facts (names, address, filing-status radio, 65/blind checkboxes, paper check).
+includeWhen: /stateReturnIsIl
+otherRequiredFacts:
+  - /isMarried
+  - /isFilingStatusMFJ
+  - /filingStatus
+  - /address
+  - /phone
+  - /primaryFiler/firstName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/lastName
+  - /primaryFiler/dateOfBirth
+  - /primaryFiler/tin
+  - /primaryFiler/age65OrOlder
+  - /primaryFiler/isBlind
+  - /secondaryFiler/firstName
+  - /secondaryFiler/middleInitial
+  - /secondaryFiler/lastName
+  - /secondaryFiler/dateOfBirth
+  - /secondaryFiler/tin
+  - /secondaryFiler/age65OrOlder
+  - /secondaryFiler/isBlind
+  - /ilLine38
+form:
+  "step1-A-firstnamemi": ~il1040First
+  "step1-A-lastname": ~il1040Last
+  "Step1-A-dob": /primaryFiler/dateOfBirth
+  "step1-A-ssn": /primaryFiler/tin
+  "step1-A-spousefirstnamemi": ~il1040SpouseFirst
+  "step1-A-spouselastname": ~il1040SpouseLast
+  "step1-A-spousedob": ~il1040SpouseDob
+  "step1-A-spousessn": ~il1040SpouseSsn
+  "step1-A-mailingaddress": ~il1040Street
+  "step1-A-aptno": ~il1040Apt
+  "step1-A-city": ~il1040City
+  "step1-A-state": ~il1040State
+  "step1-A-zip": ~il1040Zip
+  "step1-A-email": /email
+  "filing_status": ~il1040FilingStatus
+  "over_65_you": ~il1040Over65You
+  "over_65_spouse": ~il1040Over65Spouse
+  "blind_you": ~il1040BlindYou
+  "blind": ~il1040BlindSpouse
+  "Federally adjusted income": /ilLine1
+  "Federally tax-exempt interest": /ilLine2
+  "Other additions": /ilLine3
+  "Total income": /ilLine4
+  "step3-5": /ilLine5
+  "step3-6": /ilLine6
+  "step3-7": /ilLine7
+  "Total of your subtractions": /ilLine8
+  "Illinois base income": /ilLine9
+  "Exemption amount": /ilLine10a
+  "65 or older exemption amount": /ilLine10b
+  "Legally blind exemption amount": /ilLine10c
+  "Claiming dependents": /ilLine10d
+  "Exemption allowance": /ilLine10
+  "Illinois net income from Schedule NR": /ilLine11
+  "Multiply residency rate": /ilLine12
+  "Recapture of investment tax credits": /ilLine13
+  "Income tax": /ilLine14
+  "Income tax paid to another state": /ilLine15
+  "Schedule ICR": /ilLine16
+  "Credit amount from Schedule 1299-C": /ilLine17
+  "Total of your credits": /ilLine18
+  "Tax after nonrefundable credits": /ilLine19
+  "Household employment tax": /ilLine20
+  "Use tax": /ilLine21
+  "Compassionate Use of Medical Cannabis Program Act": /ilLine22
+  "Total Tax": /ilLine23
+  "Total tax from Page 1": /ilLine24
+  "Illinois Income Tax withheld": /ilLine25
+  "Estimated payments": /ilLine26
+  "Pass-through withholding": /ilLine27
+  "Pass-through entity tax credit": /ilLine28
+  "Earned Income Tax Credit from Schedule IL-E/EIC": /ilLine29
+  "Child Tax credit from Sch.IL-EITC": /ilLine30
+  "Total payments and refundable credit": /ilLine31
+  "If Line 31 is greater": /ilLine32
+  "If Line 24 is greater": /ilLine33
+  "Late-payment penalty for underpayment": /ilLine34
+  "Voluntary charitable donations": /ilLine35
+  "Total penalty and donations": /ilLine36
+  "Overpayment amount": /ilLine37
+  "Refunded to you": /ilLine38
+  "refund": ~il1040RefundChoice
+  "Amount to be credited forwarded": /ilLine40
+  "Amount you owe": /ilLine41
+  "DaytimeAreaCode_1": ~il1040Area
+  "phone_number_1": ~il1040Phone

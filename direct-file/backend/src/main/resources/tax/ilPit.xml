@@ -1,0 +1,2107 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 3: 2026 Form IL-1040 for a full-year Illinois resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-6825336196
+      2026 draft IL-1040 (R-12/26), not fillable, line structure only:
+      https://tax.illinois.gov/content/dam/soi/en/web/tax/taxprofessionals/draft-forms/documents/iit-draft-forms/2026-iit-vendor-forms-and-instructions/2026-il-1040-vendor.pdf
+      Interim fill-in template is the 2025 IL-1040 (same line numbers). Amounts are tax year 2026.
+      2025 IL-1040 instructions (structure, 4.95%, rounding, exemption chart, reciprocity, Line 21 "enter zero"):
+      https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-instr.pdf
+      IDOR FY 2026-15 (personal exemption $2,925):
+      https://tax.illinois.gov/content/dam/soi/en/web/tax/research/publications/bulletins/documents/2026/fy-2026-15.pdf
+      35 ILCS 5/201 (4.95%), 5/203 (base income from federal AGI), 5/204 (exemptions), 5/502 (withholding).
+      Ill. Const. art. IX, § 3(a) (one rate). Illinois has no local individual income tax.
+      A stop below is BlockSubmissionOnTrue and print-refusing. The arithmetic is the full-year form; Schedule NR
+      and the other stopped schedules are not modeled, and a stop refuses submission and the PDF.
+      Line 12 keeps cents through the multiply, then rounds half-up. Dollar×Rational is scaled to cents (half-even)
+      before that round, which matches 52,075 × 0.0495 = 2,577.7125 → 2,578. A product whose exact cents are
+      49.5 through 49.9 can round up a dollar; this wages-only slice does not add an operator to avoid that.
+    -->
+
+    <Fact path="/ilBasicExemption">
+      <Name>Illinois basic exemption, one person</Name>
+      <Description>IDOR FY 2026-15
+        https://tax.illinois.gov/content/dam/soi/en/web/tax/research/publications/bulletins/documents/2026/fy-2026-15.pdf
+        : "The personal exemption amount for tax year 2026 will increase to $2,925." 35 ILCS 5/204. One amount for
+        single, head of household, married filing separately, and qualifying surviving spouse. Married filing jointly
+        is two of these (Line 10a).</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>2925</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilAdditionalExemption">
+      <Name>Illinois additional exemption for age 65 or blindness</Name>
+      <Description>2025 IL-1040 instructions, Line 10
+        https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-instr.pdf
+        : "Multiply the number of boxes checked by $1,000." Each 65-or-older or legally-blind checkbox. Spouse
+        checkboxes only if married filing jointly ("you or your spouse if married filing jointly").</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>1000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilExemptionAgiLimit">
+      <Name>Illinois exemption income limit, other than joint</Name>
+      <Description>2025 IL-1040 instructions, Line 10 exemption chart: if federal AGI is greater than $250,000
+        (single, head of household, married filing separately, or widowed), the exemption allowance is zero.
+        Greater than, so $250,000 still receives the exemption. 35 ILCS 5/204.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>250000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilExemptionAgiLimitMfj">
+      <Name>Illinois exemption income limit, married filing jointly</Name>
+      <Description>2025 IL-1040 instructions, Line 10 exemption chart: if federal AGI is greater than $500,000
+        on a joint return, the exemption allowance is zero. Greater than, so $500,000 still receives the exemption.
+        35 ILCS 5/204.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>500000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilTaxRate">
+      <Name>Illinois individual income tax rate</Name>
+      <Description>35 ILCS 5/201: for taxable years ending on or after December 31, 2017, 4.95 percent.
+        2026 draft IL-1040 Line 12: "Multiply Line 11 by 4.95% (.0495)." Ill. Const. art. IX, § 3(a).
+        2025 instructions, rounding: drop an amount under 50 cents and increase an amount of 50 through 99 cents.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>495/10000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilResidencyOptions">
+      <Name>Illinois residency answers</Name>
+      <Description>#93: full-year resident is the supported IL-1040. Part-year and nonresident need Schedule NR
+        (35 ILCS 5/304). More than one state is not this return.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>nonresident</String>
+          <String>moreThanOne</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilResidencyStatus">
+      <Name>Illinois residency for this return</Name>
+      <Description>Asked when /filerResidenceAndIncomeState is Illinois. fullYear is the supported path.
+        partYear, nonresident, and moreThanOne stop the return.</Description>
+      <Writable>
+        <Enum optionsPath="/ilResidencyOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilHasScheduleM">
+      <Name>Illinois Schedule M additions or subtractions</Name>
+      <Description>IL-1040 Lines 3 and 7 are Schedule M. Not modeled. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilClaimsIlEitcOrCtc">
+      <Name>Claims the Illinois earned income or child tax credit</Name>
+      <Description>Schedule IL-E/EITC is not modeled. Yes stops the return. A dependent in the household stops
+        separately.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilHasNonrefundableCredits">
+      <Name>Illinois Schedule ICR, 1299-C, CR, or 4255</Name>
+      <Description>Lines 13, 15, 16, and 17. Those schedules are not modeled. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilHasUseTax">
+      <Name>Illinois use tax on Line 21</Name>
+      <Description>The Use Tax (UT) Worksheet is not modeled. The supported entry is zero. Yes stops the return.
+        2025 instructions, Line 21: do not leave the line blank; enter zero if none.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilHasCannabisOrGamingSurcharge">
+      <Name>Illinois cannabis or gaming surcharge</Name>
+      <Description>IL-1040 Line 22. Not modeled. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilHasPassThroughWithholdingOrCredit">
+      <Name>Illinois pass-through withholding or PTE credit</Name>
+      <Description>IL-1040 Lines 27 and 28. Not modeled. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilHasEstimatedOrPriorYearCredit">
+      <Name>Illinois estimated payments or prior-year credit</Name>
+      <Description>IL-1040 Line 26, including a credit carried from last year's return. Not federal estimates.
+        Not modeled. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilNeedsForm2210">
+      <Name>Illinois Form IL-2210</Name>
+      <Description>Underpayment penalty and the Line 34 checkboxes. IL-2210 is not modeled. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ilHasScheduleGDonation">
+      <Name>Illinois Schedule G charitable donation</Name>
+      <Description>IL-1040 Line 35. Schedule G is not modeled. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <!-- Lines. On the supported path Lines 2, 3, 5, 6, 7, 13, 15, 16, 17, 20, 21, 22, 26-30, 34, and 35 are zero.
+         Lines 14, 18, 19, 23, 24, and 31 are the form's sums, so the tax reaches Line 24. -->
+
+    <Fact path="/ilLine1">
+      <Name>IL-1040 Line 1 federal AGI</Name>
+      <Description>2026 draft IL-1040 Line 1, federally adjusted gross income. 35 ILCS 5/203. Federal /agi.
+        W-2 wages with no adjustments equal the W-2 box 1 total.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine2">
+      <Name>IL-1040 Line 2 federally tax-exempt interest</Name>
+      <Description>Zero on the supported path. Tax-exempt interest stops the return
+        (/flowKnockoutIlOtherFederalIncome). 35 ILCS 5/203.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine3">
+      <Name>IL-1040 Line 3 other additions</Name>
+      <Description>Schedule M additions. Zero. A yes to /ilHasScheduleM stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine4">
+      <Name>IL-1040 Line 4 total income</Name>
+      <Description>Line 1 + Line 2 + Line 3.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ilLine1" />
+          <Dependency path="/ilLine2" />
+          <Dependency path="/ilLine3" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine5">
+      <Name>IL-1040 Line 5 Social Security and retirement subtraction</Name>
+      <Description>Zero. Social Security, IRA, and pension income stop the return. 35 ILCS 5/203.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine6">
+      <Name>IL-1040 Line 6 Illinois income tax refund included in federal AGI</Name>
+      <Description>Zero on this wages-only path.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine7">
+      <Name>IL-1040 Line 7 other subtractions</Name>
+      <Description>Schedule M subtractions. Zero. A yes to /ilHasScheduleM stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine8">
+      <Name>IL-1040 Line 8 total subtractions</Name>
+      <Description>Line 5 + Line 6 + Line 7.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ilLine5" />
+          <Dependency path="/ilLine6" />
+          <Dependency path="/ilLine7" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine9">
+      <Name>IL-1040 Line 9 Illinois base income</Name>
+      <Description>Line 4 minus Line 8, not less than zero. 2025 instructions, Line 9. On the supported path this
+        equals Line 1.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ilLine4" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilLine8" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine4" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine8" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine10a">
+      <Name>IL-1040 Line 10a exemption amount</Name>
+      <Description>$2,925, or $5,850 when married filing jointly (two basic amounts). Shown even when the Line 10
+        total is zero because AGI is over the limit.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Multiply>
+                <Dependency path="/ilBasicExemption" />
+                <Int>2</Int>
+              </Multiply>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/ilBasicExemption" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine10b">
+      <Name>IL-1040 Line 10b age-65 exemption</Name>
+      <Description>$1,000 for each 65-or-older checkbox. The spouse checkbox counts only on a joint return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Switch>
+            <Case>
+              <When>
+                <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+              </When>
+              <Then>
+                <Dependency path="/ilAdditionalExemption" />
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
+          <Switch>
+            <Case>
+              <When>
+                <All>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                  <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+                </All>
+              </When>
+              <Then>
+                <Dependency path="/ilAdditionalExemption" />
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine10c">
+      <Name>IL-1040 Line 10c legally-blind exemption</Name>
+      <Description>$1,000 for each legally-blind checkbox. The spouse checkbox counts only on a joint return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Switch>
+            <Case>
+              <When>
+                <Dependency module="filers" path="/primaryFiler/isBlind" />
+              </When>
+              <Then>
+                <Dependency path="/ilAdditionalExemption" />
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
+          <Switch>
+            <Case>
+              <When>
+                <All>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                  <Dependency module="filers" path="/secondaryFiler/isBlind" />
+                </All>
+              </When>
+              <Then>
+                <Dependency path="/ilAdditionalExemption" />
+              </Then>
+            </Case>
+            <Case>
+              <When>
+                <True />
+              </When>
+              <Then>
+                <Dollar>0</Dollar>
+              </Then>
+            </Case>
+          </Switch>
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine10d">
+      <Name>IL-1040 Line 10d dependent exemption</Name>
+      <Description>Zero. A dependent, or an Illinois EITC or CTC, stops the return. The reduced-exemption chart for
+        a filer who can be claimed as a dependent is not used; that filer stops instead.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilExemptionDisallowed">
+      <Name>Illinois exemption allowance disallowed by AGI</Name>
+      <Description>Federal AGI greater than $500,000 on a joint return, otherwise greater than $250,000.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilExemptionAgiLimitMfj" />
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilExemptionAgiLimit" />
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine10">
+      <Name>IL-1040 Line 10 exemption allowance</Name>
+      <Description>Line 10a + 10b + 10c + 10d, or zero when /ilExemptionDisallowed. Sublines stay at the
+        pre-limitation amounts.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/ilExemptionDisallowed" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Add>
+                <Dependency path="/ilLine10a" />
+                <Dependency path="/ilLine10b" />
+                <Dependency path="/ilLine10c" />
+                <Dependency path="/ilLine10d" />
+              </Add>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine11">
+      <Name>IL-1040 Line 11 net income</Name>
+      <Description>Line 9 minus Line 10, not less than zero. Residents use this line; Schedule NR is not modeled.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ilLine9" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilLine10" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine9" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine10" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine12">
+      <Name>IL-1040 Line 12 income tax</Name>
+      <Description>Line 11 times 4.95 percent, then round. Under 50 cents drops; 50 through 99 cents rounds up.
+        35 ILCS 5/201. 52,075 × 0.0495 = 2,577.7125, which rounds to 2,578.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Multiply>
+            <Dependency path="/ilLine11" />
+            <Dependency path="/ilTaxRate" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine13">
+      <Name>IL-1040 Line 13 recapture</Name>
+      <Description>Schedule 4255 recapture. Zero. /ilHasNonrefundableCredits stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine14">
+      <Name>IL-1040 Line 14 income tax</Name>
+      <Description>Line 12 + Line 13.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ilLine12" />
+          <Dependency path="/ilLine13" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine15">
+      <Name>IL-1040 Line 15 tax paid to another state</Name>
+      <Description>Schedule CR. Zero. /ilHasNonrefundableCredits stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine16">
+      <Name>IL-1040 Line 16 property-tax credit</Name>
+      <Description>Schedule ICR. Zero. /ilHasNonrefundableCredits stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine17">
+      <Name>IL-1040 Line 17 other credits</Name>
+      <Description>Schedule 1299-C. Zero. /ilHasNonrefundableCredits stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine18">
+      <Name>IL-1040 Line 18 total credits</Name>
+      <Description>Line 15 + Line 16 + Line 17.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ilLine15" />
+          <Dependency path="/ilLine16" />
+          <Dependency path="/ilLine17" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine19">
+      <Name>IL-1040 Line 19 tax after nonrefundable credits</Name>
+      <Description>Line 14 minus Line 18, not less than zero.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ilLine14" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilLine18" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine14" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine18" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine20">
+      <Name>IL-1040 Line 20 household employment tax</Name>
+      <Description>Zero. /flowKnockoutIlHouseholdEmployment stops the return. 35 ILCS 5/201.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine21">
+      <Name>IL-1040 Line 21 use tax</Name>
+      <Description>Zero, and the PDF prints 0 rather than a blank. 2025 instructions, Line 21: enter zero if you
+        owe no use tax. A yes to /ilHasUseTax stops the return. The UT Worksheet is not modeled.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine22">
+      <Name>IL-1040 Line 22 cannabis and gaming surcharges</Name>
+      <Description>Zero. /ilHasCannabisOrGamingSurcharge stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine23">
+      <Name>IL-1040 Line 23 total tax</Name>
+      <Description>Line 19 + Line 20 + Line 21 + Line 22.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ilLine19" />
+          <Dependency path="/ilLine20" />
+          <Dependency path="/ilLine21" />
+          <Dependency path="/ilLine22" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine24">
+      <Name>IL-1040 Line 24 total tax from page 1</Name>
+      <Description>Line 23, carried to page 2.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/ilLine23" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine25">
+      <Name>IL-1040 Line 25 Illinois income tax withheld</Name>
+      <Description>Sum of W-2 box 17, also Schedule IL-WIT Line 11. 35 ILCS 5/502. A W-2 whose box 15 is not
+        Illinois, including an Iowa, Kentucky, Michigan, or Wisconsin reciprocity state, stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <CollectionSum>
+          <Dependency module="formW2s" path="/formW2s/*/stateWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine26">
+      <Name>IL-1040 Line 26 estimated payments</Name>
+      <Description>Zero. /ilHasEstimatedOrPriorYearCredit stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine27">
+      <Name>IL-1040 Line 27 pass-through withholding</Name>
+      <Description>Zero. /ilHasPassThroughWithholdingOrCredit stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine28">
+      <Name>IL-1040 Line 28 pass-through entity tax credit</Name>
+      <Description>Zero. /ilHasPassThroughWithholdingOrCredit stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine29">
+      <Name>IL-1040 Line 29 Illinois EITC</Name>
+      <Description>Schedule IL-E/EITC. Zero. Dependents or /ilClaimsIlEitcOrCtc stop the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine30">
+      <Name>IL-1040 Line 30 Illinois child tax credit</Name>
+      <Description>Schedule IL-E/EITC. Zero. Dependents or /ilClaimsIlEitcOrCtc stop the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine31">
+      <Name>IL-1040 Line 31 total payments and refundable credits</Name>
+      <Description>Lines 25 through 30.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ilLine25" />
+          <Dependency path="/ilLine26" />
+          <Dependency path="/ilLine27" />
+          <Dependency path="/ilLine28" />
+          <Dependency path="/ilLine29" />
+          <Dependency path="/ilLine30" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine32">
+      <Name>IL-1040 Line 32 overpayment</Name>
+      <Description>Line 31 minus Line 24 when Line 31 is greater; otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ilLine31" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilLine24" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine31" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine24" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine33">
+      <Name>IL-1040 Line 33 tax due</Name>
+      <Description>Line 24 minus Line 31 when Line 24 is greater; otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ilLine24" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilLine31" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine24" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine31" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine34">
+      <Name>IL-1040 Line 34 underpayment penalty</Name>
+      <Description>IL-2210. Zero. /ilNeedsForm2210 stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine35">
+      <Name>IL-1040 Line 35 Schedule G donations</Name>
+      <Description>Zero. /ilHasScheduleGDonation stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine36">
+      <Name>IL-1040 Line 36 penalty and donations</Name>
+      <Description>Line 34 + Line 35.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ilLine34" />
+          <Dependency path="/ilLine35" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine37">
+      <Name>IL-1040 Line 37 overpayment after penalty and donations</Name>
+      <Description>Line 32 minus Line 36 when Line 32 is greater; otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ilLine32" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilLine36" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine32" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine36" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine38">
+      <Name>IL-1040 Line 38 refund</Name>
+      <Description>The whole Line 37 overpayment is refunded. Nothing is credited forward (Line 40 is zero).
+        A paper check is the refund method.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/ilLine37" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine40">
+      <Name>IL-1040 Line 40 credit forward</Name>
+      <Description>Zero. The overpayment is refunded on Line 38.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilLine41">
+      <Name>IL-1040 Line 41 amount you owe</Name>
+      <Description>The form's three-way rule. Line 33 minus Line 36 when Line 33 is greater than Line 36.
+        Line 36 minus Line 32 when Line 32 is greater than zero and less than Line 36. Line 36 when Line 36 is
+        greater than zero and Lines 32 and 33 are zero. Otherwise zero. On the supported path Line 36 is zero,
+        so this is Line 33. The PDF prints 0 when nothing is owed.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ilLine33" />
+                </Left>
+                <Right>
+                  <Dependency path="/ilLine36" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine33" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine36" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/ilLine32" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+                <LessThan>
+                  <Left>
+                    <Dependency path="/ilLine32" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/ilLine36" />
+                  </Right>
+                </LessThan>
+              </All>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ilLine36" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ilLine32" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/ilLine36" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThan>
+                <Equal>
+                  <Left>
+                    <Dependency path="/ilLine32" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </Equal>
+                <Equal>
+                  <Left>
+                    <Dependency path="/ilLine33" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/ilLine36" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <!-- Stops. Each is complete false when this is not an Illinois return, and incomplete when the Illinois
+         question it depends on has not been answered. -->
+
+    <Fact path="/ilHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, tax-exempt interest, dividends, unemployment, Social Security, pensions, IRA and
+        1099-R, capital gain or a sale, Schedule C, Schedule E, 1099-MISC, or any other amount in federal total
+        income besides W-2 wages. Adjustments that reduce AGI are not this stop.</Description>
+      <Derived>
+        <Any>
+          <NotEqual>
+            <Left>
+              <Dependency module="income" path="/totalIncome" />
+            </Left>
+            <Right>
+              <Dependency module="formW2s" path="/wages" />
+            </Right>
+          </NotEqual>
+          <GreaterThan>
+            <Left>
+              <Dependency module="interest" path="/taxExemptInterest" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="socialSecurity" path="/socialSecurityBenefits" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="form1099Rs" path="/form1099Rs" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilClaimedAsDependent">
+      <Name>Filer can be claimed as a dependent</Name>
+      <Description>IL-1040 Step 1, Line C. The primary filer, or either spouse on a joint return. The reduced
+        exemption chart is not applied.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/canBeClaimed" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency module="filers" path="/secondaryFiler/canBeClaimed" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilHasDependentsOrIlCredit">
+      <Name>Dependents or an Illinois EITC or CTC</Name>
+      <Description>Anyone in the household, or a yes to /ilClaimsIlEitcOrCtc. Schedule IL-E/EITC is not modeled.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency path="/ilClaimsIlEitcOrCtc" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/ilBox15Incomplete">
+      <Name>W-2 box 15 not answered</Name>
+      <Description>Box 15 has to be Illinois (same state as the residence) before Line 25 is printed.</Description>
+      <Derived>
+        <Not>
+          <IsComplete>
+            <Dependency path="../writableState" />
+          </IsComplete>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilW2Box15NotIllinois">
+      <Name>A W-2 box 15 is not Illinois</Name>
+      <Description>differentState includes Iowa, Kentucky, Michigan, and Wisconsin. Those reciprocity states are
+        not treated as Illinois. An unanswered box 15 also stops an Illinois return.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/ilBox15Incomplete" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilPrimaryW2Count">
+      <Name>Primary filer W-2 count</Name>
+      <Description>Schedule IL-WIT rows 1 through 5 are the primary filer's forms.</Description>
+      <Derived>
+        <CollectionSize>
+          <Filter path="/formW2s">
+            <Equal>
+              <Left>
+                <Dependency path="filer" />
+              </Left>
+              <Right>
+                <Dependency module="filers" path="/primaryFiler" />
+              </Right>
+            </Equal>
+          </Filter>
+        </CollectionSize>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilSpouseW2Count">
+      <Name>Spouse W-2 count</Name>
+      <Description>Schedule IL-WIT rows 6 through 10. Zero unless the return is joint.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSize>
+                <Filter path="/formW2s">
+                  <Equal>
+                    <Left>
+                      <Dependency path="filer" />
+                    </Left>
+                    <Right>
+                      <Dependency module="filers" path="/secondaryFiler" />
+                    </Right>
+                  </Equal>
+                </Filter>
+              </CollectionSize>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilWitTooManyRows">
+      <Name>More W-2s than Schedule IL-WIT can show</Name>
+      <Description>Five rows per person. More than that would leave Line 25 larger than the schedule.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/ilPrimaryW2Count" />
+            </Left>
+            <Right>
+              <Int>5</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/ilSpouseW2Count" />
+            </Left>
+            <Right>
+              <Int>5</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilResidencyIsPartYearOrNonresident">
+      <Name>Illinois residency is part-year or nonresident</Name>
+      <Description>Incomplete until /ilResidencyStatus is answered.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="/ilResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/ilResidencyOptions">partYear</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/ilResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/ilResidencyOptions">nonresident</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ilResidencyIsMoreThanOneState">
+      <Name>Illinois residency answer is more than one state</Name>
+      <Description>Incomplete until /ilResidencyStatus is answered.</Description>
+      <Derived>
+        <Equal>
+          <Left>
+            <Dependency path="/ilResidencyStatus" />
+          </Left>
+          <Right>
+            <Enum optionsPath="/ilResidencyOptions">moreThanOne</Enum>
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlPartYearOrNonresident">
+      <Name>Flow knockout: Illinois part-year or nonresident</Name>
+      <Description>Schedule NR is not modeled. 35 ILCS 5/304. Complete false when this is not an Illinois return.
+        Incomplete until /ilResidencyStatus is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilResidencyIsPartYearOrNonresident" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilResidencyIsPartYearOrNonresident" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilResidencyIsPartYearOrNonresident" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlLivedInMoreThanOneState">
+      <Name>Flow knockout: lived in more than one state</Name>
+      <Description>The Illinois residency question answered moreThanOne. The federal "more than one state" choice
+        never reaches this return. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilResidencyIsMoreThanOneState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilResidencyIsMoreThanOneState" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilResidencyIsMoreThanOneState" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlW2NotIllinois">
+      <Name>Flow knockout: W-2 box 15 is not Illinois</Name>
+      <Description>Any box 15 other than Illinois, including Iowa, Kentucky, Michigan, and Wisconsin reciprocity,
+        or a box 15 that was not answered. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilW2Box15NotIllinois" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilW2Box15NotIllinois" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilW2Box15NotIllinois" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlOtherFederalIncome">
+      <Name>Flow knockout: federal income other than W-2 wages</Name>
+      <Description>IL-1040 Lines 2, 5, and the Schedule M income lines are not computed from this income.
+        Complete false when this is not an Illinois return. Incomplete while a sale question is unanswered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasOtherFederalIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasOtherFederalIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasOtherFederalIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlScheduleM">
+      <Name>Flow knockout: Illinois Schedule M</Name>
+      <Description>Lines 3 and 7. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasScheduleM" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasScheduleM" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasScheduleM" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlDependentsOrEitc">
+      <Name>Flow knockout: dependents or Illinois EITC or CTC</Name>
+      <Description>Schedule IL-E/EITC is not modeled. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasDependentsOrIlCredit" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasDependentsOrIlCredit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasDependentsOrIlCredit" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlNonrefundableCredits">
+      <Name>Flow knockout: Schedule ICR, 1299-C, CR, or 4255</Name>
+      <Description>Lines 13, 15, 16, and 17. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasNonrefundableCredits" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasNonrefundableCredits" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasNonrefundableCredits" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlHouseholdEmployment">
+      <Name>Flow knockout: Illinois household employment tax</Name>
+      <Description>Line 20. A complete yes to the federal household-employee answer. The placeholder false on
+        that fact is not a stop. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="householdEmployment" path="/hasHouseholdEmployeeScheduleH" />
+                </IsComplete>
+                <Dependency module="householdEmployment" path="/hasHouseholdEmployeeScheduleH" />
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlUseTax">
+      <Name>Flow knockout: Illinois use tax</Name>
+      <Description>Line 21 would be a positive amount. The supported printed amount is 0. Complete false when
+        this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasUseTax" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasUseTax" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasUseTax" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlCannabisGamingSurcharge">
+      <Name>Flow knockout: Illinois cannabis or gaming surcharge</Name>
+      <Description>Line 22. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasCannabisOrGamingSurcharge" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasCannabisOrGamingSurcharge" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasCannabisOrGamingSurcharge" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlPassThrough">
+      <Name>Flow knockout: pass-through withholding or PTE credit</Name>
+      <Description>Lines 27 and 28. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasPassThroughWithholdingOrCredit" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasPassThroughWithholdingOrCredit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasPassThroughWithholdingOrCredit" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlEstimatedPayments">
+      <Name>Flow knockout: Illinois estimated payments or prior-year credit</Name>
+      <Description>Line 26. Not federal estimated tax. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasEstimatedOrPriorYearCredit" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasEstimatedOrPriorYearCredit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasEstimatedOrPriorYearCredit" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIl2210">
+      <Name>Flow knockout: Form IL-2210</Name>
+      <Description>Line 34. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilNeedsForm2210" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilNeedsForm2210" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilNeedsForm2210" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlScheduleG">
+      <Name>Flow knockout: Schedule G donations</Name>
+      <Description>Line 35. Complete false when this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilHasScheduleGDonation" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilHasScheduleGDonation" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilHasScheduleGDonation" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlClaimedAsDependent">
+      <Name>Flow knockout: filer claimed as a dependent</Name>
+      <Description>Step 1, Line C. Complete false when this is not an Illinois return. Incomplete until the
+        filer's answer is known.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilClaimedAsDependent" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilClaimedAsDependent" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilClaimedAsDependent" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIlWitTooManyRows">
+      <Name>Flow knockout: Schedule IL-WIT has too many W-2s</Name>
+      <Description>The one-page schedule has five rows for the filer and five for the spouse. Complete false when
+        this is not an Illinois return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsIl" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ilWitTooManyRows" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ilWitTooManyRows" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ilWitTooManyRows" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

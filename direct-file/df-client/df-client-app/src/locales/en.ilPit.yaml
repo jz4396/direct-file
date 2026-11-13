@@ -1,0 +1,131 @@
+# Illinois IL-1040 strings (#93 slice 3). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    il-1040: Illinois return
+dataviews:
+  /flow/your-taxes/amount:
+    /ilResidencyStatus: Where you lived for your Illinois return
+    /ilHasScheduleM: Illinois Schedule M additions or subtractions
+    /ilClaimsIlEitcOrCtc: Illinois earned income credit or child tax credit
+    /ilHasNonrefundableCredits: Illinois Schedule ICR, 1299-C, CR, or 4255
+    /ilHasUseTax: Illinois use tax
+    /ilHasCannabisOrGamingSurcharge: Illinois cannabis or gaming surcharge
+    /ilHasPassThroughWithholdingOrCredit: Illinois pass-through withholding or credit
+    /ilHasEstimatedOrPriorYearCredit: Illinois estimated payments or prior-year credit
+    /ilNeedsForm2210: Form IL-2210
+    /ilHasScheduleGDonation: Illinois Schedule G donation
+    enums:
+      /ilResidencyOptions:
+        fullYear: I lived in Illinois all year
+        partYear: I lived in Illinois for part of the year
+        nonresident: I did not live in Illinois
+        moreThanOne: I lived in more than one state
+headings:
+  /heading/your-taxes/amount/il-residency: Which of these describes your Illinois return?
+  /heading/your-taxes/amount/il-schedule-m: Do you have Illinois additions or subtractions from Schedule M?
+  /heading/your-taxes/amount/il-eitc: Are you claiming an Illinois earned income credit or child tax credit?
+  /heading/your-taxes/amount/il-credits:
+    Do you have an Illinois credit from Schedule ICR, Schedule 1299-C, Schedule CR, or Schedule 4255?
+  /heading/your-taxes/amount/il-use-tax: Do you owe Illinois use tax?
+  /heading/your-taxes/amount/il-surcharge: Do you owe an Illinois cannabis or gaming surcharge?
+  /heading/your-taxes/amount/il-pass-through:
+    Do you have Illinois pass-through withholding or a pass-through entity tax credit?
+  /heading/your-taxes/amount/il-estimates:
+    Did you make Illinois estimated payments, or do you have a credit from last year’s Illinois return?
+  /heading/your-taxes/amount/il-2210: Do you need to file Form IL-2210?
+  /heading/your-taxes/amount/il-schedule-g: Do you want to donate on Illinois Schedule G?
+  /heading/knockout/il-part-year: This tool doesn’t yet support an Illinois part-year or nonresident return
+  /heading/knockout/il-more-than-one-state:
+    This tool doesn’t yet support an Illinois return when you lived in more than one state
+  /heading/knockout/il-w2-not-illinois: This tool doesn’t yet support a W-2 whose box 15 is not Illinois
+  /heading/knockout/il-other-income: This tool doesn’t yet support Illinois returns with income other than W-2 wages
+  /heading/knockout/il-schedule-m: This tool doesn’t yet support Illinois Schedule M
+  /heading/knockout/il-dependents:
+    This tool doesn’t yet support dependents or the Illinois earned income or child tax credit
+  /heading/knockout/il-credits: This tool doesn’t yet support these Illinois credits
+  /heading/knockout/il-household: This tool doesn’t yet support household employment tax on an Illinois return
+  /heading/knockout/il-use-tax: This tool doesn’t yet support Illinois use tax
+  /heading/knockout/il-surcharge: This tool doesn’t yet support an Illinois cannabis or gaming surcharge
+  /heading/knockout/il-pass-through:
+    This tool doesn’t yet support Illinois pass-through withholding or the pass-through entity tax credit
+  /heading/knockout/il-estimates: This tool doesn’t yet support Illinois estimated payments or a prior-year credit
+  /heading/knockout/il-2210: This tool doesn’t yet support Form IL-2210
+  /heading/knockout/il-schedule-g: This tool doesn’t yet support Illinois Schedule G
+  /heading/knockout/il-claimed-as-dependent:
+    This tool doesn’t yet support an Illinois return for someone who can be claimed as a dependent
+  /heading/knockout/il-wit-rows: This tool doesn’t yet support more than five Illinois W-2s for one person
+info:
+  /info/your-taxes/amount/il-residency:
+    body:
+      A full-year Illinois resident with W-2 wages only is the return this tool can prepare. Part-year and nonresident
+      returns use Schedule NR.
+  /info/your-taxes/amount/il-schedule-m:
+    body: Schedule M is for additions and subtractions that are not on this wages-only return.
+  /info/your-taxes/amount/il-eitc:
+    body: The Illinois earned income credit and child tax credit are on Schedule IL-E/EITC.
+  /info/your-taxes/amount/il-credits:
+    body:
+      These are the Illinois property-tax credit, credits from Schedule 1299-C, tax paid to another state, and credit
+      recapture.
+  /info/your-taxes/amount/il-use-tax:
+    body: Line 21 is use tax. If you do not owe any, this return enters zero.
+  /info/your-taxes/amount/il-surcharge:
+    body: Line 22 is the surcharges under the cannabis and gaming laws.
+  /info/your-taxes/amount/il-pass-through:
+    body: Lines 27 and 28 are pass-through withholding and the pass-through entity tax credit.
+  /info/your-taxes/amount/il-estimates:
+    body:
+      This is Illinois estimated tax, or a credit carried from last year’s Illinois return. It is not a federal
+      estimated payment.
+  /info/your-taxes/amount/il-2210:
+    body: Form IL-2210 is the penalty for underpayment of estimated tax.
+  /info/your-taxes/amount/il-schedule-g:
+    body: Schedule G is a voluntary charitable donation from your refund or with your payment.
+  /info/knockout/il-part-year:
+    alertText: Illinois part-year and nonresident returns are not supported yet
+    body: Those returns use Schedule NR, which this tool does not calculate.
+  /info/knockout/il-more-than-one-state:
+    alertText: Living in more than one state is not supported on this Illinois return
+    body: This tool prepares a full-year Illinois resident return only.
+  /info/knockout/il-w2-not-illinois:
+    alertText: Every W-2 on this return has to show Illinois in box 15
+    body: Wages from another state, including Iowa, Kentucky, Michigan, and Wisconsin, are not supported.
+  /info/knockout/il-other-income:
+    alertText: This Illinois return can include W-2 wages only
+    body: Interest, retirement, Social Security, business, rental, and other federal income are not supported.
+  /info/knockout/il-schedule-m:
+    alertText: Schedule M is not supported yet
+    body: Additions and subtractions on Schedule M are not calculated.
+  /info/knockout/il-dependents:
+    alertText: Dependents and the Illinois earned income and child tax credits are not supported yet
+    body: Schedule IL-E/EITC is not calculated.
+  /info/knockout/il-credits:
+    alertText: These Illinois credits are not supported yet
+    body: Schedules ICR, 1299-C, CR, and 4255 are not calculated.
+  /info/knockout/il-household:
+    alertText: Household employment tax is not supported on an Illinois return
+    body: Line 20 is not calculated.
+  /info/knockout/il-use-tax:
+    alertText: Illinois use tax is not supported yet
+    body: The use-tax worksheet is not calculated. A return with no use tax enters zero on Line 21.
+  /info/knockout/il-surcharge:
+    alertText: This surcharge is not supported yet
+    body: Line 22 is not calculated.
+  /info/knockout/il-pass-through:
+    alertText: Pass-through withholding and the pass-through entity tax credit are not supported yet
+    body: Lines 27 and 28 are not calculated.
+  /info/knockout/il-estimates:
+    alertText: Illinois estimated payments and prior-year credits are not supported yet
+    body: Line 26 is not calculated.
+  /info/knockout/il-2210:
+    alertText: Form IL-2210 is not supported yet
+    body: The underpayment penalty is not calculated.
+  /info/knockout/il-schedule-g:
+    alertText: Schedule G is not supported yet
+    body: Charitable donations on the Illinois return are not calculated.
+  /info/knockout/il-claimed-as-dependent:
+    alertText: An Illinois return for someone who can be claimed as a dependent is not supported yet
+    body: The reduced exemption for that filer is not calculated.
+  /info/knockout/il-wit-rows:
+    alertText: Schedule IL-WIT has five rows for you and five for your spouse
+    body: A return with more W-2s than that is not supported yet.

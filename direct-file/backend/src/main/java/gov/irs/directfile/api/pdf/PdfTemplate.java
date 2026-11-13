@@ -124,7 +124,10 @@ abstract class PdfTemplate {
             new Pa40PdfForm("PA40"),
             new PaScheduleBPdfForm("PA40B"),
             new PaScheduleCPdfForm("PA40C"),
-            new PaScheduleSpPdfForm("PA40SP"));
+            new PaScheduleSpPdfForm("PA40SP"),
+            // #93 slice 3: IL-1040 and Schedule IL-WIT. No local return.
+            new Il1040PdfForm("IL1040"),
+            new IlWitPdfForm("ILWIT"));
 
     protected PdfTemplate(
             final String templateName, final boolean shouldRemoveTinDashes, final boolean shouldRoundCurrency) {

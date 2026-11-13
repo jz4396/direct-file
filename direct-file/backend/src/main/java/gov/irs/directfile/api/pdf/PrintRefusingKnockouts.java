@@ -104,6 +104,25 @@ public final class PrintRefusingKnockouts {
             // is not produced. 72 P.S. §7303(a)(8). Complete false when the return is not a PA-40 or box 7
             // is zero.
             "/flowKnockoutPaK11041Box7",
+            // #93 slice 3: Illinois stops. Each is complete false when the return is not an IL-1040, and incomplete
+            // when the Illinois question is unanswered, so the PDF is not printed with the unmodeled line as zero.
+            // 2026 draft IL-1040; 2025 IL-1040 instructions; 35 ILCS 5/201, 5/203, 5/204, 5/304, 5/502.
+            "/flowKnockoutIlPartYearOrNonresident",
+            "/flowKnockoutIlLivedInMoreThanOneState",
+            "/flowKnockoutIlW2NotIllinois",
+            "/flowKnockoutIlOtherFederalIncome",
+            "/flowKnockoutIlScheduleM",
+            "/flowKnockoutIlDependentsOrEitc",
+            "/flowKnockoutIlNonrefundableCredits",
+            "/flowKnockoutIlHouseholdEmployment",
+            "/flowKnockoutIlUseTax",
+            "/flowKnockoutIlCannabisGamingSurcharge",
+            "/flowKnockoutIlPassThrough",
+            "/flowKnockoutIlEstimatedPayments",
+            "/flowKnockoutIl2210",
+            "/flowKnockoutIlScheduleG",
+            "/flowKnockoutIlClaimedAsDependent",
+            "/flowKnockoutIlWitTooManyRows",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.

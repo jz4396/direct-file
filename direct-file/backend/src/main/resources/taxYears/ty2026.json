@@ -165,6 +165,21 @@
       "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/1971/0/0002..HTM",
       "kind": "statute"
     },
+    "ilcs-5-201": {
+      "title": "Illinois Income Tax Act, 35 ILCS 5/201",
+      "url": "https://www.ilga.gov/legislation/ilcs/",
+      "kind": "statute"
+    },
+    "idor-fy-2026-15": {
+      "title": "Illinois Department of Revenue FY 2026-15, 2026 income tax figures",
+      "url": "https://tax.illinois.gov/content/dam/soi/en/web/tax/research/publications/bulletins/documents/2026/fy-2026-15.pdf",
+      "kind": "web"
+    },
+    "il-1040-instr-2025": {
+      "title": "2025 IL-1040 instructions (structure used for the 2026 return until the 2026 booklet is final)",
+      "url": "https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-instr.pdf",
+      "kind": "web"
+    },
     "i1040sc-dft": {
       "title": "2026 Instructions for Schedule C, draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
@@ -3797,6 +3812,73 @@
           "section": "Simplified Method Worksheet, line 2",
           "page": 14,
           "quote": "Allowable square footage for the qualified business use. Don't enter more than 300 square feet."
+        }
+      ]
+    },
+    {
+      "fact": "/ilBasicExemption",
+      "file": "ilPit.xml",
+      "values": [
+        "Dollar:2925"
+      ],
+      "cite": [
+        {
+          "source": "idor-fy-2026-15",
+          "quote": "The personal exemption amount for tax year 2026 will increase to $2,925."
+        }
+      ]
+    },
+    {
+      "fact": "/ilAdditionalExemption",
+      "file": "ilPit.xml",
+      "values": [
+        "Dollar:1000"
+      ],
+      "cite": [
+        {
+          "source": "il-1040-instr-2025",
+          "quote": "Multiply the number of boxes checked by $1,000."
+        }
+      ]
+    },
+    {
+      "fact": "/ilExemptionAgiLimit",
+      "file": "ilPit.xml",
+      "values": [
+        "Dollar:250000"
+      ],
+      "cite": [
+        {
+          "source": "il-1040-instr-2025",
+          "quote": "greater than $250,000"
+        }
+      ]
+    },
+    {
+      "fact": "/ilExemptionAgiLimitMfj",
+      "file": "ilPit.xml",
+      "values": [
+        "Dollar:500000"
+      ],
+      "cite": [
+        {
+          "source": "il-1040-instr-2025",
+          "quote": "greater than $500,000"
+        }
+      ]
+    },
+    {
+      "fact": "/ilTaxRate",
+      "file": "ilPit.xml",
+      "values": [
+        "Rational:495/10000"
+      ],
+      "cite": [
+        {
+          "source": "ilcs-5-201",
+          "section": "§ 201",
+          "url": "https://www.ilga.gov/legislation/ilcs/ilcs4.asp?DocName=003500050HArt.+2&ActID=577&ChapterID=8",
+          "quote": "For taxable years ending on or after December 31, 2017, 4.95%."
         }
       ]
     }
