@@ -16,18 +16,19 @@ import gov.irs.directfile.models.FactEvaluationResult;
  * {@code /form6251LineNN} only when {@code /form6251UsesPartIII} is true (Form 2555 is unsupported, so line 7 is the
  * only trigger). Otherwise Part III stays blank.
  *
- * <p>Line 33, p. 2: "If lines 32 and 12 are the same, skip lines 33 through 37 and go to line 38", so lines 33 and 34
- * stay blank in that case. Lines 35-37 are never mapped: line 14 (Schedule D line 19) is a stop, and "If line 14 is
- * zero or blank, skip lines 35 through 37".
+ * <p>Line 33, p. 2: "If lines 32 and 12 are the same, skip lines 33 through 37 and go to line 38", so lines 33
+ * through 37 stay blank in that case. "If line 14 is zero or blank, skip lines 35 through 37": those three stay blank
+ * when Schedule D line 19 is zero. Line 14 is Form 1099-DIV box 2b after the unrecaptured section 1250 worksheet.
  */
 class Irs6251PdfForm extends PdfForm {
     static final String USES_PART_III = "/form6251UsesPartIII";
     static final String PSEUDO_PREFIX = "~form6251PartIIILine";
 
     // Part III lines that the fact graph computes, each from /form6251Line<n>. Line 26 repeats line 21 ("Enter the
-    // amount from line 21"); lines 14 and 35-37 are never printed.
-    static final List<Integer> PART_III_LINES =
-            List.of(12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 38, 39, 40);
+    // amount from line 21").
+    static final List<Integer> PART_III_LINES = List.of(
+            12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40);
 
     public Irs6251PdfForm(final String templateName) {
         super(templateName);
@@ -45,8 +46,32 @@ class Irs6251PdfForm extends PdfForm {
         if (usesPartIII && sameAmount(valueOf(facts, 32), valueOf(facts, 12))) {
             facts.put(PSEUDO_PREFIX + 33, "");
             facts.put(PSEUDO_PREFIX + 34, "");
+            blankLines35Through37(facts);
+        }
+        if (usesPartIII && !positiveAmount(valueOf(facts, 14))) {
+            // Line 14 has no "enter -0-". A zero stays blank, and lines 35-37 are skipped.
+            facts.put(PSEUDO_PREFIX + 14, "");
+            blankLines35Through37(facts);
         }
         return true;
+    }
+
+    private static void blankLines35Through37(final FactEvaluationResult facts) {
+        facts.put(PSEUDO_PREFIX + 35, "");
+        facts.put(PSEUDO_PREFIX + 36, "");
+        facts.put(PSEUDO_PREFIX + 37, "");
+    }
+
+    /** True when the printed amount is more than zero. Blank and zero both skip lines 35-37. */
+    static boolean positiveAmount(final String amount) {
+        if (amount.isEmpty()) {
+            return false;
+        }
+        try {
+            return new java.math.BigDecimal(amount).compareTo(java.math.BigDecimal.ZERO) > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private static String valueOf(final FactEvaluationResult facts, final int line) {

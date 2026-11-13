@@ -1,8 +1,9 @@
 // #86: Form 1099-DIV boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 12 and 13. Box 12 is Form 1040 line 2a, not line 3b.
 // Box 13 is Form 6251 line 2g and cannot exceed box 12. Box 2e is the section 897 portion of box 1a and box 2f is
 // the section 897 portion of box 2a (26 U.S.C. 897(a)); neither is added again. Box 6 is included in box 1a and is
-// not deducted (26 U.S.C. 67(g)). A portion one dollar over its parent box stops the return. A nonzero box 6 on a
-// PA-40 stops the return. Boxes 2b, 2c, 2d, 8, 9, 10 and 14-16 still stop. Box 11 (FATCA filing requirement) does
+// not deducted (26 U.S.C. 67(g)). Box 2b is the unrecaptured section 1250 portion of box 2a (26 U.S.C. 1(h)(6)) and
+// is not added again. A portion one dollar over its parent box stops the return. A nonzero box 6 on a
+// PA-40 stops the return. Boxes 2c, 2d, 8, 9, 10 and 14-16 still stop. Box 11 (FATCA filing requirement) does
 // not stop by itself: it asks /requiredToFileForm8938. Yes stops (26 U.S.C. 6038D). No proceeds. Form 1099-DIV
 // (Rev. December 2027) draft, Instructions for Recipient, Box 11. Instructions for Form 8938: a specified individual
 // living in the United States who is unmarried files when specified foreign financial assets are more than $50,000
@@ -53,6 +54,7 @@ type Div = {
   box1a: number;
   box1b?: number;
   box2a?: number;
+  box2b?: number;
   box2e?: number;
   box2f?: number;
   box3?: number;
@@ -81,6 +83,7 @@ const divItem = (f: Div) => {
     [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`${f.box1a}`),
     ...opt(id, `QualifiedDividends`, f.box1b),
     ...opt(id, `CapitalGainDistributions`, f.box2a),
+    ...opt(id, `UnrecapturedSection1250Gain`, f.box2b),
     ...opt(id, `Section897OrdinaryDividends`, f.box2e),
     ...opt(id, `Section897CapitalGain`, f.box2f),
     ...opt(id, `InvestmentExpenses`, f.box6),
@@ -1132,6 +1135,183 @@ describe(`#86b capital gain distributions and the QDCG Tax Worksheet`, () => {
   it(`box 2a counts as unearned income for Form 8615`, () => {
     const g = build(divs({ box1a: 100, box2a: 2650 }));
     expect(val(g, `/form8615UnearnedIncome`)).toBe(`2750.00`);
+  });
+
+  it(`box 2b of $0 leaves the QDCG worksheet and Form 6251 unchanged`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/totalUnrecapturedSection1250Gain`,
+      `/scheduleDLine19`,
+      `/usesScheduleDTaxWorksheet`,
+      `/usesQdcgTaxWorksheet`,
+      `/tentativeTaxFromTaxableIncome`,
+      `/form6251Line37`,
+      `/form6251Line38`,
+    ];
+    // Same return as "box 2a above the 0% bracket is taxed at 15%": $40,000 wages and box 2a $40,000.
+    const blank = build(divs({ box1a: 0.01, box2a: 40000 }));
+    const zero = build(divs({ box1a: 0.01, box2a: 40000, box2b: 0 }));
+    const paths = [
+      `/qdcgLine1`,
+      `/qdcgLine5`,
+      `/qdcgLine9`,
+      `/qdcgLine17`,
+      `/qdcgLine18`,
+      `/qdcgLine22`,
+      `/qdcgLine25`,
+      `/usesQdcgTaxWorksheet`,
+      `/tentativeTaxFromTaxableIncome`,
+      `/form6251UsesPartIII`,
+      `/form6251Line13`,
+      `/form6251Line15`,
+      `/form6251Line20`,
+      `/form6251Line27`,
+      `/form6251Line37`,
+      `/form6251Line38`,
+      `/form6251Line40`,
+      `/scheduleDLine13`,
+      `/scheduleDLine19`,
+      `/scheduleDLine20Yes`,
+    ];
+    for (const p of paths) {
+      expect(val(zero, p), p).toBe(val(blank, p));
+      expect(get(zero, p).complete, p).toBe(get(blank, p).complete);
+    }
+    expect(val(zero, `/totalUnrecapturedSection1250Gain`)).toBe(`0.00`);
+    expect(val(blank, `/totalUnrecapturedSection1250Gain`)).toBe(`0.00`);
+    expect(get(zero, `/usesScheduleDTaxWorksheet`).get).toBe(false);
+    expect(get(blank, `/usesScheduleDTaxWorksheet`).get).toBe(false);
+    expect(val(zero, `/qdcgLine18`)).toBe(`2167.50`);
+    expect(val(zero, `/tentativeTaxFromTaxableIncome`)).toBe(val(zero, `/qdcgLine25`));
+    noKnockouts(zero);
+  });
+});
+
+// Form 1099-DIV box 2b is unrecaptured section 1250 gain already inside box 2a. 2026 draft Form 1099-DIV,
+// Instructions for Recipient, Box 2b. 2026 draft Instructions for Schedule D, Unrecaptured Section 1250 Gain
+// Worksheet line 11 and Schedule D Tax Worksheet. 26 U.S.C. 1(h)(1)(E), 1(h)(6).
+describe(`#86 box 2b unrecaptured section 1250 gain and the Schedule D Tax Worksheet`, () => {
+  it(`box 2a $10,000 and box 2b $4,000, with $250,000 of wages, taxes $4,000 at 25%`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/totalUnrecapturedSection1250Gain`,
+      `/scheduleDLine13`,
+      `/scheduleDLine19`,
+      `/scheduleDLine20No`,
+      `/usesScheduleDTaxWorksheet`,
+      `/usesQdcgTaxWorksheet`,
+      `/schDTaxWsLine40`,
+      `/schDTaxWsLine47`,
+      `/tentativeTaxFromTaxableIncome`,
+      `/form6251Line13`,
+      `/form6251Line14`,
+      `/form6251Line37`,
+    ];
+    // Single. Wages $250,000. Box 1a $0, box 2a $10,000, box 2b $4,000. Standard deduction $16,100
+    // (Rev. Proc. 2025-32 section 4.14). AGI $260,000. Taxable income $243,900.
+    // Schedule D line 13 is box 2a only. Line 19 is the worksheet result, $4,000.
+    // Schedule D Tax Worksheet line 40 is $4,000 x 25% = $1,000. Line 47 is $53,204.
+    // The QDCG worksheet would tax all $10,000 at 15% and produce $52,804. The difference is $400.
+    const g = build({ ...paW2(250000), ...divs({ box1a: 0, box2a: 10000, box2b: 4000 }) });
+    expect(val(g, `/taxableIncome`)).toBe(`243900.00`);
+    expect(get(g, `/requiresScheduleD`).get).toBe(true);
+    expect(get(g, `/capitalGainDistributionsWithoutScheduleD`).get).toBe(false);
+    expect(val(g, `/totalCapitalGainDistributions`)).toBe(`10000.00`);
+    expect(val(g, `/capitalGainsOrLosses`)).toBe(`10000.00`);
+    expect(val(g, `/scheduleDLine13`)).toBe(`10000.00`);
+    expect(val(g, `/scheduleDLine15`)).toBe(`10000.00`);
+    expect(val(g, `/scheduleDLine16`)).toBe(`10000.00`);
+    expect(get(g, `/scheduleDLine17Yes`).get).toBe(true);
+    expect(val(g, `/unrecaptured1250WsLine11`)).toBe(`4000.00`);
+    expect(val(g, `/unrecaptured1250WsLine17`)).toBe(`0.00`);
+    expect(val(g, `/unrecaptured1250WsLine18`)).toBe(`4000.00`);
+    expect(val(g, `/scheduleDLine19`)).toBe(`4000.00`);
+    expect(get(g, `/scheduleDLine20Yes`).get).toBe(false);
+    expect(get(g, `/scheduleDLine20No`).get).toBe(true);
+    expect(get(g, `/usesScheduleDTaxWorksheet`).get).toBe(true);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(false);
+    expect(val(g, `/schDTaxWsLine1`)).toBe(`243900.00`);
+    expect(val(g, `/schDTaxWsLine10`)).toBe(`10000.00`);
+    expect(val(g, `/schDTaxWsLine13`)).toBe(`6000.00`);
+    expect(val(g, `/schDTaxWsLine14`)).toBe(`237900.00`);
+    expect(val(g, `/schDTaxWsLine21`)).toBe(`233900.00`);
+    expect(val(g, `/schDTaxWsLine31`)).toBe(`900.00`);
+    expect(val(g, `/schDTaxWsLine39`)).toBe(`4000.00`);
+    expect(val(g, `/schDTaxWsLine40`)).toBe(`1000.00`);
+    expect(val(g, `/schDTaxWsLine44`)).toBe(`51304.00`);
+    expect(val(g, `/schDTaxWsLine46`)).toBe(`54504.00`);
+    expect(val(g, `/schDTaxWsLine47`)).toBe(`53204.00`);
+    expect(val(g, `/tentativeTaxFromTaxableIncome`)).toBe(`53204.00`);
+    expect(val(g, `/qdcgLine25`)).toBe(`52804.00`);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(true);
+    expect(val(g, `/form6251Line13`)).toBe(`6000.00`);
+    expect(val(g, `/form6251Line14`)).toBe(`4000.00`);
+    expect(val(g, `/form6251Line15`)).toBe(`10000.00`);
+    expect(val(g, `/form6251Line20`)).toBe(`237900.00`);
+    expect(val(g, `/form6251Line27`)).toBe(`233900.00`);
+    expect(val(g, `/form6251Line37`)).toBe(`1000.00`);
+    expect(val(g, `/form6251Line40`)).toBe(`43474.00`);
+    expect(val(g, `/amt`)).toBe(`0.00`);
+    noKnockouts(g);
+    expect(get(g, `/flowKnockoutUnrecaptured1250Gain`).get).toBe(false);
+  });
+
+  it(`a long-term carryover that absorbs box 2b leaves line 19 at $0 and uses the QDCG worksheet`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleDLine19`, `/usesScheduleDTaxWorksheet`, `/usesQdcgTaxWorksheet`];
+    // Worksheet line 16 is Schedule D line 14. Line 18 is zero, so line 19 is zero and the Schedule D Tax
+    // Worksheet is not used. Lines 15 and 16 are still gains, so the QDCG worksheet applies.
+    const g = build({
+      ...divs({ box1a: 500, box2a: 10000, box2b: 4000 }),
+      '/writableLongTermCapitalLossCarryover': createDollarWrapper(`8000`),
+    });
+    expect(val(g, `/scheduleDLine13`)).toBe(`10000.00`);
+    expect(val(g, `/scheduleDLine15`)).toBe(`2000.00`);
+    expect(val(g, `/unrecaptured1250WsLine17`)).toBe(`8000.00`);
+    expect(val(g, `/scheduleDLine19`)).toBe(`0.00`);
+    expect(get(g, `/scheduleDLine20Yes`).get).toBe(true);
+    expect(get(g, `/scheduleDLine20No`).get).toBe(false);
+    expect(get(g, `/usesScheduleDTaxWorksheet`).get).toBe(false);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(true);
+    expect(val(g, `/tentativeTaxFromTaxableIncome`)).toBe(val(g, `/qdcgLine25`));
+    noKnockouts(g);
+  });
+
+  it(`box 2b larger than box 2a stops; an equal amount does not`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/amountsInconsistent`,
+      `/flowKnockoutDividendAmountsInconsistent`,
+    ];
+    blocks(build(divs({ box1a: 100, box2a: 40, box2b: 41 })), `/flowKnockoutDividendAmountsInconsistent`);
+    blocks(build(divs({ box1a: 100, box2b: 1 })), `/flowKnockoutDividendAmountsInconsistent`);
+    const equal = build(divs({ box1a: 100, box2a: 40, box2b: 40 }));
+    expect(get(equal, `/flowKnockoutDividendAmountsInconsistent`).get).toBe(false);
+    expect(val(equal, `/scheduleDLine13`)).toBe(`40.00`);
+    expect(val(equal, `/scheduleDLine19`)).toBe(`40.00`);
+    noKnockouts(equal);
+    // The comparison uses the unrounded amounts. $10.00 is more than $9.60 even though both round to $10.
+    blocks(build(divs({ box1a: 0, box2a: 9.6, box2b: 10 })), `/flowKnockoutDividendAmountsInconsistent`);
+  });
+
+  it(`box 2b rounds to whole dollars on worksheet line 11 and still forces Schedule D`, () => {
+    const cents = build(divs({ box1a: 0, box2a: 1, box2b: 0.4 }));
+    expect(get(cents, `/requiresScheduleD`).get).toBe(true);
+    expect(val(cents, `/unrecaptured1250WsLine11`)).toBe(`0.00`);
+    expect(val(cents, `/scheduleDLine19`)).toBe(`0.00`);
+    expect(get(cents, `/usesScheduleDTaxWorksheet`).get).toBe(false);
+    const dollar = build(divs({ box1a: 0, box2a: 1, box2b: 0.6 }));
+    expect(val(dollar, `/unrecaptured1250WsLine11`)).toBe(`1.00`);
+    expect(val(dollar, `/scheduleDLine19`)).toBe(`1.00`);
+    expect(get(dollar, `/usesScheduleDTaxWorksheet`).get).toBe(true);
+    noKnockouts(dollar);
+  });
+
+  it(`box 2b does not change PA Schedule B line 10`, ({ task }) => {
+    task.meta.testedFactPaths = [`/paScheduleBLine10`, `/flowKnockoutPaDividends`];
+    const pa = build({ ...divs({ box1a: 500, box2a: 10, box2b: 4 }), ...state(`pa`) });
+    expect(val(pa, `/paScheduleBLine10`)).toBe(`10.00`);
+    expect(val(pa, `/paLine3`)).toBe(`510.00`);
+    expect(get(pa, `/flowKnockoutPaDividends`).get).toBe(false);
+    expect(get(pa, `/flowKnockoutPaDividendInvestmentExpenses`).get).toBe(false);
+    expect(get(pa, `/flowKnockoutPaScheduleB`).get).toBe(false);
+    expect(get(pa, `/flowIsKnockedOut`).get).toBe(false);
   });
 });
 

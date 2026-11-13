@@ -12,8 +12,10 @@
 # /scheduleDLine1bProceeds etc.); line 13 capital gain distributions; lines 6/14 carryover; Part III lines 16, 17, 20,
 # 21 and 22 (scheduleD2.xml). Line 5 (f1_20) is Schedule K-1 (Form 1041) box 3. Line 12 (f1_40) is box 4a.
 # Not mapped, left blank: lines 1a/8a (every sale is listed on Form 8949), 4/11 (no
-# Form 4797/6252/4684/6781/8824/2439), 18/19 and 20 No (collectibles and unrecaptured section
-# 1250 gain stop the return, #21), and the qualified opportunity fund question (no input collected).
+# Form 4797/6252/4684/6781/8824/2439), and line 18 (f2_2; section 1202 gain and collectibles still stop).
+# Line 19 (f2_3) is unrecaptured section 1250 gain from Form 1099-DIV box 2b. It has no ExportZero, so $0 prints
+# blank. Line 20 No (c2_2[1]) is checked when line 19 is more than zero. The qualified opportunity fund question
+# has no input collected.
 # Draft cites (file page = PDF page incl. cover): p. 2 line 7 "Net short-term capital gain or (loss). Combine lines 1a
 # through 6 in column (h)"; p. 2 line 15 "Net long-term capital gain or (loss). Combine lines 8a through 14 in column (h)";
 # p. 3 line 16 "Combine lines 7 and 15 and enter the result"; p. 3 line 21 "If line 16 is a loss, enter here and on
@@ -69,12 +71,14 @@ form:
       f1_42[0]: /scheduleDLine14
       f1_43[0]: /scheduleDLine15
     Page2[0]:
-      # Line 16 = f2_1; line 21 (positive) = f2_4. Lines 18/19 (f2_2/f2_3) are knocked out by #21
-      # (collectibles, unrecaptured 1250 gain, 1099-DIV boxes 2b-2d) and Form 8949 code Q (section 1202 gain).
+      # Line 16 = f2_1; line 21 (positive) = f2_4. Line 18 (f2_2) stays blank: section 1202 gain and collectibles
+      # still stop. Line 19 (f2_3) is Form 1099-DIV box 2b after the Unrecaptured Section 1250 Gain Worksheet.
       f2_1[0]: /scheduleDLine16
       c2_1[0]: /scheduleDLine17Yes # 17 "Are lines 15 and 16 both gains? Yes."
       c2_1[1]: /scheduleDLine17No # 17 "No. Skip lines 18 through 21, and go to line 22."
       c2_2[0]: /scheduleDLine20Yes # 20 "Are lines 18 and 19 both zero or blank and you are not filing Form 4952? Yes."
+      c2_2[1]: /scheduleDLine20No # 20 No. Complete the Schedule D Tax Worksheet.
+      f2_3[0]: /scheduleDLine19 # 19 unrecaptured section 1250 gain. Blank when zero.
       f2_4[0]: /scheduleDLine21
       c2_3[0]: /scheduleDLine22Yes # 22 "Do you have qualified dividends on Form 1040 ... line 3a? Yes."
       c2_3[1]: /scheduleDLine22No # 22 "No. Complete the rest of Form 1040, 1040-SR, or 1040-NR."

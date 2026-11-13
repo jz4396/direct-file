@@ -55,7 +55,8 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`),
       [`/dividendReports/#${id}/writableCapitalGainDistributions`]: createDollarWrapper(`10`),
     });
-    expect(at(g, `1099-div-box-2a`, task)).toRouteNextTo(`${path}/1099-div-boxes-2e-2f`);
+    expect(at(g, `1099-div-box-2a`, task)).toRouteNextTo(`${path}/1099-div-box-2b`);
+    expect(at(g, `1099-div-box-2b`, task)).toRouteNextTo(`${path}/1099-div-boxes-2e-2f`);
     expect(at(g, `1099-div-boxes-2e-2f`, task)).toRouteNextTo(`${path}/1099-div-box-3`);
   });
   it(`box 3 asks about basis, and above basis routes to its knockout`, ({ task }) => {

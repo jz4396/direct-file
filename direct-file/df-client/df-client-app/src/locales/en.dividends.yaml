@@ -15,6 +15,7 @@ headings:
   /heading/income/dividends/boxes-1a-1b: Enter the amounts from <strong>boxes 1a and 1b</strong>.
   /heading/income/dividends/holding-period: Are any of the qualified dividends in box 1b not actually qualified?
   /heading/income/dividends/box-2a: Enter the amount from <strong>box 2a</strong>, if any.
+  /heading/income/dividends/box-2b: Enter the amount from <strong>box 2b</strong>, if any.
   /heading/income/dividends/boxes-2e-2f: Enter the amounts from <strong>boxes 2e and 2f</strong>, if any.
   /heading/income/dividends/box-3: Enter the amount from <strong>box 3</strong>, if any.
   /heading/income/dividends/box-3-basis: Is the amount in box 3 more than your cost (basis) in the shares?
@@ -85,6 +86,12 @@ info:
           if you had to make related payments, such as for a short sale. Answer yes if any of these apply.
   /info/income/dividends/box-2a:
     body: Box 2a is total capital gain distributions from a mutual fund or real estate investment trust.
+  /info/income/dividends/box-2b:
+    body:
+      - p:
+          Box 2b is the part of box 2a that is unrecaptured section 1250 gain from depreciable real property. It is
+          already included in box 2a, so it is not added again. It cannot be more than box 2a. Leave it blank if it’s
+          empty on your form.
   /info/income/dividends/boxes-2e-2f:
     body:
       - p:
@@ -150,8 +157,8 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Answer yes if your form shows an amount in box 2b, 2c, 2d, 9, 10, 14, 15, or 16, or a country in box 8. Box
-          11 (FATCA filing requirement) is asked on its own screen. Boxes 2e, 2f, 6, 12, and 13 are entered on their
+          "Answer yes if your form shows an amount in box 2c, 2d, 9, 10, 14, 15, or 16, or a country in box 8. Box
+          11 (FATCA filing requirement) is asked on its own screen. Boxes 2b, 2e, 2f, 6, 12, and 13 are entered on their
           own screens."
   /info/income/dividends/nominee:
     body:
@@ -188,9 +195,9 @@ info:
     alertText:
       body:
         - p:
-            Boxes 1b, 2e, 5, and 6 are parts of box 1a, and box 2f is part of box 2a, so none of them can be more than
-            that box. Go back and check the amounts you entered. If they match your form, you’ll need another way to
-            file this return.
+            Boxes 1b, 2e, 5, and 6 are parts of box 1a, and boxes 2b and 2f are parts of box 2a, so none of them can be
+            more than that box. Go back and check the amounts you entered. If they match your form, you’ll need another
+            way to file this return.
   /info/knockout/dividends-foreign-tax:
     alertText:
       body:
@@ -201,7 +208,7 @@ info:
     alertText:
       body:
         - p:
-            This tool supports only boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 11, 12, and 13 of Form 1099-DIV. You’ll
+            This tool supports only boxes 1a, 1b, 2a, 2b, 2e, 2f, 3, 4, 5, 6, 7, 11, 12, and 13 of Form 1099-DIV. You’ll
             need another way to file this return.
   /info/knockout/dividends-box-13-exceeds-box-12:
     alertText:
@@ -247,6 +254,8 @@ fields:
     name: <strong>Box 1b</strong> - Qualified dividends
   /dividendReports/*/writableCapitalGainDistributions:
     name: <strong>Box 2a</strong> - Total capital gain distributions
+  /dividendReports/*/writableUnrecapturedSection1250Gain:
+    name: <strong>Box 2b</strong> - Unrecaptured section 1250 gain
   /dividendReports/*/writableSection897OrdinaryDividends:
     name: <strong>Box 2e</strong> - Section 897 ordinary dividends
   /dividendReports/*/writableSection897CapitalGain:
@@ -281,6 +290,7 @@ dataviews:
     /dividendReports/*/writableQualifiedDividends: Box 1b - Qualified dividends
     /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet: Are any box 1b dividends not qualified?
     /dividendReports/*/writableCapitalGainDistributions: Box 2a - Total capital gain distributions
+    /dividendReports/*/writableUnrecapturedSection1250Gain: Box 2b - Unrecaptured section 1250 gain
     /dividendReports/*/writableSection897OrdinaryDividends: Box 2e - Section 897 ordinary dividends
     /dividendReports/*/writableSection897CapitalGain: Box 2f - Section 897 capital gain
     /dividendReports/*/writableInvestmentExpenses: Box 6 - Investment expenses

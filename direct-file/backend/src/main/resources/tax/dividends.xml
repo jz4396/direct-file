@@ -9,10 +9,13 @@
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
       (PA handling lives in paPit.xml: per-spouse Schedule B lines 1, 5, 6, 10, and 12, /paLine3, and
       /flowKnockoutPaScheduleB).
-  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 and 13 per form.
+  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2b, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 and 13 per form.
   Box 11 (FATCA filing requirement) is not a stop by itself. A check asks income /requiredToFileForm8938
   (26 U.S.C. 6038D). Yes stops because Form 8938 is not produced. No proceeds.
-  Boxes 2e, 2f and 6 are portions already included in box 1a or box 2a. They are not added again.
+  Boxes 2b, 2e, 2f and 6 are portions already included in box 1a or box 2a. They are not added again.
+  Box 2b is unrecaptured section 1250 gain already inside box 2a. When the total is more than $0 it is
+  Unrecaptured Section 1250 Gain Worksheet line 11 (scheduleD2 /scheduleDLine19). It is not added to
+  Schedule D line 13 or Form 1040 line 7a.
   Schedule B Part II line 5 rows: 1099-DIV payers first (/dividendReports/*/payer and
     /dividendReports/*/roundedOrdinaryDividends), then Schedule K-1 (Form 1041) box 2a
     (interest /scheduleBPartIIRow* Payer and Amount). Line 6 is income /ordinaryDividends (Form 1040 line 3b),
@@ -39,7 +42,7 @@
   Box 13 specified private activity bond interest dividends are Form 6251 line 2g
   (form6251 /form6251Line2g). Box 13 cannot exceed box 12.
   Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut, and PrintRefusingKnockouts), never zeroed:
-    boxes 2b-2d, 8-10, 14-16                     -> /flowKnockoutDividendUnsupportedBoxes
+    boxes 2c, 2d, 8-10, 14-16                    -> /flowKnockoutDividendUnsupportedBoxes
     box 11 FATCA checked, Form 8938 required     -> income /scheduleBPartIIIOutOfScope
                                                    (interest /flowKnockoutScheduleBPartIII)
     box 13 larger than box 12                    -> /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12
@@ -50,10 +53,11 @@
     box 7 foreign tax not meeting 904(j)         -> /flowKnockoutDividendForeignTaxPaid
     dividends received as a nominee              -> /flowKnockoutDividendNominee
     box 1b, 2e, 5 or 6 larger than box 1a,
-      or box 2f larger than box 2a                -> /flowKnockoutDividendAmountsInconsistent
+      or box 2b or 2f larger than box 2a           -> /flowKnockoutDividendAmountsInconsistent
     nonzero box 6 on a PA-40                     -> paPit /flowKnockoutPaDividendInvestmentExpenses
-  Boxes 2e and 2f are section 897 amounts already inside box 1a and box 2a. Box 6 is already inside box 1a and is not
-  deducted (26 U.S.C. 67(g)). None of the three is added to another line.
+  Box 2b is unrecaptured section 1250 gain already inside box 2a. Boxes 2e and 2f are section 897 amounts already
+  inside box 1a and box 2a. Box 6 is already inside box 1a and is not deducted (26 U.S.C. 67(g)). None of them is
+  added to another line.
 -->
 <FactDictionaryModule>
   <Facts>
@@ -294,6 +298,54 @@
             </When>
             <Then>
               <Dependency path="../writableCapitalGainDistributions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableUnrecapturedSection1250Gain">
+      <Name>1099-DIV box 2b: unrecaptured section 1250 gain (as entered)</Name>
+      <Description>Box 2b on the 1099-DIV. Optional; left blank means $0. Use
+        /dividendReports/*/unrecapturedSection1250Gain downstream. Not added to Schedule D line 13 or Form 1040
+        line 7a: it is already in box 2a.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/unrecapturedSection1250Gain">
+      <Name>1099-DIV box 2b: unrecaptured section 1250 gain</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Box 2b. Shows the portion of the amount in box 2a that is
+        unrecaptured section 1250 gain from certain depreciable real property. See the Unrecaptured Section 1250 Gain
+        Worksheet in the Instructions for Schedule D (Form 1040)." 26 U.S.C. 1(h)(1)(E) and 1(h)(6)
+        (https://www.law.cornell.edu/uscode/text/26/1). The amount is already in box 2a
+        (/totalCapitalGainDistributions, Form 1040 line 7a or Schedule D line 13). It is not added again. The total
+        of box 2b is Unrecaptured Section 1250 Gain Worksheet line 11 (scheduleD2 /unrecaptured1250WsLine11) on the
+        supported path, which has no Form 4797, installment-sale, Schedule K-1, or Form 2439 section 1250 gain.
+        $0 when blank. Cannot exceed box 2a (/amountsInconsistent).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableUnrecapturedSection1250Gain" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableUnrecapturedSection1250Gain" />
             </Then>
           </Case>
           <Case>
@@ -732,17 +784,18 @@
 
     <Fact path="/dividendReports/*/hasUnsupportedBoxes">
       <Name>1099-DIV has an amount in an unsupported box</Name>
-      <Description>Yes if the form has an amount in box 2b, 2c, 2d, 9, 10, 14, 15 or 16, or a country in box 8. Box 11
-        (FATCA filing requirement) is /dividendReports/*/fatcaFilingRequirement and is not one of these boxes. Box 2e
-        is section 897 ordinary dividends (/dividendReports/*/section897OrdinaryDividends), box 2f is section 897
-        capital gain (/dividendReports/*/section897CapitalGain), and box 6 is investment expenses
+      <Description>Yes if the form has an amount in box 2c, 2d, 9, 10, 14, 15 or 16, or a country in box 8. Box 11
+        (FATCA filing requirement) is /dividendReports/*/fatcaFilingRequirement and is not one of these boxes. Box 2b
+        is unrecaptured section 1250 gain (/dividendReports/*/unrecapturedSection1250Gain). Box 2e is section 897
+        ordinary dividends (/dividendReports/*/section897OrdinaryDividends), box 2f is section 897 capital gain
+        (/dividendReports/*/section897CapitalGain), and box 6 is investment expenses
         (/dividendReports/*/investmentExpenses). Box 12 is exempt-interest dividends
         (/dividendReports/*/exemptInterestDividends) and box 13 is specified private activity bond interest dividends
         (/dividendReports/*/specifiedPrivateActivityBondInterestDividends). None of those is one of these boxes. Form
         1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured section 1250 gain", 2c "Section 1202
-        gain", 2d "Collectibles (28%) gain", boxes 9-10 liquidation distributions, boxes 14-16 state tax withheld.
-        Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured section 1250 gain" (supported; already
+        inside box 2a), 2c "Section 1202 gain", 2d "Collectibles (28%) gain", boxes 9-10 liquidation distributions,
+        boxes 14-16 state tax withheld. Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -1001,10 +1054,10 @@
 
     <Fact path="/dividendReports/*/amountsInconsistent">
       <Name>A 1099-DIV portion box is larger than the box it is part of</Name>
-      <Description>Box 1b, box 2e, box 5 and box 6 are each a portion of box 1a, and box 2f is a portion of box 2a
-        (Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf PDF p. 5). None of them can exceed that box. Equal to the
-        parent box is allowed.</Description>
+      <Description>Box 1b, box 2e, box 5 and box 6 are each a portion of box 1a, and box 2b and box 2f are each a
+        portion of box 2a (Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf). None of them can exceed that box. Equal to the parent box
+        is allowed.</Description>
       <Derived>
         <Any>
           <GreaterThan>
@@ -1029,6 +1082,14 @@
             </Left>
             <Right>
               <Dependency path="../ordinaryDividends" />
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency path="../unrecapturedSection1250Gain" />
+            </Left>
+            <Right>
+              <Dependency path="../capitalGainDistributions" />
             </Right>
           </GreaterThan>
           <GreaterThan>
@@ -1259,6 +1320,41 @@
       </Derived>
     </Fact>
 
+    <Fact path="/totalUnrecapturedSection1250Gain">
+      <Name>Total unrecaptured section 1250 gain (1099-DIV box 2b)</Name>
+      <Description>Sum of Form 1099-DIV box 2b. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 2b: the portion of box 2a that is unrecaptured section
+        1250 gain. 2026 draft Instructions for Schedule D, https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf, Unrecaptured
+        Section 1250 Gain Worksheet line 11: amounts reported as unrecaptured section 1250 gain on a Form 1099-DIV.
+        Already included in box 2a. Not added to Schedule D line 13 or Form 1040 line 7a. $0 when no form is entered.
+        A box 2b larger than box 2a stops at /flowKnockoutDividendAmountsInconsistent.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/dividendReports/*/unrecapturedSection1250Gain" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/totalNondividendDistributions">
       <Name>Total nondividend distributions (1099-DIV box 3)</Name>
       <Description>26 U.S.C. 301(c)(2) (https://www.law.cornell.edu/uscode/text/26/301): "That portion of the
@@ -1471,22 +1567,22 @@
 
     <Fact path="/flowKnockoutDividendUnsupportedBoxes">
       <Name>Knockout: 1099-DIV box this tool can't compute</Name>
-      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes. Boxes 2b-2d need the Schedule D Tax Worksheet or Form
-        8949/Schedule D (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1
-        requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202
-        gain), or box 2d (collectibles (28%) gain)"), boxes 9-10 are liquidation distributions (basis recovery), and
-        boxes 14-16 are state withholding. Box 8 is a foreign country. Box 11 (FATCA filing requirement) is not this
-        stop. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: the payer is reporting to satisfy its chapter 4
-        account reporting requirement. A check asks income /requiredToFileForm8938 (26 U.S.C. 6038D). Yes stops
-        because Form 8938 is not produced. No proceeds. Box 2e and box 2f are section 897 portions of box 1a and box
-        2a (26 U.S.C. 897(a)); they are not this stop and are not added again. Box 6 is included in box 1a and is not
-        deducted (26 U.S.C. 67(g)); it is not this stop. A box 2e, 2f or 6 larger than its parent box stops at
-        /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40 stops at paPit
+      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes. Boxes 2c and 2d need the 28% Rate Gain Worksheet
+        (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1 requires that
+        none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or
+        box 2d (collectibles (28%) gain)"). Box 2b is supported and is not this stop. Boxes 9-10 are liquidation
+        distributions (basis recovery), and boxes 14-16 are state withholding. Box 8 is a foreign country. Box 11
+        (FATCA filing requirement) is not this stop. Form 1099-DIV (Rev. December 2027) draft, Instructions for
+        Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: the payer is reporting to satisfy its
+        chapter 4 account reporting requirement. A check asks income /requiredToFileForm8938 (26 U.S.C. 6038D). Yes
+        stops because Form 8938 is not produced. No proceeds. Box 2b is the unrecaptured section 1250 portion of box
+        2a (26 U.S.C. 1(h)(6)); it is not this stop and is not added again. Box 2e and box 2f are section 897 portions
+        of box 1a and box 2a (26 U.S.C. 897(a)); they are not this stop and are not added again. Box 6 is included in
+        box 1a and is not deducted (26 U.S.C. 67(g)); it is not this stop. A box 2b, 2e, 2f or 6 larger than its
+        parent box stops at /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40 stops at paPit
         /flowKnockoutPaDividendInvestmentExpenses. Box 12 exempt-interest dividends are Form 1040 line 2a
         (/totalExemptInterestDividends). Box 13 specified private activity bond interest dividends are Form 6251 line
-        2g (26 U.S.C. 57(a)(5), /totalSpecifiedPrivateActivityBondInterestDividends). Neither is this stop. None of the
-        boxes in this stop is modeled.</Description>
+        2g (26 U.S.C. 57(a)(5), /totalSpecifiedPrivateActivityBondInterestDividends). Neither is this stop.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1537,11 +1633,11 @@
         1099-DIV (or substitute statements) have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section
         1202 gain), or box 2d (collectibles (28%) gain)." p. 33: "If Exception 1 applies, enter your total capital gain
         distributions (from box 2a of Form(s) 1099-DIV) on line 7a and check the box "Schedule D not required" on line
-        7b." True when box 2a is more than $0 and Schedule D isn't otherwise required (scheduleD /requiresScheduleD: no
-        Form 8949 transaction, which also covers qualified opportunity fund deferral, and no capital loss carryover).
-        Boxes 2b-2d stop the return (/flowKnockoutDividendUnsupportedBoxes) and so does a nominee
-        (/flowKnockoutDividendNominee), so condition 2 and the nominee rule always hold on a supported return. When
-        Schedule D is required, box 2a goes on Schedule D line 13 instead (scheduleD2 /scheduleDLine13).</Description>
+        7b." True when box 2a is more than $0 and Schedule D isn't otherwise required (scheduleD /requiresScheduleD).
+        An amount in box 2b makes Schedule D required, so Exception 1 does not apply and box 2a goes on Schedule D
+        line 13. Boxes 2c and 2d still stop the return (/flowKnockoutDividendUnsupportedBoxes), and so does a nominee
+        (/flowKnockoutDividendNominee). When Schedule D is required, box 2a goes on Schedule D line 13
+        (scheduleD2 /scheduleDLine13). Box 2b is not added again.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <All>
@@ -1915,12 +2011,12 @@
 
     <Fact path="/flowKnockoutDividendAmountsInconsistent">
       <Name>Knockout: a 1099-DIV portion box larger than the box it is part of</Name>
-      <Description>Box 1b, box 2e, box 5 and box 6 are each a portion of box 1a, and box 2f is a portion of box 2a
-        (Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf PDF p. 5). A larger amount means the form was entered
-        incorrectly; stop rather than compute Form 1040 lines 3a, 3b and 7a, or Schedule D line 13, from it. An amount
-        equal to the parent box does not stop. Boxes 2e, 2f and 6 at or under the parent box do not change those lines:
-        2e and 6 are already in box 1a, and 2f is already in box 2a.</Description>
+      <Description>Box 1b, box 2e, box 5 and box 6 are each a portion of box 1a, and box 2b and box 2f are each a
+        portion of box 2a (Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf). A larger amount means the form was entered incorrectly;
+        stop rather than compute Form 1040 lines 3a, 3b and 7a, or Schedule D line 13, from it. An amount equal to the
+        parent box does not stop. Boxes 2b, 2e, 2f and 6 at or under the parent box do not change those lines: 2b and
+        2f are already in box 2a, and 2e and 6 are already in box 1a.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
