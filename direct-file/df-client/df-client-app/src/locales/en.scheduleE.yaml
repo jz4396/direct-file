@@ -92,7 +92,8 @@ info:
     body: >-
       Answer yes if you are a beneficiary of an estate or trust, even if you did not receive the income. You should have
       a Schedule K-1 (Form 1041). Interest and dividends from boxes 1, 2a, and 2b can be reported. Ordinary business
-      income can be reported when you materially participated. Other rental income stops this return.
+      income can be reported when you materially participated. Other portfolio and nonbusiness income in box 5 can be
+      reported when it is not a loss. Other rental income stops this return.
   /info/income/schedule-e/estate-intro:
     body: >-
       Add one entry for each estate or trust. Use the name and the amounts from Schedule K-1 (Form 1041). If you have
@@ -116,10 +117,11 @@ info:
       line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a.
   /info/income/schedule-e/estate-boxes:
     body: >-
-      Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. Answer yes to material participation if you were involved
-      on a regular, continuous, and substantial basis. Box 6 goes in column (f) when you materially participate. Box 7
-      is net rental real estate income. An amount greater than zero goes in column (d). A loss stops this return. Box 8
-      is other rental income and stops this return.
+      Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. A nonnegative box 5 goes in column (f). A loss in box 5
+      stops this return. Answer yes to material participation if you were involved on a regular, continuous, and
+      substantial basis. Box 6 goes in column (f) when you materially participate. Box 7 is net rental real estate
+      income. An amount greater than zero goes in column (d). A loss stops this return. Box 8 is other rental income
+      and stops this return.
   /info/income/schedule-e/estate-box12:
     body: >-
       Code A is the adjustment for minimum tax purposes. It goes on Form 6251, line 2j. Enter 0 if code A is blank.

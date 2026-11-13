@@ -102,7 +102,8 @@ info:
     body: >-
       Conteste que sí si es beneficiario de un caudal hereditario o fideicomiso, aunque no haya recibido el ingreso.
       Debe tener un Anexo K-1 (Formulario 1041). Se pueden declarar los intereses y dividendos de las casillas 1, 2a y
-      2b. Se puede declarar el ingreso ordinario del negocio si usted participó de forma importante. Otro ingreso de
+      2b. Se puede declarar el ingreso ordinario del negocio si usted participó de forma importante. El otro ingreso de
+      cartera y no comercial de la casilla 5 se puede declarar si no es una pérdida. Otro ingreso de
       alquiler detiene esta declaración.
   /info/income/schedule-e/estate-intro:
     body: >-
@@ -130,7 +131,8 @@ info:
       en la línea 3b. Los dividendos calificados van en la línea 3a.
   /info/income/schedule-e/estate-boxes:
     body: >-
-      Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Conteste que sí a la participación
+      Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Una casilla 5 que no es negativa va en la
+      columna (f). Una pérdida en la casilla 5 detiene esta declaración. Conteste que sí a la participación
       importante si intervino de forma regular, continua y considerable. La casilla 6 va en la columna (f) si participó
       de forma importante. La casilla 7 es el ingreso neto de alquiler de bienes raíces. Una cantidad mayor que cero va
       en la columna (d). Una pérdida detiene esta declaración. La casilla 8 es otro ingreso de alquiler y detiene esta

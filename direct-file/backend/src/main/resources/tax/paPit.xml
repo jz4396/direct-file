@@ -808,7 +808,9 @@
       <Name>PA-40 line 7 estate or trust income</Name>
       <Description>#78: PA-40 (2025),
         https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf
-        line 7. Covered by /flowKnockoutPaUnsupportedItems, so $0. 72 P.S. §7303(a)
+        line 7. Covered by /flowKnockoutPaUnsupportedItems, so $0. A nonzero Schedule K-1 (Form 1041) box 5
+        is this estate or trust income (PA Schedule J) and is not entered here. 2026 draft Schedule K-1
+        (Form 1041), page 2, reports box 5 on federal Schedule E line 33, column (f). 72 P.S. §7303(a)
         (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/)(8).</Description>
       <Derived>
         <Dollar>0</Dollar>
@@ -1315,7 +1317,11 @@
       <Name>Flow knockout: unsupported PA-40 items</Name>
       <Description>#78: yes to /paHasUnsupportedItems. An unanswered question on a PA-40 stays incomplete, so
         PrintRefusingKnockouts refuses the PDF instead of printing lines 7, 8, 10, 14, 16, 22, 23 and 25 blank, or
-        filling the Form REV-459B oval. Line 15 is computed (/paLine15). An unanswered line 15 question keeps this
+        filling the Form REV-459B oval. A nonzero Schedule K-1 (Form 1041) box 5 is the same stop: PA-40 line 7
+        and Schedule J stay $0 rather than being silently zeroed. 2026 draft Schedule K-1 (Form 1041), page 2.
+        PA-40 IN (2025) p. 19, LINE 7, ESTATE OR TRUST INCOME. 72 P.S. §7303(a)(8)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/). Line 15 is
+        computed (/paLine15). An unanswered line 15 question keeps this
         fact incomplete so the PDF is not printed with line 15 blank. A non-PA return is complete and false.</Description>
       <Export downstreamFacts="true" />
       <BlockSubmissionOnTrue />
@@ -1346,6 +1352,26 @@
           <Case>
             <When>
               <Dependency path="/paHasUnsupportedItems" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEEstateK1Box5Nonzero" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleEEstateK1Box5Nonzero" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEEstateK1Box5Nonzero" />
             </When>
             <Then>
               <True />

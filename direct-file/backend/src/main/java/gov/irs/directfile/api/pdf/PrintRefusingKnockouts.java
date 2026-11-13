@@ -171,8 +171,10 @@ public final class PrintRefusingKnockouts {
             // Schedule E, PDF p. 4, line 41 combines line 32 into Schedule 1 line 5 (26 U.S.C. 702(a), 1366(a)).
             // The supported path (domestic partnership or S corporation, nonnegative box 1 only, material
             // participation, no column (e) or (f), line 27 no) is complete false and may print. Supported
-            // Part III column (f) (nonpassive Schedule K-1 (Form 1041) box 6 only) may print on the same
-            // path. Boxes 3 and 4a are Schedule D lines 5 and 12 and do not refuse this path. Boxes 4b and 4c
+            // Part III column (f) (nonnegative Schedule K-1 (Form 1041) box 5, plus nonpassive box 6) may
+            // print on the same path. Box 5 is net investment income on Form 8960. Box 6 is not. 26 U.S.C.
+            // 469(e)(1)(A); 26 U.S.C. 1411(c)(1)(A); 26 U.S.C. 1411(c)(2). A negative box 5 refuses the print.
+            // Boxes 3 and 4a are Schedule D lines 5 and 12 and do not refuse this path. Boxes 4b and 4c
             // still refuse it. Nonnegative box 7 is column (d) and may print. A negative box 7 and a
             // prior-year unallowed passive loss refuse the print (2025 Instructions for Form 8582, PDF p. 1,
             // Who Must File). Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental

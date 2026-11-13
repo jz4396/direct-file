@@ -544,6 +544,64 @@ class ScheduleBAndETy2026PdfSmokeTest {
         return syntheticFiler(m);
     }
 
+    /**
+     * Florida single filer, no Schedule E Part I. Schedule K-1 (Form 1041) box 5 of $1,000 is line 33 column (f),
+     * line 37, Schedule 1 line 5, and Form 8960 line 4a. Box 5 of $1,000 plus material-participation box 6 of $5,000
+     * is column (f) $6,000 and Schedule 1 line 5 $6,000, and Form 8960 line 4a stays $1,000. 2026 draft Schedule K-1
+     * (Form 1041), page 2. 26 U.S.C. 469(e)(1)(A); 26 U.S.C. 1411(c)(1)(A); 26 U.S.C. 1411(c)(2). A negative box 5
+     * refuses the print. A PA-40 with nonzero box 5 refuses the print through /flowKnockoutPaUnsupportedItems, and
+     * PA-40 line 7 stays $0. 72 P.S. §7303(a)(8).
+     */
+    @Test
+    void scheduleEPartIIIBox5PrintsColumnFAndForm8960Line4a() throws Exception {
+        byte[] alone = generate(floridaEstate("1000.00", "0.00"));
+        try (PDDocument doc = Loader.loadPDF(alone)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            blank(se, "f2_56[0]", "line 33A column (d)");
+            amount(se, "f2_58[0]", 1000, "line 33A column (f)");
+            amount(se, "f2_66[0]", 1000, "line 34a column (f)");
+            amount(se, "f2_71[0]", 1000, "line 35");
+            amount(se, "f2_73[0]", 1000, "line 37");
+            amount(se, "f3_4[0]", 1000, "line 41");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "f1_09[0]", 1000, "Schedule 1 line 5");
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            amount(f8960, "f1_6[0]", 1000, "Form 8960 line 4a");
+        }
+
+        byte[] both = generate(floridaEstate("1000.00", "5000.00"));
+        try (PDDocument doc = Loader.loadPDF(both)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            amount(se, "f2_58[0]", 6000, "line 33A column (f) is box 5 plus box 6");
+            amount(se, "f2_73[0]", 6000, "line 37");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "f1_09[0]", 6000, "Schedule 1 line 5");
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            amount(f8960, "f1_6[0]", 1000, "Form 8960 line 4a includes box 5 only");
+        }
+
+        refuses(floridaEstate("-1.00", "0.00"), SCHEDULE_E_PART_II_KNOCKOUT);
+
+        Map<String, String> pa = floridaEstate("1000.00", "0.00");
+        pa.put("/filerResidenceAndIncomeState", enumValue("pa", "/scopedStateOptions"));
+        pa.put("/paHasUnsupportedItems", bool(false));
+        pa.put("/paHasEstimatedInstallmentPayments", bool(false));
+        SubmissionBlockingFactsResponseStatusException e =
+                assertThrows(SubmissionBlockingFactsResponseStatusException.class, () -> generatePublicPrint(pa));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(
+                e.getBody().getProperties().get("blockingFacts").toString().contains("/flowKnockoutPaUnsupportedItems"),
+                e.getBody().toString());
+    }
+
+    /** Box 5 and box 6 on the Florida wages scenario used for Form 8960. Box 7 stays zero. */
+    static Map<String, String> floridaEstate(String box5, String box6) {
+        Map<String, String> m = floridaBox7("0.00");
+        m.put("/scheduleEEstates/#" + ESTATE + "/box5", dollar(box5));
+        m.put("/scheduleEEstates/#" + ESTATE + "/box6", dollar(box6));
+        return m;
+    }
+
     @Test
     void scheduleBPrintsLine7aYesWithQuestion2AndCountries() throws Exception {
         Map<String, String> fbarYes = partI();
