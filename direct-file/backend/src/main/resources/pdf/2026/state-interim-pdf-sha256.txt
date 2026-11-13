@@ -1,7 +1,8 @@
 # SHA-256 of state forms committed under pdf/2026 as interim templates for tax year 2026, as downloaded from the
 # publishing state's site. The 2026 PA-40 and Schedule SP are not published yet, so the 2025 forms stand in and each
 # of those files keeps its year in its name. PA-40 C (EX) 03-26 is the published schedule and has no year in its file
-# name. Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the
+# name. The 2026 Illinois vendor IL-1040 is not fillable, so the 2025 IL-1040 and Schedule IL-WIT stand in; IDOR
+# publishes those at currentyear URLs that do not repeat the year. Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the
 # committed files by StateInterimPdfHashManifestTest. When the 2026 form is published (#124), download it, hash it,
 # re-verify the field map in that template's configuration.yml, and replace the row.
 # #124 swap: then run Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true; it fails on any mapped field
@@ -10,3 +11,5 @@ c6d8f5cdd63045e1e40b6deeced2c80b23006b7700befe3b8f0c430f2b40a0d4  PA40B/en/2025_
 520555065fec4b85f757fa5cd2f3564c507464954553e376d1922bc7a75b8098  PA40C/en/pa-40c.pdf  https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/pa-40c.pdf
 fcd7648601f3ce5a7a258be49c54aa1c604e1c61c1fe9175351451ac6087d8b3  PA40/en/2025_pa-40.pdf  https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40.pdf
 cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b  PA40SP/en/2025_pa-40sp.pdf  https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40sp.pdf
+7af662f99b31f6aa0d00df5ae93c2a50c4c15e01a0c1dcf5f722fc0bde0799cd  IL1040/en/2025_il-1040.pdf  https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040.pdf
+4fd926e767d546d54047888f7064bc169641db485e830c6e730263e946248190  ILWIT/en/2025_il-1040-schedule-il-wit.pdf  https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-schedule-il-wit.pdf

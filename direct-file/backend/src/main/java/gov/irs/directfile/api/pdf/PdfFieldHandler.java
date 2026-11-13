@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 public class PdfFieldHandler {
@@ -47,6 +48,16 @@ public class PdfFieldHandler {
                 p.setValue(exportValue);
             } else {
                 throw new PdfCreationException("Non-boolean field applied to boolean value");
+            }
+        } else if (field instanceof PDRadioButton radio) {
+            if (factGraphValue instanceof String exportValue) {
+                if (!radio.getOnValues().contains(exportValue)) {
+                    throw new PdfCreationException(
+                            "Export value " + exportValue + " not on radio " + radio.getFullyQualifiedName());
+                }
+                radio.setValue(exportValue);
+            } else {
+                throw new PdfCreationException("Radio button needs an export value");
             }
         } else if (field instanceof PDTextField) {
             try {

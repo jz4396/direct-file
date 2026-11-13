@@ -8,6 +8,7 @@
       - /stateTaxLiability, /stateTaxWithheld, /stateRefund, /stateAmountOwed: Switch per state onto that state's module.
       - /flowKnockoutStateReturn: Any of All(/stateReturnIs{XX}, that state's knockouts); BlockSubmissionOnTrue, in /flowIsKnockedOut.
       A no-income-tax state (FL, #103; TX, NV, SD, WY, AK, WA, TN, and NH, #93) has only /stateReturnIs{Xx}; it adds nothing to the Switches or /stateReturnComputed.
+      Illinois (#93 slice 3) is a computed return: /livedInIl and /stateReturnIsIl feed /stateReturnComputed and these Switches the way Pennsylvania does. There is no local Illinois return.
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
@@ -27,6 +28,21 @@
               <Enum optionsPath="/scopedStateOptions">pa</Enum>
             </Right>
           </Equal>
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsIl">
+      <Name>State return: Illinois</Name>
+      <Description>#93 slice 3: the filer chose Illinois as the one state they lived in and earned income in.
+        filers /livedInIl. Full-year W-2 wages are ilPit. Part-year, nonresident, and the other stops are
+        BlockSubmissionOnTrue facts on that module. No local return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+          </IsComplete>
+          <Dependency module="filers" path="/livedInIl" />
         </All>
       </Derived>
     </Fact>
@@ -220,12 +236,13 @@
       <Derived>
         <Any>
           <Dependency path="/stateReturnPaFiled" />
+          <Dependency path="/stateReturnIsIl" />
         </Any>
       </Derived>
     </Fact>
     <Fact path="/stateTaxLiability">
       <Name>stateTaxLiability</Name>
-      <Description>#78 state framework: State tax liability (PA-40 line 12). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax liability (PA-40 line 12, or IL-1040 line 12). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -237,12 +254,20 @@
               <Dependency module="paPit" path="/paLine12" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsIl" />
+            </When>
+            <Then>
+              <Dependency module="ilPit" path="/ilLine12" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateTaxWithheld">
       <Name>stateTaxWithheld</Name>
-      <Description>#78 state framework: State tax withheld (PA-40 line 13). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax withheld (PA-40 line 13, or IL-1040 line 25). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -254,12 +279,20 @@
               <Dependency module="paPit" path="/paLine13" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsIl" />
+            </When>
+            <Then>
+              <Dependency module="ilPit" path="/ilLine25" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateRefund">
       <Name>stateRefund</Name>
-      <Description>#78 state framework: State overpayment (PA-40 line 29). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State overpayment (PA-40 line 29, or IL-1040 line 38). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -271,12 +304,20 @@
               <Dependency module="paPit" path="/paLine29" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsIl" />
+            </When>
+            <Then>
+              <Dependency module="ilPit" path="/ilLine38" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateAmountOwed">
       <Name>stateAmountOwed</Name>
-      <Description>#78 state framework: State tax due (PA-40 line 26). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax due (PA-40 line 26, or IL-1040 line 41). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -286,6 +327,14 @@
             </When>
             <Then>
               <Dependency module="paPit" path="/paLine26" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsIl" />
+            </When>
+            <Then>
+              <Dependency module="ilPit" path="/ilLine41" />
             </Then>
           </Case>
         </Switch>
@@ -316,6 +365,27 @@
               <Dependency module="paPit" path="/flowKnockoutPaK11041CapitalGain" />
               <Dependency module="paPit" path="/flowKnockoutPaK11041Box7" />
               <Dependency module="paPit" path="/flowKnockoutPaNonresidentPaSourcePay" />
+            </Any>
+          </All>
+          <All>
+            <Dependency path="/stateReturnIsIl" />
+            <Any>
+              <Dependency module="ilPit" path="/flowKnockoutIlPartYearOrNonresident" />
+              <Dependency module="ilPit" path="/flowKnockoutIlLivedInMoreThanOneState" />
+              <Dependency module="ilPit" path="/flowKnockoutIlW2NotIllinois" />
+              <Dependency module="ilPit" path="/flowKnockoutIlOtherFederalIncome" />
+              <Dependency module="ilPit" path="/flowKnockoutIlScheduleM" />
+              <Dependency module="ilPit" path="/flowKnockoutIlDependentsOrEitc" />
+              <Dependency module="ilPit" path="/flowKnockoutIlNonrefundableCredits" />
+              <Dependency module="ilPit" path="/flowKnockoutIlHouseholdEmployment" />
+              <Dependency module="ilPit" path="/flowKnockoutIlUseTax" />
+              <Dependency module="ilPit" path="/flowKnockoutIlCannabisGamingSurcharge" />
+              <Dependency module="ilPit" path="/flowKnockoutIlPassThrough" />
+              <Dependency module="ilPit" path="/flowKnockoutIlEstimatedPayments" />
+              <Dependency module="ilPit" path="/flowKnockoutIl2210" />
+              <Dependency module="ilPit" path="/flowKnockoutIlScheduleG" />
+              <Dependency module="ilPit" path="/flowKnockoutIlClaimedAsDependent" />
+              <Dependency module="ilPit" path="/flowKnockoutIlWitTooManyRows" />
             </Any>
           </All>
         </Any>

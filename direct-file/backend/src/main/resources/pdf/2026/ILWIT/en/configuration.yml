@@ -1,0 +1,83 @@
+# #93 slice 3: Schedule IL-WIT. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# Source: https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-schedule-il-wit.pdf
+# SHA-256 4fd926e767d546d54047888f7064bc169641db485e830c6e730263e946248190
+# Included when /stateReturnIsIl. Rows 1-5 are the primary filer's W-2s; rows 6-10 are the spouse's.
+# Column A is W. Column D is box 16 (0 when blank). The total is IL-1040 Line 25.
+# More than five W-2s for one person is /flowKnockoutIlWitTooManyRows.
+includeWhen: /stateReturnIsIl
+otherRequiredFacts:
+  - /isMarried
+  - /formW2s
+  - /formW2s/*/filer
+  - /formW2s/*/ein
+  - /formW2s/*/wages
+  - /formW2s/*/stateWages
+  - /formW2s/*/stateWithholding
+  - /primaryFiler
+  - /primaryFiler/firstName
+  - /primaryFiler/lastName
+  - /primaryFiler/tin
+  - /secondaryFiler/firstName
+  - /secondaryFiler/lastName
+  - /secondaryFiler/tin
+  - /ilLine25
+form:
+  "Your name": ~ilwitYourName
+  "Your SSN-3": ~ilwitYourSsn3
+  "Your SSN-2": ~ilwitYourSsn2
+  "Your SSN-4": ~ilwitYourSsn4
+  "Spouse's name": ~ilwitSpouseName
+  "Spouse's SSN-3": ~ilwitSpouseSsn3
+  "Spouse's SSN-2": ~ilwitSpouseSsn2
+  "Spouse's SSN-4": ~ilwitSpouseSsn4
+  "Form type - 1": ~ilwitType1
+  "EIN - 1": ~ilwitEin1
+  "Federal wages - 1": ~ilwitFederal1
+  "Illinois wages - 1": ~ilwitStateWages1
+  "Illinois withheld - 1": ~ilwitWithheld1
+  "Form type - 2": ~ilwitType2
+  "EIN - 2": ~ilwitEin2
+  "Federal wages - 2": ~ilwitFederal2
+  "Illinois wages - 2": ~ilwitStateWages2
+  "Illinois withheld - 2": ~ilwitWithheld2
+  "Form type - 3": ~ilwitType3
+  "EIN - 3": ~ilwitEin3
+  "Federal wages - 3": ~ilwitFederal3
+  "Illinois wages - 3": ~ilwitStateWages3
+  "Illinois withheld - 3": ~ilwitWithheld3
+  "Form type - 4": ~ilwitType4
+  "EIN - 4": ~ilwitEin4
+  "Federal wages - 4": ~ilwitFederal4
+  "Illinois wages - 4": ~ilwitStateWages4
+  "Illinois withheld - 4": ~ilwitWithheld4
+  "Form type - 5": ~ilwitType5
+  "EIN - 5": ~ilwitEin5
+  "Federal wages - 5": ~ilwitFederal5
+  "Illinois wages - 5": ~ilwitStateWages5
+  "Illinois withheld - 5": ~ilwitWithheld5
+  "Form type - 6": ~ilwitType6
+  "EIN - 6": ~ilwitEin6
+  "Federal wages - 6": ~ilwitFederal6
+  "Illinois wages - 6": ~ilwitStateWages6
+  "Illinois withheld - 6": ~ilwitWithheld6
+  "Form type - 7": ~ilwitType7
+  "EIN - 7": ~ilwitEin7
+  "Federal wages - 7": ~ilwitFederal7
+  "Illinois wages - 7": ~ilwitStateWages7
+  "Illinois withheld - 7": ~ilwitWithheld7
+  "Form type - 8": ~ilwitType8
+  "EIN - 8": ~ilwitEin8
+  "Federal wages - 8": ~ilwitFederal8
+  "Illinois wages - 8": ~ilwitStateWages8
+  "Illinois withheld - 8": ~ilwitWithheld8
+  "Form type - 9": ~ilwitType9
+  "EIN - 9": ~ilwitEin9
+  "Federal wages - 9": ~ilwitFederal9
+  "Illinois wages - 9": ~ilwitStateWages9
+  "Illinois withheld - 9": ~ilwitWithheld9
+  "Form type - 10": ~ilwitType10
+  "EIN - 10": ~ilwitEin10
+  "Federal wages - 10": ~ilwitFederal10
+  "Illinois wages - 10": ~ilwitStateWages10
+  "Illinois withheld - 10": ~ilwitWithheld10
+  "Total amount": /ilLine25

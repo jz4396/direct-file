@@ -47,6 +47,8 @@ import printCompletenessEn from './en.printCompleteness.yaml';
 import printCompletenessEs from './es.printCompleteness.yaml';
 import noIncomeTaxStatesEn from './en.noIncomeTaxStates.yaml';
 import noIncomeTaxStatesEs from './es.noIncomeTaxStates.yaml';
+import ilPitEn from './en.ilPit.yaml';
+import ilPitEs from './es.ilPit.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -135,6 +137,8 @@ for (const [locale, overlay] of [
   [esLocale, printCompletenessEs],
   [enLocale, noIncomeTaxStatesEn],
   [esLocale, noIncomeTaxStatesEs],
+  [enLocale, ilPitEn],
+  [esLocale, ilPitEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }

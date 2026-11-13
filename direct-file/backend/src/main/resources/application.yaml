@@ -488,6 +488,22 @@ direct-file:
         configuration-location: pdf/2026/PA40SP/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: IL1040
+        year: 2026
+        language-code: en
+        location: pdf/2026/IL1040/en/2025_il-1040.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/IL1040/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
+      - name: ILWIT
+        year: 2026
+        language-code: en
+        location: pdf/2026/ILWIT/en/2025_il-1040-schedule-il-wit.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/ILWIT/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: DF1099R
         year: 2026
         language-code: es

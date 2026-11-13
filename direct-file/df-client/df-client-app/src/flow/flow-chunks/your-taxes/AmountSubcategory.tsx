@@ -4,6 +4,7 @@ import {
   BigContent,
   Boolean,
   DFAlert,
+  Enum,
   Dollar,
   ContextHeading,
   DFModal,
@@ -206,6 +207,165 @@ export const AmountSubcategory = (
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-sp-unsupported' />
         <DFAlert i18nKey='/info/knockout/pa-sp-unsupported' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
+    {/* #93 slice 3: full-year Illinois resident, W-2 wages only. No local return. */}
+    <SubSubcategory route='il-1040'>
+      <Screen route='il-residency' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-residency' />
+        <Enum path='/ilResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-part-year-knockout' condition='/flowKnockoutIlPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-part-year' />
+        <DFAlert i18nKey='/info/knockout/il-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-more-than-one-knockout' condition='/flowKnockoutIlLivedInMoreThanOneState' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-more-than-one-state' />
+        <DFAlert i18nKey='/info/knockout/il-more-than-one-state' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-w2-knockout' condition='/flowKnockoutIlW2NotIllinois' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-w2-not-illinois' />
+        <DFAlert i18nKey='/info/knockout/il-w2-not-illinois' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-other-income-knockout' condition='/flowKnockoutIlOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-other-income' />
+        <DFAlert i18nKey='/info/knockout/il-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-schedule-m' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-schedule-m' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-schedule-m' />
+        <Boolean path='/ilHasScheduleM' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-schedule-m-knockout' condition='/flowKnockoutIlScheduleM' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-schedule-m' />
+        <DFAlert i18nKey='/info/knockout/il-schedule-m' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-eitc' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-eitc' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-eitc' />
+        <Boolean path='/ilClaimsIlEitcOrCtc' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-dependents-knockout' condition='/flowKnockoutIlDependentsOrEitc' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-dependents' />
+        <DFAlert i18nKey='/info/knockout/il-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-credits' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-credits' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-credits' />
+        <Boolean path='/ilHasNonrefundableCredits' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-credits-knockout' condition='/flowKnockoutIlNonrefundableCredits' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-credits' />
+        <DFAlert i18nKey='/info/knockout/il-credits' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-household-knockout' condition='/flowKnockoutIlHouseholdEmployment' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-household' />
+        <DFAlert i18nKey='/info/knockout/il-household' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-use-tax' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-use-tax' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-use-tax' />
+        <Boolean path='/ilHasUseTax' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-use-tax-knockout' condition='/flowKnockoutIlUseTax' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-use-tax' />
+        <DFAlert i18nKey='/info/knockout/il-use-tax' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-surcharge' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-surcharge' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-surcharge' />
+        <Boolean path='/ilHasCannabisOrGamingSurcharge' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-surcharge-knockout' condition='/flowKnockoutIlCannabisGamingSurcharge' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-surcharge' />
+        <DFAlert i18nKey='/info/knockout/il-surcharge' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-pass-through' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-pass-through' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-pass-through' />
+        <Boolean path='/ilHasPassThroughWithholdingOrCredit' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-pass-through-knockout' condition='/flowKnockoutIlPassThrough' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-pass-through' />
+        <DFAlert i18nKey='/info/knockout/il-pass-through' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-estimates' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-estimates' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-estimates' />
+        <Boolean path='/ilHasEstimatedOrPriorYearCredit' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-estimates-knockout' condition='/flowKnockoutIlEstimatedPayments' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-estimates' />
+        <DFAlert i18nKey='/info/knockout/il-estimates' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-2210' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-2210' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-2210' />
+        <Boolean path='/ilNeedsForm2210' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-2210-knockout' condition='/flowKnockoutIl2210' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-2210' />
+        <DFAlert i18nKey='/info/knockout/il-2210' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-schedule-g' condition='/stateReturnIsIl'>
+        <Heading i18nKey='/heading/your-taxes/amount/il-schedule-g' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/il-schedule-g' />
+        <Boolean path='/ilHasScheduleGDonation' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='il-schedule-g-knockout' condition='/flowKnockoutIlScheduleG' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-schedule-g' />
+        <DFAlert i18nKey='/info/knockout/il-schedule-g' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-dependent-filer-knockout' condition='/flowKnockoutIlClaimedAsDependent' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-claimed-as-dependent' />
+        <DFAlert i18nKey='/info/knockout/il-claimed-as-dependent' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='il-wit-rows-knockout' condition='/flowKnockoutIlWitTooManyRows' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/il-wit-rows' />
+        <DFAlert i18nKey='/info/knockout/il-wit-rows' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>

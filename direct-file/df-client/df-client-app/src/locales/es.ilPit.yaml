@@ -1,0 +1,145 @@
+# Cadenas de Illinois IL-1040 (#93, parte 3).
+subsubcategories:
+  /flow/your-taxes/amount:
+    il-1040: Declaración de Illinois
+dataviews:
+  /flow/your-taxes/amount:
+    /ilResidencyStatus: Dónde vivió para su declaración de Illinois
+    /ilHasScheduleM: Sumas o restas del Anexo M de Illinois
+    /ilClaimsIlEitcOrCtc: Crédito por ingreso del trabajo o crédito tributario por hijos de Illinois
+    /ilHasNonrefundableCredits: Anexo ICR, 1299-C, CR o 4255 de Illinois
+    /ilHasUseTax: Impuesto de uso de Illinois
+    /ilHasCannabisOrGamingSurcharge: Recargo de cannabis o de juegos de Illinois
+    /ilHasPassThroughWithholdingOrCredit: Retención o crédito de entidades de traspaso de Illinois
+    /ilHasEstimatedOrPriorYearCredit: Pagos estimados o crédito del año anterior de Illinois
+    /ilNeedsForm2210: Formulario IL-2210
+    /ilHasScheduleGDonation: Donación del Anexo G de Illinois
+    enums:
+      /ilResidencyOptions:
+        fullYear: Viví en Illinois todo el año
+        partYear: Viví en Illinois parte del año
+        nonresident: No viví en Illinois
+        moreThanOne: Viví en más de un estado
+headings:
+  /heading/your-taxes/amount/il-residency: ¿Cuál de estas opciones describe su declaración de Illinois?
+  /heading/your-taxes/amount/il-schedule-m: ¿Tiene sumas o restas de Illinois del Anexo M?
+  /heading/your-taxes/amount/il-eitc:
+    ¿Va a reclamar un crédito por ingreso del trabajo o un crédito tributario por hijos de Illinois?
+  /heading/your-taxes/amount/il-credits:
+    ¿Tiene un crédito de Illinois del Anexo ICR, el Anexo 1299-C, el Anexo CR o el Anexo 4255?
+  /heading/your-taxes/amount/il-use-tax: ¿Debe el impuesto de uso de Illinois?
+  /heading/your-taxes/amount/il-surcharge: ¿Debe un recargo de cannabis o de juegos de Illinois?
+  /heading/your-taxes/amount/il-pass-through:
+    ¿Tiene retención de entidades de traspaso o un crédito del impuesto de entidades de traspaso de Illinois?
+  /heading/your-taxes/amount/il-estimates:
+    ¿Hizo pagos estimados de Illinois o tiene un crédito de su declaración de Illinois del año pasado?
+  /heading/your-taxes/amount/il-2210: ¿Necesita presentar el Formulario IL-2210?
+  /heading/your-taxes/amount/il-schedule-g: ¿Quiere donar en el Anexo G de Illinois?
+  /heading/knockout/il-part-year:
+    Esta herramienta todavía no admite una declaración de Illinois de residente de parte del año o de no residente
+  /heading/knockout/il-more-than-one-state:
+    Esta herramienta todavía no admite una declaración de Illinois si vivió en más de un estado
+  /heading/knockout/il-w2-not-illinois: Esta herramienta todavía no admite un W-2 cuyo recuadro 15 no sea Illinois
+  /heading/knockout/il-other-income:
+    Esta herramienta todavía no admite declaraciones de Illinois con ingresos que no sean salarios del W-2
+  /heading/knockout/il-schedule-m: Esta herramienta todavía no admite el Anexo M de Illinois
+  /heading/knockout/il-dependents:
+    Esta herramienta todavía no admite dependientes ni el crédito por ingreso del trabajo o por hijos de Illinois
+  /heading/knockout/il-credits: Esta herramienta todavía no admite estos créditos de Illinois
+  /heading/knockout/il-household:
+    Esta herramienta todavía no admite el impuesto por empleo doméstico en una declaración de Illinois
+  /heading/knockout/il-use-tax: Esta herramienta todavía no admite el impuesto de uso de Illinois
+  /heading/knockout/il-surcharge: Esta herramienta todavía no admite un recargo de cannabis o de juegos de Illinois
+  /heading/knockout/il-pass-through:
+    Esta herramienta todavía no admite la retención de entidades de traspaso ni el crédito del impuesto de entidades de
+    traspaso de Illinois
+  /heading/knockout/il-estimates:
+    Esta herramienta todavía no admite pagos estimados de Illinois ni un crédito del año anterior
+  /heading/knockout/il-2210: Esta herramienta todavía no admite el Formulario IL-2210
+  /heading/knockout/il-schedule-g: Esta herramienta todavía no admite el Anexo G de Illinois
+  /heading/knockout/il-claimed-as-dependent:
+    Esta herramienta todavía no admite una declaración de Illinois de alguien a quien pueden reclamar como dependiente
+  /heading/knockout/il-wit-rows: Esta herramienta todavía no admite más de cinco W-2 de Illinois para una persona
+info:
+  /info/your-taxes/amount/il-residency:
+    body:
+      Un residente de Illinois de todo el año que solo tiene salarios de un W-2 es la declaración que esta herramienta
+      puede preparar. Las declaraciones de parte del año y de no residentes usan el Anexo NR.
+  /info/your-taxes/amount/il-schedule-m:
+    body: El Anexo M es para sumas y restas que no están en esta declaración de solo salarios.
+  /info/your-taxes/amount/il-eitc:
+    body: El crédito por ingreso del trabajo y el crédito tributario por hijos de Illinois están en el Anexo IL-E/EITC.
+  /info/your-taxes/amount/il-credits:
+    body:
+      Estos son el crédito por impuesto sobre la propiedad, los créditos del Anexo 1299-C, el impuesto pagado a otro
+      estado y la recuperación de créditos.
+  /info/your-taxes/amount/il-use-tax:
+    body: La línea 21 es el impuesto de uso. Si no debe nada, esta declaración anota cero.
+  /info/your-taxes/amount/il-surcharge:
+    body: La línea 22 corresponde a los recargos de las leyes de cannabis y de juegos.
+  /info/your-taxes/amount/il-pass-through:
+    body:
+      Las líneas 27 y 28 son la retención de entidades de traspaso y el crédito del impuesto de entidades de traspaso.
+  /info/your-taxes/amount/il-estimates:
+    body:
+      Esto es el impuesto estimado de Illinois, o un crédito trasladado de la declaración de Illinois del año pasado. No
+      es un pago estimado federal.
+  /info/your-taxes/amount/il-2210:
+    body: El Formulario IL-2210 es la multa por pago insuficiente del impuesto estimado.
+  /info/your-taxes/amount/il-schedule-g:
+    body: El Anexo G es una donación voluntaria de su reembolso o junto con su pago.
+  /info/knockout/il-part-year:
+    alertText: Las declaraciones de Illinois de residente de parte del año y de no residente todavía no están admitidas
+    body: Esas declaraciones usan el Anexo NR, que esta herramienta no calcula.
+  /info/knockout/il-more-than-one-state:
+    alertText: Vivir en más de un estado no está admitido en esta declaración de Illinois
+    body: Esta herramienta solo prepara la declaración de un residente de Illinois de todo el año.
+  /info/knockout/il-w2-not-illinois:
+    alertText: Todos los W-2 de esta declaración tienen que mostrar Illinois en el recuadro 15
+    body: Los salarios de otro estado, incluidos Iowa, Kentucky, Michigan y Wisconsin, no están admitidos.
+  /info/knockout/il-other-income:
+    alertText: Esta declaración de Illinois solo puede incluir salarios de un W-2
+    body:
+      Los intereses, la jubilación, el Seguro Social, el negocio, el alquiler y otros ingresos federales no están
+      admitidos.
+  /info/knockout/il-schedule-m:
+    alertText: El Anexo M todavía no está admitido
+    body: Las sumas y restas del Anexo M no se calculan.
+  /info/knockout/il-dependents:
+    alertText:
+      Los dependientes y los créditos por ingreso del trabajo y por hijos de Illinois todavía no están admitidos
+    body: El Anexo IL-E/EITC no se calcula.
+  /info/knockout/il-credits:
+    alertText: Estos créditos de Illinois todavía no están admitidos
+    body: Los Anexos ICR, 1299-C, CR y 4255 no se calculan.
+  /info/knockout/il-household:
+    alertText: El impuesto por empleo doméstico no está admitido en una declaración de Illinois
+    body: La línea 20 no se calcula.
+  /info/knockout/il-use-tax:
+    alertText: El impuesto de uso de Illinois todavía no está admitido
+    body:
+      La hoja de trabajo del impuesto de uso no se calcula. Una declaración sin impuesto de uso anota cero en la línea
+      21.
+  /info/knockout/il-surcharge:
+    alertText: Este recargo todavía no está admitido
+    body: La línea 22 no se calcula.
+  /info/knockout/il-pass-through:
+    alertText:
+      La retención de entidades de traspaso y el crédito del impuesto de entidades de traspaso todavía no están
+      admitidos
+    body: Las líneas 27 y 28 no se calculan.
+  /info/knockout/il-estimates:
+    alertText: Los pagos estimados de Illinois y los créditos del año anterior todavía no están admitidos
+    body: La línea 26 no se calcula.
+  /info/knockout/il-2210:
+    alertText: El Formulario IL-2210 todavía no está admitido
+    body: La multa por pago insuficiente no se calcula.
+  /info/knockout/il-schedule-g:
+    alertText: El Anexo G todavía no está admitido
+    body: Las donaciones en la declaración de Illinois no se calculan.
+  /info/knockout/il-claimed-as-dependent:
+    alertText: Una declaración de Illinois de alguien a quien pueden reclamar como dependiente todavía no está admitida
+    body: La exención reducida para esa persona no se calcula.
+  /info/knockout/il-wit-rows:
+    alertText: El Anexo IL-WIT tiene cinco filas para usted y cinco para su cónyuge
+    body: Una declaración con más W-2 que eso todavía no está admitida.

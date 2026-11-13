@@ -2656,6 +2656,25 @@
       </Derived>
     </Fact>
 
+    <Fact path="/livedInIl">
+      <Name>Lived in Illinois</Name>
+      <Description>#93 slice 3: /filerResidenceAndIncomeState is Illinois. 35 ILCS 5/201 imposes the individual
+        income tax at one rate (Ill. Const. art. IX, § 3(a)). There is no local individual income tax. Wired into
+        stateReturn /stateReturnIsIl, /stateReturnComputed, and the state Switches the way a computed return is
+        wired, not as a no-tax state.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">il</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
     <Fact path="/livedInHi">
       <Description>Lived in Hawaii</Description>
       <Export downstreamFacts="true" />
