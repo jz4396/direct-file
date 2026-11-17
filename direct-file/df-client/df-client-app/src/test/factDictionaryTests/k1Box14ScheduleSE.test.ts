@@ -66,6 +66,11 @@ const k1 = (id: string, box14: string, extra: Record<string, unknown> = {}) => (
   [`/scheduleEK1s/#${id}/form1120sBox5b`]: createDollarWrapper(`0`),
   [`/scheduleEK1s/#${id}/dividendIncludesPtep`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/box5IncludesCleanRenewableEnergyBondInterest`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${id}/form1065Box8`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1065Box9a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1120sBox7`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1120sBox8a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/longTermCapitalGainIsForeignSource`]: createBooleanWrapper(false),
   ...extra,
 });
 

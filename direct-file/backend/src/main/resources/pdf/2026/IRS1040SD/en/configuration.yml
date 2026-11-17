@@ -47,7 +47,7 @@ form:
           f1_16[0]: /scheduleDLine3CostBasis # (e)
           f1_17[0]: /scheduleDLine3Adjustment # (g)
           f1_18[0]: /scheduleDLine3 # (h)
-      f1_20[0]: /scheduleDLine5 # line 5 Schedule K-1 (Form 1041) box 3
+      f1_20[0]: /scheduleDLine5 # line 5 Schedule K-1 short-term: 1041 box 3, 1065 box 8, 1120-S box 7
       f1_21[0]: /scheduleDLine6
       f1_22[0]: /scheduleDLine7
       Table_PartII[0]:
@@ -66,7 +66,7 @@ form:
           f1_36[0]: /scheduleDLine10CostBasis # (e)
           f1_37[0]: /scheduleDLine10Adjustment # (g)
           f1_38[0]: /scheduleDLine10 # (h)
-      f1_40[0]: /scheduleDLine12 # line 12 Schedule K-1 (Form 1041) box 4a; f1_39 is line 11 and stays blank
+      f1_40[0]: /scheduleDLine12 # line 12 Schedule K-1 long-term: 1041 box 4a, 1065 box 9a, 1120-S box 8a; f1_39 is line 11 and stays blank
       f1_41[0]: /scheduleDLine13 # line 13 capital gain distributions (#86b)
       f1_42[0]: /scheduleDLine14
       f1_43[0]: /scheduleDLine15

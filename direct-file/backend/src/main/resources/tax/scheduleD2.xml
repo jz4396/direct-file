@@ -116,14 +116,19 @@
         0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1), PDF p. 2, line 5: "Net short-term
         gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s) K-1". This
         line is the whole-dollar total of Schedule K-1 (Form 1041) box 3 (scheduleE
-        /scheduleEEstateK1NetShortTermCapitalGain). 2026 draft Schedule K-1 (Form 1041), PDF p. 3. Partnership
-        and S corporation capital gain still stops the return. 26 U.S.C. 6102(a). $0 when there is no estate
-        or trust.</Description>
+        /scheduleEEstateK1NetShortTermCapitalGain) plus Form 1065 box 8 and Form 1120-S box 7 (scheduleE
+        /scheduleEK1NetShortTermCapitalGain). 2026 draft Schedule K-1 (Form 1041), PDF p. 3. Partner's
+        Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 8. Shareholder's Instructions for
+        Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 7. A loss still stops the return. 26 U.S.C.
+        6102(a). $0 when there is no K-1 capital gain.</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
         <Round>
-          <Dependency module="scheduleE" path="/scheduleEEstateK1NetShortTermCapitalGain" />
+          <Add>
+            <Dependency module="scheduleE" path="/scheduleEEstateK1NetShortTermCapitalGain" />
+            <Dependency module="scheduleE" path="/scheduleEK1NetShortTermCapitalGain" />
+          </Add>
         </Round>
       </Derived>
     </Fact>
@@ -143,7 +148,7 @@
     <Fact path="/scheduleDLine7">
       <Name>Schedule D line 7 — net short-term capital gain or loss</Name>
       <Description>Schedule D Part I line 7: combine lines 1a through 6 (lines 1a and 4 are $0 in scope;
-        line 5 is Schedule K-1 (Form 1041) box 3; line 6 short-term
+        line 5 is Schedule K-1 net short-term capital gain; line 6 short-term
         carryover is subtracted). 2026 draft Schedule D, PDF p. 2, line 7. Schedule D instr. (2025) p.10
         (lines 6/14).</Description>
       <Export downstreamFacts="true" mef="true" />
@@ -279,14 +284,20 @@
         0df9af0711964b3198ea04bb0037b29d6afa85578a671553daed46251630b5f1), PDF p. 2, line 12: "Net long-term
         gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s) K-1". This
         line is the whole-dollar total of Schedule K-1 (Form 1041) box 4a (scheduleE
-        /scheduleEEstateK1NetLongTermCapitalGain). 2026 draft Schedule K-1 (Form 1041), PDF p. 3. Partnership
-        and S corporation capital gain still stops the return. 26 U.S.C. 6102(a). $0 when there is no estate
-        or trust. The QDCG worksheet reads line 15, which includes this line.</Description>
+        /scheduleEEstateK1NetLongTermCapitalGain) plus Form 1065 box 9a and Form 1120-S box 8a (scheduleE
+        /scheduleEK1NetLongTermCapitalGain). 2026 draft Schedule K-1 (Form 1041), PDF p. 3. Partner's
+        Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 9a. Shareholder's Instructions for
+        Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 8a. A loss still stops the return. 26 U.S.C.
+        6102(a). $0 when there is no K-1 capital gain. The QDCG worksheet reads line 15, which includes this
+        line. Form 8960 line 5a reads Form 1040 line 7a, which includes line 16.</Description>
       <Export downstreamFacts="true" mef="true" />
       <ExportZero />
       <Derived>
         <Round>
-          <Dependency module="scheduleE" path="/scheduleEEstateK1NetLongTermCapitalGain" />
+          <Add>
+            <Dependency module="scheduleE" path="/scheduleEEstateK1NetLongTermCapitalGain" />
+            <Dependency module="scheduleE" path="/scheduleEK1NetLongTermCapitalGain" />
+          </Add>
         </Round>
       </Derived>
     </Fact>
@@ -341,7 +352,7 @@
     <Fact path="/scheduleDLine15">
       <Name>Schedule D line 15 — net long-term capital gain or loss</Name>
       <Description>Schedule D Part II line 15: combine lines 8a through 14 (lines 8a and 11 are $0 in scope;
-        line 12 is Schedule K-1 (Form 1041) box 4a; line 13 is capital gain distributions; line 14
+        line 12 is Schedule K-1 net long-term capital gain; line 13 is capital gain distributions; line 14
         long-term carryover is subtracted). 2026 draft Schedule D, PDF p. 2, line 15. Schedule D instr.
         (2025) p.10 (lines 6/14).</Description>
       <Export downstreamFacts="true" mef="true" />

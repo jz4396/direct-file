@@ -45,8 +45,10 @@ headings:
   /heading/income/schedule-e/k1-box14:
     Anote las ganancias del trabajo por cuenta propia del Anexo K-1 (Formulario 1065), casilla 14, código A
   /heading/income/schedule-e/k1-box14-scope: ¿Esta es la cantidad que corresponde al Anexo SE?
-  /heading/income/schedule-e/k1-portfolio-partnership: Anote los intereses y dividendos del Anexo K-1 (Formulario 1065)
-  /heading/income/schedule-e/k1-portfolio-s-corp: Anote los intereses y dividendos del Anexo K-1 (Formulario 1120-S)
+  /heading/income/schedule-e/k1-portfolio-partnership:
+    Anote los intereses, dividendos y ganancia de capital del Anexo K-1 (Formulario 1065)
+  /heading/income/schedule-e/k1-portfolio-s-corp:
+    Anote los intereses, dividendos y ganancia de capital del Anexo K-1 (Formulario 1120-S)
   /heading/income/schedule-e/k1-other: ¿Este Anexo K-1 declara algo más?
   /heading/income/schedule-e/k1-columns: ¿Tiene que marcar la columna (e) o la columna (f) en la línea 28 del Anexo E?
   /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta esta situación del Anexo K-1
@@ -194,29 +196,38 @@ info:
       Anote la casilla 5 (intereses), la casilla 6a (dividendos ordinarios) y la casilla 6b (dividendos calificados).
       Anote 0 si una casilla está en blanco. La casilla 6b no puede ser mayor que la casilla 6a. Estas cantidades van en
       el Formulario 1040, no en la línea 28 del Anexo E. Los intereses van en la línea 2b. Los dividendos ordinarios van
-      en la línea 3b. Los dividendos calificados van en la línea 3a. Conteste que sí si la casilla 5 incluye intereses
-      del crédito para tenedores de bonos de energía renovable limpia. La sociedad adjunta una declaración, y hay que
-      reducir la base de la participación en la sociedad por esos intereses. Esta declaración no calcula esa reducción.
-      Conteste que sí a la última pregunta si alguno de esos dividendos son ganancias y utilidades previamente gravadas.
-      Esa cantidad no se incluye en las líneas 3b o 3a, y esta declaración no calcula la exclusión.
+      en la línea 3b. Los dividendos calificados van en la línea 3a. Anote la casilla 8 (ganancia neta de capital a
+      corto plazo) y la casilla 9a (ganancia neta de capital a largo plazo). Una ganancia va en el Anexo D, línea 5 o
+      línea 12. Anote una pérdida como una cantidad negativa. Una pérdida necesita un cálculo de la base que esta
+      herramienta no hace. Conteste que sí si alguna parte de la ganancia de capital a largo plazo es de fuente
+      extranjera. Conteste que sí si la casilla 5 incluye intereses del crédito para tenedores de bonos de energía
+      renovable limpia. La sociedad adjunta una declaración, y hay que reducir la base de la participación en la
+      sociedad por esos intereses. Esta declaración no calcula esa reducción. Conteste que sí si alguno de esos
+      dividendos son ganancias y utilidades previamente gravadas. Esa cantidad no se incluye en las líneas 3b o 3a, y
+      esta declaración no calcula la exclusión.
   /info/income/schedule-e/k1-portfolio-s-corp:
     body: >-
       Anote la casilla 4 (intereses), la casilla 5a (dividendos ordinarios) y la casilla 5b (dividendos calificados).
       Anote 0 si una casilla está en blanco. La casilla 5b no puede ser mayor que la casilla 5a. Estas cantidades van en
       el Formulario 1040, no en la línea 28 del Anexo E. Los intereses van en la línea 2b. Los dividendos ordinarios van
-      en la línea 3b. Los dividendos calificados van en la línea 3a. Conteste que sí a la última pregunta si alguno de
-      esos dividendos son ganancias y utilidades previamente gravadas. Esa cantidad no se incluye en las líneas 3b o 3a,
-      y esta declaración no calcula la exclusión.
+      en la línea 3b. Los dividendos calificados van en la línea 3a. Anote la casilla 7 (ganancia neta de capital a
+      corto plazo) y la casilla 8a (ganancia neta de capital a largo plazo). Una ganancia va en el Anexo D, línea 5 o
+      línea 12, después de los límites sobre las pérdidas. Anote una pérdida como una cantidad negativa. Una pérdida
+      necesita un cálculo de la base que esta herramienta no hace. Conteste que sí si alguna parte de la ganancia de
+      capital a largo plazo es de fuente extranjera. Conteste que sí si alguno de esos dividendos son ganancias y
+      utilidades previamente gravadas. Esa cantidad no se incluye en las líneas 3b o 3a, y esta declaración no calcula
+      la exclusión.
   /info/income/schedule-e/k1-other:
     body: >-
       Conteste que sí a la primera pregunta si el K-1 incluye una declaración para la casilla 20, código Z (Formulario
       1065) o la casilla 17, código V (Formulario 1120-S). Conteste que sí a la segunda pregunta si alguna casilla
-      distinta de la casilla 1, de la casilla 14 código A y de las casillas de intereses y dividendos tiene una
-      cantidad. Esas casillas son las casillas 5, 6a y 6b del Formulario 1065, o las casillas 4, 5a y 5b del Formulario
-      1120-S. La casilla 4, pagos garantizados, es sí aunque esa cantidad también esté incluida en la casilla 14 código
-      A. La casilla 6c, equivalentes de dividendos, es sí. No se declaran en el Formulario 1040. La declaración de
-      intereses de bonos de energía renovable limpia en la casilla 5 es la pregunta anterior de la sociedad colectiva,
-      no esta.
+      distinta de la casilla 1, de la casilla 14 código A, de las casillas de intereses y dividendos y de las casillas
+      de ganancia neta de capital tiene una cantidad. Esas casillas son las casillas 5, 6a, 6b, 8 y 9a del Formulario
+      1065, o las casillas 4, 5a, 5b, 7 y 8a del Formulario 1120-S. La casilla 4, pagos garantizados, es sí aunque esa
+      cantidad también esté incluida en la casilla 14 código A. La casilla 6c, equivalentes de dividendos, es sí. No se
+      declaran en el Formulario 1040. Las casillas 9b y 9c del Formulario 1065, y las casillas 8b y 8c del Formulario
+      1120-S, son sí. La declaración de intereses de bonos de energía renovable limpia en la casilla 5 es la pregunta
+      anterior de la sociedad colectiva, no esta.
   /info/income/schedule-e/k1-columns:
     body: >-
       Conteste que sí a la primera pregunta si recibió una distribución, dispuso de acciones o recibió un pago de un
@@ -318,10 +329,11 @@ info:
       body:
         - p: >-
             Esta herramienta puede declarar una sociedad colectiva nacional o una sociedad anónima de tipo S con ingreso
-            ordinario del negocio si usted participó de forma importante, incluidos los intereses y dividendos de ese
-            Anexo K-1 y la casilla 14 código A del Anexo K-1 (Formulario 1065) que no es de agricultura. Una pérdida,
-            una actividad pasiva, una sociedad extranjera, una sociedad que cotiza en bolsa, una distribución u otro
-            cálculo de base, la agricultura, una reducción de esa cantidad del trabajo por cuenta propia, una cantidad
+            ordinario del negocio si usted participó de forma importante, incluidos los intereses, dividendos y una
+            ganancia de capital de ese Anexo K-1, y la casilla 14 código A del Anexo K-1 (Formulario 1065) que no es de
+            agricultura. Una pérdida, una actividad pasiva, una sociedad extranjera, una sociedad que cotiza en bolsa,
+            una distribución u otro cálculo de base, una pérdida de capital, una ganancia de capital a largo plazo de
+            fuente extranjera, la agricultura, una reducción de esa cantidad del trabajo por cuenta propia, una cantidad
             de socio comanditario que no es solo pagos garantizados por servicios, una declaración conjunta con esa
             cantidad, las ganancias y utilidades previamente gravadas, los intereses del crédito para tenedores de bonos
             de energía renovable limpia u otra cantidad del Anexo K-1 necesitan formularios que esta herramienta todavía
@@ -613,6 +625,18 @@ fields:
     name: Casilla 5a, dividendos ordinarios
   /scheduleEK1s/*/form1120sBox5b:
     name: Casilla 5b, dividendos calificados
+  /scheduleEK1s/*/form1065Box8:
+    name: Casilla 8, ganancia (o pérdida) neta de capital a corto plazo
+  /scheduleEK1s/*/form1065Box9a:
+    name: Casilla 9a, ganancia (o pérdida) neta de capital a largo plazo
+  /scheduleEK1s/*/form1120sBox7:
+    name: Casilla 7, ganancia (o pérdida) neta de capital a corto plazo
+  /scheduleEK1s/*/form1120sBox8a:
+    name: Casilla 8a, ganancia (o pérdida) neta de capital a largo plazo
+  /scheduleEK1s/*/longTermCapitalGainIsForeignSource:
+    boolean:
+      "yes": Sí, parte de la ganancia de capital a largo plazo es de fuente extranjera
+      "no": No, ninguna parte de la ganancia de capital a largo plazo es de fuente extranjera
   /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest:
     boolean:
       "yes": Sí, la casilla 5 incluye intereses de bonos de energía renovable limpia
@@ -709,14 +733,20 @@ dataviews:
     /scheduleEK1s/*/form1120sBox4: Casilla 4, ingresos por intereses
     /scheduleEK1s/*/form1120sBox5a: Casilla 5a, dividendos ordinarios
     /scheduleEK1s/*/form1120sBox5b: Casilla 5b, dividendos calificados
+    /scheduleEK1s/*/form1065Box8: Casilla 8, ganancia (o pérdida) neta de capital a corto plazo
+    /scheduleEK1s/*/form1065Box9a: Casilla 9a, ganancia (o pérdida) neta de capital a largo plazo
+    /scheduleEK1s/*/form1120sBox7: Casilla 7, ganancia (o pérdida) neta de capital a corto plazo
+    /scheduleEK1s/*/form1120sBox8a: Casilla 8a, ganancia (o pérdida) neta de capital a largo plazo
+    /scheduleEK1s/*/longTermCapitalGainIsForeignSource:
+      ¿Alguna parte de la ganancia de capital a largo plazo es de fuente extranjera?
     /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest:
       ¿La casilla 5 incluye intereses del crédito para tenedores de bonos de energía renovable limpia?
     /scheduleEK1s/*/dividendIncludesPtep:
       ¿Alguno de estos dividendos incluye ganancias y utilidades previamente gravadas?
     /scheduleEK1s/*/hasQbiStatement: ¿Hay una declaración para la casilla 20 código Z o la casilla 17 código V?
     /scheduleEK1s/*/hasOtherK1Amount:
-      ¿Alguna casilla distinta de la casilla 1, de la casilla 14 código A y de las casillas de intereses y dividendos
-      tiene una cantidad?
+      ¿Alguna casilla distinta de la casilla 1, de la casilla 14 código A, de las casillas de intereses y dividendos y
+      de las casillas de ganancia neta de capital tiene una cantidad?
     /scheduleEK1s/*/basisComputationRequired: ¿Está marcada la columna (e)?
     /scheduleEK1s/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/entityName: Nombre del caudal hereditario o fideicomiso
@@ -734,7 +764,8 @@ dataviews:
     /scheduleEEstates/*/box8: Casilla 8, otro ingreso de alquiler
     /scheduleEEstates/*/materiallyParticipates: ¿Participó de forma importante?
     /scheduleEEstates/*/box12CodeA: Casilla 12, código A, ajuste para fines del impuesto mínimo
-    /scheduleEEstates/*/hasBox12CodesBThroughI: ¿La casilla 12 tiene una cantidad para el código B, C, D, E, F, G, H o I?
+    /scheduleEEstates/*/hasBox12CodesBThroughI:
+      ¿La casilla 12 tiene una cantidad para el código B, C, D, E, F, G, H o I?
     /scheduleEEstates/*/hasBox12CodeJ: ¿La casilla 12, código J, partidas de exclusión, tiene una cantidad?
     /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 3, 4a, 5, 6, 7, 8 y los códigos A a J de la casilla 12 tiene una cantidad?
     /scheduleEEstates/*/basisLimitApplies: ¿Se aplica un límite de base?

@@ -804,6 +804,11 @@ const supportedK1 = {
   [`/scheduleEK1s/#${k1Id}/form1120sBox5b`]: createDollarWrapper(`0`),
   [`/scheduleEK1s/#${k1Id}/dividendIncludesPtep`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${k1Id}/box5IncludesCleanRenewableEnergyBondInterest`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${k1Id}/form1065Box8`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${k1Id}/form1065Box9a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${k1Id}/form1120sBox7`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${k1Id}/form1120sBox8a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${k1Id}/longTermCapitalGainIsForeignSource`]: createBooleanWrapper(false),
 };
 
 describe(`PA-40 line 6 rents from Schedule E Part I`, () => {

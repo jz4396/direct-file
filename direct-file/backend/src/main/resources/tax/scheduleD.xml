@@ -416,7 +416,9 @@
         complete Form
         8949 before Schedule D lines 1b/2/3/8b/9/10), a prior-year capital loss
         carryover (Schedule D lines 6/14), a nonzero Schedule K-1 (Form 1041) box 3 or box 4a
-        (scheduleE /scheduleEHasEstateK1CapitalGain; 2026 draft Schedule D, PDF p. 2, lines 5 and 12), or Form 1099-DIV
+        (scheduleE /scheduleEHasEstateK1CapitalGain; 2026 draft Schedule D, PDF p. 2, lines 5 and 12), a
+        nonzero Form 1065 box 8 or box 9a or Form 1120-S box 7 or box 8a (scheduleE
+        /scheduleEK1HasCapitalGain), or Form 1099-DIV
         box 2b more than $0. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a,
         Exception 1 does not apply when a Form 1099-DIV has an amount in box 2b, so capital gain distributions go on
         Schedule D line 13.</Description>
@@ -426,6 +428,7 @@
           <Dependency path="/hasForm8949Transactions" />
           <Dependency path="/hasCapitalLossCarryover" />
           <Dependency module="scheduleE" path="/scheduleEHasEstateK1CapitalGain" />
+          <Dependency module="scheduleE" path="/scheduleEK1HasCapitalGain" />
           <GreaterThan>
             <Left>
               <Dependency module="dividends" path="/totalUnrecapturedSection1250Gain" />

@@ -69,9 +69,12 @@ High blast radius. Merge only after the tax + security review writeup.
 - Boxes G–L (digital assets) total with A–F on the same Schedule D lines; a box/holding-period mismatch blocks submission.
 - Prior-year carryover: Schedule D lines 6/14 (writable, from the prior-year Capital Loss Carryover Worksheet).
 - Lines 5 and 12 are Schedule K-1 (Form 1041) box 3 and box 4a (2026 draft K-1, PDF p. 3; 2026 draft Schedule D,
-  PDF p. 2). A gain or a loss is included. Boxes 4b and 4c, and box 11 codes C and D, still stop the return.
-  A nonzero box 3 or 4a on a PA-40 stops the return (PA-40 line 7 / PA Schedule J, not line 5). Partnership and
-  S corporation capital gain still stops the return.
+  PDF p. 2), plus a nonnegative Form 1065 box 8 and box 9a and Form 1120-S box 7 and box 8a (2025 Partner's
+  Instructions PDF p. 15; 2025 Shareholder's Instructions PDF p. 7). A loss still stops the return. Boxes 4b
+  and 4c, box 11 codes C and D, Form 1065 boxes 9b and 9c, and Form 1120-S boxes 8b and 8c still stop the
+  return. A nonzero box 3 or 4a on a PA-40 stops the return (PA-40 line 7 / PA Schedule J, not line 5). A
+  nonzero partnership or S corporation capital gain on a PA-40 stops the return (PA RK-1 and PA-40 line 5,
+  not the federal K-1).
 - Tax: `/taxOnTaxableIncomeRegularRates` (was the body of `/tentativeTaxFromTaxableIncome`) is QDCG line 24;
   `/tentativeTaxFromTaxableIncome` (Form 1040 line 16) = QDCG line 25 when line 4 > 0, otherwise regular tax.
 - Print: PDFBox config `pdf/2024/IRS1040SD/en/configuration.yml` (field names checked against the IRS 2024 PDF).
