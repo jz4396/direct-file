@@ -249,8 +249,11 @@ public final class PrintRefusingKnockouts {
             // the print for line 33c, a line 34 change, a 3-prior-year average greater than $32,000,000, a tax
             // shelter, line 42 below zero, line 35 different from last year's closing inventory, the section 471(c)
             // no-inventory method claimed while Part III is required, or Part III filled in after a no to inventory.
-            // Also lines 9 and 16b vehicle expenses
-            // (PDF pp. 2 and 7, Form 4562), line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, a vehicle
+            // Line 9 standard mileage for one vehicle prints (Notice 2026-10 §3; IR-2026-29; Part IV lines 43-47b).
+            // The same path still refuses the print for actual expenses, more than one vehicle, five or more
+            // automobiles used at the same time (Rev. Proc. 2019-46 §4.05), a prior actual-expense or MACRS or
+            // section 179 or bonus method, vehicle loan interest (line 16b, Form 4562), Form 4562 otherwise required,
+            // or Part IV line 47a answered no. Also line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, a vehicle
             // lease on line 20a (inclusion amount, Pub. 463 ch. 4; listed property, 26 U.S.C. 280F(c) and
             // 280F(d)(4)). Machinery and equipment rent that is not a vehicle prints on line 20a and does not refuse
             // the print. Line 30 home office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that

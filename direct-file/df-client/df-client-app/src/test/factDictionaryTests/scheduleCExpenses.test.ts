@@ -4,6 +4,7 @@ import {
   createBooleanWrapper,
   createCollectionItemWrapper,
   createCollectionWrapper,
+  createDayWrapper,
   createDollarWrapper,
   createEnumWrapper,
   createMultEnumWrapper,
@@ -1067,7 +1068,7 @@ describe(`Schedule C Form 461 excess business loss stop`, () => {
   it(`keeps a per-business form stop complete true before expense amounts are entered`, () => {
     const { get } = base([biz], {
       ...business(biz, dollars(p(biz, `writableGrossReceipts`), `5000`)),
-      ...stops(biz, { hasCarTruckOrVehicleLoan: true }),
+      ...stops(biz, { hasDepreciationOrSection179: true }),
     });
     expect(get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
     expect(get(`/scheduleCNeedsForm461`).complete).toBe(false);
@@ -1163,5 +1164,201 @@ describe(`Schedule C Form 461 excess business loss stop`, () => {
     });
     expect(over.get(`/scheduleCNeedsForm461`).get).toBe(true);
     expect(over.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+  });
+});
+
+/**
+ * Schedule C line 9, one vehicle on the standard mileage rate, plus Part IV.
+ * Notice 2026-10 §3 (72.5 cents, January 1 through June 30). IR-2026-29 (76 cents, July 1 through December 31).
+ * Rev. Proc. 2019-46 §4.05. 2026 draft Instructions for Schedule C, PDF p. 7, Line 9 and Part IV.
+ * 6,000 miles and 4,000 miles plus $210 is $4,350 + $3,040 + $210 = $7,600.
+ */
+describe(`Schedule C line 9 standard mileage`, () => {
+  const receipts = {
+    ...dollars(p(biz, `writableGrossReceipts`), `40000`),
+    ...dollars(p(biz, `writableReturnsAndAllowances`), `0`),
+    ...dollars(p(biz, `writableOtherIncome`), `0`),
+  };
+
+  const seOff = {
+    '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+    '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+    '/usesSeOptionalMethod': createBooleanWrapper(false),
+    '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+    '/hasNotarySeExclusion': createBooleanWrapper(false),
+    '/hadForm8919Wages': createBooleanWrapper(false),
+  };
+
+  function mileage(id: string, miles: { h1: string; h2: string; parking: string }, extra: Record<string, boolean> = {}) {
+    const answers: Record<string, boolean> = {
+      hasVehicleLoanInterest: false,
+      usesStandardMileageRate: true,
+      hasMoreThanOneVehicle: false,
+      usesFiveOrMoreVehiclesSimultaneously: false,
+      vehiclePriorActualMacrs179OrBonus: false,
+      vehicleRequiresForm4562: false,
+      vehicleAvailableForPersonalUseOffDuty: false,
+      hasAnotherVehicleForPersonalUse: true,
+      vehicleHasEvidence: true,
+      vehicleEvidenceIsWritten: true,
+      ...extra,
+    };
+    return {
+      ...flag(p(id, `hasCarTruckOrVehicleLoan`), true),
+      ...Object.fromEntries(Object.entries(answers).map(([key, value]) => [p(id, key), createBooleanWrapper(value)])),
+      ...dollars(p(id, `writableBusinessMilesJanJun`), miles.h1),
+      ...dollars(p(id, `writableBusinessMilesJulDec`), miles.h2),
+      ...dollars(p(id, `writableBusinessParkingAndTolls`), miles.parking),
+      ...dollars(p(id, `writableCommutingMiles`), `120`),
+      ...dollars(p(id, `writableOtherMiles`), `80`),
+      [p(id, `vehiclePlacedInService`)]: createDayWrapper(`2024-03-15`),
+    };
+  }
+
+  function line9Return(miles: { h1: string; h2: string; parking: string }, extra: Record<string, boolean> = {}) {
+    return base([biz], {
+      ...business(biz, receipts),
+      ...stops(biz, { hasCarTruckOrVehicleLoan: true }),
+      ...mileage(biz, miles, extra),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+      ...seOff,
+    });
+  }
+
+  it(`puts $7,600 on line 9 and $32,400 on line 31, and Schedule SE follows line by line`, () => {
+    const { get } = line9Return({ h1: `6000`, h2: `4000`, parking: `210` });
+    expect(get(p(biz, `line9`)).get.toString()).toBe(`7600.00`);
+    expect(get(p(biz, `line28`)).get.toString()).toBe(`7600.00`);
+    expect(get(p(biz, `line29TentativeProfit`)).get.toString()).toBe(`32400.00`);
+    expect(get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`32400.00`);
+    expect(get(`/scheduleCNetProfitOrLoss`).get.toString()).toBe(`32400.00`);
+    expect(get(`/schedule1Line3`).get.toString()).toBe(`32400.00`);
+    expect(get(p(biz, `line44aBusinessMiles`)).get.toString()).toBe(`10000`);
+    expect(get(p(biz, `line44bCommutingMiles`)).get.toString()).toBe(`120`);
+    expect(get(p(biz, `line44cOtherMiles`)).get.toString()).toBe(`80`);
+    expect(get(p(biz, `line43Month`)).get.toString()).toBe(`3`);
+    expect(get(p(biz, `line43Day`)).get.toString()).toBe(`15`);
+    expect(get(p(biz, `line43Year`)).get.toString()).toBe(`2024`);
+    expect(get(p(biz, `line45Yes`)).get).toBe(false);
+    expect(get(p(biz, `line45No`)).get).toBe(true);
+    expect(get(p(biz, `line46Yes`)).get).toBe(true);
+    expect(get(p(biz, `line47aYes`)).get).toBe(true);
+    expect(get(p(biz, `line47bYes`)).get).toBe(true);
+    // Line 4a: Round(32,400 × 9,235/10,000) = $29,921. Line 10: 29,921 × 12.4% = $3,710.20 → $3,710.
+    // Line 11: 29,921 × 2.9% = $867.71 → $868. Line 12 = $4,578. Line 13 = Round($4,578 × 1/2) = $2,289.
+    expect(get(`/primaryFilerSeNetEarnings`).get.toString()).toBe(`29921.00`);
+    expect(get(`/primaryFilerSeSocialSecurityTax`).get.toString()).toBe(`3710.00`);
+    expect(get(`/primaryFilerSeMedicareTax`).get.toString()).toBe(`868.00`);
+    expect(get(`/primaryFilerSelfEmploymentTax`).get.toString()).toBe(`4578.00`);
+    expect(get(`/selfEmploymentTax`).get.toString()).toBe(`4578.00`);
+    expect(get(`/deductibleSelfEmploymentTax`).get.toString()).toBe(`2289.00`);
+    expect(get(`/schedule1Line15`).get.toString()).toBe(`2289.00`);
+    expect(get(`/scheduleCNetProfitForEarnedIncome`).get.toString()).toBe(`30111.00`);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`rounds one mile in each half of the year to $1`, () => {
+    const { get } = line9Return({ h1: `1`, h2: `1`, parking: `0` });
+    expect(get(p(biz, `line9ExactCents`)).get.toString()).toBe(`148.50`);
+    expect(get(p(biz, `line9`)).get.toString()).toBe(`1.00`);
+    expect(get(p(biz, `line44aBusinessMiles`)).get.toString()).toBe(`2`);
+  });
+
+  it(`rounds $7.495 once to $7 rather than the cent-then-dollar $8`, () => {
+    const { get } = line9Return({ h1: `3`, h2: `7`, parking: `0` });
+    expect(get(p(biz, `line9ExactCents`)).get.toString()).toBe(`749.50`);
+    expect(get(p(biz, `line9CentRound`)).get.toString()).toBe(`8.00`);
+    expect(get(p(biz, `line9`)).get.toString()).toBe(`7.00`);
+  });
+
+  it(`leaves line 9 at zero and Part IV blank when there are no car or truck expenses`, () => {
+    const { get } = base([biz], {
+      ...business(biz, receipts),
+      ...stops(biz),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    });
+    expect(get(p(biz, `line9`)).get.toString()).toBe(`0.00`);
+    expect(get(p(biz, `line28`)).get.toString()).toBe(`0.00`);
+    expect(get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`40000.00`);
+    expect(get(p(biz, `line44aBusinessMiles`)).complete).toBe(false);
+    expect(get(p(biz, `line45Yes`)).complete).toBe(false);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`allows zero miles and zero parking`, () => {
+    const { get } = line9Return({ h1: `0`, h2: `0`, parking: `0` });
+    expect(get(p(biz, `line9`)).get.toString()).toBe(`0.00`);
+    expect(get(p(biz, `line44aBusinessMiles`)).get.toString()).toBe(`0`);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`does not stop when line 47b is no`, () => {
+    const { get } = line9Return({ h1: `6000`, h2: `4000`, parking: `210` }, { vehicleEvidenceIsWritten: false });
+    expect(get(p(biz, `line9`)).get.toString()).toBe(`7600.00`);
+    expect(get(p(biz, `line47bYes`)).get).toBe(false);
+    expect(get(p(biz, `line47bNo`)).get).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  const stopsThatBlock: Array<[string, Record<string, boolean>]> = [
+    [`vehicle loan interest`, { hasVehicleLoanInterest: true }],
+    [`actual expenses`, { usesStandardMileageRate: false }],
+    [`more than one vehicle`, { hasMoreThanOneVehicle: true }],
+    [`five or more vehicles used at the same time`, { usesFiveOrMoreVehiclesSimultaneously: true }],
+    [`prior MACRS, section 179, bonus, or actual expenses`, { vehiclePriorActualMacrs179OrBonus: true }],
+    [`Form 4562 otherwise required`, { vehicleRequiresForm4562: true }],
+    [`line 47a answered no`, { vehicleHasEvidence: false }],
+  ];
+
+  for (const [label, extra] of stopsThatBlock) {
+    it(`stops submission when the filer reports ${label}`, () => {
+      const { get } = line9Return({ h1: `6000`, h2: `4000`, parking: `210` }, extra);
+      expect(get(p(biz, `scheduleCFormStop`)).complete).toBe(true);
+      expect(get(p(biz, `scheduleCFormStop`)).get).toBe(true);
+      expect(get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+      expect(get(p(biz, `line9`)).complete).toBe(false);
+      expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+      expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+      expect(get(`/flowIsKnockedOut`).get).toBe(true);
+    });
+  }
+
+  it(`still stops a leased vehicle on the standard mileage path`, () => {
+    const { get } = base([biz], {
+      ...business(biz, receipts),
+      ...stops(biz, { hasCarTruckOrVehicleLoan: true, hasVehicleRentOrLease: true }),
+      ...mileage(biz, { h1: `6000`, h2: `4000`, parking: `210` }),
+      ...flag(p(biz, `hasDeductibleExpenses`), false),
+    });
+    expect(get(p(biz, `scheduleCFormStop`)).get).toBe(true);
+    expect(get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+    expect(get(p(biz, `line9`)).complete).toBe(false);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(get(`/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`keeps a vehicle stop complete true before the mileage amounts are entered`, () => {
+    const { get } = base([biz], {
+      ...business(biz, receipts),
+      ...stops(biz, { hasCarTruckOrVehicleLoan: true }),
+      ...flag(p(biz, `hasVehicleLoanInterest`), true),
+    });
+    expect(get(p(biz, `scheduleCFormStop`)).complete).toBe(true);
+    expect(get(p(biz, `scheduleCFormStop`)).get).toBe(true);
+    expect(get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(get(`/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`leaves the knockout incomplete when car expenses are yes and the follow-up is blank`, () => {
+    const { get } = base([biz], {
+      ...business(biz, receipts),
+      ...stops(biz, { hasCarTruckOrVehicleLoan: true }),
+    });
+    expect(get(p(biz, `vehicleStandardMileageStop`)).complete).toBe(false);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(false);
+    expect(get(p(biz, `line9`)).complete).toBe(false);
   });
 });

@@ -16,8 +16,10 @@ import {
   KnockoutButton,
   LimitingString,
   MultiEnum,
+  DatePicker,
   SaveAndOrContinueButton,
   SquareFeet,
+  Miles,
   IconDisplay,
 } from '../../ContentDeclarations.js';
 
@@ -299,6 +301,82 @@ export const ScheduleCIncomeSubcategory = (
           <Heading i18nKey='/heading/income/schedule-c/vehicle' />
           <InfoDisplay i18nKey='/info/income/schedule-c/vehicle' />
           <Boolean path='/scheduleCBusinesses/*/hasCarTruckOrVehicleLoan' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-vehicle-loan' condition='/scheduleCBusinesses/*/hasCarTruckOrVehicleLoan'>
+          <Heading i18nKey='/heading/income/schedule-c/vehicle-loan' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/vehicle-loan' />
+          <Boolean path='/scheduleCBusinesses/*/hasVehicleLoanInterest' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-standard-mileage' condition='/scheduleCBusinesses/*/asksStandardMileageMethod'>
+          <Heading i18nKey='/heading/income/schedule-c/standard-mileage' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/standard-mileage' />
+          <Boolean path='/scheduleCBusinesses/*/usesStandardMileageRate' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-vehicle-count' condition='/scheduleCBusinesses/*/asksVehicleCount'>
+          <Heading i18nKey='/heading/income/schedule-c/vehicle-count' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/vehicle-count' />
+          <Boolean path='/scheduleCBusinesses/*/hasMoreThanOneVehicle' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-five-or-more' condition='/scheduleCBusinesses/*/asksFiveOrMoreVehicles'>
+          <Heading i18nKey='/heading/income/schedule-c/five-or-more' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/five-or-more' />
+          <Boolean path='/scheduleCBusinesses/*/usesFiveOrMoreVehiclesSimultaneously' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-prior-depreciation' condition='/scheduleCBusinesses/*/asksPriorDepreciationMethod'>
+          <Heading i18nKey='/heading/income/schedule-c/prior-depreciation' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/prior-depreciation' />
+          <Boolean path='/scheduleCBusinesses/*/vehiclePriorActualMacrs179OrBonus' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-form-4562' condition='/scheduleCBusinesses/*/asksForm4562ForVehicle'>
+          <Heading i18nKey='/heading/income/schedule-c/form-4562' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/form-4562' />
+          <Boolean path='/scheduleCBusinesses/*/vehicleRequiresForm4562' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-miles' condition='/scheduleCBusinesses/*/asksStandardMileageAmounts'>
+          <Heading i18nKey='/heading/income/schedule-c/miles' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/miles' />
+          <Miles path='/scheduleCBusinesses/*/writableBusinessMilesJanJun' />
+          <Miles path='/scheduleCBusinesses/*/writableBusinessMilesJulDec' />
+          <Dollar path='/scheduleCBusinesses/*/writableBusinessParkingAndTolls' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-vehicle-placed-in-service' condition='/scheduleCBusinesses/*/asksStandardMileageAmounts'>
+          <Heading i18nKey='/heading/income/schedule-c/vehicle-placed-in-service' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/vehicle-placed-in-service' />
+          <DatePicker path='/scheduleCBusinesses/*/vehiclePlacedInService' />
+          <Miles path='/scheduleCBusinesses/*/writableCommutingMiles' />
+          <Miles path='/scheduleCBusinesses/*/writableOtherMiles' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-vehicle-use' condition='/scheduleCBusinesses/*/asksStandardMileageAmounts'>
+          <Heading i18nKey='/heading/income/schedule-c/vehicle-off-duty' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/vehicle-off-duty' />
+          <Boolean path='/scheduleCBusinesses/*/vehicleAvailableForPersonalUseOffDuty' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-another-vehicle' condition='/scheduleCBusinesses/*/asksStandardMileageAmounts'>
+          <Heading i18nKey='/heading/income/schedule-c/another-vehicle' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/another-vehicle' />
+          <Boolean path='/scheduleCBusinesses/*/hasAnotherVehicleForPersonalUse' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-vehicle-evidence' condition='/scheduleCBusinesses/*/asksStandardMileageAmounts'>
+          <Heading i18nKey='/heading/income/schedule-c/vehicle-evidence' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/vehicle-evidence' />
+          <Boolean path='/scheduleCBusinesses/*/vehicleHasEvidence' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='schedule-c-vehicle-evidence-written' condition='/scheduleCBusinesses/*/asksWrittenEvidence'>
+          <Heading i18nKey='/heading/income/schedule-c/vehicle-evidence-written' />
+          <InfoDisplay i18nKey='/info/income/schedule-c/vehicle-evidence-written' />
+          <Boolean path='/scheduleCBusinesses/*/vehicleEvidenceIsWritten' />
           <SaveAndOrContinueButton />
         </Screen>
         <Screen route='schedule-c-depreciation'>

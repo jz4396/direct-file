@@ -62,6 +62,19 @@ headings:
   /heading/income/schedule-c/inventory-amounts: "Ingrese el costo de mercancías vendidas"
   /heading/income/schedule-c/vehicle:
     "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
+  /heading/income/schedule-c/vehicle-loan: "¿Este negocio pagó intereses de un préstamo de un vehículo?"
+  /heading/income/schedule-c/standard-mileage: "¿Quiere usar la tarifa estándar por milla para este vehículo?"
+  /heading/income/schedule-c/vehicle-count: "¿Este negocio usó más de un vehículo?"
+  /heading/income/schedule-c/five-or-more: "¿Se usaron cinco o más vehículos al mismo tiempo?"
+  /heading/income/schedule-c/prior-depreciation:
+    "¿Este vehículo se depreció bajo MACRS, la sección 179 o la depreciación adicional, o dedujo los gastos reales?"
+  /heading/income/schedule-c/form-4562: "¿Tiene que presentar el Formulario 4562 por este vehículo por otra razón?"
+  /heading/income/schedule-c/miles: "Ingrese las millas de negocio y el estacionamiento y los peajes"
+  /heading/income/schedule-c/vehicle-placed-in-service: "Ingrese la fecha del vehículo y las otras millas"
+  /heading/income/schedule-c/vehicle-off-duty: "¿El vehículo estuvo disponible para uso personal fuera del horario de trabajo?"
+  /heading/income/schedule-c/another-vehicle: "¿Usted o su cónyuge tienen otro vehículo disponible para uso personal?"
+  /heading/income/schedule-c/vehicle-evidence: "¿Tiene evidencia que respalde esta deducción del vehículo?"
+  /heading/income/schedule-c/vehicle-evidence-written: "¿Esa evidencia está por escrito?"
   /heading/income/schedule-c/depreciation: "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
   /heading/income/schedule-c/depletion: "¿Este negocio tuvo una deducción por agotamiento?"
   /heading/income/schedule-c/vehicle-lease: "¿Este negocio alquiló o arrendó un vehículo?"
@@ -308,7 +321,52 @@ info:
   /info/income/schedule-c/vehicle:
     body:
       "Conteste que sí si tuvo gastos de automóvil y camión (línea 9) o intereses de un préstamo de vehículo (línea
-      16b). Esos necesitan el Formulario 4562 o la Parte IV."
+      16b). Un solo vehículo con la tarifa estándar por milla se puede calcular aquí. Los gastos reales y los
+      intereses del préstamo del vehículo siguen necesitando otra manera de presentar."
+  /info/income/schedule-c/vehicle-loan:
+    body:
+      "Conteste que sí si pagó intereses de un préstamo de un automóvil o camión usado en este negocio. Esos intereses
+      son la línea 16b y necesitan el Formulario 4562. Esta herramienta no puede presentar ese formulario."
+  /info/income/schedule-c/standard-mileage:
+    body:
+      "Conteste que sí para usar la tarifa estándar por milla. En 2026 esa tarifa es 72.5 centavos por milla de enero
+      a junio y 76 centavos por milla de julio a diciembre. Se suman el estacionamiento y los peajes del negocio.
+      Conteste que no si deduce los gastos reales del vehículo. Esta herramienta no puede calcular los gastos reales."
+  /info/income/schedule-c/vehicle-count:
+    body: "Conteste que sí si este negocio usó más de un automóvil o camión. Esta herramienta calcula solo un vehículo."
+  /info/income/schedule-c/five-or-more:
+    body:
+      "Conteste que sí si se usaron cinco o más vehículos al mismo tiempo. La tarifa estándar por milla no se puede
+      usar en ese caso."
+  /info/income/schedule-c/prior-depreciation:
+    body:
+      "Conteste que sí si este vehículo se depreció bajo MACRS, la sección 179 o la depreciación adicional, o si
+      dedujo los gastos reales después de ponerlo en servicio. La tarifa estándar por milla no se puede usar después
+      de eso. Conteste que no si no hizo esas cosas."
+  /info/income/schedule-c/form-4562:
+    body:
+      "Conteste que sí si debe presentar el Formulario 4562 por este vehículo por una razón distinta de las preguntas
+      ya hechas. La Parte IV se usa solo cuando el Formulario 4562 no es obligatorio."
+  /info/income/schedule-c/miles:
+    body:
+      "Ingrese las millas de negocio del 1 de enero al 30 de junio, las millas de negocio del 1 de julio al 31 de
+      diciembre, y el estacionamiento y los peajes del negocio. No incluya aquí las millas de viaje al trabajo. La
+      línea 9 es 72.5 centavos por el primer monto, más 76 centavos por el segundo monto, más el estacionamiento y
+      los peajes."
+  /info/income/schedule-c/vehicle-placed-in-service:
+    body:
+      "Ingrese la fecha en que puso el vehículo en servicio para el negocio, luego las millas de viaje al trabajo y
+      las otras millas. Esas millas son la Parte IV. No forman parte de la deducción por la tarifa estándar."
+  /info/income/schedule-c/vehicle-off-duty:
+    body: "Esta es la línea 45 de la Parte IV. Cualquiera de las dos respuestas se puede declarar."
+  /info/income/schedule-c/another-vehicle:
+    body: "Esta es la línea 46 de la Parte IV. Cualquiera de las dos respuestas se puede declarar."
+  /info/income/schedule-c/vehicle-evidence:
+    body: "Esta es la línea 47a de la Parte IV. Conteste que no si no tiene evidencia que respalde la deducción."
+  /info/income/schedule-c/vehicle-evidence-written:
+    body:
+      "Esta es la línea 47b de la Parte IV. Se pregunta porque la línea 47a es sí. Cualquiera de las dos respuestas se
+      puede declarar."
   /info/income/schedule-c/depreciation:
     body:
       "Conteste que sí si corresponde la línea 13. La depreciación y la deducción de la sección 179 necesitan el
@@ -421,8 +479,11 @@ info:
             método de inventario distinto del costo o del menor entre el costo o el mercado, un cambio en cómo se valoró
             el inventario, ingresos brutos anuales promedio de los 3 años anteriores de más de $32,000,000, un refugio
             fiscal, un costo de mercancías vendidas menor que cero, un inventario inicial distinto del inventario final
-            del año pasado, una declaración de que no lleva inventario mientras la Parte III sigue llena, gastos de
-            vehículo, depreciación, agotamiento, el alquiler o arrendamiento de un vehículo, el Formulario 8829, espacio
+            del año pasado, una declaración de que no lleva inventario mientras la Parte III sigue llena, gastos
+            reales del vehículo, más de un vehículo, cinco o más vehículos usados al mismo tiempo, un método previo de
+            gastos reales o de MACRS o de la sección 179 o de depreciación adicional, intereses de un préstamo de
+            vehículo, el Formulario 4562 de un vehículo, falta de evidencia de la deducción del vehículo, depreciación,
+            agotamiento, el alquiler o arrendamiento de un vehículo, el Formulario 8829, espacio
             compartido, uso del
             hogar como alquiler, un traslado previo del Formulario 8829, un método simplificado que esta herramienta no
             calcula, más de un negocio que usa el método simplificado, el Formulario 7205, comidas que no están
@@ -683,6 +744,70 @@ fields:
     boolean:
       "yes": "Sí"
       "no": "No"
+  /scheduleCBusinesses/*/hasVehicleLoanInterest:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/usesStandardMileageRate:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/hasMoreThanOneVehicle:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/usesFiveOrMoreVehiclesSimultaneously:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/vehiclePriorActualMacrs179OrBonus:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/vehicleRequiresForm4562:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/writableBusinessMilesJanJun:
+    name: "Millas de negocio, del 1 de enero al 30 de junio"
+    errorMessages:
+      ExceedsMinLimit: "Ingrese millas que sean 0 o más"
+      InvalidCharacters: "Ingrese millas enteras, como 6000"
+  /scheduleCBusinesses/*/writableBusinessMilesJulDec:
+    name: "Millas de negocio, del 1 de julio al 31 de diciembre"
+    errorMessages:
+      ExceedsMinLimit: "Ingrese millas que sean 0 o más"
+      InvalidCharacters: "Ingrese millas enteras, como 4000"
+  /scheduleCBusinesses/*/writableBusinessParkingAndTolls:
+    name: "Estacionamiento y peajes del negocio"
+  /scheduleCBusinesses/*/vehiclePlacedInService:
+    name: "Fecha en que se puso en servicio"
+  /scheduleCBusinesses/*/writableCommutingMiles:
+    name: "Millas de viaje al trabajo"
+    errorMessages:
+      ExceedsMinLimit: "Ingrese millas que sean 0 o más"
+      InvalidCharacters: "Ingrese millas enteras, como 500"
+  /scheduleCBusinesses/*/writableOtherMiles:
+    name: "Otras millas"
+    errorMessages:
+      ExceedsMinLimit: "Ingrese millas que sean 0 o más"
+      InvalidCharacters: "Ingrese millas enteras, como 100"
+  /scheduleCBusinesses/*/vehicleAvailableForPersonalUseOffDuty:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/hasAnotherVehicleForPersonalUse:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/vehicleHasEvidence:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
+  /scheduleCBusinesses/*/vehicleEvidenceIsWritten:
+    boolean:
+      "yes": "Sí"
+      "no": "No"
   /scheduleCBusinesses/*/hasDepreciationOrSection179:
     boolean:
       "yes": "Sí"
@@ -832,6 +957,25 @@ dataviews:
     /scheduleCBusinesses/*/writableInventoryAtEnd: "Inventario al final del año"
     /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan:
       "¿Este negocio tuvo gastos de automóvil, camión o de intereses de un préstamo de vehículo?"
+    /scheduleCBusinesses/*/hasVehicleLoanInterest: "¿Este negocio pagó intereses de un préstamo de un vehículo?"
+    /scheduleCBusinesses/*/usesStandardMileageRate: "¿Quiere usar la tarifa estándar por milla para este vehículo?"
+    /scheduleCBusinesses/*/hasMoreThanOneVehicle: "¿Este negocio usó más de un vehículo?"
+    /scheduleCBusinesses/*/usesFiveOrMoreVehiclesSimultaneously: "¿Se usaron cinco o más vehículos al mismo tiempo?"
+    /scheduleCBusinesses/*/vehiclePriorActualMacrs179OrBonus:
+      "¿Este vehículo se depreció bajo MACRS, la sección 179 o la depreciación adicional, o dedujo los gastos reales?"
+    /scheduleCBusinesses/*/vehicleRequiresForm4562: "¿Tiene que presentar el Formulario 4562 por este vehículo por otra razón?"
+    /scheduleCBusinesses/*/writableBusinessMilesJanJun: "Millas de negocio, del 1 de enero al 30 de junio"
+    /scheduleCBusinesses/*/writableBusinessMilesJulDec: "Millas de negocio, del 1 de julio al 31 de diciembre"
+    /scheduleCBusinesses/*/writableBusinessParkingAndTolls: "Estacionamiento y peajes del negocio"
+    /scheduleCBusinesses/*/vehiclePlacedInService: "Fecha en que se puso el vehículo en servicio"
+    /scheduleCBusinesses/*/writableCommutingMiles: "Millas de viaje al trabajo"
+    /scheduleCBusinesses/*/writableOtherMiles: "Otras millas"
+    /scheduleCBusinesses/*/vehicleAvailableForPersonalUseOffDuty:
+      "¿El vehículo estuvo disponible para uso personal fuera del horario de trabajo?"
+    /scheduleCBusinesses/*/hasAnotherVehicleForPersonalUse:
+      "¿Usted o su cónyuge tienen otro vehículo disponible para uso personal?"
+    /scheduleCBusinesses/*/vehicleHasEvidence: "¿Tiene evidencia que respalde esta deducción del vehículo?"
+    /scheduleCBusinesses/*/vehicleEvidenceIsWritten: "¿Esa evidencia está por escrito?"
     /scheduleCBusinesses/*/hasDepreciationOrSection179:
       "¿Este negocio tuvo depreciación o una deducción de la sección 179?"
     /scheduleCBusinesses/*/hasDepletion: "¿Este negocio tuvo una deducción por agotamiento?"
