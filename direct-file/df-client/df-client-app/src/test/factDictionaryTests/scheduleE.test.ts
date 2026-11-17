@@ -77,6 +77,11 @@ const k1 = (id: string, box1: string, type: `P` | `S`, extra: Record<string, unk
   [`/scheduleEK1s/#${id}/form1120sBox5b`]: createDollarWrapper(`0`),
   [`/scheduleEK1s/#${id}/dividendIncludesPtep`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/box5IncludesCleanRenewableEnergyBondInterest`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${id}/form1065Box8`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1065Box9a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1120sBox7`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1120sBox8a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/longTermCapitalGainIsForeignSource`]: createBooleanWrapper(false),
   ...extra,
 });
 const partIIGate = {
@@ -2044,5 +2049,324 @@ describe(`Schedule K-1 (Form 1041) boxes 3 and 4a on Schedule D lines 5 and 12`,
     expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`0.00`);
     expect(get(g, `/scheduleDLine12`).get.toString()).toBe(`0.00`);
     expect(get(g, `/scheduleEHasEstateK1CapitalGain`).get).toBe(false);
+  });
+});
+
+/** One supported Part II K-1 with the capital-gain boxes in extra. */
+const oneK1 = (type: `P` | `S`, extra: Record<string, unknown> = {}) => {
+  const id = type === `P` ? partnershipId : sCorpId;
+  return {
+    ...partIIGate,
+    '/scheduleEK1s': createCollectionWrapper([id]),
+    ...k1(id, `0`, type, extra),
+  };
+};
+const boxes = (id: string, shortTerm: string, longTerm: string, type: `P` | `S`) =>
+  type === `P`
+    ? {
+        [`/scheduleEK1s/#${id}/form1065Box8`]: createDollarWrapper(shortTerm),
+        [`/scheduleEK1s/#${id}/form1065Box9a`]: createDollarWrapper(longTerm),
+      }
+    : {
+        [`/scheduleEK1s/#${id}/form1120sBox7`]: createDollarWrapper(shortTerm),
+        [`/scheduleEK1s/#${id}/form1120sBox8a`]: createDollarWrapper(longTerm),
+      };
+
+/**
+ * Single filer, W-2 wages, and one Part II K-1. filerWithRefundDueData is $200,000 of wages, which is over the
+ * section 1411 threshold, so the hand-verified case uses this instead.
+ */
+const wagesAndK1 = (wages: number, type: `P` | `S`, extra: Record<string, unknown> = {}) => {
+  const minimal = Object.fromEntries(
+    Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+  );
+  return setupFactGraph({
+    ...minimal,
+    ...baseFilerData,
+    ...singleFilerData,
+    [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+    '/flowHasSeenDeductions': createBooleanWrapper(true),
+    ...makeW2Data(wages),
+    '/interestReports': createCollectionWrapper([]),
+    ...oneK1(type, extra),
+  }).factGraph;
+};
+
+describe(`Schedule K-1 (Form 1065) boxes 8 and 9a and (Form 1120-S) boxes 7 and 8a on Schedule D`, () => {
+  it(`reports Form 1065 box 8 and box 9a on Schedule D and the QDCG worksheet`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1065Box8`,
+      `/scheduleEK1s/*/form1065Box9a`,
+      `/scheduleDLine5`,
+      `/scheduleDLine7`,
+      `/scheduleDLine12`,
+      `/scheduleDLine15`,
+      `/scheduleDLine16`,
+      `/agi`,
+      `/taxableIncome`,
+      `/qdcgLine5`,
+      `/qdcgLine9`,
+      `/qdcgLine18`,
+      `/qdcgLine22`,
+      `/qdcgLine25`,
+      `/form8960Line5a`,
+      `/requiresScheduleD`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15: box 8 is Schedule D line 5 and
+    // box 9a is line 12. Single, W-2 $60,000, box 1 $0, box 8 $1,000, box 9a $5,000. Rev. Proc. 2025-32
+    // §4.01 and §4.03: the single 0% amount is $49,450, so $4,550 of the long-term gain is taxed at 0% and
+    // $450 at 15% ($67.50). The tax table midpoint of the $44,900 ordinary amount is $44,925.
+    const g = wagesAndK1(60000, `P`, boxes(partnershipId, `1000`, `5000`, `P`));
+    expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleDLine7`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleDLine12`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/scheduleDLine15`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/scheduleDLine16`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/capitalGainsOrLosses`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/agi`).get.toString()).toBe(`66000.00`);
+    expect(get(g, `/taxableIncome`).get.toString()).toBe(`49900.00`);
+    expect(get(g, `/qdcgLine3`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/qdcgLine5`).get.toString()).toBe(`44900.00`);
+    expect(get(g, `/qdcgLine9`).get.toString()).toBe(`4550.00`);
+    expect(get(g, `/qdcgLine17`).get.toString()).toBe(`450.00`);
+    expect(get(g, `/qdcgLine18`).get.toString()).toBe(`67.50`);
+    expect(get(g, `/qdcgLine22`).get.toString()).toBe(`5143.00`);
+    expect(get(g, `/qdcgLine23`).get.toString()).toBe(`5210.50`);
+    expect(get(g, `/qdcgLine24`).get.toString()).toBe(`5743.00`);
+    expect(get(g, `/qdcgLine25`).get.toString()).toBe(`5211.00`);
+    expect(get(g, `/form8960Line5a`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/requiresScheduleD`).get).toBe(true);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/isSupportedOrdinaryIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIColumnE`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIForeignSourceCapitalGain`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`reports Form 1120-S box 7 and box 8a with the same Schedule D and QDCG totals`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1120sBox7`,
+      `/scheduleEK1s/*/form1120sBox8a`,
+      `/scheduleDLine7`,
+      `/scheduleDLine15`,
+      `/scheduleDLine16`,
+      `/agi`,
+      `/taxableIncome`,
+      `/qdcgLine9`,
+      `/qdcgLine18`,
+      `/qdcgLine25`,
+    ];
+    // Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7: box 7 is Schedule D line 5
+    // and box 8a is line 12, after the limits on losses. Same wages and amounts as the Form 1065 case.
+    const g = wagesAndK1(60000, `S`, boxes(sCorpId, `1000`, `5000`, `S`));
+    expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleDLine7`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleDLine12`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/scheduleDLine15`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/scheduleDLine16`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/agi`).get.toString()).toBe(`66000.00`);
+    expect(get(g, `/taxableIncome`).get.toString()).toBe(`49900.00`);
+    expect(get(g, `/qdcgLine9`).get.toString()).toBe(`4550.00`);
+    expect(get(g, `/qdcgLine18`).get.toString()).toBe(`67.50`);
+    expect(get(g, `/qdcgLine22`).get.toString()).toBe(`5143.00`);
+    expect(get(g, `/qdcgLine25`).get.toString()).toBe(`5211.00`);
+    expect(get(g, `/form8960Line5a`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/isSupportedOrdinaryIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`does not require Schedule D when the capital gain boxes are zero`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleEK1HasCapitalGain`, `/requiresScheduleD`, `/scheduleDLine5`];
+    const g = fg(oneK1(`P`));
+    expect(get(g, `/scheduleEK1NetShortTermCapitalGain`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEK1NetLongTermCapitalGain`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEK1HasCapitalGain`).get).toBe(false);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleDLine12`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(false);
+  });
+
+  it(`stops a net capital loss and still shows it on Schedule D`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/capitalGainIsLoss`,
+      `/flowKnockoutScheduleEPartIIColumnE`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+      `/scheduleDLine5`,
+      `/scheduleDLine12`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, report a loss on Schedule D, but 26 U.S.C. 704(d), 465, and
+    // 469 (Forms 7203, 6198, and 8582) are not computed. Shareholder's Instructions (2025), PDF p. 7, say
+    // "after applying the limitations on losses and deductions."
+    const shortLoss = fg(oneK1(`P`, boxes(partnershipId, `-1000`, `5000`, `P`)));
+    expect(get(shortLoss, `/scheduleEK1s/#${partnershipId}/capitalGainIsLoss`).get).toBe(true);
+    expect(get(shortLoss, `/scheduleDLine5`).get.toString()).toBe(`-1000.00`);
+    expect(get(shortLoss, `/scheduleDLine12`).get.toString()).toBe(`5000.00`);
+    expect(get(shortLoss, `/flowKnockoutScheduleEPartIIColumnE`).get).toBe(true);
+    expect(get(shortLoss, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(shortLoss, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(shortLoss, `/scheduleEK1s/#${partnershipId}/isSupportedOrdinaryIncome`).get).toBe(false);
+    const longLoss = fg(oneK1(`S`, boxes(sCorpId, `1000`, `-1`, `S`)));
+    expect(get(longLoss, `/scheduleEK1s/#${sCorpId}/capitalGainIsLoss`).get).toBe(true);
+    expect(get(longLoss, `/scheduleDLine12`).get.toString()).toBe(`-1.00`);
+    expect(get(longLoss, `/flowKnockoutScheduleEPartIIColumnE`).get).toBe(true);
+    expect(get(longLoss, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`stops Form 1065 boxes 9b and 9c and Form 1120-S boxes 8b and 8c`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/hasOtherK1Amount`,
+      `/flowKnockoutScheduleEPartIIOtherK1Amount`,
+      `/flowKnockoutScheduleEPartII`,
+      `/scheduleDLine5`,
+      `/scheduleDLine12`,
+    ];
+    // Partner's Instructions (2025), PDF p. 16: box 9b is the 28% Rate Gain Worksheet line 4 and box 9c is
+    // unrecaptured section 1250 gain. Shareholder's Instructions (2025), PDF p. 7, boxes 8b and 8c are the
+    // same worksheets. Those boxes stay on /scheduleEK1s/*/hasOtherK1Amount.
+    const g = fg(
+      oneK1(`P`, {
+        ...boxes(partnershipId, `1000`, `5000`, `P`),
+        [`/scheduleEK1s/#${partnershipId}/hasOtherK1Amount`]: createBooleanWrapper(true),
+      })
+    );
+    expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleDLine12`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIIOtherK1Amount`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/isSupportedOrdinaryIncome`).get).toBe(false);
+  });
+
+  it(`stops foreign-source long-term capital gain`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/longTermCapitalGainIsForeignSource`,
+      `/flowKnockoutScheduleEPartIIForeignSourceCapitalGain`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, Box 9a, Caution. Schedule K-3 is not computed. 26 U.S.C.
+    // 1366(b) is the same character rule for an S corporation. A yes stops even when box 9a is zero.
+    const g = fg(
+      oneK1(`P`, {
+        [`/scheduleEK1s/#${partnershipId}/longTermCapitalGainIsForeignSource`]: createBooleanWrapper(true),
+      })
+    );
+    expect(get(g, `/scheduleDLine12`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIIForeignSourceCapitalGain`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/isSupportedOrdinaryIncome`).get).toBe(false);
+  });
+
+  it(`stops a Pennsylvania return with a nonzero partnership or S corporation capital gain`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaK1PartIICapitalGain`,
+      `/flowKnockoutPaUnsupportedIncome`,
+      `/flowKnockoutStateReturn`,
+      `/flowIsKnockedOut`,
+    ];
+    // PA-40 IN (2025) p. 17, LINE 5, is a sale on PA Schedule D. Pennsylvania uses the PA RK-1, not the
+    // federal K-1 copied onto federal Schedule D. 72 P.S. §7303(a)(3).
+    const gain = fg({ ...oneK1(`P`, boxes(partnershipId, `1000`, `5000`, `P`)), ...residence(`pa`) });
+    expect(get(gain, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(true);
+    expect(get(gain, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(gain, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(gain, `/flowIsKnockedOut`).get).toBe(true);
+    const loss = fg({ ...oneK1(`S`, boxes(sCorpId, `0`, `-400`, `S`)), ...residence(`pa`) });
+    expect(get(loss, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(true);
+    expect(get(loss, `/scheduleDLine12`).get.toString()).toBe(`-400.00`);
+    const cents = fg({ ...oneK1(`P`, boxes(partnershipId, `0.40`, `0`, `P`)), ...residence(`pa`) });
+    expect(get(cents, `/scheduleDLine5`).get.toString()).toBe(`0.00`);
+    expect(get(cents, `/scheduleEK1CapitalGainNonzero`).get).toBe(true);
+    expect(get(cents, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(true);
+    const zero = fg({ ...oneK1(`P`), ...residence(`pa`) });
+    expect(get(zero, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(false);
+    expect(get(zero, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+  });
+
+  it(`lets a Florida filer report the gain`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaK1PartIICapitalGain`,
+      `/scheduleDLine5`,
+      `/scheduleDLine12`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Fla. Const. art. VII, sec. 5(a): no personal income tax. The federal Schedule D lines still apply.
+    const g = fg({ ...oneK1(`P`, boxes(partnershipId, `1000`, `5000`, `P`)), ...residence(`fl`) });
+    expect(get(g, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(false);
+    expect(get(g, `/scheduleDLine16`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`leaves Schedule D line 5 incomplete when box 8 is unanswered`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleDLine5`, `/scheduleEK1HasCapitalGain`, `/flowKnockoutScheduleEPartII`];
+    const facts = oneK1(`P`) as Record<string, unknown>;
+    delete facts[`/scheduleEK1s/#${partnershipId}/form1065Box8`];
+    const g = fg(facts);
+    expect(get(g, `/scheduleDLine5`).complete).toBe(false);
+    expect(get(g, `/scheduleEK1HasCapitalGain`).complete).toBe(true);
+    expect(get(g, `/scheduleEK1HasCapitalGain`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
+  });
+
+  it(`adds an estate box 3 to a partnership box 8 on Schedule D line 5`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleDLine5`, `/scheduleDLine12`];
+    // 26 U.S.C. 6102(a): the two unrounded totals are added, then rounded once.
+    const g = fg({
+      ...partIIIGate,
+      '/scheduleEEstates': createCollectionWrapper([estateId]),
+      ...estate(estateId, `0`, {
+        [`/scheduleEEstates/#${estateId}/box3`]: createDollarWrapper(`100`),
+        [`/scheduleEEstates/#${estateId}/box4a`]: createDollarWrapper(`200`),
+      }),
+      '/scheduleEK1s': createCollectionWrapper([partnershipId]),
+      ...k1(partnershipId, `0`, `P`, boxes(partnershipId, `1000`, `5000`, `P`)),
+    });
+    expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`1100.00`);
+    expect(get(g, `/scheduleDLine12`).get.toString()).toBe(`5200.00`);
+    expect(get(g, `/scheduleDLine16`).get.toString()).toBe(`6300.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+  });
+
+  it(`rounds the partnership short-term sum once on Schedule D line 5`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleEK1NetShortTermCapitalGain`, `/scheduleDLine5`];
+    // 26 U.S.C. 6102(a). $10.40 + $10.50 = $20.90, which rounds to $21.
+    const g = fg({
+      ...partIIGate,
+      '/scheduleEK1s': createCollectionWrapper([partnershipId, sCorpId]),
+      ...k1(partnershipId, `0`, `P`, boxes(partnershipId, `10.40`, `0`, `P`)),
+      ...k1(sCorpId, `0`, `S`, boxes(sCorpId, `10.50`, `0`, `S`)),
+    });
+    expect(get(g, `/scheduleEK1NetShortTermCapitalGain`).get.toString()).toBe(`20.90`);
+    expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`21.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+  });
+
+  it(`is complete false when there is no partnership or S corporation`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaK1PartIICapitalGain`,
+      `/scheduleEK1NetShortTermCapitalGain`,
+      `/scheduleDLine5`,
+    ];
+    const g = fg({
+      '/hadScheduleEIncome': createBooleanWrapper(false),
+      '/scheduleEHasPartIIIncome': createBooleanWrapper(false),
+      '/scheduleEHasPartIVIncome': createBooleanWrapper(false),
+    });
+    expect(get(g, `/scheduleEK1NetShortTermCapitalGain`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEK1NetLongTermCapitalGain`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEK1HasCapitalGain`).get).toBe(false);
+    expect(get(g, `/scheduleDLine5`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutPaK1PartIICapitalGain`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIForeignSourceCapitalGain`).get).toBe(false);
   });
 });

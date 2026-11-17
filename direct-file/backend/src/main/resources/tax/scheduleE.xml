@@ -1655,13 +1655,107 @@
         qualified dividends on Form 1040 or 1040-SR, line 3a." Qualified dividends are the portion of box
         5a that qualifies. 26 U.S.C. 469(e)(1)(A): those dividends are not taken into account as income from
         a passive activity. 26 U.S.C. 1(h)(11). 26 U.S.C. 1366(a)(1)(A) and 1366(b). A box 5b larger than
-        box 5a stops the return. Not a loss: minimum zero. Enter zero when box 5b is blank.
+        box 5a stops the return.         Not a loss: minimum zero. Enter zero when box 5b is blank.
       </Description>
       <Writable>
         <Dollar />
         <Limit type="Min">
           <Dollar>0</Dollar>
         </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box8">
+      <Name>Schedule K-1 (Form 1065) box 8 net short-term capital gain (loss)</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1065sk1.pdf, SHA-256 659063e0aaa36e44), PDF p. 15, Box 8:
+        "Report the net short-term capital gain (loss) on Schedule D (Form 1040), line 5." The same page,
+        Portfolio Income: portfolio income in boxes 5 through 9b is not subject to the passive activity
+        limitations. 26 U.S.C. 702(a)(1) and 702(a)(2) (https://www.law.cornell.edu/uscode/text/26/702)
+        require the short-term capital gain or loss to be stated separately. 26 U.S.C. 702(b) keeps the
+        character. 26 U.S.C. 1222(5) and 1222(6). Not Schedule E line 28. A nonnegative amount is Schedule D
+        line 5. A negative amount is a loss. Basis (26 U.S.C. 704(d)), at-risk (26 U.S.C. 465, Form 6198),
+        and passive-loss (26 U.S.C. 469, Form 8582) limits are not computed, so a loss stops the return
+        through /scheduleEK1s/*/basisComputationRequired. No minimum: the loss must stay visible to that
+        stop. Enter zero when box 8 is blank. Asked only for a partnership. Boxes 9b and 9c are not this
+        amount.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box9a">
+      <Name>Schedule K-1 (Form 1065) box 9a net long-term capital gain (loss)</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 9a: "Report the net
+        long-term capital gain (loss) on Schedule D (Form 1040), line 12." 26 U.S.C. 702(a)(2) and 702(b).
+        26 U.S.C. 1222(7) and 1222(8). Not Schedule E line 28. A nonnegative amount is Schedule D line 12.
+        A negative amount stops the return through /scheduleEK1s/*/basisComputationRequired. 26 U.S.C.
+        704(d), 465, and 469. Forms 6198 and 8582 are not computed. No minimum. Enter zero when box 9a is
+        blank. Asked only for a partnership. The same page, Box 9a, Caution: "If you have any foreign
+        source net long-term capital gain (loss), see the Partner's Instructions for Schedule K-3 for
+        additional information." That foreign-source amount is
+        /scheduleEK1s/*/longTermCapitalGainIsForeignSource, not this amount. Box 9b is the 28% Rate Gain
+        Worksheet line 4. Box 9c is unrecaptured section 1250 gain. Neither is this amount.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1120sBox7">
+      <Name>Schedule K-1 (Form 1120-S) box 7 net short-term capital gain (loss)</Name>
+      <Description>
+        Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1120ssk.pdf, SHA-256 fb6194da1d1f9e89), PDF p. 7, Box 7: "After
+        applying the limitations on losses and deductions, report the net short-term capital gain (loss) on
+        Schedule D (Form 1040), Capital Gains and Losses, line 5." 26 U.S.C. 1366(a)(1)(A)
+        (https://www.law.cornell.edu/uscode/text/26/1366) requires separate treatment when the item could
+        affect the shareholder's liability. 26 U.S.C. 1366(b) keeps the character. 26 U.S.C. 1222(5) and
+        1222(6). Not Schedule E line 28. A nonnegative amount is Schedule D line 5. A negative amount has
+        not had the basis, at-risk, and passive-loss limits applied. Form 7203 (26 U.S.C. 1366(d)), Form
+        6198 (26 U.S.C. 465), and Form 8582 (26 U.S.C. 469) are not computed, so a loss stops the return
+        through /scheduleEK1s/*/basisComputationRequired. No minimum. Enter zero when box 7 is blank. Asked
+        only for an S corporation.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1120sBox8a">
+      <Name>Schedule K-1 (Form 1120-S) box 8a net long-term capital gain (loss)</Name>
+      <Description>
+        Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 8a: "After applying
+        the limitations on losses and deductions, report the net long-term capital gain (loss) on Schedule D
+        (Form 1040), line 12." 26 U.S.C. 1366(a)(1)(A) and 1366(b). 26 U.S.C. 1222(7) and 1222(8). Not
+        Schedule E line 28. A nonnegative amount is Schedule D line 12. A negative amount stops the return
+        through /scheduleEK1s/*/basisComputationRequired. Forms 7203, 6198, and 8582 are not computed. No
+        minimum. Enter zero when box 8a is blank. Asked only for an S corporation. A foreign-source
+        long-term capital gain needs Schedule K-3, which is not computed
+        (/scheduleEK1s/*/longTermCapitalGainIsForeignSource). Box 8b is the 28% Rate Gain Worksheet line 4.
+        Box 8c is unrecaptured section 1250 gain. Neither is this amount.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/longTermCapitalGainIsForeignSource">
+      <Name>Long-term capital gain includes a foreign-source amount</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 9a, Caution: "If you
+        have any foreign source net long-term capital gain (loss), see the Partner's Instructions for
+        Schedule K-3 for additional information." Schedule K-3 is not computed, so the foreign-source
+        portion cannot be separated for the foreign tax credit. The same stop covers Form 1120-S box 8a:
+        26 U.S.C. 1366(b) keeps the foreign character, and Schedule K-3 (Form 1120-S) is not computed. A
+        yes stops the return. Answer no when none of the long-term capital gain is from a foreign source,
+        including when box 9a or box 8a is zero.
+      </Description>
+      <Writable>
+        <Boolean />
       </Writable>
     </Fact>
 
@@ -1727,21 +1821,28 @@
     </Fact>
 
     <Fact path="/scheduleEK1s/*/hasOtherK1Amount">
-      <Name>Any Schedule K-1 amount other than box 1, box 14 code A, and interest and dividends</Name>
+      <Name>Any Schedule K-1 amount other than box 1, box 14 code A, interest, dividends, and net capital gain</Name>
       <Description>
-        Any box other than box 1, box 14 code A, and the interest and dividend boxes. Those boxes are
-        Form 1065 boxes 5, 6a, and 6b, or Form 1120-S boxes 4, 5a, and 5b, and they are reported on Form
-        1040 lines 2b, 3b, and 3a. Previously taxed earnings and profits are a separate question
+        Any box other than box 1, box 14 code A, the interest and dividend boxes, and the net capital gain
+        boxes. The interest and dividend boxes are Form 1065 boxes 5, 6a, and 6b, or Form 1120-S boxes 4,
+        5a, and 5b, and they are reported on Form 1040 lines 2b, 3b, and 3a. The net capital gain boxes are
+        Form 1065 box 8 and box 9a, or Form 1120-S box 7 and box 8a, and they are Schedule D lines 5 and 12.
+        Previously taxed earnings and profits are a separate question
         (/scheduleEK1s/*/dividendIncludesPtep), not this one. Interest from the credit for holders of clean
         renewable energy bonds is /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest, not this
-        one. Box 4 guaranteed payments are always
-        included. Answer yes when box 4 has an amount, including when those payments are also in box 14
-        code A. 26 U.S.C. 707(c) guaranteed payments are separately stated under 702(a). Box 14 code A is
+        one. A foreign-source long-term capital gain is
+        /scheduleEK1s/*/longTermCapitalGainIsForeignSource, not this one. Box 4 guaranteed payments are
+        always included. Answer yes when box 4 has an amount, including when those payments are also in box
+        14 code A. 26 U.S.C. 707(c) guaranteed payments are separately stated under 702(a). Box 14 code A is
         the self-employment amount under 26 U.S.C. 1402(a) and does not take the place of box 4. The same
-        yes covers royalties, capital gain, section 179, credits, and other separately stated items.
-        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 6c: "Dividend
-        equivalents aren't reported on Form 1040 or 1040-SR." Box 6c is a yes. 26 U.S.C. 702(a) and
-        1366(a)(1)(A). Answer no only when every such box is blank or zero.
+        yes covers royalties, section 179, credits, and other separately stated items. Form 1065 boxes 9b
+        and 9c, and Form 1120-S boxes 8b and 8c, are still a yes. Partner's Instructions (2025), PDF p. 16,
+        Box 9b: collectibles (28%) gain goes on the 28% Rate Gain Worksheet line 4. Box 9c is unrecaptured
+        section 1250 gain. Shareholder's Instructions (2025), PDF p. 7, Box 8b and Box 8c, are the same
+        worksheets. Those worksheets are not computed. Partner's Instructions (2025), PDF p. 15, Box 6c:
+        "Dividend equivalents aren't reported on Form 1040 or 1040-SR." Box 6c is a yes. 26 U.S.C. 702(a)
+        and 1366(a)(1)(A). Answer no only when every such box is blank or zero, even if box 8, box 9a, box
+        7, or box 8a has an amount.
       </Description>
       <Writable>
         <Boolean />
@@ -1945,6 +2046,110 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/k1NetShortTermCapitalGain">
+      <Name>Net short-term capital gain from this partnership or S corporation</Name>
+      <Description>
+        Form 1065 box 8 or Form 1120-S box 7, before rounding, including a loss. Schedule D line 5.
+        Cites on /scheduleEK1s/*/form1065Box8 and /scheduleEK1s/*/form1120sBox7. 26 U.S.C. 702(a)(1),
+        1366(a)(1)(A), and 1222.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isPartnership" />
+            </When>
+            <Then>
+              <Dependency path="../form1065Box8" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../isSCorporation" />
+            </When>
+            <Then>
+              <Dependency path="../form1120sBox7" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/k1NetLongTermCapitalGain">
+      <Name>Net long-term capital gain from this partnership or S corporation</Name>
+      <Description>
+        Form 1065 box 9a or Form 1120-S box 8a, before rounding, including a loss. Schedule D line 12.
+        Cites on /scheduleEK1s/*/form1065Box9a and /scheduleEK1s/*/form1120sBox8a. 26 U.S.C. 702(a)(2),
+        1366(a)(1)(A), and 1222.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isPartnership" />
+            </When>
+            <Then>
+              <Dependency path="../form1065Box9a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../isSCorporation" />
+            </When>
+            <Then>
+              <Dependency path="../form1120sBox8a" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/capitalGainIsLoss">
+      <Name>This K-1 reports a net capital loss</Name>
+      <Description>
+        Form 1065 box 8 or box 9a, or Form 1120-S box 7 or box 8a, is less than zero. Partner's
+        Instructions (2025), PDF p. 15, and Shareholder's Instructions (2025), PDF p. 7, report the net
+        gain or loss only after the loss limitations. 26 U.S.C. 704(d), 1366(d) (Form 7203), 465 (Form
+        6198), and 469 (Form 8582) are not computed. The loss stops the return on the same path as
+        /scheduleEK1s/*/basisComputationRequired.
+      </Description>
+      <Derived>
+        <Any>
+          <LessThan>
+            <Left>
+              <Dependency path="../k1NetShortTermCapitalGain" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </LessThan>
+          <LessThan>
+            <Left>
+              <Dependency path="../k1NetLongTermCapitalGain" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </LessThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/basisComputationOrCapitalGainLoss">
+      <Name>Column (e) or a net capital loss</Name>
+      <Description>
+        True when column (e) is checked or a net capital gain box is a loss. A loss needs the basis,
+        at-risk, and passive-loss computations that column (e) already stops. Cites on
+        /scheduleEK1s/*/basisComputationRequired and /scheduleEK1s/*/capitalGainIsLoss.
+      </Description>
+      <Derived>
+        <Any>
+          <Dependency path="../basisComputationRequired" />
+          <Dependency path="../capitalGainIsLoss" />
+        </Any>
       </Derived>
     </Fact>
 
@@ -2395,7 +2600,8 @@
       <Description>
         Domestic partnership or S corporation, column (c) unchecked, not a PTP, not a trading business, box 1
         at least zero, box 14 code A on the supported Schedule SE path, no section 199A statement, no K-1
-        amount other than box 1, box 14 code A, and the interest and dividend boxes, no previously taxed
+        amount other than box 1, box 14 code A, the interest and dividend boxes, and the net capital gain
+        boxes, net capital gain at least zero, no foreign-source long-term capital gain, no previously taxed
         earnings and profits, no clean renewable energy bond interest in Form 1065 box 5, qualified
         dividends not larger than ordinary dividends, column (e) and column (f) unchecked, and material
         participation yes.
@@ -2426,6 +2632,12 @@
           </Not>
           <Not>
             <Dependency path="../hasOtherK1Amount" />
+          </Not>
+          <Not>
+            <Dependency path="../capitalGainIsLoss" />
+          </Not>
+          <Not>
+            <Dependency path="../longTermCapitalGainIsForeignSource" />
           </Not>
           <Not>
             <Dependency path="../basisComputationRequired" />
@@ -2514,6 +2726,15 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasOtherK1Amount" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../k1NetShortTermCapitalGain" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../k1NetLongTermCapitalGain" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../longTermCapitalGainIsForeignSource" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../basisComputationRequired" />
@@ -3185,12 +3406,14 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutScheduleEPartIIColumnE">
-      <Name>Knockout: Schedule E line 28 column (e)</Name>
+    <Fact path="/flowKnockoutScheduleEPartIIForeignSourceCapitalGain">
+      <Name>Knockout: foreign-source long-term capital gain on a Schedule K-1</Name>
       <Description>
-        S corporation distribution, stock disposition, loan repayment, or other required basis computation.
-        Cites on /scheduleEK1s/*/basisComputationRequired. Complete false when /scheduleEHasPartIIIncome is
-        false.
+        Any foreign-source net long-term capital gain. Partner's Instructions for Schedule K-1 (Form 1065)
+        (2025), PDF p. 15, Box 9a, Caution: "If you have any foreign source net long-term capital gain
+        (loss), see the Partner's Instructions for Schedule K-3 for additional information." Schedule K-3
+        is not computed, so the foreign tax credit cannot be figured. The same stop covers Form 1120-S box
+        8a. 26 U.S.C. 1366(b). Complete false when /scheduleEHasPartIIIncome is false.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -3200,7 +3423,34 @@
           <GreaterThan>
             <Left>
               <Count>
-                <Dependency path="/scheduleEK1s/*/basisComputationRequired" />
+                <Dependency path="/scheduleEK1s/*/longTermCapitalGainIsForeignSource" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIColumnE">
+      <Name>Knockout: Schedule E line 28 column (e)</Name>
+      <Description>
+        S corporation distribution, stock disposition, loan repayment, other required basis computation, or
+        a net capital loss in Form 1065 box 8 or box 9a or Form 1120-S box 7 or box 8a. A capital loss
+        still needs Forms 7203, 6198, and 8582. Cites on /scheduleEK1s/*/basisComputationRequired and
+        /scheduleEK1s/*/capitalGainIsLoss. Complete false when /scheduleEHasPartIIIncome is false.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/basisComputationOrCapitalGainLoss" />
               </Count>
             </Left>
             <Right>
@@ -6044,6 +6294,7 @@
           <Dependency path="/flowKnockoutScheduleEPartIIPtep" />
           <Dependency path="/flowKnockoutScheduleEPartIICleanRenewableEnergyBond" />
           <Dependency path="/flowKnockoutScheduleEPartIIQualifiedDividends" />
+          <Dependency path="/flowKnockoutScheduleEPartIIForeignSourceCapitalGain" />
           <Dependency path="/flowKnockoutScheduleEPartIIColumnE" />
           <Dependency path="/flowKnockoutScheduleEPartIIColumnF" />
           <Dependency path="/flowKnockoutScheduleEPartIIForeignOrPtp" />
@@ -6201,8 +6452,10 @@
         to Form 8960 line 4a.
         Passive, trading, PTP, and any other box stop the return. Interest and dividends (Form 1065
         boxes 5, 6a, and 6b, or Form 1120-S boxes 4, 5a, and 5b) are Form 1040 lines 2b, 3b, and 3a, not
-        line 28. Previously taxed earnings and profits in the dividend boxes stop the return. 26 U.S.C.
-        959(a).
+        line 28. A nonnegative Form 1065 box 8 or box 9a, or Form 1120-S box 7 or box 8a, is Schedule D
+        line 5 or line 12. A loss, a foreign-source long-term capital gain, and boxes 9b, 9c, 8b, and 8c
+        stop the return. Previously taxed earnings and profits in the dividend boxes stop the return.
+        26 U.S.C. 959(a).
 
         Qualified business income. A blank box 20 code Z or box
         17 code V leaves Form 8995 lines 6-9 at zero.
@@ -7108,6 +7361,173 @@
             </When>
             <Then>
               <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1NetShortTermCapitalGain">
+      <Name>Partnership and S corporation K-1 net short-term capital gain, unrounded</Name>
+      <Description>
+        Sum of Form 1065 box 8 and Form 1120-S box 7 before Schedule D rounding, including a loss.
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 8, and Shareholder's
+        Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 7, report a nonnegative amount
+        on Schedule D line 5. 26 U.S.C. 702(a)(1), 1366(a)(1)(A), and 1222. $0 when Part II is unanswered
+        or no, or the partnership list is not complete, so a return with no partnership or S corporation
+        does not leave Schedule D line 5 incomplete. A listed entity with an unanswered box leaves the sum
+        incomplete. Cents stay in the sum. scheduleD2 /scheduleDLine5 adds this to the estate and trust
+        total and rounds once. 26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEK1PortfolioReady" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEK1s/*/k1NetShortTermCapitalGain" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1NetLongTermCapitalGain">
+      <Name>Partnership and S corporation K-1 net long-term capital gain, unrounded</Name>
+      <Description>
+        Sum of Form 1065 box 9a and Form 1120-S box 8a before Schedule D rounding, including a loss.
+        Partner's Instructions (2025), PDF p. 15, Box 9a, and Shareholder's Instructions (2025), PDF p. 7,
+        Box 8a, report a nonnegative amount on Schedule D line 12. 26 U.S.C. 702(a)(2), 1366(a)(1)(A),
+        and 1222. $0 on the same gate as /scheduleEK1NetShortTermCapitalGain. A listed entity with an
+        unanswered box leaves the sum incomplete. Cents stay in the sum. scheduleD2 /scheduleDLine12 adds
+        this to the estate and trust total and rounds once. 26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEK1PortfolioReady" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEK1s/*/k1NetLongTermCapitalGain" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1CapitalGainNonzero">
+      <Name>Partnership or S corporation K-1 net capital gain total is not zero</Name>
+      <Description>
+        True when the unrounded short-term total or the unrounded long-term total is not zero, including
+        a loss and including cents that round to zero on Schedule D. Incomplete when either total is
+        incomplete, so a PA-40 with an unanswered box stays incomplete. Partner's Instructions (2025),
+        PDF p. 15. Shareholder's Instructions (2025), PDF p. 7.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Not>
+            <Equal>
+              <Left>
+                <Dependency path="/scheduleEK1NetShortTermCapitalGain" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </Equal>
+          </Not>
+          <Not>
+            <Equal>
+              <Left>
+                <Dependency path="/scheduleEK1NetLongTermCapitalGain" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </Equal>
+          </Not>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1HasCapitalGain">
+      <Name>Partnership or S corporation K-1 net capital gain is not zero</Name>
+      <Description>
+        True when the unrounded short-term total or the unrounded long-term total is not zero, including
+        a loss. Schedule D is then required (scheduleD /requiresScheduleD). Complete false when either
+        total is not yet complete, and when both are zero, so a return that has not reached Part II does
+        not change /requiresScheduleD. 2026 draft Schedule D, PDF p. 2, lines 5 and 12.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1NetShortTermCapitalGain" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1NetLongTermCapitalGain" />
+                </IsComplete>
+                <Any>
+                  <Not>
+                    <Equal>
+                      <Left>
+                        <Dependency path="/scheduleEK1NetShortTermCapitalGain" />
+                      </Left>
+                      <Right>
+                        <Dollar>0</Dollar>
+                      </Right>
+                    </Equal>
+                  </Not>
+                  <Not>
+                    <Equal>
+                      <Left>
+                        <Dependency path="/scheduleEK1NetLongTermCapitalGain" />
+                      </Left>
+                      <Right>
+                        <Dollar>0</Dollar>
+                      </Right>
+                    </Equal>
+                  </Not>
+                </Any>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
             </Then>
           </Case>
         </Switch>

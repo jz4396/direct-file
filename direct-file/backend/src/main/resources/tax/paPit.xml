@@ -1847,6 +1847,66 @@
         </Switch>
       </Derived>
     </Fact>
+    <Fact path="/flowKnockoutPaK1PartIICapitalGain">
+      <Name>Flow knockout: PA-40 with partnership or S corporation K-1 capital gain</Name>
+      <Description>A nonzero Form 1065 box 8 or box 9a, or Form 1120-S box 7 or box 8a, on a PA-40.
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, report box 8 on federal
+        Schedule D line 5 and box 9a on line 12. Shareholder's Instructions for Schedule K-1 (Form 1120-S)
+        (2025), PDF p. 7, report box 7 on line 5 and box 8a on line 12. PA-40 IN (2025)
+        https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
+        p. 17, LINE 5: "Report your gain (loss) from the sale, exchange, or disposition of any kind of
+        intangible property and any real or tangible property" on PA Schedule D. Pennsylvania uses the PA
+        RK-1 and those PA-40 line 5 rules, not the federal Schedule K-1 amount copied onto federal Schedule
+        D. PA Schedule D for a partnership or S corporation capital gain is not produced. A loss is nonzero
+        and stops too. Same treatment as /flowKnockoutPaK11041CapitalGain. Complete false when the return
+        is not a PA-40, when Part II has not started, and when both totals are zero. An unanswered box on a
+        PA-40 stays incomplete and refuses the print. 72 P.S. §7303(a)(3)
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEK1CapitalGainNonzero" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleEK1CapitalGainNonzero" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEK1CapitalGainNonzero" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/flowKnockoutPaK11041Box7">
       <Name>Flow knockout: PA-40 with Schedule K-1 (Form 1041) box 7</Name>
       <Description>

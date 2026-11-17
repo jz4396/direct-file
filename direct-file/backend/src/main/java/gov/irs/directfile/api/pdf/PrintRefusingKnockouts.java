@@ -98,6 +98,11 @@ public final class PrintRefusingKnockouts {
             // 72 P.S. §7303(a)(3) and §7303(a)(8). Complete false when the return is not a PA-40 or both totals
             // are zero.
             "/flowKnockoutPaK11041CapitalGain",
+            // A nonzero Form 1065 box 8 or box 9a, or Form 1120-S box 7 or box 8a, on a PA-40. Federal
+            // Schedule D lines 5 and 12 are not PA-40 line 5. PA uses the RK-1 and PA-40 line 5 rules.
+            // PA-40 IN (2025) p. 17, LINE 5. 72 P.S. §7303(a)(3). Complete false when the return is not a
+            // PA-40 or both totals are zero. A loss is nonzero and refuses the print.
+            "/flowKnockoutPaK1PartIICapitalGain",
             // A nonzero Schedule K-1 (Form 1041) box 7 on any PA-40. Federal Schedule E line 33 column (d)
             // is not PA-40 line 6. PA-40 IN (2025) p. 19, LINE 7, reports estate or trust income on PA
             // Schedule J from a PA-41 Schedule RK-1, and a beneficiary cannot report a loss. PA Schedule J
@@ -188,8 +193,11 @@ public final class PrintRefusingKnockouts {
             // Schedule E Part II. 2026 draft Instructions for Schedule E, PDF p. 11: "use Part II to report your
             // share of the partnership or S corporation income (even if not received) or loss." 2026 draft
             // Schedule E, PDF p. 4, line 41 combines line 32 into Schedule 1 line 5 (26 U.S.C. 702(a), 1366(a)).
-            // The supported path (domestic partnership or S corporation, nonnegative box 1 only, material
-            // participation, no column (e) or (f), line 27 no) is complete false and may print. Supported
+            // The supported path (domestic partnership or S corporation, nonnegative box 1, nonnegative
+            // Form 1065 boxes 8 and 9a or Form 1120-S boxes 7 and 8a, material
+            // participation, no column (e) or (f), line 27 no) is complete false and may print. A capital
+            // loss, foreign-source long-term capital gain, and boxes 9b, 9c, 8b, and 8c refuse the print.
+            // Supported
             // Part III column (f) (nonnegative Schedule K-1 (Form 1041) box 5, plus nonpassive box 6) may
             // print on the same path. Box 5 is net investment income on Form 8960. Box 6 is not. 26 U.S.C.
             // 469(e)(1)(A); 26 U.S.C. 1411(c)(1)(A); 26 U.S.C. 1411(c)(2). A negative box 5 refuses the print.

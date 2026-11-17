@@ -209,6 +209,7 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIPtep" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIICleanRenewableEnergyBond" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIQualifiedDividends" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIForeignSourceCapitalGain" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIColumnE" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIColumnF" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIForeignOrPtp" />

@@ -130,6 +130,13 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "form1120sBox5b", dollar("0.00"));
         m.put(p + "dividendIncludesPtep", bool(false));
         m.put(p + "box5IncludesCleanRenewableEnergyBondInterest", bool(false));
+        // Form 1065 boxes 8 and 9a and Form 1120-S boxes 7 and 8a are Schedule D lines 5 and 12 when
+        // nonnegative. A supported entity has them at zero. A loss stops on column (e).
+        m.put(p + "form1065Box8", dollar("0.00"));
+        m.put(p + "form1065Box9a", dollar("0.00"));
+        m.put(p + "form1120sBox7", dollar("0.00"));
+        m.put(p + "form1120sBox8a", dollar("0.00"));
+        m.put(p + "longTermCapitalGainIsForeignSource", bool(false));
     }
 
     static Map<String, String> partIIGate(Map<String, String> m) {

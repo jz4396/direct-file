@@ -315,6 +315,67 @@ class ScheduleDForm8949PdfSmokeTest {
         assertTrue(blockingFacts(e).contains("/flowKnockoutPaK11041CapitalGain"), e.getBody().toString());
     }
 
+    /**
+     * Form 1065 box 8 and box 9a. Partner's Instructions (2025), PDF p. 15. No Form 8949 rows, so line 7 equals
+     * line 5 and line 15 equals line 12. Line 16 is the sum.
+     */
+    @Test
+    void form1065Boxes8And9aPrintOnScheduleD() throws Exception {
+        byte[] bytes =
+                render(facts -> k1PartII(facts, "P", "1000", "5000", false, false, "fl"), "schedule-d-k1-1065.pdf");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> byName = fields(doc);
+            assertEquals("1000", digits(byName, "Page1[0].f1_20[0]"), "Sch D line 5");
+            assertEquals("5000", digits(byName, "Page1[0].f1_40[0]"), "Sch D line 12");
+            assertEquals(1, count(byName, "Page1[0].f1_22[0]", "1000"), "Sch D line 7");
+            assertEquals(1, count(byName, "Page1[0].f1_43[0]", "5000"), "Sch D line 15");
+            assertEquals(1, count(byName, "Page2[0].f2_1[0]", "6000"), "Sch D line 16");
+        }
+    }
+
+    /** A negative box 8 is a loss. Forms 7203, 6198, and 8582 are not computed, so the print is refused. */
+    @Test
+    void form1065CapitalLossRefusesThePrint() throws Exception {
+        PdfService pdfService = pdfService();
+        TaxReturn taxReturn = taxReturn(facts -> k1PartII(facts, "P", "-1000", "0", false, false, "fl"));
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn, false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(blockingFacts(e).contains("/flowKnockoutScheduleEPartII"), e.getBody().toString());
+    }
+
+    /**
+     * Form 1065 boxes 9b and 9c stay on /scheduleEK1s/star/hasOtherK1Amount. The print is refused through
+     * /flowKnockoutScheduleEPartII. Partner's Instructions (2025), PDF p. 16.
+     */
+    @Test
+    void form1065Boxes9bAnd9cRefuseThePrint() throws Exception {
+        PdfService pdfService = pdfService();
+        TaxReturn taxReturn = taxReturn(facts -> k1PartII(facts, "P", "1000", "5000", true, false, "fl"));
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn, false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(blockingFacts(e).contains("/flowKnockoutScheduleEPartII"), e.getBody().toString());
+    }
+
+    /**
+     * A full-year PA-40 with box 8 or box 9a stops. PA-40 IN (2025) p. 17, LINE 5, and the PA RK-1. A Florida
+     * filer with the same amounts prints (the Form 1065 test).
+     */
+    @Test
+    void pennsylvaniaFullYearResidentWithForm1065CapitalGainRefusesThePrint() throws Exception {
+        PdfService pdfService = pdfService();
+        TaxReturn taxReturn = taxReturn(facts -> k1PartII(facts, "P", "1000", "5000", false, false, "pa"));
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> pdfService.getTaxReturn("en", taxReturn, false));
+        assertEquals(HttpStatus.BAD_REQUEST, e.getStatusCode());
+        assertTrue(
+                blockingFacts(e).contains("/flowKnockoutPaK1PartIICapitalGain"), e.getBody().toString());
+    }
+
     /** Renders the synthetic return through the real PdfService after applying edit to its facts. */
     private static byte[] render(Consumer<ObjectNode> edit, String fileName) throws Exception {
         byte[] bytes;
@@ -458,6 +519,76 @@ class ScheduleDForm8949PdfSmokeTest {
             item.putArray("value").add(residence);
             item.put("enumOptionsPath", "/scopedStateOptions");
         }
+    }
+
+    /**
+     * One supported Schedule K-1 (Form 1065 or Form 1120-S) and no Form 8949 rows. type is P or S. residence is pa,
+     * fl, or null. A loss, otherAmount (boxes 9b/9c or 8b/8c), and foreign-source long-term capital gain refuse
+     * the print.
+     */
+    private static void k1PartII(
+            ObjectNode facts,
+            String type,
+            String shortTerm,
+            String longTerm,
+            boolean otherAmount,
+            boolean foreign,
+            String residence) {
+        ((ObjectNode) facts.get("/form8949Transactions").get("item")).putArray("items");
+        bool(facts, "/hadScheduleEIncome", false);
+        bool(facts, "/scheduleEHasPartIIIncome", true);
+        bool(facts, "/scheduleEPartIILine27", false);
+        bool(facts, "/scheduleEHasPartIIIIncome", false);
+        bool(facts, "/scheduleEHasPartIVIncome", false);
+        bool(facts, "/scheduleEK1sIsDone", true);
+        String id = "b7e1c2a0-1111-4222-8333-444455556666";
+        ObjectNode k1s = facts.putObject("/scheduleEK1s");
+        k1s.put("$type", "gov.irs.factgraph.persisters.CollectionWrapper");
+        k1s.putObject("item").putArray("items").add(id);
+        String p = "/scheduleEK1s/#" + id + "/";
+        string(facts, p + "entityName", "P".equals(type) ? "Northwind Partners" : "Northwind Inc");
+        enumFact(facts, p + "entityType", type, "/scheduleEK1EntityTypeOptions");
+        bool(facts, p + "isForeignPartnership", false);
+        bool(facts, p + "isPubliclyTradedPartnership", false);
+        bool(facts, p + "isTradingBusiness", false);
+        dollar(facts, p + "box1", "0.00");
+        bool(facts, p + "materiallyParticipates", true);
+        dollar(facts, p + "box14CodeA", "0.00");
+        bool(facts, p + "box14CodeAWasReduced", false);
+        bool(facts, p + "box14CodeAIsFarm", false);
+        bool(facts, p + "box14CodeANotLimitedPartnerAmount", false);
+        bool(facts, p + "hasQbiStatement", false);
+        bool(facts, p + "hasOtherK1Amount", otherAmount);
+        bool(facts, p + "basisComputationRequired", false);
+        bool(facts, p + "anyAmountNotAtRisk", false);
+        dollar(facts, p + "form1065Box5", "0.00");
+        dollar(facts, p + "form1065Box6a", "0.00");
+        dollar(facts, p + "form1065Box6b", "0.00");
+        dollar(facts, p + "form1120sBox4", "0.00");
+        dollar(facts, p + "form1120sBox5a", "0.00");
+        dollar(facts, p + "form1120sBox5b", "0.00");
+        bool(facts, p + "dividendIncludesPtep", false);
+        bool(facts, p + "box5IncludesCleanRenewableEnergyBondInterest", false);
+        dollar(facts, p + "form1065Box8", "P".equals(type) ? shortTerm : "0.00");
+        dollar(facts, p + "form1065Box9a", "P".equals(type) ? longTerm : "0.00");
+        dollar(facts, p + "form1120sBox7", "S".equals(type) ? shortTerm : "0.00");
+        dollar(facts, p + "form1120sBox8a", "S".equals(type) ? longTerm : "0.00");
+        bool(facts, p + "longTermCapitalGainIsForeignSource", foreign);
+        if (residence != null) {
+            ObjectNode item = facts.putObject("/filerResidenceAndIncomeState")
+                    .put("$type", "gov.irs.factgraph.persisters.EnumWrapper")
+                    .putObject("item");
+            item.putArray("value").add(residence);
+            item.put("enumOptionsPath", "/scopedStateOptions");
+        }
+    }
+
+    private static void enumFact(ObjectNode facts, String path, String value, String optionsPath) {
+        ObjectNode item = facts.putObject(path)
+                .put("$type", "gov.irs.factgraph.persisters.EnumWrapper")
+                .putObject("item");
+        item.putArray("value").add(value);
+        item.put("enumOptionsPath", optionsPath);
     }
 
     private static void bool(ObjectNode facts, String path, boolean value) {

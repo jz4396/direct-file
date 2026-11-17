@@ -175,11 +175,13 @@
         can only arise with a
         Schedule C or Schedule E, which /flowKnockoutForm8960Unsupported stops; line 5c
         (partnership interests and S
-        corporation stock) is not collected. A K-1 with any amount other than box 1, or a disposition, stops
-        the return
-        (scheduleE /flowKnockoutScheduleEPartIIColumnE and /flowKnockoutScheduleEPartIIOtherK1Amount).
-        So line 5d = line
-        5a.
+        corporation stock) is not collected. A nonnegative Form 1065 box 8 or box 9a, or Form 1120-S box 7
+        or box 8a, is already in Form 1040 line 7a through Schedule D lines 5, 12, and 16, so it is on this
+        line. A capital loss still stops the return (scheduleE /flowKnockoutScheduleEPartIIColumnE). Form
+        1065 boxes 9b and 9c and Form 1120-S boxes 8b and 8c still stop it (scheduleE
+        /flowKnockoutScheduleEPartIIOtherK1Amount). A foreign-source long-term capital gain still stops it
+        (scheduleE /flowKnockoutScheduleEPartIIForeignSourceCapitalGain). A disposition of the partnership
+        interest or S corporation stock still stops the return. So line 5d = line 5a.
       </Description>
       <Export mef="true" />
       <Derived>

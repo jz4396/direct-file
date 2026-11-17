@@ -239,6 +239,9 @@ export const ScheduleEIncomeSubcategory = (
             <Dollar path='/scheduleEK1s/*/form1065Box5' />
             <Dollar path='/scheduleEK1s/*/form1065Box6a' />
             <Dollar path='/scheduleEK1s/*/form1065Box6b' />
+            <Dollar path='/scheduleEK1s/*/form1065Box8' />
+            <Dollar path='/scheduleEK1s/*/form1065Box9a' />
+            <Boolean path='/scheduleEK1s/*/longTermCapitalGainIsForeignSource' />
             <Boolean path='/scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest' />
             <Boolean path='/scheduleEK1s/*/dividendIncludesPtep' />
             <SaveAndOrContinueButton />
@@ -249,6 +252,9 @@ export const ScheduleEIncomeSubcategory = (
             <Dollar path='/scheduleEK1s/*/form1120sBox4' />
             <Dollar path='/scheduleEK1s/*/form1120sBox5a' />
             <Dollar path='/scheduleEK1s/*/form1120sBox5b' />
+            <Dollar path='/scheduleEK1s/*/form1120sBox7' />
+            <Dollar path='/scheduleEK1s/*/form1120sBox8a' />
+            <Boolean path='/scheduleEK1s/*/longTermCapitalGainIsForeignSource' />
             <Boolean path='/scheduleEK1s/*/dividendIncludesPtep' />
             <SaveAndOrContinueButton />
           </Screen>

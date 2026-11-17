@@ -40,8 +40,10 @@ headings:
   /heading/income/schedule-e/k1-box1: Enter ordinary business income and whether you materially participated
   /heading/income/schedule-e/k1-box14: Enter self-employment earnings from Schedule K-1 (Form 1065), box 14, code A
   /heading/income/schedule-e/k1-box14-scope: Is this the amount that belongs on Schedule SE?
-  /heading/income/schedule-e/k1-portfolio-partnership: Enter interest and dividends from Schedule K-1 (Form 1065)
-  /heading/income/schedule-e/k1-portfolio-s-corp: Enter interest and dividends from Schedule K-1 (Form 1120-S)
+  /heading/income/schedule-e/k1-portfolio-partnership:
+    Enter interest, dividends, and capital gain from Schedule K-1 (Form 1065)
+  /heading/income/schedule-e/k1-portfolio-s-corp:
+    Enter interest, dividends, and capital gain from Schedule K-1 (Form 1120-S)
   /heading/income/schedule-e/k1-other: Does this Schedule K-1 report anything else?
   /heading/income/schedule-e/k1-columns: Do you have to check column (e) or column (f) on Schedule E line 28?
   /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support this Schedule K-1 situation
@@ -173,26 +175,33 @@ info:
     body: >-
       Enter box 5 (interest), box 6a (ordinary dividends), and box 6b (qualified dividends). Enter 0 if a box is blank.
       Box 6b cannot be larger than box 6a. These amounts go on Form 1040, not on Schedule E line 28. Interest goes on
-      line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a. Answer yes if box 5 includes
-      interest from the credit for holders of clean renewable energy bonds. The partnership attaches a statement, and
-      the basis of the partnership interest must be reduced by that interest. This return does not figure that
-      reduction. Answer yes to the last question if any of those dividends are previously taxed earnings and profits.
-      That amount is not included on lines 3b or 3a, and this return does not figure the exclusion.
+      line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a. Enter box 8 (net short-term capital
+      gain) and box 9a (net long-term capital gain). A gain goes on Schedule D, line 5 or line 12. Enter a loss as a
+      negative amount. A loss needs a basis computation this tool does not figure. Answer yes if any of the long-term
+      capital gain is from a foreign source. Answer yes if box 5 includes interest from the credit for holders of clean
+      renewable energy bonds. The partnership attaches a statement, and the basis of the partnership interest must be
+      reduced by that interest. This return does not figure that reduction. Answer yes if any of those dividends are
+      previously taxed earnings and profits. That amount is not included on lines 3b or 3a, and this return does not
+      figure the exclusion.
   /info/income/schedule-e/k1-portfolio-s-corp:
     body: >-
       Enter box 4 (interest), box 5a (ordinary dividends), and box 5b (qualified dividends). Enter 0 if a box is blank.
       Box 5b cannot be larger than box 5a. These amounts go on Form 1040, not on Schedule E line 28. Interest goes on
-      line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a. Answer yes to the last question if
-      any of those dividends are previously taxed earnings and profits. That amount is not included on lines 3b or 3a,
-      and this return does not figure the exclusion.
+      line 2b. Ordinary dividends go on line 3b. Qualified dividends go on line 3a. Enter box 7 (net short-term capital
+      gain) and box 8a (net long-term capital gain). A gain goes on Schedule D, line 5 or line 12, after the limits on
+      losses. Enter a loss as a negative amount. A loss needs a basis computation this tool does not figure. Answer yes
+      if any of the long-term capital gain is from a foreign source. Answer yes if any of those dividends are previously
+      taxed earnings and profits. That amount is not included on lines 3b or 3a, and this return does not figure the
+      exclusion.
   /info/income/schedule-e/k1-other:
     body: >-
       Answer yes to the first question if the K-1 includes a statement for box 20, code Z (Form 1065) or box 17, code V
-      (Form 1120-S). Answer yes to the second question if any box other than box 1, box 14 code A, and the interest and
-      dividend boxes has an amount. Those boxes are Form 1065 boxes 5, 6a, and 6b, or Form 1120-S boxes 4, 5a, and 5b.
-      Box 4 guaranteed payments are a yes even when that amount is also included in box 14 code A. Box 6c dividend
-      equivalents are a yes. They are not reported on Form 1040. The statement for clean renewable energy bond interest
-      in box 5 is the earlier partnership question, not this one.
+      (Form 1120-S). Answer yes to the second question if any box other than box 1, box 14 code A, the interest and
+      dividend boxes, and the net capital gain boxes has an amount. Those boxes are Form 1065 boxes 5, 6a, 6b, 8, and
+      9a, or Form 1120-S boxes 4, 5a, 5b, 7, and 8a. Box 4 guaranteed payments are a yes even when that amount is also
+      included in box 14 code A. Box 6c dividend equivalents are a yes. They are not reported on Form 1040. Form 1065
+      boxes 9b and 9c, and Form 1120-S boxes 8b and 8c, are a yes. The statement for clean renewable energy bond
+      interest in box 5 is the earlier partnership question, not this one.
   /info/income/schedule-e/k1-columns:
     body: >-
       Answer yes to the first question if you received a distribution, disposed of stock, or received a loan repayment
@@ -227,13 +236,14 @@ info:
       body:
         - p: >-
             This tool can report a domestic partnership or S corporation with ordinary business income when you
-            materially participated, including interest and dividends from that Schedule K-1 and Schedule K-1 (Form
-            1065) box 14 code A that is not from farming. A loss, a passive activity, a foreign partnership, a publicly
-            traded partnership, a distribution or other basis computation, farming, a reduction of that self-employment
-            amount, a limited partner amount that is not only guaranteed payments for services, a joint return with that
-            amount, previously taxed earnings and profits, interest from the credit for holders of clean renewable
-            energy bonds, or any other K-1 amount needs forms this tool doesn’t support yet. You’ll need another way to
-            file this return.
+            materially participated, including interest, dividends, and a capital gain from that Schedule K-1, and
+            Schedule K-1 (Form 1065) box 14 code A that is not from farming. A loss, a passive activity, a foreign
+            partnership, a publicly traded partnership, a distribution or other basis computation, a capital loss, a
+            foreign-source long-term capital gain, farming, a reduction of that self-employment amount, a limited
+            partner amount that is not only guaranteed payments for services, a joint return with that amount,
+            previously taxed earnings and profits, interest from the credit for holders of clean renewable energy bonds,
+            or any other K-1 amount needs forms this tool doesn’t support yet. You’ll need another way to file this
+            return.
   /info/knockout/schedule-c-k1-box14:
     alertText:
       body:
@@ -576,6 +586,18 @@ fields:
     name: Box 5a, ordinary dividends
   /scheduleEK1s/*/form1120sBox5b:
     name: Box 5b, qualified dividends
+  /scheduleEK1s/*/form1065Box8:
+    name: Box 8, net short-term capital gain or (loss)
+  /scheduleEK1s/*/form1065Box9a:
+    name: Box 9a, net long-term capital gain or (loss)
+  /scheduleEK1s/*/form1120sBox7:
+    name: Box 7, net short-term capital gain or (loss)
+  /scheduleEK1s/*/form1120sBox8a:
+    name: Box 8a, net long-term capital gain or (loss)
+  /scheduleEK1s/*/longTermCapitalGainIsForeignSource:
+    boolean:
+      "yes": Yes, some of the long-term capital gain is from a foreign source
+      "no": No, none of the long-term capital gain is from a foreign source
   /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest:
     boolean:
       "yes": Yes, box 5 includes interest from clean renewable energy bonds
@@ -671,12 +693,18 @@ dataviews:
     /scheduleEK1s/*/form1120sBox4: Box 4, interest income
     /scheduleEK1s/*/form1120sBox5a: Box 5a, ordinary dividends
     /scheduleEK1s/*/form1120sBox5b: Box 5b, qualified dividends
+    /scheduleEK1s/*/form1065Box8: Box 8, net short-term capital gain or (loss)
+    /scheduleEK1s/*/form1065Box9a: Box 9a, net long-term capital gain or (loss)
+    /scheduleEK1s/*/form1120sBox7: Box 7, net short-term capital gain or (loss)
+    /scheduleEK1s/*/form1120sBox8a: Box 8a, net long-term capital gain or (loss)
+    /scheduleEK1s/*/longTermCapitalGainIsForeignSource: Is any of the long-term capital gain from a foreign source?
     /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest:
       Does box 5 include interest from the credit for holders of clean renewable energy bonds?
     /scheduleEK1s/*/dividendIncludesPtep: Do any of these dividends include previously taxed earnings and profits?
     /scheduleEK1s/*/hasQbiStatement: Is there a statement for box 20 code Z or box 17 code V?
     /scheduleEK1s/*/hasOtherK1Amount:
-      Does any box other than box 1, box 14 code A, and the interest and dividend boxes have an amount?
+      Does any box other than box 1, box 14 code A, the interest and dividend boxes, and the net capital gain boxes have
+      an amount?
     /scheduleEK1s/*/basisComputationRequired: Is column (e) checked?
     /scheduleEK1s/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/entityName: Name of the estate or trust
