@@ -26,6 +26,10 @@
     PDF p. 23 (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf): the § 448(c) test "does not exceed $32,000,000."
   - QBI § 199A: computed on Form 8995 (form8995.xml, #87); cases it can't compute are knocked out —
     https://www.law.cornell.edu/uscode/text/26/199A
+  - Line 9 standard mileage: Notice 2026-10 section 3 (72.5 cents per mile January 1 through June 30; the
+    depreciation component in section 4 is 35 cents). IR-2026-29 (76 cents per mile July 1 through December 31).
+    Rev. Proc. 2019-46 section 4.05 (five or more automobiles used simultaneously, and after MACRS, section 179,
+    section 168(k), or actual expenses). 2026 draft Instructions for Schedule C, PDF p. 7, Line 9 and Part IV.
   - Excess business loss: 26 U.S.C. 461(l) (https://www.law.cornell.edu/uscode/text/26/461). Rev. Proc. 2025-32
     §4.31, PDF p. 23: the amount under § 461(l)(3)(A)(ii)(II) for 2026 is $256,000 ($512,000 for joint returns).
     A Schedule 1 line 3 loss of more than $128,000 stops the return (Form 461, Who Must File (ii)).
@@ -2915,15 +2919,765 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCStandardMileageRateJanJun">
+      <Name>Business standard mileage rate, January 1 through June 30</Name>
+      <Description>Notice 2026-10 §3: the business standard mileage rate is 72.5 cents per mile for miles driven
+        January 1 through June 30, 2026. IR-2025-128. The July 1 through December 31 rate is
+        /scheduleCStandardMileageRateJulDec.</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Rational>725/1000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCStandardMileageRateJulDec">
+      <Name>Business standard mileage rate, July 1 through December 31</Name>
+      <Description>IR-2026-29: the business standard mileage rate is 76 cents per mile for miles driven July 1
+        through December 31, 2026. The January 1 through June 30 rate is /scheduleCStandardMileageRateJanJun,
+        72.5 cents per mile (Notice 2026-10 §3; IR-2025-128).</Description>
+      <TaxYear>2026</TaxYear>
+      <Derived>
+        <Rational>76/100</Rational>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCBusinesses/*/hasCarTruckOrVehicleLoan">
       <Name>Car, truck, or vehicle-loan expense</Name>
       <Description>Schedule C line 9 and line 16b. 2026 draft Instructions for Schedule C
-        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 2 (line 16b is vehicle loan interest) and PDF p. 7,
-        Line 9. Standard mileage, actual vehicle expenses, and vehicle loan interest need Form 4562 or Part IV. Yes
-        stops the return. Lines 9 and 16b stay blank.</Description>
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 9, and PDF p. 2 (line 16b is vehicle loan
+        interest). Yes continues to the standard mileage questions for one vehicle. Actual expenses, vehicle loan
+        interest, more than one vehicle, and the other vehicle stops still stop the return. No leaves line 9 at zero
+        and leaves Part IV blank.</Description>
       <Writable>
         <Boolean />
       </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/hasVehicleLoanInterest">
+      <Name>Vehicle loan interest</Name>
+      <Description>Schedule C line 16b. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 2: line 16b is interest on a vehicle loan. That
+        interest needs Form 4562. Yes stops the return. Line 16b stays blank. Asked only after car or truck expenses
+        are yes.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksStandardMileageMethod">
+      <Name>Ask whether the standard mileage rate applies</Name>
+      <Description>True when this business has car or truck expenses and vehicle loan interest is no. The standard
+        mileage questions follow. A yes on loan interest stops first.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../hasCarTruckOrVehicleLoan" />
+          <Not>
+            <Dependency path="../hasVehicleLoanInterest" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/usesStandardMileageRate">
+      <Name>Standard mileage rate for this vehicle</Name>
+      <Description>Yes uses the business standard mileage rate on line 9. No is the actual-expense method, which
+        stops the return. 2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 9. Actual expenses are not computed.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksVehicleCount">
+      <Name>Ask how many vehicles this business used</Name>
+      <Description>True when the standard mileage rate was chosen. More than one vehicle is out of scope for this
+        slice.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksStandardMileageMethod" />
+          <Dependency path="../usesStandardMileageRate" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/hasMoreThanOneVehicle">
+      <Name>More than one vehicle in this business</Name>
+      <Description>Yes stops the return. This slice computes line 9 for one vehicle only. 2026 Schedule C, Part IV,
+        is the information for that one vehicle.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksFiveOrMoreVehicles">
+      <Name>Ask whether five or more vehicles were used at the same time</Name>
+      <Description>True when this business used the standard mileage rate for one vehicle. Rev. Proc. 2019-46 §4.05
+        bars the rate for five or more automobiles used simultaneously.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksVehicleCount" />
+          <Not>
+            <Dependency path="../hasMoreThanOneVehicle" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/usesFiveOrMoreVehiclesSimultaneously">
+      <Name>Five or more automobiles used at the same time</Name>
+      <Description>Rev. Proc. 2019-46 §4.05: the standard mileage rate cannot be used for five or more automobiles
+        used simultaneously. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksPriorDepreciationMethod">
+      <Name>Ask whether a prior method bars the standard mileage rate</Name>
+      <Description>True when fewer than five automobiles were used at the same time. Rev. Proc. 2019-46 §4.05 bars
+        the rate after certain depreciation and after actual expenses.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksFiveOrMoreVehicles" />
+          <Not>
+            <Dependency path="../usesFiveOrMoreVehiclesSimultaneously" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/vehiclePriorActualMacrs179OrBonus">
+      <Name>Prior actual expenses, MACRS, section 179, or bonus depreciation</Name>
+      <Description>Rev. Proc. 2019-46 §4.05: the standard mileage rate cannot be used after depreciation other than
+        straight line, after section 179, after section 168(k), after MACRS, or after actual expenses claimed for a
+        vehicle that was depreciated under MACRS. Yes stops the return. Straight-line depreciation that is still
+        inside the rate is not this question.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksForm4562ForVehicle">
+      <Name>Ask whether Form 4562 is otherwise required</Name>
+      <Description>True when no prior method bars the standard mileage rate. 2026 draft Instructions for Schedule C,
+        PDF p. 7: Part IV is used when the filer is not required to file Form 4562.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksPriorDepreciationMethod" />
+          <Not>
+            <Dependency path="../vehiclePriorActualMacrs179OrBonus" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/vehicleRequiresForm4562">
+      <Name>Form 4562 is required for another reason</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7: Part IV lines 43 through 47b are filled when
+        claiming car expenses and not required to file Form 4562. Yes stops the return. Form 4562 is not filed here.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksStandardMileageAmounts">
+      <Name>Ask standard mileage amounts and Part IV</Name>
+      <Description>True when one vehicle is on the standard mileage rate and Form 4562 is not required. Line 9 and
+        Part IV are then asked. 2026 draft Instructions for Schedule C, PDF p. 7, Line 9 and Part IV.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksForm4562ForVehicle" />
+          <Not>
+            <Dependency path="../vehicleRequiresForm4562" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableBusinessMilesJanJun">
+      <Name>Business miles, January 1 through June 30</Name>
+      <Description>Whole business miles driven January 1 through June 30. Multiplied by 72.5 cents. Notice 2026-10
+        §3. IR-2025-128. Commuting miles are not included. They are Part IV line 44b.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableBusinessMilesJulDec">
+      <Name>Business miles, July 1 through December 31</Name>
+      <Description>Whole business miles driven July 1 through December 31. Multiplied by 76 cents. IR-2026-29.
+        Commuting miles are not included. They are Part IV line 44b.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableBusinessParkingAndTolls">
+      <Name>Business parking fees and tolls</Name>
+      <Description>2026 draft Instructions for Schedule C
+        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 9: the standard mileage rate plus business
+        parking fees and tolls. Included in line 9. Zero is allowed.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/vehiclePlacedInService">
+      <Name>Date the vehicle was placed in service</Name>
+      <Description>Schedule C Part IV line 43. 2026 Schedule C
+        (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), Part IV, line 43: "When did you place your vehicle in service
+        for business purposes?" Month, day, and year print in the three line 43 boxes.</Description>
+      <Writable>
+        <Day />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableCommutingMiles">
+      <Name>Commuting miles</Name>
+      <Description>Schedule C Part IV line 44b. 2026 Schedule C, Part IV: commuting miles. Collected and printed.
+        Not a stop, and not multiplied by the standard mileage rate. 2026 draft Instructions for Schedule C, PDF p. 7.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/writableOtherMiles">
+      <Name>Other miles</Name>
+      <Description>Schedule C Part IV line 44c. 2026 Schedule C, Part IV: other miles. Collected and printed. Not a
+        stop, and not multiplied by the standard mileage rate.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/vehicleAvailableForPersonalUseOffDuty">
+      <Name>Vehicle available for personal use during off-duty hours</Name>
+      <Description>Schedule C Part IV line 45. 2026 Schedule C, Part IV: "Was the vehicle available for personal
+        use during off-duty hours?" Collected and printed. Not a stop.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/hasAnotherVehicleForPersonalUse">
+      <Name>Another vehicle available for personal use</Name>
+      <Description>Schedule C Part IV line 46. 2026 Schedule C, Part IV: "Do you (or your spouse) have another
+        vehicle available for personal use?" Collected and printed. Not a stop.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/vehicleHasEvidence">
+      <Name>Evidence to support the vehicle deduction</Name>
+      <Description>Schedule C Part IV line 47a. 2026 Schedule C, Part IV: "Do you have evidence to support your
+        deduction?" No stops the return. Yes continues to line 47b.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/vehicleEvidenceIsWritten">
+      <Name>Vehicle evidence is written</Name>
+      <Description>Schedule C Part IV line 47b. 2026 Schedule C, Part IV: "If 'Yes,' is the evidence written?"
+        Asked only when line 47a is yes. Yes or no both keep the standard mileage deduction. Neither box is printed
+        when line 47a is no.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/asksWrittenEvidence">
+      <Name>Ask whether the vehicle evidence is written</Name>
+      <Description>True when Part IV is being asked and line 47a is yes. Line 47b is required then, the same way
+        line J is required when line I is yes.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksStandardMileageAmounts" />
+          <Dependency path="../vehicleHasEvidence" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/standardMileageReady">
+      <Name>Standard mileage line 9 can be computed</Name>
+      <Description>True when one vehicle is on the standard mileage rate, the vehicle is not leased, Form 4562 is
+        not required, line 47a is yes, line 47b is answered, and the miles, parking and tolls, placed-in-service
+        date, and Part IV lines 44b, 44c, 45, and 46 are complete. Otherwise line 9 stays incomplete rather than
+        zero. A leased vehicle remains the existing line 20a stop.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../asksStandardMileageAmounts" />
+          <Not>
+            <Dependency path="../hasVehicleRentOrLease" />
+          </Not>
+          <IsComplete>
+            <Dependency path="../writableBusinessMilesJanJun" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableBusinessMilesJulDec" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableBusinessParkingAndTolls" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehiclePlacedInService" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableCommutingMiles" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableOtherMiles" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehicleAvailableForPersonalUseOffDuty" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasAnotherVehicleForPersonalUse" />
+          </IsComplete>
+          <Dependency path="../vehicleHasEvidence" />
+          <IsComplete>
+            <Dependency path="../vehicleEvidenceIsWritten" />
+          </IsComplete>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/vehicleStandardMileageStop">
+      <Name>Vehicle expense this tool does not compute</Name>
+      <Description>True when car or truck expenses were claimed and any of these applies: vehicle loan interest
+        (line 16b), the actual-expense method, more than one vehicle, five or more automobiles used simultaneously
+        (Rev. Proc. 2019-46 §4.05), a prior actual-expense, MACRS, section 179, or bonus method on this vehicle
+        (Rev. Proc. 2019-46 §4.05), Form 4562 otherwise required, or Part IV line 47a answered no. A yes is enough.
+        Later blanks do not turn the stop off. A rent or lease of a vehicle is a separate stop. No, with the
+        standard mileage questions still blank, stays incomplete.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <Dependency path="../hasCarTruckOrVehicleLoan" />
+            <Dependency path="../hasVehicleLoanInterest" />
+          </All>
+          <All>
+            <Dependency path="../asksStandardMileageMethod" />
+            <Not>
+              <Dependency path="../usesStandardMileageRate" />
+            </Not>
+          </All>
+          <All>
+            <Dependency path="../asksVehicleCount" />
+            <Dependency path="../hasMoreThanOneVehicle" />
+          </All>
+          <All>
+            <Dependency path="../asksFiveOrMoreVehicles" />
+            <Dependency path="../usesFiveOrMoreVehiclesSimultaneously" />
+          </All>
+          <All>
+            <Dependency path="../asksPriorDepreciationMethod" />
+            <Dependency path="../vehiclePriorActualMacrs179OrBonus" />
+          </All>
+          <All>
+            <Dependency path="../asksForm4562ForVehicle" />
+            <Dependency path="../vehicleRequiresForm4562" />
+          </All>
+          <All>
+            <Dependency path="../asksStandardMileageAmounts" />
+            <Not>
+              <Dependency path="../vehicleHasEvidence" />
+            </Not>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line9ExactMills">
+      <Name>Line 9 in mills before rounding</Name>
+      <Description>January-June business miles times 725, plus July-December business miles times 760, plus parking
+        and tolls times 1,000. 725 and 760 are /scheduleCStandardMileageRateJanJun and
+        /scheduleCStandardMileageRateJulDec in thousandths of a dollar (72.5 cents and 76 cents). A dollar is 1,000
+        mills, so the sum is exact. Dollar times a rational would scale to cents half-even before the dollar round
+        and can be one dollar high. Notice 2026-10 §3. IR-2026-29.</Description>
+      <Derived>
+        <Add>
+          <Multiply>
+            <Dependency path="../writableBusinessMilesJanJun" />
+            <Int>725</Int>
+          </Multiply>
+          <Multiply>
+            <Dependency path="../writableBusinessMilesJulDec" />
+            <Int>760</Int>
+          </Multiply>
+          <Multiply>
+            <Dependency path="../writableBusinessParkingAndTolls" />
+            <Int>1000</Int>
+          </Multiply>
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line9CentRound">
+      <Name>Line 9 after scaling to cents and then to dollars</Name>
+      <Description>The mills divided by 1,000, which scales to cents half-even, then rounded half up to dollars.
+        Kept so a product whose exact fraction is .4950 through .4995, which that path rounds up an extra dollar,
+        can be compared with the exact cents.</Description>
+      <Derived>
+        <Round>
+          <Divide>
+            <Dividend>
+              <Dependency path="../line9ExactMills" />
+            </Dividend>
+            <Divisors>
+              <Int>1000</Int>
+            </Divisors>
+          </Divide>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line9ExactCents">
+      <Name>Line 9 exact amount in cents</Name>
+      <Description>The mills divided by 10. Mills are whole numbers, so this is exact at cents. One mile in each
+        half of the year is 1,485 mills, which is $1.485.</Description>
+      <Derived>
+        <Divide>
+          <Dividend>
+            <Dependency path="../line9ExactMills" />
+          </Dividend>
+          <Divisors>
+            <Int>10</Int>
+          </Divisors>
+        </Divide>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line9FromStandardMileage">
+      <Name>Line 9 rounded once from the standard mileage rate</Name>
+      <Description>Round the exact sum once. 6,000 miles at 72.5 cents is $4,350, 4,000 miles at 76 cents is
+        $3,040, and $210 of parking and tolls is $7,600. One mile in each half is $1.485, which rounds to $1.
+        Three miles at 72.5 cents plus seven miles at 76 cents is $7.495, which rounds to $7. The cent-then-dollar
+        result is one dollar high when it exceeds the exact cents by more than 50 cents. Half up still applies at
+        50 cents.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply>
+                        <Dependency path="../line9CentRound" />
+                        <Int>100</Int>
+                      </Multiply>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="../line9ExactCents" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Dollar>50</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="../line9CentRound" />
+                </Minuend>
+                <Subtrahends>
+                  <Dollar>1</Dollar>
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="../line9CentRound" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line9">
+      <Name>Schedule C line 9</Name>
+      <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 9, car and truck expenses.
+        2026 draft Instructions for Schedule C (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 7, Line 9:
+        the standard mileage rate plus business parking fees and tolls. Zero when this business has no car or truck
+        expenses. The standard mileage amount when one vehicle qualifies. Otherwise incomplete, including when a
+        vehicle stop applies, so a stopped return does not publish line 9 as zero. 26 U.S.C. 162
+        (https://www.law.cornell.edu/uscode/text/26/162). Notice 2026-10 §3. IR-2026-29. The depreciation component
+        of the rate is 35 cents (Notice 2026-10 §4) and is not entered separately.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../hasCarTruckOrVehicleLoan" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../line9FromStandardMileage" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line44aBusinessMiles">
+      <Name>Schedule C Part IV line 44a</Name>
+      <Description>Business miles for the year. The sum of the January-June and July-December business miles.
+        Derived, not asked separately. 2026 Schedule C, Part IV, line 44a. Printed only when line 9 is the standard
+        mileage amount.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Add>
+                <RoundToInt>
+                  <Dependency path="../writableBusinessMilesJanJun" />
+                </RoundToInt>
+                <RoundToInt>
+                  <Dependency path="../writableBusinessMilesJulDec" />
+                </RoundToInt>
+              </Add>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line44bCommutingMiles">
+      <Name>Schedule C Part IV line 44b</Name>
+      <Description>Commuting miles. 2026 Schedule C, Part IV, line 44b. Printed only when line 9 is the standard
+        mileage amount.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <RoundToInt>
+                <Dependency path="../writableCommutingMiles" />
+              </RoundToInt>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line44cOtherMiles">
+      <Name>Schedule C Part IV line 44c</Name>
+      <Description>Other miles. 2026 Schedule C, Part IV, line 44c. Printed only when line 9 is the standard
+        mileage amount.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <RoundToInt>
+                <Dependency path="../writableOtherMiles" />
+              </RoundToInt>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line43Month">
+      <Name>Schedule C Part IV line 43 month</Name>
+      <Description>Month the vehicle was placed in service. 2026 Schedule C, Part IV, line 43. Printed only when
+        line 9 is the standard mileage amount.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../vehiclePlacedInService/month" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line43Day">
+      <Name>Schedule C Part IV line 43 day</Name>
+      <Description>Day the vehicle was placed in service. 2026 Schedule C, Part IV, line 43.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../vehiclePlacedInService/day" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line43Year">
+      <Name>Schedule C Part IV line 43 year</Name>
+      <Description>Year the vehicle was placed in service. 2026 Schedule C, Part IV, line 43.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../vehiclePlacedInService/year" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line45Yes">
+      <Name>Schedule C Part IV line 45 Yes</Name>
+      <Description>Checked when line 45 is yes and line 9 is the standard mileage amount. Otherwise blank.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../vehicleAvailableForPersonalUseOffDuty" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line45No">
+      <Name>Schedule C Part IV line 45 No</Name>
+      <Description>The opposite of line 45 Yes. Blank when line 45 Yes is blank.</Description>
+      <Derived>
+        <Not>
+          <Dependency path="../line45Yes" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line46Yes">
+      <Name>Schedule C Part IV line 46 Yes</Name>
+      <Description>Checked when line 46 is yes and line 9 is the standard mileage amount. Otherwise blank.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../hasAnotherVehicleForPersonalUse" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line46No">
+      <Name>Schedule C Part IV line 46 No</Name>
+      <Description>The opposite of line 46 Yes. Blank when line 46 Yes is blank.</Description>
+      <Derived>
+        <Not>
+          <Dependency path="../line46Yes" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line47aYes">
+      <Name>Schedule C Part IV line 47a Yes</Name>
+      <Description>Checked when line 47a is yes and line 9 is the standard mileage amount. A no is a stop and is
+        not printed as a zero deduction.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../vehicleHasEvidence" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line47aNo">
+      <Name>Schedule C Part IV line 47a No</Name>
+      <Description>The opposite of line 47a Yes. Blank when the standard mileage amount is not being claimed.</Description>
+      <Derived>
+        <Not>
+          <Dependency path="../line47aYes" />
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line47bYes">
+      <Name>Schedule C Part IV line 47b Yes</Name>
+      <Description>Checked when line 47a is yes, line 47b is yes, and line 9 is the standard mileage amount. Blank
+        when line 47a is no.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../standardMileageReady" />
+            </When>
+            <Then>
+              <Dependency path="../vehicleEvidenceIsWritten" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/line47bNo">
+      <Name>Schedule C Part IV line 47b No</Name>
+      <Description>The opposite of line 47b Yes. Blank when line 47b was not asked.</Description>
+      <Derived>
+        <Not>
+          <Dependency path="../line47bYes" />
+        </Not>
+      </Derived>
     </Fact>
 
     <Fact path="/scheduleCBusinesses/*/hasDepreciationOrSection179">
@@ -3371,6 +4125,54 @@
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasCarTruckOrVehicleLoan" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasVehicleLoanInterest" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../usesStandardMileageRate" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasMoreThanOneVehicle" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../usesFiveOrMoreVehiclesSimultaneously" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehiclePriorActualMacrs179OrBonus" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehicleRequiresForm4562" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableBusinessMilesJanJun" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableBusinessMilesJulDec" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableBusinessParkingAndTolls" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehiclePlacedInService" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableCommutingMiles" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../writableOtherMiles" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehicleAvailableForPersonalUseOffDuty" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../hasAnotherVehicleForPersonalUse" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehicleHasEvidence" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../vehicleEvidenceIsWritten" />
           </IsComplete>
           <IsComplete>
             <Dependency path="../hasDepreciationOrSection179" />
@@ -5380,11 +6182,11 @@
     <Fact path="/scheduleCBusinesses/*/line28">
       <Name>Schedule C line 28</Name>
       <Description>2026 Schedule C (https://www.irs.gov/pub/irs-pdf/f1040sc.pdf), line 28: total expenses
-        before expenses for business use of home. Sum of the supported lines, including line 20a. Zero when the filer
-        has no checklist expenses and no machinery or equipment rent. Line 20a alone is line 28 when the checklist is
-        no. Incomplete when the line 20a question or amount is blank, when expenses were claimed but no line was
-        selected, or a selected amount is still blank. 26 U.S.C. 162(a)
-        (https://www.law.cornell.edu/uscode/text/26/162).</Description>
+        before expenses for business use of home. Sum of the supported lines, including line 9 and line 20a. Zero
+        when the filer has no checklist expenses, no machinery or equipment rent, and no car or truck expenses.
+        Line 9, line 20a, or both are line 28 when the checklist is no. Incomplete when a line 9 or line 20a
+        question or amount is blank, when expenses were claimed but no line was selected, or a selected amount is
+        still blank. 26 U.S.C. 162(a) (https://www.law.cornell.edu/uscode/text/26/162).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -5395,6 +6197,9 @@
                 </Not>
                 <Not>
                   <Dependency path="../hasMachineryOrEquipmentRent" />
+                </Not>
+                <Not>
+                  <Dependency path="../hasCarTruckOrVehicleLoan" />
                 </Not>
               </All>
             </When>
@@ -5408,14 +6213,25 @@
                 <Not>
                   <Dependency path="../hasDeductibleExpenses" />
                 </Not>
-                <Dependency path="../hasMachineryOrEquipmentRent" />
+                <Any>
+                  <Dependency path="../hasMachineryOrEquipmentRent" />
+                  <Dependency path="../hasCarTruckOrVehicleLoan" />
+                </Any>
                 <IsComplete>
                   <Dependency path="../line20aMachineryEquipmentRent" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../line9" />
                 </IsComplete>
               </All>
             </When>
             <Then>
-              <Dependency path="../line20aMachineryEquipmentRent" />
+              <Round>
+                <Add>
+                  <Dependency path="../line20aMachineryEquipmentRent" />
+                  <Dependency path="../line9" />
+                </Add>
+              </Round>
             </Then>
           </Case>
           <Case>
@@ -5426,6 +6242,7 @@
               <Round>
                 <Add>
                   <Dependency path="../line8Advertising" />
+                  <Dependency path="../line9" />
                   <Dependency path="../line10CommissionsAndFees" />
                   <Dependency path="../line11ContractLabor" />
                   <Dependency path="../line14EmployeeBenefitPrograms" />
@@ -5591,7 +6408,7 @@
         III cannot be figured (line 33c, a line 34 change, a 3-prior-year average over $32,000,000, a tax shelter,
         line 42 below zero, line 35 different from last year's closing inventory, the section 471(c) no-inventory
         method claimed together with Part III, or Part III amounts while the filer says there is no inventory), or a
-        vehicle, depreciation, depletion, a vehicle lease, Form 8829, shared space, rental use of the home, a prior
+        vehicle expense this tool does not compute, depreciation, depletion, a vehicle lease, Form 8829, shared space, rental use of the home, a prior
         Form 8829 carryover, a simplified method this tool does not figure, more than one simplified-method business,
         the line 27a deduction, a non-50-percent meal, wage credits, interest that must be allocated, new
         amortization, a fourth Part V line, or line 6 income that belongs on another form applies. A yes on any stop
@@ -5604,7 +6421,7 @@
         <Any>
           <Dependency path="../accountingMethodIsOther" />
           <Dependency path="../partIIIStop" />
-          <Dependency path="../hasCarTruckOrVehicleLoan" />
+          <Dependency path="../vehicleStandardMileageStop" />
           <Dependency path="../hasDepreciationOrSection179" />
           <Dependency path="../hasDepletion" />
           <Dependency path="../hasVehicleRentOrLease" />
@@ -5932,8 +6749,9 @@
         receipts amount greater than $32,000,000 under Rev. Proc. 2025-32 §4.30 and 26 U.S.C. 448(c), a tax shelter
         under 26 U.S.C. 448(d)(3), line 42 below zero, line 35 different from last year's closing inventory, the
         section 471(c) no-inventory method claimed while Part III is still required, or Part III filled in after a no
-        to inventory), car or truck expenses or vehicle-loan interest
-        (lines 9 and 16b, Form 4562),
+        to inventory), a vehicle expense this tool does not compute (actual expenses, more than one vehicle,
+        five or more automobiles used at the same time, a prior actual-expense or MACRS or section 179 or bonus
+        method, vehicle loan interest on line 16b, Form 4562 otherwise required, or Part IV line 47a answered no),
         depreciation
         or section 179 (line 13, Form 4562), depletion (line 12), rent or lease of a vehicle
         (line 20a), Form 8829, shared space, rental use of the home, a prior Form 8829 carryover, a simplified method

@@ -14,6 +14,7 @@ import DFAlert from '../Alert/DFAlert.js';
 import DFAccordion from '../Accordion/DFAccordion.js';
 import DFModal from '../HelperText/DFModal.js';
 import Dollar from './Dollar.js';
+import Miles from './Miles.js';
 import SquareFeet from './SquareFeet.js';
 import DownloadPDFButton from '../DownloadPDFButton/index.js';
 import Ein from './Ein/index.js';
@@ -71,6 +72,7 @@ export const FactTypeRenderer = {
   DatePicker,
   Dollar,
   Ein,
+  Miles,
   SquareFeet,
   Enum,
   MultiEnum,

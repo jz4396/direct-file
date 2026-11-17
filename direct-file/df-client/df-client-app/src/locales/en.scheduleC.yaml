@@ -54,6 +54,19 @@ headings:
     "Is inventory at the beginning of the year different from last year's closing inventory?"
   /heading/income/schedule-c/inventory-amounts: "Enter cost of goods sold"
   /heading/income/schedule-c/vehicle: "Did this business have car, truck, or vehicle-loan expenses?"
+  /heading/income/schedule-c/vehicle-loan: "Did this business pay interest on a loan for a vehicle?"
+  /heading/income/schedule-c/standard-mileage: "Do you want to use the standard mileage rate for this vehicle?"
+  /heading/income/schedule-c/vehicle-count: "Did this business use more than one vehicle?"
+  /heading/income/schedule-c/five-or-more: "Were five or more vehicles used at the same time?"
+  /heading/income/schedule-c/prior-depreciation:
+    "Was this vehicle depreciated under MACRS, section 179, or bonus depreciation, or did you deduct actual expenses for it?"
+  /heading/income/schedule-c/form-4562: "Do you have to file Form 4562 for this vehicle for another reason?"
+  /heading/income/schedule-c/miles: "Enter business miles and parking and tolls"
+  /heading/income/schedule-c/vehicle-placed-in-service: "Enter the vehicle date and the other miles"
+  /heading/income/schedule-c/vehicle-off-duty: "Was this vehicle available for personal use during off-duty hours?"
+  /heading/income/schedule-c/another-vehicle: "Do you or your spouse have another vehicle available for personal use?"
+  /heading/income/schedule-c/vehicle-evidence: "Do you have evidence to support this vehicle deduction?"
+  /heading/income/schedule-c/vehicle-evidence-written: "Is that evidence written?"
   /heading/income/schedule-c/depreciation: "Did this business have depreciation or a section 179 deduction?"
   /heading/income/schedule-c/depletion: "Did this business have a depletion deduction?"
   /heading/income/schedule-c/vehicle-lease: "Did this business rent or lease a vehicle?"
@@ -276,8 +289,48 @@ info:
       lines 37 through 39, minus line 41. If that result is below zero, this tool cannot complete the return."
   /info/income/schedule-c/vehicle:
     body:
-      "Answer yes for car and truck expenses (line 9) or vehicle loan interest (line 16b). Those need Form 4562 or Part
-      IV."
+      "Answer yes for car and truck expenses (line 9) or vehicle loan interest (line 16b). One vehicle on the standard
+      mileage rate can be figured here. Actual expenses and vehicle loan interest still need another way to file."
+  /info/income/schedule-c/vehicle-loan:
+    body:
+      "Answer yes if you paid interest on a loan for a car or truck used in this business. That interest is line 16b
+      and needs Form 4562. This tool cannot file that form."
+  /info/income/schedule-c/standard-mileage:
+    body:
+      "Answer yes to use the standard mileage rate. For 2026 that rate is 72.5 cents a mile for January through June
+      and 76 cents a mile for July through December. Business parking and tolls are added. Answer no if you are
+      deducting actual vehicle expenses. This tool cannot figure actual expenses."
+  /info/income/schedule-c/vehicle-count:
+    body: "Answer yes if this business used more than one car or truck. This tool can figure only one vehicle."
+  /info/income/schedule-c/five-or-more:
+    body:
+      "Answer yes if five or more vehicles were used at the same time. The standard mileage rate cannot be used then."
+  /info/income/schedule-c/prior-depreciation:
+    body:
+      "Answer yes if this vehicle was depreciated under MACRS, section 179, or bonus depreciation, or if you deducted
+      actual expenses for it after it was placed in service. The standard mileage rate cannot be used after that.
+      Answer no if you have not done those things."
+  /info/income/schedule-c/form-4562:
+    body:
+      "Answer yes if you must file Form 4562 for this vehicle for a reason other than the questions already asked.
+      Part IV is used only when Form 4562 is not required."
+  /info/income/schedule-c/miles:
+    body:
+      "Enter business miles from January 1 through June 30, business miles from July 1 through December 31, and
+      business parking fees and tolls. Do not include commuting miles here. Line 9 is 72.5 cents times the first
+      amount, plus 76 cents times the second amount, plus the parking and tolls."
+  /info/income/schedule-c/vehicle-placed-in-service:
+    body:
+      "Enter the date the vehicle was placed in service for business, then commuting miles and other miles. Those
+      miles are Part IV. They are not part of the standard mileage deduction."
+  /info/income/schedule-c/vehicle-off-duty:
+    body: "This is Part IV, line 45. Either answer can be reported."
+  /info/income/schedule-c/another-vehicle:
+    body: "This is Part IV, line 46. Either answer can be reported."
+  /info/income/schedule-c/vehicle-evidence:
+    body: "This is Part IV, line 47a. Answer no if you do not have evidence to support the deduction."
+  /info/income/schedule-c/vehicle-evidence-written:
+    body: "This is Part IV, line 47b. It is asked because line 47a is yes. Either answer can be reported."
   /info/income/schedule-c/depreciation:
     body: "Answer yes if line 13 applies. Depreciation and the section 179 deduction need Form 4562."
   /info/income/schedule-c/depletion:
@@ -379,7 +432,10 @@ info:
             other than cost or lower of cost or market, a change in how inventory was valued, average annual gross
             receipts for the 3 prior tax years over $32,000,000, a tax shelter, cost of goods sold below zero, beginning
             inventory different from last year's closing inventory, a claim that you do not keep inventory while Part
-            III is still filled in, vehicle expenses, depreciation, depletion, a vehicle lease, Form 8829, shared space,
+            III is still filled in, actual vehicle expenses, more than one vehicle, five or more vehicles used at the
+            same time, a prior actual-expense or MACRS or section 179 or bonus method, vehicle loan interest, Form 4562
+            for a vehicle, no evidence for the vehicle deduction, depreciation, depletion, a vehicle lease, Form 8829,
+            shared space,
             rental use of the home, a prior Form 8829 carryover, a simplified method this tool does not figure, more
             than one business using the simplified method, Form 7205, meals that are not limited to 50 percent,
             employment credits, interest that must be allocated, new amortization, more than three other expenses, line
@@ -638,6 +694,70 @@ fields:
     boolean:
       "yes": "Yes"
       "no": "No"
+  /scheduleCBusinesses/*/hasVehicleLoanInterest:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/usesStandardMileageRate:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/hasMoreThanOneVehicle:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/usesFiveOrMoreVehiclesSimultaneously:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/vehiclePriorActualMacrs179OrBonus:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/vehicleRequiresForm4562:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/writableBusinessMilesJanJun:
+    name: "Business miles, January 1 through June 30"
+    errorMessages:
+      ExceedsMinLimit: "Enter miles that are 0 or more"
+      InvalidCharacters: "Enter whole miles, like 6000"
+  /scheduleCBusinesses/*/writableBusinessMilesJulDec:
+    name: "Business miles, July 1 through December 31"
+    errorMessages:
+      ExceedsMinLimit: "Enter miles that are 0 or more"
+      InvalidCharacters: "Enter whole miles, like 4000"
+  /scheduleCBusinesses/*/writableBusinessParkingAndTolls:
+    name: "Business parking fees and tolls"
+  /scheduleCBusinesses/*/vehiclePlacedInService:
+    name: "Date placed in service"
+  /scheduleCBusinesses/*/writableCommutingMiles:
+    name: "Commuting miles"
+    errorMessages:
+      ExceedsMinLimit: "Enter miles that are 0 or more"
+      InvalidCharacters: "Enter whole miles, like 500"
+  /scheduleCBusinesses/*/writableOtherMiles:
+    name: "Other miles"
+    errorMessages:
+      ExceedsMinLimit: "Enter miles that are 0 or more"
+      InvalidCharacters: "Enter whole miles, like 100"
+  /scheduleCBusinesses/*/vehicleAvailableForPersonalUseOffDuty:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/hasAnotherVehicleForPersonalUse:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/vehicleHasEvidence:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
+  /scheduleCBusinesses/*/vehicleEvidenceIsWritten:
+    boolean:
+      "yes": "Yes"
+      "no": "No"
   /scheduleCBusinesses/*/hasDepreciationOrSection179:
     boolean:
       "yes": "Yes"
@@ -784,6 +904,25 @@ dataviews:
     /scheduleCBusinesses/*/writableInventoryOtherCosts: "Other costs"
     /scheduleCBusinesses/*/writableInventoryAtEnd: "Inventory at end of year"
     /scheduleCBusinesses/*/hasCarTruckOrVehicleLoan: "Did this business have car, truck, or vehicle-loan expenses?"
+    /scheduleCBusinesses/*/hasVehicleLoanInterest: "Did this business pay interest on a loan for a vehicle?"
+    /scheduleCBusinesses/*/usesStandardMileageRate: "Do you want to use the standard mileage rate for this vehicle?"
+    /scheduleCBusinesses/*/hasMoreThanOneVehicle: "Did this business use more than one vehicle?"
+    /scheduleCBusinesses/*/usesFiveOrMoreVehiclesSimultaneously: "Were five or more vehicles used at the same time?"
+    /scheduleCBusinesses/*/vehiclePriorActualMacrs179OrBonus:
+      "Was this vehicle depreciated under MACRS, section 179, or bonus depreciation, or did you deduct actual expenses for it?"
+    /scheduleCBusinesses/*/vehicleRequiresForm4562: "Do you have to file Form 4562 for this vehicle for another reason?"
+    /scheduleCBusinesses/*/writableBusinessMilesJanJun: "Business miles, January 1 through June 30"
+    /scheduleCBusinesses/*/writableBusinessMilesJulDec: "Business miles, July 1 through December 31"
+    /scheduleCBusinesses/*/writableBusinessParkingAndTolls: "Business parking fees and tolls"
+    /scheduleCBusinesses/*/vehiclePlacedInService: "Date the vehicle was placed in service"
+    /scheduleCBusinesses/*/writableCommutingMiles: "Commuting miles"
+    /scheduleCBusinesses/*/writableOtherMiles: "Other miles"
+    /scheduleCBusinesses/*/vehicleAvailableForPersonalUseOffDuty:
+      "Was this vehicle available for personal use during off-duty hours?"
+    /scheduleCBusinesses/*/hasAnotherVehicleForPersonalUse:
+      "Do you or your spouse have another vehicle available for personal use?"
+    /scheduleCBusinesses/*/vehicleHasEvidence: "Do you have evidence to support this vehicle deduction?"
+    /scheduleCBusinesses/*/vehicleEvidenceIsWritten: "Is that evidence written?"
     /scheduleCBusinesses/*/hasDepreciationOrSection179:
       "Did this business have depreciation or a section 179 deduction?"
     /scheduleCBusinesses/*/hasDepletion: "Did this business have a depletion deduction?"

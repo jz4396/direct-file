@@ -294,6 +294,7 @@ export const ConditionalAccordion = (() => <></>) as FlowNodeConstructor<
 >;
 export const LimitingString = (() => <></>) as FlowNodeConstructor<`LimitingString`, FactDeclaration>;
 export const SquareFeet = (() => <></>) as FlowNodeConstructor<`SquareFeet`, FactDeclaration>;
+export const Miles = (() => <></>) as FlowNodeConstructor<`Miles`, FactDeclaration>;
 export const StateTaxesButton = (() => <></>) as FlowNodeConstructor<`StateTaxesButton`, ScreenButtonDeclaration>;
 export const DataPreview = (() => <></>) as FlowNodeConstructor<`DataPreview`, DataPreviewDeclaration>;
 export const CollectionDataPreview = (() => <></>) as FlowNodeConstructor<
@@ -309,6 +310,7 @@ export const FactTypes = {
   DatePicker,
   Dollar,
   Ein,
+  Miles,
   SquareFeet,
   Enum,
   MultiEnum,

@@ -13,9 +13,11 @@
 # practiced as a sole proprietor." 2026 Schedule C, line 31: "If a profit, enter on both Schedule 1 (Form 1040),
 # line 3, and on Schedule SE, line 2." Net earnings from self-employment: 26 U.S.C. 1402(a).
 #
-# Supported lines (26 U.S.C. 61, 162, 162(a)(3) for line 20a, 274(n) for meals, and 280A(c)(5) for line 30): 1-8, 10,
-# 11, 14-16a, 16c, 17-19, 20a (machinery and equipment that is not a vehicle), 20b, 21-26, 27b, 28, 29, 30 (simplified
-# method only), 31, 32, and the first three Part V lines plus line 48. A single
+# Supported lines (26 U.S.C. 61, 162, 162(a)(3) for line 20a, 274(n) for meals, and 280A(c)(5) for line 30): 1-11, 14-16a,
+# 16c, 17-19, 20a (machinery and equipment that is not a vehicle), 20b, 21-26, 27b, 28, 29, 30 (simplified
+# method only), 31, 32, Part IV for one vehicle on the standard mileage rate, and the first three Part V lines plus
+# line 48. Line 9 is January-June miles times 72.5 cents plus July-December miles times 76 cents, plus business
+# parking and tolls, rounded once (Notice 2026-10 §3; IR-2026-29). A single
 # stored expense total still prints on line 28,
 # with lines 2, 4, and 6 at zero so lines 3, 5, and 7 equal line 1.
 # Header lines A, B, D, E, F (cash and accrual), H, I, and J are mapped. 2026 draft Instructions for Schedule C
@@ -34,10 +36,13 @@
 # increased from $600 to $2,000." 26 U.S.C. 6041(a), as amended by P.L. 119-21. These lines do not change net profit.
 # PA-40 C has no matching lines. Not mapped, left blank (the return stops instead of printing a zero):
 #   the line 1 statutory-employee checkbox.
-#   Line 9 and line 16b (vehicle, Form 4562), line 12 depletion, line 13 depreciation and section 179 (Form 4562),
+#   Line 16b (vehicle loan interest, Form 4562), actual vehicle expenses, more than one vehicle, five or more
+#   automobiles used at the same time (Rev. Proc. 2019-46 §4.05), a prior actual-expense or MACRS or section 179 or
+#   bonus method, Form 4562 otherwise required, and Part IV line 47a answered no. Also line 12 depletion, line 13
+#   depreciation and section 179 (Form 4562),
 #   a vehicle lease on line 20a (inclusion amount, Pub. 463 ch. 4; listed property, 26 U.S.C. 280F(c) and 280F(d)(4)),
 #   line 27a (Form 7205),
-#   Part IV, and Part V lines 4-9.
+#   and Part V lines 4-9.
 # Line 30 is the simplified method when it applies: $5 times allowable square feet (not more than 300), not more than
 # line 29. 2026 draft Instructions for Schedule C, PDF p. 14. Line 30(a) and 30(b) are the home and business areas.
 # Form 8829 is not mapped. $0 on line 30 prints blank, so a return with no home office still shows line 31 equal to
@@ -90,6 +95,8 @@ form:
       f1_19[0]: /scheduleCBusinesses/*/line7GrossIncome # 7 "Gross income. Add lines 5 and 6"
       Lines8-16c_ReadOrder[0]:
         f1_20[0]: /scheduleCBusinesses/*/line8Advertising # 8 Advertising (26 U.S.C. 162)
+        # 9. Standard mileage plus business parking and tolls. Notice 2026-10 §3. IR-2026-29. $0 prints blank.
+        f1_21[0]: /scheduleCBusinesses/*/line9
         f1_22[0]: /scheduleCBusinesses/*/line10CommissionsAndFees # 10
         f1_23[0]: /scheduleCBusinesses/*/line11ContractLabor # 11
         f1_26[0]: /scheduleCBusinesses/*/line14EmployeeBenefitPrograms # 14
@@ -134,6 +141,22 @@ form:
       f2_6[0]: /scheduleCBusinesses/*/line40GoodsAvailable # 40 Add lines 35 through 39
       f2_7[0]: /scheduleCBusinesses/*/line41InventoryAtEnd # 41 Inventory at end of year
       f2_8[0]: /scheduleCBusinesses/*/line42CostOfGoodsSold # 42 Cost of goods sold, also line 4
+      # Part IV. One vehicle on the standard mileage rate. Blank when line 9 is not that amount.
+      # 2026 Schedule C, PDF p. 2, lines 43-47b. 2026 draft Instructions for Schedule C, PDF p. 7.
+      f2_9[0]: /scheduleCBusinesses/*/line43Month # 43 month placed in service
+      f2_10[0]: /scheduleCBusinesses/*/line43Day # 43 day
+      f2_11[0]: /scheduleCBusinesses/*/line43Year # 43 year
+      f2_12[0]: /scheduleCBusinesses/*/line44aBusinessMiles # 44a business miles (both halves)
+      f2_13[0]: /scheduleCBusinesses/*/line44bCommutingMiles # 44b commuting
+      f2_14[0]: /scheduleCBusinesses/*/line44cOtherMiles # 44c other
+      c2_5[0]: /scheduleCBusinesses/*/line45Yes # 45 available for personal use off duty
+      c2_5[1]: /scheduleCBusinesses/*/line45No
+      c2_6[0]: /scheduleCBusinesses/*/line46Yes # 46 another vehicle for personal use
+      c2_6[1]: /scheduleCBusinesses/*/line46No
+      c2_7[0]: /scheduleCBusinesses/*/line47aYes # 47a evidence
+      c2_7[1]: /scheduleCBusinesses/*/line47aNo
+      c2_8[0]: /scheduleCBusinesses/*/line47bYes # 47b written evidence; blank when 47a is no
+      c2_8[1]: /scheduleCBusinesses/*/line47bNo
       f2_15[0]: /scheduleCBusinesses/*/partV1Description # Part V line 1 description
       f2_16[0]: /scheduleCBusinesses/*/partV1Amount # Part V line 1 amount
       f2_17[0]: /scheduleCBusinesses/*/partV2Description

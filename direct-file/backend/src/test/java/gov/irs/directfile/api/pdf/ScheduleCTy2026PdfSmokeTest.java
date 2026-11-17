@@ -693,6 +693,139 @@ class ScheduleCTy2026PdfSmokeTest {
                 "public print lists the Schedule C stop");
     }
 
+    /**
+     * One vehicle, standard mileage. Notice 2026-10 §3 and IR-2026-29. 6,000 miles at 72.5 cents plus 4,000 miles at
+     * 76 cents plus $210 is $7,600. Line 31 is $32,400. No W-2 wages, so Schedule SE line 4a is $29,921, line 12 is
+     * $4,578, and Schedule 1 line 15 is $2,289. Part IV lines 43-47b print.
+     */
+    @Test
+    void standardMileagePrintsLine9PartIVAndScheduleSE() throws Exception {
+        var facts = selfEmployed("0.00", "0.00", "40000.00");
+        String b = biz();
+        facts.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+        facts.put(b + "writableOtherIncome", dollar("0.00"));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasVehicleRentOrLease",
+            "hasMachineryOrEquipmentRent",
+            "hasHomeOffice",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            facts.put(b + stop, bool(false));
+        }
+        facts.put(b + "hasDeductibleExpenses", bool(false));
+        standardMileage(facts, b);
+        assertFalse(
+                PrintRefusingKnockouts.refusingPaths(graphOf(facts)).contains("/flowKnockoutScheduleCOutOfScope"),
+                "standard mileage does not refuse the print");
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, SC_FOOTER);
+            amount(sc, "Page1[0].Lines8-16c_ReadOrder[0].f1_21[0]", 7600, "9");
+            amount(sc, "Page1[0].f1_46[0]", 7600, "28");
+            amount(sc, "Page1[0].f1_47[0]", 32400, "29");
+            amount(sc, "Page1[0].f1_51[0]", 32400, "31");
+            assertEquals("3", value(sc, "Page2[0].f2_9[0]"), "43 month");
+            assertEquals("15", value(sc, "Page2[0].f2_10[0]"), "43 day");
+            assertEquals("2024", value(sc, "Page2[0].f2_11[0]"), "43 year");
+            assertEquals("10000", value(sc, "Page2[0].f2_12[0]"), "44a");
+            assertEquals("120", value(sc, "Page2[0].f2_13[0]"), "44b");
+            assertEquals("80", value(sc, "Page2[0].f2_14[0]"), "44c");
+            assertTrue(checked(sc, "Page2[0].c2_5[1]"), "45 No");
+            assertFalse(checked(sc, "Page2[0].c2_5[0]"), "45 Yes");
+            assertTrue(checked(sc, "Page2[0].c2_6[0]"), "46 Yes");
+            assertTrue(checked(sc, "Page2[0].c2_7[0]"), "47a Yes");
+            assertTrue(checked(sc, "Page2[0].c2_8[0]"), "47b Yes");
+
+            Map<String, String> se = fieldsOnPages(doc, ScheduleSETy2026PdfSmokeTest.SE_FOOTER);
+            amount(se, "Page1[0].f1_5[0]", 32400, "SE line 2");
+            amount(se, "Page1[0].f1_7[0]", 29921, "SE line 4a");
+            amount(se, "Page1[0].f1_19[0]", 3710, "SE line 10");
+            amount(se, "Page1[0].f1_20[0]", 868, "SE line 11");
+            amount(se, "Page1[0].f1_21[0]", 4578, "SE line 12");
+            amount(se, "Page1[0].f1_22[0]", 2289, "SE line 13");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "Page1[0].f1_07[0]", 32400, "Schedule 1 line 3");
+            amount(s1, "Page2[0].f2_05[0]", 2289, "Schedule 1 line 15");
+        }
+    }
+
+    /**
+     * Each line 9 stop refuses submission and the public print. A later mileage amount does not turn the stop off.
+     * Actual expenses, more than one vehicle, five or more at once, a prior MACRS or section 179 or bonus or actual
+     * method, vehicle loan interest, Form 4562 otherwise required, and Part IV line 47a no. Rev. Proc. 2019-46 §4.05.
+     * 2026 draft Instructions for Schedule C, PDF p. 7.
+     */
+    @Test
+    void standardMileageStopsRefuseSubmissionAndPrint() throws Exception {
+        String[][] stops = {
+            {"hasVehicleLoanInterest", "vehicle loan interest"},
+            {"usesStandardMileageRate", "actual expenses"},
+            {"hasMoreThanOneVehicle", "more than one vehicle"},
+            {"usesFiveOrMoreVehiclesSimultaneously", "five or more vehicles"},
+            {"vehiclePriorActualMacrs179OrBonus", "prior depreciation method"},
+            {"vehicleRequiresForm4562", "Form 4562 otherwise required"},
+            {"vehicleHasEvidence", "line 47a no"}
+        };
+        for (String[] stop : stops) {
+            var facts = selfEmployed("0.00", "0.00", "40000.00");
+            String b = biz();
+            facts.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+            facts.put(b + "writableOtherIncome", dollar("0.00"));
+            for (String off : new String[] {
+                "hasInventoryOrCogs",
+                "hasDepreciationOrSection179",
+                "hasDepletion",
+                "hasVehicleRentOrLease",
+                "hasMachineryOrEquipmentRent",
+                "hasHomeOffice",
+                "hasEnergyEfficientBuildingsDeduction"
+            }) {
+                facts.put(b + off, bool(false));
+            }
+            facts.put(b + "hasDeductibleExpenses", bool(false));
+            standardMileage(facts, b);
+            boolean stoppingYes = !stop[0].equals("usesStandardMileageRate") && !stop[0].equals("vehicleHasEvidence");
+            facts.put(b + stop[0], bool(stoppingYes));
+            assertTrue(
+                    PrintRefusingKnockouts.refusingPaths(graphOf(facts)).contains("/flowKnockoutScheduleCOutOfScope"),
+                    stop[1] + " refuses the print");
+            SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                    SubmissionBlockingFactsResponseStatusException.class,
+                    () -> generatePublicPrint(facts),
+                    stop[1] + " blocks the public print");
+            assertTrue(
+                    e.getBody().getProperties().get("blockingFacts") instanceof List<?> blocking
+                            && blocking.contains("/flowKnockoutScheduleCOutOfScope"),
+                    stop[1] + " lists the Schedule C stop");
+        }
+    }
+
+    private static void standardMileage(Map<String, String> facts, String b) {
+        facts.put(b + "hasCarTruckOrVehicleLoan", bool(true));
+        facts.put(b + "hasVehicleLoanInterest", bool(false));
+        facts.put(b + "usesStandardMileageRate", bool(true));
+        facts.put(b + "hasMoreThanOneVehicle", bool(false));
+        facts.put(b + "usesFiveOrMoreVehiclesSimultaneously", bool(false));
+        facts.put(b + "vehiclePriorActualMacrs179OrBonus", bool(false));
+        facts.put(b + "vehicleRequiresForm4562", bool(false));
+        facts.put(b + "writableBusinessMilesJanJun", dollar("6000.00"));
+        facts.put(b + "writableBusinessMilesJulDec", dollar("4000.00"));
+        facts.put(b + "writableBusinessParkingAndTolls", dollar("210.00"));
+        facts.put(
+                b + "vehiclePlacedInService",
+                "{\"$type\":\"gov.irs.factgraph.persisters.DayWrapper\",\"item\":{\"date\":\"2024-03-15\"}}");
+        facts.put(b + "writableCommutingMiles", dollar("120.00"));
+        facts.put(b + "writableOtherMiles", dollar("80.00"));
+        facts.put(b + "vehicleAvailableForPersonalUseOffDuty", bool(false));
+        facts.put(b + "hasAnotherVehicleForPersonalUse", bool(true));
+        facts.put(b + "vehicleHasEvidence", bool(true));
+        facts.put(b + "vehicleEvidenceIsWritten", bool(true));
+    }
+
     private static String biz() {
         return "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/";
     }
