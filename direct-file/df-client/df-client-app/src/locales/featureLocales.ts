@@ -49,6 +49,8 @@ import noIncomeTaxStatesEn from './en.noIncomeTaxStates.yaml';
 import noIncomeTaxStatesEs from './es.noIncomeTaxStates.yaml';
 import ilPitEn from './en.ilPit.yaml';
 import ilPitEs from './es.ilPit.yaml';
+import ncPitEn from './en.ncPit.yaml';
+import ncPitEs from './es.ncPit.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -139,6 +141,8 @@ for (const [locale, overlay] of [
   [esLocale, noIncomeTaxStatesEs],
   [enLocale, ilPitEn],
   [esLocale, ilPitEs],
+  [enLocale, ncPitEn],
+  [esLocale, ncPitEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }

@@ -180,6 +180,21 @@
       "url": "https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-instr.pdf",
       "kind": "web"
     },
+    "nc-gs-105": {
+      "title": "North Carolina General Statutes, Chapter 105",
+      "url": "https://www.ncleg.gov/",
+      "kind": "statute"
+    },
+    "d-401-2025": {
+      "title": "2025 North Carolina Individual Income Tax Instructions, Form D-401 (structure and standard-deduction chart used for the 2026 return until the 2026 booklet is posted)",
+      "url": "https://www.ncdor.gov/2025-d-401-individual-income-tax-instructions/open",
+      "kind": "web"
+    },
+    "ncdor-nc-30": {
+      "title": "NCDOR NC-30, Individual Income Tax Rates",
+      "url": "https://www.ncdor.gov/taxes-forms/individual-income-tax/tax-rate-schedules",
+      "kind": "web"
+    },
     "i1040sc-dft": {
       "title": "2026 Instructions for Schedule C, draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
@@ -3879,6 +3894,70 @@
           "section": "§ 201",
           "url": "https://www.ilga.gov/legislation/ilcs/ilcs4.asp?DocName=003500050HArt.+2&ActID=577&ChapterID=8",
           "quote": "For taxable years ending on or after December 31, 2017, 4.95%."
+        }
+      ]
+    },
+    {
+      "fact": "/ncStandardDeductionSingleOrMfs",
+      "file": "ncPit.xml",
+      "values": [
+        "Dollar:12750"
+      ],
+      "cite": [
+        {
+          "source": "d-401-2025",
+          "quote": "Single $12,750. Married filing separately if spouse does not claim itemized deductions $12,750."
+        },
+        {
+          "source": "nc-gs-105",
+          "section": "§ 105-153.5(a)(1)",
+          "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-153.5.html",
+          "quote": "G.S. 105-153.5(a)(1) standard deduction."
+        }
+      ]
+    },
+    {
+      "fact": "/ncStandardDeductionMfjOrQss",
+      "file": "ncPit.xml",
+      "values": [
+        "Dollar:25500"
+      ],
+      "cite": [
+        {
+          "source": "d-401-2025",
+          "quote": "Married filing jointly/Qualifying widow(er)/Surviving spouse $25,500."
+        }
+      ]
+    },
+    {
+      "fact": "/ncStandardDeductionHoh",
+      "file": "ncPit.xml",
+      "values": [
+        "Dollar:19125"
+      ],
+      "cite": [
+        {
+          "source": "d-401-2025",
+          "quote": "Head of household $19,125."
+        }
+      ]
+    },
+    {
+      "fact": "/ncTaxRate",
+      "file": "ncPit.xml",
+      "values": [
+        "Rational:399/10000"
+      ],
+      "cite": [
+        {
+          "source": "nc-gs-105",
+          "section": "§ 105-153.7(a)",
+          "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-153.7.html",
+          "quote": "3.99% for tax years beginning after 2025."
+        },
+        {
+          "source": "ncdor-nc-30",
+          "quote": "The individual income tax rate for tax year 2026 is 3.99%."
         }
       ]
     }

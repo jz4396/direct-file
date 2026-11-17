@@ -1,0 +1,98 @@
+# #93 slice 4: Form D-400. YEAR-BASED MAPPING: 2025 WEB-FILL AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# The 2026 D-400 is not posted. This 2025 web-fill is fillable. Amounts are tax year 2026 (rate 3.99%).
+# The preprinted line 15 sentence still says "Multiply Line 14 by 4.25% (0.0425)." The filled amount is the 2026 tax.
+# Source: https://www.ncdor.gov/2025-d-400-web-filled-version/open
+# SHA-256 2bf6e0b44e628a05cc401d22f7cf6f8c7b39db529d345f4bcf7d93ccfe170d63
+# Included when /stateReturnIsNc. Stops in ncPit refuse the package, so the zero lines below are the supported entry.
+# Whole dollars, no commas, no decimals. Zero prints 0. Line 13 (part-year percentage) stays blank.
+# NcD400PdfForm fills the ~ncD400* pseudo-facts (names, address, county, circles).
+includeWhen: /stateReturnIsNc
+otherRequiredFacts:
+  - /isFilingStatusMFJ
+  - /filingStatus
+  - /address
+  - /phone
+  - /primaryFiler/firstName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/lastName
+  - /primaryFiler/tin
+  - /secondaryFiler/firstName
+  - /secondaryFiler/middleInitial
+  - /secondaryFiler/lastName
+  - /secondaryFiler/tin
+  - /ncResidencyStatus
+  - /ncCounty
+  - /ncIsVeteran
+  - /ncSpouseIsVeteran
+  - /ncItemizes
+  - /ncHasUseTax
+  - /ncLine34
+form:
+  y_d400wf_fname1: ~ncD400First
+  y_d400wf_mi1: ~ncD400Mi
+  y_d400wf_lname1: ~ncD400Last
+  y_d400wf_ssn1: /primaryFiler/tin
+  y_d400wf_fname2: ~ncD400SpouseFirst
+  y_d400wf_mi2: ~ncD400SpouseMi
+  y_d400wf_lname2: ~ncD400SpouseLast
+  y_d400wf_ssn2: ~ncD400SpouseSsn
+  y_d400wf_sname2: ~ncD400MfsSpouseName
+  y_d400wf_sssn2: ~ncD400MfsSpouseSsn
+  y_d400wf_add: ~ncD400Street
+  "y_d400wf_apartment number": ~ncD400Apt
+  y_d400wf_city: ~ncD400City
+  y_d400wf_state: ~ncD400State
+  y_d400wf_zip: ~ncD400Zip
+  y_d400wf_county: ~ncD400County
+  y_d400wf_dayphone: ~ncD400Phone
+  y_d400wf_fstat1: ~ncD400Fstat1
+  y_d400wf_fstat2: ~ncD400Fstat2
+  y_d400wf_fstat3: ~ncD400Fstat3
+  y_d400wf_fstat4: ~ncD400Fstat4
+  y_d400wf_fstat5: ~ncD400Fstat5
+  y_d400wf_v1yes: ~ncD400VeteranYes
+  y_d400wf_v2no: ~ncD400VeteranNo
+  y_d400wf_sv1yes: ~ncD400SpouseVeteranYes
+  y_d400wf_sv1no: ~ncD400SpouseVeteranNo
+  y_d400wf_rs1yes: ~ncD400ResidentYes
+  y_d400wf_rs2yes: ~ncD400SpouseResidentYes
+  y_d400wf_ncstandarddeduction: ~ncD400Standard
+  "y_d400wf_Consumer Use Tax": ~ncD400CertifyNoUseTax
+  y_d400wf_li6_good: /ncLine6
+  y_d400wf_li7_good: /ncLine7
+  y_d400wf_li8_good: /ncLine8
+  y_d400wf_li9_good: /ncLine9
+  y_d400wf_li10a_good: /ncLine10a
+  y_d400wf_li10b_good: /ncLine10b
+  y_d400wf_li11_page1_good: /ncLine11
+  y_d400wf_li12a_pg1_good: /ncLine12a
+  y_d400wf_li12b_pg1_good: /ncLine12b
+  y_d400wf_li14_pg1_good: /ncLine14
+  y_d400wf_li15_pg1_good: /ncLine15
+  y_d400wf_li16_pg2_good: /ncLine16
+  y_d400wf_li17_pg2_good: /ncLine17
+  y_d400wf_li18_pg2_good: /ncLine18
+  y_d400wf_li19_pg2_good: /ncLine19
+  y_d400wf_li20a_pg2_good: /ncLine20a
+  y_d400wf_li20b_pg2_good: /ncLine20b
+  y_d400wf_li21a_pg2_good: /ncLine21a
+  y_d400wf_li21b_pg2_good: /ncLine21b
+  y_d400wf_li21c_pg2_good: /ncLine21c
+  y_d400wf_li21d_pg2_good: /ncLine21d
+  y_d400wf_li22_pg2_good: /ncLine22
+  y_d400wf_li23_pg2_good: /ncLine23
+  y_d400wf_li24_pg2_good: /ncLine24
+  y_d400wf_li25_pg2_good: /ncLine25
+  y_d400wf_li26a_pg2_good: /ncLine26a
+  y_d400wf_li26b_pg2_good: /ncLine26b
+  y_d400wf_li26c_pg2_good: /ncLine26c
+  y_d400wf_li26d_pg2_good: /ncLine26d
+  y_d400wf_li26e_pg2_good: /ncLine26e
+  y_d400wf_li27_pg2_good: /ncLine27
+  y_d400wf_li28_pg2_good: /ncLine28
+  y_d400wf_li29_pg2_good: /ncLine29
+  y_d400wf_li30_pg2_good: /ncLine30
+  y_d400wf_li31_pg2_good: /ncLine31
+  y_d400wf_li32_pg2_good: /ncLine32
+  y_d400wf_li33_pg2_good: /ncLine33
+  y_d400wf_li34_pg2_good: /ncLine34

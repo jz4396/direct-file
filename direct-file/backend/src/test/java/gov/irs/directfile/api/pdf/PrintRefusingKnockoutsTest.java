@@ -225,6 +225,16 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutIlScheduleG",
                 "/flowKnockoutIlClaimedAsDependent",
                 "/flowKnockoutIlWitTooManyRows",
+                "/flowKnockoutNcPartYearOrNonresident",
+                "/flowKnockoutNcScheduleS",
+                "/flowKnockoutNcOtherFederalIncome",
+                "/flowKnockoutNcDependentsOrChildDeduction",
+                "/flowKnockoutNcItemizedDeductions",
+                "/flowKnockoutNcCredits",
+                "/flowKnockoutNcUseTax",
+                "/flowKnockoutNcOtherPayments",
+                "/flowKnockoutNcW2NotNorthCarolina",
+                "/flowKnockoutNcMfsSpouseItemizes",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -274,7 +284,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(76, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(86, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -836,6 +846,19 @@ class PrintRefusingKnockoutsTest {
                     }
                 }
             }
+            // #93 slice 4: a North Carolina resident return refuses the same way.
+            Result<Object> ncReturn = graph.get("/stateReturnIsNc");
+            if (ncReturn.complete() && Boolean.TRUE.equals(ncReturn.get())) {
+                for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+                    if (!path.startsWith("/flowKnockoutNc")) {
+                        continue;
+                    }
+                    Result<Object> knock = graph.get(path);
+                    if (!(knock.complete() && Boolean.FALSE.equals(knock.get()))) {
+                        expected.add(path);
+                    }
+                }
+            }
             assertEquals(expected, PrintRefusingKnockouts.refusingPaths(graph), file.getFilename());
             if (schedule.complete() && Boolean.TRUE.equals(schedule.get()) && !expected.isEmpty()) {
                 scheduleEicRefused.add(file.getFilename() + " " + expected);
@@ -865,9 +888,10 @@ class PrintRefusingKnockoutsTest {
         // 8995 now prints too, and a qualifying-child EIC that is not a shared qualifying child prints Schedule EIC.
         // Of the 50 Schedule EIC scenarios, qss still refuses for a shared qualifying child and
         // npe-form-2441-without-cdcc still refuses for the special enrollment period, so 106 + 48.
-        // #93: 8862-ctc-no-letter-for-improper-claims.json is an Illinois resident return, so the unanswered
-        // Illinois screeners refuse it. 154 federal prints minus that one scenario.
-        assertEquals(153, printed, "scenarios that print");
+        // #93 slice 3: 8862-ctc-no-letter-for-improper-claims.json is an Illinois resident return, so the unanswered
+        // Illinois screeners refuse it. #93 slice 4: hsa-mfj-ticket-11914.json is a North Carolina resident return,
+        // so the unanswered North Carolina screeners refuse it. 154 federal prints minus those two scenarios.
+        assertEquals(152, printed, "scenarios that print");
     }
 
     /**
