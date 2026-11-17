@@ -19,7 +19,10 @@
 // (Golden P: full-year Alaska resident, single, W-2 wages $55,000 and the $1,200 Alaska Permanent Fund Dividend
 // on Schedule 1 line 8g, with no state return), and profile Q
 // (Golden Q: full-year Pennsylvania resident, married filing jointly, two qualifying children under 17 for the
-// Child Tax Credit and Form 8812, one W-2, standard deduction, no Form 2441).
+// Child Tax Credit and Form 8812, one W-2, standard deduction, no Form 2441), and profile R
+// (Golden R: full-year Florida resident, head of household, one qualifying child age 10, itemized deductions
+// with the SALT cap and the 0.5% charitable floor, and Form 1099-INT box 9 on Form 6251 line 2g so alternative
+// minimum tax is owed).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -70,6 +73,8 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2006`,
   `444-00-2007`,
   `444-00-2008`,
+  `444-00-2009`,
+  `444-00-2010`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1277,6 +1282,69 @@ export const profileQPaMfjTwoChildren = {
   ...w2s(nolan.ssn, profileQW2),
 };
 
+/**
+ * Profile R (Golden R, #135): full-year Florida resident, head of household, under 65, not blind. One qualifying
+ * child age 10 (born 2016-06-15, so 10 on December 31, 2026) who lived in the home all year. Itemizes. One W-2:
+ * boxes 1, 3, and 5 $180,000 (under the OASDI wage base), box 2 $31,000. One Form 1099-INT: box 1 $0, box 8
+ * $60,000 tax-exempt interest, box 9 $60,000 specified private activity bond interest. Schedule A: real estate tax
+ * $9,000, Form 1098 mortgage interest $15,000 (acquisition debt under $750,000, so not an unsupported item), cash
+ * gifts $5,000. No state income tax and no state return.
+ *
+ * The cite names SSNs in the 9xx area. Those fail Tin.isSSN, and IRC §24(h)(7) allows no child tax credit without
+ * an SSN for the taxpayer and the qualifying child. These SSNs are group 00 (444-00-2009 and 444-00-2010), the same
+ * kind Golden G and Golden Q use. Group 00 is never assigned by SSA. Fixed ids in the
+ * 13500000-0000-4000-8000-0000000021xx range.
+ */
+const alex: Person = { first: `Alex`, last: `Example`, ssn: [`444`, `00`, `2009`], dob: `1983-09-04` };
+export const profileRChildId = `13500000-0000-4000-8000-000000002103`;
+export const profileRInterestId = `13500000-0000-4000-8000-000000002102`;
+export const profileRW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002101`,
+  employer: `Example Sunshine Payroll LLC`,
+  ein: [`00`, `0002101`],
+  box1: 180000,
+  box2: 31000,
+  box3: 180000,
+  // 6.2% × 180,000 = 11,160. 26 U.S.C. 3101(a). The wage base is above this wage.
+  box4: 11160,
+  box5: 180000,
+  // 1.45% × 180,000 = 2,610. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 2610,
+};
+export const profileRFlHohItemizerAmt = {
+  ...single(alex, { street: `123 Example St`, city: `Miami`, zip: `33101`, state: `FL` }),
+  '/maritalStatus': createEnumWrapper(`single`, `/maritalStatusOptions`),
+  '/filingStatus': createEnumWrapper(`headOfHousehold`, `/filingStatusOptions`),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  '/familyAndHousehold': createCollectionWrapper([profileRChildId]),
+  ...makeChildData(profileRChildId, `2016-06-15`),
+  [`/familyAndHousehold/#${profileRChildId}/firstName`]: createStringWrapper(`Eden`),
+  [`/familyAndHousehold/#${profileRChildId}/writableMiddleInitial`]: createStringWrapper(``),
+  [`/familyAndHousehold/#${profileRChildId}/lastName`]: createStringWrapper(`Example`),
+  [`/familyAndHousehold/#${profileRChildId}/monthsLivedWithTPInUS`]: createEnumWrapper(
+    `twelve`,
+    `/monthsLivedWithTPInUSOptions`
+  ),
+  [`/familyAndHousehold/#${profileRChildId}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial: `2010` }),
+  [`/familyAndHousehold/#${profileRChildId}/hasIpPin`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${profileRChildId}/unableToCareForSelf`]: createBooleanWrapper(false),
+  [`/familyAndHousehold/#${profileRChildId}/tpPaidMostOfHomeUpkeep`]: createBooleanWrapper(true),
+  '/hohQualifyingPerson': createCollectionItemWrapper(profileRChildId),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(false),
+  '/receivedImproperClaims': createBooleanWrapper(false),
+  ...w2s(alex.ssn, profileRW2),
+  ...taxExemptInterest(profileRInterestId, `Example City Bond`, 60000, 60000),
+  '/scheduleAWantsToItemize': createBooleanWrapper(true),
+  '/scheduleAWritableMedical': createDollarWrapper(`0`),
+  '/scheduleAWritableStateLocalIncomeOrSalesTax': createDollarWrapper(`0`),
+  '/scheduleAWritableRealEstateTaxes': createDollarWrapper(`9000`),
+  '/scheduleAWritablePersonalPropertyTaxes': createDollarWrapper(`0`),
+  '/scheduleAWritableMortgageInterest': createDollarWrapper(`15000`),
+  '/scheduleAWritableCashGifts': createDollarWrapper(`5000`),
+  '/scheduleAWritableElectsToItemize': createBooleanWrapper(false),
+  '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1301,4 +1369,5 @@ export const goldenProfiles = {
   profileOFlQdcgK1,
   profilePAkSinglePfd,
   profileQPaMfjTwoChildren,
+  profileRFlHohItemizerAmt,
 };

@@ -19,7 +19,9 @@
 // (Golden P: full-year Alaska resident, single, W-2 wages $55,000 and the $1,200 Alaska Permanent Fund Dividend
 // on Schedule 1 line 8g, with no state return), and profile Q
 // (Golden Q: full-year Pennsylvania resident, married filing jointly, two qualifying children, Form 8812, no
-// Form 2441).
+// Form 2441), and profile R
+// (Golden R: full-year Florida resident, head of household, one qualifying child age 10, Schedule A with the
+// SALT cap and the 0.5% charitable floor, and Form 6251 line 2g private activity bond interest so AMT is owed).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -128,7 +130,7 @@
 // [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
-//      fixture SSNs other than profiles C, D, F, and G are in the 900 area, which SSA never issues; the app reads them
+//      fixture SSNs other than profiles C, D, F, G, Q, and R are in the 900 area, which SSA never issues; the app reads them
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
 //      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
@@ -136,12 +138,16 @@
 //      900-35-1016 (group 35, outside the ITIN ranges). Profile P uses 900-33-1017 (group 33, outside the ITIN
 //      ranges). Profiles C and D use
 //      444-00-4444 (group 00, never issued [SSA]), which the app reads as an SSN. Profile F uses 444-00-1007 and the
-//      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00. Every
+//      child uses 444-00-1008, also group 00. Profile G uses 444-00-2001 through 444-00-2004, also group 00.
+//      Profile Q uses 444-00-2005 through 444-00-2008, also group 00. Profile R uses 444-00-2009 and 444-00-2010,
+//      also group 00: the cite names 9xx SSNs, and Tin.isSSN is false for a 9xx area, which would zero the child
+//      tax credit under IRC §24(h)(7). Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
 //      "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), and profile F's AGI
 //      is above that amount too, so EITC is $0 on both. Profile G is under the two-child joint completed phaseout and
-//      its EITC is computed in that block. The other profiles have no child, so their CTC is $0. Profile F's child tax
-//      credit is reduced by the §24(b) phaseout.
+//      its EITC is computed in that block. Profiles D, F, G, Q, and R have a child; the rest have no child, so their
+//      CTC is $0. Profile F's child tax credit is reduced by the §24(b) phaseout. Profile R's is $2,200, computed in
+//      that block.
 // [AK] AS 43.20.012(a)(1)–(2): "The tax imposed by this chapter does not apply to (1) an individual; (2) a fiduciary"
 //      (https://www.akleg.gov/basis/statutes.asp?media=print&secStart=43.20.012&secEnd=43.20.012). The individual tax
 //      was repealed by ch. 2 SSSLA 1980. The Permanent Fund Dividend stays federal income only (Schedule 1 line 8g).
@@ -230,6 +236,10 @@ import {
   profileQChild2Id,
   profileQPaMfjTwoChildren,
   profileQW2,
+  profileRChildId,
+  profileRFlHohItemizerAmt,
+  profileRInterestId,
+  profileRW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -292,7 +302,7 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
     }
     expect(checked).toBeGreaterThan(0);
   });
-  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; only profile G gets EITC, and only profiles D, F, G, and Q get CTC`, () => {
+  it(`the 900-area TINs are neither an SSN nor an ITIN to the app; only profile G gets EITC, and only profiles D, F, G, Q, and R get CTC`, () => {
     for (const [name, facts] of Object.entries(goldenProfiles)) {
       const g = graph(facts);
       const groupZero =
@@ -300,12 +310,14 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
         name.startsWith(`profileD`) ||
         name.startsWith(`profileF`) ||
         name.startsWith(`profileG`) ||
-        name.startsWith(`profileQ`);
+        name.startsWith(`profileQ`) ||
+        name.startsWith(`profileR`);
       const hasChild =
         name.startsWith(`profileD`) ||
         name.startsWith(`profileF`) ||
         name.startsWith(`profileG`) ||
-        name.startsWith(`profileQ`);
+        name.startsWith(`profileQ`) ||
+        name.startsWith(`profileR`);
       expect(get(g, `/primaryFiler/tin/isSSN`).get, name).toBe(groupZero);
       expect(get(g, `/primaryFiler/tin/isITIN`).get, name).toBe(false);
       if (name.startsWith(`profileG`)) {
@@ -4059,6 +4071,237 @@ describe(`golden end-to-end scenario (synthetic data): profile Q, Golden Q, full
         path.resolve(
           __dirname,
           `../../../../../backend/src/test/resources/submission-blocking/golden-profileQ-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`nothing stops the return`, () => {
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile R, Golden R, Florida HOH itemizer, Form 6251 AMT`, () => {
+  // Alex Example, born 1983-09-04 (under 65, not blind). Head of household, full-year Florida [FL]. Address 123
+  //   Example St, Miami, FL 33101. Eden Example, born 2016-06-15 (10 at year end), lived in the home 12 months, a
+  //   qualifying child. SSNs are group 00 (444-00-2009 and 444-00-2010) [SSA]. The cite names 9xx SSNs. A 9xx area is
+  //   not an SSN (Tin.isSSN), and IRC §24(h)(7) requires an SSN for the taxpayer and the qualifying child. The same
+  //   group-00 pattern is Golden G and Golden Q.
+  // One W-2. Boxes 1, 3, and 5 $180,000 (under the OASDI wage base). Box 2 $31,000. Box 4 is 6.2% × 180,000 = 11,160
+  //   (26 U.S.C. 3101(a)). Box 6 is 1.45% × 180,000 = 2,610 [3101] [3102]. No box 16 or 17. No other earned income.
+  // Form 1099-INT, Example City Bond: box 1 $0, box 8 $60,000, box 9 $60,000. Box 9 is included in box 8.
+  //   Form 1040 line 2a is box 8. 26 U.S.C. 103(a): tax-exempt interest is not gross income, so it is not in total
+  //   income or AGI. Taxable interest is $0, which is not over $1,500, so Schedule B is not required. Instructions
+  //   for Schedule B (2025) p. 1: "You had over $1,500 of taxable interest or ordinary dividends." Box 8 does not
+  //   force Schedule B.
+  // Form 1040: line 1a, line 9, and line 11 (AGI) 180,000. Line 2a 60,000. Line 2b 0.
+  // Schedule A (2026 draft, https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf). The cite's "line 17" is this draft's
+  //   line 18 (older forms called the total line 17; ScheduleATy2026PdfSmokeTest). Line 5a 0. Line 5b 9,000. Line 5c
+  //   0. Line 5d 9,000. Line 5e is the smaller of line 5d and $40,400. IRC §164(b)(7) as amended by P.L. 119-21:
+  //   "in the case of any taxable year beginning in calendar year 2026, $40,400". MAGI $180,000 is under the $505,000
+  //   phase-down threshold, so there is no phase-down. Line 5e and line 7 are 9,000. Line 8a 15,000 (Form 1098;
+  //   acquisition debt under $750,000, so /scheduleAHasUnsupportedItems is no). IRC §170(b)(1)(I): cash gifts are
+  //   allowed only to the extent they exceed 0.5% of the contribution base. 0.5% × 180,000 = 900, so line 11 is
+  //   5,000 and lines 13 and 15 are 5,000 − 900 = 4,100. Line 18 = 9,000 + 15,000 + 4,100 = 28,100. The head of
+  //   household standard deduction is $24,150. Rev. Proc. 2025-32 §4.14(1), PDF p. 18: "Heads of Households
+  //   (§ 1(j)(2)(B)) $24,150". 28,100 is more, so the filer itemizes. IRC §68's 2/37 overall limitation does not
+  //   apply: line 11b minus lines 13a and 13b is $180,000, not more than $384,350 (Schedule A line 18 "No").
+  // Form 1040: line 12e 28,100. Line 14 28,100 (no Schedule 1-A). Line 15 taxable income 151,900.
+  // Line 16, Tax Computation Worksheet. Taxable income is $100,000 or more, so the tax is on 151,900 itself, not a
+  //   Tax Table midpoint. [GI] p. 36. Rev. Proc. 2025-32 §4.01 Table 2 (heads of households): "Over $105,700 but not
+  //   over $201,750 $16,155 plus 24% of the excess over $105,700". Excess = 151,900 − 105,700 = 46,200. 24% × 46,200
+  //   = 11,088. Tax = 16,155 + 11,088 = 27,243.
+  // Form 6251 [6251] [55]. The cite's "L1a $151,900" is the amount that enters AMTI. On the 2026 draft that amount
+  //   is line 1b, not line 1a. Line 1a is Form 1040 line 14 minus Schedule 1-A line 43 = 28,100. Line 1b = AGI −
+  //   line 1a = 180,000 − 28,100 = 151,900. Line 2a is Schedule A line 7, which is line 5e, $9,000 (line 6 is $0).
+  //   Line 2g is box 9, $60,000. 26 U.S.C. 57(a)(5). Lines 2b-2f and 2h-3 are $0; /hasAmtPreferenceItems is no.
+  //   Line 4 AMTI = 151,900 + 9,000 + 60,000 = 220,900. That is under the unmarried phaseout threshold $500,000
+  //   [RP p. 17 §4.10], so line 5 is the full exemption $90,100 [RP p. 16 §4.10: "Unmarried Individuals (other than
+  //   Surviving Spouses) $90,100"]. A head of household is that category. Line 6 = 220,900 − 90,100 = 130,800, which
+  //   is not over $244,500 [RP p. 16 §4.10], so Part III is not used and line 7 = 26% × 130,800 = 34,008. Line 8 is
+  //   $0, so line 9 is 34,008. Line 10 is the regular tax 27,243. Line 11 AMT = 34,008 − 27,243 = 6,765. That is
+  //   Schedule 2 line 2, then line 3, then Form 1040 line 17. The cite's "Schedule 2 line 1/2" is this draft's line 2
+  //   (line 1z is $0). Who Must File item 1 is met, so Form 6251 is attached.
+  // Form 1040 line 18 = 27,243 + 6,765 = 34,008.
+  // Schedule 8812, IRC §24. One qualifying child under 17. [RP] p. 14 §4.05(1): "the maximum amount of the credit
+  //   allowed under § 24(a) is $2,200." §24(h)(3): the threshold is $200,000 other than a joint return. AGI is under
+  //   that, so the phaseout is 0. Credit Limit Worksheet A line 1 is Form 1040 line 18 (/totalTentativeTax), 34,008,
+  //   and no credit is ahead of the child tax credit, so the limit is 34,008. Line 14 and Form 1040 line 19 are
+  //   2,200. Nothing remains for the additional child tax credit.
+  // Form 1040: line 22 = 34,008 − 2,200 = 31,808. Line 24 total tax 31,808. No Additional Medicare Tax: box 5
+  //   $180,000 is under $200,000 [3101]. No NIIT: AGI is under the $200,000 head-of-household threshold, and
+  //   tax-exempt interest is not net investment income [1411]. Line 25a and line 33 are 31,000. Line 37 amount owed
+  //   is 808. That is under $1,000, so Form 2210 is not filed. 26 U.S.C. 6654(e)(1). Form 2210 (2026) draft p. 1:
+  //   line 4 or line 7 less than $1,000 means stop.
+  // EITC is $0. AGI $180,000 is over the one-child completed phaseout of $51,593 [EITC]. No Florida return [FL].
+  const g = graph(profileRFlHohItemizerAmt);
+
+  it(`Form 1040 income leaves tax-exempt interest off AGI`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`headOfHousehold`);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/familyAndHousehold/#${profileRChildId}/tin/isSSN` as string).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/flowKnockoutHasBonds`).get).toBe(false);
+    expect(get(g, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8`).get).toBe(false);
+    const interestPath = `/interestReports/#${profileRInterestId}`;
+    expect(get(g, `${interestPath}/payer`).get.toString()).toBe(`Example City Bond`);
+    expectDollars(g, {
+      '/wages': `180000.00`,
+      '/taxExemptInterest': `60000.00`,
+      '/interestIncome': `0.00`,
+      [`${interestPath}/taxExemptInterest`]: `60000.00`,
+      [`${interestPath}/specifiedPrivateActivityBondInterest`]: `60000.00`,
+      '/totalIncome': `180000.00`,
+      '/agi': `180000.00`,
+    });
+  });
+
+  it(`Schedule A: SALT under the cap, mortgage interest, and the 0.5% charitable floor`, () => {
+    const agi = Number(get(g, `/agi`).get.toString());
+    expect(agi).toBe(180000);
+    // IRC §170(b)(1)(I). 0.5% × 180,000 = 900. Deduction = 5,000 − 900 = 4,100.
+    const floor = Math.round(agi * 0.005);
+    expect(floor).toBe(900);
+    expect(5000 - floor).toBe(4100);
+    expect(get(g, `/scheduleASaltLimit`).get.toString()).toBe(`40400.00`);
+    expect(get(g, `/flowKnockoutScheduleAUnsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleAUnsupported`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleAOverallLimit`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleAOverallLimit`).get).toBe(false);
+    expect(get(g, `/itemizesDeductions`).get).toBe(true);
+    expectDollars(g, {
+      '/scheduleAStateLocalIncomeOrSalesTax': `0.00`,
+      '/scheduleARealEstateTaxes': `9000.00`,
+      '/scheduleAPersonalPropertyTaxes': `0.00`,
+      '/scheduleALine5d': `9000.00`,
+      '/scheduleALine5e': `9000.00`,
+      '/scheduleAMortgageInterest': `15000.00`,
+      '/scheduleACashGifts': `5000.00`,
+      '/scheduleALine13': `4100.00`,
+      '/scheduleALine18': `28100.00`,
+      '/standardDeduction': `24150.00`,
+      '/standardOrItemizedDeductions': `28100.00`,
+    });
+  });
+
+  it(`taxable income is $151,900 and the Tax Computation Worksheet tax is $27,243`, () => {
+    const taxable = Number(get(g, `/taxableIncome`).get.toString());
+    expect(taxable).toBe(151900);
+    // [RP] §4.01 Table 2. 16,155 + 24% × (151,900 − 105,700) = 16,155 + 11,088 = 27,243 exactly.
+    const taxCents = 16155 * 100 + (151900 - 105700) * 24;
+    expect(taxCents).toBe(2724300);
+    expectDollars(g, {
+      '/totalDeductions': `28100.00`,
+      '/taxableIncome': `151900.00`,
+      '/tentativeTaxFromTaxableIncome': `27243.00`,
+    });
+  });
+
+  it(`Form 6251 line 2g is box 9 and line 11 alternative minimum tax is $6,765`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItemsUnanswered`).get).toBe(false);
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(true);
+    const line6 = Number(get(g, `/form6251Line6`).get.toString());
+    // 26% × 130,800 = 34,008 exactly. [6251] line 7; [55]; [RP p. 16] breakpoint $244,500.
+    expect(line6).toBe(130800);
+    expect(line6 * 26).toBe(3400800);
+    expectDollars(g, {
+      '/form6251ExemptionAmount': `90100.00`,
+      '/form6251PhaseoutThreshold': `500000.00`,
+      // Cite "L1a $151,900" is draft line 1b. Line 1a is the $28,100 itemized deduction.
+      '/form6251Line1a': `28100.00`,
+      '/form6251Line1b': `151900.00`,
+      '/form6251Line2a': `9000.00`,
+      '/form6251Line2g': `60000.00`,
+      '/form6251Line4': `220900.00`,
+      '/form6251Line5': `90100.00`,
+      '/form6251Line6': `130800.00`,
+      '/form6251Line7': `34008.00`,
+      '/form6251Line9': `34008.00`,
+      '/form6251Line10': `27243.00`,
+      '/amt': `6765.00`,
+      '/schedule2Line1z': `0.00`,
+      '/schedule2Line2': `6765.00`,
+      '/totalAdditionalTaxesOwed': `6765.00`,
+    });
+  });
+
+  it(`the child tax credit is $2,200 against line 18, and the amount owed is $808`, () => {
+    expect(get(g, `/ctcEligibleDependents`).get.toString()).toBe(`1`);
+    expect(get(g, `/pdfIncludeSchedule8812`).get).toBe(true);
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    // /requiresSchedule1 is a Switch with only a true branch, so "no Schedule 1" is incomplete rather than false.
+    expect(get(g, `/requiresSchedule1`).complete).toBe(false);
+    expect(get(g, `/requiresSchedule2`).get).toBe(true);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, `/earnedIncomeCredit`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/form2210AskPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expectDollars(g, {
+      '/totalTentativeTax': `34008.00`,
+      '/dependentCreditPhaseoutThreshold': `200000.00`,
+      '/dependentCreditPhaseout': `0.00`,
+      '/totalPotentialCtc': `2200.00`,
+      '/sched8812CreditLimit': `34008.00`,
+      '/totalCtc': `2200.00`,
+      '/totalCtcAndOdc': `2200.00`,
+      '/additionalCtc': `0.00`,
+      '/nonRefundableCredits': `2200.00`,
+      '/taxLessNonRefundableCredits': `31808.00`,
+      '/line21OfSchedule2': `0.00`,
+      '/totalTax': `31808.00`,
+      '/formW2Withholding': `31000.00`,
+      '/totalWithholding': `31000.00`,
+      '/totalPayments': `31000.00`,
+      '/overpayment': `0.00`,
+      '/balanceDue': `808.00`,
+      '/form2210Line4': `31808.00`,
+      '/form2210Line6': `31000.00`,
+      '/form2210Line7': `808.00`,
+      [`/formW2s/#${profileRW2.id}/oasdiWages`]: `180000.00`,
+      [`/formW2s/#${profileRW2.id}/oasdiWithholding`]: `11160.00`,
+      [`/formW2s/#${profileRW2.id}/medicareWages`]: `180000.00`,
+      [`/formW2s/#${profileRW2.id}/medicareWithholding`]: `2610.00`,
+    });
+  });
+
+  it(`Florida resident: no state return, and the listed forms are the ones that print`, () => {
+    expect(get(g, `/livedInFl`).get).toBe(true);
+    expect(get(g, `/stateReturnIsFl`).get).toBe(true);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/hasNoStateIncomeTax`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowKnockoutUnsupportedState`).get).toBe(false);
+    for (const form of [`IRS1040`, `IRS1040SA`, `IRS6251`, `IRS1040S2`, `IRS1040S8812`]) {
+      expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(true);
+    }
+    for (const form of [`IRS1040SB`, `IRS1040S1`, `IRS1040SD`, `IRS8960`, `IRS8959`, `PA40`, `IRS1040EIC`]) {
+      const included = get(g, pdfIncludeWhen(form) as string);
+      // Schedule 1's includeWhen is incomplete when the return has no Schedule 1 income. That does not include it.
+      expect(included.complete && included.get === true, form).toBe(false);
+    }
+    for (const p of [`/stateTaxLiability`, `/stateRefund`, `/stateAmountOwed`]) {
+      expect(get(g, p).complete, p).toBe(false);
+    }
+  });
+
+  it(`golden-profileR-complete.json is the persisted profileRFlHohItemizerAmt return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileR-complete.json`
         ),
         `utf8`
       )
