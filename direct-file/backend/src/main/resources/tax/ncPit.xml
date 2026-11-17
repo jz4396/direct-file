@@ -1,0 +1,1702 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 4: 2026 Form D-400 for a full-year North Carolina resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-6949678658
+      Rate: G.S. 105-153.7(a) as amended by S.L. 2023-134 (HB 259 s. 42.1.(a)): "3.99% for tax years beginning
+      after 2025." NCDOR NC-30: the individual income tax rate for tax year 2026 is 3.99%.
+      Standard deduction: G.S. 105-153.5(a)(1). Single $12,750 / MFJ and QSS $25,500 / HOH $19,125 / MFS $12,750.
+      MFS is $0 when the spouse itemizes, and $0 for anyone not eligible for the federal standard deduction.
+      No personal exemption and no additional amount for age 65 or blindness.
+      Form structure: 2025 D-400 web-fill, used until the 2026 form is posted. For 2026 only the rate on line 15
+      changes; the preprinted 2025 sentence still says 4.25%, and the amount entered is the 2026 tax.
+      Rounding: D-401 (2025) p. 4: drop amounts under 50 cents and increase amounts of 50 through 99 cents.
+      Line 15 rounds the exact product once. Dollar times Rational scales to cents half-even before Round, so
+      /ncLine15 corrects that second step the way /ilLine12 does. 40,213 times 0.0399 is 1,604.4987, which is $1,604.
+      A stop below is BlockSubmissionOnTrue and print-refusing. Out-of-scope schedules are not calculated.
+    -->
+
+    <Fact path="/ncStandardDeductionSingleOrMfs">
+      <Name>North Carolina standard deduction, single or married filing separately</Name>
+      <Description>G.S. 105-153.5(a)(1). D-401 (2025) standard deduction chart: Single $12,750. Married filing
+        separately $12,750 when the spouse does not claim itemized deductions. No addition for age 65 or blindness.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>12750</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncStandardDeductionMfjOrQss">
+      <Name>North Carolina standard deduction, joint or qualifying surviving spouse</Name>
+      <Description>G.S. 105-153.5(a)(1). D-401 (2025) standard deduction chart: Married filing jointly and
+        qualifying
+        widow(er) or surviving spouse $25,500. No addition for age 65 or blindness.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>25500</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncStandardDeductionHoh">
+      <Name>North Carolina standard deduction, head of household</Name>
+      <Description>G.S. 105-153.5(a)(1). D-401 (2025) standard deduction chart: Head of household $19,125.
+        No addition
+        for age 65 or blindness.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>19125</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncTaxRate">
+      <Name>North Carolina individual income tax rate</Name>
+      <Description>G.S. 105-153.7(a) as amended by S.L. 2023-134 (HB 259 s. 42.1.(a)): "3.99% for tax years
+        beginning
+        after 2025." NCDOR publication NC-30: the rate for tax year 2026 is 3.99%. D-401 (2025) p. 4
+        rounds to the
+        nearest dollar, dropping under 50 cents and increasing 50 through 99 cents. The 2025 D-400
+        line 15 sentence still
+        prints 4.25%; the amount on the line is this 2026 rate.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>399/10000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncResidencyOptions">
+      <Name>North Carolina residency answers</Name>
+      <Description>Full-year resident is the supported D-400. Part-year and nonresident need Schedule PN.
+        G.S. 105-153.4.
+        D-401 (2025), residency status and line 13.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>nonresident</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncResidencyStatus">
+      <Name>North Carolina residency for this return</Name>
+      <Description>Asked when the filer chose North Carolina. fullYear is the supported path. partYear and
+        nonresident
+        stop the return. Schedule PN is not calculated.</Description>
+      <Writable>
+        <Enum optionsPath="/ncResidencyOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncCounty">
+      <Name>North Carolina county of residence</Name>
+      <Description>D-400 header: county where the filer lived on the last day of the year. The form prints the
+        first five
+        letters. No effect on the tax.</Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>40</Int>
+        </Limit>
+        <Limit type="Match">
+          <String><![CDATA[[A-Za-z][A-Za-z .'-]*]]></String>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncIsVeteran">
+      <Name>Filer is a veteran</Name>
+      <Description>D-400 veteran information: are you a veteran? Header only. No effect on the tax.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncSpouseIsVeteran">
+      <Name>Spouse is a veteran</Name>
+      <Description>D-400 veteran information, asked on a joint return: is your spouse a veteran? Header only.
+        No effect
+        on the tax.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncAskSpouseVeteran">
+      <Name>Ask whether the spouse is a veteran</Name>
+      <Description>The spouse circle is on a joint D-400. D-401 (2025), veteran information.</Description>
+      <Derived>
+        <All>
+          <Dependency module="stateReturn" path="/stateReturnIsNc" />
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncHasScheduleS">
+      <Name>North Carolina Schedule S addition or deduction</Name>
+      <Description>Any Schedule S addition or deduction, including Social Security, Bailey or other retirement,
+        interest
+        on U.S. obligations, and bonus depreciation. D-400 lines 7 and 9. Not calculated. Yes stops
+        the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncClaimsChildDeduction">
+      <Name>Claims the North Carolina child deduction</Name>
+      <Description>D-400 line 10. The child deduction is not calculated. Yes stops the return. A person in the
+        household
+        stops separately.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncItemizes">
+      <Name>Claims North Carolina itemized deductions</Name>
+      <Description>D-400 line 11 itemized circle and Schedule A. Not calculated. Yes stops the return. The
+        supported path
+        is the North Carolina standard deduction.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncHasD400TcCredit">
+      <Name>Claims a Form D-400TC credit</Name>
+      <Description>D-400 line 16. Form D-400TC is not calculated. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncHasUseTax">
+      <Name>North Carolina consumer use tax is due</Name>
+      <Description>D-400 line 18. The use-tax worksheet is not calculated. Yes stops the return. No fills the
+        circle that
+        certifies no consumer use tax is due, and line 18 is zero. D-401 (2025), line 18.
+        G.S. 105-164.6.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ncHasOtherPayments">
+      <Name>North Carolina estimated, extension, partnership, or S corporation payments</Name>
+      <Description>D-400 lines 21a through 21d: estimated tax, paid with extension, partnership, and
+        S corporation. Not
+        calculated. Yes stops the return.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <!-- Lines. On the supported path lines 7, 9, 10, 16, 18, and 21a through 22, 24, and 26b through 33 are zero.
+         Line 15 is line 14 times 3.99%, rounded once. -->
+
+    <Fact path="/ncLine6">
+      <Name>D-400 line 6 federal adjusted gross income</Name>
+      <Description>D-400 line 6. Federal /agi. W-2 wages with no adjustments equal the W-2 box 1 total.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine7">
+      <Name>D-400 line 7 Schedule S additions</Name>
+      <Description>Zero. A yes to /ncHasScheduleS stops the return. Social Security, retirement, U.S. obligation
+        interest, and other non-W-2 income stop at /flowKnockoutNcOtherFederalIncome.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine8">
+      <Name>D-400 line 8</Name>
+      <Description>Line 6 plus line 7.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine6" />
+          <Dependency path="/ncLine7" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine9">
+      <Name>D-400 line 9 Schedule S deductions</Name>
+      <Description>Zero. A yes to /ncHasScheduleS stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine10a">
+      <Name>D-400 line 10a qualifying children</Name>
+      <Description>Zero. Dependents and a claimed child deduction stop the return. D-400 line 10a.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Int>0</Int>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine10b">
+      <Name>D-400 line 10b child deduction</Name>
+      <Description>Zero. The child deduction is not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine11">
+      <Name>D-400 line 11 North Carolina standard deduction</Name>
+      <Description>G.S. 105-153.5(a)(1). Single or married filing separately $12,750, head of household $19,125,
+        married
+        filing jointly or qualifying surviving spouse $25,500. Married filing separately is zero when the
+        spouse
+        itemizes, which is the case this tool can see of someone who is not eligible for the federal
+        standard deduction
+        (IRC 63(c)(6); D-401 (2025) chart). That return stops and is not filed. No addition
+        for age 65 or blindness, and
+        no reduction because the filer can be claimed as a dependent. North Carolina
+        itemized deductions stop the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFS" />
+              </Not>
+            </When>
+            <Then>
+              <Switch>
+                <Case>
+                  <When>
+                    <Dependency module="filingStatus" path="/isFilingStatusHOH" />
+                  </When>
+                  <Then>
+                    <Dependency path="/ncStandardDeductionHoh" />
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <Any>
+                      <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                      <Dependency module="filingStatus" path="/isFilingStatusQSS" />
+                    </Any>
+                  </When>
+                  <Then>
+                    <Dependency path="/ncStandardDeductionMfjOrQss" />
+                  </Then>
+                </Case>
+                <Case>
+                  <When>
+                    <True />
+                  </When>
+                  <Then>
+                    <Dependency path="/ncStandardDeductionSingleOrMfs" />
+                  </Then>
+                </Case>
+              </Switch>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filers" path="/spouseItemizesKnockout" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/ncStandardDeductionSingleOrMfs" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine12a">
+      <Name>D-400 line 12a</Name>
+      <Description>Line 9 plus line 10b plus line 11.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine9" />
+          <Dependency path="/ncLine10b" />
+          <Dependency path="/ncLine11" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine12b">
+      <Name>D-400 line 12b</Name>
+      <Description>Line 8 minus line 12a, not below zero. A negative result is not filed: line 14 is that
+        non-negative
+        amount for a full-year resident, and line 15 is zero when line 14 is zero.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ncLine8" />
+                </Left>
+                <Right>
+                  <Dependency path="/ncLine12a" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ncLine8" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ncLine12a" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine14">
+      <Name>D-400 line 14 North Carolina taxable income</Name>
+      <Description>Full-year residents enter line 12b. Line 12b is already not below zero, so this is
+        max(0, line 12b).
+        Schedule PN line 13 is not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/ncLine12b" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine15CentRound">
+      <Name>D-400 line 15 after the cent-then-dollar round</Name>
+      <Description>Round(line 14 times 3.99%). Dollar times Rational scales to cents half-even before Round
+        half-up, so a
+        product whose exact fraction is just under half a dollar can become 50 cents and then
+        round up a dollar.</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Dependency path="/ncLine14" />
+            <Dependency path="/ncTaxRate" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine15Times100">
+      <Name>One hundred times the exact D-400 line 15</Name>
+      <Description>Line 14 times 399/100. That is 100 times line 14 times 0.0399, and for a whole-dollar line 14
+        it is
+        exact to the cent. G.S. 105-153.7(a).</Description>
+      <Derived>
+        <Multiply>
+          <Dependency path="/ncLine14" />
+          <Rational>399/100</Rational>
+        </Multiply>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine15">
+      <Name>D-400 line 15 North Carolina income tax</Name>
+      <Description>Line 14 times 3.99 percent, rounded once. Under 50 cents drops; 50 through 99 cents rounds up.
+        If zero
+        or less, the result is zero. G.S. 105-153.7(a). D-401 (2025) p. 4.
+        42,250 times 0.0399 is 1,685.775, which rounds
+        to 1,686.
+        29,500 times 0.0399 is 1,177.05, which rounds to 1,177.
+        40,213 times 0.0399 is 1,604.4987, which stays
+        1,604. The cent-then-dollar path produces 1,605.
+        45,000 times 0.0399 is 1,795.50, which rounds to 1,796.
+        The
+        cent-then-dollar result is one dollar high when it exceeds this exact product by more than 50 cents.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply>
+                        <Dependency path="/ncLine15CentRound" />
+                        <Int>100</Int>
+                      </Multiply>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/ncLine15Times100" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Dollar>50</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ncLine15CentRound" />
+                </Minuend>
+                <Subtrahends>
+                  <Dollar>1</Dollar>
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/ncLine15CentRound" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine16">
+      <Name>D-400 line 16 tax credits</Name>
+      <Description>Form D-400TC. Zero. A yes to /ncHasD400TcCredit stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine17">
+      <Name>D-400 line 17 tax after credits</Name>
+      <Description>Line 15 minus line 16, not below zero.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ncLine15" />
+                </Left>
+                <Right>
+                  <Dependency path="/ncLine16" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ncLine15" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ncLine16" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine18">
+      <Name>D-400 line 18 consumer use tax</Name>
+      <Description>Zero, and the certify-none circle is filled when /ncHasUseTax is no. A yes stops the return.
+        The
+        worksheet is not calculated. D-401 (2025), line 18.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine19">
+      <Name>D-400 line 19</Name>
+      <Description>Line 17 plus line 18.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine17" />
+          <Dependency path="/ncLine18" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/ncPrimaryWithholding">
+      <Name>This W-2's North Carolina withholding for the primary filer</Name>
+      <Description>Box 17 when the form belongs to the primary filer; otherwise zero. D-400 line 20a.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../filer" />
+                </Left>
+                <Right>
+                  <Dependency module="filers" path="/primaryFiler" />
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dependency path="../stateWithholding" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/ncSpouseWithholding">
+      <Name>This W-2's North Carolina withholding for the spouse</Name>
+      <Description>Box 17 when the return is joint and the form belongs to the spouse; otherwise zero.
+        D-401 (2025),
+        lines 20a and 20b: the spouse's withholding is line 20b only on a joint return.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                <Equal>
+                  <Left>
+                    <Dependency path="../filer" />
+                  </Left>
+                  <Right>
+                    <Dependency module="filers" path="/secondaryFiler" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../stateWithholding" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine20a">
+      <Name>D-400 line 20a North Carolina tax withheld</Name>
+      <Description>Primary filer's W-2 box 17. A W-2 whose box 15 is not North Carolina, or any box 20 locality,
+        stops
+        the return. North Carolina has no local income tax.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/ncPrimaryWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine20b">
+      <Name>D-400 line 20b spouse's North Carolina tax withheld</Name>
+      <Description>Spouse's W-2 box 17 on a joint return; otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/ncSpouseWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine20">
+      <Name>D-400 North Carolina income tax withheld</Name>
+      <Description>Line 20a plus line 20b.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine20a" />
+          <Dependency path="/ncLine20b" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine21a">
+      <Name>D-400 line 21a estimated tax</Name>
+      <Description>Zero. A yes to /ncHasOtherPayments stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine21b">
+      <Name>D-400 line 21b paid with extension</Name>
+      <Description>Zero. A yes to /ncHasOtherPayments stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine21c">
+      <Name>D-400 line 21c partnership</Name>
+      <Description>Zero. A yes to /ncHasOtherPayments stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine21d">
+      <Name>D-400 line 21d S corporation</Name>
+      <Description>Zero. A yes to /ncHasOtherPayments stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine22">
+      <Name>D-400 line 22 additional payments on an amended return</Name>
+      <Description>Zero. Amended returns are not this path. D-401 (2025), line 22.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine23">
+      <Name>D-400 line 23 total payments</Name>
+      <Description>Lines 20a through 22.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine20a" />
+          <Dependency path="/ncLine20b" />
+          <Dependency path="/ncLine21a" />
+          <Dependency path="/ncLine21b" />
+          <Dependency path="/ncLine21c" />
+          <Dependency path="/ncLine21d" />
+          <Dependency path="/ncLine22" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine24">
+      <Name>D-400 line 24 previous refunds</Name>
+      <Description>Zero. Amended returns only. D-401 (2025), line 24.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine25">
+      <Name>D-400 line 25 net payments</Name>
+      <Description>Line 23 minus line 24, not below zero. Line 24 is zero on this path, so this is line 23.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ncLine23" />
+                </Left>
+                <Right>
+                  <Dependency path="/ncLine24" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ncLine23" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ncLine24" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine26a">
+      <Name>D-400 line 26a tax due</Name>
+      <Description>Line 19 minus line 25 when line 25 is less; otherwise zero. D-401 (2025), line 26a.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ncLine19" />
+                </Left>
+                <Right>
+                  <Dependency path="/ncLine25" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ncLine19" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ncLine25" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine26b">
+      <Name>D-400 line 26b penalties</Name>
+      <Description>Zero. Penalties are not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine26c">
+      <Name>D-400 line 26c interest</Name>
+      <Description>Zero. Interest is not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine26d">
+      <Name>D-400 line 26d penalties and interest</Name>
+      <Description>Line 26b plus line 26c.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine26b" />
+          <Dependency path="/ncLine26c" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine26e">
+      <Name>D-400 line 26e underpayment interest</Name>
+      <Description>Form D-422. Zero. Estimated payments stop the return, and this interest is not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine27">
+      <Name>D-400 line 27 amount due</Name>
+      <Description>Line 26a plus line 26d plus line 26e. D-401 (2025), line 27.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine26a" />
+          <Dependency path="/ncLine26d" />
+          <Dependency path="/ncLine26e" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine28">
+      <Name>D-400 line 28 overpayment</Name>
+      <Description>Line 25 minus line 19 when line 25 is greater; otherwise zero. Line 26e is zero on this path.
+        D-401
+        (2025), line 28.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ncLine25" />
+                </Left>
+                <Right>
+                  <Dependency path="/ncLine19" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ncLine25" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ncLine19" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine29">
+      <Name>D-400 line 29 applied to next year's estimate</Name>
+      <Description>Zero. Applying an overpayment to estimated tax is not this path.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine30">
+      <Name>D-400 line 30 Nongame and Endangered Wildlife Fund</Name>
+      <Description>Zero. Contributions are not this path.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine31">
+      <Name>D-400 line 31 Education Endowment Fund</Name>
+      <Description>Zero. Contributions are not this path.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine32">
+      <Name>D-400 line 32 Breast and Cervical Cancer Control Program</Name>
+      <Description>Zero. Contributions are not this path.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine33">
+      <Name>D-400 line 33</Name>
+      <Description>Lines 29 through 32.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Add>
+          <Dependency path="/ncLine29" />
+          <Dependency path="/ncLine30" />
+          <Dependency path="/ncLine31" />
+          <Dependency path="/ncLine32" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncLine34">
+      <Name>D-400 line 34 refund</Name>
+      <Description>Line 28 minus line 33, not below zero. Contributions and the estimated-tax application are zero,
+        so
+        this is the overpayment. D-401 (2025), line 34.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/ncLine28" />
+                </Left>
+                <Right>
+                  <Dependency path="/ncLine33" />
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ncLine28" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency path="/ncLine33" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <!-- Stops. Each is complete false when this is not a North Carolina return, and incomplete when the
+         question it depends on has not been answered. -->
+
+    <Fact path="/ncHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, tax-exempt interest, dividends, unemployment, Social Security, pensions, IRA and
+        1099-R,
+        capital gain or a sale, Schedule C, Schedule E, 1099-MISC, or any other amount in federal total
+        income besides
+        W-2 wages. Schedule S items in that income, including Social Security, retirement,
+        U.S. obligation interest, and
+        bonus depreciation, are not calculated. Adjustments that reduce AGI are
+        not this stop.</Description>
+      <Derived>
+        <Any>
+          <NotEqual>
+            <Left>
+              <Dependency module="income" path="/totalIncome" />
+            </Left>
+            <Right>
+              <Dependency module="formW2s" path="/wages" />
+            </Right>
+          </NotEqual>
+          <GreaterThan>
+            <Left>
+              <Dependency module="interest" path="/taxExemptInterest" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="socialSecurity" path="/socialSecurityBenefits" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="form1099Rs" path="/form1099Rs" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncHasDependentsOrChildDeduction">
+      <Name>Dependents or a North Carolina child deduction</Name>
+      <Description>Anyone in the household, or a yes to /ncClaimsChildDeduction. D-400 line 10 is not calculated.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency path="/ncClaimsChildDeduction" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/ncBox15Incomplete">
+      <Name>W-2 box 15 not answered</Name>
+      <Description>Box 15 has to be North Carolina (same state as the residence) before line 20 is printed.</Description>
+      <Derived>
+        <Not>
+          <IsComplete>
+            <Dependency path="../writableState" />
+          </IsComplete>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/ncBox20HasLocality">
+      <Name>W-2 box 20 has a locality</Name>
+      <Description>Box 20 is not blank. North Carolina has no local income tax, so a locality is out of scope.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Length>
+              <Dependency path="../locality" />
+            </Length>
+          </Left>
+          <Right>
+            <Int>0</Int>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncW2NotNorthCarolina">
+      <Name>A W-2 box 15 is not North Carolina, or box 20 has a locality</Name>
+      <Description>differentState is not North Carolina. An unanswered box 15 also stops a North Carolina return.
+        Any box
+        20 locality stops it.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/ncBox15Incomplete" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/formW2s/*/ncBox20HasLocality" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ncResidencyIsPartYearOrNonresident">
+      <Name>North Carolina residency is part-year or nonresident</Name>
+      <Description>Incomplete until /ncResidencyStatus is answered. Schedule PN is not calculated.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="/ncResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/ncResidencyOptions">partYear</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/ncResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/ncResidencyOptions">nonresident</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcPartYearOrNonresident">
+      <Name>Flow knockout: North Carolina part-year or nonresident</Name>
+      <Description>Schedule PN is not calculated. G.S. 105-153.4. D-401 (2025), line 13. Complete false when
+        this is not
+        a North Carolina return. Incomplete until /ncResidencyStatus is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncResidencyIsPartYearOrNonresident" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncResidencyIsPartYearOrNonresident" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncResidencyIsPartYearOrNonresident" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcScheduleS">
+      <Name>Flow knockout: North Carolina Schedule S</Name>
+      <Description>Any Schedule S addition or deduction, including Social Security, Bailey or other retirement,
+        interest
+        on U.S. obligations, and bonus depreciation. Lines 7 and 9. Complete false when this is not a
+        North Carolina
+        return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncHasScheduleS" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncHasScheduleS" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncHasScheduleS" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcOtherFederalIncome">
+      <Name>Flow knockout: federal income other than W-2 wages</Name>
+      <Description>Non-W-2 income already stopped for a computed state return, including the Schedule S items
+        Social
+        Security, retirement, U.S. obligation interest, and bonus depreciation. Complete false when this
+        is not a North
+        Carolina return. Incomplete while a sale question is unanswered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncHasOtherFederalIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncHasOtherFederalIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncHasOtherFederalIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcDependentsOrChildDeduction">
+      <Name>Flow knockout: dependents or the North Carolina child deduction</Name>
+      <Description>D-400 line 10 is not calculated. Complete false when this is not a North Carolina return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncHasDependentsOrChildDeduction" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncHasDependentsOrChildDeduction" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncHasDependentsOrChildDeduction" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcItemizedDeductions">
+      <Name>Flow knockout: North Carolina itemized deductions</Name>
+      <Description>D-400 Schedule A is not calculated. The supported line 11 is the standard deduction.
+        Complete false
+        when this is not a North Carolina return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncItemizes" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncItemizes" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncItemizes" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcCredits">
+      <Name>Flow knockout: Form D-400TC</Name>
+      <Description>Line 16 credits are not calculated. Complete false when this is not a North Carolina return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncHasD400TcCredit" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncHasD400TcCredit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncHasD400TcCredit" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcUseTax">
+      <Name>Flow knockout: North Carolina consumer use tax</Name>
+      <Description>Line 18 would be a positive amount. The supported entry is zero, with the certify-none circle
+        filled.
+        Complete false when this is not a North Carolina return. G.S. 105-164.6.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncHasUseTax" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncHasUseTax" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncHasUseTax" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcOtherPayments">
+      <Name>Flow knockout: North Carolina estimated, extension, partnership, or S corporation payments</Name>
+      <Description>Lines 21a through 21d are not calculated. Complete false when this is not a North Carolina return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncHasOtherPayments" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncHasOtherPayments" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncHasOtherPayments" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcW2NotNorthCarolina">
+      <Name>Flow knockout: W-2 box 15 is not North Carolina, or box 20 has a locality</Name>
+      <Description>Any box 15 other than North Carolina, a box 15 that was not answered, or any box 20 locality.
+        North
+        Carolina has no local income tax. Complete false when this is not a North Carolina return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ncW2NotNorthCarolina" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ncW2NotNorthCarolina" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ncW2NotNorthCarolina" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutNcMfsSpouseItemizes">
+      <Name>Flow knockout: married filing separately and the spouse itemizes</Name>
+      <Description>G.S. 105-153.5(a)(1) and the D-401 (2025) chart: the North Carolina standard deduction is zero
+        when a
+        married filing separately filer's spouse itemizes, because that filer is not eligible for the
+        federal standard
+        deduction. This return is not calculated. Complete false when this is not a North
+        Carolina return, and when the
+        filer is not in that case.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNc" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="filers" path="/spouseItemizesKnockout" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="filers" path="/spouseItemizesKnockout" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filers" path="/spouseItemizesKnockout" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

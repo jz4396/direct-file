@@ -1,0 +1,109 @@
+# Cadenas del formulario D-400 de Carolina del Norte (#93, parte 4).
+subsubcategories:
+  /flow/your-taxes/amount:
+    nc-d400: Declaración de Carolina del Norte
+dataviews:
+  /flow/your-taxes/amount:
+    /ncResidencyStatus: Dónde vivió para su declaración de Carolina del Norte
+    /ncCounty: Condado de Carolina del Norte
+    /ncIsVeteran: Veterano
+    /ncSpouseIsVeteran: Su cónyuge es veterano
+    /ncHasScheduleS: Anexo S de Carolina del Norte
+    /ncClaimsChildDeduction: Deducción por hijos de Carolina del Norte
+    /ncItemizes: Deducciones detalladas de Carolina del Norte
+    /ncHasD400TcCredit: Crédito del formulario D-400TC
+    /ncHasUseTax: Impuesto de uso de Carolina del Norte
+    /ncHasOtherPayments: Pagos estimados u otros pagos de Carolina del Norte
+fields:
+  /ncResidencyOptions:
+    fullYear: Viví en Carolina del Norte todo el año
+    partYear: Viví en Carolina del Norte parte del año
+    nonresident: No viví en Carolina del Norte
+  /ncCounty:
+    name: Condado donde vivió el último día del año
+headings:
+  /heading/your-taxes/amount/nc-residency: ¿Cuál de estas opciones describe su declaración de Carolina del Norte?
+  /heading/your-taxes/amount/nc-county: ¿En qué condado de Carolina del Norte vivió?
+  /heading/your-taxes/amount/nc-veteran: ¿Es usted veterano?
+  /heading/your-taxes/amount/nc-spouse-veteran: ¿Su cónyuge es veterano?
+  /heading/your-taxes/amount/nc-schedule-s: ¿Tiene una suma o una deducción del Anexo S de Carolina del Norte?
+  /heading/your-taxes/amount/nc-child-deduction: ¿Reclama la deducción por hijos de Carolina del Norte?
+  /heading/your-taxes/amount/nc-itemized: ¿Reclama deducciones detalladas de Carolina del Norte?
+  /heading/your-taxes/amount/nc-credits: ¿Reclama un crédito en el formulario D-400TC?
+  /heading/your-taxes/amount/nc-use-tax: ¿Debe impuesto de uso de Carolina del Norte?
+  /heading/your-taxes/amount/nc-payments:
+    ¿Hizo un pago estimado de Carolina del Norte, o tiene un pago de prórroga, de sociedad o de sociedad anónima tipo S?
+  /heading/knockout/nc-part-year:
+    Esta herramienta todavía no admite una declaración de residente parcial o de no residente de Carolina del Norte
+  /heading/knockout/nc-schedule-s: Esta herramienta todavía no admite el Anexo S de Carolina del Norte
+  /heading/knockout/nc-other-income:
+    Esta herramienta todavía no admite declaraciones de Carolina del Norte con ingresos distintos de los salarios del W-2
+  /heading/knockout/nc-dependents:
+    Esta herramienta todavía no admite dependientes ni la deducción por hijos de Carolina del Norte
+  /heading/knockout/nc-itemized: Esta herramienta todavía no admite las deducciones detalladas de Carolina del Norte
+  /heading/knockout/nc-credits: Esta herramienta todavía no admite el formulario D-400TC
+  /heading/knockout/nc-use-tax: Esta herramienta todavía no admite el impuesto de uso de Carolina del Norte
+  /heading/knockout/nc-payments:
+    Esta herramienta todavía no admite pagos estimados, de prórroga, de sociedad o de sociedad anónima tipo S de Carolina del Norte
+  /heading/knockout/nc-w2: Esta herramienta todavía no admite un W-2 que no sea de salarios de Carolina del Norte
+  /heading/knockout/nc-mfs-itemized:
+    Esta herramienta todavía no admite una declaración por separado cuando su cónyuge detalla deducciones
+info:
+  /info/your-taxes/amount/nc-residency:
+    body:
+      Un residente de Carolina del Norte durante todo el año, solo con salarios del W-2, es la declaración que esta
+      herramienta puede preparar. Las declaraciones de residente parcial y de no residente usan el Anexo PN.
+  /info/your-taxes/amount/nc-county:
+    body: La declaración imprime las primeras cinco letras del condado. No cambia el impuesto.
+  /info/your-taxes/amount/nc-veteran:
+    body: Este es el círculo de veterano del formulario D-400. No cambia el impuesto.
+  /info/your-taxes/amount/nc-spouse-veteran:
+    body: Una declaración conjunta también pregunta esto sobre su cónyuge. No cambia el impuesto.
+  /info/your-taxes/amount/nc-schedule-s:
+    body:
+      El Anexo S es para sumas y deducciones como el Seguro Social, la jubilación, los intereses de obligaciones de
+      EE. UU. y la depreciación adicional.
+  /info/your-taxes/amount/nc-child-deduction:
+    body: La línea 10 es la deducción por hijos. Una declaración solo de salarios, sin dependientes, anota cero.
+  /info/your-taxes/amount/nc-itemized:
+    body: La declaración admitida usa la deducción estándar de Carolina del Norte, no el Anexo A del formulario D-400.
+  /info/your-taxes/amount/nc-credits:
+    body: La línea 16 son los créditos del formulario D-400TC. Si no tiene ninguno, esta declaración anota cero.
+  /info/your-taxes/amount/nc-use-tax:
+    body:
+      La línea 18 es el impuesto de uso del consumidor. Si no debe nada, esta declaración anota cero y marca el círculo
+      que certifica que no debe impuesto de uso.
+  /info/your-taxes/amount/nc-payments:
+    body: Las líneas 21a a 21d son el impuesto estimado, un pago de prórroga, una sociedad y una sociedad anónima tipo S.
+  /info/knockout/nc-part-year:
+    alertText: Las declaraciones de residente parcial y de no residente de Carolina del Norte todavía no se admiten
+    body: Esas declaraciones usan el Anexo PN, que esta herramienta no calcula.
+  /info/knockout/nc-schedule-s:
+    alertText: El Anexo S todavía no se admite
+    body: Las sumas y deducciones del Anexo S no se calculan.
+  /info/knockout/nc-other-income:
+    alertText: Esta declaración de Carolina del Norte solo puede incluir salarios del W-2
+    body: Los intereses, la jubilación, el Seguro Social, el negocio, el alquiler y otros ingresos federales no se admiten.
+  /info/knockout/nc-dependents:
+    alertText: Los dependientes y la deducción por hijos de Carolina del Norte todavía no se admiten
+    body: La línea 10 no se calcula.
+  /info/knockout/nc-itemized:
+    alertText: Las deducciones detalladas de Carolina del Norte todavía no se admiten
+    body: El Anexo A del formulario D-400 no se calcula.
+  /info/knockout/nc-credits:
+    alertText: El formulario D-400TC todavía no se admite
+    body: La línea 16 no se calcula.
+  /info/knockout/nc-use-tax:
+    alertText: El impuesto de uso de Carolina del Norte todavía no se admite
+    body: La hoja de trabajo del impuesto de uso no se calcula. Una declaración sin impuesto de uso anota cero en la línea 18.
+  /info/knockout/nc-payments:
+    alertText: Estos pagos de Carolina del Norte todavía no se admiten
+    body: Las líneas 21a a 21d no se calculan.
+  /info/knockout/nc-w2:
+    alertText: Cada W-2 de esta declaración tiene que mostrar Carolina del Norte en la casilla 15, con la casilla 20 en blanco
+    body:
+      Los salarios de otro estado, y cualquier impuesto local en la casilla 20, no se admiten. Carolina del Norte no
+      tiene impuesto local sobre el ingreso.
+  /info/knockout/nc-mfs-itemized:
+    alertText: No se admite una declaración por separado cuando su cónyuge detalla deducciones
+    body: En ese caso la deducción estándar de Carolina del Norte es cero, y esta declaración no se calcula.

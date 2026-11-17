@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -81,6 +82,15 @@ public class PdfFieldHandler {
                 // ... and try again.
                 field.setValue(factGraphValue.toString().trim());
             }
+        } else if (field instanceof PDChoice choice) {
+            if (!(factGraphValue instanceof String exportValue)) {
+                throw new PdfCreationException("Choice field needs a string");
+            }
+            if (!choice.getOptions().contains(exportValue)) {
+                throw new PdfCreationException(
+                        "Export value " + exportValue + " not on choice " + choice.getFullyQualifiedName());
+            }
+            choice.setValue(exportValue);
         } else {
             throw new PdfCreationException(
                     "Unhandled PDField type " + field.getClass().getName());

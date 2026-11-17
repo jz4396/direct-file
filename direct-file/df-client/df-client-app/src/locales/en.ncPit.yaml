@@ -1,0 +1,103 @@
+# North Carolina Form D-400 strings (#93 slice 4). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    nc-d400: North Carolina return
+dataviews:
+  /flow/your-taxes/amount:
+    /ncResidencyStatus: Where you lived for your North Carolina return
+    /ncCounty: North Carolina county
+    /ncIsVeteran: Veteran
+    /ncSpouseIsVeteran: Spouse is a veteran
+    /ncHasScheduleS: North Carolina Schedule S
+    /ncClaimsChildDeduction: North Carolina child deduction
+    /ncItemizes: North Carolina itemized deductions
+    /ncHasD400TcCredit: Form D-400TC credit
+    /ncHasUseTax: North Carolina use tax
+    /ncHasOtherPayments: North Carolina estimated or other payments
+fields:
+  /ncResidencyOptions:
+    fullYear: I lived in North Carolina all year
+    partYear: I lived in North Carolina for part of the year
+    nonresident: I did not live in North Carolina
+  /ncCounty:
+    name: County where you lived on the last day of the year
+headings:
+  /heading/your-taxes/amount/nc-residency: Which of these describes your North Carolina return?
+  /heading/your-taxes/amount/nc-county: What North Carolina county did you live in?
+  /heading/your-taxes/amount/nc-veteran: Are you a veteran?
+  /heading/your-taxes/amount/nc-spouse-veteran: Is your spouse a veteran?
+  /heading/your-taxes/amount/nc-schedule-s: Do you have a North Carolina Schedule S addition or deduction?
+  /heading/your-taxes/amount/nc-child-deduction: Are you claiming the North Carolina child deduction?
+  /heading/your-taxes/amount/nc-itemized: Are you claiming North Carolina itemized deductions?
+  /heading/your-taxes/amount/nc-credits: Are you claiming a credit on Form D-400TC?
+  /heading/your-taxes/amount/nc-use-tax: Do you owe North Carolina use tax?
+  /heading/your-taxes/amount/nc-payments:
+    Did you make a North Carolina estimated payment, or do you have an extension, partnership, or S corporation payment?
+  /heading/knockout/nc-part-year: This tool doesn’t yet support a North Carolina part-year or nonresident return
+  /heading/knockout/nc-schedule-s: This tool doesn’t yet support North Carolina Schedule S
+  /heading/knockout/nc-other-income:
+    This tool doesn’t yet support North Carolina returns with income other than W-2 wages
+  /heading/knockout/nc-dependents: This tool doesn’t yet support dependents or the North Carolina child deduction
+  /heading/knockout/nc-itemized: This tool doesn’t yet support North Carolina itemized deductions
+  /heading/knockout/nc-credits: This tool doesn’t yet support Form D-400TC
+  /heading/knockout/nc-use-tax: This tool doesn’t yet support North Carolina use tax
+  /heading/knockout/nc-payments:
+    This tool doesn’t yet support North Carolina estimated, extension, partnership, or S corporation payments
+  /heading/knockout/nc-w2: This tool doesn’t yet support a W-2 that is not North Carolina wages
+  /heading/knockout/nc-mfs-itemized:
+    This tool doesn’t yet support a separate return when your spouse itemizes
+info:
+  /info/your-taxes/amount/nc-residency:
+    body:
+      A full-year North Carolina resident with W-2 wages only is the return this tool can prepare. Part-year and
+      nonresident returns use Schedule PN.
+  /info/your-taxes/amount/nc-county:
+    body: The return prints the first five letters of the county. It does not change the tax.
+  /info/your-taxes/amount/nc-veteran:
+    body: This is the veteran circle on Form D-400. It does not change the tax.
+  /info/your-taxes/amount/nc-spouse-veteran:
+    body: A joint return also asks this about your spouse. It does not change the tax.
+  /info/your-taxes/amount/nc-schedule-s:
+    body:
+      Schedule S is for additions and deductions such as Social Security, retirement, interest on U.S. obligations, and
+      bonus depreciation.
+  /info/your-taxes/amount/nc-child-deduction:
+    body: Line 10 is the child deduction. A wages-only return with no dependents enters zero.
+  /info/your-taxes/amount/nc-itemized:
+    body: The supported return uses the North Carolina standard deduction, not Form D-400 Schedule A.
+  /info/your-taxes/amount/nc-credits:
+    body: Line 16 is credits from Form D-400TC. If you have none, this return enters zero.
+  /info/your-taxes/amount/nc-use-tax:
+    body: Line 18 is consumer use tax. If you do not owe any, this return enters zero and fills the certify-none circle.
+  /info/your-taxes/amount/nc-payments:
+    body: Lines 21a through 21d are estimated tax, an extension payment, partnership, and S corporation.
+  /info/knockout/nc-part-year:
+    alertText: North Carolina part-year and nonresident returns are not supported yet
+    body: Those returns use Schedule PN, which this tool does not calculate.
+  /info/knockout/nc-schedule-s:
+    alertText: Schedule S is not supported yet
+    body: Additions and deductions on Schedule S are not calculated.
+  /info/knockout/nc-other-income:
+    alertText: This North Carolina return can include W-2 wages only
+    body: Interest, retirement, Social Security, business, rental, and other federal income are not supported.
+  /info/knockout/nc-dependents:
+    alertText: Dependents and the North Carolina child deduction are not supported yet
+    body: Line 10 is not calculated.
+  /info/knockout/nc-itemized:
+    alertText: North Carolina itemized deductions are not supported yet
+    body: Form D-400 Schedule A is not calculated.
+  /info/knockout/nc-credits:
+    alertText: Form D-400TC is not supported yet
+    body: Line 16 is not calculated.
+  /info/knockout/nc-use-tax:
+    alertText: North Carolina use tax is not supported yet
+    body: The use-tax worksheet is not calculated. A return with no use tax enters zero on line 18.
+  /info/knockout/nc-payments:
+    alertText: These North Carolina payments are not supported yet
+    body: Lines 21a through 21d are not calculated.
+  /info/knockout/nc-w2:
+    alertText: Every W-2 on this return has to show North Carolina in box 15, with box 20 blank
+    body: Wages from another state, and any local tax in box 20, are not supported. North Carolina has no local income tax.
+  /info/knockout/nc-mfs-itemized:
+    alertText: A separate return is not supported when your spouse itemizes
+    body: The North Carolina standard deduction is zero in that case, and this return is not calculated.

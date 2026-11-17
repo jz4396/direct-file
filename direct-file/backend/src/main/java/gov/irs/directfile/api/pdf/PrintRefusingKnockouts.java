@@ -128,6 +128,21 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutIlScheduleG",
             "/flowKnockoutIlClaimedAsDependent",
             "/flowKnockoutIlWitTooManyRows",
+            // #93 slice 4: North Carolina stops. Each is complete false when the return is not a D-400, and incomplete
+            // when the North Carolina question is unanswered, so the PDF is not printed with the unmodeled line as
+            // zero.
+            // 2025 Form D-400 and D-401, used until the 2026 form is posted. G.S. 105-153.4, 105-153.5(a)(1),
+            // 105-153.7(a), 105-164.6. Rate on the filled line 15 is 3.99 percent.
+            "/flowKnockoutNcPartYearOrNonresident",
+            "/flowKnockoutNcScheduleS",
+            "/flowKnockoutNcOtherFederalIncome",
+            "/flowKnockoutNcDependentsOrChildDeduction",
+            "/flowKnockoutNcItemizedDeductions",
+            "/flowKnockoutNcCredits",
+            "/flowKnockoutNcUseTax",
+            "/flowKnockoutNcOtherPayments",
+            "/flowKnockoutNcW2NotNorthCarolina",
+            "/flowKnockoutNcMfsSpouseItemizes",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
@@ -241,7 +256,8 @@ public final class PrintRefusingKnockouts {
             // Schedule C QBI case Form 8995 here can't compute: true when any of the four stops above applies to a
             // return with Schedule C income (26 U.S.C. 199A(c)(1), (c)(3)(A)); the Schedule C knockout screen reads it.
             "/flowKnockoutScheduleCQbi",
-            // More than five trades or businesses, counting Schedule C and section 162 rentals together. 2026 Instructions for Form 8995 draft, PDF p. 5, line 2: "If you
+            // More than five trades or businesses, counting Schedule C and section 162 rentals together. 2026
+            // Instructions for Form 8995 draft, PDF p. 5, line 2: "If you
             // have more than five trades or businesses, attach a statement with the name and taxpayer identification
             // number of the trade(s) or business(es) and include the income and loss from those trade(s) or
             // business(es) in the total for line 2." This package does not attach that statement. Column (c) is split

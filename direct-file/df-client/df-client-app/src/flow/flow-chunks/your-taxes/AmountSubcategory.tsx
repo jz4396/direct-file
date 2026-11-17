@@ -379,6 +379,129 @@ export const AmountSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
+    {/* #93 slice 4: full-year North Carolina resident, W-2 wages only. No local return. */}
+    <SubSubcategory route='nc-d400'>
+      <Screen route='nc-residency' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-residency' />
+        <Enum path='/ncResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-part-year-knockout' condition='/flowKnockoutNcPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-part-year' />
+        <DFAlert i18nKey='/info/knockout/nc-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-county' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-county' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-county' />
+        <GenericString path='/ncCounty' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-veteran' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-veteran' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-veteran' />
+        <Boolean path='/ncIsVeteran' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-spouse-veteran' condition='/ncAskSpouseVeteran'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-spouse-veteran' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-spouse-veteran' />
+        <Boolean path='/ncSpouseIsVeteran' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-schedule-s' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-schedule-s' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-schedule-s' />
+        <Boolean path='/ncHasScheduleS' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-schedule-s-knockout' condition='/flowKnockoutNcScheduleS' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-schedule-s' />
+        <DFAlert i18nKey='/info/knockout/nc-schedule-s' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-other-income-knockout' condition='/flowKnockoutNcOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-other-income' />
+        <DFAlert i18nKey='/info/knockout/nc-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-child-deduction' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-child-deduction' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-child-deduction' />
+        <Boolean path='/ncClaimsChildDeduction' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-dependents-knockout' condition='/flowKnockoutNcDependentsOrChildDeduction' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-dependents' />
+        <DFAlert i18nKey='/info/knockout/nc-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-itemized' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-itemized' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-itemized' />
+        <Boolean path='/ncItemizes' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-itemized-knockout' condition='/flowKnockoutNcItemizedDeductions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-itemized' />
+        <DFAlert i18nKey='/info/knockout/nc-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-credits' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-credits' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-credits' />
+        <Boolean path='/ncHasD400TcCredit' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-credits-knockout' condition='/flowKnockoutNcCredits' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-credits' />
+        <DFAlert i18nKey='/info/knockout/nc-credits' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-use-tax' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-use-tax' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-use-tax' />
+        <Boolean path='/ncHasUseTax' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-use-tax-knockout' condition='/flowKnockoutNcUseTax' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-use-tax' />
+        <DFAlert i18nKey='/info/knockout/nc-use-tax' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-payments' condition='/stateReturnIsNc'>
+        <Heading i18nKey='/heading/your-taxes/amount/nc-payments' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nc-payments' />
+        <Boolean path='/ncHasOtherPayments' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nc-payments-knockout' condition='/flowKnockoutNcOtherPayments' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-payments' />
+        <DFAlert i18nKey='/info/knockout/nc-payments' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-w2-knockout' condition='/flowKnockoutNcW2NotNorthCarolina' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-w2' />
+        <DFAlert i18nKey='/info/knockout/nc-w2' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nc-mfs-itemized-knockout' condition='/flowKnockoutNcMfsSpouseItemizes' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nc-mfs-itemized' />
+        <DFAlert i18nKey='/info/knockout/nc-mfs-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     {/* #77 Form 6251 cases this tool doesn't compute */}
     <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />

@@ -2530,8 +2530,11 @@
 
     <Fact path="/livedInNc">
       <Name>The filer(s) lives in North Carolina</Name>
-      <Description>We show North Carolina-specific information when the filer(s) lives in North Carolina</Description>
-
+      <Description>#93 slice 4: /filerResidenceAndIncomeState is North Carolina. G.S. 105-153.7(a) imposes the
+        individual income tax at 3.99% for tax years beginning after 2025, and G.S. 105-153.5(a)(1) sets the
+        standard deduction. Wired into stateReturn /stateReturnIsNc, /stateReturnComputed, and the state Switches
+        the way a computed return is wired. There is no local North Carolina individual income tax.</Description>
+      <Export downstreamFacts="true" />
       <Derived>
         <Equal>
           <Left>
