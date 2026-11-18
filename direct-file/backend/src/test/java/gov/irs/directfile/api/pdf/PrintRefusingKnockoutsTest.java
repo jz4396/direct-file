@@ -235,6 +235,16 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutNcOtherPayments",
                 "/flowKnockoutNcW2NotNorthCarolina",
                 "/flowKnockoutNcMfsSpouseItemizes",
+                "/flowKnockoutAzPartYearOrNonresident",
+                "/flowKnockoutAzW2NotArizona",
+                "/flowKnockoutAzOtherFederalIncome",
+                "/flowKnockoutAzDependentsOrQualifyingPerson",
+                "/flowKnockoutAzAgeOrBlind",
+                "/flowKnockoutAzItemizedDeductions",
+                "/flowKnockoutAzCharitableContributions",
+                "/flowKnockoutAzLowIncomeCredit",
+                "/flowKnockoutAzSchedule1A",
+                "/flowKnockoutAzFilingStatus",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -284,7 +294,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(86, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(96, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -859,6 +869,28 @@ class PrintRefusingKnockoutsTest {
                     }
                 }
             }
+            // #93 slice 5: an Arizona resident return refuses the same way.
+            Result<Object> azReturn = graph.get("/stateReturnIsAz");
+            if (azReturn.complete() && Boolean.TRUE.equals(azReturn.get())) {
+                for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+                    if (!path.startsWith("/flowKnockoutAz")) {
+                        continue;
+                    }
+                    Result<Object> knock = graph.get(path);
+                    if (!(knock.complete() && Boolean.FALSE.equals(knock.get()))) {
+                        expected.add(path);
+                    }
+                }
+            }
+            // refusingPaths follows FACT_PATHS. Arizona stops sit ahead of the Form 8962 stops, so an Arizona
+            // scenario that also refuses on a premium tax credit is listed with the Arizona paths first.
+            List<String> ordered = new ArrayList<>();
+            for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+                if (expected.contains(path)) {
+                    ordered.add(path);
+                }
+            }
+            expected = ordered;
             assertEquals(expected, PrintRefusingKnockouts.refusingPaths(graph), file.getFilename());
             if (schedule.complete() && Boolean.TRUE.equals(schedule.get()) && !expected.isEmpty()) {
                 scheduleEicRefused.add(file.getFilename() + " " + expected);
@@ -869,11 +901,18 @@ class PrintRefusingKnockoutsTest {
         }
         assertEquals(50, withScheduleEic, "scenarios with Schedule EIC");
         // npe-form-2441-without-cdcc.json still refuses on the income-based special enrollment period question
-        // (26 U.S.C. 36B(c)(3)(A)(iii)), which is independent of Schedule EIC.
+        // (26 U.S.C. 36B(c)(3)(A)(iii)), which is independent of Schedule EIC. Arizona resident returns that attach
+        // Schedule EIC also refuse while Arizona residency is unanswered.
         assertEquals(
                 Set.of(
                         "npe-form-2441-without-cdcc.json [/flowKnockoutPtcIncomeBasedSpecialEnrollmentPeriod]",
-                        "qss_35K_1 dependent-signed.json [" + SCHEDULE_EIC_KNOCKOUT + "]"),
+                        "qss_35K_1 dependent-signed.json [" + SCHEDULE_EIC_KNOCKOUT
+                                + ", /flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzAgeOrBlind, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions, /flowKnockoutAzSchedule1A, /flowKnockoutAzFilingStatus]",
+                        "cfa-npe-01-26.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions]",
+                        "cfa-xml-error-2.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions]",
+                        "ticket-6196.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzAgeOrBlind, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions]",
+                        "mfj-deceased-spouse.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzAgeOrBlind, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions]",
+                        "HOH-35K-dep-credits.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions, /flowKnockoutAzFilingStatus]"),
                 Set.copyOf(scheduleEicRefused),
                 "Schedule EIC scenarios that still refuse");
         // qss_35K_1 dependent-signed.json claims the EIC for a child who is another person's qualifying child
@@ -890,8 +929,12 @@ class PrintRefusingKnockoutsTest {
         // npe-form-2441-without-cdcc still refuses for the special enrollment period, so 106 + 48.
         // #93 slice 3: 8862-ctc-no-letter-for-improper-claims.json is an Illinois resident return, so the unanswered
         // Illinois screeners refuse it. #93 slice 4: hsa-mfj-ticket-11914.json is a North Carolina resident return,
-        // so the unanswered North Carolina screeners refuse it. 154 federal prints minus those two scenarios.
-        assertEquals(152, printed, "scenarios that print");
+        // so the unanswered North Carolina screeners refuse it. #93 slice 5: an Arizona resident return refuses while
+        // Arizona residency is unanswered. These thirteen otherwise printed: cfa-npe-01-26, cfa-xml-error-2,
+        // HOH-35K-dep-credits, mfj-11k, mfj-15k, mfj-20k, mfj-50k-ctc-odc, mfj-deceased-spouse, ny-rejected-0126,
+        // qss-12k, ticket-6192-ctc, ticket-6192-odc, and ticket-6196. qss_35K_1 dependent-signed and ptc-high-income
+        // already refused. 152 minus those thirteen.
+        assertEquals(139, printed, "scenarios that print");
     }
 
     /**

@@ -1,0 +1,87 @@
+# #93 slice 5: Arizona Form 140. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# The 2026 Form 140 is not the template. This 2025 fillable form stands in. Amounts are tax year 2026.
+# Preprinted text that still says 2025, and the 2025 exemption and deduction dollars, are left as printed.
+# The amount entered on line 43 is the 2026 standard deduction. Line 46 is line 45 times 2.5 percent.
+# Source: https://azdor.gov/sites/default/files/document/FORMS_INDIVIDUAL_2025_140_f.pdf
+# SHA-256 2acdda2a07ab46d7f6bd701618e63d1af8d45ac7921c38572a740940437edf84
+# Included when /stateReturnIsAz. Stops in azPit refuse the package, so the zero lines below are the supported entry.
+# Whole dollars, no commas, no decimals. Zero prints 0.
+# Az140PdfForm fills the ~az140* pseudo-facts (name, address, filing-status export value, standard box).
+includeWhen: /stateReturnIsAz
+otherRequiredFacts:
+  - /isFilingStatusMFJ
+  - /filingStatus
+  - /address
+  - /phone
+  - /primaryFiler/firstName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/lastName
+  - /primaryFiler/tin
+  - /secondaryFiler/firstName
+  - /secondaryFiler/middleInitial
+  - /secondaryFiler/lastName
+  - /secondaryFiler/tin
+  - /azResidencyStatus
+  - /azLine46
+  - /azRefund
+form:
+  'Your First Name and Middle Initial': ~az140First
+  'Your Last Name': ~az140Last
+  'Your SSN': /primaryFiler/tin
+  "Spouse's First Name and Middle Initial": ~az140SpouseFirst
+  "Spouse's Last Name": ~az140SpouseLast
+  "Spouse's SSN": ~az140SpouseSsn
+  'Current Home Address - number and street, rural route': ~az140Street
+  'Apartment Number': ~az140Apt
+  'City, Town, Post Office': ~az140City
+  'State': ~az140State
+  'ZIP Code': ~az140Zip
+  'Daytime Phone': ~az140Phone
+  'Filing Status': ~az140FilingStatus
+  'Itemized/Standard': ~az140Deduction
+  'Age 65 or over': /azZero
+  Blind: /azZero
+  'Dependents Under age of 17': /azZero
+  'Dependents Age 17 and over': /azZero
+  'Qualifying parents and grandparents': /azZero
+  '40E': /azZero
+  'Federal adjusted gross income (from your federal return)': /azLine12
+  'Small Bussiness Income': /azZero
+  'Modified federal adjusted gross income': /azLine14
+  'Non-Arizona municipal interest': /azZero
+  'Partnership Income adjustment': /azZero
+  'Total federal depreciation': /azZero
+  'Other Additions to Income:  Complete Other Additions to Arizona Gross Income schedule on page 5': /azZero
+  'Subtotal:  Add lines 14 through 18 and enter the total': /azLine19
+  'Subtract lines 24 through 34c from line 19': /azLine37
+  'Subtract line 36 from line 35.  Enter the difference': /azLine37
+  'Age 65 or over:  Multiply the number in box 8 by $2,100': /azZero
+  'Blind:  Multiply the number in box 9 by $1,500': /azZero
+  'Other Exemptions': /azZero
+  'Qualifying parents and grandparents:  Multiply the number in box 11a by $10,000': /azZero
+  'Arizona adjusted gross income:  Subtract lines 38 through 41 from line 37.  If less than zero, enter “0”': /azLine42
+  'Deductions:  Check box and enter amount': /azLine43
+  'If you checked box 43S and claim charitable contributions, check 44C. Complete page 3': /azLine44
+  'Arizona taxable income:  Subtract lines 43 and 44 from line 42.  If less than zero, enter “0”': /azLine45
+  'Tax:  Multiply line 45 by 2.5% (.025).  Enter the result': /azLine46
+  'Tax from recapture of credits from Arizona Form 301, Part 2, line 30': /azZero
+  'Subtotal of tax:  Add lines 46 and 47.  Enter the total': /azLine48
+  'Dependent Tax Credit.  See instructions': /azZero
+  'Family income tax credit (from the worksheet - see instructions)': /azZero
+  'Nonrefundable Credits from Arizona Form 301, Part 2, line 60': /azZero
+  'Balance of tax:  Subtract lines 49, 50 and 51 from line 48.  If the sum of lines 49, 50 and 51 is greater than line 48, enter “0”': /azLine52
+  '2025 AZ income tax withheld': /azLine53
+  '54a': /azZero
+  '54b': /azZero
+  '54c Add 54a and 54b': /azZero
+  '2025 AZ extension payment (Form 204)': /azZero
+  'Increased Excise Tax Credit (from the worksheet - see instructions)': /azZero
+  'Property Tax Credit from Arizona Form 140PTC': /azZero
+  'Other refundable credits:  Check the box(es) and enter the total amount': /azZero
+  'Total payments and refundable credits:  Add lines 53 through 58': /azLine59
+  'TAX DUE:  If line 52 is larger than line 59, subtract line 59 from line 52.  Enter amount of tax due. Skip lines 61, 62 and 63': /azLine60
+  'OVERPAYMENT:  If line 59 is larger than line 52, subtract line 52 from line 59.  Enter amount of overpayment': /azLine61
+  'Amount of line 61 to be applied to 2026 estimated tax': /azZero
+  'Balance of overpayment:  Subtract line 62 from line 61.  Enter the difference': /azLine63
+  'REFUND: Subtract line 78 from line 63': /azRefund
+  'AMOUNT OWED:  Add lines 60 and 78. Make check payable to Arizona Department of Revenue; write your SSN on payment; and include with your return': /azAmountOwed

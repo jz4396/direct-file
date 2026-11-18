@@ -1,0 +1,61 @@
+# Arizona Form 140 strings (#93 slice 5). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    az-140: Arizona return
+dataviews:
+  /flow/your-taxes/amount:
+    /azResidencyStatus: Where you lived for your Arizona return
+fields:
+  /azResidencyOptions:
+    fullYear: I lived in Arizona all year
+    partYear: I lived in Arizona for part of the year
+    nonresident: I did not live in Arizona
+headings:
+  /heading/your-taxes/amount/az-residency: Which of these describes your Arizona return?
+  /heading/knockout/az-part-year: This tool doesn’t yet support an Arizona part-year or nonresident return
+  /heading/knockout/az-w2: This tool doesn’t yet support a W-2 from a state other than Arizona
+  /heading/knockout/az-other-income: This tool doesn’t yet support Arizona returns with income other than W-2 wages
+  /heading/knockout/az-dependents: This tool doesn’t yet support dependents or a qualifying person on an Arizona return
+  /heading/knockout/az-age-blind: This tool doesn’t yet support an Arizona return for someone who is 65 or older or blind
+  /heading/knockout/az-itemized: This tool doesn’t yet support Arizona itemized deductions
+  /heading/knockout/az-charity: This tool doesn’t yet support charitable contributions on an Arizona return
+  /heading/knockout/az-low-income: This tool doesn’t yet support this Arizona credit
+  /heading/knockout/az-schedule-1a: This tool doesn’t yet support a federal Schedule 1-A deduction on an Arizona return
+  /heading/knockout/az-filing-status: This tool doesn’t yet support this Arizona filing status
+info:
+  /info/your-taxes/amount/az-residency:
+    body:
+      A full year means you, and your spouse if you file jointly, lived in Arizona all year. That is Form 140.
+      Part-year residents use Form 140PY. Nonresidents use Form 140NR.
+  /info/knockout/az-part-year:
+    alertText: Arizona part-year and nonresident returns are not supported yet
+    body: Those returns use Form 140PY or Form 140NR, which this tool does not calculate.
+  /info/knockout/az-w2:
+    alertText: A W-2 from another state is not supported on this Arizona return
+    body: Box 15 has to be Arizona, or blank. Withholding counts only when box 15 is Arizona.
+  /info/knockout/az-other-income:
+    alertText: This Arizona return can include W-2 wages only
+    body: Interest, retirement, Social Security, business, rental, and other federal income are not supported.
+  /info/knockout/az-dependents:
+    alertText: Dependents and a qualifying person are not supported on this Arizona return
+    body: Lines 40, 41, and 49 are not calculated.
+  /info/knockout/az-age-blind:
+    alertText: Age 65 or blindness is not supported on this Arizona return
+    body: The exemptions on lines 38 and 39 are not calculated.
+  /info/knockout/az-itemized:
+    alertText: Arizona itemized deductions are not supported yet
+    body: The supported return uses the standard deduction on line 43.
+  /info/knockout/az-charity:
+    alertText: Charitable contributions are not supported on this Arizona return
+    body: Line 44, the increased standard deduction for charity, is not calculated.
+  /info/knockout/az-low-income:
+    alertText: This Arizona credit is not supported yet
+    body:
+      The Family Income Tax Credit and the Increased Excise Tax Credit are not calculated for a single filer with
+      federal AGI of $12,500 or less, or a joint return with federal AGI of $25,000 or less.
+  /info/knockout/az-schedule-1a:
+    alertText: A federal Schedule 1-A deduction is not supported on this Arizona return
+    body: Tips, overtime, car-loan interest, and the senior deduction are below federal AGI, and this return does not guess how Arizona treats them.
+  /info/knockout/az-filing-status:
+    alertText: This filing status is not supported on an Arizona return yet
+    body: This tool prepares Form 140 for single filers and for a joint return when both spouses lived in Arizona all year.
