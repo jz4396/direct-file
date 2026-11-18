@@ -7,8 +7,8 @@
       wired from Schedule D lines 15/16 (Schedule D line 20 / instr. p.15 points here).
       Preferential rates IRC §1(h)(1)(B)–(D): 0% / 15% / 20%.
       Breakpoints (lines 6 and 13) reuse PR #2 constants4.xml: Rev. Proc. 2025-32 §4.03 p.13.
-      Schedule D Tax Worksheet (2026 draft Instructions for Schedule D) applies when Schedule D line 19 is more
-      than zero and lines 15 and 16 are both gains. 28% rate gain (line 18) and Form 4952 still stop.
+      Schedule D Tax Worksheet (2025 Instructions for Schedule D, pp. 15-16) applies when Schedule D line 18 or
+      line 19 is more than zero and lines 15 and 16 are both gains. Section 1202 gain and Form 4952 still stop.
     -->
 
     <Fact path="/qdcgLine1">
@@ -358,8 +358,9 @@
         (lines 2 + 3) more than $0, so this is line 4 &gt; 0, and the Schedule D Tax Worksheet does not apply.
         2026 draft Instructions for Schedule D, https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf, Schedule D Tax
         Worksheet: use that worksheet, not this one, when line 18 or line 19 of Schedule D is more than zero and
-        lines 15 and 16 are gains, or Form 4952 line 4g has an amount. Line 18 and Form 4952 still stop. Line 19 is
-        /usesScheduleDTaxWorksheet. Form 2555 is out of scope.</Description>
+        lines 15 and 16 are gains, or Form 4952 line 4g has an amount. Line 18 is the 28% rate gain and line 19 is
+        unrecaptured section 1250 gain (/usesScheduleDTaxWorksheet). Form 4952 still stops. Form 2555 is out of
+        scope.</Description>
       <Derived>
         <All>
           <GreaterThan>
@@ -379,9 +380,9 @@
 
     <Fact path="/tentativeTaxFromTaxableIncome">
       <Name>Tentative tax from taxable income</Name>
-      <Description>Tax as reported on Form 1040 line 16. Schedule D Tax Worksheet line 47 when Schedule D line 19 is
-        more than zero and lines 15 and 16 are both gains (2026 draft Instructions for Schedule D,
-        https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf). Otherwise QDCG Tax Worksheet—Line 16 (Form 1040 instr.
+      <Description>Tax as reported on Form 1040 line 16. Schedule D Tax Worksheet line 47 when Schedule D line 18 or
+        line 19 is more than zero and lines 15 and 16 are both gains (2025 Instructions for Schedule D,
+        https://www.irs.gov/pub/irs-pdf/i1040sd.pdf pp. 15-16). Otherwise QDCG Tax Worksheet—Line 16 (Form 1040 instr.
         (2025) p.38) line 25 when it applies, otherwise Tax Table / Tax Computation Worksheet on line 15 (Rev. Proc.
         2025-32 §4.01 pp.10–12 rates).</Description>
       <Export downstreamFacts="true" mef="true" />
@@ -1358,31 +1359,51 @@
       <Description>2026 draft Instructions for Schedule D, https://www.irs.gov/pub/irs-dft/i1040sd--dft.pdf, Schedule D
         Tax Worksheet: "Complete this worksheet only if line 18 or line 19 of Schedule D is more than zero and lines 15
         and 16 of Schedule D are gains or if you file Form 4952 and you have an amount on line 4g, even if you don't
-        need to file Schedule D. Otherwise, complete the Qualified Dividends and Capital Gain Tax Worksheet". Line 18
-        stays zero because section 1202 gain and collectibles still stop. Form 4952 still stops, so line 4g never
-        applies. Schedule D line 19 is entered only when lines 15 and 16 are both gains, so line 19 more than zero is
-        the whole gate. The total of Form 1099-DIV box 2b is tested first so this fact is complete and false, and the
-        QDCG worksheet is unchanged, when box 2b is $0 even if Schedule D is still incomplete. 26 U.S.C. 1(h)(1)(E).
+        need to file Schedule D. Otherwise, complete the Qualified Dividends and Capital Gain Tax Worksheet". Section
+        1202 gain still stops. Form 4952 still stops, so line 4g never applies. Schedule D lines 18 and 19 are entered
+        only when lines 15 and 16 are both gains. The totals of Form 1099-DIV box 2b and box 2d are tested first so
+        this fact is complete and false, and the QDCG worksheet is unchanged, when both are $0 even if Schedule D is
+        still incomplete. 26 U.S.C. 1(h)(1)(E), 1(h)(1)(F).
       </Description>
       <Derived>
-        <All>
-          <GreaterThan>
-            <Left>
-              <Dependency module="dividends" path="/totalUnrecapturedSection1250Gain" />
-            </Left>
-            <Right>
-              <Dollar>0</Dollar>
-            </Right>
-          </GreaterThan>
-          <GreaterThan>
-            <Left>
-              <Dependency module="scheduleD2" path="/scheduleDLine19" />
-            </Left>
-            <Right>
-              <Dollar>0</Dollar>
-            </Right>
-          </GreaterThan>
-        </All>
+        <Any>
+          <All>
+            <GreaterThan>
+              <Left>
+                <Dependency module="dividends" path="/totalUnrecapturedSection1250Gain" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+            <GreaterThan>
+              <Left>
+                <Dependency module="scheduleD2" path="/scheduleDLine19" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+          <All>
+            <GreaterThan>
+              <Left>
+                <Dependency module="dividends" path="/totalCollectibles28RateGain" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+            <GreaterThan>
+              <Left>
+                <Dependency module="scheduleD2" path="/scheduleDLine18" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </All>
+        </Any>
       </Derived>
     </Fact>
 
@@ -1457,10 +1478,15 @@
 
     <Fact path="/schDTaxWsLine11">
       <Name>Schedule D Tax Worksheet line 11</Name>
-      <Description>Schedule D Tax Worksheet line 11: add Schedule D lines 18 and 19. Line 18 is $0 because section 1202
-        gain and collectibles still stop.</Description>
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf pp. 15-16, Schedule D
+        Tax Worksheet line 11: "Add lines 18 and 19 of Schedule D." Line 18 is the 28% rate gain (scheduleD2
+        /scheduleDLine18). Line 19 is unrecaptured section 1250 gain. Section 1202 gain still stops, so it is not in
+        line 18. 26 U.S.C. 1(h)(1)(E), 1(h)(1)(F).</Description>
       <Derived>
-        <Dependency module="scheduleD2" path="/scheduleDLine19" />
+        <Add>
+          <Dependency module="scheduleD2" path="/scheduleDLine18" />
+          <Dependency module="scheduleD2" path="/scheduleDLine19" />
+        </Add>
       </Derived>
     </Fact>
 
@@ -1926,13 +1952,97 @@
       </Derived>
     </Fact>
 
+    <Fact path="/schDTaxWsLine41">
+      <Name>Schedule D Tax Worksheet line 41</Name>
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf pp. 15-16, Schedule D
+        Tax Worksheet line 41: "Add lines 21, 22, 30, 33, and 39." Line 39 is the unrecaptured section 1250 gain taxed
+        at 25% and is $0 while Schedule D line 19 is $0. Skipped, with lines 42 and 43, when Schedule D line 18 is
+        zero or blank, or when lines 23 through 43 or lines 33 through 43 are skipped.</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/schDTaxWsLine21" />
+          <Dependency path="/schDTaxWsLine22" />
+          <Dependency path="/schDTaxWsLine30" />
+          <Dependency path="/schDTaxWsLine33" />
+          <Dependency path="/schDTaxWsLine39" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/schDTaxWsLine42">
+      <Name>Schedule D Tax Worksheet line 42</Name>
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf pp. 15-16, Schedule D
+        Tax Worksheet line 42: "Subtract line 41 from line 1." This is the 28% rate gain still to be taxed when lines
+        41 through 43 are not skipped. 26 U.S.C. 1(h)(1)(F).</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/schDTaxWsLine1" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/schDTaxWsLine41" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
     <Fact path="/schDTaxWsLine43">
       <Name>Schedule D Tax Worksheet line 43</Name>
-      <Description>Schedule D Tax Worksheet lines 41 through 43 multiply the 28% rate gain by 28%. Schedule D line 18
-        is zero because section 1202 gain and collectibles still stop, so those lines are skipped and this line is
-        zero. 26 U.S.C. 1(h)(1)(F).</Description>
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf pp. 15-16, Schedule D
+        Tax Worksheet line 43: "Multiply line 42 by 28% (0.28)." Zero when lines 23 through 43 are skipped (line 1
+        equals line 16), lines 33 through 43 are skipped (line 1 equals line 32), or Schedule D line 18 is zero or
+        blank (skip lines 41 through 43). Section 1202 gain still stops, so line 18 is Form 1099-DIV box 2d only.
+        26 U.S.C. 1(h)(1)(F).</Description>
+      <TaxYear>2026</TaxYear>
       <Derived>
-        <Dollar>0</Dollar>
+        <Switch>
+          <Case>
+            <When>
+              <Any>
+                <Equal>
+                  <Left>
+                    <Dependency path="/schDTaxWsLine1" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/schDTaxWsLine16" />
+                  </Right>
+                </Equal>
+                <Equal>
+                  <Left>
+                    <Dependency path="/schDTaxWsLine1" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/schDTaxWsLine32" />
+                  </Right>
+                </Equal>
+                <Not>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency module="scheduleD2" path="/scheduleDLine18" />
+                    </Left>
+                    <Right>
+                      <Dollar>0</Dollar>
+                    </Right>
+                  </GreaterThan>
+                </Not>
+              </Any>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Multiply>
+                <Rational>28/100</Rational>
+                <Dependency path="/schDTaxWsLine42" />
+              </Multiply>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 

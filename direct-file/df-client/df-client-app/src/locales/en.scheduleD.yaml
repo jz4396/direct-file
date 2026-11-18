@@ -2,7 +2,7 @@
 headings:
   /heading/income/income-sources/capital-assets-sold: In {{/taxYear}}, did you sell stock, digital assets such as crypto, or other capital assets, or get a Form 1099-B or Form 1099-DA?
   /heading/knockout/capital-assets: This tool doesn’t yet support reporting sales of stock, digital assets (crypto), or other capital assets
-  /heading/income/income-sources/collectibles: "In {{/taxYear}}, did you have collectibles (28%) gain, shown in box 2d of a Form 1099-DIV or on a Schedule K-1?"
+  /heading/income/income-sources/collectibles: "In {{/taxYear}}, did you have collectibles (28%) gain from a sale or a Schedule K-1, other than the amount in box 2d of a Form 1099-DIV?"
   /heading/knockout/collectibles: This tool doesn’t yet support collectibles gain
   /heading/income/income-sources/unrecaptured-1250-gain: "In {{/taxYear}}, did you have unrecaptured section 1250 gain from a sale of real property, an installment sale, Form 4797, Form 2439, or a Schedule K-1, other than the amount in box 2b of a Form 1099-DIV?"
   /heading/knockout/unrecaptured-1250-gain: This tool doesn’t yet support unrecaptured section 1250 gain from Form 4797, an installment sale, or a Schedule K-1
@@ -16,7 +16,7 @@ info:
       urls:
         Link1: https://www.irs.gov/filing/individuals/how-to-file
   /info/income/income-sources/collectibles:
-    body: Check box 2d (Collectibles (28%) gain) on any Form 1099-DIV, and any Schedule K-1 from a partnership, S corporation, estate, or trust. This gain can be taxed at up to 28%.
+    body: Enter Form 1099-DIV box 2d with that form. Answer yes if you sold a collectible or have collectibles (28%) gain on a Schedule K-1 from a partnership, S corporation, estate, or trust. Those worksheet lines are not computed. This gain can be taxed at up to 28%.
   /info/knockout/collectibles:
     alertText:
       body:

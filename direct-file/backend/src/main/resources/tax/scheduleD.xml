@@ -239,8 +239,11 @@
     <Fact path="/soldCollectibles">
       <Export downstreamFacts="true" />
       <Name>Sold collectibles</Name>
-      <Description>#21: collectibles (28%) gain, e.g. Form 1099-DIV box 2d or a Schedule K-1, taxed up to 28%. IRC
-        §1(h)(4)-(5); Schedule D instr. (2025) p. D-11, Line 18 (28% Rate Gain Worksheet).</Description>
+      <Description>#21: collectibles (28%) gain from a sale or a Schedule K-1, other than Form 1099-DIV box 2d.
+        Box 2d is dividends /totalCollectibles28RateGain and Schedule D line 18. A yes here is a sale of a
+        collectible or Schedule K-1 (Form 1065) box 9b / Form 1120-S box 8b, which stay on 28% Rate Gain Worksheet
+        lines other than the Form 1099-DIV line. Taxed up to 28%. 26 U.S.C. 1(h)(4) and 1(h)(5); 2025 Instructions
+        for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 11, 28% Rate Gain Worksheet.</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -261,8 +264,9 @@
     <Fact path="/flowKnockoutCollectibles">
       <Export downstreamFacts="true" />
       <Name>Flow knockout: collectibles</Name>
-      <Description>#21: yes to /soldCollectibles. Phase A: the Schedule D Tax Worksheet is not implemented, so a yes
-        blocks submission instead of silently using the 0/15/20% QDCG worksheet.</Description>
+      <Description>#21: yes to /soldCollectibles. A sale of a collectible or a Schedule K-1 collectibles amount
+        uses 28% Rate Gain Worksheet lines other than line 4's Form 1099-DIV box 2d. Those lines are not filled.
+        Form 1099-DIV box 2d is not this stop.</Description>
       <BlockSubmissionOnTrue />
       <Derived>
         <All>
@@ -419,9 +423,9 @@
         (scheduleE /scheduleEHasEstateK1CapitalGain; 2026 draft Schedule D, PDF p. 2, lines 5 and 12), a
         nonzero Form 1065 box 8 or box 9a or Form 1120-S box 7 or box 8a (scheduleE
         /scheduleEK1HasCapitalGain), or Form 1099-DIV
-        box 2b more than $0. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a,
-        Exception 1 does not apply when a Form 1099-DIV has an amount in box 2b, so capital gain distributions go on
-        Schedule D line 13.</Description>
+        box 2b or box 2d more than $0. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31,
+        Line 7a, Exception 1 does not apply when a Form 1099-DIV has an amount in box 2b or box 2d, so capital gain
+        distributions go on Schedule D line 13.</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Any>
@@ -432,6 +436,14 @@
           <GreaterThan>
             <Left>
               <Dependency module="dividends" path="/totalUnrecapturedSection1250Gain" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="dividends" path="/totalCollectibles28RateGain" />
             </Left>
             <Right>
               <Dollar>0</Dollar>

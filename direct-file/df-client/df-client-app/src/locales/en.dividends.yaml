@@ -16,6 +16,7 @@ headings:
   /heading/income/dividends/holding-period: Are any of the qualified dividends in box 1b not actually qualified?
   /heading/income/dividends/box-2a: Enter the amount from <strong>box 2a</strong>, if any.
   /heading/income/dividends/box-2b: Enter the amount from <strong>box 2b</strong>, if any.
+  /heading/income/dividends/box-2d: Enter the amount from <strong>box 2d</strong>, if any.
   /heading/income/dividends/boxes-2e-2f: Enter the amounts from <strong>boxes 2e and 2f</strong>, if any.
   /heading/income/dividends/box-3: Enter the amount from <strong>box 3</strong>, if any.
   /heading/income/dividends/box-3-basis: Is the amount in box 3 more than your cost (basis) in the shares?
@@ -37,6 +38,8 @@ headings:
   /heading/knockout/dividends-section-199a:
     This tool can’t split section 199A dividends that aren’t qualified REIT dividends
   /heading/knockout/dividends-amounts-inconsistent: Check the amounts you entered from this 1099-DIV
+  /heading/knockout/dividends-collectibles-with-loss:
+    This tool doesn’t yet support collectibles gain when you also have a capital loss
   /heading/knockout/dividends-foreign-tax: This tool doesn’t yet support foreign tax that needs Form 1116
   /heading/knockout/dividends-unsupported-boxes: This tool doesn’t yet support some boxes on your 1099-DIV
   /heading/knockout/dividends-box-13-exceeds-box-12: Box 13 cannot be more than box 12
@@ -92,6 +95,11 @@ info:
           Box 2b is the part of box 2a that is unrecaptured section 1250 gain from depreciable real property. It is
           already included in box 2a, so it is not added again. It cannot be more than box 2a. Leave it blank if it’s
           empty on your form.
+  /info/income/dividends/box-2d:
+    body:
+      - p:
+          Box 2d is the part of box 2a that is collectibles (28%) gain. It is already included in box 2a, so it is not
+          added again. It cannot be more than box 2a. Leave it blank if it’s empty on your form.
   /info/income/dividends/boxes-2e-2f:
     body:
       - p:
@@ -157,9 +165,9 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Answer yes if your form shows an amount in box 2c, 2d, 9, 10, 14, 15, or 16, or a country in box 8. Box
-          11 (FATCA filing requirement) is asked on its own screen. Boxes 2b, 2e, 2f, 6, 12, and 13 are entered on their
-          own screens."
+          "Answer yes if your form shows an amount in box 2c, 9, 10, 14, 15, or 16, or a country in box 8. Box 11 (FATCA
+          filing requirement) is asked on its own screen. Boxes 2b, 2d, 2e, 2f, 6, 12, and 13 are entered on their own
+          screens."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -195,9 +203,9 @@ info:
     alertText:
       body:
         - p:
-            Boxes 1b, 2e, 5, and 6 are parts of box 1a, and boxes 2b and 2f are parts of box 2a, so none of them can be
-            more than that box. Go back and check the amounts you entered. If they match your form, you’ll need another
-            way to file this return.
+            Boxes 1b, 2e, 5, and 6 are parts of box 1a, and boxes 2b, 2d, and 2f are parts of box 2a, so none of them
+            can be more than that box. Go back and check the amounts you entered. If they match your form, you’ll need
+            another way to file this return.
   /info/knockout/dividends-foreign-tax:
     alertText:
       body:
@@ -208,8 +216,15 @@ info:
     alertText:
       body:
         - p:
-            This tool supports only boxes 1a, 1b, 2a, 2b, 2e, 2f, 3, 4, 5, 6, 7, 11, 12, and 13 of Form 1099-DIV. You’ll
-            need another way to file this return.
+            This tool supports only boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 11, 12, and 13 of Form 1099-DIV.
+            You’ll need another way to file this return.
+  /info/knockout/dividends-collectibles-with-loss:
+    alertText:
+      body:
+        - p:
+            Collectibles (28%) gain in box 2d is reduced by a short-term capital loss or a long-term capital loss
+            carryover before it is taxed at 28%. This tool doesn’t figure that reduction yet. You’ll need another way to
+            file this return.
   /info/knockout/dividends-box-13-exceeds-box-12:
     alertText:
       body:
@@ -256,6 +271,8 @@ fields:
     name: <strong>Box 2a</strong> - Total capital gain distributions
   /dividendReports/*/writableUnrecapturedSection1250Gain:
     name: <strong>Box 2b</strong> - Unrecaptured section 1250 gain
+  /dividendReports/*/writableCollectibles28RateGain:
+    name: <strong>Box 2d</strong> - Collectibles (28%) gain
   /dividendReports/*/writableSection897OrdinaryDividends:
     name: <strong>Box 2e</strong> - Section 897 ordinary dividends
   /dividendReports/*/writableSection897CapitalGain:
@@ -291,6 +308,7 @@ dataviews:
     /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet: Are any box 1b dividends not qualified?
     /dividendReports/*/writableCapitalGainDistributions: Box 2a - Total capital gain distributions
     /dividendReports/*/writableUnrecapturedSection1250Gain: Box 2b - Unrecaptured section 1250 gain
+    /dividendReports/*/writableCollectibles28RateGain: Box 2d - Collectibles (28%) gain
     /dividendReports/*/writableSection897OrdinaryDividends: Box 2e - Section 897 ordinary dividends
     /dividendReports/*/writableSection897CapitalGain: Box 2f - Section 897 capital gain
     /dividendReports/*/writableInvestmentExpenses: Box 6 - Investment expenses

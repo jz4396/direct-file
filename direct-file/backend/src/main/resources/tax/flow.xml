@@ -35,6 +35,7 @@
           <Dependency module="dividends" path="/flowKnockoutDividendForeignTaxPaid" />
           <Dependency module="dividends" path="/flowKnockoutDividendNominee" />
           <Dependency module="dividends" path="/flowKnockoutDividendAmountsInconsistent" />
+          <Dependency module="scheduleD2" path="/flowKnockoutCollectibles28RateGainNetting" />
           <Dependency module="dividends" path="/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12" />
           <Dependency module="interest" path="/flowKnockoutHasForeignTaxPaid" />
           <Dependency module="interest" path="/flowKnockoutWithholdingUnsupportedState" />
