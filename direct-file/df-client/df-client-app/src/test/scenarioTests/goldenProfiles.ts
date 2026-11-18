@@ -22,7 +22,10 @@
 // Child Tax Credit and Form 8812, one W-2, standard deduction, no Form 2441), and profile R
 // (Golden R: full-year Florida resident, head of household, one qualifying child age 10, itemized deductions
 // with the SALT cap and the 0.5% charitable floor, and Form 1099-INT box 9 on Form 6251 line 2g so alternative
-// minimum tax is owed).
+// minimum tax is owed), and profile S
+// (Golden S: full-year Florida resident, married filing jointly, both under 65, no dependents, standard deduction,
+// two W-2s, and Form 1099-DIV boxes 12 and 13 so the standard-deduction add-back and the private activity bond
+// dividends produce alternative minimum tax, with Form 8959 on the combined Medicare wages).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -75,6 +78,8 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2008`,
   `444-00-2009`,
   `444-00-2010`,
+  `444-00-2011`,
+  `444-00-2012`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -210,6 +215,24 @@ const qualifiedDividends = (id: string, payer: string, box1a: number, box1b: num
     ? {}
     : { [`/dividendReports/#${id}/writableCapitalGainDistributions`]: createDollarWrapper(`${box2a}`) }),
   [`/dividendReports/#${id}/qualifiedDividendsHoldingPeriodNotMet`]: createBooleanWrapper(false),
+  [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+  [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(false),
+  [`/dividendReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
+  '/dividendReportsIsDone': createBooleanWrapper(true),
+});
+
+/**
+ * Form 1099-DIV with box 12 (Form 1040 line 2a) and box 13 (Form 6251 line 2g). Every other dollar box stays unset,
+ * which the derived facts read as $0. Box 1a is the one required writable: a blank box 1a leaves the form incomplete,
+ * so it is stored as $0.
+ */
+const exemptInterestDividends = (id: string, payer: string, box12: number, box13: number) => ({
+  '/dividendReports': createCollectionWrapper([id]),
+  [`/dividendReports/#${id}/filer`]: createCollectionItemWrapper(primaryFilerId),
+  [`/dividendReports/#${id}/payer`]: createStringWrapper(payer),
+  [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`0`),
+  [`/dividendReports/#${id}/writableExemptInterestDividends`]: createDollarWrapper(`${box12}`),
+  [`/dividendReports/#${id}/writableSpecifiedPrivateActivityBondInterestDividends`]: createDollarWrapper(`${box13}`),
   [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
   [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(false),
   [`/dividendReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
@@ -1345,6 +1368,64 @@ export const profileRFlHohItemizerAmt = {
   '/scheduleAHasUnsupportedItems': createBooleanWrapper(false),
 };
 
+/**
+ * Profile S (Golden S, #135): full-year Florida resident, married filing jointly, both under 65, not blind, no
+ * dependents, standard deduction. Two W-2s. Primary: boxes 1, 3, and 5 $300,000, box 2 $72,000, box 4 $11,439
+ * (6.2% of the $184,500 wage base), box 6 $5,250 (1.45% plus 0.9% over $200,000). Spouse: boxes 1, 3, and 5
+ * $150,000, box 2 $30,000, box 4 $9,300, box 6 $2,175. One Form 1099-DIV on the primary: box 12 and box 13 $60,000.
+ * No state income tax and no state return.
+ *
+ * The cite names 9xx SSNs. Those fail Tin.isSSN. These SSNs are group 00 (444-00-2011 and 444-00-2012), the same
+ * kind Golden G and Golden Q use. Group 00 is never assigned by SSA. Fixed ids in the
+ * 13500000-0000-4000-8000-0000000022xx range.
+ */
+const lane: Person = { first: `Lane`, last: `Example`, ssn: [`444`, `00`, `2011`], dob: `1982-03-11` };
+const noor: Person = { first: `Noor`, last: `Example`, ssn: [`444`, `00`, `2012`], dob: `1984-07-19` };
+export const profileSDividendId = `13500000-0000-4000-8000-000000002203`;
+export const profileSPrimaryW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002201`,
+  employer: `Example Gulf Payroll LLC`,
+  ein: [`00`, `0002201`],
+  box1: 300000,
+  box2: 72000,
+  box3: 300000,
+  // 6.2% × 184,500 = 11,439. 26 U.S.C. 3101(a). The wage base caps the tax; the cite still reports box 3 at $300,000.
+  box4: 11439,
+  box5: 300000,
+  // 1.45% × 300,000 = 4,350, plus 0.9% × (300,000 − 200,000) = 900. 26 U.S.C. 3101(b), 3102(f)(1).
+  box6: 5250,
+  filerId: primaryFilerId,
+  tin: lane.ssn,
+};
+export const profileSSpouseW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002202`,
+  employer: `Example Coast Payroll LLC`,
+  ein: [`00`, `0002202`],
+  box1: 150000,
+  box2: 30000,
+  box3: 150000,
+  // 6.2% × 150,000 = 9,300. 26 U.S.C. 3101(a). Under the wage base.
+  box4: 9300,
+  box5: 150000,
+  // 1.45% × 150,000 = 2,175. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000).
+  box6: 2175,
+  filerId: spouseId,
+  tin: noor.ssn,
+};
+export const profileSFlMfjStandardAmt = {
+  ...single(lane, { street: `123 Example St`, city: `Miami`, zip: `33101`, state: `FL` }),
+  ...mfjFilerData,
+  ...spouse(noor),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(lane.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`onlySame`, `/primaryFilerW2And1099IntStateOptions`),
+  ...w2s(lane.ssn, profileSPrimaryW2, profileSSpouseW2),
+  ...exemptInterestDividends(profileSDividendId, `Example Muni Fund`, 60000, 60000),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1370,4 +1451,5 @@ export const goldenProfiles = {
   profilePAkSinglePfd,
   profileQPaMfjTwoChildren,
   profileRFlHohItemizerAmt,
+  profileSFlMfjStandardAmt,
 };

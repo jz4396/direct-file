@@ -268,6 +268,155 @@ class Form8959Form8960Ty2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Golden S (#135), public print path. The facts are {@code golden-profileS-complete.json}, the persisted client
+     * profile {@code profileSFlMfjStandardAmt}: Lane and Noor Example, full-year Florida, married filing jointly, both
+     * under 65, no dependents, standard deduction. Two W-2s: primary boxes 1, 3, and 5 $300,000, box 2 $72,000, box 4
+     * $11,439, box 6 $5,250; spouse boxes 1, 3, and 5 $150,000, box 2 $30,000, box 4 $9,300, box 6 $2,175. One Form
+     * 1099-DIV, box 12 and box 13 $60,000.
+     *
+     * <p>Form 1040 line 1a is $450,000. Line 2a is $60,000. Tax-exempt interest is not gross income. 26 U.S.C.
+     * §103(a). Line 11 is $450,000. Line 12e is the $32,200 joint standard deduction. Rev. Proc. 2025-32 §4.14(1), PDF
+     * p. 18. Line 15 is $417,800. The Tax Computation Worksheet tax is $82,048 + 32% × $14,250 = $86,608. Rev. Proc.
+     * 2025-32 §4.01 Table 1, PDF p. 10. Instructions for Form 1040 (2025), PDF p. 36.
+     *
+     * <p>Form 6251 line 1a is $32,200 (Form 1040 line 14; no Schedule 1-A). The cite's "line 1 $417,800" is draft line
+     * 1b. Line 2a is the standard deduction, $32,200. 26 U.S.C. §56(b)(1)(E). Line 2g is box 13, $60,000. 26 U.S.C.
+     * §57(a)(5). Line 4 is $510,000. Line 5 is the $140,200 exemption. Rev. Proc. 2025-32 §4.10, PDF pp. 16–17. Line 6
+     * is $369,800. Line 7 is 28% × $369,800 − $4,890 = $98,654. Line 11 is $12,046. Schedule 2 line 2 is $12,046 and
+     * line 3 is $12,046 (the cite's "line 1"; line 1z is blank). Form 1040 line 17 is $12,046.
+     *
+     * <p>Form 8959 line 7 is ($450,000 − $250,000) × 0.9% = $1,800. 26 U.S.C. §3101(b)(2). Line 19 is $7,425. Line 21
+     * is 1.45% × $450,000 = $6,525. Line 24 is $900, Form 1040 line 25c. Form 8960 prints because MAGI $450,000 is over
+     * the $250,000 threshold. Instructions for Form 8960 (2026) draft p. 1, Who Must File. Exempt-interest dividends
+     * are not net investment income, so line 12 and line 17 are $0. 26 U.S.C. §1411(c). Schedule 2 line 17b is
+     * $1,800 and line 21 is $1,800. Form 1040 line 23 is $1,800. Line 24 is $100,454. Line 25a is $102,000. Line 33 is
+     * $102,900. Line 34 and line 35a are the $2,446 refund. Schedule A line 18 is $0, under the standard deduction, so
+     * the return does not itemize and Schedule A is not in the package. No Schedule B, Schedule 1, Schedule D,
+     * Schedule 8812, or state return.
+     *
+     * <p>Group-00 test SSNs (the SSA never assigns group 00). A 9xx area is not an SSN. {@code Tin.isSSN} rejects it,
+     * so the fixture uses group 00. The same pattern is Golden G, Golden Q, and Golden R.
+     */
+    @Test
+    void goldenSPrintsForm1040Form6251Form8959AndSchedule2OnThePublicPath() throws Exception {
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileS-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> f = fieldsOnPages(doc, Schedules123Ty2026PdfSmokeTest.F1040);
+            assertTrue(
+                    Schedules123Ty2026PdfSmokeTest.any(f, "f1_14[0]")
+                            .toUpperCase()
+                            .contains("LANE"),
+                    "Form 1040 first name");
+            assertTrue(
+                    Schedules123Ty2026PdfSmokeTest.any(f, "f1_17[0]")
+                            .toUpperCase()
+                            .contains("NOOR"),
+                    "Form 1040 spouse first name");
+            // Page1 c1_8[1] is MFJ. HOH-QSS_ReadOrder also has a c1_8[1] (qualifying surviving spouse), so the
+            // short name is not unique. The export value is the PDF's on-state, not a locked literal.
+            assertEquals(
+                    "Off", PaPit40ScheduleSpTy2026PdfSmokeTest.field(f, "Page1[0].c1_8[0]"), "single is not checked");
+            assertFalse(
+                    Set.of("", "Off").contains(PaPit40ScheduleSpTy2026PdfSmokeTest.field(f, "Page1[0].c1_8[1]")),
+                    "married filing jointly is checked");
+            assertEquals(
+                    "Off",
+                    PaPit40ScheduleSpTy2026PdfSmokeTest.field(f, "Page1[0].c1_8[2]"),
+                    "married filing separately is not checked");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f1_31[0]", "no dependent");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_47[0]", 450000, "Form 1040 line 1a wages");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_58[0]", 60000, "Form 1040 line 2a tax-exempt interest");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f1_59[0]", "Form 1040 line 2b ($0 taxable interest)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_73[0]", 450000, "Form 1040 line 9");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f1_74[0]", "Form 1040 line 10 ($0 adjustments)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_75[0]", 450000, "Form 1040 line 11a AGI");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_01[0]", 450000, "Form 1040 line 11b AGI");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_02[0]", 32200, "Form 1040 line 12e standard deduction");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_07[0]", 417800, "Form 1040 line 15 taxable income");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_09[0]", 86608, "Form 1040 line 16 tax");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_10[0]", 12046, "Form 1040 line 17 AMT");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_11[0]", 98654, "Form 1040 line 18");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f2_12[0]", "Form 1040 line 19 child tax credit ($0)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_15[0]", 98654, "Form 1040 line 22 tax after credits");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_16[0]", 1800, "Form 1040 line 23 additional Medicare tax");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_17[0]", 100454, "Form 1040 line 24a total tax");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_20[0]", 102000, "Form 1040 line 25a withholding");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_22[0]", 900, "Form 1040 line 25c Form 8959");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_23[0]", 102900, "Form 1040 line 25d");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f2_26[0]", "Form 1040 line 27a EITC ($0)");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f2_27[0]", "Form 1040 line 28 additional child tax credit ($0)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_34[0]", 102900, "Form 1040 line 33 payments");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_35[0]", 2446, "Form 1040 line 34 overpayment");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_36[0]", 2446, "Form 1040 line 35a refund");
+            // /balanceDue has ExportZero, so $0 owed prints "0.00" rather than a blank.
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_40[0]", 0, "Form 1040 line 37 amount owed ($0)");
+
+            Map<String, String> f6251 = Form6251Ty2026PdfSmokeTest.form6251Fields(doc);
+            assertFalse(f6251.isEmpty(), "Form 6251 is attached when line 7 is greater than line 10");
+            assertEquals(3220000, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_3[0]"), "Form 6251 line 1a");
+            assertEquals(41780000, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_4[0]"), "Form 6251 line 1b");
+            assertEquals(3220000, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_5[0]"), "Form 6251 line 2a");
+            assertEquals(6000000, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_11[0]"), "Form 6251 line 2g");
+            assertEquals(51000000, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_26[0]"), "Form 6251 line 4");
+            assertEquals(14020000, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_27[0]"), "Form 6251 line 5");
+            assertEquals(36980000, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_28[0]"), "Form 6251 line 6");
+            assertEquals(9865400, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_29[0]"), "Form 6251 line 7");
+            assertEquals(9865400, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_31[0]"), "Form 6251 line 9");
+            assertEquals(8660800, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_32[0]"), "Form 6251 line 10");
+            assertEquals(1204600, Form6251Ty2026PdfSmokeTest.line(f6251, "f1_33[0]"), "Form 6251 line 11");
+            assertEquals("", Form6251Ty2026PdfSmokeTest.field(f6251, "Page2[0].f2_1[0]"), "Form 6251 Part III blank");
+
+            Map<String, String> f8959 = fieldsOnPages(doc, "Form 8959 (2026)");
+            assertFalse(f8959.isEmpty(), "Form 8959 page printed");
+            assertTrue(field(f8959, "f1_1[0]").toUpperCase().contains("LANE"), "Form 8959 name");
+            amount(f8959, "f1_3[0]", 450000, "line 1 Medicare wages");
+            amount(f8959, "f1_7[0]", 250000, "line 5 threshold, married filing jointly");
+            amount(f8959, "f1_8[0]", 200000, "line 6");
+            amount(f8959, "f1_9[0]", 1800, "line 7 = 200,000 x 0.9%");
+            amount(f8959, "f1_14[0]", 1800, "line 12");
+            amount(f8959, "f1_21[0]", 7425, "line 19 box 6");
+            amount(f8959, "f1_23[0]", 6525, "line 21 = 1.45% x 450,000");
+            amount(f8959, "f1_24[0]", 900, "line 22");
+            amount(f8959, "f1_26[0]", 900, "line 24 to Form 1040 line 25c");
+
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            assertFalse(f8960.isEmpty(), "Form 8960 page printed because MAGI is over the threshold");
+            amount(f8960, "f1_22[0]", 0, "line 12 net investment income");
+            amount(f8960, "f1_23[0]", 450000, "line 13 MAGI");
+            amount(f8960, "f1_24[0]", 250000, "line 14");
+            amount(f8960, "f1_25[0]", 200000, "line 15");
+            blank(f8960, "f1_26[0]", "line 16");
+            blank(f8960, "f1_27[0]", "line 17");
+
+            Map<String, String> s2 = Schedules123Ty2026PdfSmokeTest.page(doc, Schedules123Ty2026PdfSmokeTest.SCH2);
+            assertTrue(field(s2, "f1_01[0]").toUpperCase().contains("LANE"), "Schedule 2 name");
+            blank(s2, "f1_11[0]", "Schedule 2 line 1z");
+            amount(s2, "f1_12[0]", 12046, "Schedule 2 line 2 AMT");
+            amount(s2, "f1_13[0]", 12046, "Schedule 2 line 3");
+            blank(s2, "f1_15[0]", "Schedule 2 line 4 (no Schedule SE)");
+            blank(s2, "f1_17[0]", "Schedule 2 line 6 (no NIIT)");
+            Schedules123Ty2026PdfSmokeTest.amount2(s2, "f2_12[0]", 1800, "Schedule 2 line 17b");
+            Schedules123Ty2026PdfSmokeTest.amount2(s2, "f2_20[0]", 1800, "Schedule 2 line 21");
+
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("SCHEDULE A (Form 1040) 2026"), "no Schedule A");
+            assertFalse(text.contains("Schedule A (Form 1040) 2026"), "no Schedule A page 2");
+            assertFalse(text.contains("Schedule B (Form 1040) 2026"), "no Schedule B");
+            assertFalse(text.contains("Schedule 1 (Form 1040) 2026"), "no Schedule 1");
+            assertFalse(text.contains("Schedule D (Form 1040) 2026"), "no Schedule D");
+            assertTrue(
+                    CreditFormsTy2026PdfSmokeTest.pages(
+                                    CreditFormsTy2026PdfSmokeTest.pageTexts(doc), CreditFormsTy2026PdfSmokeTest::is8812)
+                            .isEmpty(),
+                    "no Schedule 8812");
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheets dropped");
+            assertFalse(
+                    PaPit40ScheduleSpTy2026PdfSmokeTest.pageWith(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1),
+                    "no PA-40 for a full-year Florida resident");
+        }
+    }
+
     @Test
     void neitherFormPrintsBelowTheThresholds() throws Exception {
         byte[] bytes = generate(Map.of());
