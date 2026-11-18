@@ -51,6 +51,7 @@ import gov.irs.directfile.api.io.IOLocationService;
 import gov.irs.directfile.api.loaders.service.FactGraphService;
 import gov.irs.directfile.api.taxreturn.models.TaxReturn;
 import gov.irs.directfile.models.FactTypeWithItem;
+import gov.irs.factgraph.Graph;
 
 import static gov.irs.directfile.api.pdf.Form8959Form8960Ty2026PdfSmokeTest.collectionItem;
 import static gov.irs.directfile.api.pdf.PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue;
@@ -160,6 +161,7 @@ class Ty2026PdfPackageTest {
             Map.entry("IRS1040SC", 2),
             Map.entry("IRS1040SD", 2),
             Map.entry("IRS1040SSE", 2),
+            Map.entry("IRS1040SSESPOUSE", 2),
             Map.entry("IRS8949", 2),
             Map.entry("IRS6251", 2),
             Map.entry("IRS8959", 1),
@@ -483,6 +485,7 @@ class Ty2026PdfPackageTest {
                 PaScheduleCTy2026PdfSmokeTest.lineItemPa("50000.00", "20000.00"),
                 PaScheduleBTy2026PdfSmokeTest.capitalGainDistributions(),
                 selfEmployedFamily("4000.00"),
+                ScheduleSETy2026PdfSmokeTest.spouseOwnedScheduleC(),
                 ScheduleBAndETy2026PdfSmokeTest.partI(),
                 ScheduleRTy2026PdfSmokeTest.disabledSingle(),
                 Form8862Ty2026PdfSmokeTest.eitcWithoutChildren())) {
@@ -1248,6 +1251,7 @@ class Ty2026PdfPackageTest {
         }
 
         Pkg pkg = new Pkg(Loader.loadPDF(bytes));
+        Graph graph = factGraphService.getGraph(facts);
         String current = null;
         int lastIndex = -1;
         for (int i = 0; i < pkg.doc.getNumberOfPages(); i++) {
@@ -1255,15 +1259,46 @@ class Ty2026PdfPackageTest {
             assertFalse(
                     text.contains("The draft you are looking for begins on the next page"),
                     "page " + (i + 1) + " is not a draft cover sheet");
-            String form = null;
-            int index = -1;
+            Map<String, Integer> matches = new LinkedHashMap<>();
             for (var e : blankPageText.entrySet()) {
                 int at = e.getValue().indexOf(text);
                 if (at >= 0) {
-                    assertTrue(form == null, "page " + (i + 1) + " matches one template only");
-                    form = e.getKey();
-                    index = at;
+                    matches.put(e.getKey(), at);
                 }
+            }
+            String form = null;
+            int index = -1;
+            if (matches.size() == 1) {
+                form = matches.keySet().iterator().next();
+                index = matches.get(form);
+            } else if (matches.size() > 1 && samePdfLocation(matches.keySet())) {
+                // IRS1040SSE and IRS1040SSESPOUSE are the same draft, so the page text matches both.
+                // The copy that prints is the one whose includeWhen is true, in template order.
+                // 2026 Instructions for Schedule SE, p. 2: each spouse files a separate Schedule SE.
+                List<String> included = includedCopies(matches.keySet(), graph);
+                assertFalse(included.isEmpty(), "page " + (i + 1) + " matches a copy that is included");
+                if (current != null && included.contains(current)) {
+                    int at = matches.get(current);
+                    int skip = leadingPagesSkipped(current);
+                    List<Integer> instance =
+                            pkg.forms.get(current).get(pkg.forms.get(current).size() - 1);
+                    if (at == skip + instance.size()) {
+                        form = current;
+                        index = at;
+                    }
+                }
+                if (form == null) {
+                    for (String name : included) {
+                        if (!name.equals(current)) {
+                            form = name;
+                            index = matches.get(name);
+                            break;
+                        }
+                    }
+                }
+                assertTrue(form != null, "page " + (i + 1) + " matches one included copy");
+            } else {
+                assertEquals(1, matches.size(), "page " + (i + 1) + " matches one template only");
             }
             assertTrue(form != null, "page " + (i + 1) + " is a page of a configured TY2026 template");
             int skip = leadingPagesSkipped(form);
@@ -1279,6 +1314,48 @@ class Ty2026PdfPackageTest {
             lastIndex = index;
         }
         return pkg;
+    }
+
+    /** True when every matching template is the same PDF file (two copies of one draft). */
+    static boolean samePdfLocation(Set<String> forms) {
+        String location = null;
+        for (String form : forms) {
+            String next = templates.get(form).getLocation();
+            if (location == null) {
+                location = next;
+            } else if (!location.equals(next)) {
+                return false;
+            }
+        }
+        return location != null;
+    }
+
+    /**
+     * Copies of one draft whose includeWhen is true, in {@link PdfTemplate#templateList} order. A template with no
+     * includeWhen is always included.
+     */
+    static List<String> includedCopies(Set<String> forms, Graph graph) throws Exception {
+        List<String> out = new ArrayList<>();
+        for (PdfTemplate template : PdfTemplate.templateList) {
+            String name = template.getTemplateName();
+            if (!forms.contains(name) || !includeWhenTrue(name, graph)) {
+                continue;
+            }
+            out.add(name);
+        }
+        return out;
+    }
+
+    static boolean includeWhenTrue(String form, Graph graph) throws Exception {
+        String config = new String(
+                new ClassPathResource(templates.get(form).getConfigurationLocation()).getContentAsByteArray(),
+                StandardCharsets.UTF_8);
+        var m = Pattern.compile("(?m)^includeWhen:\\s*(\\S+)").matcher(config);
+        if (!m.find()) {
+            return true;
+        }
+        var result = graph.get(m.group(1));
+        return result != null && result.complete() && Boolean.TRUE.equals(result.get());
     }
 
     static int leadingPagesSkipped(String form) throws Exception {

@@ -67,6 +67,12 @@ abstract class PdfTemplate {
 
             // ASN 17 (#89: 2026 draft Schedule SE). Stamps the line 3 "Exempt—Notary" dotted entry.
             new Irs1040SsePdfForm("IRS1040SSE"),
+            // The spouse's own Schedule SE, same draft. 26 U.S.C. 1402(b)(1). 2026 Instructions for Schedule SE,
+            // p. 2 (SHA-256 prefix 7054fa6c86d89301): each spouse files a separate Schedule SE.
+            new Irs1040SsePdfForm(
+                    "IRS1040SSESPOUSE",
+                    "/scheduleCSecondaryFilerNotaryNetProfit",
+                    "/secondaryFilerNonfarmOptionalMethodApplies"),
 
             // ASN 21. #124 SWAP: the three statements are repo-built with the 2026 draft Form 2441 headings.
             new Irs2441PdfForm("IRS2441"),

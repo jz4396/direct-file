@@ -14,10 +14,12 @@
 # $100 after the 92.35% factor is -0-). Tested per filer. Every line maps the primary filer's own Schedule SE chain
 # (scheduleSE.xml /primaryFiler... facts), not the combined /seNetEarningsFromSelfEmployment or /selfEmploymentTax:
 # 2026 draft i1040sse, Joint Returns: "If both spouses have self-employment income, each must file a separate Schedule
-# SE." Only this form prints for now: a Schedule C business owned by the spouse stops the return (scheduleC
-# /flowKnockoutScheduleCSpouseBusiness), and the spouse's church employee income stops the return
+# SE." The spouse's own Schedule SE is IRS1040SSESPOUSE, included when /secondaryFilerSeTaxApplies. One
+# secondary-filer business is allowed on a joint return. More than one, a qualified joint venture, and a
+# community-property state still stop submission (scheduleC /flowKnockoutScheduleCSpouseBusiness and the stops
+# next to it). The spouse's church employee income stops the return
 # (scheduleSE /hadSecondaryFilerChurchEmployeeIncome; 26 U.S.C. 3121(w), 1402(b), 1402(j)). That income is not
-# entered on the primary filer's line 5a. The person with the computed Schedule SE is the primary filer.
+# entered on the primary filer's line 5a. The person with this Schedule SE is the primary filer.
 #
 # Line arithmetic (scheduleSE.xml, primary chain): when the nonfarm optional method applies, line 2 is skipped, so
 # lines 2, 3, and 4a are $0 and line 4c equals line 4b (26 U.S.C. 1402(a), 1402(l)). Otherwise 4a = line 3 x 92.35%

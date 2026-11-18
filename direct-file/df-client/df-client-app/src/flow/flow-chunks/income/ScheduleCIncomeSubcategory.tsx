@@ -633,6 +633,48 @@ export const ScheduleCIncomeSubcategory = (
       </SubSubcategory>
     </CollectionLoop>
 
+    <SubSubcategory route='schedule-c-spouse'>
+      <Screen route='schedule-c-qualified-joint-venture' condition='/askScheduleCQualifiedJointVenture'>
+        <Heading i18nKey='/heading/income/schedule-c/qualified-joint-venture' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/qualified-joint-venture' />
+        <Boolean path='/scheduleCIsQualifiedJointVenture' />
+        <SaveAndOrContinueButton />
+      </Screen>
+    </SubSubcategory>
+
+    <Screen
+      route='schedule-c-qualified-joint-venture-knockout'
+      condition='/flowKnockoutScheduleCQualifiedJointVenture'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-c-qualified-joint-venture' />
+      <DFAlert i18nKey='/info/knockout/schedule-c-qualified-joint-venture' headingLevel='h2' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
+
+    <Screen
+      route='schedule-c-spouse-business-knockout'
+      condition='/flowKnockoutScheduleCSpouseBusiness'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-c-spouse-business' />
+      <DFAlert i18nKey='/info/knockout/schedule-c-spouse-business' headingLevel='h2' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
+
+    <Screen
+      route='schedule-c-community-property-knockout'
+      condition='/flowKnockoutScheduleCCommunityProperty'
+      isKnockout={true}
+    >
+      <IconDisplay name='ErrorOutline' size={9} isCentered />
+      <Heading i18nKey='/heading/knockout/schedule-c-community-property' />
+      <DFAlert i18nKey='/info/knockout/schedule-c-community-property' headingLevel='h2' type='warning' />
+      <KnockoutButton i18nKey='button.knockout' />
+    </Screen>
+
     <Screen
       route='schedule-c-nonfarm-optional-method-knockout'
       condition='/flowKnockoutScheduleSENonfarmOptionalMethod'

@@ -29,6 +29,8 @@ import gov.irs.directfile.models.FactEvaluationResult;
 public class Irs1040SsePdfForm extends PdfForm {
     static final String NOTARY_NET_PROFIT = "/scheduleCPrimaryFilerNotaryNetProfit";
     static final String OPTIONAL_METHOD = "/primaryFilerNonfarmOptionalMethodApplies";
+    private final String notaryNetProfitPath;
+    private final String optionalMethodPath;
     /** Line 3 amount. The dotted line sits to its left. */
     static final String LINE_3_FIELD = "topmostSubform[0].Page1[0].f1_6[0]";
 
@@ -39,7 +41,18 @@ public class Irs1040SsePdfForm extends PdfForm {
     static final float BASELINE_ABOVE_FIELD_BOTTOM = 2.1f;
 
     public Irs1040SsePdfForm(final String templateName) {
+        this(templateName, NOTARY_NET_PROFIT, OPTIONAL_METHOD);
+    }
+
+    /**
+     * A second copy of the same draft, for the spouse's Schedule SE. The notary stamp reads that spouse's facts.
+     * 26 U.S.C. 1402(c)(1). 2026 Instructions for Schedule SE, p. 2: each spouse files a separate Schedule SE.
+     */
+    public Irs1040SsePdfForm(
+            final String templateName, final String notaryNetProfitPath, final String optionalMethodPath) {
         super(templateName);
+        this.notaryNetProfitPath = notaryNetProfitPath;
+        this.optionalMethodPath = optionalMethodPath;
     }
 
     /**
@@ -60,11 +73,11 @@ public class Irs1040SsePdfForm extends PdfForm {
 
     @Override
     protected void afterFieldsFilled(final PDDocument document, final FactEvaluationResult facts) throws IOException {
-        final Optional<BigDecimal> notary = PaPdfForm.dollars(facts, NOTARY_NET_PROFIT);
+        final Optional<BigDecimal> notary = PaPdfForm.dollars(facts, notaryNetProfitPath);
         if (notary.isEmpty() || notary.get().signum() <= 0) {
             return;
         }
-        if (PaPdfForm.isTrue(facts, OPTIONAL_METHOD)) {
+        if (PaPdfForm.isTrue(facts, optionalMethodPath)) {
             return;
         }
         final PDAcroForm form = document.getDocumentCatalog().getAcroForm();

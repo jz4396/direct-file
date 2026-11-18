@@ -364,7 +364,7 @@ class Form8995Ty2026PdfSmokeTest {
         assertEquals("46467.00", dollars(graph, "/form8995Line1iQbi"));
         assertEquals("350.00", dollars(graph, "/form8995Line1iiQbi"));
         assertEquals("46817.00", dollars(graph, "/form8995Line2"));
-        assertEquals(Boolean.TRUE, graph.get("/flowKnockoutScheduleCSpouseBusiness").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutScheduleCSpouseBusiness").get());
         assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(graph), "spouse Schedule C still prints");
 
         try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {

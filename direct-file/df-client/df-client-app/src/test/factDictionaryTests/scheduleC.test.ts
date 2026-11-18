@@ -212,25 +212,57 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     const yes = setupFactGraph({ ...baseSingle, '/hadSelfEmploymentIncome': createBooleanWrapper(true) }).factGraph;
     expect(yes.get(`/scheduleCNetProfitOrLoss` as ConcretePath).complete).toBe(false);
   });
-  it(`Spouse-owned business is knocked out (per-spouse Schedule SE not supported)`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutScheduleCSpouseBusiness`];
-    const mk = (owner: string) =>
+  it(`One spouse-owned business on a joint return is allowed; two, a non-joint return, a QJV, or community property still stop`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleCSpouseBusiness`,
+      `/flowKnockoutScheduleCQualifiedJointVenture`,
+      `/flowKnockoutScheduleCCommunityProperty`,
+    ];
+    const second = `a59c03d1-af4a-447f-96aa-d19397048a02`;
+    const mk = (owners: string[], extra: Record<string, unknown> = {}) =>
       setupFactGraph({
         ...baseSingle,
         '/filingStatus': createEnumWrapper(`marriedFilingJointly`, `/filingStatusOptions`),
         '/hadSelfEmploymentIncome': createBooleanWrapper(true),
         '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
         '/qbiIsCooperativePatron': createBooleanWrapper(false),
-        '/scheduleCBusinesses': createCollectionWrapper([businessId]),
-        [`/scheduleCBusinesses/#${businessId}/filer`]: createCollectionItemWrapper(owner),
-        [`/scheduleCBusinesses/#${businessId}/businessName`]: createStringWrapper(`Biz`),
-        [`/scheduleCBusinesses/#${businessId}/writableGrossReceipts`]: createDollarWrapper(`5000`),
-        [`/scheduleCBusinesses/#${businessId}/writableTotalExpenses`]: createDollarWrapper(`0`),
-        [`/scheduleCBusinesses/#${businessId}/materiallyParticipates`]: createBooleanWrapper(true),
+        '/scheduleCBusinesses': createCollectionWrapper(owners.map((_, i) => (i === 0 ? businessId : second))),
+        ...Object.assign(
+          {},
+          ...owners.map((owner, i) => {
+            const id = i === 0 ? businessId : second;
+            return {
+              [`/scheduleCBusinesses/#${id}/filer`]: createCollectionItemWrapper(owner),
+              [`/scheduleCBusinesses/#${id}/businessName`]: createStringWrapper(`Biz`),
+              [`/scheduleCBusinesses/#${id}/writableGrossReceipts`]: createDollarWrapper(`5000`),
+              [`/scheduleCBusinesses/#${id}/writableTotalExpenses`]: createDollarWrapper(`0`),
+              [`/scheduleCBusinesses/#${id}/materiallyParticipates`]: createBooleanWrapper(true),
+            };
+          })
+        ),
         '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+        ...extra,
       }).factGraph;
-    expect(mk(spouseId).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(true);
-    expect(mk(primaryFilerId).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(false);
+    const one = mk([spouseId]);
+    expect(one.get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(false);
+    expect(one.get(`/flowKnockoutScheduleCQualifiedJointVenture` as ConcretePath).complete).toBe(true);
+    expect(one.get(`/flowKnockoutScheduleCQualifiedJointVenture` as ConcretePath).get).toBe(false);
+    expect(one.get(`/flowKnockoutScheduleCCommunityProperty` as ConcretePath).complete).toBe(true);
+    expect(one.get(`/flowKnockoutScheduleCCommunityProperty` as ConcretePath).get).toBe(false);
+    expect(mk([primaryFilerId]).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(false);
+    expect(mk([spouseId, spouseId]).get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(true);
+    const notJoint = mk([spouseId], {
+      '/filingStatus': createEnumWrapper(`single`, `/filingStatusOptions`),
+    });
+    expect(notJoint.get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(true);
+    const qjv = mk([spouseId], { '/scheduleCIsQualifiedJointVenture': createBooleanWrapper(true) });
+    expect(qjv.get(`/flowKnockoutScheduleCQualifiedJointVenture` as ConcretePath).get).toBe(true);
+    const community = mk([spouseId], {
+      '/filerResidenceAndIncomeState': createEnumWrapper(`ca`, `/scopedStateOptions`),
+    });
+    expect(community.get(`/flowKnockoutScheduleCCommunityProperty` as ConcretePath).get).toBe(true);
   });
 
   // Additional Medicare Tax on SE income; the threshold is reduced by Medicare wages.

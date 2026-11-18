@@ -186,6 +186,8 @@
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCQualifiedJointVenture" />
+          <Dependency module="scheduleC" path="/flowKnockoutScheduleCCommunityProperty" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCOutOfScope" />
           <Dependency module="scheduleSE" path="/flowKnockoutScheduleSEOutOfScope" />
           <Dependency module="scheduleSE" path="/flowKnockoutScheduleSENonfarmOptionalMethod" />
