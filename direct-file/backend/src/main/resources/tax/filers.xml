@@ -2547,6 +2547,26 @@
       </Derived>
     </Fact>
 
+    <Fact path="/livedInAz">
+      <Name>The filer(s) lives in Arizona</Name>
+      <Description>#93 slice 5: /filerResidenceAndIncomeState is Arizona. A.R.S. 43-1011 imposes the individual income
+        tax, and A.R.S. 43-1041 sets the standard deduction, which subsection H adjusts the same way as the federal
+        basic standard deduction. Wired into stateReturn /stateReturnIsAz, /stateReturnComputed, and the state
+        Switches the way a computed return is wired. Arizona is already in /scopedStateOptions. Form 140 has no local
+        return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">az</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
     <Fact path="/livedInMa">
       <Name>The filer(s) lives in Massachusetts</Name>
       <Description>Washington has a Working Families Tax Credit, so we need a condition to show

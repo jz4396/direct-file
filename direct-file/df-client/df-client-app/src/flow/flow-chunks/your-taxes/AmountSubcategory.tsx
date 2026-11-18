@@ -502,6 +502,75 @@ export const AmountSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
+    {/* #93 slice 5: full-year Arizona resident, W-2 wages only. No local return. */}
+    <SubSubcategory route='az-140'>
+      <Screen route='az-residency' condition='/stateReturnIsAz'>
+        <Heading i18nKey='/heading/your-taxes/amount/az-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/az-residency' />
+        <Enum path='/azResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='az-part-year-knockout' condition='/flowKnockoutAzPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-part-year' />
+        <DFAlert i18nKey='/info/knockout/az-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-w2-knockout' condition='/flowKnockoutAzW2NotArizona' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-w2' />
+        <DFAlert i18nKey='/info/knockout/az-w2' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-other-income-knockout' condition='/flowKnockoutAzOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-other-income' />
+        <DFAlert i18nKey='/info/knockout/az-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-dependents-knockout' condition='/flowKnockoutAzDependentsOrQualifyingPerson' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-dependents' />
+        <DFAlert i18nKey='/info/knockout/az-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-age-blind-knockout' condition='/flowKnockoutAzAgeOrBlind' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-age-blind' />
+        <DFAlert i18nKey='/info/knockout/az-age-blind' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-itemized-knockout' condition='/flowKnockoutAzItemizedDeductions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-itemized' />
+        <DFAlert i18nKey='/info/knockout/az-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-charity-knockout' condition='/flowKnockoutAzCharitableContributions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-charity' />
+        <DFAlert i18nKey='/info/knockout/az-charity' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-low-income-knockout' condition='/flowKnockoutAzLowIncomeCredit' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-low-income' />
+        <DFAlert i18nKey='/info/knockout/az-low-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-schedule-1a-knockout' condition='/flowKnockoutAzSchedule1A' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-schedule-1a' />
+        <DFAlert i18nKey='/info/knockout/az-schedule-1a' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='az-filing-status-knockout' condition='/flowKnockoutAzFilingStatus' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/az-filing-status' />
+        <DFAlert i18nKey='/info/knockout/az-filing-status' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     {/* #77 Form 6251 cases this tool doesn't compute */}
     <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />

@@ -1,0 +1,72 @@
+# Cadenas del formulario 140 de Arizona (#93, parte 5).
+subsubcategories:
+  /flow/your-taxes/amount:
+    az-140: Declaración de Arizona
+dataviews:
+  /flow/your-taxes/amount:
+    /azResidencyStatus: Dónde vivió para su declaración de Arizona
+fields:
+  /azResidencyOptions:
+    fullYear: Viví en Arizona todo el año
+    partYear: Viví en Arizona parte del año
+    nonresident: No viví en Arizona
+headings:
+  /heading/your-taxes/amount/az-residency: ¿Cuál de estas opciones describe su declaración de Arizona?
+  /heading/knockout/az-part-year:
+    Esta herramienta todavía no admite una declaración de residente parcial o de no residente de Arizona
+  /heading/knockout/az-w2: Esta herramienta todavía no admite un W-2 de un estado distinto de Arizona
+  /heading/knockout/az-other-income:
+    Esta herramienta todavía no admite declaraciones de Arizona con ingresos distintos de los salarios del W-2
+  /heading/knockout/az-dependents:
+    Esta herramienta todavía no admite dependientes ni una persona calificada en una declaración de Arizona
+  /heading/knockout/az-age-blind:
+    Esta herramienta todavía no admite una declaración de Arizona de alguien de 65 años o más, o con ceguera
+  /heading/knockout/az-itemized: Esta herramienta todavía no admite deducciones detalladas de Arizona
+  /heading/knockout/az-charity: Esta herramienta todavía no admite contribuciones caritativas en una declaración de Arizona
+  /heading/knockout/az-low-income: Esta herramienta todavía no admite este crédito de Arizona
+  /heading/knockout/az-schedule-1a:
+    Esta herramienta todavía no admite una deducción del Anexo 1-A federal en una declaración de Arizona
+  /heading/knockout/az-filing-status: Esta herramienta todavía no admite este estado civil de Arizona
+info:
+  /info/your-taxes/amount/az-residency:
+    body:
+      Un año completo significa que usted, y su cónyuge si presentan una declaración conjunta, vivieron en Arizona
+      todo el año. Esa es la Forma 140. Los residentes parciales usan la Forma 140PY. Los no residentes usan la
+      Forma 140NR.
+  /info/knockout/az-part-year:
+    alertText: Las declaraciones de residente parcial y de no residente de Arizona todavía no se admiten
+    body: Esas declaraciones usan la Forma 140PY o la Forma 140NR, que esta herramienta no calcula.
+  /info/knockout/az-w2:
+    alertText: Un W-2 de otro estado no se admite en esta declaración de Arizona
+    body: La casilla 15 tiene que ser Arizona, o estar en blanco. La retención cuenta solo cuando la casilla 15 es Arizona.
+  /info/knockout/az-other-income:
+    alertText: Esta declaración de Arizona solo puede incluir salarios del W-2
+    body: Los intereses, la jubilación, el Seguro Social, el negocio, el alquiler y otros ingresos federales no se admiten.
+  /info/knockout/az-dependents:
+    alertText: Los dependientes y una persona calificada no se admiten en esta declaración de Arizona
+    body: Las líneas 40, 41 y 49 no se calculan.
+  /info/knockout/az-age-blind:
+    alertText: La edad de 65 años o la ceguera no se admite en esta declaración de Arizona
+    body: Las exenciones de las líneas 38 y 39 no se calculan.
+  /info/knockout/az-itemized:
+    alertText: Las deducciones detalladas de Arizona todavía no se admiten
+    body: La declaración admitida usa la deducción estándar de la línea 43.
+  /info/knockout/az-charity:
+    alertText: Las contribuciones caritativas no se admiten en esta declaración de Arizona
+    body: La línea 44, el aumento de la deducción estándar por donaciones, no se calcula.
+  /info/knockout/az-low-income:
+    alertText: Este crédito de Arizona todavía no se admite
+    body:
+      El crédito del impuesto sobre la renta familiar y el crédito del impuesto especial aumentado no se calculan para
+      una persona soltera con un AGI federal de $12,500 o menos, ni para una declaración conjunta con un AGI federal
+      de $25,000 o menos.
+  /info/knockout/az-schedule-1a:
+    alertText: Una deducción del Anexo 1-A federal no se admite en esta declaración de Arizona
+    body:
+      Las propinas, las horas extra, el interés de un préstamo de auto y la deducción para personas mayores están por
+      debajo del AGI federal, y esta declaración no adivina cómo las trata Arizona.
+  /info/knockout/az-filing-status:
+    alertText: Este estado civil todavía no se admite en una declaración de Arizona
+    body:
+      Esta herramienta prepara la Forma 140 para personas solteras y para una declaración conjunta cuando ambos
+      cónyuges vivieron en Arizona todo el año.

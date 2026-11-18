@@ -512,6 +512,14 @@ direct-file:
         configuration-location: pdf/2026/NCD400/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: AZ140
+        year: 2026
+        language-code: en
+        location: pdf/2026/AZ140/en/2025_140.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/AZ140/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: DF1099R
         year: 2026
         language-code: es

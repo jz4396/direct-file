@@ -1,0 +1,1209 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 5: 2026 Form 140 for a full-year Arizona resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-6980303677
+      Scope: Single, or married filing jointly with both spouses in Arizona all year.
+      Line 12 is federal AGI. Additions, subtractions, and exemptions are zero in scope, so line 42 equals line 12.
+      Line 43 is the 2026 standard deduction: $16,100 single / $32,200 joint (Rev. Proc. 2025-32 §4.14; A.R.S. 43-1041(H)
+      adjusts the statutory dollars the same way as IRC 63). Line 44 is zero because any charitable gift stops the return.
+      Line 45 is line 42 minus line 43 minus line 44, not below zero.
+      Line 46 is line 45 times 2.5 percent, rounded once, half up, to the dollar. 2025 Form 140 instructions, line 46:
+      "Multiply line 45 by 2.5% (.025) and enter the result." A.R.S. 43-1011 imposes the tax; the azleg.gov codification
+      of that section still prints older brackets, so the filled amount uses this 2.5 percent computation.
+      Dollar times Rational scales to cents half-even before Round half-up, so /azLine46 corrects that second step the
+      way /ilLine12 and /ncLine15 do. 38,900 times 0.025 is 972.50, which rounds half-up to 973. Half-even would leave
+      972 because 972 is even. The correction subtracts $1 only when the cent-then-dollar result exceeds the exact
+      product by more than 50 cents, so an exact half dollar stays the half-up dollar.
+      Form structure: 2025 ADOR Form 140, used until the 2026 form is posted. Amounts entered are tax year 2026.
+      A stop below is BlockSubmissionOnTrue and print-refusing. Out-of-scope lines are not calculated.
+    -->
+
+    <Fact path="/azStandardDeductionSingle">
+      <Name>Arizona standard deduction, single</Name>
+      <Description>Form 140 line 43 for a single filer. A.R.S. 43-1041(A) and (H): the department adjusts the statutory
+        standard deduction the same way the federal basic standard deduction is adjusted under IRC 63. Rev. Proc.
+        2025-32 §4.14: $16,100 for unmarried individuals for taxable years beginning in 2026. The 2025 instructions
+        still chart $15,750. No addition for age 65 or blindness; those filers stop.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>16100</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azStandardDeductionMfj">
+      <Name>Arizona standard deduction, married filing jointly</Name>
+      <Description>Form 140 line 43 for a joint return. A.R.S. 43-1041(A) and (H) adjust the statutory amount the same
+        way as the federal basic standard deduction. Rev. Proc. 2025-32 §4.14: $32,200 for married individuals filing
+        joint returns for taxable years beginning in 2026. The 2025 instructions still chart $31,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>32200</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azTaxRate">
+      <Name>Arizona individual income tax rate</Name>
+      <Description>Form 140 line 46. 2025 Form 140 instructions: "Multiply line 45 by 2.5% (.025) and enter the
+        result." A.R.S. 43-1011 levies the tax on the taxable income of a resident. The amount is rounded once,
+        half up, to the dollar. 38,900 times 0.025 is 972.50, which is 973.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>25/1000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLowIncomeLimitSingle">
+      <Name>Arizona family and excise credit income limit, single</Name>
+      <Description>2025 Form 140 instructions, Increased Excise Tax Credit: a single filer may claim the credit when
+        Form 140 line 12 is $12,500 or less. That region, and the Family Income Tax Credit on line 50, is not
+        calculated. A single return at or under this amount stops.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>12500</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLowIncomeLimitMfj">
+      <Name>Arizona family and excise credit income limit, married filing jointly</Name>
+      <Description>2025 Form 140 instructions, Increased Excise Tax Credit: a joint return may claim the credit when
+        Form 140 line 12 is $25,000 or less. That region, and the Family Income Tax Credit on line 50, is not
+        calculated. A joint return at or under this amount stops.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>25000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azResidencyOptions">
+      <Name>Arizona residency answers</Name>
+      <Description>Full-year resident is the supported Form 140. Part-year residents use Form 140PY and nonresidents
+        use Form 140NR. A joint return is a full-year Form 140 only when both spouses lived in Arizona all year.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>nonresident</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azResidencyStatus">
+      <Name>Arizona residency</Name>
+      <Description>Full year means you, and your spouse if you file jointly, lived in Arizona all year. Part-year and
+        nonresident stop. Form 140, Form 140PY, and Form 140NR.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Enum optionsPath="/azResidencyOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/azResidencyIsPartYearOrNonresident">
+      <Name>Arizona residency is part-year or nonresident</Name>
+      <Description>True for Form 140PY or Form 140NR. Incomplete until /azResidencyStatus is answered.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="/azResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/azResidencyOptions">partYear</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/azResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/azResidencyOptions">nonresident</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine12">
+      <Name>Form 140 line 12 federal adjusted gross income</Name>
+      <Description>Federal AGI. Additions and subtractions are zero on the supported return, so line 42 equals this
+        amount. 2025 Form 140 instructions, line 42.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine14">
+      <Name>Form 140 line 14 modified federal AGI</Name>
+      <Description>Line 12 minus line 13. Line 13, small business income, is zero because Form 140-SBI is not in
+        scope.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/azLine12" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine19">
+      <Name>Form 140 line 19</Name>
+      <Description>Line 14 plus additions on lines 15 through 18. Those additions are zero on a W-2-only return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/azLine12" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine37">
+      <Name>Form 140 line 37</Name>
+      <Description>Arizona gross income after subtractions. Lines 20 through 36 are zero on the supported return, so
+        this equals line 12.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/azLine12" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine42">
+      <Name>Form 140 line 42 Arizona adjusted gross income</Name>
+      <Description>Subtract lines 38 through 41 from line 37. If less than zero, enter 0. Exemptions are zero because
+        age 65, blindness, dependents, and qualifying parents stop the return. On the supported path this equals
+        federal AGI.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Dependency path="/azLine37" />
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine43">
+      <Name>Form 140 line 43 standard deduction</Name>
+      <Description>$16,100 single or $32,200 married filing jointly. Any other filing status is zero and stops.
+        Itemized deductions stop. A.R.S. 43-1041. Rev. Proc. 2025-32 §4.14.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            </When>
+            <Then>
+              <Dependency path="/azStandardDeductionSingle" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dependency path="/azStandardDeductionMfj" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine44">
+      <Name>Form 140 line 44 charitable increase to the standard deduction</Name>
+      <Description>Zero. Any charitable contribution stops the return rather than computing the increased standard
+        deduction. The 2025 form says to multiply gifts by 34 percent. A.R.S. 43-1041(I)(2), for years beginning after
+        December 31, 2025, is a dollar cap instead. Neither amount is calculated.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine45">
+      <Name>Form 140 line 45 Arizona taxable income</Name>
+      <Description>Subtract lines 43 and 44 from line 42. If less than zero, enter 0. 2025 Form 140 instructions,
+        line 45.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/azLine42" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/azLine43" />
+              <Dependency path="/azLine44" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine46CentRound">
+      <Name>Form 140 line 46 after the cent-then-dollar round</Name>
+      <Description>Round(line 45 times 2.5%). Dollar times Rational scales to cents half-even before Round half-up, so
+        a product whose exact fraction is just under half a dollar can become 50 cents and then round up a dollar.
+        This is not the amount entered on the form.</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Dependency path="/azLine45" />
+            <Dependency path="/azTaxRate" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine46Times100">
+      <Name>One hundred times the exact Form 140 line 46</Name>
+      <Description>Line 45 times 5/2. That is 100 times line 45 times 0.025, and for a whole-dollar line 45 it is
+        exact to the cent. 38,900 times 5/2 is 97,250 cents, which is 972.50 dollars.</Description>
+      <Derived>
+        <Multiply>
+          <Dependency path="/azLine45" />
+          <Rational>5/2</Rational>
+        </Multiply>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine46">
+      <Name>Form 140 line 46 tax</Name>
+      <Description>Line 45 times 2.5 percent, rounded once, half up, to the dollar. The cent-then-dollar result is one
+        dollar high when it exceeds this exact product by more than 50 cents. An exact half dollar, 972.50, stays 973.
+        2025 Form 140 instructions, line 46. A.R.S. 43-1011.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply>
+                        <Dependency path="/azLine46CentRound" />
+                        <Int>100</Int>
+                      </Multiply>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/azLine46Times100" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Dollar>50</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/azLine46CentRound" />
+                </Minuend>
+                <Subtrahends>
+                  <Dollar>1</Dollar>
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/azLine46CentRound" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine48">
+      <Name>Form 140 line 48 subtotal of tax</Name>
+      <Description>Line 46 plus line 47. Credit recapture is zero.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/azLine46" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine52">
+      <Name>Form 140 line 52 balance of tax</Name>
+      <Description>Line 48 minus lines 49, 50, and 51, not below zero. The dependent tax credit, family income tax
+        credit, and Form 301 credits are zero. Dependents and the low-income credit region stop the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/azLine46" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/azWithholding">
+      <Name>This W-2's Arizona withholding</Name>
+      <Description>Box 17 when box 15 is Arizona (same state as the residence). A blank box 15 is in scope and
+        contributes zero. A box 15 for another state stops the return and contributes zero here.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../writableState" />
+                </IsComplete>
+                <Equal>
+                  <Left>
+                    <Dependency path="../writableState" />
+                  </Left>
+                  <Right>
+                    <Enum optionsPath="/incomeFormStateOptions">sameState</Enum>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../stateWithholding" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine53">
+      <Name>Form 140 line 53 Arizona income tax withheld</Name>
+      <Description>Sum of W-2 box 17 where box 15 is Arizona. The 2025 form prints "2025 AZ income tax withheld"; the
+        amount is this year's withholding.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/azWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine59">
+      <Name>Form 140 line 59 payments and refundable credits</Name>
+      <Description>Lines 54 through 58 are zero. Estimated payments, the extension, the increased excise tax credit,
+        the property tax credit, and other refundable credits are not calculated. This equals line 53.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/azLine53" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine60">
+      <Name>Form 140 line 60 tax due</Name>
+      <Description>Line 52 minus line 59 when line 52 is larger, otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/azLine52" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/azLine59" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine61">
+      <Name>Form 140 line 61 overpayment</Name>
+      <Description>Line 59 minus line 52 when line 59 is larger, otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/azLine59" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/azLine52" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLine63">
+      <Name>Form 140 line 63 balance of overpayment</Name>
+      <Description>Line 61 minus line 62. Nothing is applied to next year's estimated tax, so this equals line 61.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/azLine61" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azRefund">
+      <Name>Form 140 refund</Name>
+      <Description>Refund line: line 63 minus line 78. Voluntary contributions and the penalty on lines 64 through 78
+        are zero, so the refund equals line 63.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/azLine63" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azAmountOwed">
+      <Name>Form 140 amount owed</Name>
+      <Description>Amount owed: line 60 plus line 78. Line 78 is zero, so this equals line 60.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/azLine60" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/azZero">
+      <Name>Form 140 zero</Name>
+      <Description>Printed on lines this return does not calculate and on the exemption counts, which are zero because
+        those cases stop.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <!-- Stops. Each is complete false when this is not an Arizona return, and incomplete when the fact it depends on
+         has not been answered. -->
+
+    <Fact path="/azHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, tax-exempt interest, Social Security, a sale or capital gain, 1099-MISC, a 1099-R,
+        Schedule C, or Schedule E. Any of that income stops a Form 140. Adjustments that reduce AGI are not this
+        stop.</Description>
+      <Derived>
+        <Any>
+          <!-- An incomplete total income is not other income. A joint return's Social Security worksheet can stay
+               incomplete until the educator and dependent questions are answered, while the dollars are still wages. -->
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/totalIncome" />
+            </IsComplete>
+            <IsComplete>
+              <Dependency module="formW2s" path="/wages" />
+            </IsComplete>
+            <NotEqual>
+              <Left>
+                <Dependency module="income" path="/totalIncome" />
+              </Left>
+              <Right>
+                <Dependency module="formW2s" path="/wages" />
+              </Right>
+            </NotEqual>
+          </All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="interest" path="/taxExemptInterest" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="socialSecurity" path="/socialSecurityBenefits" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="form1099Rs" path="/form1099Rs" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azHasDependentsOrQualifyingPerson">
+      <Name>Dependents or a qualifying person</Name>
+      <Description>Anyone in the household, including a dependent or a qualifying parent, or a filer who is a
+        qualifying person for the child and dependent care credit. Form 140 lines 10, 11, 40, 41, and 49 are not
+        calculated.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="filers" path="/cdccQualifyingFilersCount" />
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azAgeOrBlind">
+      <Name>Age 65 or blind</Name>
+      <Description>Primary filer is 65 or older or blind. On a joint return, either spouse. Form 140 lines 38 and 39
+        are not calculated. The spouse is checked only on a joint return so a single return does not wait on the
+        spouse.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/primaryFiler/isBlind" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Any>
+              <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+              <Dependency module="filers" path="/secondaryFiler/isBlind" />
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azHasCharitableContributions">
+      <Name>Any charitable contribution</Name>
+      <Description>Cash gifts claimed with the standard deduction, or Schedule A gifts. Form 140 line 44 is not
+        calculated. An unanswered gift question is zero.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <Dependency module="charitableNonItemizer" path="/nonItemizerCashGifts" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="scheduleA" path="/scheduleACashGifts" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azLowIncome">
+      <Name>Federal AGI in the family or excise credit region</Name>
+      <Description>Single and line 12 is $12,500 or less, or joint and line 12 is $25,000 or less. The Family Income
+        Tax Credit and the Increased Excise Tax Credit are not calculated. Other filing statuses are not this stop.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            </When>
+            <Then>
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Left>
+                <Right>
+                  <Dependency path="/azLowIncomeLimitSingle" />
+                </Right>
+              </LessThanOrEqual>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Left>
+                <Right>
+                  <Dependency path="/azLowIncomeLimitMfj" />
+                </Right>
+              </LessThanOrEqual>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azFilingStatusUnsupported">
+      <Name>Filing status other than single or joint</Name>
+      <Description>The supported Form 140 is single, or married filing jointly with both spouses in Arizona all year.
+        Head of household, married filing separately, and qualifying surviving spouse are not calculated. The 2026
+        standard deduction for those statuses is not entered.</Description>
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzPartYearOrNonresident">
+      <Name>Flow knockout: Arizona part-year or nonresident</Name>
+      <Description>Form 140PY and Form 140NR are not calculated. Complete false when this is not an Arizona return.
+        Incomplete until /azResidencyStatus is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azResidencyIsPartYearOrNonresident" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azResidencyIsPartYearOrNonresident" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azResidencyIsPartYearOrNonresident" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzW2NotArizona">
+      <Name>Flow knockout: a W-2 box 15 is not Arizona</Name>
+      <Description>Any W-2 whose box 15 is a state other than Arizona. A blank box 15 is in scope and is not this
+        stop. Complete false when this is not an Arizona return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzOtherFederalIncome">
+      <Name>Flow knockout: income other than W-2 wages</Name>
+      <Description>Any federal income other than W-2 wages. Complete false when this is not an Arizona return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azHasOtherFederalIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azHasOtherFederalIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azHasOtherFederalIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzDependentsOrQualifyingPerson">
+      <Name>Flow knockout: dependents or a qualifying person</Name>
+      <Description>Lines 10, 11, 40, 41, and 49 are not calculated. Complete false when this is not an Arizona
+        return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azHasDependentsOrQualifyingPerson" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azHasDependentsOrQualifyingPerson" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azHasDependentsOrQualifyingPerson" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzAgeOrBlind">
+      <Name>Flow knockout: age 65 or blind</Name>
+      <Description>Lines 38 and 39 are not calculated. Complete false when this is not an Arizona return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azAgeOrBlind" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azAgeOrBlind" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azAgeOrBlind" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzItemizedDeductions">
+      <Name>Flow knockout: itemized deductions</Name>
+      <Description>Form 140 line 43 is the standard deduction only. Schedule A stops the return. Complete false when
+        this is not an Arizona return. Incomplete until the itemizing choice is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleA" path="/itemizesDeductions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzCharitableContributions">
+      <Name>Flow knockout: charitable contributions</Name>
+      <Description>Any charitable gift. Line 44 is not calculated. Complete false when this is not an Arizona return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azHasCharitableContributions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azHasCharitableContributions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azHasCharitableContributions" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzLowIncomeCredit">
+      <Name>Flow knockout: family income tax credit or increased excise tax credit region</Name>
+      <Description>Federal AGI at or under $12,500 single or $25,000 joint. Lines 50 and 56 are not calculated.
+        Complete false when this is not an Arizona return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azLowIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azLowIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azLowIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/azHasSchedule1A">
+      <Name>Federal Schedule 1-A line 44 is more than zero</Name>
+      <Description>Qualified tips, overtime, car-loan interest, or the senior deduction. Incomplete when line 44 is
+        incomplete, so the stop is incomplete rather than a silent no.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="schedule1A" path="/schedule1ALine44" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzSchedule1A">
+      <Name>Flow knockout: federal Schedule 1-A deduction</Name>
+      <Description>Any amount on federal Schedule 1-A line 44: qualified tips, overtime, car-loan interest, or the
+        senior deduction. Those deductions are below AGI, and Arizona's 2026 treatment of them is not pinned, so the
+        return stops instead of guessing. Complete false when this is not an Arizona return and when line 44 is
+        zero.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azHasSchedule1A" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azHasSchedule1A" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azHasSchedule1A" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutAzFilingStatus">
+      <Name>Flow knockout: filing status other than single or joint</Name>
+      <Description>Head of household, married filing separately, and qualifying surviving spouse are outside this
+        Form 140. Complete false when this is not an Arizona return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsAz" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/azFilingStatusUnsupported" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/azFilingStatusUnsupported" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/azFilingStatusUnsupported" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

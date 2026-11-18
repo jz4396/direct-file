@@ -195,6 +195,16 @@
       "url": "https://www.ncdor.gov/taxes-forms/individual-income-tax/tax-rate-schedules",
       "kind": "web"
     },
+    "ars-title-43": {
+      "title": "Arizona Revised Statutes Title 43",
+      "url": "https://www.azleg.gov/",
+      "kind": "statute"
+    },
+    "az-140-instr-2025": {
+      "title": "2025 Arizona Form 140 instructions (structure used for the 2026 return until the 2026 booklet is posted)",
+      "url": "https://azdor.gov/sites/default/files/document/FORMS_INDIVIDUAL_2025_140i.pdf",
+      "kind": "web"
+    },
     "i1040sc-dft": {
       "title": "2026 Instructions for Schedule C, draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
@@ -3958,6 +3968,95 @@
         {
           "source": "ncdor-nc-30",
           "quote": "The individual income tax rate for tax year 2026 is 3.99%."
+        }
+      ]
+    },
+    {
+      "fact": "/azStandardDeductionSingle",
+      "file": "azPit.xml",
+      "values": [
+        "Dollar:16100"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.14(1)",
+          "page": 18,
+          "quote": "Unmarried Individuals (other than Surviving Spouses and Heads of Households) (§ 1(j)(2)(C)): $16,100; Married Individuals Filing Separate Returns (§ 1(j)(2)(D)): $16,100",
+          "form": "table"
+        },
+        {
+          "source": "ars-title-43",
+          "section": "§ 43-1041(H)",
+          "url": "https://www.azleg.gov/ars/43/01041.htm",
+          "quote": "the department shall adjust the dollar amounts prescribed by subsection A, paragraphs 1, 2 and 3 of this section for inflation in the same manner in which the federal basic standard deduction is adjusted for inflation pursuant to section 63 of the internal revenue code."
+        }
+      ]
+    },
+    {
+      "fact": "/azStandardDeductionMfj",
+      "file": "azPit.xml",
+      "values": [
+        "Dollar:32200"
+      ],
+      "cite": [
+        {
+          "source": "rp-2025-32",
+          "section": "§4.14(1)",
+          "page": 18,
+          "quote": "Married Individuals Filing Joint Returns and Surviving Spouses (§ 1(j)(2)(A)): $32,200",
+          "form": "table"
+        },
+        {
+          "source": "ars-title-43",
+          "section": "§ 43-1041(H)",
+          "url": "https://www.azleg.gov/ars/43/01041.htm",
+          "quote": "the department shall adjust the dollar amounts prescribed by subsection A, paragraphs 1, 2 and 3 of this section for inflation in the same manner in which the federal basic standard deduction is adjusted for inflation pursuant to section 63 of the internal revenue code."
+        }
+      ]
+    },
+    {
+      "fact": "/azTaxRate",
+      "file": "azPit.xml",
+      "values": [
+        "Rational:25/1000"
+      ],
+      "cite": [
+        {
+          "source": "az-140-instr-2025",
+          "quote": "Multiply line 45 by 2.5% (.025) and enter the result."
+        },
+        {
+          "source": "ars-title-43",
+          "section": "§ 43-1011",
+          "url": "https://www.azleg.gov/ars/43/01011.htm",
+          "quote": "There shall be levied, collected and paid for each taxable year on the entire taxable income of every resident of this state"
+        }
+      ]
+    },
+    {
+      "fact": "/azLowIncomeLimitSingle",
+      "file": "azPit.xml",
+      "values": [
+        "Dollar:12500"
+      ],
+      "cite": [
+        {
+          "source": "az-140-instr-2025",
+          "quote": "If you are single or married filing a separate return, you may claim this credit if the amount on Form 140, page 1, line 12 is $12,500 or less."
+        }
+      ]
+    },
+    {
+      "fact": "/azLowIncomeLimitMfj",
+      "file": "azPit.xml",
+      "values": [
+        "Dollar:25000"
+      ],
+      "cite": [
+        {
+          "source": "az-140-instr-2025",
+          "quote": "If you are married filing a joint return, or a head of household, you may claim this credit if the amount on Form 140, page 1, line 12 is $25,000 or less."
         }
       ]
     }
