@@ -362,16 +362,18 @@ public final class PrintRefusingKnockouts {
             // Rev. Proc. 2025-32 §4.10 complete phaseout amount for a married individual filing a separate return
             // (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 17). Printing line 4 without it understates AMTI.
             "/flowKnockoutAmtMfsAddBack",
-            // Form 1099-DIV boxes this return does not compute (2c, 2d, 8-10, 14-16). Box 2b is unrecaptured section
-            // 1250 gain already inside box 2a and is Schedule D line 19. Box 2e and box 2f are section 897 portions of
-            // box 1a and box 2a (26 U.S.C. 897(a)) and are not added again. Box 6 is included in box 1a and is not
-            // deducted (26 U.S.C. 67(g)). A portion larger than its parent box is
-            // /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40 is
-            // /flowKnockoutPaDividendInvestmentExpenses. Box 12 is Form 1040 line 2a. Box 13 is Form 6251 line 2g.
-            // Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1,
-            // requires that none of the forms have an amount in box 2c (section 1202 gain) or box 2d (collectibles
-            // (28%) gain). An amount in box 2b makes Schedule D required. 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6),
-            // 1(h)(7). Printing only box 2a would drop boxes 2c and 2d.
+            // Form 1099-DIV boxes this return does not compute (2c, 8-10, 14-16). Box 2b is unrecaptured section
+            // 1250 gain already inside box 2a and is Schedule D line 19. Box 2d is collectibles (28%) gain already
+            // inside box 2a and is Schedule D line 18. Box 2e and box 2f are section 897 portions of box 1a and box
+            // 2a (26 U.S.C. 897(a)) and are not added again. Box 6 is included in box 1a and is not deducted
+            // (26 U.S.C. 67(g)). A portion larger than its parent box is
+            // /flowKnockoutDividendAmountsInconsistent. A box 2d greater than $0 with a Schedule D line 7 loss or a
+            // line 14 capital loss carryover is /flowKnockoutCollectibles28RateGainNetting. A nonzero box 6 on a
+            // PA-40 is /flowKnockoutPaDividendInvestmentExpenses. Box 12 is Form 1040 line 2a. Box 13 is Form 6251
+            // line 2g. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception
+            // 1, requires that none of the forms have an amount in box 2c (section 1202 gain). An amount in box 2b
+            // or box 2d makes Schedule D required. 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6), 1(h)(7). Printing only box
+            // 2a would drop box 2c.
             "/flowKnockoutDividendUnsupportedBoxes",
             // Box 3 above basis is capital gain. 26 U.S.C. 301(c)(3)(A). Form 1040 instr. (2025) p. 26, Nondividend
             // Distributions: "After you get back all of your cost (or other basis), you must report these
@@ -394,10 +396,15 @@ public final class PrintRefusingKnockouts {
             // a nominee, ordinary dividends that actually belong to someone else." The Part II subtraction is not
             // computed, so the nominee amount is not left in line 3b.
             "/flowKnockoutDividendNominee",
-            // Box 1b, box 2e, box 5, or box 6 larger than box 1a, or box 2f larger than box 2a. Each is a portion of
-            // that box (2026 draft Form 1099-DIV, Instructions for Recipient, PDF p. 5). Lines 3a, 3b, and 7a, and
-            // Schedule D line 13, are not computed from that form. An amount equal to the parent box still prints.
+            // Box 1b, box 2e, box 5, or box 6 larger than box 1a, or box 2b, box 2d, or box 2f larger than box 2a.
+            // Each is a portion of that box (2026 draft Form 1099-DIV, Instructions for Recipient, PDF p. 5). Lines
+            // 3a, 3b, and 7a, and Schedule D line 13, are not computed from that form. An amount equal to the parent
+            // box still prints.
             "/flowKnockoutDividendAmountsInconsistent",
+            // 28% Rate Gain Worksheet lines 5 and 6. A Form 1099-DIV box 2d greater than $0 with a Schedule D line 7
+            // loss or a line 14 capital loss carryover. Those losses are not netted against the collectibles gain.
+            // 2025 Instructions for Schedule D p. 11. 26 U.S.C. 1(h)(4), 1(h)(5).
+            "/flowKnockoutCollectibles28RateGainNetting",
             // 1099-INT box 9 larger than box 8. Instructions for Form 1099-INT, box 9: "This amount is included in
             // box 8." 26 U.S.C. 57(a)(5). Form 6251 line 2g is not filed from that form.
             "/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8",

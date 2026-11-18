@@ -347,9 +347,11 @@
         Statement (3) is scheduleE /flowKnockoutScheduleEPartIIIBox12CodesBThroughI: codes B through I stop the return,
         so a filed return has no box 12 code B, C, D, E, or F and uses the regular tax amounts. Under (2) only AMT
         QDCG worksheet lines 2-4 are needed, and they don't depend on line 1, so line 13 is still scheduleD3
-        /qdcgLine4 when the QDCG worksheet applies. When the Schedule D Tax Worksheet applies, line 13 is that
-        worksheet's line 13, line 14 is Schedule D line 19, and lines 35-37 compute the 25% slice. Form 2555 is not
-        collected. Tested in dividends.test.ts. 26 U.S.C. 55(b)(3).</Description>
+        /qdcgLine4 when the QDCG worksheet applies.         When the Schedule D Tax Worksheet applies, line 13 is that
+        worksheet's line 13, line 14 is Schedule D line 19, and lines 35-37 compute the 25% slice. Worksheet line 13
+        excludes the 28% rate gain (Schedule D line 18). That gain is not given its own Part III rate: it stays in
+        line 17 and is taxed at 26% or 28% on line 18, which is the Part III 28% line. Form 2555 is not collected.
+        Tested in dividends.test.ts. 26 U.S.C. 55(b)(3), 1(h)(4).</Description>
       <Derived>
         <Any>
           <Dependency module="scheduleD3" path="/usesQdcgTaxWorksheet" />
@@ -372,6 +374,10 @@
         Schedule D Tax Worksheet in the Instructions for Schedule D (Form 1040), whichever applies (as refigured for
         the AMT, if necessary)." No AMT refiguring is needed in scope (no AMT basis adjustments), so this is the
         regular-tax amount: scheduleD3 /schDTaxWsLine13 when /usesScheduleDTaxWorksheet, otherwise /qdcgLine4.
+        Worksheet line 13 is line 10 minus the 28% rate gain (and the unrecaptured section 1250 gain, which line 14
+        adds back). The 28% gain is therefore not in this line. Line 15 caps the preferential amount at worksheet
+        line 10, which does not pull the 28% gain back in. It is taxed on line 18 at 26% or 28%. 26 U.S.C. 55(b)(3),
+        1(h)(1)(F), 1(h)(4).
       </Description>
       <Derived>
         <Switch>
@@ -477,7 +483,8 @@
         (2025), https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23, Rounding Off to Whole Dollars: "If you do round to
         whole dollars, you must round all amounts." Every other amount on this return is whole dollars, so Part III is
         too; line 38 then adds the amounts as entered on lines 18, 31 and 34, and line 40 compares the entered lines 38
-        and 39.</Description>
+        and 39. The 28% rate gain (Schedule D line 18) is excluded from line 13 and is not added back on line 15, so
+        it is inside line 17 and taxed at 26% or 28% on this line. 26 U.S.C. 1(h)(1)(F), 1(h)(4).</Description>
       <TaxYear>2026</TaxYear>
       <Derived>
         <Round>

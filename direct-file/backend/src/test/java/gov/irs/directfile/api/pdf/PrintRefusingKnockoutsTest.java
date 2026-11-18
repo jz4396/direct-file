@@ -122,8 +122,8 @@ class PrintRefusingKnockoutsTest {
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
     /**
-     * Form 1099-DIV boxes 2b-2d, 8-10 and 14-16, including section 1202 and collectibles. Box 11 (FATCA) asks Form
-     * 8938 and is not this stop. Boxes 2e, 2f and 6 are portions of box 1a or 2a. Box 13 is line 2g.
+     * Form 1099-DIV boxes 2c, 8-10 and 14-16, including section 1202 gain. Boxes 2b and 2d are supported. Box 11
+     * (FATCA) asks Form 8938 and is not this stop. Boxes 2e, 2f and 6 are portions of box 1a or 2a. Box 13 is line 2g.
      */
     static final String DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT = "/flowKnockoutDividendUnsupportedBoxes";
     /** 26 U.S.C. 301(c)(3)(A): box 3 above basis, reported on Form 8949. */
@@ -136,8 +136,10 @@ class PrintRefusingKnockoutsTest {
     static final String DIVIDEND_FOREIGN_TAX_KNOCKOUT = "/flowKnockoutDividendForeignTaxPaid";
     /** Nominee ordinary dividends. The Schedule B Part II subtraction is not computed. */
     static final String DIVIDEND_NOMINEE_KNOCKOUT = "/flowKnockoutDividendNominee";
-    /** Box 1b or box 5 larger than box 1a. */
+    /** Box 1b or box 5 larger than box 1a, or box 2b, 2d, or 2f larger than box 2a. */
     static final String DIVIDEND_INCONSISTENT_KNOCKOUT = "/flowKnockoutDividendAmountsInconsistent";
+    /** Box 2d greater than $0 with a Schedule D line 7 loss or a line 14 capital loss carryover. */
+    static final String COLLECTIBLES_28_RATE_GAIN_NETTING_KNOCKOUT = "/flowKnockoutCollectibles28RateGainNetting";
     /** 1099-INT box 9 larger than box 8. 26 U.S.C. 57(a)(5). */
     static final String PAB_INTEREST_EXCEEDS_BOX_8 = "/flowKnockoutSpecifiedPrivateActivityBondInterestExceedsBox8";
     /** 1099-DIV box 13 larger than box 12. 26 U.S.C. 57(a)(5). */
@@ -272,13 +274,14 @@ class PrintRefusingKnockoutsTest {
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 (not lines 2g and 2j)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
-                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2b-2d, 8-10, 14-16 (not box 11)
+                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2c, 8-10, 14-16 (not boxes 2b, 2d, or 11)
                 DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
                 DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
                 DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT, // box 5 that is not a qualified REIT dividend
                 DIVIDEND_FOREIGN_TAX_KNOCKOUT, // box 7 that needs Form 1116
                 DIVIDEND_NOMINEE_KNOCKOUT, // nominee dividends
-                DIVIDEND_INCONSISTENT_KNOCKOUT, // box 1b, 2e, 5, or 6 larger than box 1a, or box 2f larger than box 2a
+                DIVIDEND_INCONSISTENT_KNOCKOUT, // box 1b, 2e, 5, or 6 larger than box 1a, or box 2b, 2d, or 2f larger than box 2a
+                COLLECTIBLES_28_RATE_GAIN_NETTING_KNOCKOUT, // box 2d with a line 7 loss or a line 14 carryover
                 PAB_INTEREST_EXCEEDS_BOX_8, // 1099-INT box 9 larger than box 8
                 PAB_DIVIDENDS_EXCEED_BOX_12, // 1099-DIV box 13 larger than box 12
                 WASHINGTON_CAPITAL_GAINS_KNOCKOUT)); // RCW 82.87.060(1): WA long-term gain over $250,000
@@ -294,7 +297,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(96, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(97, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -1319,6 +1322,7 @@ class PrintRefusingKnockoutsTest {
             DIVIDEND_FOREIGN_TAX_KNOCKOUT,
             DIVIDEND_NOMINEE_KNOCKOUT,
             DIVIDEND_INCONSISTENT_KNOCKOUT,
+            COLLECTIBLES_28_RATE_GAIN_NETTING_KNOCKOUT,
             PAB_DIVIDENDS_EXCEED_BOX_12,
             SCHEDULE_B_PART_III_PRINT_REFUSE);
 

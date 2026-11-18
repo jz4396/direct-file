@@ -521,13 +521,16 @@
 
     <Fact path="/unrecaptured1250WsLine17">
       <Name>Unrecaptured Section 1250 Gain Worksheet line 17</Name>
-      <Description>2026 draft Instructions for Schedule D, Unrecaptured Section 1250 Gain Worksheet lines 14 through
-        17. Line 14 is the 28% Rate Gain Worksheet, which is $0 because section 1202 gain, collectibles, and Form
-        1099-DIV boxes 2c and 2d still stop. Line 15 is the loss on Schedule D line 7, entered as a negative amount,
-        or $0 when line 7 is zero or a gain. Line 16 is the long-term capital loss carryover from Schedule D line 14,
-        entered as a negative amount. Schedule K-1 (Form 1041) box 11 code D stops, so it is not added. Line 17 is
-        the loss from combining those lines, entered as a positive amount, or $0 when the combination is zero or a
-        gain. With line 14 at $0 that positive amount is a Schedule D line 7 loss, if any, plus Schedule D line 14.
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf, Unrecaptured
+        Section 1250 Gain Worksheet lines 14 through 17. Line 14 is lines 1 through 4 of the 28% Rate Gain Worksheet.
+        On a supported return that is Form 1099-DIV box 2d (a gain) or $0. Section 1202 gain and a sale of a
+        collectible still stop. Line 15 is the loss on Schedule D line 7, entered as a negative amount, or $0 when
+        line 7 is zero or a gain. Line 16 is the long-term capital loss carryover from Schedule D line 14, entered as
+        a negative amount. Schedule K-1 (Form 1041) box 11 code D stops, so it is not added. Line 17: "If the result
+        is a (loss), enter it as a positive amount. If the result is zero or a gain, enter -0-." A box 2d gain with a
+        line 7 loss or a line 14 carryover stops at /flowKnockoutCollectibles28RateGainNetting, so this line is not
+        asked to net that gain against a loss. With no such loss the combination is zero or a gain and this line is
+        the Schedule D line 7 loss, if any, plus Schedule D line 14.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -566,6 +569,117 @@
             </Subtrahends>
           </Subtract>
         </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/rateGainWsLine4">
+      <Name>28% Rate Gain Worksheet line 4</Name>
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 11, 28% Rate Gain
+        Worksheet line 4: "Enter the total of any collectibles gain reported to you on: Form 1099-DIV, box 2d; Form
+        2439, box 1d; and Schedule K-1 from a partnership, S corporation, estate, or trust." On a supported return the
+        only source is Form 1099-DIV box 2d (dividends /totalCollectibles28RateGain), in whole dollars. Form 2439 and
+        Schedule K-1 collectibles gain still stop: a sale of a collectible is scheduleD /flowKnockoutCollectibles, and
+        Schedule K-1 (Form 1065) box 9b and Schedule K-1 (Form 1120-S) box 8b are scheduleE
+        /scheduleEK1s/*/hasOtherK1Amount. Lines 1 through 3 are $0 on that path. 26 U.S.C. 1(h)(4), 1(h)(5).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Dependency module="dividends" path="/totalCollectibles28RateGain" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/rateGainWsLine7">
+      <Name>28% Rate Gain Worksheet line 7</Name>
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 11, 28% Rate Gain
+        Worksheet line 7: "Combine lines 1 through 6. If zero or less, enter -0-. If more than zero, also enter this
+        amount on Schedule D, line 18." Lines 1 through 3 are $0 (section 1202 gain and collectibles reported on Form
+        8949 or Forms 4684, 6252, 6781 and 8824 still stop). Line 4 is /rateGainWsLine4. Line 5 is the long-term
+        capital loss carryover from Schedule D line 14, and line 6 is a loss on Schedule D line 7. A box 2d greater
+        than $0 with either of those stops at /flowKnockoutCollectibles28RateGainNetting, so they are not subtracted
+        here. On a return that is not stopped, line 7 equals line 4. 26 U.S.C. 1(h)(1)(F).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/rateGainWsLine4" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleDLine18">
+      <Name>Schedule D line 18 — 28% rate gain</Name>
+      <Description>2026 draft Schedule D line 18 and 2025 Instructions for Schedule D, 28% Rate Gain Worksheet line 7.
+        Entered only when line 17 is Yes (lines 15 and 16 are both gains). Otherwise the form skips lines 18 through
+        21 and this line is $0. 26 U.S.C. 1(h)(1)(F), 1(h)(4), 1(h)(5). Not added to line 15: Form 1099-DIV box 2d is
+        already inside box 2a. No ExportZero: the form says "if any," so a zero prints blank.</Description>
+      <Export downstreamFacts="true" mef="true" />
+      <Derived>
+        <!-- IsComplete first so an unanswered capital-assets screener (line 17 still incomplete) yields a complete
+             $0. All is complete and false as soon as IsComplete is false, so this does not depend on line 7. -->
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleDLine17Yes" />
+                </IsComplete>
+                <Dependency path="/scheduleDLine17Yes" />
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/rateGainWsLine7" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutCollectibles28RateGainNetting">
+      <Name>Knockout: box 2d with a capital loss the 28% Rate Gain Worksheet would net</Name>
+      <Description>2025 Instructions for Schedule D, https://www.irs.gov/pub/irs-pdf/i1040sd.pdf p. 11, 28% Rate Gain
+        Worksheet lines 5 and 6. Line 5 is the long-term capital loss carryover from Schedule D line 14 (Schedule K-1
+        (Form 1041) box 11 code D still stops and is not added). Line 6 is a loss on Schedule D line 7. Those lines
+        reduce collectibles gain before it is entered on Schedule D line 18. They are not computed. True when Form
+        1099-DIV box 2d (dividends /totalCollectibles28RateGain) is more than $0 and Schedule D line 7 is a loss or
+        Schedule D line 14 is more than $0. The box 2d total is tested first, so this fact is complete and false when
+        box 2d is $0 even if Schedule D line 7 is still incomplete. 26 U.S.C. 1(h)(4), 1(h)(5).</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="dividends" path="/totalCollectibles28RateGain" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Any>
+            <LessThan>
+              <Left>
+                <Dependency path="/scheduleDLine7" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </LessThan>
+            <GreaterThan>
+              <Left>
+                <Dependency path="/scheduleDLine14" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </Any>
+        </All>
       </Derived>
     </Fact>
 
@@ -608,18 +722,29 @@
 
     <Fact path="/scheduleDLine20Yes">
       <Name>Schedule D line 20 Yes: lines 18 and 19 zero or blank, no Form 4952</Name>
-      <Description>Checked when line 17 is Yes, line 19 is not more than zero, and every other input that can put an
-        amount on line 18 or line 19 is complete and false. Line 18 (28% rate gain, 26 U.S.C. 1(h)(4)): collectibles
-        gain (scheduleD /flowKnockoutCollectibles) and section 1202 gain (scheduleD /flowKnockoutForm8949CodeQ). Other
-        unrecaptured section 1250 gain (scheduleD /flowKnockoutUnrecaptured1250Gain) and Form 1099-DIV boxes 2c, 2d,
+      <Description>Checked when line 17 is Yes, lines 18 and 19 are not more than zero, and every other input that
+        can put an amount on line 18 or line 19 is complete and false. Line 18 (28% rate gain, 26 U.S.C. 1(h)(4) and
+        1(h)(5)) is Form 1099-DIV box 2d after the 28% Rate Gain Worksheet (/scheduleDLine18). A sale of a collectible
+        (scheduleD /flowKnockoutCollectibles) and section 1202 gain (scheduleD /flowKnockoutForm8949CodeQ) still stop.
+        Other unrecaptured section 1250 gain (scheduleD /flowKnockoutUnrecaptured1250Gain) and Form 1099-DIV boxes 2c,
         8-10, and 14-16 (dividends /flowKnockoutDividendUnsupportedBoxes) still stop. Form 1099-DIV box 2b is Schedule
-        D line 19. When that line is more than zero, line 20 No is checked and tax is figured on the Schedule D Tax
-        Worksheet (scheduleD3 /usesScheduleDTaxWorksheet). When line 19 is zero, tax is figured on the Qualified
+        D line 19. When line 18 or line 19 is more than zero, line 20 No is checked and tax is figured on the Schedule
+        D Tax Worksheet (scheduleD3 /usesScheduleDTaxWorksheet). When both are zero, tax is figured on the Qualified
         Dividends and Capital Gain Tax Worksheet, matching this box. Form 4952 is never filed: investment interest
         stops the return.</Description>
       <Derived>
         <All>
           <Dependency path="/scheduleDLine17Yes" />
+          <Not>
+            <GreaterThan>
+              <Left>
+                <Dependency path="/scheduleDLine18" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </Not>
           <Not>
             <GreaterThan>
               <Left>
@@ -661,20 +786,31 @@
     <Fact path="/scheduleDLine20No">
       <Name>Schedule D line 20 No: use the Schedule D Tax Worksheet</Name>
       <Description>2026 draft Schedule D line 20: "Are lines 18 and 19 both zero or blank and you are not filing Form
-        4952?" No when line 17 is Yes and line 18 or line 19 is more than zero. Line 18 stays zero because section
-        1202 gain and collectibles still stop. Form 4952 still stops. So this box is line 19 more than zero.
+        4952?" No when line 17 is Yes and line 18 or line 19 is more than zero. Line 18 is the 28% rate gain from
+        Form 1099-DIV box 2d. Line 19 is unrecaptured section 1250 gain from box 2b. Section 1202 gain and a sale of
+        a collectible still stop. Form 4952 still stops.
       </Description>
       <Derived>
         <All>
           <Dependency path="/scheduleDLine17Yes" />
-          <GreaterThan>
-            <Left>
-              <Dependency path="/scheduleDLine19" />
-            </Left>
-            <Right>
-              <Dollar>0</Dollar>
-            </Right>
-          </GreaterThan>
+          <Any>
+            <GreaterThan>
+              <Left>
+                <Dependency path="/scheduleDLine18" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+            <GreaterThan>
+              <Left>
+                <Dependency path="/scheduleDLine19" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </GreaterThan>
+          </Any>
         </All>
       </Derived>
     </Fact>
