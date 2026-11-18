@@ -15,7 +15,7 @@ direct-file/df-client	js-yaml	high	1123911,1138115,1193727
 direct-file/df-client	lodash	high	1115806
 direct-file/df-client	minimatch	high	1113459,1113461,1113465,1113538,1113540,1113544,1113546,1113548,1113552
 direct-file/df-client	nanoid	high	1138811,1139427,1153189
-direct-file/df-client	picomatch	high	1115552
+direct-file/df-client	picomatch	high	1115552,1247710
 direct-file/df-client	postcss	high	1124252,1139510
 direct-file/df-client	react-router	high	via:@remix-run/router
 direct-file/df-client	react-router-dom	high	via:@remix-run/router,via:react-router

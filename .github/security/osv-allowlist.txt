@@ -76,6 +76,8 @@ direct-file/df-client/package-lock.json	GHSA-c8p4-j97h-3vg8	npm	happy-dom	15.10.
 direct-file/df-client/package-lock.json	GHSA-f65p-4m7j-42xc	npm	fast-uri	3.0.3
 direct-file/df-client/package-lock.json	GHSA-f886-m6hf-6m8v	npm	brace-expansion	1.1.11
 direct-file/df-client/package-lock.json	GHSA-f886-m6hf-6m8v	npm	brace-expansion	2.0.1
+# GHSA-fc5q-39xc-vjpf picomatch single-branch extglob ReDoS; no release past 4.0.7. Lockfile unchanged.
+direct-file/df-client/package-lock.json	GHSA-fc5q-39xc-vjpf	npm	picomatch	2.3.1
 direct-file/df-client/package-lock.json	GHSA-fj3w-jwp8-x2g3	npm	fast-xml-parser	4.4.1
 direct-file/df-client/package-lock.json	GHSA-fx2h-pf6j-xcff	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-fxqj-rqcc-2cmp	npm	postcss	8.4.47
