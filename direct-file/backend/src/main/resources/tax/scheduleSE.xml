@@ -1515,6 +1515,77 @@
       </Derived>
     </Fact>
 
+    <Fact path="/secondaryFilerSeReportedNetProfit">
+      <Name>Secondary filer: Schedule SE line 2 as reported</Name>
+      <Description>
+        2026 draft Schedule SE, line 2: "Skip line 2 if you use the nonfarm optional method." When
+        /secondaryFilerNonfarmOptionalMethodApplies is true, line 2 is $0. Otherwise this is the secondary
+        filer's Schedule C net profit or (loss), which can be a loss. 2026 Instructions for Schedule SE
+        (https://www.irs.gov/instructions/i1040sse, SHA-256 prefix 7054fa6c86d89301), p. 2: each spouse files
+        a separate Schedule SE. This is the amount printed on that spouse's Schedule SE. The tax uses
+        /secondaryFilerSeNetProfit, which floors a loss at $0 after subtracting notary net profit.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerSeReportedLine3">
+      <Name>Secondary filer: Schedule SE line 3 as reported</Name>
+      <Description>
+        2026 draft Schedule SE, line 3: "Combine lines 1a, 1b, and 2." Notary net profit is subtracted (26
+        U.S.C. 1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2). When
+        /secondaryFilerNonfarmOptionalMethodApplies is true, line 2 is skipped and line 3 is $0. Otherwise
+        this is /secondaryFilerSeReportedNetProfit minus /scheduleCSecondaryFilerNotaryNetProfit. The tax
+        chain keeps the floored /secondaryFilerSeNetProfit.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/secondaryFilerSeReportedNetProfit" />
+                </Minuend>
+                <Subtrahends>
+                  <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNotaryNetProfit" />
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/secondaryFilerSeReportedLine4a">
       <Name>Secondary filer: Schedule SE line 4a as reported</Name>
       <Description>
@@ -1568,6 +1639,46 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerSeLine16">
+      <Name>Secondary filer: Schedule SE Part II line 16</Name>
+      <Description>
+        2026 draft Schedule SE, PDF p. 3, line 16: "Subtract line 15 from line 14." Line 15 is $0 and
+        line 14 is /seOptionalMethodMaximumIncome ($7,560) when the nonfarm optional method applies.
+        Otherwise $0, printed blank. Same rule as /primaryFilerSeLine16, on this spouse's Schedule SE.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/secondaryFilerNonfarmOptionalMethodApplies" />
+            </When>
+            <Then>
+              <Dependency path="/seOptionalMethodMaximumIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerSeLine17">
+      <Name>Secondary filer: Schedule SE Part II line 17</Name>
+      <Description>
+        Line 17 when the nonfarm optional method applies; otherwise $0. The same amount is line 4b.
+        2026 draft Schedule SE, PDF p. 3, line 17: "Also, include this amount on line 4b above."
+      </Description>
+      <Derived>
+        <Dependency path="/secondaryFilerSeLine4b" />
       </Derived>
     </Fact>
 
@@ -1644,6 +1755,65 @@
             <Dependency module="formW2s" path="/secondaryFilerW2s/*/oasdiTips" />
           </CollectionSum>
         </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerScheduleSELine8a">
+      <Name>Secondary filer: Schedule SE line 8a</Name>
+      <Description>
+        This spouse's Schedule SE line 8a: W-2 box 3 (/secondaryFilerOasdiWagesTotal) plus box 7
+        (/secondaryFilerOasdiTipsTotal). 26 U.S.C. 1402(b)(1)
+        (https://www.law.cornell.edu/uscode/text/26/1402#b_1) reduces the contribution and benefit base by
+        "the amount of the wages paid to such individual", so the primary filer's wages are not on this
+        line. 2026 Instructions for Schedule SE (https://www.irs.gov/instructions/i1040sse, SHA-256 prefix
+        7054fa6c86d89301), p. 2: each spouse files a separate Schedule SE. Printed on the spouse's Schedule
+        SE. The tax uses /secondaryFilerSeRemainingSocialSecurityWageBase, which subtracts the same wages
+        and tips from the $184,500 base (90 FR 49047, p. 49050).
+      </Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/secondaryFilerOasdiWagesTotal" />
+            <Dependency path="/secondaryFilerOasdiTipsTotal" />
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/secondaryFilerScheduleSELine8d">
+      <Name>Secondary filer: Schedule SE line 8d</Name>
+      <Description>
+        Line 8d on the spouse's Schedule SE: "Add lines 8a, 8b, and 8c." Lines 8b and 8c are blank on a
+        return this tool files, so line 8d equals line 8a. Line 8a says to skip lines 8b through 10 when it
+        is at least the TY2026 wage base (/socialSecurityWageBaseTy2026, $184,500; 90 FR 49047, p. 49050;
+        26 U.S.C. 1402(b)(1)), so line 8d is $0 (printed blank) in that case. Same rule as /scheduleSELine8d.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="/secondaryFilerScheduleSELine8a" />
+                </Left>
+                <Right>
+                  <Dependency path="/socialSecurityWageBaseTy2026" />
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/secondaryFilerScheduleSELine8a" />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -2703,8 +2873,9 @@
         Interview complete when there is no Schedule C and no nonzero Form 1065 box 14 code A, or when
         Schedule C is finished, header lines A through F, H, and I are answered on every business, line J is
         answered when line I is yes, the Schedule SE
-        out-of-scope questions are answered, church employee income on line 5a is complete, and the
-        nonfarm optional method is not stopped for eligibility. A yes on /hadChurchEmployeeIncome is
+        out-of-scope questions are answered, church employee income on line 5a is complete, the
+        nonfarm optional method is not stopped for eligibility, and the qualified joint venture question
+        is answered when a joint return has exactly one spouse-owned business. A yes on /hadChurchEmployeeIncome is
         complete only after /churchEmployeeIncome is entered. On a joint return,
         /hadSecondaryFilerChurchEmployeeIncome must be answered. A yes stops the section: that income
         is not entered on the primary filer's line 5a. 26 U.S.C. 3121(w), 1402(b), and 1402(j). The
@@ -2769,6 +2940,7 @@
                 <Not>
                   <Dependency module="scheduleC" path="/scheduleCHeaderBlocksSection" />
                 </Not>
+                <Dependency module="scheduleC" path="/scheduleCQualifiedJointVentureAnswered" />
               </All>
             </Then>
           </Case>

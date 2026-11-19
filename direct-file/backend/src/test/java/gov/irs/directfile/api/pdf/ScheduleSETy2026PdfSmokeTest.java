@@ -86,6 +86,39 @@ class ScheduleSETy2026PdfSmokeTest {
     }
 
     /**
+     * Joint return: primary W-2 $80,000 (boxes 1, 3, and 5) with $8,000 withheld, spouse Schedule C net $20,000.
+     * Group-00 test SSNs. Florida, so the community-property stop is not true. The spouse is not electing a
+     * qualified joint venture.
+     */
+    static Map<String, String> spouseOwnedScheduleC() {
+        String spouse = "859c03d1-af4a-447f-96aa-d19397048a48";
+        Map<String, String> m = selfEmployed("80000.00", "80000.00", "20000.00");
+        m.put("/formW2s/#" + W2 + "/writableFederalWithholding", dollar("8000.00"));
+        m.put("/filingStatus", PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("marriedFilingJointly", "/filingStatusOptions"));
+        m.put("/maritalStatus", PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("married", "/maritalStatusOptions"));
+        m.put("/filerResidenceAndIncomeState", PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("fl", "/scopedStateOptions"));
+        m.put("/scheduleCIsQualifiedJointVenture", bool(false));
+        m.put("/hadSecondaryFilerChurchEmployeeIncome", bool(false));
+        m.put("/livedTogetherAllYearWithSpouse", bool(true));
+        m.put("/MFJRequiredToFile", bool(true));
+        m.put("/MFJDependentsFilingForCredits", bool(false));
+        String s = "/filers/#" + spouse + "/";
+        m.put(s + "firstName", string("Blair"));
+        m.put(s + "writableMiddleInitial", string("R"));
+        m.put(s + "lastName", string(Ty2026PdfPackageTest.LAST_NAME));
+        m.put(s + "tin", PaPit40ScheduleSpTy2026PdfSmokeTest.tin("900", "00", "0002"));
+        m.put(s + "dateOfBirth", PaPit40ScheduleSpTy2026PdfSmokeTest.day("1987-06-06"));
+        m.put(s + "isUsCitizenFullYear", bool(true));
+        m.put(s + "isBlind", bool(false));
+        m.put(s + "isDisabled", bool(false));
+        m.put(s + "isStudent", bool(false));
+        m.put(s + "occupation", string("writer"));
+        m.put(s + "canBeClaimed", bool(false));
+        m.put("/scheduleCBusinesses/#" + BIZ + "/filer", collectionItem(spouse));
+        return m;
+    }
+
+    /**
      * The Form 8995 questions for one Schedule C business: the filer materially participates, has no prior-year
      * qualified business loss carryforward and is not a cooperative patron (26 U.S.C. 199A(c)(2), 199A(g)). Also the
      * Schedule SE questions answered no (26 U.S.C. 1402(a), 1402(c)(1), 1402(e), 1402(g), 1402(j), 1402(l)), so lines
@@ -98,6 +131,7 @@ class ScheduleSETy2026PdfSmokeTest {
         // Answered no: Schedule SE lines 1a, 1b, 4b, 5a, 5b, checkbox A, and 8c stay blank.
         m.put("/hadFarmSelfEmploymentIncome", bool(false));
         m.put("/hadChurchEmployeeIncome", bool(false));
+        m.put("/hadSecondaryFilerChurchEmployeeIncome", bool(false));
         m.put("/usesSeOptionalMethod", bool(false));
         m.put("/hasMinisterOrSeExemption", bool(false));
         m.put("/hasNotarySeExclusion", bool(false));
@@ -439,6 +473,52 @@ class ScheduleSETy2026PdfSmokeTest {
                 }
             }
             assertEquals(expected.size(), mapped, "every expected field is mapped");
+        }
+    }
+
+    /**
+     * One spouse-owned Schedule C on a joint return prints under the spouse's name and SSN, and that spouse's
+     * Schedule SE uses only the spouse's own wage base. Primary W-2 $80,000, withholding $8,000, spouse net
+     * $20,000. 2026 Instructions for Schedule SE, p. 2. 26 U.S.C. 1402(b)(1). The spouse has no W-2, so line 8a
+     * is blank and line 10 is the full 12.4%. Owes $1,851.
+     */
+    @Test
+    void spouseScheduleCPrintsTheSpousesOwnScheduleCAndScheduleSE() throws Exception {
+        byte[] bytes = generate(spouseOwnedScheduleC());
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, "Schedule C (Form 1040) 2026");
+            assertTrue(value(sc, "Page1[0].f1_1[0]").toUpperCase().contains("BLAIR"), "Schedule C proprietor");
+            assertEquals("900000002", value(sc, "Page1[0].f1_2[0]").replaceAll("\\D", ""), "Schedule C SSN");
+            amount(sc, "Page1[0].f1_51[0]", 20000, "Schedule C line 31");
+
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertTrue(value(se, "Page1[0].f1_1[0]").toUpperCase().contains("BLAIR"), "Schedule SE name");
+            assertEquals("900000002", value(se, "Page1[0].f1_2[0]").replaceAll("\\D", ""), "Schedule SE SSN");
+            amount(se, "Page1[0].f1_5[0]", 20000, "2");
+            amount(se, "Page1[0].f1_7[0]", 18470, "4a");
+            blank(se, "Page1[0].f1_14[0]", "8a (spouse has no W-2)");
+            amount(se, "Page1[0].f1_19[0]", 2290, "10");
+            amount(se, "Page1[0].f1_20[0]", 536, "11");
+            amount(se, "Page1[0].f1_21[0]", 2826, "12");
+            amount(se, "Page1[0].f1_22[0]", 1413, "13");
+
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "Page1[0].f1_07[0]", 20000, "Schedule 1 line 3");
+            amount(s1, "Page2[0].f2_05[0]", 1413, "Schedule 1 line 15");
+            Map<String, String> s2 = fieldsOnPages(doc, "Schedule 2 (Form 1040) 2026");
+            amount(s2, "Page1[0].f1_15[0]", 2826, "Schedule 2 line 4");
+
+            Map<String, String> f8995 = fieldsOnPages(doc, "Form 8995 (2026)");
+            amount(f8995, "Table[0].Row1i[0].f1_5[0]", 18587, "Form 8995 line 1(i)(c)");
+            amount(f8995, "Page1[0].f1_21[0]", 3717, "line 5 = round(18,587 x 20%)");
+            amount(f8995, "Page1[0].f1_27[0]", 66387, "line 11");
+            amount(f8995, "Page1[0].f1_30[0]", 13277, "line 14 = round(66,387 x 20%)");
+            amount(f8995, "Page1[0].f1_33[0]", 3717, "line 17");
+
+            Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
+            amount(f1040, "Page1[0].f1_75[0]", 98587, "AGI");
+            amount(f1040, "Page2[0].f2_17[0]", 9851, "total tax");
+            amount(f1040, "Page2[0].f2_40[0]", 1851, "balance due");
         }
     }
 }

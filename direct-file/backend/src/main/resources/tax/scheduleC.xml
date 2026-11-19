@@ -680,16 +680,18 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCSpouseBusiness">
-      <Name>Knockout: spouse-owned Schedule C business</Name>
+      <Name>Knockout: more than one spouse-owned Schedule C, or a spouse business off a joint return</Name>
       <Description>
-        Schedule SE is figured per filer (scheduleSE /secondaryFilerSelfEmploymentTax, with that spouse's own
-        OASDI base under 26 U.S.C. 1402(b)(1)) and Schedule 2 line 4, Schedule 1 line 15 and Form 8959 line 13
-        combine
-        both. A secondary filer's business still stops the return until the rest of that spouse's path is
-        per spouse:
-        EITC and CDCC earned income with self-employment (Form 2441 lines 4 and 5 are per spouse), and
-        the printed return
-        has no Schedule SE form yet (one per spouse once it does).
+        One secondary-filer business is allowed on a joint return. That spouse files their own Schedule C and
+        their own Schedule SE (scheduleSE /secondaryFilerSelfEmploymentTax). 2026 Instructions for Schedule SE
+        (https://www.irs.gov/instructions/i1040sse, SHA-256 prefix 7054fa6c86d89301), p. 2: "If both spouses have
+        self-employment income, each must file a separate Schedule SE." Line 8a of that Schedule SE is only the
+        spouse's own W-2 boxes 3 and 7 (26 U.S.C. 1402(b)(1),
+        https://www.law.cornell.edu/uscode/text/26/1402#b_1). Schedule 1 lines 3 and 15, Schedule 2 line 4, Form
+        8959, and Form 8995 combine both spouses. Still stopped: more than one business owned by the secondary
+        filer, and any secondary-filer business on a return that is not married filing jointly (that net is not
+        reported on a Schedule SE). A qualified joint venture and a community-property state stop on the facts
+        below. EITC, CDCC, and ACTC cases stay on /flowKnockoutScheduleCEarnedIncomeCredits.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -707,9 +709,6 @@
           </Case>
           <Case>
             <When>
-              <True />
-            </When>
-            <Then>
               <GreaterThan>
                 <Left>
                   <CollectionSize>
@@ -717,9 +716,289 @@
                   </CollectionSize>
                 </Left>
                 <Right>
-                  <Int>0</Int>
+                  <Int>1</Int>
                 </Right>
               </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCIsQualifiedJointVenture">
+      <Name>Electing qualified joint venture treatment</Name>
+      <Description>
+        Yes when the spouses elect under 26 U.S.C. 761(f)
+        (https://www.law.cornell.edu/uscode/text/26/761#f) to treat a jointly owned and operated business as a
+        qualified joint venture. Asked only when /askScheduleCQualifiedJointVenture is true. An unanswered
+        answer is not an election.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/askScheduleCQualifiedJointVenture">
+      <Name>Ask the qualified joint venture question</Name>
+      <Description>
+        The question is asked on a joint return with exactly one secondary-filer Schedule C business. 26 U.S.C.
+        761(f). More than one spouse business is already stopped. A return that is not married filing jointly
+        does not ask it.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadSelfEmploymentIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQualifiedJointVentureAnswered">
+      <Name>Qualified joint venture question is answered when it applies</Name>
+      <Description>
+        True when the question does not apply, or when /scheduleCIsQualifiedJointVenture has been answered.
+        An unanswered election does not leave a return that never sees the question incomplete.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/askScheduleCQualifiedJointVenture" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/scheduleCIsQualifiedJointVenture" />
+              </IsComplete>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleCQualifiedJointVenture">
+      <Name>Knockout: qualified joint venture election</Name>
+      <Description>
+        Stops when the filer elects qualified joint venture treatment. 26 U.S.C. 761(f): each spouse reports
+        their share as a sole proprietor. This tool files one spouse's own Schedule C, not that election.
+        Complete false when self-employment income is no or the election is unanswered or no, without treating
+        an unanswered question as a yes.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadSelfEmploymentIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCIsQualifiedJointVenture" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/scheduleCIsQualifiedJointVenture" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleCCommunityProperty">
+      <Name>Knockout: spouse-owned Schedule C in a community property state</Name>
+      <Description>
+        Stops when a secondary filer owns a Schedule C business and the filers live in a community property
+        state (filers /livesInCommunityPropertyState). Community income is not split onto two Schedules C here.
+        Louisiana is a community property state and is not in /livesInCommunityPropertyState, because it is not
+        a scoped state. Complete false when there is no spouse-owned business, or when the residence state is
+        not a complete true community-property state, so an unanswered state is not a stop.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hadSelfEmploymentIncome" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <GreaterThan>
+                  <Left>
+                    <CollectionSize>
+                      <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+                    </CollectionSize>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="filers" path="/livesInCommunityPropertyState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filers" path="/livesInCommunityPropertyState" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
             </Then>
           </Case>
         </Switch>
@@ -751,10 +1030,12 @@
         Form 2441 lines 4 and 5 need each spouse's
         Schedule SE line 3 and Schedule 1
         line 15 share ("If filing jointly, figure your and your spouse's earned
-        income separately"), and Schedule SE is
-        not yet figured per spouse.
-        Stopped elsewhere: a spouse-owned business
-        (/flowKnockoutScheduleCSpouseBusiness),
+        income separately"). Schedule SE is figured per spouse, and this earned-income
+        amount still adds the two filers together, so the joint CDCC case stays stopped.
+        Stopped elsewhere: more than one spouse-owned business, a spouse business off a
+        joint return
+        (/flowKnockoutScheduleCSpouseBusiness), a qualified joint venture, and a
+        community-property state,
         statutory employees
         (formW2s /flowKnockoutStatutoryEmployee), and
         farm income, the farm optional method, church employee income,

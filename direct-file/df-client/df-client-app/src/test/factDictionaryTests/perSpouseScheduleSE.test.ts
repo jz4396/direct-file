@@ -17,7 +17,9 @@ import {
   createCollectionItemWrapper,
   createCollectionWrapper,
   createDollarWrapper,
+  createEnumWrapper,
   createStringWrapper,
+  createTinWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 import {
@@ -65,7 +67,7 @@ const businesses = (...list: Business[]) => {
   return out;
 };
 
-type W2 = { id: string; owner: string; wages: number };
+type W2 = { id: string; owner: string; wages: number; withholding?: number };
 const w2s = (...list: W2[]) => {
   let out: Record<string, unknown> = { '/formW2s': createCollectionWrapper(list.map((w) => w.id)) };
   for (const w of list) {
@@ -76,8 +78,31 @@ const w2s = (...list: W2[]) => {
       [`${p}/writableWages`]: createDollarWrapper(`${w.wages}`),
       [`${p}/writableOasdiWages`]: createDollarWrapper(`${w.wages}`),
       [`${p}/writableMedicareWages`]: createDollarWrapper(`${w.wages}`),
-      [`${p}/writableFederalWithholding`]: createDollarWrapper(`0`),
+      [`${p}/writableFederalWithholding`]: createDollarWrapper(`${w.withholding ?? 0}`),
     };
+  }
+  return out;
+};
+
+/** Form 8995 and Schedule SE questions answered so the return can be computed. Group-00 test SSNs. */
+const readyForReturn = (...businessIds: string[]) => {
+  let out: Record<string, unknown> = {
+    '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+    '/qbiIsCooperativePatron': createBooleanWrapper(false),
+    '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+    '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+    '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(false),
+    '/usesSeOptionalMethod': createBooleanWrapper(false),
+    '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+    '/hasNotarySeExclusion': createBooleanWrapper(false),
+    '/hadForm8919Wages': createBooleanWrapper(false),
+    '/scheduleCIsQualifiedJointVenture': createBooleanWrapper(false),
+    '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+    [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `900`, group: `00`, serial: `0001` }),
+    [`/filers/#${spouseId}/tin`]: createTinWrapper({ area: `900`, group: `00`, serial: `0002` }),
+  };
+  for (const id of businessIds) {
+    out[`/scheduleCBusinesses/#${id}/materiallyParticipates`] = createBooleanWrapper(true);
   }
   return out;
 };
@@ -137,8 +162,8 @@ describe(`Per-spouse Schedule SE (#118)`, () => {
     expect(str(`/primaryFilerSelfEmploymentTax`)).toBe(`0.00`);
     expect(str(`/selfEmploymentTax`)).toBe(`5652.00`);
     expect(str(`/deductibleSelfEmploymentTax`)).toBe(`2826.00`);
-    // A spouse-owned business still stops the return (see the knockout's description).
-    expect(get(`/flowKnockoutScheduleCSpouseBusiness`).get).toBe(true);
+    // One spouse-owned business on a joint return does not stop.
+    expect(get(`/flowKnockoutScheduleCSpouseBusiness`).get).toBe(false);
   });
 
   it(`primary-owned $40,000 business with the primary's own $180,000 wages: base remaining $4,500, SE tax $1,629`, ({
@@ -238,5 +263,111 @@ describe(`Per-spouse Schedule SE (#118)`, () => {
     expect(str(`/secondaryFilerSelfEmploymentTax`)).toBe(`0.00`);
     expect(get(`/seTaxApplies`).get).toBe(true);
     expect(str(`/selfEmploymentTax`)).toBe(`1413.00`);
+  });
+
+  it(`MFJ, primary W-2 $80,000, spouse Schedule C $20,000: owes $1,851`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/secondaryFilerSeReportedLine4a`,
+      `/secondaryFilerSelfEmploymentTax`,
+      `/agi`,
+      `/form8995Line2`,
+      `/form8995Line11`,
+      `/form8995Line14`,
+      `/qualifiedBusinessIncomeDeduction`,
+      `/taxableIncome`,
+      `/taxOnTaxableIncomeRegularRates`,
+      `/totalTax`,
+      `/balanceDue`,
+    ];
+    const { get, str } = graph({
+      ...mfj,
+      ...w2s({ id: W1, owner: primaryFilerId, wages: 80000, withholding: 8000 }),
+      ...businesses({ id: B1, owner: spouseId, gross: 20000 }),
+      ...readyForReturn(B1),
+    });
+    // Spouse Schedule SE. 20,000 x 0.9235 = 18,470. 26 U.S.C. 1402(a)(12).
+    // Line 10: round(18,470 x 0.124) = round(2,290.28) = 2,290. 26 U.S.C. 1401(a).
+    // Line 11: round(18,470 x 0.029) = round(535.63) = 536. 26 U.S.C. 1401(b)(1).
+    // Line 12 = 2,826. Line 13 = round(1,413) = 1,413. 26 U.S.C. 164(f).
+    expect(str(`/secondaryFilerSeReportedLine4a`)).toBe(`18470.00`);
+    expect(str(`/secondaryFilerSeSocialSecurityTax`)).toBe(`2290.00`);
+    expect(str(`/secondaryFilerSeMedicareTax`)).toBe(`536.00`);
+    expect(str(`/secondaryFilerSelfEmploymentTax`)).toBe(`2826.00`);
+    expect(str(`/secondaryFilerDeductibleSelfEmploymentTax`)).toBe(`1413.00`);
+    expect(str(`/primaryFilerSelfEmploymentTax`)).toBe(`0.00`);
+    // Schedule 1 line 3 is the spouse's Schedule C. Lines 15 and Schedule 2 line 4 are that spouse's SE lines.
+    expect(str(`/schedule1Line3`)).toBe(`20000.00`);
+    expect(str(`/schedule1Line15`)).toBe(`1413.00`);
+    expect(str(`/schedule2Line4`)).toBe(`2826.00`);
+    // AGI = 80,000 + 20,000 - 1,413 = 98,587.
+    expect(str(`/agi`)).toBe(`98587.00`);
+    // Standard deduction $32,200. Rev. Proc. 2025-32 §4.14. 98,587 - 32,200 = 66,387 before the QBI deduction.
+    expect(str(`/standardDeduction`)).toBe(`32200.00`);
+    // QBI = 20,000 - 1,413 = 18,587. 18,587 x 20% = 3,717.40. 66,387 x 20% = 13,277.40.
+    // The form rounds each line to whole dollars, so line 5 is $3,717 and line 14 is $13,277. The deduction is $3,717.
+    expect(str(`/form8995Line1iQbi`)).toBe(`18587.00`);
+    expect(str(`/form8995Line2`)).toBe(`18587.00`);
+    expect((18587 * 20) / 100).toBe(3717.4);
+    expect(str(`/form8995Line5`)).toBe(`3717.00`);
+    expect(str(`/form8995Line11`)).toBe(`66387.00`);
+    expect((66387 * 20) / 100).toBe(13277.4);
+    expect(str(`/form8995Line14`)).toBe(`13277.00`);
+    expect(str(`/form8995Line15`)).toBe(`3717.00`);
+    expect(str(`/qualifiedBusinessIncomeDeduction`)).toBe(`3717.00`);
+    // Taxable income = 66,387 - 3,717 = 62,670.
+    expect(str(`/taxableIncome`)).toBe(`62670.00`);
+    // Tax Table midpoint of the $62,650-$62,700 bracket is $62,675. Rev. Proc. 2025-32 §4.01:
+    // 10% of $24,800 = $2,480, plus 12% of ($62,675 - $24,800) = $4,545. Total $7,025.
+    expect(str(`/roundedTaxableIncome`)).toBe(`62675.00`);
+    expect(str(`/taxOnTaxableIncomeRegularRates`)).toBe(`7025.00`);
+    expect(str(`/tentativeTaxFromTaxableIncome`)).toBe(`7025.00`);
+    // Total tax = 7,025 + 2,826 = 9,851. Withholding $8,000. Owes 9,851 - 8,000 = 1,851.
+    expect(str(`/totalTax`)).toBe(`9851.00`);
+    expect(str(`/totalWithholding`)).toBe(`8000.00`);
+    expect(str(`/balanceDue`)).toBe(`1851.00`);
+    expect(get(`/flowKnockoutScheduleCSpouseBusiness`).get).toBe(false);
+  });
+
+  it(`the spouse's Schedule SE wage base is only the spouse's own $180,000, and Form 8959 is $256`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/secondaryFilerScheduleSELine8a`,
+      `/secondaryFilerSeRemainingSocialSecurityWageBase`,
+      `/secondaryFilerSelfEmploymentTax`,
+      `/form8959Line7`,
+      `/form8959Line13`,
+      `/form8959Line18`,
+    ];
+    const spouseW2 = `e1180000-0000-4000-8000-000000000012`;
+    const { str } = graph({
+      ...mfj,
+      ...w2s(
+        { id: W1, owner: primaryFilerId, wages: 80000 },
+        { id: spouseW2, owner: spouseId, wages: 180000 }
+      ),
+      ...businesses({ id: B1, owner: spouseId, gross: 20000 }),
+      ...readyForReturn(B1),
+    });
+    // Boxes 1, 3, and 5 are each the stated wages. Under the $184,500 base they match, and Form 8959 line 1
+    // uses Medicare wages (box 5).
+    // Line 8a is the spouse's own $180,000, not $80,000 and not the pooled $260,000. 26 U.S.C. 1402(b)(1).
+    // Line 9 = 184,500 - 180,000 = 4,500. Line 10 = round(4,500 x 0.124) = 558.
+    // Line 11 = round(18,470 x 0.029) = 536. Line 12 = 1,094.
+    // Using the primary's $80,000 would leave a $104,500 base and line 12 of $2,826.
+    // Pooling both W-2s ($260,000) would leave no Social Security base and line 12 of $536.
+    expect(str(`/secondaryFilerScheduleSELine8a`)).toBe(`180000.00`);
+    expect(str(`/scheduleSELine8a`)).toBe(`80000.00`);
+    expect(str(`/secondaryFilerSeRemainingSocialSecurityWageBase`)).toBe(`4500.00`);
+    expect(str(`/secondaryFilerSeSocialSecurityTax`)).toBe(`558.00`);
+    expect(str(`/secondaryFilerSeMedicareTax`)).toBe(`536.00`);
+    expect(str(`/secondaryFilerSelfEmploymentTax`)).toBe(`1094.00`);
+    // 2026 Form 8959: Part I line 7 is the wage Additional Medicare Tax. Medicare wages $260,000 minus the
+    // $250,000 MFJ threshold is $10,000 x 0.9% = $90. Part IV line 13 is combined Schedule SE line 6 ($18,470).
+    // The threshold is fully used by wages, so line 18 is round(18,470 x 0.9%) = round(166.23) = $166.
+    // The spec's "line 13 $166" and "Part II" are the older form layout. Line 12 equals line 7. Total $256.
+    expect(str(`/form8959Line7`)).toBe(`90.00`);
+    expect(str(`/form8959Line12`)).toBe(`90.00`);
+    expect(str(`/form8959Line13`)).toBe(`18470.00`);
+    expect(str(`/form8959Line18`)).toBe(`166.00`);
+    expect(Number(str(`/form8959Line12`)) + Number(str(`/form8959Line18`))).toBe(256);
   });
 });

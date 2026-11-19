@@ -1863,8 +1863,10 @@
     <Fact path="/primaryFilerEarnedIncomeForCdccBase">
       <Name>Primary filer earned income for the CDCC, before combat pay and dependent care benefits</Name>
       <Description>#117: the primary filer's line 1 earned income (/primaryFilerEmployerIncomeSubtotalBase) plus net
-        earnings from self-employment (scheduleC /scheduleCNetProfitForEarnedIncome). Every Schedule C business is the
-        primary filer's while a spouse-owned business stops the return (scheduleC /flowKnockoutScheduleCSpouseBusiness).
+        earnings from self-employment (scheduleC /scheduleCNetProfitForEarnedIncome). That amount adds each filer's
+        own Schedule C. One spouse-owned business is allowed on a joint return. A joint return that claims the CDCC
+        still stops (scheduleC /flowKnockoutScheduleCEarnedIncomeCredits), because Form 2441 lines 4 and 5 are not
+        entered separately.
         26 U.S.C. 21(d)(1) (https://www.law.cornell.edu/uscode/text/26/21#d_1): expenses can't exceed "(A) in the case
         of
         a taxpayer who is not married at the close of such year, such individual's earned income for such year, or (B)
@@ -1875,8 +1877,8 @@
         figure your and your spouse’s earned income separately." and "2. The amount shown on Schedule SE (Form 1040),
         line 3, minus any deduction you claim on Schedule 1 (Form 1040), line 15." and "Caution: You must reduce your
         earned income by any loss from self-employment." A Schedule C loss is not modeled and stops the return when the
-        credit could apply, and a joint return with a Schedule C stops it too until Schedule SE is figured per spouse
-        (scheduleC /flowKnockoutScheduleCEarnedIncomeCredits).</Description>
+        credit could apply, and a joint return with a Schedule C stops it too because Form 2441 lines 4 and 5 are
+        still one combined amount (scheduleC /flowKnockoutScheduleCEarnedIncomeCredits).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Add>

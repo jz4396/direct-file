@@ -212,10 +212,11 @@ describe(`Schedule C earned income for the EITC and CDCC (#117)`, () => {
     expect(get(KO).get).toBe(false);
   });
 
-  it(`a spouse's Schedule C still stops the return`, ({ task }) => {
+  it(`one spouse-owned Schedule C on a joint return does not stop on the spouse-business knockout`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutScheduleCSpouseBusiness`];
     const { get } = graph({ ...single, ...mfjFilerData, ...scheduleC(15000, 0, spouseId) });
-    expect(get(`/flowKnockoutScheduleCSpouseBusiness`).get).toBe(true);
+    expect(get(`/flowKnockoutScheduleCSpouseBusiness`).complete).toBe(true);
+    expect(get(`/flowKnockoutScheduleCSpouseBusiness`).get).toBe(false);
   });
 
   it(`CDCC, single with $40,000 interest: $2,500 Schedule C profit limits $3,000 of care expenses to $2,323`, ({

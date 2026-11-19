@@ -4,9 +4,12 @@ subsubcategories:
   /flow/income/schedule-c:
     schedule-c-eligibility: Self-employment income
     schedule-c-business: Business information
+    schedule-c-spouse: Spouse's business
 headings:
   /heading/income/schedule-c: Self-employment income
   /heading/income/schedule-c/intro: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
+  /heading/income/schedule-c/qualified-joint-venture:
+    Are you and your spouse electing to treat this business as a qualified joint venture?
   /heading/income/schedule-c/qbi-carryforward: Do you have a qualified business loss carryforward from a prior year?
   /heading/income/schedule-c/qbi-cooperative: Are you a patron of an agricultural or horticultural cooperative?
   /heading/income/schedule-c/material-participation: Did you materially participate in this business?
@@ -24,6 +27,10 @@ headings:
   /heading/income/schedule-c/file-1099: If “Yes,” did you or will you file required Form(s) 1099?
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
   /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
+  /heading/knockout/schedule-c-qualified-joint-venture: This tool can't file a qualified joint venture
+  /heading/knockout/schedule-c-spouse-business: This tool can't file more than one business for your spouse
+  /heading/knockout/schedule-c-community-property:
+    This tool can't file your spouse's business from a community property state
   /heading/income/schedule-c/farm:
     Did you have farm income, Conservation Reserve Program payments, or do you want to use the farm optional method?
   /heading/income/schedule-c/church-employee:
@@ -102,6 +109,28 @@ headings:
   /heading/knockout/schedule-c-out-of-scope: "This tool can’t complete this Schedule C"
   /heading/knockout/schedule-c-accounting-method: "This tool can’t use another accounting method"
 info:
+  /info/income/schedule-c/qualified-joint-venture:
+    body: >-
+      A qualified joint venture is a business you and your spouse jointly own and operate and elect to report as
+      sole proprietors. Answer yes if you are making that election. This tool cannot file it.
+  /info/knockout/schedule-c-qualified-joint-venture:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. Each spouse would report a share of that business. This
+            tool cannot file that election. You will need another way to file this return.
+  /info/knockout/schedule-c-spouse-business:
+    alertText:
+      body:
+        - p: >-
+            This tool can file one business owned by your spouse on a joint return. More than one spouse-owned
+            business, or a spouse-owned business when you are not filing jointly, has to be filed another way.
+  /info/knockout/schedule-c-community-property:
+    alertText:
+      body:
+        - p: >-
+            You live in a community property state, and your spouse owns a business. This tool does not split
+            community income between the two of you. You will need another way to file this return.
   /info/income/schedule-c/intro:
     body: >-
       This includes income from a sole proprietorship, gig work, or freelance work reported on Schedule C. It also

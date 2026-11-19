@@ -18,8 +18,10 @@
   box 5. Schedule C column (c) reduces each business by its owner's share of deductible self-employment tax
   (Treas. Reg. 1.199A-3(b)(1)(vi)). A rental row is not reduced: 26 U.S.C. 1402(a)(1) excludes real-estate rentals
   from net earnings from self-employment. Column (b) on a rental row is the filer's SSN or ITIN, and is blank only
-  when the rental is aggregated. A secondary-filer business still stops submission (scheduleC
-  /flowKnockoutScheduleCSpouseBusiness). More than five trades or businesses, counting Schedule C and these rentals
+  when the rental is aggregated. One secondary-filer business is allowed on a joint return. More than one, a
+  business owned by the spouse on a return that is not married filing jointly, a qualified joint venture, and a
+  community-property state still stop submission (scheduleC /flowKnockoutScheduleCSpouseBusiness and the two stops
+  next to it). More than five trades or businesses, counting Schedule C and these rentals
   together, stops the print (/flowKnockoutForm8995MoreThanFiveBusinesses): the instructions require a statement this
   package does not attach. Taxable income before the deduction at or below the threshold, no prior-year loss
   carryforward, not a cooperative patron. Line 6 is the sum of box 5 (no PTP income). A REIT dividend that fails the

@@ -4,11 +4,14 @@ subsubcategories:
   /flow/income/schedule-c:
     schedule-c-eligibility: Ingresos de trabajo por cuenta propia
     schedule-c-business: Información del negocio
+    schedule-c-spouse: Negocio del cónyuge
 headings:
   /heading/income/schedule-c: Ingresos de trabajo por cuenta propia
   /heading/income/schedule-c/intro:
     ¿Tuvo ingresos de trabajo por cuenta propia, de trabajos esporádicos o como trabajador independiente en
     {{/taxYear}}?
+  /heading/income/schedule-c/qualified-joint-venture:
+    ¿Usted y su cónyuge eligen tratar este negocio como una empresa conjunta calificada?
   /heading/income/schedule-c/qbi-carryforward:
     ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
   /heading/income/schedule-c/qbi-cooperative: ¿Es usted cliente de una cooperativa agrícola u hortícola?
@@ -26,6 +29,12 @@ headings:
   /heading/income/schedule-c/file-1099: Si “Sí”, ¿presentó o presentará los Formularios 1099 requeridos?
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
+  /heading/knockout/schedule-c-qualified-joint-venture:
+    Esta herramienta no puede presentar una empresa conjunta calificada
+  /heading/knockout/schedule-c-spouse-business:
+    Esta herramienta no puede presentar más de un negocio de su cónyuge
+  /heading/knockout/schedule-c-community-property:
+    Esta herramienta no puede presentar el negocio de su cónyuge en un estado de bienes gananciales
   /heading/income/schedule-c/farm:
     ¿Tuvo ingresos de agricultura, pagos del Programa de Reservas para la Conservación, o quiere usar el método opcional
     de agricultura?
@@ -268,6 +277,30 @@ info:
             dependientes. El Formulario 2441 usa las líneas 3 y 4b del Anexo SE, menos la deducción de la línea 15 del
             Anexo 1. La línea 4b no se incluye aquí en el ingreso del trabajo, así que esos créditos no se pueden
             calcular con la elección. Tendrá que usar otra manera de presentar esta declaración.
+  /info/income/schedule-c/qualified-joint-venture:
+    body: >-
+      Una empresa conjunta calificada es un negocio que usted y su cónyuge poseen y operan juntos y eligen declarar
+      como propietarios únicos. Conteste que sí si hace esa elección. Esta herramienta no puede presentarla.
+  /info/knockout/schedule-c-qualified-joint-venture:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Cada cónyuge declararía una parte de ese negocio.
+            Esta herramienta no puede presentar esa elección. Tendrá que usar otra manera de presentar esta
+            declaración.
+  /info/knockout/schedule-c-spouse-business:
+    alertText:
+      body:
+        - p: >-
+            Esta herramienta puede presentar un negocio de su cónyuge en una declaración conjunta. Más de un negocio
+            del cónyuge, o un negocio del cónyuge cuando no presenta en conjunto, tiene que presentarse de otra
+            manera.
+  /info/knockout/schedule-c-community-property:
+    alertText:
+      body:
+        - p: >-
+            Vive en un estado de bienes gananciales y su cónyuge es dueño de un negocio. Esta herramienta no divide
+            ese ingreso ganancial entre los dos. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-c-qbi:
     alertText:
       body:

@@ -175,9 +175,9 @@ describe(`Schedule 8812 Part II-B lines 21-27 (2026 draft)`, () => {
     // Per spouse (26 U.S.C. 1402; one Schedule SE each):
     //   $3,000: round(2,770.50) = 2,771; round(343.60) + round(80.36) = 344 + 80 = 424; half = 212.
     //   $2,000: 1,847; round(229.03) + round(53.56) = 229 + 54 = 283; half = 141.50 -> 142.
-    // Schedule 1 line 15 = 212 + 142 = 354. The graph runs one Schedule SE on the combined $5,000 (4,618;
-    // 573 + 134 = 707; half 354), equal here; a secondary filer's business stops the return
-    // (/flowKnockoutScheduleCSpouseBusiness), so this graph checks the arithmetic only.
+    // Schedule 1 line 15 = 212 + 142 = 354. Each spouse has their own Schedule SE. One spouse-owned
+    // business does not stop the return (/flowKnockoutScheduleCSpouseBusiness is false). The combined
+    // Schedule 1 line 15 is what line 22 uses.
     // 18a = 5,000 - 354 = 4,646; line 20 = round(15% x 2,146) = round(321.90) = 322.
     // 22 = 354; 23 = 354; 25 = 354; 26 = max(322, 354) = 354; 27 = 354.
     const { factGraph } = setupFactGraph({
@@ -189,7 +189,7 @@ describe(`Schedule 8812 Part II-B lines 21-27 (2026 draft)`, () => {
       ...dividends(13000),
       ...scheduleC({ id: biz1, filer: primaryFilerId, profit: 3000 }, { id: biz2, filer: spouseId, profit: 2000 }),
     });
-    expect(factGraph.get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(true);
+    expect(factGraph.get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(false);
     expect(dollars(factGraph, `/schedule1Line15`)).toBe(`354.00`);
     expect(dollars(factGraph, `/pdf8812Line17`)).toBe(`5100.00`);
     expect(dollars(factGraph, `/pdf8812Line20`)).toBe(`322.00`);
