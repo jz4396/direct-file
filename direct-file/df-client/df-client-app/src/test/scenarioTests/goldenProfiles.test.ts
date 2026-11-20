@@ -25,7 +25,10 @@
 // and profile S
 // (Golden S: full-year Florida resident, married filing jointly, both under 65, no dependents, standard deduction,
 // two W-2s, and Form 1099-DIV boxes 12 and 13 so Form 6251 line 2a and line 2g produce alternative minimum tax,
-// with Form 8959 on the combined Medicare wages).
+// with Form 8959 on the combined Medicare wages), and profile T
+// (Golden T: full-year Florida resident, married filing jointly, both under 65, no dependents, standard deduction,
+// one primary W-2, a spouse-owned Schedule C and Schedule SE, Form 1099-DIV box 2d through the Schedule D Tax
+// Worksheet, the section 199A deduction, and estimated tax payments).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -134,7 +137,7 @@
 // [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
-//      fixture SSNs other than profiles C, D, F, G, Q, R, and S are in the 900 area, which SSA never issues; the app reads them
+//      fixture SSNs other than profiles C, D, F, G, Q, R, S, and T are in the 900 area, which SSA never issues; the app reads them
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
 //      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
@@ -146,7 +149,7 @@
 //      Profile Q uses 444-00-2005 through 444-00-2008, also group 00. Profile R uses 444-00-2009 and 444-00-2010,
 //      also group 00: the cite names 9xx SSNs, and Tin.isSSN is false for a 9xx area, which would zero the child
 //      tax credit under IRC §24(h)(7). Profile S uses 444-00-2011 and 444-00-2012, also group 00: the cite names
-//      9xx SSNs, and Tin.isSSN is false for a 9xx area. Profile S has no child. Every
+//      9xx SSNs, and Tin.isSSN is false for a 9xx area. Profile S has no child. Profile T uses 444-00-2013 and 444-00-2014, also group 00. Profile T has no child. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
 //      "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), and profile F's AGI
 //      is above that amount too, so EITC is $0 on both. Profile G is under the two-child joint completed phaseout and
@@ -249,6 +252,10 @@ import {
   profileSFlMfjStandardAmt,
   profileSPrimaryW2,
   profileSSpouseW2,
+  profileTBusinessId,
+  profileTDividendId,
+  profileTFlMfjSpouseScheduleC,
+  profileTW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -321,7 +328,8 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
         name.startsWith(`profileG`) ||
         name.startsWith(`profileQ`) ||
         name.startsWith(`profileR`) ||
-        name.startsWith(`profileS`);
+        name.startsWith(`profileS`) ||
+        name.startsWith(`profileT`);
       const hasChild =
         name.startsWith(`profileD`) ||
         name.startsWith(`profileF`) ||
@@ -4567,5 +4575,287 @@ describe(`golden end-to-end scenario (synthetic data): profile S, Golden S, Flor
   it(`nothing stops the return`, () => {
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
     expectNotStopped(g);
+  });
+});
+
+// The only submission-blocking facts this return sets true. Form 8995 prints. Submission still stops because
+// there is no MeF mapping (/flowKnockoutForm8995WithoutTy2026Template), the same as profile K and #345.
+const PROFILE_T_STOPPED = [`/flowKnockoutForm8995WithoutTy2026Template`, `/flowIsKnockedOut`];
+
+describe(`golden end-to-end scenario (synthetic data): profile T, Golden T, Florida MFJ, spouse Schedule C, box 2d, QBI`, () => {
+  // Wren Example, born 1981-04-16, and Eden Example, born 1983-12-02. Married filing jointly, both under 65, not
+  //   blind. No dependents. Full-year Florida [FL]. Address 123 Example St, Miami, FL 33101. Standard deduction.
+  //   SSNs are group 00 (444-00-2013 and 444-00-2014) [SSA]. A 9xx area is not an SSN (Tin.isSSN). The same
+  //   group-00 pattern is Golden G, Golden Q, Golden R, and Golden S. There is no child.
+  // Primary W-2, Example Bay Payroll LLC. Boxes 1, 3, and 5 $120,000. Box 2 $14,000. Box 4 is 6.2% × 120,000 =
+  //   7,440 (26 U.S.C. 3101(a); under the $184,500 wage base). Box 6 is 1.45% × 120,000 = 1,740. This employer
+  //   paid under $200,000, so there is no 0.9% [3102].
+  // Spouse Schedule C, Example Studio. Gross receipts $40,000. No expenses. Net profit $40,000. One spouse-owned
+  //   business on a joint return. 26 U.S.C. 1402(b)(1): Schedule SE line 8a uses only the spouse's own W-2 wages,
+  //   and the spouse has none.
+  // Form 1099-DIV, Example Dividend Fund, primary. Box 1a $5,000, box 1b $3,000, box 2a $4,000, box 2d $1,000.
+  //   Every other dollar box is blank, which the derived facts read as $0. Box 2d is inside box 2a. 26 U.S.C.
+  //   1(h)(4), 1(h)(5). Box 2d makes Schedule D required, so line 7b is not checked.
+  // Estimated tax payments $8,000. Form 1040 line 26.
+  // Spouse Schedule SE, whole dollars. Line 4a = 40,000 × 92.35% = 36,940. 26 U.S.C. 1402(a)(12). Line 9 is the
+  //   full $184,500 wage base (SSA; 42 U.S.C. 430). Line 10 = round(36,940 × 12.4%) = round(4,580.56) = 4,581.
+  //   Line 11 = round(36,940 × 2.9%) = round(1,071.26) = 1,071. Line 12 = 5,652. Line 13 = 2,826. 26 U.S.C.
+  //   1401(a), 1401(b)(1), 164(f).
+  // Form 1040: line 1a 120,000; line 3a 3,000; line 3b 5,000; line 7a 4,000 (Schedule D line 16; line 18 is
+  //   1,000). Schedule 1 line 3 40,000; line 15 2,826. Total income 169,000. AGI 166,174. Standard deduction
+  //   32,200. Rev. Proc. 2025-32 §4.14.
+  // QBI = 40,000 − 2,826 = 37,174. Treas. Reg. §1.199A-3(b)(1)(vi). 20% × 37,174 = 7,434.80, which the form
+  //   rounds to line 5 $7,435. Taxable income before the deduction is 133,974. Net capital gain for the limit is
+  //   qualified dividends 3,000 plus Schedule D line 16 4,000 = 7,000. 26 U.S.C. 199A(a), 199A(e)(1).
+  //   20% × (133,974 − 7,000) = 25,394.80, which the form rounds to line 14 $25,395. Line 15 is the smaller,
+  //   $7,435. The cite's "line 13" is 2026 draft Form 1040 line 13b. Line 13a is $0. Taxable income 126,539.
+  // Schedule D Tax Worksheet is required because line 18 is more than zero. The 2025 worksheet the engine
+  //   implements ends at line 47. The cite's lines 42–48 are that worksheet shifted by one, and the cite's tax
+  //   lines are shown before whole-dollar rounding. Engine line 41 is $126,539 (the cite's line 42). Engine
+  //   lines 42 and 43 are $0 (the cite's lines 43 and 44): the 28% gain is inside ordinary income taxed at 22%,
+  //   so none of it is taxed at 28%. 26 U.S.C. 1(h)(1)(F). Engine line 44 is the tax on $120,539, round(15,942.58)
+  //   = 15,943. Engine line 45 is 900 + 15,943 = 16,843. Engine line 46 is round(17,262.58) = 17,263. Engine
+  //   line 47, Form 1040 line 16, is the smaller, $16,843 (the cite's line 48). Rev. Proc. 2025-32 §4.01 Table 1
+  //   and §4.03 ($98,900).
+  // Schedule 2 line 4 is $5,652. Total tax 16,843 + 5,652 = 22,495. Payments are line 25a 14,000 plus line 26
+  //   8,000 = 22,000. Balance due 495.
+  // AMTI is line 1b 126,539 plus the standard-deduction add-back 32,200 = 158,739. The $140,200 MFJ exemption
+  //   (Rev. Proc. 2025-32 §4.10) leaves 18,539. Tentative minimum tax is below regular tax, so Form 6251 is not
+  //   required. Form 8959 is not required: Medicare wages 120,000 plus Schedule SE line 6 36,940 = 156,940, under
+  //   the $250,000 joint threshold. Form 8960 is not required: AGI is under $250,000. 26 U.S.C. 1411(b).
+  // Form 2210 line 6 is withholding only, $14,000, so line 7 is 22,495 − 14,000 = 8,495. That is not under
+  //   $1,000. 26 U.S.C. 6654(e)(1) subtracts the section 31 withholding credit, not estimated payments. The cite's
+  //   "$495 is under $1,000" is the balance due after the $8,000 of estimated payments. Part II is asked. The
+  //   prior-year return is also joint, so box E does not apply, and boxes A–D are no. The penalty is not
+  //   computed. /flowKnockoutForm2210 stays false.
+  const g = graph(profileTFlMfjSpouseScheduleC);
+  const expectStoppedOnly = (fg: Fg) => {
+    const stopped = new Set(PROFILE_T_STOPPED);
+    for (const path of submissionBlockingFacts.filter((p) => !p.includes(`*`) && p !== `/flowIncomplete`)) {
+      const r = get(fg, path);
+      if (stopped.has(path)) {
+        expect(r.complete, path).toBe(true);
+        expect(r.get, path).toBe(true);
+      } else {
+        expect(r.complete && r.get === true, path).toBe(false);
+      }
+    }
+  };
+
+  it(`spouse Schedule C and Schedule SE, and Schedule 1 and Schedule 2`, () => {
+    const biz = `/scheduleCBusinesses/#${profileTBusinessId}`;
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`marriedFilingJointly`);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/secondaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `${biz}/businessName`).get).toBe(`Example Studio`);
+    expect(get(g, `/flowKnockoutScheduleCSpouseBusiness`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleCSpouseBusiness`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
+    expect(get(g, `/primaryFilerSeTaxApplies`).get).toBe(false);
+    expect(get(g, `/secondaryFilerSeTaxApplies`).get).toBe(true);
+    expect(get(g, `/livesInCommunityPropertyState`).get).toBe(false);
+    expectDollars(g, {
+      [`${biz}/line1GrossReceipts`]: `40000.00`,
+      [`${biz}/line7GrossIncome`]: `40000.00`,
+      [`${biz}/line28`]: `0.00`,
+      [`${biz}/netProfitOrLoss`]: `40000.00`,
+      '/scheduleCNetProfitOrLoss': `40000.00`,
+      '/schedule1Line3': `40000.00`,
+      '/secondaryFilerSeNetEarnings': `36940.00`,
+      '/secondaryFilerSeRemainingSocialSecurityWageBase': `184500.00`,
+      '/secondaryFilerSeSocialSecurityTax': `4581.00`,
+      '/secondaryFilerSeMedicareTax': `1071.00`,
+      '/secondaryFilerSelfEmploymentTax': `5652.00`,
+      '/secondaryFilerDeductibleSelfEmploymentTax': `2826.00`,
+      '/primaryFilerSelfEmploymentTax': `0.00`,
+      '/selfEmploymentTax': `5652.00`,
+      '/deductibleSelfEmploymentTax': `2826.00`,
+      '/schedule1Line15': `2826.00`,
+      '/schedule2Line4': `5652.00`,
+      [`/formW2s/#${profileTW2.id}/oasdiWages`]: `120000.00`,
+      [`/formW2s/#${profileTW2.id}/oasdiWithholding`]: `7440.00`,
+      [`/formW2s/#${profileTW2.id}/medicareWages`]: `120000.00`,
+      [`/formW2s/#${profileTW2.id}/medicareWithholding`]: `1740.00`,
+    });
+  });
+
+  it(`Form 1040 income, the QBI deduction, and taxable income $126,539`, () => {
+    expect(get(g, `/form8995Required`).get).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).get).toBe(false);
+    expect(get(g, `/form8995Line1iName`).get).toBe(`Example Studio`);
+    expect(get(g, `/form8995Line1iiName`).complete).toBe(false);
+    // 37,174 × 20% = 7,434.80. (133,974 − 7,000) × 20% = 25,394.80. The form stores the rounded lines.
+    expect((37174 * 20) / 100).toBe(7434.8);
+    expect(((133974 - 7000) * 20) / 100).toBe(25394.8);
+    expectDollars(g, {
+      '/wages': `120000.00`,
+      '/qualifiedDividends': `3000.00`,
+      '/ordinaryDividends': `5000.00`,
+      '/capitalGainsOrLosses': `4000.00`,
+      '/totalIncome': `169000.00`,
+      '/adjustmentsToIncome': `2826.00`,
+      '/agi': `166174.00`,
+      '/standardDeduction': `32200.00`,
+      '/standardOrItemizedDeductions': `32200.00`,
+      '/schedule1ALine44': `0.00`,
+      '/form8995Line1iQbi': `37174.00`,
+      '/form8995Line2': `37174.00`,
+      '/form8995Line5': `7435.00`,
+      '/form8995Line10': `7435.00`,
+      '/form8995Line11': `133974.00`,
+      '/form8995Line12': `7000.00`,
+      '/form8995Line13': `126974.00`,
+      '/form8995Line14': `25395.00`,
+      '/form8995Line15': `7435.00`,
+      '/form8995Line16': `400.00`,
+      '/form8995Line17': `7435.00`,
+      '/qualifiedBusinessIncomeDeduction': `7435.00`,
+      '/taxableIncome': `126539.00`,
+    });
+    expect(Number(get(g, `/form8995Line5`).get.toString())).toBeLessThan(
+      Number(get(g, `/form8995Line14`).get.toString())
+    );
+  });
+
+  it(`Schedule D line 18 is $1,000 and the Schedule D Tax Worksheet line 47 tax is $16,843`, () => {
+    const dividendPath = `/dividendReports/#${profileTDividendId}`;
+    expect(get(g, `${dividendPath}/payer`).get.toString()).toBe(`Example Dividend Fund`);
+    expect(get(g, `/requiresScheduleD`).get).toBe(true);
+    expect(get(g, `/capitalGainDistributionsWithoutScheduleD`).get).toBe(false);
+    expect(get(g, `/scheduleDLine17Yes`).get).toBe(true);
+    expect(get(g, `/scheduleDLine20No`).get).toBe(true);
+    expect(get(g, `/usesScheduleDTaxWorksheet`).get).toBe(true);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(false);
+    expect(get(g, `/flowKnockoutCollectibles`).get).toBe(false);
+    expect(get(g, `/flowKnockoutCollectibles28RateGainNetting`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutCollectibles28RateGainNetting`).get).toBe(false);
+    // Rev. Proc. 2025-32 §4.01 Table 1: $11,600 + 22% × (120,539 − 100,800) = 15,942.58.
+    // $11,600 + 22% × (126,539 − 100,800) = 17,262.58. The worksheet stores those taxes in whole dollars.
+    const taxOnLine21Cents = 11600 * 100 + (120539 - 100800) * 22;
+    const taxOnLine1Cents = 11600 * 100 + (126539 - 100800) * 22;
+    expect(taxOnLine21Cents).toBe(1594258);
+    expect(taxOnLine1Cents).toBe(1726258);
+    expectDollars(g, {
+      [`${dividendPath}/ordinaryDividends`]: `5000.00`,
+      [`${dividendPath}/qualifiedDividends`]: `3000.00`,
+      [`${dividendPath}/capitalGainDistributions`]: `4000.00`,
+      [`${dividendPath}/collectibles28RateGain`]: `1000.00`,
+      '/scheduleDLine13': `4000.00`,
+      '/scheduleDLine15': `4000.00`,
+      '/scheduleDLine16': `4000.00`,
+      '/scheduleDLine18': `1000.00`,
+      '/scheduleDLine19': `0.00`,
+      '/schDTaxWsLine10': `7000.00`,
+      '/schDTaxWsLine11': `1000.00`,
+      '/schDTaxWsLine12': `1000.00`,
+      '/schDTaxWsLine13': `6000.00`,
+      '/schDTaxWsLine14': `120539.00`,
+      '/schDTaxWsLine15': `98900.00`,
+      '/schDTaxWsLine16': `98900.00`,
+      '/schDTaxWsLine17': `98900.00`,
+      '/schDTaxWsLine18': `119539.00`,
+      '/schDTaxWsLine20': `120539.00`,
+      '/schDTaxWsLine21': `120539.00`,
+      '/schDTaxWsLine22': `0.00`,
+      '/schDTaxWsLine23': `6000.00`,
+      '/schDTaxWsLine30': `6000.00`,
+      '/schDTaxWsLine31': `900.00`,
+      '/schDTaxWsLine33': `0.00`,
+      // Cite line 42 is this line. Cite lines 43 and 44 are lines 42 and 43, both $0.
+      '/schDTaxWsLine41': `126539.00`,
+      '/schDTaxWsLine42': `0.00`,
+      '/schDTaxWsLine43': `0.00`,
+      '/schDTaxWsLine44': `15943.00`,
+      '/schDTaxWsLine45': `16843.00`,
+      '/schDTaxWsLine46': `17263.00`,
+      '/schDTaxWsLine47': `16843.00`,
+      '/tentativeTaxFromTaxableIncome': `16843.00`,
+    });
+  });
+
+  it(`total tax is $22,495, payments are $22,000, and the balance due is $495`, () => {
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/requiresScheduleBForOrdinaryDividends`).get).toBe(true);
+    expect(get(g, `/hasForeignAccounts`).get).toBe(false);
+    expect(get(g, `/requiresSchedule1`).get).toBe(true);
+    expect(get(g, `/requiresSchedule2`).get).toBe(true);
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutAmtPreferenceItems`).get).toBe(false);
+    expect(get(g, `/form2210AskPartII`).get).toBe(true);
+    expect(get(g, `/form2210ShowIrsWillBillNote`).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/totalCtc`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/earnedIncomeCredit`).get.toString()).toBe(`0.00`);
+    expectDollars(g, {
+      '/form6251Line1b': `126539.00`,
+      '/form6251Line2a': `32200.00`,
+      '/form6251Line4': `158739.00`,
+      '/form6251Line5': `140200.00`,
+      '/form6251Line6': `18539.00`,
+      '/amt': `0.00`,
+      '/form8959Line1': `120000.00`,
+      '/form8959Line13': `36940.00`,
+      '/form8959Line18': `0.00`,
+      '/totalTentativeTax': `16843.00`,
+      '/nonRefundableCredits': `0.00`,
+      '/line21OfSchedule2': `5652.00`,
+      '/totalTax': `22495.00`,
+      '/formW2Withholding': `14000.00`,
+      '/estimatedAndFromLastYear': `8000.00`,
+      '/totalPayments': `22000.00`,
+      '/overpayment': `0.00`,
+      '/balanceDue': `495.00`,
+      '/form2210Line4': `22495.00`,
+      '/form2210Line6': `14000.00`,
+      '/form2210Line7': `8495.00`,
+    });
+    expect(Number(get(g, `/form8959Line1`).get.toString()) + Number(get(g, `/form8959Line13`).get.toString())).toBe(
+      156940
+    );
+  });
+
+  it(`Florida resident: no state return, and Schedule C, the spouse Schedule SE, Schedule D, Schedule B, Schedules 1 and 2, and Form 8995 print`, () => {
+    expect(get(g, `/livedInFl`).get).toBe(true);
+    expect(get(g, `/stateReturnIsFl`).get).toBe(true);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/hasNoStateIncomeTax`).get).toBe(true);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/hasScheduleCBusinesses`).get).toBe(true);
+    for (const form of [`IRS1040`, `IRS1040S1`, `IRS1040S2`, `IRS1040SB`, `IRS1040SD`, `IRS1040SSESPOUSE`, `IRS8995`]) {
+      expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(true);
+    }
+    for (const form of [`IRS1040SSE`, `IRS6251`, `IRS8959`, `IRS8960`, `IRS1040SA`, `PA40`, `IRS1040S8812`]) {
+      const included = get(g, pdfIncludeWhen(form) as string);
+      expect(included.complete && included.get === true, form).toBe(false);
+    }
+  });
+
+  it(`golden-profileT-complete.json is the persisted profileTFlMfjSpouseScheduleC return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileT-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`Form 8995 is the only stop`, () => {
+    expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expectStoppedOnly(g);
   });
 });
