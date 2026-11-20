@@ -205,6 +205,21 @@
       "url": "https://azdor.gov/sites/default/files/document/FORMS_INDIVIDUAL_2025_140i.pdf",
       "kind": "web"
     },
+    "mgl-c62": {
+      "title": "Massachusetts General Laws Chapter 62",
+      "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/",
+      "kind": "statute"
+    },
+    "mgl-c111m": {
+      "title": "Massachusetts General Laws Chapter 111M",
+      "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXVI/Chapter111M/",
+      "kind": "statute"
+    },
+    "ma-form-1-instr-2025": {
+      "title": "2025 Massachusetts Form 1 instructions (revised August 4, 2026), used for the 2026 return until the 2026 booklet is posted",
+      "url": "https://www.mass.gov/doc/2025-form-1-instructions/download",
+      "kind": "web"
+    },
     "i1040sc-dft": {
       "title": "2026 Instructions for Schedule C, draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
@@ -4057,6 +4072,150 @@
         {
           "source": "az-140-instr-2025",
           "quote": "If you are married filing a joint return, or a head of household, you may claim this credit if the amount on Form 140, page 1, line 12 is $25,000 or less."
+        }
+      ]
+    },
+    {
+      "fact": "/maPersonalExemptionSingle",
+      "file": "maPit.xml",
+      "values": [
+        "Dollar:4400"
+      ],
+      "cite": [
+        {
+          "source": "mgl-c62",
+          "section": "§ 3B(b)(1)(A)",
+          "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/Section3",
+          "quote": "The personal exemption shall not exceed $4,400."
+        },
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "If you are single or married filing a separate return, enter $4,400 in line 2a."
+        }
+      ]
+    },
+    {
+      "fact": "/maPersonalExemptionMfj",
+      "file": "maPit.xml",
+      "values": [
+        "Dollar:8800"
+      ],
+      "cite": [
+        {
+          "source": "mgl-c62",
+          "section": "§ 3B(b)(2)(A)",
+          "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/Section3",
+          "quote": "The personal exemption shall not exceed $8,800."
+        },
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "If married filing a joint return, enter $8,800 in line 2a."
+        }
+      ]
+    },
+    {
+      "fact": "/maTaxRate",
+      "file": "maPit.xml",
+      "values": [
+        "Rational:1/20"
+      ],
+      "cite": [
+        {
+          "source": "mgl-c62",
+          "section": "§ 4(b)",
+          "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/Section4",
+          "quote": "Part B taxable income shall be taxed at a rate of not less than 5 per cent."
+        },
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "If line 21 is greater than $24,000 multiply by 0.05 and enter the result in line 22."
+        }
+      ]
+    },
+    {
+      "fact": "/maOptionalTaxRate",
+      "file": "maPit.xml",
+      "values": [
+        "Rational:585/10000"
+      ],
+      "cite": [
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "Personal income tax forms must provide an election to voluntarily pay tax at a rate of 5.85% on taxable income which would otherwise be taxed at a rate of 5.0%."
+        },
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "If choosing the optional 5.85% tax rate, multiply line 21 and Schedule D, line 21 by 0.0585 and fill in the oval."
+        }
+      ]
+    },
+    {
+      "fact": "/maFicaCap",
+      "file": "maPit.xml",
+      "values": [
+        "Dollar:2000"
+      ],
+      "cite": [
+        {
+          "source": "mgl-c62",
+          "section": "§ 3B(a)(3)",
+          "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/Section3",
+          "quote": "In no event shall the aggregate of the otherwise allowable deductions of this subparagraph and of all sums deducted from wages as contributions to an annuity, pension, endowment or retirement fund of the United States government, the commonwealth or any political subdivision thereof, attributable to any one taxpayer exceed two thousand dollars."
+        },
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "Enter in lines 11a and 11b the amount you, and your spouse if filing jointly, paid to Social Security (FICA), Medicare or Railroad Retirement and the U.S. or Massachusetts retirement systems during 2025 as shown on your Form W-2, but not more than $2,000 each."
+        }
+      ]
+    },
+    {
+      "fact": "/maRentalCap",
+      "file": "maPit.xml",
+      "values": [
+        "Dollar:4000"
+      ],
+      "cite": [
+        {
+          "source": "mgl-c62",
+          "section": "§ 3B(a)(9)",
+          "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/Section3",
+          "quote": "an amount equal to 50 per cent of such rent; provided, however, that such deduction shall not exceed $4,000 for a single person, for a person that qualifies as a head of household under section two (b) of the Code, or for a husband and wife."
+        },
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "Divide line 14a by 2 and enter the result, or $4,000 ($2,000 if married filing a separate return), whichever is smaller, in line 14."
+        }
+      ]
+    },
+    {
+      "fact": "/maTaxTableThreshold",
+      "file": "maPit.xml",
+      "values": [
+        "Dollar:24000"
+      ],
+      "cite": [
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "If line 21 is less than $24,000, find the proper tax by using the tax tables found in the back of this booklet. If line 21 is greater than $24,000 multiply by 0.05 and enter the result in line 22."
+        }
+      ]
+    },
+    {
+      "fact": "/maSurtaxStop",
+      "file": "maPit.xml",
+      "values": [
+        "Dollar:1000000"
+      ],
+      "cite": [
+        {
+          "source": "mgl-c62",
+          "section": "§ 4(d)",
+          "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/Section4",
+          "quote": "Where the sum of Part A taxable income, Part B taxable income and Part C taxable income exceeds $1,000,000 in a taxable year, the portion of such taxable income exceeding $1,000,000 shall be taxed at the rates specified in subsections (a) to (c), inclusive, plus an additional 4 per cent."
+        },
+        {
+          "source": "ma-form-1-instr-2025",
+          "quote": "personal income taxpayers must pay an additional 4% on taxable income over $1,000,000, increased annually for inflation. For the 2025 tax year, the threshold is $1,083,150."
         }
       ]
     }

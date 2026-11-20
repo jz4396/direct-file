@@ -53,6 +53,8 @@ import ncPitEn from './en.ncPit.yaml';
 import ncPitEs from './es.ncPit.yaml';
 import azPitEn from './en.azPit.yaml';
 import azPitEs from './es.azPit.yaml';
+import maPitEn from './en.maPit.yaml';
+import maPitEs from './es.maPit.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -147,6 +149,8 @@ for (const [locale, overlay] of [
   [esLocale, ncPitEs],
   [enLocale, azPitEn],
   [esLocale, azPitEs],
+  [enLocale, maPitEn],
+  [esLocale, maPitEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }

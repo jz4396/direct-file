@@ -2569,9 +2569,11 @@
 
     <Fact path="/livedInMa">
       <Name>The filer(s) lives in Massachusetts</Name>
-      <Description>Washington has a Working Families Tax Credit, so we need a condition to show
-        Massachusetts-specific
-        content.</Description>
+      <Description>#93 slice 6: /filerResidenceAndIncomeState is Massachusetts. M.G.L. c. 62, § 4 taxes a
+        resident's taxable income. Wired into stateReturn /stateReturnIsMa, /stateReturnComputed, and the state
+        Switches the way a computed return is wired. Massachusetts is already in /scopedStateOptions. Form 1 has
+        no local return.</Description>
+      <Export downstreamFacts="true" />
       <Derived>
         <Equal>
           <Left>

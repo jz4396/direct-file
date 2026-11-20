@@ -4,7 +4,8 @@
 # name. The 2026 Illinois vendor IL-1040 is not fillable, so the 2025 IL-1040 and Schedule IL-WIT stand in; IDOR
 # publishes those at currentyear URLs that do not repeat the year. The 2026 Form D-400 is not posted, so the 2025
 # D-400 web-fill stands in and the file keeps 2025 in its name. The 2026 Arizona Form 140 is not the template, so the
-# 2025 ADOR Form 140 stands in and the file keeps 2025 in its name. Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the
+# 2025 ADOR Form 140 stands in and the file keeps 2025 in its name. The 2026 Massachusetts Form 1 and Schedule HC
+# are not the templates, so the 2025 DOR forms stand in and each file keeps 2025 in its name. Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the
 # committed files by StateInterimPdfHashManifestTest. When the 2026 form is published (#124), download it, hash it,
 # re-verify the field map in that template's configuration.yml, and replace the row.
 # #124 swap: then run Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true; it fails on any mapped field
@@ -17,3 +18,5 @@ cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b  PA40SP/en/2025
 4fd926e767d546d54047888f7064bc169641db485e830c6e730263e946248190  ILWIT/en/2025_il-1040-schedule-il-wit.pdf  https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-schedule-il-wit.pdf
 2bf6e0b44e628a05cc401d22f7cf6f8c7b39db529d345f4bcf7d93ccfe170d63  NCD400/en/2025_d-400.pdf  https://www.ncdor.gov/2025-d-400-web-filled-version/open
 2acdda2a07ab46d7f6bd701618e63d1af8d45ac7921c38572a740940437edf84  AZ140/en/2025_140.pdf  https://azdor.gov/sites/default/files/document/FORMS_INDIVIDUAL_2025_140_f.pdf
+0bb62498fda14b515084b83fb4467f379f17d08a712f6390b1cd2fceecb04a07  MA1/en/2025_form-1.pdf  https://www.mass.gov/doc/2025-form-1-massachusetts-resident-income-tax-return/download
+3f4f6f04e4a82de0b938a0d7e780039730cb60a41561f788aa515c638eabb970  MAHC/en/2025_schedule-hc.pdf  https://www.mass.gov/doc/2025-schedule-hc-health-care-information/download
