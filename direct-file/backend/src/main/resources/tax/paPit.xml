@@ -1907,6 +1907,60 @@
         </Switch>
       </Derived>
     </Fact>
+    <Fact path="/flowKnockoutPaK1GuaranteedPayments">
+      <Name>Flow knockout: PA-40 with Form 1065 box 4a guaranteed payments for services</Name>
+      <Description>A nonzero Form 1065 box 4a on a PA-40. Partner's Instructions for Schedule K-1 (Form
+        1065) (2025), PDF p. 15, Box 4a, report guaranteed payments for services in column (k) of federal
+        Schedule E line 28. That federal column is not copied onto a PA-40 line. PA Schedule RK-1 is not
+        produced. Same treatment as /flowKnockoutPaK1PartIICapitalGain. Complete false when the return is
+        not a PA-40, when Part II has not started, and when the unrounded box 4a total is zero. An
+        unanswered box 4a on a PA-40 stays incomplete and refuses the print. 72 P.S. §7303
+        (https://codes.findlaw.com/pa/title-72-ps-taxation-and-fiscal-affairs/pa-st-sect-72-7303/).</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnPaFiled" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEK1GuaranteedPaymentsForServicesNonzero" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleE" path="/scheduleEK1GuaranteedPaymentsForServicesNonzero" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleE" path="/scheduleEK1GuaranteedPaymentsForServicesNonzero" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
     <Fact path="/flowKnockoutPaK11041Box7">
       <Name>Flow knockout: PA-40 with Schedule K-1 (Form 1041) box 7</Name>
       <Description>
