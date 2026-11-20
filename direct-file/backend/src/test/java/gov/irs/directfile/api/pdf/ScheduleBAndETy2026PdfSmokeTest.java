@@ -116,6 +116,10 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "box14CodeAWasReduced", bool(false));
         m.put(p + "box14CodeAIsFarm", bool(false));
         m.put(p + "box14CodeANotLimitedPartnerAmount", bool(false));
+        // Form 1065 box 4a is column (k) with box 1. A supported entity has boxes 4a, 4b, and 4c at zero.
+        m.put(p + "form1065Box4a", dollar("0.00"));
+        m.put(p + "form1065Box4b", dollar("0.00"));
+        m.put(p + "form1065Box4c", dollar("0.00"));
         m.put(p + "hasQbiStatement", bool(false));
         m.put(p + "hasOtherK1Amount", bool(false));
         m.put(p + "basisComputationRequired", bool(false));

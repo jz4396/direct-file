@@ -6,6 +6,7 @@ import {
   createDollarWrapper,
   createEnumWrapper,
   createStringWrapper,
+  createTinWrapper,
 } from '../persistenceWrappers.js';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -65,6 +66,9 @@ const k1 = (id: string, box1: string, type: `P` | `S`, extra: Record<string, unk
   [`/scheduleEK1s/#${id}/box14CodeAWasReduced`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/box14CodeAIsFarm`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/box14CodeANotLimitedPartnerAmount`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${id}/form1065Box4a`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1065Box4b`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${id}/form1065Box4c`]: createDollarWrapper(`0`),
   [`/scheduleEK1s/#${id}/hasQbiStatement`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/hasOtherK1Amount`]: createBooleanWrapper(false),
   [`/scheduleEK1s/#${id}/basisComputationRequired`]: createBooleanWrapper(false),
@@ -1080,9 +1084,7 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
 
-  it(`a single Florida filer with box 7 of $4,000 and MAGI over $200,000 shows it on Form 8960 line 4a`, ({
-    task,
-  }) => {
+  it(`a single Florida filer with box 7 of $4,000 and MAGI over $200,000 shows it on Form 8960 line 4a`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/form8960Line4a`,
       `/form8960Line13`,
@@ -1959,7 +1961,11 @@ describe(`Schedule K-1 (Form 1041) boxes 3 and 4a on Schedule D lines 5 and 12`,
   });
 
   it(`leaves Schedule D line 5 and the Part III knockout incomplete when box 3 is unanswered`, ({ task }) => {
-    task.meta.testedFactPaths = [`/scheduleDLine5`, `/flowKnockoutScheduleEPartIII`, `/scheduleEHasEstateK1CapitalGain`];
+    task.meta.testedFactPaths = [
+      `/scheduleDLine5`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/scheduleEHasEstateK1CapitalGain`,
+    ];
     const facts = capitalGain(`0`, `0`) as Record<string, unknown>;
     delete facts[`/scheduleEEstates/#${estateId}/box3`];
     const g = fg(facts);
@@ -2368,5 +2374,256 @@ describe(`Schedule K-1 (Form 1065) boxes 8 and 9a and (Form 1120-S) boxes 7 and 
     expect(get(g, `/flowKnockoutPaK1PartIICapitalGain`).complete).toBe(true);
     expect(get(g, `/flowKnockoutPaK1PartIICapitalGain`).get).toBe(false);
     expect(get(g, `/flowKnockoutScheduleEPartIIForeignSourceCapitalGain`).get).toBe(false);
+  });
+});
+
+const w2Id = `4623aac9-6d6f-424e-9ba2-8cdf19d45b10`;
+/** Single filer. W-2 $50,000. One general-partner K-1 with box 4a $20,000. Rev. Proc. 2025-32 §4.01 and §4.14. */
+const guaranteedPaymentsFacts = (extra: Record<string, unknown> = {}) => {
+  const minimal = Object.fromEntries(
+    Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+  );
+  return {
+    ...minimal,
+    ...baseFilerData,
+    ...singleFilerData,
+    [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+    [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `900`, group: `00`, serial: `0001` }),
+    '/flowHasSeenDeductions': createBooleanWrapper(true),
+    ...makeW2Data(50000),
+    [`/formW2s/#${w2Id}/writableFederalWithholding`]: createDollarWrapper(`6000`),
+    [`/formW2s/#${w2Id}/writableOasdiWages`]: createDollarWrapper(`50000`),
+    [`/formW2s/#${w2Id}/writableMedicareWages`]: createDollarWrapper(`50000`),
+    '/interestReports': createCollectionWrapper([]),
+    '/hadSelfEmploymentIncome': createBooleanWrapper(false),
+    '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+    '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+    '/usesSeOptionalMethod': createBooleanWrapper(false),
+    '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+    '/hasNotarySeExclusion': createBooleanWrapper(false),
+    '/hadForm8919Wages': createBooleanWrapper(false),
+    ...residence(`fl`),
+    ...oneK1(`P`, {
+      [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`20000`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4a`]: createDollarWrapper(`20000`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4b`]: createDollarWrapper(`0`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4c`]: createDollarWrapper(`20000`),
+    }),
+    ...extra,
+  };
+};
+const gp = (extra: Record<string, unknown> = {}) => setupFactGraph(guaranteedPaymentsFacts(extra)).factGraph;
+const money = (g: ReturnType<typeof gp>, path: string) => get(g, path).get.toString();
+
+describe(`Schedule K-1 (Form 1065) box 4a guaranteed payments for services`, () => {
+  it(`puts box 4a on Schedule E line 28 column (k) and leaves QBI at $0`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1065Box4a`,
+      `/scheduleEK1s/*/columnK`,
+      `/scheduleEPartIILine28AColumnK`,
+      `/scheduleEPartIILine29aColumnK`,
+      `/scheduleEPartIILine32`,
+      `/scheduleELine41`,
+      `/schedule1Line5`,
+      `/primaryFilerSeReportedLine4a`,
+      `/primaryFilerSeNetEarnings`,
+      `/primaryFilerSeSocialSecurityTax`,
+      `/primaryFilerSeMedicareTax`,
+      `/primaryFilerSelfEmploymentTax`,
+      `/selfEmploymentTax`,
+      `/primaryFilerDeductibleSelfEmploymentTax`,
+      `/deductibleSelfEmploymentTax`,
+      `/agi`,
+      `/standardDeduction`,
+      `/form8995Line2`,
+      `/qualifiedBusinessIncomeDeduction`,
+      `/form8995Required`,
+      `/form8995Line1iQbi`,
+      `/taxableIncome`,
+      `/roundedTaxableIncome`,
+      `/taxOnTaxableIncomeRegularRates`,
+      `/tentativeTaxFromTaxableIncome`,
+      `/totalTax`,
+      `/balanceDue`,
+      `/form8960Line4a`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+    ];
+    // Partner's Instructions (2025), PDF p. 15, Box 4a: column (k) of Schedule E line 28. 26 U.S.C. 707(c).
+    // Not QBI. 26 U.S.C. 199A(c)(4)(B). Not Form 8960 line 4a. 26 U.S.C. 1411(c)(6). Box 14 code A already
+    // includes it, so Schedule SE is not increased again. Single. W-2 $50,000, box 2 $6,000, box 3 and box 5
+    // $50,000. Box 1 $0, box 4a $20,000, box 4c $20,000, box 14 code A $20,000. Rev. Proc. 2025-32 §4.01
+    // (tax table) and §4.14 (standard deduction $16,100). The pinned 2026 draft Schedule E calls this row
+    // line 28A.
+    const g = gp();
+    expect(money(g, `/scheduleEK1s/#${partnershipId}/columnK`)).toBe(`20000.00`);
+    expect(money(g, `/scheduleEPartIILine28AColumnK`)).toBe(`20000.00`);
+    expect(money(g, `/scheduleEPartIILine29aColumnK`)).toBe(`20000.00`);
+    expect(money(g, `/scheduleEPartIILine32`)).toBe(`20000.00`);
+    expect(money(g, `/scheduleELine41`)).toBe(`20000.00`);
+    expect(money(g, `/schedule1Line5`)).toBe(`20000.00`);
+    expect(money(g, `/primaryFilerSeReportedLine4a`)).toBe(`18470.00`);
+    expect(money(g, `/primaryFilerSeNetEarnings`)).toBe(`18470.00`);
+    expect(money(g, `/primaryFilerSeSocialSecurityTax`)).toBe(`2290.00`);
+    expect(money(g, `/primaryFilerSeMedicareTax`)).toBe(`536.00`);
+    expect(money(g, `/primaryFilerSelfEmploymentTax`)).toBe(`2826.00`);
+    expect(money(g, `/selfEmploymentTax`)).toBe(`2826.00`);
+    expect(money(g, `/primaryFilerDeductibleSelfEmploymentTax`)).toBe(`1413.00`);
+    expect(money(g, `/deductibleSelfEmploymentTax`)).toBe(`1413.00`);
+    expect(money(g, `/agi`)).toBe(`68587.00`);
+    expect(money(g, `/standardDeduction`)).toBe(`16100.00`);
+    expect(money(g, `/form8995Line2`)).toBe(`0.00`);
+    expect(money(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`0.00`);
+    expect(get(g, `/form8995Required`).get).toBe(false);
+    expect(get(g, `/form8995Line1iQbi`).complete).toBe(false);
+    expect(money(g, `/taxableIncome`)).toBe(`52487.00`);
+    expect(money(g, `/roundedTaxableIncome`)).toBe(`52475.00`);
+    expect(money(g, `/taxOnTaxableIncomeRegularRates`)).toBe(`6257.00`);
+    expect(money(g, `/tentativeTaxFromTaxableIncome`)).toBe(`6257.00`);
+    expect(money(g, `/totalTax`)).toBe(`9083.00`);
+    expect(money(g, `/balanceDue`)).toBe(`3083.00`);
+    expect(money(g, `/form8960Line4a`)).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIGuaranteedPaymentsInconsistent`).get).toBe(false);
+  });
+
+  it(`adds box 4a alongside nonnegative box 1 in column (k)`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleEK1s/*/columnK`, `/scheduleEPartIILine32`, `/scheduleELine41`];
+    // Box 1 $12,000 plus box 4a $20,000, rounded once. 26 U.S.C. 6102(a).
+    const g = gp({
+      [`/scheduleEK1s/#${partnershipId}/box1`]: createDollarWrapper(`12000`),
+    });
+    expect(money(g, `/scheduleEK1s/#${partnershipId}/columnK`)).toBe(`32000.00`);
+    expect(money(g, `/scheduleEPartIILine32`)).toBe(`32000.00`);
+    expect(money(g, `/scheduleELine41`)).toBe(`32000.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+  });
+
+  it(`stops on box 4b even when box 4c equals box 4a plus box 4b`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1065Box4b`,
+      `/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital`,
+      `/flowIsKnockedOut`,
+    ];
+    // Treas. Reg. 1.1411-4(g)(10). The other-amount question is still no; the numeric stop fires on its own.
+    const g = gp({
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4b`]: createDollarWrapper(`1`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4c`]: createDollarWrapper(`20001`),
+    });
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/hasOtherK1Amount`).get).toBe(false);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/form1065Box4bIsNonzero`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`stops when box 14 code A is less than box 4a`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutScheduleEPartIIGuaranteedPaymentsInconsistent`, `/flowIsKnockedOut`];
+    // 26 U.S.C. 1402(a). Guaranteed payments for services are already in box 14 code A.
+    const g = gp({
+      [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`19999`),
+    });
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/form1065Box4aInconsistentWithBox14`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIGuaranteedPaymentsInconsistent`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`stays incomplete when box 14 code A is blank and box 4a is greater than zero`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutScheduleEPartIIGuaranteedPaymentsInconsistent`];
+    const facts = guaranteedPaymentsFacts();
+    delete facts[`/scheduleEK1s/#${partnershipId}/box14CodeA`];
+    const g = setupFactGraph(facts).factGraph;
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/form1065Box4aInconsistentWithBox14`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIGuaranteedPaymentsInconsistent`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
+  });
+
+  it(`does not put box 4a in column (k) when the partner does not materially participate`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/columnK`,
+      `/flowKnockoutScheduleEPartIINotMaterialParticipation`,
+      `/flowKnockoutScheduleEPartII`,
+    ];
+    const g = gp({
+      [`/scheduleEK1s/#${partnershipId}/materiallyParticipates`]: createBooleanWrapper(false),
+    });
+    expect(money(g, `/scheduleEK1s/#${partnershipId}/columnK`)).toBe(`0.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartIINotMaterialParticipation`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+  });
+
+  it(`treats a box 4c that is not box 4a plus box 4b as a validation, not a stop`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1065Box4cDoesNotMatch`,
+      `/scheduleEK1s/*/isComplete`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital`,
+    ];
+    const g = gp({
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4c`]: createDollarWrapper(`0`),
+    });
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/form1065Box4cDoesNotMatch`).get).toBe(true);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/isComplete`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).complete).toBe(false);
+  });
+
+  it(`stops a PA-40 with box 4a and stays false when the unrounded total is zero`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutPaK1GuaranteedPayments`,
+      `/flowKnockoutStateReturn`,
+      `/flowKnockoutPaUnsupportedIncome`,
+      `/scheduleEK1GuaranteedPaymentsForServicesNonzero`,
+    ];
+    // 72 P.S. §7303. PA Schedule RK-1 is not produced. Same treatment as the capital-gain stop.
+    const paid = gp(residence(`pa`));
+    expect(get(paid, `/flowKnockoutPaK1GuaranteedPayments`).get).toBe(true);
+    expect(get(paid, `/flowKnockoutStateReturn`).get).toBe(true);
+    expect(get(paid, `/flowIsKnockedOut`).get).toBe(true);
+    const zero = gp({
+      ...residence(`pa`),
+      [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`0`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4a`]: createDollarWrapper(`0`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4c`]: createDollarWrapper(`0`),
+    });
+    expect(get(zero, `/flowKnockoutPaK1GuaranteedPayments`).get).toBe(false);
+    expect(get(zero, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    const cents = gp({
+      ...residence(`pa`),
+      [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`0.40`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4a`]: createDollarWrapper(`0.40`),
+      [`/scheduleEK1s/#${partnershipId}/form1065Box4c`]: createDollarWrapper(`0.40`),
+    });
+    expect(money(cents, `/scheduleEK1s/#${partnershipId}/columnK`)).toBe(`0.00`);
+    expect(get(cents, `/scheduleEK1GuaranteedPaymentsForServicesNonzero`).get).toBe(true);
+    expect(get(cents, `/flowKnockoutPaK1GuaranteedPayments`).get).toBe(true);
+    const unanswered = guaranteedPaymentsFacts(residence(`pa`));
+    delete unanswered[`/scheduleEK1s/#${partnershipId}/form1065Box4a`];
+    const open = setupFactGraph(unanswered).factGraph;
+    expect(get(open, `/flowKnockoutPaK1GuaranteedPayments`).complete).toBe(false);
+  });
+
+  it(`does not stop a Florida return for box 4a`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutPaK1GuaranteedPayments`, `/flowKnockoutScheduleEPartII`];
+    const g = gp();
+    expect(get(g, `/flowKnockoutPaK1GuaranteedPayments`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(money(g, `/scheduleEPartIILine28AColumnK`)).toBe(`20000.00`);
+  });
+
+  it(`does not use box 4a on an S corporation`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleEK1s/*/columnK`, `/scheduleEK1s/*/isSupportedOrdinaryIncome`];
+    const g = fg(
+      oneK1(`S`, {
+        [`/scheduleEK1s/#${sCorpId}/box1`]: createDollarWrapper(`12000`),
+        [`/scheduleEK1s/#${sCorpId}/form1065Box4a`]: createDollarWrapper(`5000`),
+      })
+    );
+    expect(money(g, `/scheduleEK1s/#${sCorpId}/columnK`)).toBe(`12000.00`);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/isSupportedOrdinaryIncome`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
   });
 });

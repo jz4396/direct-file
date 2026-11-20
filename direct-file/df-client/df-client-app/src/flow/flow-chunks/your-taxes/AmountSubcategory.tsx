@@ -182,6 +182,16 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-k1-part-ii-capital-gain' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      <Screen
+        route='pa-k1-guaranteed-payments-knockout'
+        condition='/flowKnockoutPaK1GuaranteedPayments'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-k1-guaranteed-payments' />
+        <DFAlert i18nKey='/info/knockout/pa-k1-guaranteed-payments' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='pa-k1-1041-capital-gain-knockout' condition='/flowKnockoutPaK11041CapitalGain' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-k1-1041-capital-gain' />

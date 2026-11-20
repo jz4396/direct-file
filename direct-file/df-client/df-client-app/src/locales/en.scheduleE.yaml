@@ -30,7 +30,8 @@ headings:
   /heading/income/schedule-e/estate-capital-gains: Enter capital gain or loss from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-boxes: Enter the income from Schedule K-1 (Form 1041)
   /heading/income/schedule-e/estate-box12: Enter Schedule K-1 (Form 1041) box 12, code A
-  /heading/income/schedule-e/estate-other: Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J?
+  /heading/income/schedule-e/estate-other:
+    Does this Schedule K-1 report anything besides boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J?
   /heading/income/schedule-e/estate-limits: Do any loss limits apply to this estate or trust?
   /heading/income/schedule-e/part-iv: Do you have a residual interest in a REMIC (Schedule Q, Form 1066)?
   /heading/income/schedule-e/k1-intro: Add each partnership and S corporation
@@ -40,6 +41,7 @@ headings:
   /heading/income/schedule-e/k1-box1: Enter ordinary business income and whether you materially participated
   /heading/income/schedule-e/k1-box14: Enter self-employment earnings from Schedule K-1 (Form 1065), box 14, code A
   /heading/income/schedule-e/k1-box14-scope: Is this the amount that belongs on Schedule SE?
+  /heading/income/schedule-e/k1-guaranteed-payments: Enter guaranteed payments from Schedule K-1 (Form 1065), box 4
   /heading/income/schedule-e/k1-portfolio-partnership:
     Enter interest, dividends, and capital gain from Schedule K-1 (Form 1065)
   /heading/income/schedule-e/k1-portfolio-s-corp:
@@ -108,10 +110,10 @@ info:
       trust is a foreign trust, or if you are treating an item differently from the estate or trust.
   /info/income/schedule-e/estate-capital-gains:
     body: >-
-      Box 3 is net short-term capital gain or loss. It goes on Schedule D, line 5. Box 4a is net long-term capital
-      gain or loss. It goes on Schedule D, line 12. Enter a loss as a negative amount. Enter 0 if a box is blank.
-      Box 4b (28% rate gain) and box 4c (unrecaptured section 1250 gain) are not these boxes. Answer yes on the later
-      screen if box 4b, box 4c, or box 11 code C or D has an amount.
+      Box 3 is net short-term capital gain or loss. It goes on Schedule D, line 5. Box 4a is net long-term capital gain
+      or loss. It goes on Schedule D, line 12. Enter a loss as a negative amount. Enter 0 if a box is blank. Box 4b (28%
+      rate gain) and box 4c (unrecaptured section 1250 gain) are not these boxes. Answer yes on the later screen if box
+      4b, box 4c, or box 11 code C or D has an amount.
   /info/income/schedule-e/estate-interest-dividends:
     body: >-
       Enter box 1 (interest), box 2a (ordinary dividends), and box 2b (qualified dividends). Enter 0 if a box is blank.
@@ -122,8 +124,8 @@ info:
       Enter boxes 5, 6, 7, and 8. Enter 0 if a box is blank. A nonnegative box 5 goes in column (f). A loss in box 5
       stops this return. Answer yes to material participation if you were involved on a regular, continuous, and
       substantial basis. Box 6 goes in column (f) when you materially participate. Box 7 is net rental real estate
-      income. An amount greater than zero goes in column (d). A loss stops this return. Box 8 is other rental income
-      and stops this return.
+      income. An amount greater than zero goes in column (d). A loss stops this return. Box 8 is other rental income and
+      stops this return.
   /info/income/schedule-e/estate-box12:
     body: >-
       Code A is the adjustment for minimum tax purposes. It goes on Form 6251, line 2j. Enter 0 if code A is blank.
@@ -133,9 +135,9 @@ info:
   /info/income/schedule-e/estate-other:
     body: >-
       Answer yes for boxes 4b and 4c, and for boxes 9, 10, 11, 13, and 14, including the 28% rate gain, unrecaptured
-      section 1250 gain, capital loss carryovers (box 11 codes C and D), deductions, and credits. Boxes 3 and 4a are
-      the capital gain screen. Box 12 codes A through J are the previous screen. Do not answer yes only because of
-      box 3, box 4a, or code J.
+      section 1250 gain, capital loss carryovers (box 11 codes C and D), deductions, and credits. Boxes 3 and 4a are the
+      capital gain screen. Box 12 codes A through J are the previous screen. Do not answer yes only because of box 3,
+      box 4a, or code J.
   /info/income/schedule-e/estate-limits:
     body: >-
       Answer yes to the first question if a basis limit applies. Answer yes to the second if any amount is not at risk.
@@ -196,12 +198,22 @@ info:
   /info/income/schedule-e/k1-other:
     body: >-
       Answer yes to the first question if the K-1 includes a statement for box 20, code Z (Form 1065) or box 17, code V
-      (Form 1120-S). Answer yes to the second question if any box other than box 1, box 14 code A, the interest and
-      dividend boxes, and the net capital gain boxes has an amount. Those boxes are Form 1065 boxes 5, 6a, 6b, 8, and
-      9a, or Form 1120-S boxes 4, 5a, 5b, 7, and 8a. Box 4 guaranteed payments are a yes even when that amount is also
-      included in box 14 code A. Box 6c dividend equivalents are a yes. They are not reported on Form 1040. Form 1065
-      boxes 9b and 9c, and Form 1120-S boxes 8b and 8c, are a yes. The statement for clean renewable energy bond
-      interest in box 5 is the earlier partnership question, not this one.
+      (Form 1120-S). Answer yes to the second question if any box other than box 1, box 4a, box 14 code A, the interest
+      and dividend boxes, and the net capital gain boxes has an amount. Those boxes are Form 1065 boxes 4a, 5, 6a, 6b,
+      8, and 9a, or Form 1120-S boxes 4, 5a, 5b, 7, and 8a. Box 4a guaranteed payments for services are the earlier
+      partnership question, not this one. Box 4b guaranteed payments for capital are a yes even when that amount is also
+      included in box 14 code A. Box 4c is the total and is not a separate yes when it equals box 4a plus box 4b. Box 6c
+      dividend equivalents are a yes. They are not reported on Form 1040. Form 1065 boxes 9b and 9c, and Form 1120-S
+      boxes 8b and 8c, are a yes. The statement for clean renewable energy bond interest in box 5 is the earlier
+      partnership question, not this one.
+  /info/income/schedule-e/k1-guaranteed-payments:
+    body: >-
+      Enter box 4a (guaranteed payments for services), box 4b (guaranteed payments for capital), and box 4c (total
+      guaranteed payments). Enter 0 if a box is blank. Box 4c must equal box 4a plus box 4b. Box 4a goes in column (k)
+      of Schedule E line 28. It is not qualified business income. Box 4b stops this return.
+  /info/income/schedule-e/k1-box4-total:
+    alertText:
+      body: Box 4c must equal box 4a plus box 4b. Check the Schedule K-1 and update these amounts.
   /info/income/schedule-e/k1-columns:
     body: >-
       Answer yes to the first question if you received a distribution, disposed of stock, or received a loan repayment
@@ -574,6 +586,12 @@ fields:
     boolean:
       "yes": Yes, I am a limited partner and this amount is not only guaranteed payments for services
       "no": No, this is the right amount for Schedule SE
+  /scheduleEK1s/*/form1065Box4a:
+    name: Box 4a, guaranteed payments for services
+  /scheduleEK1s/*/form1065Box4b:
+    name: Box 4b, guaranteed payments for capital
+  /scheduleEK1s/*/form1065Box4c:
+    name: Box 4c, total guaranteed payments
   /scheduleEK1s/*/form1065Box5:
     name: Box 5, interest income
   /scheduleEK1s/*/form1065Box6a:
@@ -702,9 +720,12 @@ dataviews:
       Does box 5 include interest from the credit for holders of clean renewable energy bonds?
     /scheduleEK1s/*/dividendIncludesPtep: Do any of these dividends include previously taxed earnings and profits?
     /scheduleEK1s/*/hasQbiStatement: Is there a statement for box 20 code Z or box 17 code V?
+    /scheduleEK1s/*/form1065Box4a: Box 4a, guaranteed payments for services
+    /scheduleEK1s/*/form1065Box4b: Box 4b, guaranteed payments for capital
+    /scheduleEK1s/*/form1065Box4c: Box 4c, total guaranteed payments
     /scheduleEK1s/*/hasOtherK1Amount:
-      Does any box other than box 1, box 14 code A, the interest and dividend boxes, and the net capital gain boxes have
-      an amount?
+      Does any box other than box 1, box 4a, box 14 code A, the interest and dividend boxes, and the net capital gain
+      boxes have an amount?
     /scheduleEK1s/*/basisComputationRequired: Is column (e) checked?
     /scheduleEK1s/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/entityName: Name of the estate or trust
@@ -724,7 +745,8 @@ dataviews:
     /scheduleEEstates/*/box12CodeA: Box 12, code A, adjustment for minimum tax purposes
     /scheduleEEstates/*/hasBox12CodesBThroughI: Does box 12 have an amount for code B, C, D, E, F, G, H, or I?
     /scheduleEEstates/*/hasBox12CodeJ: Does box 12, code J, exclusion items, have an amount?
-    /scheduleEEstates/*/hasOtherK1Amount: Does any box other than boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J have an amount?
+    /scheduleEEstates/*/hasOtherK1Amount:
+      Does any box other than boxes 1, 2a, 2b, 3, 4a, 5, 6, 7, 8, and box 12 codes A through J have an amount?
     /scheduleEEstates/*/basisLimitApplies: Does a basis limit apply?
     /scheduleEEstates/*/anyAmountNotAtRisk: Is any amount not at risk?
     /scheduleEEstates/*/passiveDeductionOrLoss: Is there a passive deduction or loss?

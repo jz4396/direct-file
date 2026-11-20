@@ -210,6 +210,7 @@ class PrintRefusingKnockoutsTest {
                 PA_SCHEDULE_D_KNOCKOUT, // PA Schedule D
                 PA_K1_1041_CAPITAL_GAIN_KNOCKOUT, // PA-40 line 7 / Schedule J; K-1 (Form 1041) box 3 or 4a
                 "/flowKnockoutPaK1PartIICapitalGain", // PA-40 line 5 / RK-1; 1065 boxes 8 and 9a, 1120-S boxes 7 and 8a
+                "/flowKnockoutPaK1GuaranteedPayments", // PA-40; Form 1065 box 4a; PA Schedule RK-1 not produced
                 PA_K1_1041_BOX7_KNOCKOUT, // PA-40 line 7 / Schedule J; K-1 (Form 1041) box 7
                 "/flowKnockoutIlPartYearOrNonresident",
                 "/flowKnockoutIlLivedInMoreThanOneState",
@@ -311,8 +312,8 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        // #93 slice 6 adds the fourteen Massachusetts Form 1 stops.
-        assertEquals(111, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        // #347 adds /flowKnockoutPaK1GuaranteedPayments. #93 slice 6 adds the fourteen Massachusetts stops.
+        assertEquals(112, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
