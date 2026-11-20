@@ -20,7 +20,7 @@ import {
 import type { ConditionString } from '../../Condition.js';
 
 /**
- * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 and 13.
+ * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15 and 16.
  * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4,
  * line 2a includes box 12. Box 2b is the unrecaptured section 1250 portion of box 2a (26 U.S.C. 1(h)(6)) and is
  * not added again. Box 2e is the section 897 portion of box 1a and box 2f is the section 897 portion of
@@ -31,7 +31,10 @@ import type { ConditionString } from '../../Condition.js';
  * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Box 11 (FATCA) asks /requiredToFileForm8938. Yes stops.
  * No proceeds. Box 2d is the collectibles (28%) portion of box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)) and is
  * not added again. A box 2d greater than $0 with a Schedule D line 7 loss or a line 14 capital loss
- * carryover stops the return. Boxes 2c, 8-10 and 14-16 still stop the return.
+ * carryover stops the return. Boxes 2c, 9, and 10, and box 14 greater than $0, still stop the return.
+ * Box 8 is the foreign country for box 7 and does not stop when the 904(j) election applies or box 7 is $0.
+ * Boxes 15 and 16 are allowed when box 14 is $0. On a Pennsylvania, Illinois, North Carolina, or Arizona
+ * return, a box 16 amount that is not box 1a plus box 2a stops the return.
  * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
@@ -236,6 +239,7 @@ export const DividendIncomeSubcategory = (
           <Heading i18nKey='/heading/income/dividends/box-7' />
           <InfoDisplay i18nKey='/info/income/dividends/box-7' />
           <Dollar path='/dividendReports/*/writableForeignTaxPaid' required={false} />
+          <GenericString path='/dividendReports/*/writableForeignCountry' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
         <Screen route='1099-div-box-7-election' condition='/dividendReports/*/hasForeignTaxPaid'>
@@ -279,6 +283,24 @@ export const DividendIncomeSubcategory = (
           <SaveAndOrContinueButton />
         </Screen>
         {knockout(`1099-div-form-8938-knockout`, `/dividendReports/*/form8938StopsReturn`, `foreign-accounts-trusts`)}
+        <Screen route='1099-div-boxes-14-16'>
+          <Heading i18nKey='/heading/income/dividends/boxes-14-16' />
+          <InfoDisplay i18nKey='/info/income/dividends/boxes-14-16' />
+          <Dollar path='/dividendReports/*/writableStateTaxWithheld' required={false} />
+          <GenericString path='/dividendReports/*/writableStateIdNumber' required={false} />
+          <Dollar path='/dividendReports/*/writableStateDistribution' required={false} />
+          <SaveAndOrContinueButton />
+        </Screen>
+        {knockout(
+          `1099-div-box-14-knockout`,
+          `/dividendReports/*/hasStateTaxWithheld`,
+          `dividends-unsupported-boxes`
+        )}
+        {knockout(
+          `1099-div-box-16-knockout`,
+          `/flowKnockoutDividendStateDistribution`,
+          `dividends-state-distribution`
+        )}
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />
           <InfoDisplay i18nKey='/info/income/dividends/unsupported-boxes' />
