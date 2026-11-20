@@ -727,7 +727,9 @@
         1(h)(5)) is Form 1099-DIV box 2d after the 28% Rate Gain Worksheet (/scheduleDLine18). A sale of a collectible
         (scheduleD /flowKnockoutCollectibles) and section 1202 gain (scheduleD /flowKnockoutForm8949CodeQ) still stop.
         Other unrecaptured section 1250 gain (scheduleD /flowKnockoutUnrecaptured1250Gain) and Form 1099-DIV boxes 2c,
-        8-10, and 14-16 (dividends /flowKnockoutDividendUnsupportedBoxes) still stop. Form 1099-DIV box 2b is Schedule
+        9, and 10, and box 14 greater than $0 (dividends /flowKnockoutDividendUnsupportedBoxes) still stop. Box 8 and
+        boxes 15-16 do not, except a box 16 amount that differs from box 1a plus box 2a on a computed state return
+        (dividends /flowKnockoutDividendStateDistribution). Form 1099-DIV box 2b is Schedule
         D line 19. When line 18 or line 19 is more than zero, line 20 No is checked and tax is figured on the Schedule
         D Tax Worksheet (scheduleD3 /usesScheduleDTaxWorksheet). When both are zero, tax is figured on the Qualified
         Dividends and Capital Gain Tax Worksheet, matching this box. Form 4952 is never filed: investment interest

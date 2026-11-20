@@ -26,7 +26,8 @@ headings:
   /heading/income/dividends/box-5-holding:
     Did you hold each REIT share more than 45 days around the dividend date and not have to pay the dividend to someone
     else?
-  /heading/income/dividends/box-7: Enter the amount from <strong>box 7</strong>, if any.
+  /heading/income/dividends/box-7: Enter <strong>box 7</strong> and <strong>box 8</strong>, if any.
+  /heading/income/dividends/boxes-14-16: Enter the state information from <strong>boxes 14, 15, and 16</strong>, if any.
   /heading/income/dividends/box-12: Enter the amount from <strong>box 12</strong>, if any.
   /heading/income/dividends/box-13: Enter the amount from <strong>box 13</strong>, if any.
   /heading/income/dividends/box-11: Is the FATCA filing requirement box (box 11) checked?
@@ -42,6 +43,8 @@ headings:
     This tool doesn’t yet support collectibles gain when you also have a capital loss
   /heading/knockout/dividends-foreign-tax: This tool doesn’t yet support foreign tax that needs Form 1116
   /heading/knockout/dividends-unsupported-boxes: This tool doesn’t yet support some boxes on your 1099-DIV
+  /heading/knockout/dividends-state-distribution:
+    This tool can’t use a state distribution that doesn’t match your federal dividends
   /heading/knockout/dividends-box-13-exceeds-box-12: Box 13 cannot be more than box 12
   /heading/knockout/dividends-nominee: This tool doesn’t yet support dividends received as a nominee
 info:
@@ -134,7 +137,16 @@ info:
           before the ex-dividend date, and you did not have to pay the dividend to someone else. Answer no if you held a
           share for 45 days or less, or if you had to make a related payment, such as for a short sale.
   /info/income/dividends/box-7:
-    body: Box 7 is foreign tax paid on these dividends.
+    body:
+      - p:
+          Box 7 is foreign tax paid on these dividends. Box 8 is the country or U.S. possession for that tax. Leave a
+          box blank if it’s empty on your form. A mutual fund often leaves box 8 blank.
+  /info/income/dividends/boxes-14-16:
+    body:
+      - p:
+          Box 14 is state income tax withheld. An amount greater than $0 stops this return. Box 15 is the payer’s state
+          identification number. Box 16 is the state distribution. Boxes 15 and 16 are not added to your federal return.
+          Leave a box blank if it’s empty on your form.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -165,9 +177,9 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Answer yes if your form shows an amount in box 2c, 9, 10, 14, 15, or 16, or a country in box 8. Box 11 (FATCA
-          filing requirement) is asked on its own screen. Boxes 2b, 2d, 2e, 2f, 6, 12, and 13 are entered on their own
-          screens."
+          "Answer yes if your form shows an amount in box 2c, 9, or 10. Box 8 (foreign country) is entered with box 7.
+          Boxes 14, 15, and 16 are entered on their own screen. Box 11 (FATCA filing requirement) is asked on its own
+          screen. Boxes 2b, 2d, 2e, 2f, 6, 12, and 13 are entered on their own screens."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -216,8 +228,14 @@ info:
     alertText:
       body:
         - p:
-            This tool supports only boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 11, 12, and 13 of Form 1099-DIV.
-            You’ll need another way to file this return.
+            This tool doesn’t support an amount in box 2c, 9, or 10, or state tax withheld in box 14. You’ll need
+            another way to file this return.
+  /info/knockout/dividends-state-distribution:
+    alertText:
+      body:
+        - p:
+            On a Pennsylvania, Illinois, North Carolina, or Arizona return, box 16 has to equal box 1a plus box 2a.
+            Those state returns use the federal amounts. You’ll need another way to file this return.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:
@@ -287,6 +305,14 @@ fields:
     name: <strong>Box 5</strong> - Section 199A dividends
   /dividendReports/*/writableForeignTaxPaid:
     name: <strong>Box 7</strong> - Foreign tax paid
+  /dividendReports/*/writableForeignCountry:
+    name: <strong>Box 8</strong> - Foreign country or U.S. possession
+  /dividendReports/*/writableStateTaxWithheld:
+    name: <strong>Box 14</strong> - State tax withheld
+  /dividendReports/*/writableStateIdNumber:
+    name: <strong>Box 15</strong> - State identification number
+  /dividendReports/*/writableStateDistribution:
+    name: <strong>Box 16</strong> - State distribution
   /dividendReports/*/writableExemptInterestDividends:
     name: <strong>Box 12</strong> - Exempt-interest dividends
   /dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends:
@@ -319,6 +345,10 @@ dataviews:
     /dividendReports/*/section199ADividendsHoldingPeriodMet:
       Did you hold each REIT share more than 45 days and not have to pay the dividend to someone else?
     /dividendReports/*/writableForeignTaxPaid: Box 7 - Foreign tax paid
+    /dividendReports/*/writableForeignCountry: Box 8 - Foreign country or U.S. possession
+    /dividendReports/*/writableStateTaxWithheld: Box 14 - State tax withheld
+    /dividendReports/*/writableStateIdNumber: Box 15 - State identification number
+    /dividendReports/*/writableStateDistribution: Box 16 - State distribution
     /dividendReports/*/foreignTaxElectionRequirementsMet: Do all of the foreign tax requirements apply?
     /dividendReports/*/writableExemptInterestDividends: Box 12 - Exempt-interest dividends
     /dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends:

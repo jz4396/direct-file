@@ -29,7 +29,9 @@ headings:
   /heading/income/dividends/box-5-holding:
     ¿Tuvo cada acción de REIT más de 45 días alrededor de la fecha del dividendo y no tuvo que pagar el dividendo a otra
     persona?
-  /heading/income/dividends/box-7: Ingrese la cantidad del <strong>encasillado 7</strong>, si la hay.
+  /heading/income/dividends/box-7: Ingrese el <strong>encasillado 7</strong> y el <strong>encasillado 8</strong>, si los hay.
+  /heading/income/dividends/boxes-14-16:
+    Ingrese la información estatal de los <strong>encasillados 14, 15 y 16</strong>, si la hay.
   /heading/income/dividends/box-12: Ingrese la cantidad del <strong>encasillado 12</strong>, si la hay.
   /heading/income/dividends/box-13: Ingrese la cantidad del <strong>encasillado 13</strong>, si la hay.
   /heading/income/dividends/box-11: ¿Está marcada la casilla del requisito de presentación de FATCA (encasillado 11)?
@@ -48,6 +50,8 @@ headings:
     Esta herramienta aún no admite impuestos extranjeros que requieren el Formulario 1116
   /heading/knockout/dividends-unsupported-boxes:
     Esta herramienta aún no admite algunos encasillados de su Formulario 1099-DIV
+  /heading/knockout/dividends-state-distribution:
+    Esta herramienta no puede usar una distribución estatal que no coincida con sus dividendos federales
   /heading/knockout/dividends-box-13-exceeds-box-12: El encasillado 13 no puede ser mayor que el encasillado 12
   /heading/knockout/dividends-nominee: Esta herramienta aún no admite dividendos recibidos como nominatario
 info:
@@ -148,7 +152,18 @@ info:
           de la fecha ex dividendo, y no tuvo que pagar el dividendo a otra persona. Responda no si tuvo una acción 45
           días o menos, o si tuvo que hacer un pago relacionado, como por una venta en corto.
   /info/income/dividends/box-7:
-    body: El encasillado 7 es el impuesto extranjero pagado sobre estos dividendos.
+    body:
+      - p:
+          El encasillado 7 es el impuesto extranjero pagado sobre estos dividendos. El encasillado 8 es el país o la
+          posesión de EE. UU. de ese impuesto. Deje un encasillado en blanco si está vacío en su formulario. Un fondo
+          mutuo a menudo deja el encasillado 8 en blanco.
+  /info/income/dividends/boxes-14-16:
+    body:
+      - p:
+          El encasillado 14 es el impuesto estatal sobre el ingreso retenido. Una cantidad mayor que $0 detiene esta
+          declaración. El encasillado 15 es el número de identificación estatal del pagador. El encasillado 16 es la
+          distribución estatal. Los encasillados 15 y 16 no se suman a su declaración federal. Deje un encasillado en
+          blanco si está vacío en su formulario.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -181,9 +196,10 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Responda sí si su formulario muestra una cantidad en el encasillado 2c, 9, 10, 14, 15 o 16, o un país en el
-          encasillado 8. El encasillado 11 (requisito de presentación de FATCA) se pregunta en su propia pantalla. Los
-          encasillados 2b, 2d, 2e, 2f, 6, 12 y 13 se ingresan en sus propias pantallas."
+          "Responda sí si su formulario muestra una cantidad en el encasillado 2c, 9 o 10. El encasillado 8 (país
+          extranjero) se ingresa con el encasillado 7. Los encasillados 14, 15 y 16 se ingresan en su propia pantalla.
+          El encasillado 11 (requisito de presentación de FATCA) se pregunta en su propia pantalla. Los encasillados 2b,
+          2d, 2e, 2f, 6, 12 y 13 se ingresan en sus propias pantallas."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -236,8 +252,15 @@ info:
     alertText:
       body:
         - p:
-            Esta herramienta solo admite los encasillados 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 y 13 del
-            Formulario 1099-DIV. Necesitará otra manera de presentar esta declaración.
+            Esta herramienta no admite una cantidad en el encasillado 2c, 9 o 10, ni el impuesto estatal retenido en el
+            encasillado 14. Necesitará otra manera de presentar esta declaración.
+  /info/knockout/dividends-state-distribution:
+    alertText:
+      body:
+        - p:
+            En una declaración de Pensilvania, Illinois, Carolina del Norte o Arizona, el encasillado 16 tiene que ser
+            igual al encasillado 1a más el encasillado 2a. Esas declaraciones estatales usan las cantidades federales.
+            Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:
@@ -310,6 +333,14 @@ fields:
     name: <strong>Encasillado 5</strong> - Dividendos de la sección 199A
   /dividendReports/*/writableForeignTaxPaid:
     name: <strong>Encasillado 7</strong> - Impuesto extranjero pagado
+  /dividendReports/*/writableForeignCountry:
+    name: <strong>Encasillado 8</strong> - País extranjero o posesión de EE. UU.
+  /dividendReports/*/writableStateTaxWithheld:
+    name: <strong>Encasillado 14</strong> - Impuesto estatal retenido
+  /dividendReports/*/writableStateIdNumber:
+    name: <strong>Encasillado 15</strong> - Número de identificación estatal
+  /dividendReports/*/writableStateDistribution:
+    name: <strong>Encasillado 16</strong> - Distribución estatal
   /dividendReports/*/writableExemptInterestDividends:
     name: <strong>Encasillado 12</strong> - Dividendos de intereses exentos
   /dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends:
@@ -344,6 +375,10 @@ dataviews:
     /dividendReports/*/section199ADividendsHoldingPeriodMet:
       ¿Tuvo cada acción de REIT más de 45 días y no tuvo que pagar el dividendo a otra persona?
     /dividendReports/*/writableForeignTaxPaid: Encasillado 7 - Impuesto extranjero pagado
+    /dividendReports/*/writableForeignCountry: Encasillado 8 - País extranjero o posesión de EE. UU.
+    /dividendReports/*/writableStateTaxWithheld: Encasillado 14 - Impuesto estatal retenido
+    /dividendReports/*/writableStateIdNumber: Encasillado 15 - Número de identificación estatal
+    /dividendReports/*/writableStateDistribution: Encasillado 16 - Distribución estatal
     /dividendReports/*/foreignTaxElectionRequirementsMet: ¿Se cumplen todas las condiciones del impuesto extranjero?
     /dividendReports/*/writableExemptInterestDividends: Encasillado 12 - Dividendos de intereses exentos
     /dividendReports/*/writableSpecifiedPrivateActivityBondInterestDividends:

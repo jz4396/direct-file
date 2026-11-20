@@ -122,10 +122,13 @@ class PrintRefusingKnockoutsTest {
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
     /**
-     * Form 1099-DIV boxes 2c, 8-10 and 14-16, including section 1202 gain. Boxes 2b and 2d are supported. Box 11
+     * Form 1099-DIV boxes 2c, 9, and 10, and box 14 greater than $0, including section 1202 gain. Boxes 2b and 2d
+     * are supported. Box 8 and boxes 15-16 are supported when box 14 is $0. Box 11
      * (FATCA) asks Form 8938 and is not this stop. Boxes 2e, 2f and 6 are portions of box 1a or 2a. Box 13 is line 2g.
      */
     static final String DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT = "/flowKnockoutDividendUnsupportedBoxes";
+    /** 1099-DIV box 16 differs from box 1a plus box 2a on a computed PA, IL, NC, or AZ return. */
+    static final String DIVIDEND_STATE_DISTRIBUTION_KNOCKOUT = "/flowKnockoutDividendStateDistribution";
     /** 26 U.S.C. 301(c)(3)(A): box 3 above basis, reported on Form 8949. */
     static final String DIVIDEND_OVER_BASIS_KNOCKOUT = "/flowKnockoutNondividendDistributionsOverBasis";
     /** 26 U.S.C. 1(h)(11)(B)(iii): box 1b that is not a qualified dividend. */
@@ -274,7 +277,8 @@ class PrintRefusingKnockoutsTest {
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 (not lines 2g and 2j)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
-                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2c, 8-10, 14-16 (not boxes 2b, 2d, or 11)
+                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2c, 9, 10, and box 14 > $0
+                DIVIDEND_STATE_DISTRIBUTION_KNOCKOUT, // box 16 ≠ box 1a + box 2a on a computed PA, IL, NC, or AZ return
                 DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
                 DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
                 DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT, // box 5 that is not a qualified REIT dividend
@@ -297,7 +301,7 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(97, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(98, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -1316,6 +1320,7 @@ class PrintRefusingKnockoutsTest {
 
     static final List<String> DIVIDEND_PRINT_KNOCKOUTS = List.of(
             DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT,
+            DIVIDEND_STATE_DISTRIBUTION_KNOCKOUT,
             DIVIDEND_OVER_BASIS_KNOCKOUT,
             DIVIDEND_HOLDING_PERIOD_KNOCKOUT,
             DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT,
@@ -1381,6 +1386,29 @@ class PrintRefusingKnockoutsTest {
         assertEquals(
                 List.of(DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT),
                 PrintRefusingKnockouts.refusingPaths(fgs.getGraph(boxes)));
+
+        // Box 14 $25 is state tax withheld. It is not Schedule A line 5a. Boxes 2c, 9, and 10 use the same stop.
+        Map<String, FactTypeWithItem> box14 = commonDividendReturn(mapper);
+        putJson(box14, mapper, div + "/writableStateTaxWithheld", ScheduleATy2026PdfSmokeTest.dollar("25.00"));
+        Graph box14Graph = fgs.getGraph(box14);
+        assertEquals("25.00", box14Graph.get(div + "/stateTaxWithheld").get().toString());
+        assertEquals(
+                List.of(DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(box14Graph));
+
+        // Florida: box 8 "Various", box 15 "FL 123", box 16 $2,000, box 14 $0. Box 16 is not box 1a plus box 2a
+        // ($1,000,000 + $500). A return that is not a computed state return still prints.
+        Map<String, FactTypeWithItem> stateBoxes = commonDividendReturn(mapper);
+        putJson(stateBoxes, mapper, div + "/writableForeignCountry", ScheduleATy2026PdfSmokeTest.string("Various"));
+        putJson(stateBoxes, mapper, div + "/writableStateTaxWithheld", ScheduleATy2026PdfSmokeTest.dollar("0.00"));
+        putJson(stateBoxes, mapper, div + "/writableStateIdNumber", ScheduleATy2026PdfSmokeTest.string("FL 123"));
+        putJson(stateBoxes, mapper, div + "/writableStateDistribution", ScheduleATy2026PdfSmokeTest.dollar("2000.00"));
+        Graph stateGraph = fgs.getGraph(stateBoxes);
+        assertEquals("Various", stateGraph.get(div + "/foreignCountry").get().toString());
+        assertEquals("0.00", stateGraph.get(div + "/stateTaxWithheld").get().toString());
+        assertEquals("FL 123", stateGraph.get(div + "/stateIdNumber").get().toString());
+        assertEquals("2000.00", stateGraph.get(div + "/stateDistribution").get().toString());
+        assertEquals(Boolean.FALSE, stateGraph.get(DIVIDEND_STATE_DISTRIBUTION_KNOCKOUT).get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(stateGraph), "box 8 and boxes 15-16 print");
 
         Map<String, FactTypeWithItem> overBasis = commonDividendReturn(mapper);
         putJson(

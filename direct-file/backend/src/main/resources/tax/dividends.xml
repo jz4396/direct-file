@@ -9,7 +9,10 @@
     PA-40 IN (2025) https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40in.pdf
       (PA handling lives in paPit.xml: per-spouse Schedule B lines 1, 5, 6, 10, and 12, /paLine3, and
       /flowKnockoutPaScheduleB).
-  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 11, 12 and 13 per form.
+  Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15
+  and 16 per form. Box 8 (/dividendReports/*/foreignCountry) is the country or U.S. possession for box 7. Boxes 15
+  (/dividendReports/*/stateIdNumber) and 16 (/dividendReports/*/stateDistribution) are the payer's state ID and the
+  state distribution. None of those three is added to a federal or state line.
   Box 11 (FATCA filing requirement) is not a stop by itself. A check asks income /requiredToFileForm8938
   (26 U.S.C. 6038D). Yes stops because Form 8938 is not produced. No proceeds.
   Boxes 2b, 2e, 2f and 6 are portions already included in box 1a or box 2a. They are not added again.
@@ -45,7 +48,14 @@
   Box 13 specified private activity bond interest dividends are Form 6251 line 2g
   (form6251 /form6251Line2g). Box 13 cannot exceed box 12.
   Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut, and PrintRefusingKnockouts), never zeroed:
-    boxes 2c, 8-10, 14-16                        -> /flowKnockoutDividendUnsupportedBoxes
+    boxes 2c, 9 and 10, or box 14 > $0           -> /flowKnockoutDividendUnsupportedBoxes
+    box 16 ≠ box 1a + box 2a on a computed
+      PA, IL, NC, or AZ return                   -> /flowKnockoutDividendStateDistribution
+  Box 8 is allowed when /flowKnockoutDividendForeignTaxPaid is false (box 7 is $0 or meets 26 U.S.C. 904(j)). The
+  election does not use the country (904(j); Form 1040 instr. (2025) Schedule 3 line 1). A box 7 that fails 904(j)
+  stays that stop, including when box 8 is filled in. Boxes 15 and 16 are allowed when box 14 is $0 on every form.
+  Box 14 greater than $0 would be Schedule A line 5a and each state module's withholding line. Neither is wired, so
+  it stops. A blank box 14 is $0.
     box 11 FATCA checked, Form 8938 required     -> income /scheduleBPartIIIOutOfScope
                                                    (interest /flowKnockoutScheduleBPartIII)
     box 13 larger than box 12                    -> /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12
@@ -591,6 +601,247 @@
       </Derived>
     </Fact>
 
+    <Fact path="/dividendReports/*/writableForeignCountry">
+      <Name>1099-DIV box 8: foreign country or U.S. possession (as entered)</Name>
+      <Description>Box 8 on the 1099-DIV. Optional. Use /dividendReports/*/foreignCountry downstream. Not added to any
+        line.</Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>75</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/foreignCountry">
+      <Name>1099-DIV box 8: foreign country or U.S. possession</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 8 is the country or U.S. possession to which the box 7
+        foreign tax was paid. "This box should be left blank if a RIC reported the foreign tax shown in box 7."
+        26 U.S.C. 904(j) (https://www.law.cornell.edu/uscode/text/26/904) and Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 115, Schedule 3 line 1: the election does not make a per-country
+        computation, so the country is not used on Schedule 3 line 1. Empty when blank. A country does not stop the
+        return when /flowKnockoutDividendForeignTaxPaid is false (box 7 is $0 or meets 904(j)). A box 7 that fails
+        904(j) stays that stop.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableForeignCountry" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableForeignCountry" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableStateTaxWithheld">
+      <Name>1099-DIV box 14: state tax withheld (as entered)</Name>
+      <Description>Box 14 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/stateTaxWithheld
+        downstream. Not added to any line.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/stateTaxWithheld">
+      <Name>1099-DIV box 14: state tax withheld</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: boxes 14-16 are state income tax withholding. Box 14 is the
+        state tax withheld. It would be Schedule A (Form 1040) line 5a and each computed state's withholding line.
+        Neither is wired, so an amount greater than $0 stops the return
+        (/flowKnockoutDividendUnsupportedBoxes). $0, including a blank box, does not. The amount is not added to
+        Schedule A line 5a or to a state withholding line.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableStateTaxWithheld" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableStateTaxWithheld" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/hasStateTaxWithheld">
+      <Name>1099-DIV box 14 is more than $0</Name>
+      <Description>Box 14 greater than $0. A blank box is $0.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="../stateTaxWithheld" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableStateIdNumber">
+      <Name>1099-DIV box 15: state identification number (as entered)</Name>
+      <Description>Box 15 on the 1099-DIV. Optional. Use /dividendReports/*/stateIdNumber downstream. Not added to any
+        line.</Description>
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>75</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/stateIdNumber">
+      <Name>1099-DIV box 15: state identification number</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 15 is the payer's state identification number. It is
+        used only for a state return and is not added to any line. Empty when blank. Allowed when box 14 is $0 on
+        every form. A box 14 greater than $0 stops the return for that reason
+        (/flowKnockoutDividendUnsupportedBoxes).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableStateIdNumber" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableStateIdNumber" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <String />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableStateDistribution">
+      <Name>1099-DIV box 16: state distribution (as entered)</Name>
+      <Description>Box 16 on the 1099-DIV. Optional; left blank means $0. Use /dividendReports/*/stateDistribution
+        downstream. Not added to any line.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/stateDistribution">
+      <Name>1099-DIV box 16: state distribution</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 16 is the state distribution. It is payer state-income
+        information, used only for a state return, and is not added to any line. $0 when blank. Allowed when box 14
+        is $0 on every form. On a computed state return (stateReturn /stateReturnComputed: Pennsylvania, including a
+        part-year PA-40, Illinois, North Carolina, or Arizona) an entered amount that is not this form's box 1a plus
+        box 2a stops the return (/flowKnockoutDividendStateDistribution). Those modules read the federal amounts. A
+        blank box 16 is not an amount and does not stop.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../writableStateDistribution" />
+              </IsComplete>
+            </When>
+            <Then>
+              <Dependency path="../writableStateDistribution" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/stateDistributionDiffersFromFederal">
+      <Name>1099-DIV box 16 differs from box 1a plus box 2a</Name>
+      <Description>An entered box 16 amount is not this form's box 1a plus box 2a. Blank box 16 is complete false.
+        Box 2a left blank is $0.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="../writableStateDistribution" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <NotEqual>
+                <Left>
+                  <Dependency path="../stateDistribution" />
+                </Left>
+                <Right>
+                  <Add>
+                    <Dependency path="../ordinaryDividends" />
+                    <Dependency path="../capitalGainDistributions" />
+                  </Add>
+                </Right>
+              </NotEqual>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/dividendReports/*/writableExemptInterestDividends">
       <Name>1099-DIV box 12: exempt-interest dividends (as entered)</Name>
       <Description>Box 12 on the 1099-DIV. Optional; left blank means $0. Use
@@ -838,20 +1089,23 @@
 
     <Fact path="/dividendReports/*/hasUnsupportedBoxes">
       <Name>1099-DIV has an amount in an unsupported box</Name>
-      <Description>Yes if the form has an amount in box 2c, 9, 10, 14, 15 or 16, or a country in box 8. Box 11
-        (FATCA filing requirement) is /dividendReports/*/fatcaFilingRequirement and is not one of these boxes. Box 2b
-        is unrecaptured section 1250 gain (/dividendReports/*/unrecapturedSection1250Gain). Box 2d is collectibles
-        (28%) gain (/dividendReports/*/collectibles28RateGain). Box 2e is section 897 ordinary dividends
+      <Description>Yes if the form has an amount in box 2c, 9, or 10. Box 14 greater than $0 is the same stop, from
+        /dividendReports/*/hasStateTaxWithheld, not from this answer. Box 8
+        (/dividendReports/*/foreignCountry) is not this answer: it is allowed when
+        /flowKnockoutDividendForeignTaxPaid is false. Boxes 15 and 16
+        (/dividendReports/*/stateIdNumber and /dividendReports/*/stateDistribution) are not this answer when box 14
+        is $0. Box 11 (FATCA filing requirement) is /dividendReports/*/fatcaFilingRequirement and is not one of these
+        boxes. Box 2b is unrecaptured section 1250 gain (/dividendReports/*/unrecapturedSection1250Gain). Box 2d is
+        collectibles (28%) gain (/dividendReports/*/collectibles28RateGain). Box 2e is section 897 ordinary dividends
         (/dividendReports/*/section897OrdinaryDividends), box 2f is section 897 capital gain
         (/dividendReports/*/section897CapitalGain), and box 6 is investment expenses
         (/dividendReports/*/investmentExpenses). Box 12 is exempt-interest dividends
         (/dividendReports/*/exemptInterestDividends) and box 13 is specified private activity bond interest dividends
         (/dividendReports/*/specifiedPrivateActivityBondInterestDividends). None of those is one of these boxes. Form
         1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2b "unrecaptured section 1250 gain" (supported; already
-        inside box 2a), 2c "Section 1202 gain" (still this stop), 2d "Collectibles (28%) gain" (supported; already
-        inside box 2a), boxes 9-10 liquidation distributions, boxes 14-16 state tax withheld. Box 13 is Form 6251
-        line 2g (26 U.S.C. 57(a)(5)).</Description>
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2c "Section 1202 gain" (still this stop), boxes 9-10
+        liquidation distributions (still this stop), box 14 state tax withheld (still this stop when greater than $0).
+        Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
       <Writable>
         <Boolean />
       </Writable>
@@ -1667,24 +1921,28 @@
 
     <Fact path="/flowKnockoutDividendUnsupportedBoxes">
       <Name>Knockout: 1099-DIV box this tool can't compute</Name>
-      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes. Box 2c needs the section 1202 part of the 28% Rate
-        Gain Worksheet (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1
-        requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section
-        1202 gain), or box 2d (collectibles (28%) gain)"). Boxes 2b and 2d are supported and are not this stop. Boxes
-        9-10 are liquidation distributions (basis recovery), and boxes 14-16 are state withholding. Box 8 is a foreign
-        country. Box 11 (FATCA filing requirement) is not this stop. Form 1099-DIV (Rev. December 2027) draft,
-        Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: the payer is reporting
-        to satisfy its chapter 4 account reporting requirement. A check asks income /requiredToFileForm8938
-        (26 U.S.C. 6038D). Yes stops because Form 8938 is not produced. No proceeds. Box 2b is the unrecaptured section
-        1250 portion of box 2a (26 U.S.C. 1(h)(6)); it is not this stop and is not added again. Box 2d is the
-        collectibles (28%) portion of box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)); it is not this stop and is not added
-        again. Box 2e and box 2f are section 897 portions of box 1a and box 2a (26 U.S.C. 897(a)); they are not this
-        stop and are not added again. Box 6 is included in box 1a and is not deducted (26 U.S.C. 67(g)); it is not
-        this stop. A box 2b, 2d, 2e, 2f or 6 larger than its parent box stops at
-        /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40 stops at paPit
-        /flowKnockoutPaDividendInvestmentExpenses. Box 12 exempt-interest dividends are Form 1040 line 2a
-        (/totalExemptInterestDividends). Box 13 specified private activity bond interest dividends are Form 6251 line
-        2g (26 U.S.C. 57(a)(5), /totalSpecifiedPrivateActivityBondInterestDividends). Neither is this stop.</Description>
+      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes (box 2c, 9, or 10), or box 14 greater than $0
+        (/dividendReports/*/hasStateTaxWithheld). Box 2c needs the section 1202 part of the 28% Rate Gain Worksheet
+        (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1 requires that
+        none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or
+        box 2d (collectibles (28%) gain)"). Boxes 2b and 2d are supported and are not this stop. Boxes 9-10 are
+        liquidation distributions (basis recovery). Box 14 is state tax withheld. It would be Schedule A line 5a and
+        each state module's withholding line, and neither is wired, so an amount greater than $0 stops. $0 does not.
+        Box 8 is a foreign country (/dividendReports/*/foreignCountry) and is not this stop. Boxes 15 and 16 are not
+        this stop when box 14 is $0. A box 16 amount that differs from box 1a plus box 2a on a computed state return
+        stops at /flowKnockoutDividendStateDistribution. Box 11 (FATCA filing requirement) is not this stop. Form
+        1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: the payer is reporting to satisfy its chapter 4
+        account reporting requirement. A check asks income /requiredToFileForm8938 (26 U.S.C. 6038D). Yes stops
+        because Form 8938 is not produced. No proceeds. Box 2b is the unrecaptured section 1250 portion of box 2a
+        (26 U.S.C. 1(h)(6)); it is not this stop and is not added again. Box 2d is the collectibles (28%) portion of
+        box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)); it is not this stop and is not added again. Box 2e and box 2f are
+        section 897 portions of box 1a and box 2a (26 U.S.C. 897(a)); they are not this stop and are not added again.
+        Box 6 is included in box 1a and is not deducted (26 U.S.C. 67(g)); it is not this stop. A box 2b, 2d, 2e, 2f
+        or 6 larger than its parent box stops at /flowKnockoutDividendAmountsInconsistent. A nonzero box 6 on a PA-40
+        stops at paPit /flowKnockoutPaDividendInvestmentExpenses. Box 12 exempt-interest dividends are Form 1040 line
+        2a (/totalExemptInterestDividends). Box 13 specified private activity bond interest dividends are Form 6251
+        line 2g (26 U.S.C. 57(a)(5), /totalSpecifiedPrivateActivityBondInterestDividends). Neither is this stop.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -1697,15 +1955,81 @@
               </IsComplete>
             </When>
             <Then>
+              <Any>
+                <GreaterThan>
+                  <Left>
+                    <Count>
+                      <All>
+                        <IsComplete>
+                          <Dependency path="/dividendReports/*/hasUnsupportedBoxes" />
+                        </IsComplete>
+                        <Dependency path="/dividendReports/*/hasUnsupportedBoxes" />
+                      </All>
+                    </Count>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <GreaterThan>
+                  <Left>
+                    <Count>
+                      <Dependency path="/dividendReports/*/hasStateTaxWithheld" />
+                    </Count>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </Any>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutDividendStateDistribution">
+      <Name>Knockout: 1099-DIV box 16 differs from box 1a plus box 2a on a computed state return</Name>
+      <Description>A computed state return (stateReturn /stateReturnComputed: full-year or part-year Pennsylvania,
+        Illinois, North Carolina, or Arizona) and an entered box 16 that is not that form's box 1a plus box 2a.
+        Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 16 is the state distribution. PA-40 Schedule B reads
+        federal box 1a (line 1) and box 2a (line 10). Illinois, North Carolina, and Arizona read federal total income,
+        which includes those amounts. A different state distribution is not computed, so the return stops. Blank box
+        16 is not an amount. An amount equal to box 1a plus box 2a does not stop. A return that is not a computed
+        state return, including Florida, is complete false. Box 14 greater than $0 is
+        /flowKnockoutDividendUnsupportedBoxes, not this stop. Complete false when /stateReturnComputed is not a
+        complete true, when no Form 1099-DIV is entered, or when every entered box 16 equals that form's box 1a plus
+        box 2a.</Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency module="stateReturn" path="/stateReturnComputed" />
+                </IsComplete>
+                <Dependency module="stateReturn" path="/stateReturnComputed" />
+                <IsComplete>
+                  <Dependency path="/dividendReports" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
               <GreaterThan>
                 <Left>
                   <Count>
-                    <All>
-                      <IsComplete>
-                        <Dependency path="/dividendReports/*/hasUnsupportedBoxes" />
-                      </IsComplete>
-                      <Dependency path="/dividendReports/*/hasUnsupportedBoxes" />
-                    </All>
+                    <Dependency path="/dividendReports/*/stateDistributionDiffersFromFederal" />
                   </Count>
                 </Left>
                 <Right>

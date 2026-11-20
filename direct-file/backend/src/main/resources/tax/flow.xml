@@ -29,6 +29,7 @@
                or box 11), and line 7b countries that do not fit are /flowKnockoutScheduleBPartIII. -->
           <Dependency module="interest" path="/flowKnockoutScheduleBPartIII" />
           <Dependency module="dividends" path="/flowKnockoutDividendUnsupportedBoxes" />
+          <Dependency module="dividends" path="/flowKnockoutDividendStateDistribution" />
           <Dependency module="dividends" path="/flowKnockoutNondividendDistributionsOverBasis" />
           <Dependency module="dividends" path="/flowKnockoutQualifiedDividendsHoldingPeriod" />
           <Dependency module="dividends" path="/flowKnockoutSection199ADividendsHoldingPeriod" />
