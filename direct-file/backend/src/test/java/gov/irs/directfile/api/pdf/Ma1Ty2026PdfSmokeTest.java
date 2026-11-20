@@ -151,6 +151,37 @@ class Ma1Ty2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Line 22 double-rounding guard. Single, 5.85 percent elected, box 16 $30,870, boxes 4 and 6 already $2,000 on
+     * the synthetic filer, no rent. Line 17 is $28,870 and line 21 is $24,470. 24,470 × 0.0585 = $1,431.495. Cent
+     * rounding half-even makes that $1,431.50, so an unguarded Round would print $1,432. Line 22 is $1,431.
+     */
+    @Test
+    void optionalRateDropsTheDoubleRoundedHalfCent() throws Exception {
+        Map<String, String> facts = supported();
+        facts.put("/formW2s/#" + W2 + "/writableStateWages", dollar("30870.00"));
+        facts.put("/maRentPaid", dollar("0.00"));
+        facts.put("/maElectsOptionalRate", bool(true));
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            var form = doc.getDocumentCatalog().getAcroForm();
+            assertEquals(
+                    "28870",
+                    form.getField(
+                                    "line 17. 5.0% Income after deductions. Subtract line 16 from line 10. Not less than 0")
+                            .getValueAsString());
+            assertEquals(
+                    "24470",
+                    form.getField("line 21. Total Taxable 5.0% Income. Add lines 19 and 20")
+                            .getValueAsString());
+            assertEquals(
+                    "1431",
+                    form.getField(
+                                    "line 22. Tax On 5.0% Income (from tax table). If line 21 is more than $24,000, multiply by .05")
+                            .getValueAsString());
+        }
+    }
+
     @Test
     void filingStatusExportValuesMatchTheForm() {
         assertEquals("Single", Ma1PdfForm.filingStatusExport("single"));
