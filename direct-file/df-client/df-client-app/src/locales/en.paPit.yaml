@@ -78,6 +78,8 @@ headings:
   /heading/knockout/pa-schedule-d: This tool doesn’t yet support sales of property on a Pennsylvania return
   /heading/knockout/pa-k1-part-ii-capital-gain:
     This tool doesn’t yet support partnership or S corporation capital gain on a Pennsylvania return
+  /heading/knockout/pa-k1-guaranteed-payments:
+    This tool doesn’t yet support guaranteed payments for services on a Pennsylvania return
   /heading/knockout/pa-k1-1041-capital-gain:
     This tool doesn’t yet support estate or trust capital gain on a Pennsylvania return
   /heading/knockout/pa-k1-1041-box-7:
@@ -276,8 +278,8 @@ info:
         - p:
             Your Pennsylvania return needs PA Schedule B for an amount this tool doesn’t put on the schedule. This
             includes capital gain distributions on a joint or part-year return, fund dividends from U.S. or Pennsylvania
-            obligations, dividends you received as a nominee, or ordinary dividends you received while you lived
-            outside Pennsylvania.
+            obligations, dividends you received as a nominee, or ordinary dividends you received while you lived outside
+            Pennsylvania.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
@@ -304,13 +306,24 @@ info:
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-k1-guaranteed-payments:
+    alertText:
+      body:
+        - p:
+            Form 1065 box 4a is guaranteed payments for services. On a federal return that amount goes in column (k) of
+            Schedule E line 28. On a PA-40 it is not copied from that federal line. Pennsylvania uses the PA Schedule
+            RK-1. This tool doesn’t fill out that RK-1 yet.
+        - p: You can still file your federal return here.
+        - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/knockout/pa-k1-1041-capital-gain:
     alertText:
       body:
         - p:
             Schedule K-1 (Form 1041) box 3 or box 4a is estate or trust income. On a PA-40 that amount is reported on
-            line 7, Estate or Trust Income, using PA Schedule J and the PA-41 Schedule RK-1. It is not PA-40 line 5.
-            A beneficiary cannot report a loss. This tool doesn’t fill out PA Schedule J yet.
+            line 7, Estate or Trust Income, using PA Schedule J and the PA-41 Schedule RK-1. It is not PA-40 line 5. A
+            beneficiary cannot report a loss. This tool doesn’t fill out PA Schedule J yet.
         - p: You can still file your federal return here.
         - p: <Link1>Find other ways to file your Pennsylvania return.</Link1>
       urls:

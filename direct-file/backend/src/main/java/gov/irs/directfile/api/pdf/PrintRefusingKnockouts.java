@@ -103,6 +103,11 @@ public final class PrintRefusingKnockouts {
             // PA-40 IN (2025) p. 17, LINE 5. 72 P.S. §7303(a)(3). Complete false when the return is not a
             // PA-40 or both totals are zero. A loss is nonzero and refuses the print.
             "/flowKnockoutPaK1PartIICapitalGain",
+            // A nonzero Form 1065 box 4a on a PA-40. Federal Schedule E line 28 column (k) is not copied onto
+            // a PA-40 line. PA Schedule RK-1 is not produced. Same treatment as
+            // /flowKnockoutPaK1PartIICapitalGain. 72 P.S. §7303. Complete false when the return is not a
+            // PA-40 or the unrounded box 4a total is zero.
+            "/flowKnockoutPaK1GuaranteedPayments",
             // A nonzero Schedule K-1 (Form 1041) box 7 on any PA-40. Federal Schedule E line 33 column (d)
             // is not PA-40 line 6. PA-40 IN (2025) p. 19, LINE 7, reports estate or trust income on PA
             // Schedule J from a PA-41 Schedule RK-1, and a beneficiary cannot report a loss. PA Schedule J
@@ -239,7 +244,11 @@ public final class PrintRefusingKnockouts {
             // that is not the supported nonfarm Form 1065 amount on Schedule SE line 2, a section 199A
             // statement, an out-of-scope estate or trust, Part IV), refuses the print. A REMIC
             // yes (Schedule Q (Form 1066)) refuses through this same path even when the K-1 answer is no.
-            // This list does not gain another Schedule E path. Asked of every filer, not only after Part I.
+            // Nonnegative Form 1065 box 4a (guaranteed payments for services) is line 28 column (k) and may
+            // print. It is not Form 8995 line 1 (26 U.S.C. 199A(c)(4)(B)) and not Form 8960 line 4a
+            // (26 U.S.C. 1411(c)(6)). Box 4b and a box 4a greater than box 14 code A refuse the print through
+            // this same path. This list does not gain another Schedule E path. Asked of every filer, not only
+            // after Part I.
             "/flowKnockoutScheduleEPartII",
             // More than four partnerships or S corporations. 2026 draft Instructions for Schedule E, PDF p. 9: attach
             // a continuation sheet. Lines 29a, 30, and 32 include every entity, and line 28 has only four rows, so

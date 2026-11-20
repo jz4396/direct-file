@@ -557,6 +557,9 @@ class ScheduleDForm8949PdfSmokeTest {
         bool(facts, p + "box14CodeAWasReduced", false);
         bool(facts, p + "box14CodeAIsFarm", false);
         bool(facts, p + "box14CodeANotLimitedPartnerAmount", false);
+        dollar(facts, p + "form1065Box4a", "0.00");
+        dollar(facts, p + "form1065Box4b", "0.00");
+        dollar(facts, p + "form1065Box4c", "0.00");
         bool(facts, p + "hasQbiStatement", false);
         bool(facts, p + "hasOtherK1Amount", otherAmount);
         bool(facts, p + "basisComputationRequired", false);

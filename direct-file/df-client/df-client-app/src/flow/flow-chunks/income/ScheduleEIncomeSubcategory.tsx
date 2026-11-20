@@ -10,6 +10,7 @@ import {
   Heading,
   InfoDisplay,
   KnockoutButton,
+  TaxReturnAlert,
   LimitingString,
   SaveAndOrContinueButton,
   IconDisplay,
@@ -24,6 +25,8 @@ import type { ConditionString } from '../../Condition.js';
  * Form 1065 boxes 5, 6a, and 6b, and Form 1120-S boxes 4, 5a, and 5b, are Form 1040 lines 2b, 3b, and 3a.
  * Previously taxed earnings and profits in those dividend boxes stop the return (26 U.S.C. 959(a)).
  * Nonfarm Form 1065 box 14 code A is Schedule SE line 2 (26 U.S.C. 1402(a)) except on a joint return.
+ * Form 1065 box 4a (guaranteed payments for services) is Schedule E line 28 column (k) and is not QBI.
+ * Box 4b stays a stop. Box 4c must equal box 4a plus box 4b.
  * Part III supported: domestic estate or trust, nonnegative box 6 in column (f), nonnegative box 7 in
  * column (d), material participation. A negative box 7 and a prior-year unallowed passive loss stop the return.
  * Box 8 is other rental income (26 U.S.C. 469(c)(2) and 469(c)(4)) and stops the return.
@@ -231,6 +234,19 @@ export const ScheduleEIncomeSubcategory = (
             <Boolean path='/scheduleEK1s/*/box14CodeAWasReduced' />
             <Boolean path='/scheduleEK1s/*/box14CodeAIsFarm' />
             <Boolean path='/scheduleEK1s/*/box14CodeANotLimitedPartnerAmount' />
+            <SaveAndOrContinueButton />
+          </Screen>
+          <Screen route='schedule-e-k1-guaranteed-payments' condition='/scheduleEK1s/*/isPartnership'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-guaranteed-payments' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-guaranteed-payments' />
+            <Dollar path='/scheduleEK1s/*/form1065Box4a' />
+            <Dollar path='/scheduleEK1s/*/form1065Box4b' />
+            <Dollar path='/scheduleEK1s/*/form1065Box4c' />
+            <TaxReturnAlert
+              i18nKey='/info/income/schedule-e/k1-box4-total'
+              type='error'
+              condition='/scheduleEK1s/*/form1065Box4cDoesNotMatch'
+            />
             <SaveAndOrContinueButton />
           </Screen>
           <Screen route='schedule-e-k1-portfolio' condition='/scheduleEK1s/*/isPartnership'>

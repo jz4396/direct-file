@@ -462,6 +462,7 @@
               <Dependency module="paPit" path="/flowKnockoutPaScheduleD" />
               <Dependency module="paPit" path="/flowKnockoutPaK11041CapitalGain" />
               <Dependency module="paPit" path="/flowKnockoutPaK1PartIICapitalGain" />
+              <Dependency module="paPit" path="/flowKnockoutPaK1GuaranteedPayments" />
               <Dependency module="paPit" path="/flowKnockoutPaK11041Box7" />
               <Dependency module="paPit" path="/flowKnockoutPaNonresidentPaSourcePay" />
             </Any>

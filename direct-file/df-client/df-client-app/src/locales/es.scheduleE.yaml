@@ -31,10 +31,13 @@ headings:
   /heading/income/schedule-e/estate-scope:
     ¿Es un beneficiario extranjero, un fideicomiso extranjero o un tratamiento distinto?
   /heading/income/schedule-e/estate-interest-dividends: Anote los intereses y dividendos del Anexo K-1 (Formulario 1041)
-  /heading/income/schedule-e/estate-capital-gains: Anote la ganancia o pérdida de capital del Anexo K-1 (Formulario 1041)
+  /heading/income/schedule-e/estate-capital-gains:
+    Anote la ganancia o pérdida de capital del Anexo K-1 (Formulario 1041)
   /heading/income/schedule-e/estate-boxes: Anote el ingreso del Anexo K-1 (Formulario 1041)
   /heading/income/schedule-e/estate-box12: Anote la casilla 12, código A, del Anexo K-1 (Formulario 1041)
-  /heading/income/schedule-e/estate-other: ¿Este Anexo K-1 declara algo además de las casillas 1, 2a, 2b, 3, 4a, 5, 6, 7, 8 y los códigos A a J de la casilla 12?
+  /heading/income/schedule-e/estate-other:
+    ¿Este Anexo K-1 declara algo además de las casillas 1, 2a, 2b, 3, 4a, 5, 6, 7, 8 y los códigos A a J de la casilla
+    12?
   /heading/income/schedule-e/estate-limits: ¿Se aplica algún límite de pérdida a este caudal hereditario o fideicomiso?
   /heading/income/schedule-e/part-iv: ¿Tiene una participación residual en un REMIC (Anexo Q, Formulario 1066)?
   /heading/income/schedule-e/k1-intro: Agregue cada sociedad colectiva y sociedad anónima de tipo S
@@ -45,6 +48,8 @@ headings:
   /heading/income/schedule-e/k1-box14:
     Anote las ganancias del trabajo por cuenta propia del Anexo K-1 (Formulario 1065), casilla 14, código A
   /heading/income/schedule-e/k1-box14-scope: ¿Esta es la cantidad que corresponde al Anexo SE?
+  /heading/income/schedule-e/k1-guaranteed-payments:
+    Anote los pagos garantizados del Anexo K-1 (Formulario 1065), casilla 4
   /heading/income/schedule-e/k1-portfolio-partnership:
     Anote los intereses, dividendos y ganancia de capital del Anexo K-1 (Formulario 1065)
   /heading/income/schedule-e/k1-portfolio-s-corp:
@@ -105,8 +110,8 @@ info:
       Conteste que sí si es beneficiario de un caudal hereditario o fideicomiso, aunque no haya recibido el ingreso.
       Debe tener un Anexo K-1 (Formulario 1041). Se pueden declarar los intereses y dividendos de las casillas 1, 2a y
       2b. Se puede declarar el ingreso ordinario del negocio si usted participó de forma importante. El otro ingreso de
-      cartera y no comercial de la casilla 5 se puede declarar si no es una pérdida. Otro ingreso de
-      alquiler detiene esta declaración.
+      cartera y no comercial de la casilla 5 se puede declarar si no es una pérdida. Otro ingreso de alquiler detiene
+      esta declaración.
   /info/income/schedule-e/estate-intro:
     body: >-
       Agregue una entrada por cada caudal hereditario o fideicomiso. Use el nombre y las cantidades del Anexo K-1
@@ -134,10 +139,10 @@ info:
   /info/income/schedule-e/estate-boxes:
     body: >-
       Anote las casillas 5, 6, 7 y 8. Anote 0 si una casilla está en blanco. Una casilla 5 que no es negativa va en la
-      columna (f). Una pérdida en la casilla 5 detiene esta declaración. Conteste que sí a la participación
-      importante si intervino de forma regular, continua y considerable. La casilla 6 va en la columna (f) si participó
-      de forma importante. La casilla 7 es el ingreso neto de alquiler de bienes raíces. Una cantidad mayor que cero va
-      en la columna (d). Una pérdida detiene esta declaración. La casilla 8 es otro ingreso de alquiler y detiene esta
+      columna (f). Una pérdida en la casilla 5 detiene esta declaración. Conteste que sí a la participación importante
+      si intervino de forma regular, continua y considerable. La casilla 6 va en la columna (f) si participó de forma
+      importante. La casilla 7 es el ingreso neto de alquiler de bienes raíces. Una cantidad mayor que cero va en la
+      columna (d). Una pérdida detiene esta declaración. La casilla 8 es otro ingreso de alquiler y detiene esta
       declaración.
   /info/income/schedule-e/estate-box12:
     body: >-
@@ -148,11 +153,11 @@ info:
       no es la línea 2j y no detiene esta declaración.
   /info/income/schedule-e/estate-other:
     body: >-
-      Conteste que sí por las casillas 4b y 4c, y por las casillas 9, 10, 11, 13 y 14, incluso la ganancia a la tasa
-      del 28%, la ganancia no recuperada de la sección 1250, los arrastres de pérdida de capital (códigos C y D de la
-      casilla 11), las deducciones y los créditos. Las casillas 3 y 4a están en la pantalla de ganancia de capital.
-      Los códigos A a J de la casilla 12 están en la pantalla anterior. No conteste que sí solo por la casilla 3, la
-      casilla 4a o el código J.
+      Conteste que sí por las casillas 4b y 4c, y por las casillas 9, 10, 11, 13 y 14, incluso la ganancia a la tasa del
+      28%, la ganancia no recuperada de la sección 1250, los arrastres de pérdida de capital (códigos C y D de la
+      casilla 11), las deducciones y los créditos. Las casillas 3 y 4a están en la pantalla de ganancia de capital. Los
+      códigos A a J de la casilla 12 están en la pantalla anterior. No conteste que sí solo por la casilla 3, la casilla
+      4a o el código J.
   /info/income/schedule-e/estate-limits:
     body: >-
       Conteste que sí a la primera pregunta si se aplica un límite de base. Conteste que sí a la segunda si alguna
@@ -221,13 +226,26 @@ info:
     body: >-
       Conteste que sí a la primera pregunta si el K-1 incluye una declaración para la casilla 20, código Z (Formulario
       1065) o la casilla 17, código V (Formulario 1120-S). Conteste que sí a la segunda pregunta si alguna casilla
-      distinta de la casilla 1, de la casilla 14 código A, de las casillas de intereses y dividendos y de las casillas
-      de ganancia neta de capital tiene una cantidad. Esas casillas son las casillas 5, 6a, 6b, 8 y 9a del Formulario
-      1065, o las casillas 4, 5a, 5b, 7 y 8a del Formulario 1120-S. La casilla 4, pagos garantizados, es sí aunque esa
-      cantidad también esté incluida en la casilla 14 código A. La casilla 6c, equivalentes de dividendos, es sí. No se
-      declaran en el Formulario 1040. Las casillas 9b y 9c del Formulario 1065, y las casillas 8b y 8c del Formulario
-      1120-S, son sí. La declaración de intereses de bonos de energía renovable limpia en la casilla 5 es la pregunta
-      anterior de la sociedad colectiva, no esta.
+      distinta de la casilla 1, de la casilla 4a, de la casilla 14 código A, de las casillas de intereses y dividendos y
+      de las casillas de ganancia neta de capital tiene una cantidad. Esas casillas son las casillas 4a, 5, 6a, 6b, 8 y
+      9a del Formulario 1065, o las casillas 4, 5a, 5b, 7 y 8a del Formulario 1120-S. La casilla 4a, pagos garantizados
+      por servicios, es la pregunta anterior de la sociedad colectiva, no esta. La casilla 4b, pagos garantizados por
+      capital, es sí aunque esa cantidad también esté incluida en la casilla 14 código A. La casilla 4c es el total y no
+      es un sí aparte cuando es igual a la casilla 4a más la casilla 4b. La casilla 6c, equivalentes de dividendos, es
+      sí. No se declaran en el Formulario 1040. Las casillas 9b y 9c del Formulario 1065, y las casillas 8b y 8c del
+      Formulario 1120-S, son sí. La declaración de intereses de bonos de energía renovable limpia en la casilla 5 es la
+      pregunta anterior de la sociedad colectiva, no esta.
+  /info/income/schedule-e/k1-guaranteed-payments:
+    body: >-
+      Anote la casilla 4a (pagos garantizados por servicios), la casilla 4b (pagos garantizados por capital) y la
+      casilla 4c (total de pagos garantizados). Anote 0 si una casilla está en blanco. La casilla 4c debe ser igual a la
+      casilla 4a más la casilla 4b. La casilla 4a va en la columna (k) de la línea 28 del Anexo E. No es ingreso
+      calificado de negocios. La casilla 4b detiene esta declaración.
+  /info/income/schedule-e/k1-box4-total:
+    alertText:
+      body: >-
+        La casilla 4c debe ser igual a la casilla 4a más la casilla 4b. Revise el Anexo K-1 y actualice estas
+        cantidades.
   /info/income/schedule-e/k1-columns:
     body: >-
       Conteste que sí a la primera pregunta si recibió una distribución, dispuso de acciones o recibió un pago de un
@@ -613,6 +631,12 @@ fields:
     boolean:
       "yes": Sí, soy socio comanditario y esta cantidad no es solo pagos garantizados por servicios
       "no": No, esta es la cantidad correcta para el Anexo SE
+  /scheduleEK1s/*/form1065Box4a:
+    name: Casilla 4a, pagos garantizados por servicios
+  /scheduleEK1s/*/form1065Box4b:
+    name: Casilla 4b, pagos garantizados por capital
+  /scheduleEK1s/*/form1065Box4c:
+    name: Casilla 4c, total de pagos garantizados
   /scheduleEK1s/*/form1065Box5:
     name: Casilla 5, ingresos por intereses
   /scheduleEK1s/*/form1065Box6a:
@@ -744,9 +768,12 @@ dataviews:
     /scheduleEK1s/*/dividendIncludesPtep:
       ¿Alguno de estos dividendos incluye ganancias y utilidades previamente gravadas?
     /scheduleEK1s/*/hasQbiStatement: ¿Hay una declaración para la casilla 20 código Z o la casilla 17 código V?
+    /scheduleEK1s/*/form1065Box4a: Casilla 4a, pagos garantizados por servicios
+    /scheduleEK1s/*/form1065Box4b: Casilla 4b, pagos garantizados por capital
+    /scheduleEK1s/*/form1065Box4c: Casilla 4c, total de pagos garantizados
     /scheduleEK1s/*/hasOtherK1Amount:
-      ¿Alguna casilla distinta de la casilla 1, de la casilla 14 código A, de las casillas de intereses y dividendos y
-      de las casillas de ganancia neta de capital tiene una cantidad?
+      ¿Alguna casilla distinta de la casilla 1, de la casilla 4a, de la casilla 14 código A, de las casillas de
+      intereses y dividendos y de las casillas de ganancia neta de capital tiene una cantidad?
     /scheduleEK1s/*/basisComputationRequired: ¿Está marcada la columna (e)?
     /scheduleEK1s/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/entityName: Nombre del caudal hereditario o fideicomiso
@@ -767,7 +794,9 @@ dataviews:
     /scheduleEEstates/*/hasBox12CodesBThroughI:
       ¿La casilla 12 tiene una cantidad para el código B, C, D, E, F, G, H o I?
     /scheduleEEstates/*/hasBox12CodeJ: ¿La casilla 12, código J, partidas de exclusión, tiene una cantidad?
-    /scheduleEEstates/*/hasOtherK1Amount: ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 3, 4a, 5, 6, 7, 8 y los códigos A a J de la casilla 12 tiene una cantidad?
+    /scheduleEEstates/*/hasOtherK1Amount:
+      ¿Alguna casilla distinta de las casillas 1, 2a, 2b, 3, 4a, 5, 6, 7, 8 y los códigos A a J de la casilla 12 tiene
+      una cantidad?
     /scheduleEEstates/*/basisLimitApplies: ¿Se aplica un límite de base?
     /scheduleEEstates/*/anyAmountNotAtRisk: ¿Alguna cantidad no está en riesgo?
     /scheduleEEstates/*/passiveDeductionOrLoss: ¿Hay una deducción o pérdida pasiva?
