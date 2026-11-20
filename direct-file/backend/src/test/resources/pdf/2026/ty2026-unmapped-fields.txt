@@ -234,6 +234,384 @@ pdf/2024/IRSW2/en/fw2.pdf	topmostSubform[0].CopyB[0].Box17_ReadOrder[0].f2_36[0]
 pdf/2024/IRSW2/en/fw2.pdf	topmostSubform[0].CopyB[0].Box18_ReadOrder[0].f2_38[0]	Tx	
 pdf/2024/IRSW2/en/fw2.pdf	topmostSubform[0].CopyB[0].Box19_ReadOrder[0].f2_40[0]	Tx	
 pdf/2024/IRSW2/en/fw2.pdf	topmostSubform[0].CopyB[0].f2_42[0]	Tx	
+pdf/2026/AZ140/en/2025_140.pdf	Last Names 4 years	Tx	Enter last name used in last 4 prior years if different
+pdf/2026/AZ140/en/2025_140.pdf	Head of Household	Tx	Head of Household
+pdf/2026/AZ140/en/2025_140.pdf	10d First	Tx	10d First
+pdf/2026/AZ140/en/2025_140.pdf	10e First	Tx	10e First
+pdf/2026/AZ140/en/2025_140.pdf	10d Last	Tx	10d Last
+pdf/2026/AZ140/en/2025_140.pdf	10e Last	Tx	10e Last
+pdf/2026/AZ140/en/2025_140.pdf	10d SSN	Tx	10d SSN
+pdf/2026/AZ140/en/2025_140.pdf	10e SSN	Tx	10e SSN
+pdf/2026/AZ140/en/2025_140.pdf	10d Relationship	Tx	10d Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10e Relationship	Tx	10e Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10d Mo in Home	Tx	10d Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10e Mo in Home	Tx	10e Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10d_10a check box	Btn	10d_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10e_10a check box	Btn	10e_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10d_10b check box	Btn	10d_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10e_10b check box	Btn	10e_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10d educ	Btn	10d - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10e educ	Btn	10e - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	11c First	Tx	11c First
+pdf/2026/AZ140/en/2025_140.pdf	11c Last	Tx	11c Last
+pdf/2026/AZ140/en/2025_140.pdf	11c SSN	Tx	11c SSN
+pdf/2026/AZ140/en/2025_140.pdf	11c Relationship	Tx	11c Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11c died	Btn	11c died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	11a check box	Btn	Select for more space and complete page 4, part 2
+pdf/2026/AZ140/en/2025_140.pdf	13S	Btn	13S - Select if you are filing AZ form 140-SBI
+pdf/2026/AZ140/en/2025_140.pdf	34b	Tx	34b - 529A ABLE accounts
+pdf/2026/AZ140/en/2025_140.pdf	34c	Tx	34c - Add 34a and 34b
+pdf/2026/AZ140/en/2025_140.pdf	1b	Tx	1b - Your Name
+pdf/2026/AZ140/en/2025_140.pdf	1c	Tx	1c - Your SSN
+pdf/2026/AZ140/en/2025_140.pdf	34a	Tx	34a - 529 College Savings Plans
+pdf/2026/AZ140/en/2025_140.pdf	11c over 65	Btn	11c over 65
+pdf/2026/AZ140/en/2025_140.pdf	Refund	Btn	Refund
+pdf/2026/AZ140/en/2025_140.pdf	Routing Number	Tx	Routing Number
+pdf/2026/AZ140/en/2025_140.pdf	Account Number	Tx	Account Number
+pdf/2026/AZ140/en/2025_140.pdf	Political Party	Btn	Political Party
+pdf/2026/AZ140/en/2025_140.pdf	10c First	Tx	10c First
+pdf/2026/AZ140/en/2025_140.pdf	10c Last	Tx	10c Last
+pdf/2026/AZ140/en/2025_140.pdf	10c SSN	Tx	10c SSN
+pdf/2026/AZ140/en/2025_140.pdf	10c Relationship	Tx	10c Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10c Mo in Home	Tx	10c Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10c_10a check box	Btn	10c_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10c educ	Btn	10c - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	11b First	Tx	11b First
+pdf/2026/AZ140/en/2025_140.pdf	11b Last	Tx	11b Last
+pdf/2026/AZ140/en/2025_140.pdf	11b SSN	Tx	11b SSN
+pdf/2026/AZ140/en/2025_140.pdf	11b Relationship	Tx	11b Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11b Mo in Home	Tx	11b Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11b over 65	Btn	11b over 65
+pdf/2026/AZ140/en/2025_140.pdf	11b died	Btn	11b died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	10f First	Tx	10f First
+pdf/2026/AZ140/en/2025_140.pdf	10f Last	Tx	10f Last
+pdf/2026/AZ140/en/2025_140.pdf	10f SSN	Tx	10f SSN
+pdf/2026/AZ140/en/2025_140.pdf	10f Relationship	Tx	10f Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10f Mo in Home	Tx	10f Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10f_10a check box	Btn	10f_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10f_10b check box	Btn	10f_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10f educ	Btn	10f - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10g First	Tx	10g First
+pdf/2026/AZ140/en/2025_140.pdf	10g Last	Tx	10g Last
+pdf/2026/AZ140/en/2025_140.pdf	10g SSN	Tx	10g SSN
+pdf/2026/AZ140/en/2025_140.pdf	10g Relationship	Tx	10g Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10g Mo in Home	Tx	10g Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10g_10a check box	Btn	10g_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10g_10b check box	Btn	10g_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10g educ	Btn	10g - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10h First	Tx	10h First
+pdf/2026/AZ140/en/2025_140.pdf	10h Last	Tx	10h Last
+pdf/2026/AZ140/en/2025_140.pdf	10h SSN	Tx	10h SSN
+pdf/2026/AZ140/en/2025_140.pdf	10h Relationship	Tx	10h Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10h Mo in Home	Tx	10h Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10h_10a check box	Btn	10h_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10h_10b check box	Btn	10h_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10h educ	Btn	10h - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10i First	Tx	10i First
+pdf/2026/AZ140/en/2025_140.pdf	10i Last	Tx	10i Last
+pdf/2026/AZ140/en/2025_140.pdf	10i SSN	Tx	10i SSN
+pdf/2026/AZ140/en/2025_140.pdf	10i Relationship	Tx	10i Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10i Mo in Home	Tx	10i Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10i_10a check box	Btn	10i_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10i_10b check box	Btn	10i_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10i educ	Btn	10i - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10j First	Tx	10j First
+pdf/2026/AZ140/en/2025_140.pdf	10j Last	Tx	10j Last
+pdf/2026/AZ140/en/2025_140.pdf	10j SSN	Tx	10j SSN
+pdf/2026/AZ140/en/2025_140.pdf	10j Relationship	Tx	10j Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10j Mo in Home	Tx	10j Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10j_10a check box	Btn	10j_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10j_10b check box	Btn	10j_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10j educ	Btn	10j - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10k First	Tx	10k First
+pdf/2026/AZ140/en/2025_140.pdf	10k Last	Tx	10k Last
+pdf/2026/AZ140/en/2025_140.pdf	10k SSN	Tx	10k SSN
+pdf/2026/AZ140/en/2025_140.pdf	10k Relationship	Tx	10k Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10k Mo in Home	Tx	10k Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10k_10a check box	Btn	10k_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10k_10b check box	Btn	10k_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10k educ	Btn	10k - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10l First	Tx	10l First
+pdf/2026/AZ140/en/2025_140.pdf	10l Last	Tx	10l Last
+pdf/2026/AZ140/en/2025_140.pdf	10l SSN	Tx	10l SSN
+pdf/2026/AZ140/en/2025_140.pdf	10l Relationship	Tx	10l Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10l Mo in Home	Tx	10l Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10l_10a check box	Btn	10l_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10l_10b check box	Btn	10l_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10l educ	Btn	10l - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10m First	Tx	10m First
+pdf/2026/AZ140/en/2025_140.pdf	10m Last	Tx	10m Last
+pdf/2026/AZ140/en/2025_140.pdf	10m SSN	Tx	10m SSN
+pdf/2026/AZ140/en/2025_140.pdf	10m Relationship	Tx	10m Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10m Mo in Home	Tx	10m Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10m_10a check box	Btn	10m_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10m_10b check box	Btn	10m_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10m educ	Btn	10m - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10n First	Tx	10n First
+pdf/2026/AZ140/en/2025_140.pdf	10n Last	Tx	10n Last
+pdf/2026/AZ140/en/2025_140.pdf	10n SSN	Tx	10n SSN
+pdf/2026/AZ140/en/2025_140.pdf	10n Relationship	Tx	10n Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10n Mo in Home	Tx	10n Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10n_10a check box	Btn	10n_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10n_10b check box	Btn	10n_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10n educ	Btn	10n - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10p First	Tx	10p First
+pdf/2026/AZ140/en/2025_140.pdf	10p Last	Tx	10p Last
+pdf/2026/AZ140/en/2025_140.pdf	10p SSN	Tx	10p SSN
+pdf/2026/AZ140/en/2025_140.pdf	10p Relationship	Tx	10p Relationship
+pdf/2026/AZ140/en/2025_140.pdf	10o Mo in Home	Tx	10o Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10p Mo in Home	Tx	10p Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	10o_10a check box	Btn	10o_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10o_10b check box	Btn	10o_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10o educ	Btn	10o - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	10c_10b check box	Btn	10c_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	11c Mo in Home	Tx	11c Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11d First	Tx	11d First
+pdf/2026/AZ140/en/2025_140.pdf	11d Last	Tx	11d Last
+pdf/2026/AZ140/en/2025_140.pdf	11d SSN	Tx	11d SSN
+pdf/2026/AZ140/en/2025_140.pdf	11d Relationship	Tx	11d Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11d Mo in Home	Tx	11d Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11d over 65	Btn	11d over 65
+pdf/2026/AZ140/en/2025_140.pdf	11d died	Btn	11d died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	11e First	Tx	11e First
+pdf/2026/AZ140/en/2025_140.pdf	11e Last	Tx	11e Last
+pdf/2026/AZ140/en/2025_140.pdf	11e SSN	Tx	11e SSN
+pdf/2026/AZ140/en/2025_140.pdf	11e Relationship	Tx	11e Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11e Mo in Home	Tx	11e Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11e over 65	Btn	11e over 65
+pdf/2026/AZ140/en/2025_140.pdf	11e died	Btn	11e died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	11f First	Tx	11f First
+pdf/2026/AZ140/en/2025_140.pdf	11f Last	Tx	11f Last
+pdf/2026/AZ140/en/2025_140.pdf	11f SSN	Tx	11f SSN
+pdf/2026/AZ140/en/2025_140.pdf	11f Relationship	Tx	11f Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11f Mo in Home	Tx	11f Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11f over 65	Btn	11f over 65
+pdf/2026/AZ140/en/2025_140.pdf	11f died	Btn	11f died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	11g First	Tx	11g First
+pdf/2026/AZ140/en/2025_140.pdf	11g Last	Tx	11g Last
+pdf/2026/AZ140/en/2025_140.pdf	11g SSN	Tx	11g SSN
+pdf/2026/AZ140/en/2025_140.pdf	11g Relationship	Tx	11g Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11g Mo in Home	Tx	11g Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11g over 65	Btn	11g over 65
+pdf/2026/AZ140/en/2025_140.pdf	11g died	Btn	11g died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	11h First	Tx	11h First
+pdf/2026/AZ140/en/2025_140.pdf	11h Last	Tx	11h Last
+pdf/2026/AZ140/en/2025_140.pdf	11h SSN	Tx	11h SSN
+pdf/2026/AZ140/en/2025_140.pdf	11h Relationship	Tx	11h Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11i Relationship	Tx	11i Relationship
+pdf/2026/AZ140/en/2025_140.pdf	11h Mo in Home	Tx	11h Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11i Mo in Home	Tx	11i Months in Home
+pdf/2026/AZ140/en/2025_140.pdf	11h over 65	Btn	11h over 65
+pdf/2026/AZ140/en/2025_140.pdf	11i over 65	Btn	11i over 65
+pdf/2026/AZ140/en/2025_140.pdf	11h died	Btn	11h died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	11i died	Btn	11i died in 2025
+pdf/2026/AZ140/en/2025_140.pdf	11i First	Tx	11i First
+pdf/2026/AZ140/en/2025_140.pdf	11i Last	Tx	11i Last
+pdf/2026/AZ140/en/2025_140.pdf	11i SSN	Tx	11i SSN
+pdf/2026/AZ140/en/2025_140.pdf	10p_10a check box	Btn	10p_10a check box
+pdf/2026/AZ140/en/2025_140.pdf	10p_10b check box	Btn	10p_10b check box
+pdf/2026/AZ140/en/2025_140.pdf	10p educ	Btn	10p - If you did not claim this person on your federal return due to edu...
+pdf/2026/AZ140/en/2025_140.pdf	3_1 First	Tx	3_1 First
+pdf/2026/AZ140/en/2025_140.pdf	3_1 Last	Tx	3_1 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_1 SSN	Tx	3_1 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_1	Btn	c1_1
+pdf/2026/AZ140/en/2025_140.pdf	c2_1	Btn	c2_1
+pdf/2026/AZ140/en/2025_140.pdf	1 child	Btn	1 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_2 First	Tx	3_2 First
+pdf/2026/AZ140/en/2025_140.pdf	3_2 Last	Tx	3_2 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_2 SSN	Tx	3_2 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_2	Btn	c1_2
+pdf/2026/AZ140/en/2025_140.pdf	c2_2	Btn	c2_2
+pdf/2026/AZ140/en/2025_140.pdf	2 child	Btn	2 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_3 First	Tx	3_3 First
+pdf/2026/AZ140/en/2025_140.pdf	3_3 Last	Tx	3_3 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_3 SSN	Tx	3_3 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_3	Btn	c1_3
+pdf/2026/AZ140/en/2025_140.pdf	c2_3	Btn	c2_3
+pdf/2026/AZ140/en/2025_140.pdf	3 child	Btn	3 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_4 First	Tx	3_4 First
+pdf/2026/AZ140/en/2025_140.pdf	3_4 Last	Tx	3_4 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_4 SSN	Tx	3_4 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_4	Btn	c1_4
+pdf/2026/AZ140/en/2025_140.pdf	c2_4	Btn	c2_4
+pdf/2026/AZ140/en/2025_140.pdf	4 child	Btn	4 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_5 First	Tx	3_5 First
+pdf/2026/AZ140/en/2025_140.pdf	3_5 Last	Tx	3_5 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_5 SSN	Tx	3_5 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_5	Btn	c1_5
+pdf/2026/AZ140/en/2025_140.pdf	c2_5	Btn	c2_5
+pdf/2026/AZ140/en/2025_140.pdf	5 child	Btn	5 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_6 First	Tx	3_6 First
+pdf/2026/AZ140/en/2025_140.pdf	3_6 Last	Tx	3_6 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_6 SSN	Tx	3_6 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_6	Btn	c1_6
+pdf/2026/AZ140/en/2025_140.pdf	c2_6	Btn	c2_6
+pdf/2026/AZ140/en/2025_140.pdf	6 child	Btn	6 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_7 First	Tx	3_7 First
+pdf/2026/AZ140/en/2025_140.pdf	3_7 Last	Tx	3_7 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_7 SSN	Tx	3_7 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_7	Btn	c1_7
+pdf/2026/AZ140/en/2025_140.pdf	c2_7	Btn	c2_7
+pdf/2026/AZ140/en/2025_140.pdf	7 child	Btn	7 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_8 First	Tx	3_8 First
+pdf/2026/AZ140/en/2025_140.pdf	3_8 Last	Tx	3_8 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_8 SSN	Tx	3_8 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_8	Btn	c1_8
+pdf/2026/AZ140/en/2025_140.pdf	c2_8	Btn	c2_8
+pdf/2026/AZ140/en/2025_140.pdf	8 child	Btn	8 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	3_9 First	Tx	3_9 First
+pdf/2026/AZ140/en/2025_140.pdf	3_9 Last	Tx	3_9 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_9 SSN	Tx	3_9 SSN
+pdf/2026/AZ140/en/2025_140.pdf	c1_9	Btn	c1_9
+pdf/2026/AZ140/en/2025_140.pdf	c1_10	Btn	c1_10
+pdf/2026/AZ140/en/2025_140.pdf	c2_9	Btn	c2_9
+pdf/2026/AZ140/en/2025_140.pdf	c2_10	Btn	c2_10
+pdf/2026/AZ140/en/2025_140.pdf	9 child	Btn	9 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	10 child	Btn	10 stillborn child in 2025
+pdf/2026/AZ140/en/2025_140.pdf	10o First	Tx	10o First
+pdf/2026/AZ140/en/2025_140.pdf	10o Last	Tx	10o Last
+pdf/2026/AZ140/en/2025_140.pdf	10o SSN	Tx	10o SSN
+pdf/2026/AZ140/en/2025_140.pdf	10o Relationship	Tx	10o Relationship
+pdf/2026/AZ140/en/2025_140.pdf	3_10 First	Tx	3_10 First
+pdf/2026/AZ140/en/2025_140.pdf	3_10 Last	Tx	3_10 Last
+pdf/2026/AZ140/en/2025_140.pdf	3_10 SSN	Tx	3_10 SSN
+pdf/2026/AZ140/en/2025_140.pdf	58_1	Btn	58_1 - 308-I
+pdf/2026/AZ140/en/2025_140.pdf	58_2	Btn	58_2 - 334
+pdf/2026/AZ140/en/2025_140.pdf	58_3	Btn	58_3 - 349
+pdf/2026/AZ140/en/2025_140.pdf	Check Box 82F	Btn	Check Box 82F
+pdf/2026/AZ140/en/2025_140.pdf	Fiscal year beginning MMDD2025	Tx	Enter beginning of fiscal year in mmdd
+pdf/2026/AZ140/en/2025_140.pdf	Fiscal year ending MMDD	Tx	Enter end of fiscal year in mmdd
+pdf/2026/AZ140/en/2025_140.pdf	Fiscal year ending YY	Tx	Type YY digits only
+pdf/2026/AZ140/en/2025_140.pdf	4a Injured Spouse Protection of Joint Overpayment	Btn	4a Injured Spouse Protection of Joint Overpayment
+pdf/2026/AZ140/en/2025_140.pdf	10a 10b check box	Btn	Select for more space and complete page 4, part 1
+pdf/2026/AZ140/en/2025_140.pdf	Total net capital gain or (loss)	Tx	Total net capital gain or (loss)
+pdf/2026/AZ140/en/2025_140.pdf	Total net short-term capital gain or (loss)	Tx	Total net short-term capital gain or (loss)
+pdf/2026/AZ140/en/2025_140.pdf	Total net long-term capital gain or (loss)	Tx	Total net long-term capital gain or (loss)
+pdf/2026/AZ140/en/2025_140.pdf	Net long-term capital gain from assets acquired after December 31, 2011	Tx	Net long-term capital gain from assets acquired after December 31, 2011
+pdf/2026/AZ140/en/2025_140.pdf	Multiply line 23 by 25% (.25) and enter the result	Tx	Multiply line 23 by 25% (.25) and enter the result
+pdf/2026/AZ140/en/2025_140.pdf	Net capital gain derived from investment in qualified small business	Tx	Net capital gain derived from investment in qualified small business
+pdf/2026/AZ140/en/2025_140.pdf	Recalculated Arizona depreciation	Tx	Recalculated Arizona depreciation
+pdf/2026/AZ140/en/2025_140.pdf	Interest on U.S. obligations such as U.S. savings bonds and treasury bills	Tx	Interest on U.S. obligations such as U.S. savings bonds and treasury bil...
+pdf/2026/AZ140/en/2025_140.pdf	Exclusion for federal, Arizona state or local government pensions (up to $2,500 per taxpayer)	Tx	Exclusion for federal, Arizona state or local government pensions (up to...
+pdf/2026/AZ140/en/2025_140.pdf	Exclusion for benefits, annuities and pensions for retired/retainer pay of the uniformed services	Tx	Exclusion for benefits, annuities and pensions for retired/retainer pay ...
+pdf/2026/AZ140/en/2025_140.pdf	U.S. Social Security or Railroad Retirement Act benefits included as income on your federal return (taxable amount)	Tx	U.S. Social Security or Railroad Retirement Act benefits included as inc...
+pdf/2026/AZ140/en/2025_140.pdf	Certain wages of American Indians	Tx	Certain wages of American Indians
+pdf/2026/AZ140/en/2025_140.pdf	Pay received for active service as a member of the reserves, national guard or the U.S. armed forces	Tx	Pay received for active service as a member of the reserves, national gu...
+pdf/2026/AZ140/en/2025_140.pdf	Net operating loss adjustment	Tx	Net operating loss adjustment
+pdf/2026/AZ140/en/2025_140.pdf	Other Subtractions from Income.  Complete Other Subtraction from Arizona Gross Income schedule on page 6	Tx	Other Subtractions from Income. Complete Other Subtraction from Arizona ...
+pdf/2026/AZ140/en/2025_140.pdf	44C checkbox	Btn	44C checkbox
+pdf/2026/AZ140/en/2025_140.pdf	Solutions Teams Assigned to Schools	Tx	Solutions Teams Assigned to Schools
+pdf/2026/AZ140/en/2025_140.pdf	Arizona Wildlife	Tx	Arizona Wildlife
+pdf/2026/AZ140/en/2025_140.pdf	Child Abuse Prevention	Tx	Child Abuse Prevention
+pdf/2026/AZ140/en/2025_140.pdf	Domestic Violence Services	Tx	Domestic Violence Services
+pdf/2026/AZ140/en/2025_140.pdf	Political Gift	Tx	Political Gift
+pdf/2026/AZ140/en/2025_140.pdf	Neighbors Helping Neighbors	Tx	Neighbors Helping Neighbors
+pdf/2026/AZ140/en/2025_140.pdf	Special Olympics	Tx	Special Olympics
+pdf/2026/AZ140/en/2025_140.pdf	Veterans' Donations Fund	Tx	Veterans' Donations Fund
+pdf/2026/AZ140/en/2025_140.pdf	I Didn't Pay Enough Fund	Tx	I Didn't Pay Enough Fund
+pdf/2026/AZ140/en/2025_140.pdf	Sustainable State Parks and Road Fund	Tx	Sustainable State Parks and Road Fund
+pdf/2026/AZ140/en/2025_140.pdf	Spay/Neuter of Animals	Tx	Spay/Neuter of Animals
+pdf/2026/AZ140/en/2025_140.pdf	Estimated payment penalty	Tx	Estimated payment penalty
+pdf/2026/AZ140/en/2025_140.pdf	77_1 Checkbox	Btn	77_1 - Annualized/Other
+pdf/2026/AZ140/en/2025_140.pdf	77_2 Checkbox	Btn	77_2 - Farmer or Fisherman
+pdf/2026/AZ140/en/2025_140.pdf	77_3 Checkbox	Btn	77_3 - Form 221 included
+pdf/2026/AZ140/en/2025_140.pdf	Add lines 64 through 74 and 76	Tx	Add lines 64 through 74 and 76
+pdf/2026/AZ140/en/2025_140.pdf	79A Checkbox	Btn	79A Select if your deposit will be ultimately placed in a foreign accoun...
+pdf/2026/AZ140/en/2025_140.pdf	Your Occupation	Tx	Your Occupation
+pdf/2026/AZ140/en/2025_140.pdf	Spouse's Occupation	Tx	Spouse's Occupation
+pdf/2026/AZ140/en/2025_140.pdf	Firm's Name	Tx	Firm's Name
+pdf/2026/AZ140/en/2025_140.pdf	Paid Preparer's Street Address	Tx	Paid Preparer's Street Address
+pdf/2026/AZ140/en/2025_140.pdf	Paid Preparer's TIN	Tx	state abbreviation
+pdf/2026/AZ140/en/2025_140.pdf	Paid Preparer's City	Tx	Enter paid preparer's city
+pdf/2026/AZ140/en/2025_140.pdf	Paid Preparer's State	Tx	state abbreviation
+pdf/2026/AZ140/en/2025_140.pdf	Paid Preparer's ZIP Code	Tx	Enter zip code, type 5 digits only
+pdf/2026/AZ140/en/2025_140.pdf	Paid Preparer's Phone Number	Tx	Enter phone number with area code, type digits only
+pdf/2026/AZ140/en/2025_140.pdf	2025 Gifts by cash or check	Tx	2025 Gifts by cash or check
+pdf/2026/AZ140/en/2025_140.pdf	2025 Other than by cash or check	Tx	2025 Other than by cash or check
+pdf/2026/AZ140/en/2025_140.pdf	Carryover from prior year	Tx	Carryover from prior year
+pdf/2026/AZ140/en/2025_140.pdf	Add lines 1C through 3C and enter the total	Tx	Add lines 1C through 3C and enter the total
+pdf/2026/AZ140/en/2025_140.pdf	Total charitable contributions made in 2025 for which you are claiming a credit under Arizona law for the current (2025) or prior (2024) tax year	Tx	Total charitable contributions made in 2025 for which you are claiming a...
+pdf/2026/AZ140/en/2025_140.pdf	Subtract line 5c from line 4c and enter the difference. If less than zero, enter 0	Tx	Subtract line 5c from line 4c and enter the difference. If less than zer...
+pdf/2026/AZ140/en/2025_140.pdf	Multiply line 6C by 34% (.34) and enter the result	Tx	Multiply line 6C by 34% (.34) and enter the result
+pdf/2026/AZ140/en/2025_140.pdf	Ordinary Income Portion of Lump-Sum Distributions Excluded on Your Federal Return	Tx	Ordinary Income Portion of Lump-Sum Distributions Excluded on Your Feder...
+pdf/2026/AZ140/en/2025_140.pdf	Items Previously Deducted for Arizona Purposes	Tx	Items Previously Deducted for Arizona Purposes
+pdf/2026/AZ140/en/2025_140.pdf	Claim of Right Adjustment for Amounts Repaid in 2025	Tx	Claim of Right Adjustment for Amounts Repaid in 2025
+pdf/2026/AZ140/en/2025_140.pdf	Claim of Right Adjustment for Amounts Repaid in Prior Taxable years	Tx	Claim of Right Adjustment for Amounts Repaid in Prior Taxable years
+pdf/2026/AZ140/en/2025_140.pdf	Adjustment for Net Operating Loss due to Claim of Right	Tx	Adjustment for Net Operating Loss due to Claim of Right
+pdf/2026/AZ140/en/2025_140.pdf	Amount of Agricultural Water Conservation Expenses deducted under IRC for which a credit is  claimed on Form 312	Tx	Amount of Agricultural Water Conservation Expenses deducted under IRC fo...
+pdf/2026/AZ140/en/2025_140.pdf	Addition to S Corporation income due to claiming Pass Through Credit for Agricultural Water  Conservation System (Credit 312)	Tx	Addition to S Corporation income due to claiming Pass Through Credit for...
+pdf/2026/AZ140/en/2025_140.pdf	Adjusted basis computed under IRC for property for which a credit was claimed on Form 338 and that is sold or otherwise disposed of during the taxable year excees the adjusted basis of the property	Tx	Adjusted basis computed under IRC for property for which a credit was cl...
+pdf/2026/AZ140/en/2025_140.pdf	Adjusted basis computed under IRC for Agricultural Pollution Control Equipment for which a credit  was taken (Form 325) before taxable year 2025 that was sold or otherwise disposed of during the  taxable year exceeds the adjusted basis of the property	Tx	Adjusted basis computed under IRC for Agricultural Pollution Control Equ...
+pdf/2026/AZ140/en/2025_140.pdf	Adjusted basis computed under IRC for Pollution Control Equipment for which a credit was taken  (Form 315) before taxable year 2025 that was sold or otherwise disposed of during the taxable year exceeds the adjusted basis of the property	Tx	Adjusted basis computed under IRC for Pollution Control Equipment for wh...
+pdf/2026/AZ140/en/2025_140.pdf	Nonqualified Withdrawals from 529 College Savings Plans	Tx	Nonqualified Withdrawals from 529 College Savings Plans
+pdf/2026/AZ140/en/2025_140.pdf	Sole Proprietorship Loss of an Arizona Nonprofit Medical Marijuana Dispensary included in Federal Adjusted Gross Income.  Sole Proprietorship loss of an Arizona dual licensee that has not elected to operate on a for profit-basis must also add back the portion of their loss that is from the medical marijauna portion of the business that is included in the federal adjusted gross income	Tx	Sole Proprietorship Loss of an Arizona Nonprofit Medical Marijuana Dispe...
+pdf/2026/AZ140/en/2025_140.pdf	Federal Net Operating Loss (NOL) Carryforward from Non-Arizona Sources Accrued While a Nonresident	Tx	Federal Net Operating Loss (NOL) Carryforward from Non-Arizona Sources A...
+pdf/2026/AZ140/en/2025_140.pdf	Amortization or Depreciation for Child Care Facility before 1990	Tx	Amortization or Depreciation for Child Care Facility before 1990
+pdf/2026/AZ140/en/2025_140.pdf	Net Capital Loss Derived From the Exchange of One Kind of Legal Tender for Another Kind of Legal Tender	Tx	Net Capital Loss Derived From the Exchange of One Kind of Legal Tender f...
+pdf/2026/AZ140/en/2025_140.pdf	Entity-level Income Tax Payment	Tx	Entity-level Income Tax Payment
+pdf/2026/AZ140/en/2025_140.pdf	Motion Picture Productions Costs	Tx	Motion Picture Productions Costs
+pdf/2026/AZ140/en/2025_140.pdf	Other Adjustments Related to Tax Credits	Tx	Other Adjustments Related to Tax Credits
+pdf/2026/AZ140/en/2025_140.pdf	Other Adjustments	Tx	Other Adjustments
+pdf/2026/AZ140/en/2025_140.pdf	Total Other Additions:  Add all amounts and enter the total here and on page 1, line 18	Tx	Total Other Additions: Add all amounts and enter the total here and on p...
+pdf/2026/AZ140/en/2025_140.pdf	Married Persons Filing Separate Returns	Tx	Married Persons Filing Separate Returns
+pdf/2026/AZ140/en/2025_140.pdf	Federally Taxable Arizona Municipal Interest as Evidenced by Bonds	Tx	Federally Taxable Arizona Municipal Interest as Evidenced by Bonds
+pdf/2026/AZ140/en/2025_140.pdf	Adoption Expense	Tx	Adoption Expense
+pdf/2026/AZ140/en/2025_140.pdf	Qualified Wood Stove, Wood Fireplace or Gas-Fired Fireplace	Tx	Qualified Wood Stove, Wood Fireplace or Gas-Fired Fireplace
+pdf/2026/AZ140/en/2025_140.pdf	Claim of Right Adjustment for Amounts Repaid in Prior Taxable Years	Tx	Claim of Right Adjustment for Amounts Repaid in Prior Taxable Years
+pdf/2026/AZ140/en/2025_140.pdf	Certain Expenses Not Allowed for Federal Purposes (due to claiming federal tax credits)	Tx	Certain Expenses Not Allowed for Federal Purposes (due to claiming feder...
+pdf/2026/AZ140/en/2025_140.pdf	Qualified State Tuition Distributions	Tx	Qualified State Tuition Distributions
+pdf/2026/AZ140/en/2025_140.pdf	Installment Sale Income from Another State Taxed by the Other State In a Prior Taxable Year	Tx	Installment Sale Income from Another State Taxed by the Other State In a...
+pdf/2026/AZ140/en/2025_140.pdf	Agricultural Crops Given to Arizona Charitable Organizations	Tx	Agricultural Crops Given to Arizona Charitable Organizations
+pdf/2026/AZ140/en/2025_140.pdf	Basis Adjustment for Property Sold or Otherwise Disposed of During the Taxable Year	Tx	Basis Adjustment for Property Sold or Otherwise Disposed of During the T...
+pdf/2026/AZ140/en/2025_140.pdf	Sole Proprietorship Income of an Arizona Nonprofit Medical Marijuana Dispensary Included in Federal Adjusted Gross Income.  In addition, Sole Proprietorship income of an  Arizona dual licensee that has not elected to operate on a for-profit basis may subtract the portion of their federal taxable income that is from the medical marijuana portion of the business	Tx	Sole Proprietorship Income of an Arizona Nonprofit Medical Marijuana Dis...
+pdf/2026/AZ140/en/2025_140.pdf	Long-Term Care Insurance Premiums	Tx	Long-Term Care Insurance Premiums
+pdf/2026/AZ140/en/2025_140.pdf	Americans with Disabilities Act - Access Expenditures	Tx	Americans with Disabilities Act - Access Expenditures
+pdf/2026/AZ140/en/2025_140.pdf	Exploration Expenses Deferred before January 1, 1990	Tx	Exploration Expenses Deferred before January 1, 1990
+pdf/2026/AZ140/en/2025_140.pdf	Sole Proprietorship of an Arizona Marijuana Establishment, Marijuana Testing Facilities and dual  licensees that operate on a for-profit basis: enter the total amount of ordinary and necessary expenses  related to the sales of recreational use products reported on Schedule DFE (line 16).  An LLC that has  elected to be treated as a disregarded entity for federal purposes, and also elected to operate on a  for-profit basis may subtract the total amount of ordinary and necessary expenses related to the sales of recreational use products reported on Schedule DFE (line 16)	Tx	Sole Proprietorship of an Arizona Marijuana Establishment, Marijuana Tes...
+pdf/2026/AZ140/en/2025_140.pdf	S Corporation shareholders of an Arizona Marijuana Establishment, Marijuana Testing  Facilities and dual licensees that operate on a for-profit basis:  enter the amount of your pro-rata  share of ordinary and necessary expenses related to the sales of recreational use products as shown  on your Form 120S Schedule K-1, line 7	Tx	S Corporation shareholders of an Arizona Marijuana Establishment, Mariju...
+pdf/2026/AZ140/en/2025_140.pdf	Net Capital Gain Derived From the Exchange of One Kind of Legal Tender for Another Kind of Legal Tender	Tx	Net Capital Gain Derived From the Exchange of One Kind of Legal Tender f...
+pdf/2026/AZ140/en/2025_140.pdf	Value of Virtual Currency and Non-Fungible Tokens Recieved at the Time of the Airdrop	Tx	Value of Virtual Currency and Non-Fungible Tokens Recieved at the Time o...
+pdf/2026/AZ140/en/2025_140.pdf	Gas Fees Not Included in Virtual Currency or Non-Fungible Token Basis	Tx	Gas Fees Not Included in Virtual Currency or Non-Fungible Token Basis
+pdf/2026/AZ140/en/2025_140.pdf	Arizona Families Tax Rebate	Tx	Arizona Families Tax Rebate
+pdf/2026/AZ140/en/2025_140.pdf	Other Adjustments .See instructions and MCTCP worksheet	Tx	Other Adjustments .See instructions and MCTCP worksheet
+pdf/2026/AZ140/en/2025_140.pdf	Total Other Subtractions:  Add all amounts and enter the total here and on page 2, line 36	Tx	Total Other Subtractions: Add all amounts and enter the total here and o...
+pdf/2026/AZ140/en/2025_140.pdf	Federal Capital Loss Carryforward Deduction Incurred from Non-Arizona Sources Prior to AZ residency	Tx	Federal Capital Loss Carryforward Deduction Incurred from Non-Arizona So...
+pdf/2026/AZ140/en/2025_140.pdf	Arizona Form 141AZ Schedule K-1 - Fiduciary Adjustment	Tx	Arizona Form 141AZ Schedule K-1 - Fiduciary Adjustment
+pdf/2026/IL1040/en/2025_il-1040.pdf	Fiscal year ending year	Tx	Fiscal year ending year.
+pdf/2026/IL1040/en/2025_il-1040.pdf	Fiscal year ending month	Tx	Fiscal year ending month.
+pdf/2026/IL1040/en/2025_il-1040.pdf	step1-A-foreignnation	Tx	Foreign nation if not US (do not abbreviate)
+pdf/2026/IL1040/en/2025_il-1040.pdf	step1-A-county	Tx	County (Illinois only)
+pdf/2026/IL1040/en/2025_il-1040.pdf	dependent_you	Btn	you
+pdf/2026/IL1040/en/2025_il-1040.pdf	dependent_status	Btn	choose one
+pdf/2026/IL1040/en/2025_il-1040.pdf	residency	Btn	choose one
+pdf/2026/IL1040/en/2025_il-1040.pdf	Check if at least twothirds of your federal gross income is from farming	Btn	Check if at least two-thirds of your federal gross income is from farmin...
+pdf/2026/IL1040/en/2025_il-1040.pdf	Check if you or your spouse are 65 or older and permanently living in a nursing home	Btn	Check if you or your spouse are 65 or older and permanently living in a ...
+pdf/2026/IL1040/en/2025_il-1040.pdf	Check if your income was not received evenly during the year and you annualized your income on Form IL2210	Btn	Check if your income was not received evenly during the year and you ann...
+pdf/2026/IL1040/en/2025_il-1040.pdf	Check if you were not required to file an Illinois Individual Income Tax return in the previous tax year	Btn	Check if you were not required to file an Illinois Individual Income Tax...
+pdf/2026/IL1040/en/2025_il-1040.pdf	Routing number	Tx	Routing number
+pdf/2026/IL1040/en/2025_il-1040.pdf	account_type	Btn	choose one
+pdf/2026/IL1040/en/2025_il-1040.pdf	Account number	Tx	Account number
+pdf/2026/IL1040/en/2025_il-1040.pdf	Check this box and include your email address in Step 1 if IDOR may share your income and other information from this return	Btn	Check this box and include your email address in Step 1 if IDOR may shar...
+pdf/2026/IL1040/en/2025_il-1040.pdf	Self	Btn	Self
+pdf/2026/IL1040/en/2025_il-1040.pdf	Spouse_3	Btn	Spouse
+pdf/2026/IL1040/en/2025_il-1040.pdf	Dependents	Btn	Dependent(s
+pdf/2026/IL1040/en/2025_il-1040.pdf	date_2	Tx	Date (mm/dd/yyyy)_Row_1
+pdf/2026/IL1040/en/2025_il-1040.pdf	PrintType paid preparers namePaid Preparer Use Only	Tx	Print/Type paid preparer’s name_Paid Preparer Use Only
+pdf/2026/IL1040/en/2025_il-1040.pdf	Paid preparers signaturePaid Preparer Use Only	Tx	Paid preparer’s signature_Paid Preparer Use Only
+pdf/2026/IL1040/en/2025_il-1040.pdf	Date mmddyyyyPaid Preparer Use Only	Tx	Date (mm/dd/yyyy)_Paid Preparer Use Only
+pdf/2026/IL1040/en/2025_il-1040.pdf	Check if	Btn	Check if
+pdf/2026/IL1040/en/2025_il-1040.pdf	Paid Preparers PTINCheck if selfemployed	Tx	Paid Preparer’s PTIN_Check if self-employed
+pdf/2026/IL1040/en/2025_il-1040.pdf	Firms name	Tx	Firm’s name
+pdf/2026/IL1040/en/2025_il-1040.pdf	Firms FEIN	Tx	Firm’s FEIN
+pdf/2026/IL1040/en/2025_il-1040.pdf	Firms address	Tx	Firm’s address
+pdf/2026/IL1040/en/2025_il-1040.pdf	DaytimeAreaCode_2	Tx	Your daytime area code.
+pdf/2026/IL1040/en/2025_il-1040.pdf	phone_number_2	Tx	firm's phone number
+pdf/2026/IL1040/en/2025_il-1040.pdf	area code	Tx	area code
+pdf/2026/IL1040/en/2025_il-1040.pdf	phone_number_3	Tx	designee's phone number
+pdf/2026/IL1040/en/2025_il-1040.pdf	Check if the Department may	Btn	Check if the Department may
+pdf/2026/IL1040/en/2025_il-1040.pdf	date_1	Tx	Date (mm/dd/yyyy)
+pdf/2026/IL1040/en/2025_il-1040.pdf	step12-designeesig	Tx	Third Party Designee Name
+pdf/2026/ILWIT/en/2025_il-1040-schedule-il-wit.pdf	Check if attaching to Amended Form IL1040X	Btn	Check if attaching to Amended Form IL-1040-X
 pdf/2026/IRS1040/en/f1040--dft.pdf	topmostSubform[0].Page1[0].f1_01[0]	Tx	Page 1. For the year Jan. 1–Dec. 31, 2026, or other tax year beginning. ...
 pdf/2026/IRS1040/en/f1040--dft.pdf	topmostSubform[0].Page1[0].f1_02[0]	Tx	, 2026, ending. Month and day.
 pdf/2026/IRS1040/en/f1040--dft.pdf	topmostSubform[0].Page1[0].f1_03[0]	Tx	, 20. 2 digit year.
@@ -602,32 +980,11 @@ pdf/2026/IRS1040SA/en/f1040sa--dft.pdf	form1[0].Page2[0].c2_1[1]	Btn	18. Yes. Yo
 pdf/2026/IRS1040SB/en/f1040sb--dft.pdf	topmostSubform[0].Page1[0].f1_32[0]	Tx	3. Excludable interest on series E E and I U.S. savings bonds issued aft...
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_1[2]	Btn	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_12[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_3[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_4[1]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_5[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].c1_5[1]	Btn	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Line1_ReadOrder[0].c1_6[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_21[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_24[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_25[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].Lines8-16c_ReadOrder[0].f1_29[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_35[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page1[0].f1_44[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_9[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_10[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_11[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_12[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_13[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_14[0]	Tx	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_5[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_5[1]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_6[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_6[1]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_7[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_7[1]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_8[0]	Btn	
-pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].c2_8[1]	Btn	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_21[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_22[0]	Tx	
 pdf/2026/IRS1040SC/en/f1040sc.pdf	topmostSubform[0].Page2[0].f2_23[0]	Tx	
@@ -646,15 +1003,10 @@ pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].Table_PartI[0]
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_4[0]	Tx	Row: 1a. Totals for all short-term transactions reported on Form 1099-B ...
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_6[0]	Tx	Row: 1a. Totals for all short-term transactions reported on Form 1099-B ...
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].f1_19[0]	Tx	4. Short-term gain from Form 6252 and short-term gain or (loss) from For...
-pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].f1_20[0]	Tx	5. Net short-term gain or (loss) from partnerships, S corporations, esta...
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_23[0]	Tx	Part I I. Long-Term Capital Gains and Losses—Generally Assets Held More ...
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_24[0]	Tx	Row: 8a. Totals for all long-term transactions reported on Form 1099-B o...
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_26[0]	Tx	Row: 8a. Totals for all long-term transactions reported on Form 1099-B o...
 pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].f1_39[0]	Tx	11. Gain from Form 4797, Part I; long-term gain from Forms 2439 and 6252...
-pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page1[0].f1_40[0]	Tx	12. Net long-term gain or (loss) from partnerships, S corporations, esta...
-pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page2[0].f2_2[0]	Tx	18. If you are required to complete the 28% Rate Gain Worksheet (see ins...
-pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page2[0].f2_3[0]	Tx	19. If you are required to complete the Unrecaptured Section 1250 Gain W...
-pdf/2026/IRS1040SD/en/f1040sd--dft.pdf	topmostSubform[0].Page2[0].c2_2[1]	Btn	20. No. Complete the Schedule D Tax Worksheet in the instructions. Don’t...
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page1[0].c1_1[0]	Btn	Part I. Income or Loss From Rental Real Estate and Royalties. Note: If y...
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page1[0].c1_1[1]	Btn	A. No.
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page1[0].c1_2[0]	Btn	B. If “Yes,” did you or will you file required Form(s) 1099? Yes.
@@ -792,10 +1144,8 @@ pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].f2_49[0]	Tx	31
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33a-b[0].RowA[0].f2_52[0]	Tx	Row: A. Column: (b) Employer identification number.
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33a-b[0].RowB[0].f2_54[0]	Tx	Row: B. Column: (b) Employer identification number.
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33c-f[0].RowA[0].f2_55[0]	Tx	Row: A. Column: Passive income and loss. (c) Passive deduction or loss a...
-pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33c-f[0].RowA[0].f2_56[0]	Tx	Row: A. Column: Passive income and loss. (d) Passive income from Schedul...
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33c-f[0].RowA[0].f2_57[0]	Tx	Row: A. Column: Nonpassive income and loss. (e) Deduction or loss from S...
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33c-f[0].RowB[0].f2_59[0]	Tx	Row: B. Column: Passive income and loss. (c) Passive deduction or loss a...
-pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33c-f[0].RowB[0].f2_60[0]	Tx	Row: B. Column: Passive income and loss. (d) Passive income from Schedul...
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].Table_Line33c-f[0].RowB[0].f2_61[0]	Tx	Row: B. Column: Nonpassive income and loss. (e) Deduction or loss from S...
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].f2_67[0]	Tx	34b. Totals. (c) Passive deduction or loss allowed (attach Form 8582 if ...
 pdf/2026/IRS1040SE/en/f1040se--dft.pdf	topmostSubform[0].Page2[0].f2_69[0]	Tx	34b. (e) Deduction or loss from Schedule K-1.
@@ -834,10 +1184,6 @@ pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_23[0]	Tx	2s. Op
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_24[0]	Tx	2t. Intangible drilling costs preference.
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_25[0]	Tx	3. Other adjustments, including income-based related adjustments.
 pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page1[0].f1_30[0]	Tx	8. Alternative minimum tax foreign tax credit (see instructions).
-pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_3[0]	Tx	14. Enter the amount from Schedule D (Form 1040), line 19 (as refigured ...
-pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_24[0]	Tx	If line 14 is zero or blank, skip lines 35 through 37 and go to line 38....
-pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_25[0]	Tx	36. Subtract line 35 from line 12.
-pdf/2026/IRS6251/en/f6251--dft.pdf	topmostSubform[0].Page2[0].f2_26[0]	Tx	37. Multiply line 36 by 25% (0.25).
 pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page1[0].Checkbox3_ReadOrder[0].c1_3[0]	Btn	
 pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page1[0].c1_4[0]	Btn	
 pdf/2026/IRS8862/en/f8862.pdf	topmostSubform[0].Page2[0].c2_3[1]	Btn	
@@ -953,6 +1299,146 @@ pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_34[0]	Tx	(b) Al
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_35[0]	Tx	(c) Alternative start month.
 pdf/2026/IRS8962/en/f8962--dft.pdf	topmostSubform[0].Page2[0].f2_36[0]	Tx	(d) Alternative stop month.
 pdf/2026/IRS8995/en/f8995--dft.pdf	topmostSubform[0].Page1[0].Checkbox8pt[0]	Btn	20. Check the box for this line 20 only if indicating a filing of this F...
+pdf/2026/MA1/en/2025_form-1.pdf	Foreign province, state, or county	Tx	Foreign province, state, or county
+pdf/2026/MA1/en/2025_form-1.pdf	Foreign contry (or country code)	Tx	Foreign contry (or country code)
+pdf/2026/MA1/en/2025_form-1.pdf	Foreign postal code	Tx	Foreign postal code
+pdf/2026/MA1/en/2025_form-1.pdf	Amended return	Btn	Amended return
+pdf/2026/MA1/en/2025_form-1.pdf	federal amendment	Btn	federal amendment
+pdf/2026/MA1/en/2025_form-1.pdf	Other jurisdiction change	Btn	Other jurisdiction change
+pdf/2026/MA1/en/2025_form-1.pdf	date of other jurisdiction change	Tx	date of other jurisdiction change
+pdf/2026/MA1/en/2025_form-1.pdf	Amended return due to IRS BBA Partnership Audit	Btn	Amended return due to IRS BBA Partnership Audit
+pdf/2026/MA1/en/2025_form-1.pdf	1$ Taxpayer	Btn	1$ Taxpayer
+pdf/2026/MA1/en/2025_form-1.pdf	1$ Spouse	Btn	1$ Spouse
+pdf/2026/MA1/en/2025_form-1.pdf	state election campaign fund contributuion total	Tx	state election campaign fund contributuion total
+pdf/2026/MA1/en/2025_form-1.pdf	taxpayer	Btn	taxpayer
+pdf/2026/MA1/en/2025_form-1.pdf	spouse	Btn	spouse
+pdf/2026/MA1/en/2025_form-1.pdf	taxpayer deceased	Btn	taxpayer deceased
+pdf/2026/MA1/en/2025_form-1.pdf	deceased taxpayer date of death	Tx	deceased taxpayer date of death
+pdf/2026/MA1/en/2025_form-1.pdf	spouse deceased	Btn	spouse deceased
+pdf/2026/MA1/en/2025_form-1.pdf	deceased spouse date of death	Tx	deceased spouse date of death
+pdf/2026/MA1/en/2025_form-1.pdf	taxpayer under age 18	Btn	taxpayer under age 18
+pdf/2026/MA1/en/2025_form-1.pdf	spouse under age 18	Btn	spouse under age 18
+pdf/2026/MA1/en/2025_form-1.pdf	taxpayer name change	Btn	taxpayer name change
+pdf/2026/MA1/en/2025_form-1.pdf	spouse name change	Btn	spouse name change
+pdf/2026/MA1/en/2025_form-1.pdf	noncustodial parent	Btn	noncustodial parent
+pdf/2026/MA1/en/2025_form-1.pdf	custodial parent has released claim to exemption for children	Btn	custodial parent has released claim to exemption for children
+pdf/2026/MA1/en/2025_form-1.pdf	filing Schedule TDS	Btn	filing Schedule TDS
+pdf/2026/MA1/en/2025_form-1.pdf	filing Schedule FCI	Btn	filing Schedule FCI
+pdf/2026/MA1/en/2025_form-1.pdf	reporting digital assets (see instructions)	Btn	reporting digital assets (see instructions)
+pdf/2026/MA1/en/2025_form-1.pdf	fill in box if line a is a loss	Btn	fill in box if line a is a loss
+pdf/2026/MA1/en/2025_form-1.pdf	fill in box if line b is a loss	Btn	fill in box if line b is a loss
+pdf/2026/MA1/en/2025_form-1.pdf	Fill in if not using same filing status on the federal return	Btn	Fill in if not using same filing status on the federal return
+pdf/2026/MA1/en/2025_form-1.pdf	Fill in if joint filing exemption for spouses with Massachusetts gross income under $8,000	Btn	Fill in if joint filing exemption for spouses with Massachusetts gross i...
+pdf/2026/MA1/en/2025_form-1.pdf	nonresident alien	Btn	nonresident alien
+pdf/2026/MA1/en/2025_form-1.pdf	line 2c taxpayer age 65 or over before 2026	Btn	line 2c taxpayer age 65 or over before 2026
+pdf/2026/MA1/en/2025_form-1.pdf	line 2c taxpayer's spouse age 65 or over before 2026	Btn	line 2c taxpayer's spouse age 65 or over before 2026
+pdf/2026/MA1/en/2025_form-1.pdf	line 2d taxpayer blindness exemption	Btn	line 2d taxpayer blindness exemption
+pdf/2026/MA1/en/2025_form-1.pdf	line 2d taxpayer's spouse blindness exemption	Btn	line 2d taxpayer's spouse blindness exemption
+pdf/2026/MA1/en/2025_form-1.pdf	date of signature	Tx	date of signature
+pdf/2026/MA1/en/2025_form-1.pdf	date of spouse's signature	Tx	date of spouse's signature
+pdf/2026/MA1/en/2025_form-1.pdf	fill in box if line 6a is a loss	Btn	fill in box if line 6a is a loss
+pdf/2026/MA1/en/2025_form-1.pdf	fill in box if line 6b is a loss	Btn	fill in box if line 6b is a loss
+pdf/2026/MA1/en/2025_form-1.pdf	fill in box if line 7 is a loss	Btn	fill in box if line 7 is a loss
+pdf/2026/MA1/en/2025_form-1.pdf	fill in box if line 10 is a loss	Btn	fill in box if line 10 is a loss
+pdf/2026/MA1/en/2025_form-1.pdf	line 24 oval. If filing Schedule D-IS, Installment Sales, fill in oval and enclose Schedule D-IS	Btn	line 24 oval. If filing Schedule D-IS, Installment Sales, fill in oval a...
+pdf/2026/MA1/en/2025_form-1.pdf	line 24 excess exemption. If excess exemptions were used in calculating lines 20, 23 or 24, fill in oval and see instructions	Btn	line 24 excess exemption. If excess exemptions were used in calculating ...
+pdf/2026/MA1/en/2025_form-1.pdf	line 27. If you qualify for No Tax Status, fill in oval and enter 0 in line 28 (from worksheet)	Btn	line 27. If you qualify for No Tax Status, fill in oval and enter 0 in l...
+pdf/2026/MA1/en/2025_form-1.pdf	line 43 Note: You cannot claim the Earned Income Credit if your filing status is married filing separately unless you qualify for an exception (see instructions). Fill in oval if you qualify for this exception	Btn	line 43 Note: You cannot claim the Earned Income Credit if your filing s...
+pdf/2026/MA1/en/2025_form-1.pdf	direct deposit	Btn	direct deposit
+pdf/2026/MA1/en/2025_form-1.pdf	Direct deposit of refund. Routing number (first two digits must be 01 to 12 or 21 to 32)	Tx	Direct deposit of refund. Routing number (first two digits must be 01 to...
+pdf/2026/MA1/en/2025_form-1.pdf	Direct deposit of refund. Account number	Tx	Direct deposit of refund. Account number
+pdf/2026/MA1/en/2025_form-1.pdf	Fill in if M-2210 exception. Enclose Form M-2210	Btn	Fill in if M-2210 exception. Enclose Form M-2210
+pdf/2026/MA1/en/2025_form-1.pdf	Penalty	Tx	Penalty
+pdf/2026/MA1/en/2025_form-1.pdf	M-2210 amount	Tx	M-2210 amount
+pdf/2026/MA1/en/2025_form-1.pdf	Print Paid Preparer’S Name	Tx	Print Paid Preparer’S Name
+pdf/2026/MA1/en/2025_form-1.pdf	Paid Preparer's Social Security number or Preparer's Tax Identification number	Tx	Paid Preparer's Social Security number or Preparer's Tax Identification ...
+pdf/2026/MA1/en/2025_form-1.pdf	Paid Preparer's phone number	Tx	Paid Preparer's phone number
+pdf/2026/MA1/en/2025_form-1.pdf	Date of return	Tx	Date of return
+pdf/2026/MA1/en/2025_form-1.pdf	Paid Preparer's Employer Identification number	Tx	Paid Preparer's Employer Identification number
+pdf/2026/MA1/en/2025_form-1.pdf	fill in if paid preparer is self-employed	Btn	fill in if paid preparer is self-employed
+pdf/2026/MA1/en/2025_form-1.pdf	fill in if DOR may discuss this return with the preparer	Btn	fill in if DOR may discuss this return with the preparer
+pdf/2026/MA1/en/2025_form-1.pdf	fill in if you do not want preparer to file return electronically	Btn	fill in if you do not want preparer to file return electronically
+pdf/2026/MA1/en/2025_form-1.pdf	Interest	Tx	Interest
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	fill in box if line 2 is a loss	Btn	fill in box if line 2 is a loss
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4b. MassHealth. Fill in oval(s) and go to line 5	Btn	4b. MassHealth. Fill in oval(s) and go to line 5
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4b. Spouse MassHealth. Fill in oval(s) and go to line 5	Btn	4b. Spouse MassHealth. Fill in oval(s) and go to line 5
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4c. Medicare (including a replacement or supplemental plan). Fill in oval(s) and go to line 5	Btn	4c. Medicare (including a replacement or supplemental plan). Fill in ova...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4c. Spouse Medicare (including a replacement or supplemental plan). Fill in oval(s) and go to line 5	Btn	4c. Spouse Medicare (including a replacement or supplemental plan). Fill...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4d. U.S. military (including Veteran’s Administration and Tri-Care). Fill in oval(s) and go to line 5	Btn	4d. U.S. military (including Veteran’s Administration and Tri-Care). Fil...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4d. Spouse U.S. military (including Veteran’s Administration and Tri-Care). Fill in oval(s) and go to line 5	Btn	4d. Spouse U.S. military (including Veteran’s Administration and Tri-Car...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4e. Other program. Enter program name(s) only in lines 4f and/or 4g below (see instructions)	Btn	4e. Other program. Enter program name(s) only in lines 4f and/or 4g belo...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4e. Spouse Other program. Enter program name(s) only in lines 4f and/or 4g below (see instructions)	Btn	4e. Spouse Other program. Enter program name(s) only in lines 4f and/or ...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4f Line 2. Name of second private insurance company, administrator or other government program if necessary (from box 1 of form ma 1099-hc)	Tx	4f Line 2. Name of second private insurance company, administrator or ot...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4f line 2a. Subscriber number (from form ma 1099-hc) note: if you were not issued form ma 1099-hc, enter the identification number from your health insurance card	Tx	4f line 2a. Subscriber number (from form ma 1099-hc) note: if you were n...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4g Line 2. Name of second private insurance company, administrator or other government program if necessary for spouse (from box 1 of form ma 1099-hc)	Tx	4g Line 2. Name of second private insurance company, administrator or ot...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	4g line 2a. subscriber number (from form ma 1099-hc) note: if you were not issued form ma 1099-hc, enter the identification number from your health insurance card	Tx	4g line 2a. subscriber number (from form ma 1099-hc) note: if you were n...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	I authorize D O R to share this tax return including attached schedules with the Massachusetts Health Connector for the purpose of assessing my eligibility for insurance affordability programs and contacting me with information about the same	Btn	I authorize D O R to share this tax return including attached schedules ...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	My spouse authorizes D O R to share this tax return including attached schedules with the Massachusetts Health Connector for the purpose of assessing my eligibility for insurance affordability programs and contacting me with information about the same	Btn	My spouse authorizes D O R to share this tax return including attached s...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	6 Was your income in 2025 at or below 150% of the federal poverty level?	Btn	6 Was your income in 2025 at or below 150% of the federal poverty level?
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of January	Btn	Fill in if you had coverage for the month of January
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of February	Btn	Fill in if you had coverage for the month of February.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of March	Btn	Fill in if you had coverage for the month of March.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of April	Btn	Fill in if you had coverage for the month of April.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of May	Btn	Fill in if you had coverage for the month of May.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of June	Btn	Fill in if you had coverage for the month of June.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of July	Btn	Fill in if you had coverage for the month of July.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of August	Btn	Fill in if you had coverage for the month of August.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of September	Btn	Fill in if you had coverage for the month of September.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of October	Btn	Fill in if you had coverage for the month of October.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of November	Btn	Fill in if you had coverage for the month of November.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if you had coverage for the month of December	Btn	Fill in if you had coverage for the month of December.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your spouse had coverage for the month of January	Btn	Fill in if your spouse had coverage for the month of January.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your spouse had coverage for the month of February	Btn	Fill in if your spouse had coverage for the month of February.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of March	Btn	Fill in if your Spouse had coverage for the month of March.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of April	Btn	Fill in if your Spouse had coverage for the month of April.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of May	Btn	Fill in if your Spouse had coverage for the month of May.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of June	Btn	Fill in if your Spouse had coverage for the month of June.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of July	Btn	Fill in if your Spouse had coverage for the month of July.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of August	Btn	Fill in if your Spouse had coverage for the month of August.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of September	Btn	Fill in if your Spouse had coverage for the month of September.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of October	Btn	Fill in if your Spouse had coverage for the month of October.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of November	Btn	Fill in if your Spouse had coverage for the month of November.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Fill in if your Spouse had coverage for the month of December	Btn	Fill in if your Spouse had coverage for the month of December.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	8a. Religious exemption. Are you claiming an exemption from the requirement to purchase health insurance based on your sincerely-held religious beliefs that cause you to object to substantially all forms of treatment covered by health insurance?	Btn	8a. Religious exemption. Are you claiming an exemption from the requirem...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	8a. Religious exemption. Is your spouse claiming an exemption from the requirement to purchase health insurance based on your sincerely-held religious beliefs that cause you to object to substantially all forms of treatment covered by health insurance?	Btn	8a. Religious exemption. Is your spouse claiming an exemption from the r...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	8b. Received medical health care during the 2025 tax year?	Btn	8b. Received medical health care during the 2025 tax year?
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	8b. Spouse Received medical health care during the 2025 tax year?	Btn	8b. Spouse Received medical health care during the 2025 tax year?
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	9 Have you obtained a Certificate of Exemption issued by the Massachusetts Health Connector for the 2025 tax year?	Btn	9 Have you obtained a Certificate of Exemption issued by the Massachuset...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	9 Has your spouse obtained a Certificate of Exemption issued by the Massachusetts Health Connector for the 2025 tax year?	Btn	9 Has your spouse obtained a Certificate of Exemption issued by the Mass...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Section 9. Massachusetts certificate number	Tx	Section 9. Your massachusetts certificate number
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	Section 9. Spouse's Massachusetts certificate number	Tx	section 9. Spouse’s massachusetts certificate number.
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	10 Did your employer offer affordable health insurance that met the minimum creditable coverage requirements as determined by completing the Schedule HC Worksheet for line 10?	Btn	10 Did your employer offer affordable health insurance that met the mini...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	10 Did your spouse's employer offer affordable health insurance that met the minimum creditable coverage requirements as determined by completing the Schedule HC Worksheet for line 10?	Btn	10 Did your spouse's employer offer affordable health insurance that met...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	11 Were you eligible for government-subsidized health insurance as determined by completing the Schedule HC Worksheet for Line 11?	Btn	11 Were you eligible for government-subsidized health insurance as deter...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	11 Was your spouse eligible for government-subsidized health insurance as determined by completing the Schedule HC Worksheet for Line 11?	Btn	11 Was your spouse eligible for government-subsidized health insurance a...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	12. Were you able to purchase affordable private health insurance that met the minimum creditable coverage requirements as determined by completing the Schedule HC Worksheet for line 12?	Btn	12. Were you able to purchase affordable private health insurance that m...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	12. Was your spouse able to purchase affordable private health insurance that met the minimum creditable coverage requirements as determined by completing the Schedule HC Worksheet for line 12?	Btn	12. Was your spouse able to purchase affordable private health insurance...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	I wish to appeal the penalty. I authorize D O R to share this tax return including this schedule with the Massachusetts Health Connector for purposes of deciding this appeal	Btn	I wish to appeal the penalty. I authorize D O R to share this tax return...
+pdf/2026/MAHC/en/2025_schedule-hc.pdf	My spouse wishes to appeal the penalty. I authorize D O R to share this tax return including this schedule with the Massachusetts Health Connector for purposes of deciding this appeal	Btn	My spouse wishes to appeal the penalty. I authorize D O R to share this ...
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_datebeg	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_country	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_Out of Country	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_dead1	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_dead2	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_dead3	Ch	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_lname2_PG2	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_li13_page1_good	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_dateend	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_NCEDU_good	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_Ex_good	Ch	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_Signed by Executor or Administrator	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_sigdate	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_ppsigdate	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_sigdate2	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_ppssn	Tx	FEIN, SSN, or PTIN
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_ppphoneno	Tx	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_amendedreturn	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_rs1no	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_rs2no	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_ncitemizeddeduction	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_check	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_fedex1yes	Btn	
+pdf/2026/NCD400/en/2025_d-400.pdf	y_d400wf_fedex1no	Btn	
 pdf/2026/PA40/en/2025_pa-40.pdf	Extension	Btn	Click on oval if an extension was filed for the return
 pdf/2026/PA40/en/2025_pa-40.pdf	Amended Return	Btn	Click on Oval if this is an Amended PA-40 Return
 pdf/2026/PA40/en/2025_pa-40.pdf	Final Return	Tx	Final Return. Indicate reason:
@@ -1101,7 +1587,6 @@ pdf/2026/PA40C/en/pa-40c.pdf	3. (c) Totals	Tx	Totals
 pdf/2026/PA40C/en/pa-40c.pdf	7. Amortization	Tx	Amortization
 pdf/2026/PA40C/en/pa-40c.pdf	8. Bad Debts from sales or services	Tx	Bad Debts from sales or services
 pdf/2026/PA40C/en/pa-40c.pdf	9. Bank charges	Tx	Bank charges
-pdf/2026/PA40C/en/pa-40c.pdf	10. Car & truck expenses	Tx	Car & truck expenses
 pdf/2026/PA40C/en/pa-40c.pdf	12. Cost Depletion	Tx	Cost Depletion but not percentage depletion
 pdf/2026/PA40C/en/pa-40c.pdf	13a. Regular Depreciation	Tx	Regular Depreciation
 pdf/2026/PA40C/en/pa-40c.pdf	13b. Section 179 expense	Tx	Section 179 expense

@@ -248,6 +248,20 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutAzLowIncomeCredit",
                 "/flowKnockoutAzSchedule1A",
                 "/flowKnockoutAzFilingStatus",
+                "/flowKnockoutMaPartYearOrNonresident",
+                "/flowKnockoutMaW2NotMassachusetts",
+                "/flowKnockoutMaOtherFederalIncome",
+                "/flowKnockoutMaDependentsOrQualifyingPerson",
+                "/flowKnockoutMaAgeOrBlind",
+                "/flowKnockoutMaFilingStatus",
+                "/flowKnockoutMaItemizedDeductions",
+                "/flowKnockoutMaTaxTable",
+                "/flowKnockoutMaSurtax",
+                "/flowKnockoutMaEarnedIncomeCredit",
+                "/flowKnockoutMaUseTax",
+                "/flowKnockoutMaNoFullYearMcc",
+                "/flowKnockoutMaRetirementContribution",
+                "/flowKnockoutMaScheduleHcIdentifiers",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -298,7 +312,8 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops and does not list Part III again.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(98, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        // #347 adds /flowKnockoutPaK1GuaranteedPayments. #93 slice 6 adds the fourteen Massachusetts stops.
+        assertEquals(112, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -886,6 +901,19 @@ class PrintRefusingKnockoutsTest {
                     }
                 }
             }
+            // #93 slice 6: a Massachusetts resident return refuses the same way.
+            Result<Object> maReturn = graph.get("/stateReturnIsMa");
+            if (maReturn.complete() && Boolean.TRUE.equals(maReturn.get())) {
+                for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+                    if (!path.startsWith("/flowKnockoutMa")) {
+                        continue;
+                    }
+                    Result<Object> knock = graph.get(path);
+                    if (!(knock.complete() && Boolean.FALSE.equals(knock.get()))) {
+                        expected.add(path);
+                    }
+                }
+            }
             // refusingPaths follows FACT_PATHS. Arizona stops sit ahead of the Form 8962 stops, so an Arizona
             // scenario that also refuses on a premium tax credit is listed with the Arizona paths first.
             List<String> ordered = new ArrayList<>();
@@ -916,7 +944,11 @@ class PrintRefusingKnockoutsTest {
                         "cfa-xml-error-2.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions]",
                         "ticket-6196.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzAgeOrBlind, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions]",
                         "mfj-deceased-spouse.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzAgeOrBlind, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions]",
-                        "HOH-35K-dep-credits.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions, /flowKnockoutAzFilingStatus]"),
+                        "HOH-35K-dep-credits.json [/flowKnockoutAzPartYearOrNonresident, /flowKnockoutAzOtherFederalIncome, /flowKnockoutAzDependentsOrQualifyingPerson, /flowKnockoutAzItemizedDeductions, /flowKnockoutAzCharitableContributions, /flowKnockoutAzFilingStatus]",
+                        "hoh-43k-plus-interest.json [/flowKnockoutMaPartYearOrNonresident, /flowKnockoutMaOtherFederalIncome, /flowKnockoutMaDependentsOrQualifyingPerson, /flowKnockoutMaFilingStatus, /flowKnockoutMaItemizedDeductions, /flowKnockoutMaTaxTable, /flowKnockoutMaSurtax, /flowKnockoutMaEarnedIncomeCredit, /flowKnockoutMaUseTax, /flowKnockoutMaNoFullYearMcc, /flowKnockoutMaRetirementContribution, /flowKnockoutMaScheduleHcIdentifiers]",
+                        "HOH-32k-EITC.json [/flowKnockoutMaPartYearOrNonresident, /flowKnockoutMaOtherFederalIncome, /flowKnockoutMaDependentsOrQualifyingPerson, /flowKnockoutMaAgeOrBlind, /flowKnockoutMaFilingStatus, /flowKnockoutMaItemizedDeductions, /flowKnockoutMaTaxTable, /flowKnockoutMaSurtax, /flowKnockoutMaEarnedIncomeCredit, /flowKnockoutMaUseTax, /flowKnockoutMaNoFullYearMcc, /flowKnockoutMaRetirementContribution, /flowKnockoutMaScheduleHcIdentifiers]",
+                        "hoh-9300.json [/flowKnockoutMaPartYearOrNonresident, /flowKnockoutMaOtherFederalIncome, /flowKnockoutMaDependentsOrQualifyingPerson, /flowKnockoutMaFilingStatus, /flowKnockoutMaItemizedDeductions, /flowKnockoutMaTaxTable, /flowKnockoutMaSurtax, /flowKnockoutMaEarnedIncomeCredit, /flowKnockoutMaUseTax, /flowKnockoutMaNoFullYearMcc, /flowKnockoutMaRetirementContribution, /flowKnockoutMaScheduleHcIdentifiers]",
+                        "mfs-35k-cod-eitc.json [/flowKnockoutMaPartYearOrNonresident, /flowKnockoutMaOtherFederalIncome, /flowKnockoutMaDependentsOrQualifyingPerson, /flowKnockoutMaAgeOrBlind, /flowKnockoutMaFilingStatus, /flowKnockoutMaItemizedDeductions, /flowKnockoutMaTaxTable, /flowKnockoutMaSurtax, /flowKnockoutMaEarnedIncomeCredit, /flowKnockoutMaUseTax, /flowKnockoutMaNoFullYearMcc, /flowKnockoutMaRetirementContribution, /flowKnockoutMaScheduleHcIdentifiers]"),
                 Set.copyOf(scheduleEicRefused),
                 "Schedule EIC scenarios that still refuse");
         // qss_35K_1 dependent-signed.json claims the EIC for a child who is another person's qualifying child
@@ -937,8 +969,10 @@ class PrintRefusingKnockoutsTest {
         // Arizona residency is unanswered. These thirteen otherwise printed: cfa-npe-01-26, cfa-xml-error-2,
         // HOH-35K-dep-credits, mfj-11k, mfj-15k, mfj-20k, mfj-50k-ctc-odc, mfj-deceased-spouse, ny-rejected-0126,
         // qss-12k, ticket-6192-ctc, ticket-6192-odc, and ticket-6196. qss_35K_1 dependent-signed and ptc-high-income
-        // already refused. 152 minus those thirteen.
-        assertEquals(139, printed, "scenarios that print");
+        // already refused. 152 minus those thirteen is 139. #93 slice 6: 29 Massachusetts resident returns that
+        // previously printed now refuse, because a Form 1 stop is true or a Form 1 question is unanswered.
+        // 139 minus 29 is 110. The in-scope full-year W-2 scenarios that answer those questions still print.
+        assertEquals(110, printed, "scenarios that print");
     }
 
     /**

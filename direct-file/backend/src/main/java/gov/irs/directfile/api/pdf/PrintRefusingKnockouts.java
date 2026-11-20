@@ -162,6 +162,25 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutAzLowIncomeCredit",
             "/flowKnockoutAzSchedule1A",
             "/flowKnockoutAzFilingStatus",
+            // #93 slice 6: Massachusetts stops. Each is complete false when the return is not a Form 1, and incomplete
+            // when the Massachusetts question is unanswered, so the PDF is not printed with the unmodeled line as
+            // zero. Derived stops are complete false when the condition is false.
+            // 2025 Form 1 and Schedule HC, used until the 2026 forms are posted. M.G.L. c. 62, §§ 3 and 4; c. 111M,
+            // § 2. Line 22 is 5 percent, or 5.85 percent when that rate is elected, rounded once.
+            "/flowKnockoutMaPartYearOrNonresident",
+            "/flowKnockoutMaW2NotMassachusetts",
+            "/flowKnockoutMaOtherFederalIncome",
+            "/flowKnockoutMaDependentsOrQualifyingPerson",
+            "/flowKnockoutMaAgeOrBlind",
+            "/flowKnockoutMaFilingStatus",
+            "/flowKnockoutMaItemizedDeductions",
+            "/flowKnockoutMaTaxTable",
+            "/flowKnockoutMaSurtax",
+            "/flowKnockoutMaEarnedIncomeCredit",
+            "/flowKnockoutMaUseTax",
+            "/flowKnockoutMaNoFullYearMcc",
+            "/flowKnockoutMaRetirementContribution",
+            "/flowKnockoutMaScheduleHcIdentifiers",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.

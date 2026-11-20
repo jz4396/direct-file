@@ -11,6 +11,7 @@
       Illinois (#93 slice 3) is a computed return: /livedInIl and /stateReturnIsIl feed /stateReturnComputed and these Switches the way Pennsylvania does. There is no local Illinois return.
       North Carolina (#93 slice 4) is a computed return: /livedInNc and /stateReturnIsNc feed /stateReturnComputed and these Switches the same way. There is no local North Carolina return.
       Arizona (#93 slice 5) is a computed return: /livedInAz and /stateReturnIsAz feed /stateReturnComputed and these Switches the same way. Form 140 has no local return.
+      Massachusetts (#93 slice 6) is a computed return: /livedInMa and /stateReturnIsMa feed /stateReturnComputed and these Switches the same way. Form 1 has no local return.
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
@@ -75,6 +76,21 @@
             <Dependency module="filers" path="/filerResidenceAndIncomeState" />
           </IsComplete>
           <Dependency module="filers" path="/livedInAz" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsMa">
+      <Name>State return: Massachusetts</Name>
+      <Description>#93 slice 6: the filer chose Massachusetts as the one state they lived in and earned income in.
+        filers /livedInMa. Full-year W-2 wages are maPit Form 1. Part-year, nonresident, and the other stops are
+        BlockSubmissionOnTrue facts on that module. No local return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+          </IsComplete>
+          <Dependency module="filers" path="/livedInMa" />
         </All>
       </Derived>
     </Fact>
@@ -271,12 +287,13 @@
           <Dependency path="/stateReturnIsIl" />
           <Dependency path="/stateReturnIsNc" />
           <Dependency path="/stateReturnIsAz" />
+          <Dependency path="/stateReturnIsMa" />
         </Any>
       </Derived>
     </Fact>
     <Fact path="/stateTaxLiability">
       <Name>stateTaxLiability</Name>
-      <Description>#78 state framework: State tax liability (PA-40 line 12, IL-1040 line 12, D-400 line 15, or Form 140 line 46). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax liability (PA-40 line 12, IL-1040 line 12, D-400 line 15, Form 140 line 46, or Form 1 line 22). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -312,12 +329,20 @@
               <Dependency module="azPit" path="/azLine46" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsMa" />
+            </When>
+            <Then>
+              <Dependency module="maPit" path="/maLine22" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateTaxWithheld">
       <Name>stateTaxWithheld</Name>
-      <Description>#78 state framework: State tax withheld (PA-40 line 13, IL-1040 line 25, D-400 lines 20a and 20b, or Form 140 line 53). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax withheld (PA-40 line 13, IL-1040 line 25, D-400 lines 20a and 20b, Form 140 line 53, or Form 1 line 38). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -353,12 +378,20 @@
               <Dependency module="azPit" path="/azLine53" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsMa" />
+            </When>
+            <Then>
+              <Dependency module="maPit" path="/maLine38" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateRefund">
       <Name>stateRefund</Name>
-      <Description>#78 state framework: State overpayment (PA-40 line 29, IL-1040 line 38, D-400 line 34, or Form 140 refund). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State overpayment (PA-40 line 29, IL-1040 line 38, D-400 line 34, Form 140 refund, or Form 1 line 54). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -394,12 +427,20 @@
               <Dependency module="azPit" path="/azRefund" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsMa" />
+            </When>
+            <Then>
+              <Dependency module="maPit" path="/maLine54" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateAmountOwed">
       <Name>stateAmountOwed</Name>
-      <Description>#78 state framework: State tax due (PA-40 line 26, IL-1040 line 41, D-400 line 27, or Form 140 amount owed). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax due (PA-40 line 26, IL-1040 line 41, D-400 line 27, Form 140 amount owed, or Form 1 line 55). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -433,6 +474,14 @@
             </When>
             <Then>
               <Dependency module="azPit" path="/azAmountOwed" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsMa" />
+            </When>
+            <Then>
+              <Dependency module="maPit" path="/maLine55" />
             </Then>
           </Case>
         </Switch>
@@ -516,6 +565,25 @@
               <Dependency module="azPit" path="/flowKnockoutAzLowIncomeCredit" />
               <Dependency module="azPit" path="/flowKnockoutAzSchedule1A" />
               <Dependency module="azPit" path="/flowKnockoutAzFilingStatus" />
+            </Any>
+          </All>
+          <All>
+            <Dependency path="/stateReturnIsMa" />
+            <Any>
+              <Dependency module="maPit" path="/flowKnockoutMaPartYearOrNonresident" />
+              <Dependency module="maPit" path="/flowKnockoutMaW2NotMassachusetts" />
+              <Dependency module="maPit" path="/flowKnockoutMaOtherFederalIncome" />
+              <Dependency module="maPit" path="/flowKnockoutMaDependentsOrQualifyingPerson" />
+              <Dependency module="maPit" path="/flowKnockoutMaAgeOrBlind" />
+              <Dependency module="maPit" path="/flowKnockoutMaFilingStatus" />
+              <Dependency module="maPit" path="/flowKnockoutMaItemizedDeductions" />
+              <Dependency module="maPit" path="/flowKnockoutMaTaxTable" />
+              <Dependency module="maPit" path="/flowKnockoutMaSurtax" />
+              <Dependency module="maPit" path="/flowKnockoutMaEarnedIncomeCredit" />
+              <Dependency module="maPit" path="/flowKnockoutMaUseTax" />
+              <Dependency module="maPit" path="/flowKnockoutMaNoFullYearMcc" />
+              <Dependency module="maPit" path="/flowKnockoutMaRetirementContribution" />
+              <Dependency module="maPit" path="/flowKnockoutMaScheduleHcIdentifiers" />
             </Any>
           </All>
         </Any>
