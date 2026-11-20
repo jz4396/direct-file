@@ -25,7 +25,10 @@
 // minimum tax is owed), and profile S
 // (Golden S: full-year Florida resident, married filing jointly, both under 65, no dependents, standard deduction,
 // two W-2s, and Form 1099-DIV boxes 12 and 13 so the standard-deduction add-back and the private activity bond
-// dividends produce alternative minimum tax, with Form 8959 on the combined Medicare wages).
+// dividends produce alternative minimum tax, with Form 8959 on the combined Medicare wages), and profile T
+// (Golden T: full-year Florida resident, married filing jointly, both under 65, no dependents, standard deduction,
+// one primary W-2, one spouse-owned Schedule C, Form 1099-DIV boxes 1a, 1b, 2a, and 2d through the Schedule D Tax
+// Worksheet, the section 199A deduction, and estimated tax payments).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -80,6 +83,8 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2010`,
   `444-00-2011`,
   `444-00-2012`,
+  `444-00-2013`,
+  `444-00-2014`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1426,6 +1431,103 @@ export const profileSFlMfjStandardAmt = {
   ...exemptInterestDividends(profileSDividendId, `Example Muni Fund`, 60000, 60000),
 };
 
+/**
+ * Profile T (Golden T, #135): full-year Florida resident, married filing jointly, both under 65, not blind, no
+ * dependents, standard deduction. Primary W-2: boxes 1, 3, and 5 $120,000, box 2 $14,000, box 4 $7,440 (6.2% of
+ * $120,000), box 6 $1,740 (1.45% of $120,000). Spouse Schedule C: one business, gross receipts $40,000, no expenses,
+ * net profit $40,000. Primary Form 1099-DIV: box 1a $5,000, box 1b $3,000, box 2a $4,000, box 2d $1,000. Estimated
+ * tax payments $8,000. No state income tax and no state return.
+ *
+ * The cite does not name SSNs. These are group 00 (444-00-2013 and 444-00-2014), the same kind Golden G, Golden Q,
+ * Golden R, and Golden S use. Group 00 is never assigned by SSA. Fixed ids in the
+ * 13500000-0000-4000-8000-0000000023xx range.
+ */
+const wren: Person = { first: `Wren`, last: `Example`, ssn: [`444`, `00`, `2013`], dob: `1981-04-16` };
+const eden: Person = { first: `Eden`, last: `Example`, ssn: [`444`, `00`, `2014`], dob: `1983-12-02` };
+export const profileTDividendId = `13500000-0000-4000-8000-000000002302`;
+export const profileTBusinessId = `13500000-0000-4000-8000-000000002303`;
+export const profileTW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002301`,
+  employer: `Example Bay Payroll LLC`,
+  ein: [`00`, `0002301`],
+  box1: 120000,
+  box2: 14000,
+  box3: 120000,
+  // 6.2% × 120,000 = 7,440. 26 U.S.C. 3101(a). Under the $184,500 wage base.
+  box4: 7440,
+  box5: 120000,
+  // 1.45% × 120,000 = 1,740. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000).
+  box6: 1740,
+  filerId: primaryFilerId,
+  tin: wren.ssn,
+};
+const profileTScheduleCStops = [
+  `hasInventoryOrCogs`,
+  `hasCarTruckOrVehicleLoan`,
+  `hasDepreciationOrSection179`,
+  `hasDepletion`,
+  `hasVehicleRentOrLease`,
+  `hasMachineryOrEquipmentRent`,
+  `hasHomeOffice`,
+  `hasEnergyEfficientBuildingsDeduction`,
+];
+export const profileTFlMfjSpouseScheduleC = {
+  ...single(wren, { street: `123 Example St`, city: `Miami`, zip: `33101`, state: `FL` }),
+  ...mfjFilerData,
+  ...spouse(eden),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(wren.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  [`/filers/#${spouseId}/occupation`]: createStringWrapper(`Owner`),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  // The spouse has no W-2 and no 1099-G. The Schedule C is not one of those forms.
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`noForms`, `/primaryFilerW2And1099IntStateOptions`),
+  ...w2s(wren.ssn, profileTW2),
+  ...qualifiedDividends(profileTDividendId, `Example Dividend Fund`, 5000, 3000, 4000),
+  [`/dividendReports/#${profileTDividendId}/writableCollectibles28RateGain`]: createDollarWrapper(`1000`),
+  '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+  // Answered no. Unanswered, /flowKnockoutScheduleSEOutOfScope stays incomplete and refuses the print.
+  // 26 U.S.C. 1402(a), 1402(a)(1), 1402(a)(8), 1402(a)(14), 1402(c)(1), 1402(c)(4), 1402(e), 1402(g), 1402(j), 1402(l).
+  '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+  '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+  '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(false),
+  '/usesSeOptionalMethod': createBooleanWrapper(false),
+  '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+  '/hasNotarySeExclusion': createBooleanWrapper(false),
+  '/hadForm8919Wages': createBooleanWrapper(false),
+  '/scheduleCIsQualifiedJointVenture': createBooleanWrapper(false),
+  '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+  '/qbiIsCooperativePatron': createBooleanWrapper(false),
+  '/scheduleCBusinesses': createCollectionWrapper([profileTBusinessId]),
+  '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileTBusinessId}/filer`]: createCollectionItemWrapper(spouseId),
+  [`/scheduleCBusinesses/#${profileTBusinessId}/businessName`]: createStringWrapper(`Example Studio`),
+  [`/scheduleCBusinesses/#${profileTBusinessId}/materiallyParticipates`]: createBooleanWrapper(true),
+  [`/scheduleCBusinesses/#${profileTBusinessId}/writableGrossReceipts`]: createDollarWrapper(`40000`),
+  [`/scheduleCBusinesses/#${profileTBusinessId}/writableReturnsAndAllowances`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileTBusinessId}/writableOtherIncome`]: createDollarWrapper(`0`),
+  [`/scheduleCBusinesses/#${profileTBusinessId}/hasDeductibleExpenses`]: createBooleanWrapper(false),
+  ...Object.fromEntries(
+    profileTScheduleCStops.map((key) => [
+      `/scheduleCBusinesses/#${profileTBusinessId}/${key}`,
+      createBooleanWrapper(false),
+    ])
+  ),
+  // Form 1040 line 26. 2026 draft Form 1040, line 26: "2026 estimated tax payments and amount applied from 2025 return".
+  '/paidEstimatedTaxesOrFromLastYear': createBooleanWrapper(true),
+  '/paidEstimatedTaxesOrFromLastYearUnderDifferentName': createBooleanWrapper(false),
+  '/paidEstimatedTaxesWithFormerSpouse': createEnumWrapper(`neither`, `/paidEstimatedTaxesWithFormerSpouseOptions`),
+  '/estimatedTaxPaymentWritable': createDollarWrapper(`8000`),
+  // Form 2210 line 6 is withholding only. Tax $22,495 minus withholding $14,000 is $8,495, so Part II is asked.
+  // 26 U.S.C. 6654(e)(1) reduces the tax by the section 31 withholding credit, not by estimated payments. The
+  // prior-year return is also joint, so box E does not apply. Boxes A through D are no. The penalty is not computed.
+  '/form2210WaiverRequested': createBooleanWrapper(false),
+  '/form2210AnnualizedIncome': createBooleanWrapper(false),
+  '/form2210WithholdingOnActualDates': createBooleanWrapper(false),
+  '/form2210FiledJointReturnPriorYear': createBooleanWrapper(true),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1452,4 +1554,5 @@ export const goldenProfiles = {
   profileQPaMfjTwoChildren,
   profileRFlHohItemizerAmt,
   profileSFlMfjStandardAmt,
+  profileTFlMfjSpouseScheduleC,
 };
