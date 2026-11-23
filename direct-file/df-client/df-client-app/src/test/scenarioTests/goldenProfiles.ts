@@ -28,7 +28,10 @@
 // dividends produce alternative minimum tax, with Form 8959 on the combined Medicare wages), and profile T
 // (Golden T: full-year Florida resident, married filing jointly, both under 65, no dependents, standard deduction,
 // one primary W-2, one spouse-owned Schedule C, Form 1099-DIV boxes 1a, 1b, 2a, and 2d through the Schedule D Tax
-// Worksheet, the section 199A deduction, and estimated tax payments).
+// Worksheet, the section 199A deduction, and estimated tax payments), and profile U
+// (Golden U: full-year Florida resident, single, under 65, no dependents, standard deduction, one W-2, and one
+// Form 1099-DIV with qualified dividends, capital gain distributions, and boxes 12 and 13, so Form 6251 Part III
+// taxes the preferential income at 15% and Form 8960 computes net investment income tax).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -85,6 +88,7 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2012`,
   `444-00-2013`,
   `444-00-2014`,
+  `444-00-2015`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1528,6 +1532,43 @@ export const profileTFlMfjSpouseScheduleC = {
   '/form2210FiledJointReturnPriorYear': createBooleanWrapper(true),
 };
 
+/**
+ * Profile U (Golden U, #135): full-year Florida resident, single, under 65, not blind, no dependents, standard
+ * deduction. One W-2: boxes 1 and 5 $200,000, box 3 $184,500 (the OASDI wage base), box 2 $48,000, box 4 $11,439
+ * (6.2% of $184,500), box 6 $2,900 (1.45% of $200,000). One Form 1099-DIV: box 1a $20,000, box 1b $20,000, box 2a
+ * $10,000, box 12 $50,000, box 13 $50,000. Every other dollar box is blank. Box 2a alone does not require Schedule D.
+ * No state income tax and no state return.
+ *
+ * The cite does not name an SSN. This one is group 00 (444-00-2015), the same kind Golden G, Golden Q, Golden R,
+ * Golden S, and Golden T use. Group 00 is never assigned by SSA. Fixed ids in the
+ * 13500000-0000-4000-8000-0000000024xx range.
+ */
+const marlow: Person = { first: `Marlow`, last: `Example`, ssn: [`444`, `00`, `2015`], dob: `1986-08-09` };
+export const profileUDividendId = `13500000-0000-4000-8000-000000002402`;
+export const profileUW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002401`,
+  employer: `Example Palm Payroll LLC`,
+  ein: [`00`, `0002401`],
+  box1: 200000,
+  box2: 48000,
+  box3: 184500,
+  // 6.2% × 184,500 = 11,439. 26 U.S.C. 3101(a). Box 3 is the wage base; box 1 is above it.
+  box4: 11439,
+  box5: 200000,
+  // 1.45% × 200,000 = 2,900. 26 U.S.C. 3101(b)(1). Medicare wages are not over $200,000, so there is no 0.9%.
+  // 26 U.S.C. 3101(b)(2), 3102(f)(1).
+  box6: 2900,
+};
+export const profileUFlSingleAmtPartIii = {
+  ...single(marlow, { street: `123 Example St`, city: `Miami`, zip: `33101`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  ...w2s(marlow.ssn, profileUW2),
+  ...qualifiedDividends(profileUDividendId, `Example Income Fund`, 20000, 20000, 10000),
+  [`/dividendReports/#${profileUDividendId}/writableExemptInterestDividends`]: createDollarWrapper(`50000`),
+  [`/dividendReports/#${profileUDividendId}/writableSpecifiedPrivateActivityBondInterestDividends`]:
+    createDollarWrapper(`50000`),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1555,4 +1596,5 @@ export const goldenProfiles = {
   profileRFlHohItemizerAmt,
   profileSFlMfjStandardAmt,
   profileTFlMfjSpouseScheduleC,
+  profileUFlSingleAmtPartIii,
 };
