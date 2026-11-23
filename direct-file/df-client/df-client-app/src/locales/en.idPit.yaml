@@ -1,0 +1,89 @@
+# Idaho Form 40 strings (#93 slice 7). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    id-form-40: Idaho return
+dataviews:
+  /flow/your-taxes/amount:
+    /idResidencyStatus: Where you lived for your Idaho return
+    /idHasUseTax: Idaho use tax
+    /idReceivedPublicAssistance: Idaho public assistance
+    /idReceivedSnapOrIncarcerated: Food stamps or incarceration
+    /idSpouseReceivedSnapOrIncarcerated: Spouse food stamps or incarceration
+fields:
+  /idResidencyOptions:
+    fullYear: I lived in Idaho all year
+    partYear: I lived in Idaho for part of the year
+    nonresident: I did not live in Idaho
+headings:
+  /heading/your-taxes/amount/id-residency: Which of these describes your Idaho return?
+  /heading/your-taxes/amount/id-use-tax: Do you owe Idaho use tax?
+  /heading/your-taxes/amount/id-public-assistance: Were you receiving Idaho public assistance payments at the end of the tax year?
+  /heading/your-taxes/amount/id-snap: Did you receive federal food stamp (SNAP) benefits or were you incarcerated during any part of the year?
+  /heading/your-taxes/amount/id-spouse-snap: Did your spouse receive federal food stamp (SNAP) benefits or was your spouse incarcerated during any part of the year?
+  /heading/knockout/id-part-year: This tool doesn’t yet support an Idaho part-year or nonresident return
+  /heading/knockout/id-w2: This tool doesn’t yet support a W-2 from a state other than Idaho
+  /heading/knockout/id-other-income: This tool doesn’t yet support Idaho returns with income other than W-2 wages
+  /heading/knockout/id-dependents: This tool doesn’t yet support dependents on an Idaho return
+  /heading/knockout/id-age-blind: This tool doesn’t yet support an Idaho return for someone who is 65 or older or blind
+  /heading/knockout/id-claimed: This tool doesn’t yet support an Idaho return for someone who can be claimed as a dependent
+  /heading/knockout/id-filing-status: This tool doesn’t yet support this Idaho filing status
+  /heading/knockout/id-itemized: This tool doesn’t yet support Idaho returns that itemize
+  /heading/knockout/id-schedule-1a: This tool doesn’t yet support a federal Schedule 1-A deduction on an Idaho return
+  /heading/knockout/id-use-tax: This tool doesn’t yet support Idaho use tax
+  /heading/knockout/id-public-assistance: This tool doesn’t yet support the Idaho public-assistance waiver
+  /heading/knockout/id-snap: This tool doesn’t yet support a partial-year Food Tax Credit
+info:
+  /info/your-taxes/amount/id-residency:
+    body:
+      A full year means you, and your spouse if you file jointly, lived in Idaho all year. That is Form 40.
+      Part-year residents and nonresidents use Form 43.
+  /info/your-taxes/amount/id-use-tax:
+    body:
+      You owe use tax if you bought items without paying Idaho sales tax, including internet, catalog, radio,
+      and TV purchases. If you owe any, this tool cannot prepare the return.
+  /info/your-taxes/amount/id-public-assistance:
+    body:
+      Idaho public assistance at the end of the year waives the $10 Permanent Building Fund tax. Food stamps
+      and WIC do not qualify. If you were receiving Idaho public assistance, this tool cannot prepare the return.
+  /info/your-taxes/amount/id-snap:
+    body:
+      The Food Tax Credit is $155 for a full year. A month of SNAP benefits or incarceration changes that amount.
+      This tool does not prorate the credit.
+  /info/your-taxes/amount/id-spouse-snap:
+    body: A joint return asks the same question about your spouse. The credit is $155 for each spouse for a full year.
+  /info/knockout/id-part-year:
+    alertText: Idaho part-year and nonresident returns are not supported yet
+    body: Those returns use Form 43, which this tool does not calculate.
+  /info/knockout/id-w2:
+    alertText: A W-2 from another state is not supported on this Idaho return
+    body: Box 15 has to be Idaho, or blank. Withholding counts only when box 15 is Idaho.
+  /info/knockout/id-other-income:
+    alertText: This Idaho return can include W-2 wages only
+    body: Interest, Social Security, a sale, retirement, business, rental, and other income are not supported.
+  /info/knockout/id-dependents:
+    alertText: Dependents are not supported on this Idaho return
+    body: The Idaho child tax credit and the dependent Food Tax Credit are not calculated.
+  /info/knockout/id-age-blind:
+    alertText: Age 65 or blindness is not supported on this Idaho return
+    body: Lines 12a and 12b, and the additional standard deduction, are not calculated.
+  /info/knockout/id-claimed:
+    alertText: Being claimed as a dependent is not supported on this Idaho return
+    body: Line 12c and the dependent standard-deduction worksheet are not calculated.
+  /info/knockout/id-filing-status:
+    alertText: This filing status is not supported on an Idaho return yet
+    body: This tool prepares Form 40 for single filers and for a joint return when both spouses lived in Idaho all year.
+  /info/knockout/id-itemized:
+    alertText: Itemized deductions are not supported on this Idaho return
+    body: Line 14, the state and local tax add-back, is not calculated.
+  /info/knockout/id-schedule-1a:
+    alertText: A federal Schedule 1-A deduction is not supported on this Idaho return
+    body: Qualified overtime, tips, car-loan interest, and the senior deduction are not entered on line 18.
+  /info/knockout/id-use-tax:
+    alertText: Idaho use tax is not supported yet
+    body: Line 28 is not calculated.
+  /info/knockout/id-public-assistance:
+    alertText: The Permanent Building Fund waiver is not supported yet
+    body: The line 31 checkbox is not calculated. Food stamps and WIC are not Idaho public assistance.
+  /info/knockout/id-snap:
+    alertText: A partial-year Food Tax Credit is not supported yet
+    body: The credit is not prorated for a month of SNAP benefits or incarceration.

@@ -220,6 +220,16 @@
       "url": "https://www.mass.gov/doc/2025-form-1-instructions/download",
       "kind": "web"
     },
+    "idaho-code": {
+      "title": "Idaho Code, Title 63, Chapter 30",
+      "url": "https://legislature.idaho.gov/statutesrules/idstat/",
+      "kind": "statute"
+    },
+    "id-form-40-instr-2025": {
+      "title": "2025 Idaho Form 40 instructions, EIN00046 rev. 03-02-2026, used for the 2026 return until the 2026 booklet is posted",
+      "url": "https://tax.idaho.gov/wp-content/uploads/forms/EIN00046/EIN00046_03-02-2026.pdf",
+      "kind": "web"
+    },
     "i1040sc-dft": {
       "title": "2026 Instructions for Schedule C, draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
@@ -4216,6 +4226,113 @@
         {
           "source": "ma-form-1-instr-2025",
           "quote": "personal income taxpayers must pay an additional 4% on taxable income over $1,000,000, increased annually for inflation. For the 2025 tax year, the threshold is $1,083,150."
+        }
+      ]
+    },
+    {
+      "fact": "/idTaxThresholdSingle",
+      "file": "idPit.xml",
+      "values": [
+        "Dollar:4811"
+      ],
+      "cite": [
+        {
+          "source": "idaho-code",
+          "section": "§ 63-3024(2)(a)",
+          "url": "https://legislature.idaho.gov/statutesrules/idstat/title63/t63ch30/sect63-3024/",
+          "quote": "The tax imposed upon individuals, trusts, and estates shall be computed at the rate of five and three-tenths percent (5.3%) of taxable income over two thousand five hundred dollars ($2,500)."
+        },
+        {
+          "source": "idaho-code",
+          "section": "§ 63-3024(3)",
+          "url": "https://legislature.idaho.gov/statutesrules/idstat/title63/t63ch30/sect63-3024/",
+          "quote": "the state tax commission shall prescribe a factor that shall be used to compute the Idaho income tax thresholds provided in subsection (2) of this section. The factor shall provide an adjustment to the Idaho tax thresholds so that inflation will not result in a tax increase."
+        },
+        {
+          "source": "id-form-40-instr-2025",
+          "quote": "Single or married filing separately, enter $4,811"
+        }
+      ]
+    },
+    {
+      "fact": "/idTaxThresholdMfj",
+      "file": "idPit.xml",
+      "values": [
+        "Dollar:9622"
+      ],
+      "cite": [
+        {
+          "source": "idaho-code",
+          "section": "§ 63-3024(2)(b)",
+          "url": "https://legislature.idaho.gov/statutesrules/idstat/title63/t63ch30/sect63-3024/",
+          "quote": "the tax imposed shall be computed at the rate of five and three-tenths percent (5.3%) of taxable income over five thousand dollars ($5,000)."
+        },
+        {
+          "source": "id-form-40-instr-2025",
+          "quote": "Married filing jointly, head of household, or qualifying surviving spouse, enter $9,622"
+        }
+      ]
+    },
+    {
+      "fact": "/idTaxRate",
+      "file": "idPit.xml",
+      "values": [
+        "Rational:53/1000"
+      ],
+      "cite": [
+        {
+          "source": "idaho-code",
+          "section": "§ 63-3024(2)(a)",
+          "url": "https://legislature.idaho.gov/statutesrules/idstat/title63/t63ch30/sect63-3024/",
+          "quote": "computed at the rate of five and three-tenths percent (5.3%)"
+        },
+        {
+          "source": "id-form-40-instr-2025",
+          "quote": "Multiply subtotal by 5.3%"
+        }
+      ]
+    },
+    {
+      "fact": "/idPermanentBuildingFundTax",
+      "file": "idPit.xml",
+      "values": [
+        "Dollar:10"
+      ],
+      "cite": [
+        {
+          "source": "idaho-code",
+          "section": "§ 63-3082(1)",
+          "url": "https://legislature.idaho.gov/statutesrules/idstat/title63/t63ch30/sect63-3082/",
+          "quote": "Every person required to file an income tax return shall pay a tax of ten dollars ($10.00). For this purpose, a husband and wife filing a joint return shall be deemed a single person."
+        },
+        {
+          "source": "id-form-40-instr-2025",
+          "quote": "You must pay the $10 PBF tax if Idaho requires you to file an Idaho income tax return."
+        }
+      ]
+    },
+    {
+      "fact": "/idFoodTaxCreditPerFiler",
+      "file": "idPit.xml",
+      "values": [
+        "Dollar:155"
+      ],
+      "cite": [
+        {
+          "source": "idaho-code",
+          "section": "§ 63-3024A(1)",
+          "url": "https://legislature.idaho.gov/statutesrules/idstat/title63/t63ch30/sect63-3024a/",
+          "quote": "For tax year 2025 and each year thereafter, the credit is one hundred fifty-five dollars ($155)."
+        },
+        {
+          "source": "idaho-code",
+          "section": "§ 63-3024A(5)",
+          "url": "https://legislature.idaho.gov/statutesrules/idstat/title63/t63ch30/sect63-3024a/",
+          "quote": "assistance under the federal food stamp program was received for any month or part of a month"
+        },
+        {
+          "source": "id-form-40-instr-2025",
+          "quote": "The credit is either $155 each for you, your spouse, and your qualifying dependents"
         }
       ]
     }

@@ -122,6 +122,14 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `greater-than stop at the RCW 82.87.060(1) statutory $250,000 standard deduction floor, not the higher amount indexed under RCW 82.87.150 (WA DOR: $278,000 for 2025; the 2026 figure is not yet published). Deliberately not a tax-year parameter. The WA return is not produced. Refs #93.`,
   },
+  '/idLine20Times100': {
+    kind: `structural`,
+    reason: `100 times Form 40 line 20 before the dollar round: worksheet line 3 times 53/10, which is 100 times the 5.3% rate in /idTaxRate. The rate itself is the tax-year parameter. Refs #93.`,
+  },
+  '/idLine20': {
+    kind: `structural`,
+    reason: `half-up guard: multiply the cent-then-dollar round by 100, and subtract $1 only when that exceeds the exact product by more than 50 cents. 38,783 times 5.3% stays $2,055. Refs #93.`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,

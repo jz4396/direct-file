@@ -1,0 +1,1584 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 7: 2026 Form 40 for a full-year Idaho resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-7102786141
+      Scope: Single, or married filing jointly with both spouses in Idaho all year. No dependents,
+      under 65, not blind, nobody can claim a filer as a dependent, federal standard deduction.
+      Line 7 is federal AGI. Lines 8 and 10 are zero, so lines 9 and 11 equal line 7.
+      Lines 13 through 15 are zero because Schedule A is not used. Line 16 is Form 1040 line 12,
+      the federal standard deduction, not the 2025 margin figures printed on the form.
+      Line 18 is federal lines 13a and 13b. On the 2026 draft Form 1040 in this tool, line 13a is
+      Schedule 1-A and line 13b is the qualified business income deduction. Schedule 1-A greater
+      than zero stops. Qualified business income is zero when the only income is W-2 wages.
+      Line 20 is the line 20 worksheet: (line 19 minus $4,811 single or $9,622 joint) times 5.3
+      percent, floored at zero, rounded once, half up, to the dollar. Dollar times Rational scales
+      to cents half-even before Round half-up, so /idLine20 corrects that second step the way
+      /ilLine12, /ncLine15, /azLine46, and /maLine22 do. 38,783 times 0.053 is 2,055.499, which
+      must stay 2,055. Cents first would make 2,055.50 and then 2,056. The correction subtracts
+      $1 only when the cent-then-dollar result exceeds the exact product by more than 50 cents,
+      so an exact half dollar stays the half-up dollar. 38,500 times 0.053 is 2,040.50, which
+      rounds half-up to 2,041.
+      The $4,811 and $9,622 thresholds are the 2025 inflation-indexed figures. Swap them for the
+      2026 schedule when the Commission posts it. The rate is the 5.3 percent in Idaho Code
+      § 63-3024(2), as amended in 2025.
+      Line 31 is the $10 Permanent Building Fund tax. Line 43 is $155 for each filer.
+      Form structure: 2025 Form 40 (EFO00089, rev. 03-02-2026), used until the 2026 form is posted.
+      Amounts entered are tax year 2026. A stop below is BlockSubmissionOnTrue and print-refusing.
+    -->
+
+    <Fact path="/idTaxThresholdSingle">
+      <Name>Idaho income tax threshold, single</Name>
+      <Description>Form 40 line 20 worksheet, line 2, for a single filer. Idaho Code § 63-3024(2)(a):
+        "The tax imposed upon individuals, trusts, and estates shall be computed at the rate of five and
+        three-tenths percent (5.3%) of taxable income over two thousand five hundred dollars ($2,500)."
+        Subsection (3) indexes that threshold. 2025 Form 40 instructions, line 20 worksheet: "Single or
+        married filing separately, enter $4,811." Married filing separately is not in scope. These are the
+        2025 indexed figures. Swap this amount for the 2026 schedule when the Commission posts it.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>4811</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idTaxThresholdMfj">
+      <Name>Idaho income tax threshold, married filing jointly</Name>
+      <Description>Form 40 line 20 worksheet, line 2, for a joint return. Idaho Code § 63-3024(2)(b):
+        "For taxpayers filing a joint return pursuant to the provisions of section 63-3031, Idaho Code, the
+        tax imposed shall be computed at the rate of five and three-tenths percent (5.3%) of taxable income
+        over five thousand dollars ($5,000)." Subsection (3) indexes that threshold. 2025 Form 40
+        instructions, line 20 worksheet: "Married filing jointly, head of household, or qualifying surviving
+        spouse, enter $9,622." Head of household and qualifying surviving spouse are not in scope. These are
+        the 2025 indexed figures. Swap this amount for the 2026 schedule when the Commission posts it.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>9622</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idTaxRate">
+      <Name>Idaho individual income tax rate</Name>
+      <Description>Form 40 line 20 worksheet, line 4. Idaho Code § 63-3024(2)(a): "computed at the rate of
+        five and three-tenths percent (5.3%)." The same sentence is in subsection (2)(b) for a joint return.
+        The codified text was amended in 2025 (2025, ch. 13, sec. 3). 2025 Form 40 instructions, line 20
+        worksheet: "Multiply subtotal by 5.3%." Stored as 53/1000. The amount is rounded once, half up, to
+        the dollar.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>53/1000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idPermanentBuildingFundTax">
+      <Name>Idaho Permanent Building Fund tax</Name>
+      <Description>Form 40 line 31. Idaho Code § 63-3082(1): "Every person required to file an income tax
+        return shall pay a tax of ten dollars ($10.00). For this purpose, a husband and wife filing a joint
+        return shall be deemed a single person." One $10 amount per return, including a joint return.
+        2025 Form 40 instructions, line 31: "You must pay the $10 PBF tax if Idaho requires you to file an
+        Idaho income tax return." Receiving Idaho public assistance at year end waives it. That case stops,
+        so a supported return always enters $10.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>10</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idFoodTaxCreditPerFiler">
+      <Name>Idaho Food Tax Credit for one filer</Name>
+      <Description>Form 40 line 43, one filer for the full year. Idaho Code § 63-3024A(1): "For tax year
+        2025 and each year thereafter, the credit is one hundred fifty-five dollars ($155)." 2025 Form 40
+        instructions, line 43: "The credit is either $155 each for you, your spouse, and your qualifying
+        dependents." Dependents are not in scope. A filer who received SNAP or was incarcerated stops, so
+        the partial-month proration is not calculated. A supported single return claims $155. A supported
+        joint return claims $155 for each spouse.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>155</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idResidencyOptions">
+      <Name>Idaho residency answers</Name>
+      <Description>Full-year resident is the supported Form 40. Part-year residents and nonresidents use
+        Form 43. A joint return is a full-year Form 40 only when both spouses lived in Idaho all year.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>nonresident</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idResidencyStatus">
+      <Name>Idaho residency</Name>
+      <Description>Full year means you, and your spouse if you file jointly, lived in Idaho all year.
+        Part-year and nonresident stop. Form 40 and Form 43.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Enum optionsPath="/idResidencyOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/idResidencyIsPartYearOrNonresident">
+      <Name>Idaho residency is part-year or nonresident</Name>
+      <Description>True for Form 43. Incomplete until /idResidencyStatus is answered.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="/idResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/idResidencyOptions">partYear</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/idResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/idResidencyOptions">nonresident</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idHasUseTax">
+      <Name>Idaho use tax owed</Name>
+      <Description>Form 40 line 28, sales or use tax due on untaxed purchases. 2025 Form 40 instructions,
+        line 28: "You owe use tax if you did either of these during the year: Bought items without paying
+        Idaho sales tax." Yes stops the return. The 6 percent worksheet is not calculated. Incomplete until
+        answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/idReceivedPublicAssistance">
+      <Name>Idaho public assistance at year end</Name>
+      <Description>Form 40 line 31 checkbox. 2025 Form 40 instructions, line 31: "You were receiving Idaho
+        public assistance payments at the end of the tax year. Check the box on this line and draw a line
+        through the $10. Food stamps and WIC payments don't qualify as Idaho public assistance." Yes waives
+        the Permanent Building Fund tax. That waiver is not calculated. Yes stops the return. Incomplete
+        until answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/idReceivedSnapOrIncarcerated">
+      <Name>Filer received SNAP or was incarcerated</Name>
+      <Description>Asked once for the filer: "Did you receive federal food stamp (SNAP) benefits or were you
+        incarcerated during any part of the year?" Idaho Code § 63-3024A(5) prorates the credit for any month
+        or part of a month of federal food stamp assistance. Subsection (6) prorates it for incarceration.
+        2025 Form 40 instructions, line 43: an individual can't qualify for a month in which the person
+        "Received assistance from the federal food stamp program" or "Was incarcerated." Yes stops the return.
+        Partial-month proration is not modeled. Incomplete until answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/idSpouseReceivedSnapOrIncarcerated">
+      <Name>Spouse received SNAP or was incarcerated</Name>
+      <Description>The same SNAP or incarceration question for the spouse on a joint return. Asked only on
+        a joint return. Yes stops the return. Idaho Code § 63-3024A(5) and (6).</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/idAskSpouse">
+      <Name>Ask the spouse Idaho questions</Name>
+      <Description>True on a joint Idaho return, so the spouse SNAP question is asked. False for a single
+        filer and when this is not an Idaho return.</Description>
+      <Derived>
+        <All>
+          <Dependency module="stateReturn" path="/stateReturnIsId" />
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine7">
+      <Name>Form 40 line 7 federal adjusted gross income</Name>
+      <Description>Federal AGI. 2025 Form 40 instructions, line 7: "Enter your federal adjusted gross income
+        from Form 1040 or 1040-SR, line 11."</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine8">
+      <Name>Form 40 line 8 additions</Name>
+      <Description>Zero. Form 39R additions are not in scope. W-2 wages only do not reach them.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine9">
+      <Name>Form 40 line 9 total</Name>
+      <Description>Add lines 7 and 8. Line 8 is zero, so this equals line 7.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/idLine7" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine10">
+      <Name>Form 40 line 10 subtractions</Name>
+      <Description>Zero. Form 39R subtractions are not in scope. W-2 wages only do not reach them.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine11">
+      <Name>Form 40 line 11 total adjusted income</Name>
+      <Description>Subtract line 10 from line 9. Line 10 is zero, so this equals line 7.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/idLine9" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine13">
+      <Name>Form 40 line 13 itemized deductions</Name>
+      <Description>Zero. Federal Schedule A is not used. Itemized deductions stop the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine14">
+      <Name>Form 40 line 14 state and local tax add-back</Name>
+      <Description>Zero. Idaho Code § 63-3022(a) adds state and local taxes measured by net income, and
+        § 63-3022(j)(2) keeps itemized deductions "except state or local taxes measured by net income and
+        general sales taxes." That line 14 add-back is not calculated. Itemized deductions stop the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine15">
+      <Name>Form 40 line 15 Idaho itemized deductions</Name>
+      <Description>Zero. 2025 Form 40, line 15: subtract line 14 from line 13, and enter zero when federal
+        Schedule A is not used. Schedule A is not used.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine16">
+      <Name>Form 40 line 16 standard deduction</Name>
+      <Description>The federal standard deduction for the filing status, which is Form 1040 line 12 when the
+        standard deduction applies. Idaho Code § 63-3022(j)(1): "The standard deduction as defined in section
+        63 of the Internal Revenue Code." Rev. Proc. 2025-32 §4.14 sets that 2026 amount at $16,100 for a
+        single filer and $32,200 for a joint return. The 2025 form's margin figures ($15,750 and $31,500)
+        are the 2025 federal amounts. This fact reads the federal standard deduction. It does not hardcode
+        those margin figures. Itemized deductions, age 65, blindness, and being claimed as a dependent stop
+        the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="standardDeduction" path="/standardDeduction" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine17">
+      <Name>Form 40 line 17</Name>
+      <Description>Subtract the larger of line 15 or 16 from line 11. Line 15 is zero, so this is line 11
+        minus line 16, not below zero. 2025 Form 40, line 17.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/idLine11" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/idLine16" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine18">
+      <Name>Form 40 line 18 qualified business income and Schedule 1-A</Name>
+      <Description>2025 Form 40 instructions, line 18: "Add lines 13a and 13b from federal Form 1040 or
+        1040-SR and enter the total on this line." On the 2026 draft Form 1040 this tool fills, line 13a is
+        Schedule 1-A line 44 and line 13b is the qualified business income deduction. The sum is floored at
+        zero. In scope it is zero: qualified business income is zero for W-2 wages only, and Schedule 1-A
+        greater than zero stops the return. The READY spec labels Schedule 1-A as line 13b. This draft prints
+        it on line 13a. The stop follows the Schedule 1-A amount, not that label.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Add>
+            <Dependency module="schedule1A" path="/schedule1ALine44" />
+            <Dependency module="taxCalculations" path="/qualifiedBusinessIncomeDeduction" />
+          </Add>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine19">
+      <Name>Form 40 line 19 Idaho taxable income</Name>
+      <Description>Subtract line 18 from line 17, not below zero. 2025 Form 40, line 19. Idaho Code
+        § 63-3022 applies the additions and subtractions, which are zero in scope, and the standard deduction.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/idLine17" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/idLine18" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idTaxThreshold">
+      <Name>Idaho line 20 worksheet threshold</Name>
+      <Description>$4,811 for single. $9,622 for married filing jointly. Other filing statuses use the
+        single figure and stop. 2025 Form 40 instructions, line 20 worksheet, line 2.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dependency path="/idTaxThresholdMfj" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/idTaxThresholdSingle" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idWorksheetLine3">
+      <Name>Form 40 line 20 worksheet line 3</Name>
+      <Description>Line 19 minus the filing-status threshold, not below zero. 2025 Form 40 instructions,
+        line 20 worksheet: "Subtract line 2 from line 1. Enter the subtotal." "If zero or less, enter zero"
+        on worksheet line 5.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/idLine19" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/idTaxThreshold" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine20CentRound">
+      <Name>Form 40 line 20 after the cent-then-dollar round</Name>
+      <Description>Round(worksheet line 3 times 5.3%). Dollar times Rational scales to cents half-even
+        before Round half-up, so a product whose exact fraction is just under half a dollar can become
+        50 cents and then round up a dollar. 38,783 times 0.053 is 2,055.499, which that path turns into
+        2,056. This is not the amount entered on the form.</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Dependency path="/idWorksheetLine3" />
+            <Dependency path="/idTaxRate" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine20Times100">
+      <Name>One hundred times the exact Form 40 line 20</Name>
+      <Description>Worksheet line 3 times 53/10. That is 100 times line 3 times 0.053, and for a whole-dollar
+        line 3 it keeps the exact tenth of a cent. 38,783 times 53/10 is 205,549.9 cents, which is 2,055.499
+        dollars. 38,500 times 53/10 is 204,050 cents, which is 2,040.50 dollars.</Description>
+      <Derived>
+        <Multiply>
+          <Dependency path="/idWorksheetLine3" />
+          <Rational>53/10</Rational>
+        </Multiply>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine20">
+      <Name>Form 40 line 20 tax</Name>
+      <Description>Worksheet line 3 times 5.3 percent, rounded once, half up, to the dollar. The
+        cent-then-dollar result is one dollar high when it exceeds this exact product by more than 50 cents.
+        An exact half dollar, 2,040.50, stays 2,041. 38,783 times 0.053 is 2,055.499 and stays 2,055.
+        2025 Form 40 instructions, Rounding: "Round the amounts on your return to the nearest whole dollar.
+        Round down if under 50 cents, round up if 50 cents or more." Line 20 worksheet: "Multiply subtotal
+        by 5.3%." Idaho Code § 63-3024(2).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply>
+                        <Dependency path="/idLine20CentRound" />
+                        <Int>100</Int>
+                      </Multiply>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/idLine20Times100" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Dollar>50</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/idLine20CentRound" />
+                </Minuend>
+                <Subtrahends>
+                  <Dollar>1</Dollar>
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/idLine20CentRound" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine26">
+      <Name>Form 40 line 26 tax after credits</Name>
+      <Description>Subtract line 25 from line 20. Lines 21 through 25 are zero in scope, so this equals
+        line 20. The credit for tax paid to other states, charitable credits, business credits, and the
+        Idaho child tax credit are not calculated.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/idLine20" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine31">
+      <Name>Form 40 line 31 Permanent Building Fund tax</Name>
+      <Description>$10 per return. Idaho Code § 63-3082(1). A joint return pays one $10 tax. Public
+        assistance that would waive it stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/idPermanentBuildingFundTax" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine32">
+      <Name>Form 40 line 32 total tax</Name>
+      <Description>Add lines 26 through 31. Lines 27 through 30 are zero, so this is line 20 plus the $10
+        Permanent Building Fund tax. Use tax on line 28 stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/idLine26" />
+          <Dependency path="/idLine31" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine41">
+      <Name>Form 40 line 41 total tax plus donations</Name>
+      <Description>Add lines 32 through 40. Donations on lines 33 through 40 are not offered, so this
+        equals line 32.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/idLine32" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idFoodCreditSpouse">
+      <Name>Food Tax Credit for the spouse</Name>
+      <Description>$155 on a joint return and zero otherwise. Idaho Code § 63-3024A(1). The spouse SNAP
+        question stops a joint return that cannot claim the full-year amount.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dependency path="/idFoodTaxCreditPerFiler" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine43">
+      <Name>Form 40 line 43 Food Tax Credit</Name>
+      <Description>$155 for the filer, plus $155 for the spouse on a joint return. Idaho Code
+        § 63-3024A(1). Dependents are not in scope. Donation of the credit is not offered.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/idFoodTaxCreditPerFiler" />
+          <Dependency path="/idFoodCreditSpouse" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/idWithholding">
+      <Name>This W-2's Idaho withholding</Name>
+      <Description>Box 17 when box 15 is Idaho (the same state as the residence). A blank box 15 is in
+        scope and contributes zero. A box 15 for another state stops the return and contributes zero here.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../writableState" />
+                </IsComplete>
+                <Equal>
+                  <Left>
+                    <Dependency path="../writableState" />
+                  </Left>
+                  <Right>
+                    <Enum optionsPath="/incomeFormStateOptions">sameState</Enum>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../stateWithholding" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine46">
+      <Name>Form 40 line 46 Idaho income tax withheld</Name>
+      <Description>Sum of W-2 box 17 where box 15 is Idaho. 2025 Form 40 instructions, line 46: "Enter the
+        total amount of Idaho income tax withheld."</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/idWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine50">
+      <Name>Form 40 line 50 payments and other credits</Name>
+      <Description>Add lines 42 through 49. Lines 42, 44, 45, and 47 through 49 are zero. This is the Food
+        Tax Credit plus Idaho withholding.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/idLine43" />
+          <Dependency path="/idLine46" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine51">
+      <Name>Form 40 line 51 tax due</Name>
+      <Description>If line 41 is more than line 50, subtract line 50 from line 41. Otherwise zero.
+        2025 Form 40, line 51.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/idLine41" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/idLine50" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine54">
+      <Name>Form 40 line 54 total due</Name>
+      <Description>Add lines 51 and 52, then subtract line 53. Lines 52 and 53 are zero, so this equals
+        line 51.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/idLine51" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine55">
+      <Name>Form 40 line 55 overpaid</Name>
+      <Description>If line 41 is less than line 50, subtract lines 41 and 52 from line 50. Line 52 is zero.
+        Otherwise zero. 2025 Form 40, line 55.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/idLine50" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/idLine41" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idLine56">
+      <Name>Form 40 line 56 refund</Name>
+      <Description>The refunded amount. Nothing on line 55 is applied to next year's estimated tax, so this
+        equals line 55. 2025 Form 40, line 56.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/idLine55" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/idZero">
+      <Name>Form 40 zero</Name>
+      <Description>Printed on lines this return does not calculate: credits, use tax, donations, fuels,
+        estimates, and the penalty lines. Those cases stop or are not offered.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idHouseholdSelf">
+      <Name>Form 40 line 6a yourself</Name>
+      <Description>Enter 1 unless someone else claims you as a dependent. Being claimed stops the return,
+        so a supported return enters 1. 2025 Form 40 instructions, line 6a.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Int>1</Int>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idHouseholdSpouse">
+      <Name>Form 40 line 6b spouse</Name>
+      <Description>Enter 1 on a joint return. Otherwise zero. 2025 Form 40 instructions, line 6b.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Int>1</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idHouseholdTotal">
+      <Name>Form 40 line 6d total household</Name>
+      <Description>Add lines 6a through 6c. Dependents on line 6c are zero because a dependent stops the
+        return. This is 1 for single and 2 for a joint return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/idHouseholdSelf" />
+          <Dependency path="/idHouseholdSpouse" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <!-- Stops. Each is complete false when this is not an Idaho return, and incomplete when the fact it
+         depends on has not been answered. -->
+
+    <Fact path="/idHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, tax-exempt interest, Social Security, a sale or capital gain, 1099-MISC, a
+        1099-R, Schedule C, or Schedule E. Any of that income stops a Form 40.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/totalIncome" />
+            </IsComplete>
+            <IsComplete>
+              <Dependency module="formW2s" path="/wages" />
+            </IsComplete>
+            <NotEqual>
+              <Left>
+                <Dependency module="income" path="/totalIncome" />
+              </Left>
+              <Right>
+                <Dependency module="formW2s" path="/wages" />
+              </Right>
+            </NotEqual>
+          </All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="interest" path="/taxExemptInterest" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="socialSecurity" path="/socialSecurityBenefits" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="form1099Rs" path="/form1099Rs" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idHasDependents">
+      <Name>Dependents or a qualifying person</Name>
+      <Description>Anyone in the household, or a filer who is a qualifying person for the child and
+        dependent care credit. The Idaho child tax credit on line 24 and the dependent Food Tax Credit are
+        not calculated.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="filers" path="/cdccQualifyingFilersCount" />
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idAgeOrBlind">
+      <Name>Age 65 or blind</Name>
+      <Description>Primary filer is 65 or older or blind. On a joint return, either spouse. Form 40 lines
+        12a and 12b are not calculated. The additional standard deduction is not entered. The spouse is
+        checked only on a joint return so a single return does not wait on the spouse.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/primaryFiler/isBlind" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Any>
+              <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+              <Dependency module="filers" path="/secondaryFiler/isBlind" />
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idClaimedAsDependent">
+      <Name>Filer can be claimed as a dependent</Name>
+      <Description>Form 40 line 12c. The primary filer, or either spouse on a joint return. The dependent
+        standard-deduction worksheet is not applied. 2025 Form 40 instructions, line 12c.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/canBeClaimed" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency module="filers" path="/secondaryFiler/canBeClaimed" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idFilingStatusUnsupported">
+      <Name>Filing status other than single or joint</Name>
+      <Description>The supported Form 40 is single, or married filing jointly with both spouses in Idaho
+        all year. Head of household, married filing separately, and qualifying surviving spouse are not
+        calculated.</Description>
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idHasSchedule1A">
+      <Name>Federal Schedule 1-A is more than zero</Name>
+      <Description>Qualified tips, overtime, car-loan interest, or the senior deduction on Schedule 1-A
+        line 44. The 2026 draft Form 1040 prints that amount on line 13a. The READY spec calls the Schedule
+        1-A stop line 13b. Idaho's 2026 IRC conformity date is not pinned, so the deduction is not entered
+        on line 18. Incomplete when line 44 is incomplete.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="schedule1A" path="/schedule1ALine44" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/idSnapOrIncarcerated">
+      <Name>A filer received SNAP or was incarcerated</Name>
+      <Description>The filer answered yes, or the spouse answered yes on a joint return. Idaho Code
+        § 63-3024A(5) and (6).</Description>
+      <Derived>
+        <Any>
+          <Dependency path="/idReceivedSnapOrIncarcerated" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency path="/idSpouseReceivedSnapOrIncarcerated" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdPartYearOrNonresident">
+      <Name>Flow knockout: Idaho part-year or nonresident</Name>
+      <Description>Form 43 is not calculated. Complete false when this is not an Idaho return. Incomplete
+        until /idResidencyStatus is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idResidencyIsPartYearOrNonresident" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idResidencyIsPartYearOrNonresident" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idResidencyIsPartYearOrNonresident" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdW2NotIdaho">
+      <Name>Flow knockout: a W-2 box 15 is not Idaho</Name>
+      <Description>Any W-2 whose box 15 is a state other than Idaho. A blank box 15 is in scope and is not
+        this stop. Complete false when this is not an Idaho return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdOtherFederalIncome">
+      <Name>Flow knockout: income other than W-2 wages</Name>
+      <Description>Any federal income other than W-2 wages. Complete false when this is not an Idaho return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idHasOtherFederalIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idHasOtherFederalIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idHasOtherFederalIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdDependents">
+      <Name>Flow knockout: dependents</Name>
+      <Description>The Idaho child tax credit and the dependent Food Tax Credit are not calculated. Complete
+        false when this is not an Idaho return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idHasDependents" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idHasDependents" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idHasDependents" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdAgeOrBlind">
+      <Name>Flow knockout: age 65 or blind</Name>
+      <Description>Lines 12a and 12b are not calculated. Complete false when this is not an Idaho return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idAgeOrBlind" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idAgeOrBlind" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idAgeOrBlind" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdClaimedAsDependent">
+      <Name>Flow knockout: claimed as a dependent</Name>
+      <Description>Line 12c is not calculated. Complete false when this is not an Idaho return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idClaimedAsDependent" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idClaimedAsDependent" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idClaimedAsDependent" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdFilingStatus">
+      <Name>Flow knockout: filing status other than single or joint</Name>
+      <Description>Head of household, married filing separately, and qualifying surviving spouse are outside
+        this Form 40. Complete false when this is not an Idaho return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idFilingStatusUnsupported" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idFilingStatusUnsupported" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idFilingStatusUnsupported" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdItemizedDeductions">
+      <Name>Flow knockout: itemized deductions</Name>
+      <Description>Idaho requires the line 14 state-and-local-tax add-back when the filer itemizes. That
+        add-back is not calculated. Idaho Code § 63-3022(a) and (j)(2). Complete false when this is not an
+        Idaho return. Incomplete until the itemizing choice is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleA" path="/itemizesDeductions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdSchedule1A">
+      <Name>Flow knockout: federal Schedule 1-A deduction</Name>
+      <Description>Schedule 1-A line 44 is greater than zero, including qualified overtime. Idaho's 2026 IRC
+        conformity date is not pinned, so the deduction is not flowed to line 18. The 2026 draft Form 1040
+        prints Schedule 1-A on line 13a. The READY spec names that stop as line 13b. Complete false when this
+        is not an Idaho return and when line 44 is zero.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idHasSchedule1A" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idHasSchedule1A" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idHasSchedule1A" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdPublicAssistance">
+      <Name>Flow knockout: Idaho public assistance</Name>
+      <Description>Idaho public assistance at the end of the year waives the line 31 Permanent Building Fund
+        tax. That waiver is not calculated. Complete false when this is not an Idaho return. Incomplete until
+        the question is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idReceivedPublicAssistance" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idReceivedPublicAssistance" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idReceivedPublicAssistance" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdUseTax">
+      <Name>Flow knockout: Idaho use tax</Name>
+      <Description>Line 28 use tax is not calculated. Complete false when this is not an Idaho return.
+        Incomplete until the question is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idHasUseTax" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idHasUseTax" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idHasUseTax" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdSnapOrIncarcerated">
+      <Name>Flow knockout: SNAP benefits or incarceration</Name>
+      <Description>A yes on the SNAP or incarceration question. The Food Tax Credit is not prorated for a
+        partial month. Idaho Code § 63-3024A(5) and (6). Complete false when this is not an Idaho return.
+        Incomplete until the question is answered. On a joint return, incomplete until the spouse answers.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/idSnapOrIncarcerated" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/idSnapOrIncarcerated" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/idSnapOrIncarcerated" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutIdForm39R">
+      <Name>Flow knockout: Form 39R additions or subtractions</Name>
+      <Description>Idaho 529 and the Idaho HSA subtraction are Form 39R additions or subtractions. They are
+        not reachable with W-2 wages only, so this stop is complete false. No Idaho 529 or HSA question is
+        asked, and those amounts are not collected on this return. Idaho Code § 63-3022 is the list of
+        additions and subtractions applied in computing Idaho taxable income.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsId" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

@@ -181,6 +181,24 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutMaNoFullYearMcc",
             "/flowKnockoutMaRetirementContribution",
             "/flowKnockoutMaScheduleHcIdentifiers",
+            // #93 slice 7: Idaho stops. Each is complete false when the return is not a Form 40, and incomplete when
+            // the Idaho question is unanswered, so the PDF is not printed with the unmodeled line as zero. Derived
+            // stops are complete false when the condition is false. 2025 Form 40 (EFO00089, rev. 03-02-2026), used
+            // until the 2026 form is posted. Idaho Code §§ 63-3022, 63-3024, 63-3024A, and 63-3082. Line 20 is 5.3
+            // percent of Idaho taxable income over the indexed threshold, rounded once.
+            "/flowKnockoutIdPartYearOrNonresident",
+            "/flowKnockoutIdW2NotIdaho",
+            "/flowKnockoutIdOtherFederalIncome",
+            "/flowKnockoutIdDependents",
+            "/flowKnockoutIdAgeOrBlind",
+            "/flowKnockoutIdClaimedAsDependent",
+            "/flowKnockoutIdFilingStatus",
+            "/flowKnockoutIdItemizedDeductions",
+            "/flowKnockoutIdSchedule1A",
+            "/flowKnockoutIdPublicAssistance",
+            "/flowKnockoutIdUseTax",
+            "/flowKnockoutIdSnapOrIncarcerated",
+            "/flowKnockoutIdForm39R",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.

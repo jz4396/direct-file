@@ -1,0 +1,92 @@
+# Cadenas del Formulario 40 de Idaho (#93, parte 7).
+subsubcategories:
+  /flow/your-taxes/amount:
+    id-form-40: Declaración de Idaho
+dataviews:
+  /flow/your-taxes/amount:
+    /idResidencyStatus: Dónde vivió para su declaración de Idaho
+    /idHasUseTax: Impuesto de uso de Idaho
+    /idReceivedPublicAssistance: Asistencia pública de Idaho
+    /idReceivedSnapOrIncarcerated: Cupones de alimentos o encarcelamiento
+    /idSpouseReceivedSnapOrIncarcerated: Cupones de alimentos o encarcelamiento del cónyuge
+fields:
+  /idResidencyOptions:
+    fullYear: Viví en Idaho todo el año
+    partYear: Viví en Idaho parte del año
+    nonresident: No viví en Idaho
+headings:
+  /heading/your-taxes/amount/id-residency: ¿Cuál de estas opciones describe su declaración de Idaho?
+  /heading/your-taxes/amount/id-use-tax: ¿Debe impuesto de uso de Idaho?
+  /heading/your-taxes/amount/id-public-assistance: ¿Recibía pagos de asistencia pública de Idaho al final del año fiscal?
+  /heading/your-taxes/amount/id-snap: ¿Recibió beneficios de cupones de alimentos federales (SNAP) o estuvo encarcelado durante alguna parte del año?
+  /heading/your-taxes/amount/id-spouse-snap: ¿Su cónyuge recibió beneficios de cupones de alimentos federales (SNAP) o estuvo encarcelado durante alguna parte del año?
+  /heading/knockout/id-part-year: Esta herramienta todavía no admite una declaración de Idaho de residente parcial o no residente
+  /heading/knockout/id-w2: Esta herramienta todavía no admite un W-2 de un estado que no sea Idaho
+  /heading/knockout/id-other-income: Esta herramienta todavía no admite declaraciones de Idaho con ingresos distintos de los salarios del W-2
+  /heading/knockout/id-dependents: Esta herramienta todavía no admite dependientes en una declaración de Idaho
+  /heading/knockout/id-age-blind: Esta herramienta todavía no admite una declaración de Idaho de alguien de 65 años o más, o con ceguera
+  /heading/knockout/id-claimed: Esta herramienta todavía no admite una declaración de Idaho de alguien que puede ser reclamado como dependiente
+  /heading/knockout/id-filing-status: Esta herramienta todavía no admite este estado civil en Idaho
+  /heading/knockout/id-itemized: Esta herramienta todavía no admite declaraciones de Idaho que detallan deducciones
+  /heading/knockout/id-schedule-1a: Esta herramienta todavía no admite una deducción del Anexo 1-A federal en una declaración de Idaho
+  /heading/knockout/id-use-tax: Esta herramienta todavía no admite el impuesto de uso de Idaho
+  /heading/knockout/id-public-assistance: Esta herramienta todavía no admite la exención por asistencia pública de Idaho
+  /heading/knockout/id-snap: Esta herramienta todavía no admite un crédito del impuesto sobre alimentos de parte del año
+info:
+  /info/your-taxes/amount/id-residency:
+    body:
+      Un año completo significa que usted, y su cónyuge si presenta una declaración conjunta, vivió en Idaho todo el año.
+      Esa es la Formulario 40. Los residentes parciales y los no residentes usan la Formulario 43.
+  /info/your-taxes/amount/id-use-tax:
+    body:
+      Debe impuesto de uso si compró artículos sin pagar el impuesto sobre las ventas de Idaho, incluidas las compras
+      por internet, catálogo, radio y televisión. Si debe alguno, esta herramienta no puede preparar la declaración.
+  /info/your-taxes/amount/id-public-assistance:
+    body:
+      La asistencia pública de Idaho al final del año exime el impuesto de $10 del Fondo Permanente de Construcción.
+      Los cupones de alimentos y WIC no califican. Si recibía asistencia pública de Idaho, esta herramienta no puede
+      preparar la declaración.
+  /info/your-taxes/amount/id-snap:
+    body:
+      El crédito del impuesto sobre alimentos es de $155 por un año completo. Un mes de beneficios SNAP o de
+      encarcelamiento cambia esa cantidad. Esta herramienta no prorratea el crédito.
+  /info/your-taxes/amount/id-spouse-snap:
+    body:
+      Una declaración conjunta hace la misma pregunta sobre su cónyuge. El crédito es de $155 por cada cónyuge
+      durante un año completo.
+  /info/knockout/id-part-year:
+    alertText: Las declaraciones de Idaho de residente parcial y de no residente todavía no están admitidas
+    body: Esas declaraciones usan la Formulario 43, que esta herramienta no calcula.
+  /info/knockout/id-w2:
+    alertText: Un W-2 de otro estado no está admitido en esta declaración de Idaho
+    body: La casilla 15 tiene que ser Idaho, o estar en blanco. La retención cuenta solo cuando la casilla 15 es Idaho.
+  /info/knockout/id-other-income:
+    alertText: Esta declaración de Idaho solo puede incluir salarios del W-2
+    body: Los intereses, el Seguro Social, una venta, la jubilación, un negocio, un alquiler y otros ingresos no están admitidos.
+  /info/knockout/id-dependents:
+    alertText: Los dependientes no están admitidos en esta declaración de Idaho
+    body: El crédito tributario por hijos de Idaho y el crédito del impuesto sobre alimentos de los dependientes no se calculan.
+  /info/knockout/id-age-blind:
+    alertText: La edad de 65 años o la ceguera no está admitida en esta declaración de Idaho
+    body: Las líneas 12a y 12b, y la deducción estándar adicional, no se calculan.
+  /info/knockout/id-claimed:
+    alertText: Ser reclamado como dependiente no está admitido en esta declaración de Idaho
+    body: La línea 12c y la hoja de la deducción estándar para dependientes no se calculan.
+  /info/knockout/id-filing-status:
+    alertText: Este estado civil todavía no está admitido en una declaración de Idaho
+    body: Esta herramienta prepara la Formulario 40 para solteros y para una declaración conjunta cuando ambos cónyuges vivieron en Idaho todo el año.
+  /info/knockout/id-itemized:
+    alertText: Las deducciones detalladas no están admitidas en esta declaración de Idaho
+    body: La línea 14, la suma de impuestos estatales y locales, no se calcula.
+  /info/knockout/id-schedule-1a:
+    alertText: Una deducción del Anexo 1-A federal no está admitida en esta declaración de Idaho
+    body: Las horas extra calificadas, las propinas, el interés del préstamo del auto y la deducción para personas mayores no se anotan en la línea 18.
+  /info/knockout/id-use-tax:
+    alertText: El impuesto de uso de Idaho todavía no está admitido
+    body: La línea 28 no se calcula.
+  /info/knockout/id-public-assistance:
+    alertText: La exención del Fondo Permanente de Construcción todavía no está admitida
+    body: La casilla de la línea 31 no se calcula. Los cupones de alimentos y WIC no son asistencia pública de Idaho.
+  /info/knockout/id-snap:
+    alertText: Un crédito del impuesto sobre alimentos de parte del año todavía no está admitido
+    body: El crédito no se prorratea por un mes de beneficios SNAP o de encarcelamiento.

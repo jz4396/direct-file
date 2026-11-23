@@ -728,6 +728,111 @@ export const AmountSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
+    {/* #93 slice 7: full-year Idaho resident, W-2 wages only. No local return. */}
+    <SubSubcategory route='id-form-40'>
+      <Screen route='id-residency' condition='/stateReturnIsId'>
+        <Heading i18nKey='/heading/your-taxes/amount/id-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/id-residency' />
+        <Enum path='/idResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='id-part-year-knockout' condition='/flowKnockoutIdPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-part-year' />
+        <DFAlert i18nKey='/info/knockout/id-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-w2-knockout' condition='/flowKnockoutIdW2NotIdaho' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-w2' />
+        <DFAlert i18nKey='/info/knockout/id-w2' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-other-income-knockout' condition='/flowKnockoutIdOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-other-income' />
+        <DFAlert i18nKey='/info/knockout/id-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-dependents-knockout' condition='/flowKnockoutIdDependents' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-dependents' />
+        <DFAlert i18nKey='/info/knockout/id-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-age-blind-knockout' condition='/flowKnockoutIdAgeOrBlind' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-age-blind' />
+        <DFAlert i18nKey='/info/knockout/id-age-blind' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-claimed-knockout' condition='/flowKnockoutIdClaimedAsDependent' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-claimed' />
+        <DFAlert i18nKey='/info/knockout/id-claimed' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-filing-status-knockout' condition='/flowKnockoutIdFilingStatus' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-filing-status' />
+        <DFAlert i18nKey='/info/knockout/id-filing-status' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-itemized-knockout' condition='/flowKnockoutIdItemizedDeductions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-itemized' />
+        <DFAlert i18nKey='/info/knockout/id-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-schedule-1a-knockout' condition='/flowKnockoutIdSchedule1A' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-schedule-1a' />
+        <DFAlert i18nKey='/info/knockout/id-schedule-1a' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-use-tax' condition='/stateReturnIsId'>
+        <Heading i18nKey='/heading/your-taxes/amount/id-use-tax' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/id-use-tax' />
+        <Boolean path='/idHasUseTax' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='id-use-tax-knockout' condition='/flowKnockoutIdUseTax' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-use-tax' />
+        <DFAlert i18nKey='/info/knockout/id-use-tax' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-public-assistance' condition='/stateReturnIsId'>
+        <Heading i18nKey='/heading/your-taxes/amount/id-public-assistance' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/id-public-assistance' />
+        <Boolean path='/idReceivedPublicAssistance' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='id-public-assistance-knockout' condition='/flowKnockoutIdPublicAssistance' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-public-assistance' />
+        <DFAlert i18nKey='/info/knockout/id-public-assistance' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='id-snap' condition='/stateReturnIsId'>
+        <Heading i18nKey='/heading/your-taxes/amount/id-snap' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/id-snap' />
+        <Boolean path='/idReceivedSnapOrIncarcerated' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='id-spouse-snap' condition='/idAskSpouse'>
+        <Heading i18nKey='/heading/your-taxes/amount/id-spouse-snap' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/id-spouse-snap' />
+        <Boolean path='/idSpouseReceivedSnapOrIncarcerated' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='id-snap-knockout' condition='/flowKnockoutIdSnapOrIncarcerated' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/id-snap' />
+        <DFAlert i18nKey='/info/knockout/id-snap' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     {/* #77 Form 6251 cases this tool doesn't compute */}
     <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />
