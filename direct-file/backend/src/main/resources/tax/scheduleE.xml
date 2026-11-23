@@ -4195,9 +4195,20 @@
           </Case>
           <Case>
             <When>
-              <IsComplete>
-                <Dependency path="/scheduleEK1s/*/asksBox17V" />
-              </IsComplete>
+              <Equal>
+                <Left>
+                  <Count>
+                    <IsComplete>
+                      <Dependency path="/scheduleEK1s/*/asksBox17V" />
+                    </IsComplete>
+                  </Count>
+                </Left>
+                <Right>
+                  <CollectionSize>
+                    <Dependency path="/scheduleEK1s" />
+                  </CollectionSize>
+                </Right>
+              </Equal>
             </When>
             <Then>
               <False />
