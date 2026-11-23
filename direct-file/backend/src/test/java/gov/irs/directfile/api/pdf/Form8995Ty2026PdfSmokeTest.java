@@ -548,4 +548,91 @@ class Form8995Ty2026PdfSmokeTest {
             amount(f1040, "Page2[0].f2_05[0]", 2400, "Form 1040 line 13b");
         }
     }
+
+    /**
+     * Single, Florida, W-2 $60,000, withholding $12,000. One S corporation, material participation, box 1 $40,000,
+     * box 17 code V QBI $40,000. Schedule E line 28 column (k), line 32, and line 41 are $40,000. No Schedule SE.
+     * Form 8995 line 1 is $40,000, line 5 is $8,000, line 11 is $83,900, line 15 and line 17 are $8,000. Taxable
+     * income $75,900. Tax $11,416. Overpayment $584. 26 U.S.C. 199A(a), (b)(2), (c)(1). Submission stays blocked.
+     */
+    @Test
+    void form1120SBox17CodeVPrintsOnForm8995Line1() throws Exception {
+        String id = ScheduleBAndETy2026PdfSmokeTest.K1;
+        String w2 = ScheduleBAndETy2026PdfSmokeTest.W2;
+        Map<String, String> facts = ScheduleBAndETy2026PdfSmokeTest.partI();
+        facts.put("/formW2s/#" + w2 + "/writableWages", dollar("60000.00"));
+        facts.put("/formW2s/#" + w2 + "/writableOasdiWages", dollar("60000.00"));
+        facts.put("/formW2s/#" + w2 + "/writableMedicareWages", dollar("60000.00"));
+        facts.put("/formW2s/#" + w2 + "/writableFederalWithholding", dollar("12000.00"));
+        facts.put("/hadScheduleEIncome", bool(false));
+        facts.put("/scheduleEWritableRents", dollar("0.00"));
+        facts.put("/scheduleEWritableRoyalties", dollar("0.00"));
+        facts.put("/scheduleEWritableExpenses", dollar("0.00"));
+        facts.put("/filerResidenceAndIncomeState", enumValue("fl", "/scopedStateOptions"));
+        facts.put("/hadSelfEmploymentIncome", bool(false));
+        ScheduleBAndETy2026PdfSmokeTest.partIIGate(facts);
+        facts.put("/scheduleEK1s", collection(id));
+        ScheduleBAndETy2026PdfSmokeTest.k1(facts, id, "Northwind Inc", "S", "40000.00");
+        String p = "/scheduleEK1s/#" + id + "/";
+        facts.put(p + "hasQbiStatement", bool(true));
+        facts.put(p + "employerIdentificationNumber", ScheduleCTy2026PdfSmokeTest.ein("12", "3456789"));
+        facts.put(p + "form1120SBox17VQbi", dollar("40000.00"));
+        facts.put(p + "form1120SBox17VMoreThanOneTrade", bool(false));
+        facts.put(p + "form1120SBox17VAggregationElection", bool(false));
+        facts.put(p + "form1120SBox17VQualifiedReitDividends", dollar("0.00"));
+        facts.put(p + "form1120SBox17VQualifiedPtpIncome", dollar("0.00"));
+        facts.put("/qbiHasPriorYearLossCarryforward", bool(false));
+        facts.put("/qbiIsCooperativePatron", bool(false));
+
+        Graph graph = CreditFormsTy2026PdfSmokeTest.factGraphService()
+                .getGraph(PrintRefusingKnockoutsTest.smoke(facts));
+        assertEquals("40000.00", dollars(graph, "/scheduleEPartIILine28AColumnK"));
+        assertEquals("40000.00", dollars(graph, "/scheduleEPartIILine32"));
+        assertEquals("40000.00", dollars(graph, "/scheduleELine41"));
+        assertEquals(Boolean.FALSE, graph.get("/primaryFilerSeTaxApplies").get());
+        assertEquals("100000.00", dollars(graph, "/agi"));
+        assertEquals("16100.00", dollars(graph, "/standardDeduction"));
+        assertEquals("Northwind Inc", graph.get("/form8995Line1iName").get().toString());
+        assertEquals("12-3456789", graph.get("/form8995Line1iTin").get().toString());
+        assertEquals("40000.00", dollars(graph, "/form8995Line1iQbi"));
+        assertEquals("40000.00", dollars(graph, "/form8995Line2"));
+        assertEquals("8000.00", dollars(graph, "/form8995Line5"));
+        assertEquals("83900.00", dollars(graph, "/form8995Line11"));
+        assertEquals("0.00", dollars(graph, "/form8995Line12"));
+        assertEquals("16780.00", dollars(graph, "/form8995Line14"));
+        assertEquals("8000.00", dollars(graph, "/form8995Line15"));
+        assertEquals("400.00", dollars(graph, "/form8995Line16"));
+        assertEquals("8000.00", dollars(graph, "/form8995Line17"));
+        assertEquals("75900.00", dollars(graph, "/taxableIncome"));
+        assertEquals("11416.00", dollars(graph, "/totalTax"));
+        assertEquals("584.00", dollars(graph, "/overpayment"));
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutScheduleEPartIIQbiCode").get());
+        assertEquals(Boolean.FALSE, graph.get("/flowKnockoutQbiAboveThreshold").get());
+        submissionStillBlocked(graph);
+
+        try (PDDocument doc = Loader.loadPDF(generatePublicPrint(facts))) {
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains(ScheduleSETy2026PdfSmokeTest.SE_FOOTER), "no Schedule SE");
+            Map<String, String> se = fieldsOnPages(doc, ScheduleBAndETy2026PdfSmokeTest.SE_FOOTER);
+            assertTrue(value(se, "f2_6[0]").contains("Northwind Inc"), "line 28 name");
+            assertEquals("S", value(se, "f2_7[0]").trim(), "line 28 column (b)");
+            assertEquals("123456789", value(se, "f2_8[0]").replaceAll("\\D", ""), "line 28 column (d)");
+            amount(se, "f2_22[0]", 40000, "line 28 column (k)");
+            amount(se, "f2_42[0]", 40000, "line 29a column (k)");
+            amount(se, "f2_50[0]", 40000, "line 32");
+            amount(se, "f3_4[0]", 40000, "line 41");
+            Map<String, String> f = fieldsOnPages(doc, FOOTER);
+            assertTrue(value(f, ROW_I + "f1_3[0]").contains("Northwind Inc"), "1(i)(a)");
+            assertEquals("123456789", value(f, ROW_I + "f1_4[0]").replaceAll("\\D", ""), "1(i)(b)");
+            amount(f, ROW_I + "f1_5[0]", 40000, "1(i)(c)");
+            amount(f, "Page1[0].f1_18[0]", 40000, "2");
+            amount(f, "Page1[0].f1_21[0]", 8000, "5");
+            amount(f, "Page1[0].f1_27[0]", 83900, "11");
+            amount(f, "Page1[0].f1_30[0]", 16780, "14");
+            amount(f, "Page1[0].f1_31[0]", 8000, "15");
+            amount(f, "Page1[0].f1_33[0]", 8000, "17");
+            Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
+            amount(f1040, "Page2[0].f2_05[0]", 8000, "Form 1040 line 13b");
+        }
+    }
 }

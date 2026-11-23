@@ -47,6 +47,7 @@ headings:
   /heading/income/schedule-e/k1-portfolio-s-corp:
     Enter interest, dividends, and capital gain from Schedule K-1 (Form 1120-S)
   /heading/income/schedule-e/k1-other: Does this Schedule K-1 report anything else?
+  /heading/income/schedule-e/k1-box-17v: Box 17 code V section 199A statement
   /heading/income/schedule-e/k1-columns: Do you have to check column (e) or column (f) on Schedule E line 28?
   /heading/knockout/schedule-e-part-ii: This tool doesn’t yet support this Schedule K-1 situation
   /heading/knockout/schedule-c-k1-box14:
@@ -198,7 +199,8 @@ info:
   /info/income/schedule-e/k1-other:
     body: >-
       Answer yes to the first question if the K-1 includes a statement for box 20, code Z (Form 1065) or box 17, code V
-      (Form 1120-S). Answer yes to the second question if any box other than box 1, box 4a, box 14 code A, the interest
+      (Form 1120-S). Box 17 code V continues on the next screen. Box 20 code Z stops this return. Answer yes to the
+      second question if any box other than box 1, box 4a, box 14 code A, the interest
       and dividend boxes, and the net capital gain boxes has an amount. Those boxes are Form 1065 boxes 4a, 5, 6a, 6b,
       8, and 9a, or Form 1120-S boxes 4, 5a, 5b, 7, and 8a. Box 4a guaranteed payments for services are the earlier
       partnership question, not this one. Box 4b guaranteed payments for capital are a yes even when that amount is also
@@ -206,6 +208,14 @@ info:
       dividend equivalents are a yes. They are not reported on Form 1040. Form 1065 boxes 9b and 9c, and Form 1120-S
       boxes 8b and 8c, are a yes. The statement for clean renewable energy bond interest in box 5 is the earlier
       partnership question, not this one.
+  /info/income/schedule-e/k1-box-17v:
+    body: >-
+      Enter the S corporation's employer identification number and the amounts from the box 17 code V statement.
+      Enter the qualified business income for the one trade or business. It has to equal box 1. Answer yes if the
+      statement lists more than one trade or business, or if you elected to aggregate trades or businesses. Enter 0
+      for qualified REIT dividends and qualified PTP income when those lines are blank or zero. A yes, an amount that
+      does not equal box 1, a negative amount, or an amount other than zero for those dividends or that PTP income
+      stops this return. Form 1065 box 20 code Z still stops this return.
   /info/income/schedule-e/k1-guaranteed-payments:
     body: >-
       Enter box 4a (guaranteed payments for services), box 4b (guaranteed payments for capital), and box 4c (total
@@ -628,6 +638,14 @@ fields:
     boolean:
       "yes": Yes, there is a statement for box 20 code Z or box 17 code V
       "no": "No"
+  /scheduleEK1s/*/form1120SBox17VMoreThanOneTrade:
+    boolean:
+      "yes": Yes, the statement lists more than one trade or business
+      "no": No, the statement lists one trade or business
+  /scheduleEK1s/*/form1120SBox17VAggregationElection:
+    boolean:
+      "yes": Yes, I elected to aggregate trades or businesses
+      "no": No, I did not elect to aggregate
   /scheduleEK1s/*/hasOtherK1Amount:
     boolean:
       "yes": Yes, another box has an amount
@@ -720,6 +738,13 @@ dataviews:
       Does box 5 include interest from the credit for holders of clean renewable energy bonds?
     /scheduleEK1s/*/dividendIncludesPtep: Do any of these dividends include previously taxed earnings and profits?
     /scheduleEK1s/*/hasQbiStatement: Is there a statement for box 20 code Z or box 17 code V?
+    /scheduleEK1s/*/employerIdentificationNumber: Employer identification number
+    /scheduleEK1s/*/form1120SBox17VQbi: Qualified business income from the box 17 code V statement
+    /scheduleEK1s/*/form1120SBox17VMoreThanOneTrade:
+      Does the statement list more than one trade or business?
+    /scheduleEK1s/*/form1120SBox17VAggregationElection: Did you elect to aggregate trades or businesses?
+    /scheduleEK1s/*/form1120SBox17VQualifiedReitDividends: Qualified REIT dividends on the statement
+    /scheduleEK1s/*/form1120SBox17VQualifiedPtpIncome: Qualified PTP income on the statement
     /scheduleEK1s/*/form1065Box4a: Box 4a, guaranteed payments for services
     /scheduleEK1s/*/form1065Box4b: Box 4b, guaranteed payments for capital
     /scheduleEK1s/*/form1065Box4c: Box 4c, total guaranteed payments

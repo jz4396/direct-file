@@ -81,15 +81,19 @@ form:
         RowA[0]:
           f2_6[0]: /scheduleEK1s/[0]/entityName # "28. Row: A. Column: (a) Name."
           f2_7[0]: /scheduleEK1s/[0]/entityType # "Row: A. Column: (b) Enter P for partnership; S for S corporation."
+          f2_8[0]: /scheduleEK1s/[0]/employerIdentificationNumber # "Row: A. Column: (d) Employer identification number."
         RowB[0]:
           f2_9[0]: /scheduleEK1s/[1]/entityName
           f2_10[0]: /scheduleEK1s/[1]/entityType
+          f2_11[0]: /scheduleEK1s/[1]/employerIdentificationNumber # "Row: B. Column: (d) Employer identification number."
         RowC[0]:
           f2_12[0]: /scheduleEK1s/[2]/entityName
           f2_13[0]: /scheduleEK1s/[2]/entityType
+          f2_14[0]: /scheduleEK1s/[2]/employerIdentificationNumber # "Row: C. Column: (d) Employer identification number."
         RowD[0]:
           f2_15[0]: /scheduleEK1s/[3]/entityName
           f2_16[0]: /scheduleEK1s/[3]/entityType
+          f2_17[0]: /scheduleEK1s/[3]/employerIdentificationNumber # "Row: D. Column: (d) Employer identification number."
       Table_Line28g-k[0]:
         RowA[0]:
           f2_22[0]: /scheduleEK1s/[0]/columnK # "(k) Nonpassive income from Schedule K-1."
