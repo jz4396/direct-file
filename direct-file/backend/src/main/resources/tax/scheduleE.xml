@@ -23,7 +23,11 @@
   Schedule SE line 2 (26 U.S.C. 1402(a)). A reduction of that amount, farming or box 14 code B, a limited
   partner amount that is not only guaranteed payments for services (1402(a)(13)), a joint return, and
   Schedule C qualified business income together with that amount are stops. An S corporation still enters
-  box 14 code A as zero. Box 20 code Z and Form 1120-S box 17 code V stay stops.
+  box 14 code A as zero. Nonnegative Form 1065 box 4a (guaranteed payments for services) is added to that
+  partnership's line 28 column (k) with nonnegative box 1. It is not Form 8995 line 1 (26 U.S.C.
+  199A(c)(4)(B)) and not Form 8960 line 4a (26 U.S.C. 1411(c)(6)). Schedule SE is unchanged: box 14 code A
+  already includes it. Box 4b (guaranteed payments for capital) stays a stop. Box 4c must equal 4a plus 4b;
+  a mismatch is a validation, not a stop. Box 20 code Z and Form 1120-S box 17 code V stay stops.
 
   Part III supported path (every estate or trust on line 33): domestic beneficiary, not a foreign trust,
   no Form 8082 inconsistent treatment. Schedule K-1 (Form 1041) box 6 is at least zero and the filer
@@ -1542,6 +1546,62 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleEK1s/*/form1065Box4a">
+      <Name>Schedule K-1 (Form 1065) box 4a guaranteed payments for services</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025)
+        (https://www.irs.gov/pub/irs-pdf/i1065sk1.pdf, SHA-256 659063e0aaa36e44), PDF p. 15, Box 4a:
+        "Generally, amounts on this line aren't passive income, and you should report them in column (k)
+        of Schedule E (Form 1040), line 28 (for example, guaranteed payments for personal services)."
+        26 U.S.C. 707(c) (https://www.law.cornell.edu/uscode/text/26/707): guaranteed payments are
+        determined without regard to partnership income and are stated separately under 26 U.S.C. 702(a).
+        Added to this K-1's Schedule E line 28 column (k) with nonnegative box 1 when the filer materially
+        participates. 26 U.S.C. 199A(c)(4)(B) (https://www.law.cornell.edu/uscode/text/26/199A): qualified
+        business income does not include "any guaranteed payment described in section 707(c) paid to a
+        partner for services rendered with respect to the trade or business." Not Form 8995 line 1.
+        26 U.S.C. 1411(c)(6) (https://www.law.cornell.edu/uscode/text/26/1411): net investment income
+        excludes any item taken into account in determining self-employment income. Box 4a is already in
+        box 14 code A, which 26 U.S.C. 1402(a) covers, so it is not added again on Schedule SE and it is
+        not Form 8960 line 4a. A box 4a greater than zero with box 14 code A blank or less than box 4a
+        stops the return. Asked only for a partnership. Not a loss: minimum zero. Enter zero when box 4a
+        is blank. An S corporation has no box 4.
+      </Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box4b">
+      <Name>Schedule K-1 (Form 1065) box 4b guaranteed payments for capital</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 4b: guaranteed payments
+        for capital also go in column (k) of Schedule E line 28. Treas. Reg. 1.1411-4(g)(10)
+        (https://www.law.cornell.edu/cfr/text/26/1.1411-4) reserves the net investment income treatment of
+        guaranteed payments for the use of capital. That treatment is not computed, so a nonzero amount
+        stops the return (/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital). It stays inside
+        /scheduleEK1s/*/hasOtherK1Amount as well. Enter zero when box 4b is blank. Asked only for a
+        partnership. No minimum: a negative amount is nonzero and stops.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box4c">
+      <Name>Schedule K-1 (Form 1065) box 4c total guaranteed payments</Name>
+      <Description>
+        Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15, Box 4c is the total of
+        guaranteed payments. It must equal box 4a plus box 4b. A different total is
+        /scheduleEK1s/*/form1065Box4cDoesNotMatch, a validation that leaves the K-1 incomplete. It is not
+        a stop. Enter zero when box 4c is blank. Asked only for a partnership.
+      </Description>
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
 
     <Fact path="/scheduleEK1s/*/form1065Box5">
       <Name>Schedule K-1 (Form 1065) box 5 interest income</Name>
@@ -1821,28 +1881,31 @@
     </Fact>
 
     <Fact path="/scheduleEK1s/*/hasOtherK1Amount">
-      <Name>Any Schedule K-1 amount other than box 1, box 14 code A, interest, dividends, and net capital gain</Name>
+      <Name>Any Schedule K-1 amount other than box 1, box 4a, box 14 code A, interest, dividends, and net capital gain</Name>
       <Description>
-        Any box other than box 1, box 14 code A, the interest and dividend boxes, and the net capital gain
-        boxes. The interest and dividend boxes are Form 1065 boxes 5, 6a, and 6b, or Form 1120-S boxes 4,
-        5a, and 5b, and they are reported on Form 1040 lines 2b, 3b, and 3a. The net capital gain boxes are
-        Form 1065 box 8 and box 9a, or Form 1120-S box 7 and box 8a, and they are Schedule D lines 5 and 12.
-        Previously taxed earnings and profits are a separate question
+        Any box other than box 1, Form 1065 box 4a, box 14 code A, the interest and dividend boxes, and the
+        net capital gain boxes. The interest and dividend boxes are Form 1065 boxes 5, 6a, and 6b, or Form
+        1120-S boxes 4, 5a, and 5b, and they are reported on Form 1040 lines 2b, 3b, and 3a. The net capital
+        gain boxes are Form 1065 box 8 and box 9a, or Form 1120-S box 7 and box 8a, and they are Schedule D
+        lines 5 and 12. Previously taxed earnings and profits are a separate question
         (/scheduleEK1s/*/dividendIncludesPtep), not this one. Interest from the credit for holders of clean
         renewable energy bonds is /scheduleEK1s/*/box5IncludesCleanRenewableEnergyBondInterest, not this
         one. A foreign-source long-term capital gain is
-        /scheduleEK1s/*/longTermCapitalGainIsForeignSource, not this one. Box 4 guaranteed payments are
-        always included. Answer yes when box 4 has an amount, including when those payments are also in box
-        14 code A. 26 U.S.C. 707(c) guaranteed payments are separately stated under 702(a). Box 14 code A is
-        the self-employment amount under 26 U.S.C. 1402(a) and does not take the place of box 4. The same
-        yes covers royalties, section 179, credits, and other separately stated items.         Form 1065 boxes 9b
+        /scheduleEK1s/*/longTermCapitalGainIsForeignSource, not this one. Form 1065 box 4a guaranteed
+        payments for services are /scheduleEK1s/*/form1065Box4a, not this question. Box 4b guaranteed
+        payments for capital are still included. Answer yes when box 4b has an amount, including when those
+        payments are also in box 14 code A. 26 U.S.C. 707(c) guaranteed payments are separately stated under
+        702(a). Box 14 code A is the self-employment amount under 26 U.S.C. 1402(a) and does not take the
+        place of box 4b. Box 4c is the total of box 4a and box 4b
+        (/scheduleEK1s/*/form1065Box4c) and is not a separate yes when it equals that sum. The same yes
+        covers royalties, section 179, credits, and other separately stated items. Form 1065 boxes 9b
         and 9c, and Form 1120-S boxes 8b and 8c, are still a yes. Partner's Instructions (2025), PDF p. 16,
         Box 9b: collectibles (28%) gain goes on the 28% Rate Gain Worksheet line 4. Box 9c is unrecaptured
         section 1250 gain. Shareholder's Instructions (2025), PDF p. 7, Box 8b and Box 8c, are the same
         worksheets. Those K-1 lines are not computed. Form 1099-DIV box 2d is not this question. Partner's Instructions (2025), PDF p. 15, Box 6c:
         "Dividend equivalents aren't reported on Form 1040 or 1040-SR." Box 6c is a yes. 26 U.S.C. 702(a)
-        and 1366(a)(1)(A). Answer no only when every such box is blank or zero, even if box 8, box 9a, box
-        7, or box 8a has an amount.
+        and 1366(a)(1)(A). Answer no only when every such box is blank or zero, even if box 4a, box 8, box
+        9a, box 7, or box 8a has an amount.
       </Description>
       <Writable>
         <Boolean />
@@ -1942,6 +2005,125 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEK1s/*/form1065Box4aAmount">
+      <Name>Guaranteed payments for services from this K-1</Name>
+      <Description>
+        Form 1065 box 4a before rounding, or $0 for an S corporation. Cites on
+        /scheduleEK1s/*/form1065Box4a. An unanswered partnership box leaves this incomplete.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../isPartnership" />
+            </When>
+            <Then>
+              <Dependency path="../form1065Box4a" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box4bIsNonzero">
+      <Name>Box 4b guaranteed payments for capital are not zero</Name>
+      <Description>
+        True when a partnership's box 4b is not zero, including a negative amount. An S corporation is
+        false. Partner's Instructions (2025), PDF p. 15, Box 4b. Treas. Reg. 1.1411-4(g)(10).
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <Not>
+            <Equal>
+              <Left>
+                <Dependency path="../form1065Box4b" />
+              </Left>
+              <Right>
+                <Dollar>0</Dollar>
+              </Right>
+            </Equal>
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box4cDoesNotMatch">
+      <Name>Box 4c is not box 4a plus box 4b</Name>
+      <Description>
+        True when a partnership has entered box 4a, box 4b, and box 4c and box 4c is not the sum of box 4a
+        and box 4b. Partner's Instructions (2025), PDF p. 15, Box 4c is the total. False while any of the
+        three is unanswered, and for an S corporation, so the alert is not shown early. A mismatch leaves
+        /scheduleEK1s/*/isComplete false. It is not a stop.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <IsComplete>
+            <Dependency path="../form1065Box4a" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../form1065Box4b" />
+          </IsComplete>
+          <IsComplete>
+            <Dependency path="../form1065Box4c" />
+          </IsComplete>
+          <Not>
+            <Equal>
+              <Left>
+                <Dependency path="../form1065Box4c" />
+              </Left>
+              <Right>
+                <Add>
+                  <Dependency path="../form1065Box4a" />
+                  <Dependency path="../form1065Box4b" />
+                </Add>
+              </Right>
+            </Equal>
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/form1065Box4aInconsistentWithBox14">
+      <Name>Box 4a is greater than box 14 code A</Name>
+      <Description>
+        True when a partnership's box 4a is greater than zero and box 14 code A is less than box 4a.
+        Partner's Instructions (2025), PDF p. 15, Box 4a, report guaranteed payments for services in
+        column (k). Those payments are net earnings from self-employment under 26 U.S.C. 1402(a) and are
+        included in box 14 code A. A smaller code A is an inconsistent K-1. An unanswered code A leaves
+        this incomplete. An S corporation is false. Zero box 4a is false.
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="../form1065Box4a" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <LessThan>
+            <Left>
+              <Dependency path="../box14CodeA" />
+            </Left>
+            <Right>
+              <Dependency path="../form1065Box4a" />
+            </Right>
+          </LessThan>
+        </All>
+      </Derived>
+    </Fact>
 
     <Fact path="/scheduleEK1s/*/isSCorporation">
       <Name>Schedule K-1 is Form 1120-S</Name>
@@ -2481,17 +2663,17 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (k): "Nonpassive income from Schedule K-1". 2026 draft
         Instructions for Schedule E, PDF pp. 11-12: nonpassive income goes in columns (i) through (k). Column
-        (k) is box
-        1, rounded to whole dollars, when the filer materially participates and box 1 is zero or
-        positive. Interest and dividends are not column (k). Partner's Instructions for Schedule K-1
-        (Form 1065) (2025), PDF p. 15, Box 5 and Boxes 6a and 6b, report them on Form 1040 lines 2b, 3b,
-        and 3a. Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Boxes 4, 5a,
-        and 5b, do the same. 26 U.S.C.
-        6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of
-        a dollar shall be disregarded
-        unless it amounts to one-half dollar or more, in which case it shall be
-        increased to one dollar." Passive income
-        and losses are not entered here; those returns stop.
+        (k) is box 1, plus Form 1065 box 4a for a partnership, rounded to whole dollars once, when the filer
+        materially participates and box 1 is zero or positive. Partner's Instructions for Schedule K-1
+        (Form 1065) (2025), PDF p. 15, Box 4a: guaranteed payments for services "aren't passive income, and
+        you should report them in column (k) of Schedule E (Form 1040), line 28." An S corporation has no
+        box 4, so column (k) is box 1 only. Interest and dividends are not column (k). Partner's Instructions
+        (2025), PDF p. 15, Box 5 and Boxes 6a and 6b, report them on Form 1040 lines 2b, 3b, and 3a.
+        Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Boxes 4, 5a, and 5b, do
+        the same. 26 U.S.C. 6102(a) (https://www.law.cornell.edu/uscode/text/26/6102): "the fractional part of
+        a dollar shall be disregarded unless it amounts to one-half dollar or more, in which case it shall be
+        increased to one dollar." Passive income and losses are not entered here; those returns stop. Box 4a
+        on a passive K-1 is not column (h).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -2508,6 +2690,33 @@
                     <Dollar>0</Dollar>
                   </Right>
                 </GreaterThanOrEqual>
+                <Dependency path="../isPartnership" />
+              </All>
+            </When>
+            <Then>
+              <Round>
+                <Add>
+                  <Dependency path="../box1" />
+                  <Dependency path="../form1065Box4a" />
+                </Add>
+              </Round>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../materiallyParticipates" />
+                <GreaterThanOrEqual>
+                  <Left>
+                    <Dependency path="../box1" />
+                  </Left>
+                  <Right>
+                    <Dollar>0</Dollar>
+                  </Right>
+                </GreaterThanOrEqual>
+                <Not>
+                  <Dependency path="../isPartnership" />
+                </Not>
               </All>
             </When>
             <Then>
@@ -2600,11 +2809,13 @@
       <Description>
         Domestic partnership or S corporation, column (c) unchecked, not a PTP, not a trading business, box 1
         at least zero, box 14 code A on the supported Schedule SE path, no section 199A statement, no K-1
-        amount other than box 1, box 14 code A, the interest and dividend boxes, and the net capital gain
-        boxes, net capital gain at least zero, no foreign-source long-term capital gain, no previously taxed
-        earnings and profits, no clean renewable energy bond interest in Form 1065 box 5, qualified
-        dividends not larger than ordinary dividends, column (e) and column (f) unchecked, and material
-        participation yes.
+        amount other than box 1, Form 1065 box 4a, box 14 code A, the interest and dividend boxes, and the
+        net capital gain boxes, net capital gain at least zero, no foreign-source long-term capital gain, no
+        previously taxed earnings and profits, no clean renewable energy bond interest in Form 1065 box 5,
+        qualified dividends not larger than ordinary dividends, column (e) and column (f) unchecked, and
+        material participation yes. A partnership also needs box 4b at zero, box 4c equal to box 4a plus box
+        4b, and box 14 code A at least box 4a when box 4a is greater than zero. An S corporation is not asked
+        those questions.
       </Description>
       <Derived>
         <All>
@@ -2654,6 +2865,31 @@
           <Not>
             <Dependency path="../qualifiedDividendsExceedOrdinary" />
           </Not>
+          <Any>
+            <Not>
+              <Dependency path="../isPartnership" />
+            </Not>
+            <All>
+              <IsComplete>
+                <Dependency path="../form1065Box4a" />
+              </IsComplete>
+              <IsComplete>
+                <Dependency path="../form1065Box4b" />
+              </IsComplete>
+              <IsComplete>
+                <Dependency path="../form1065Box4c" />
+              </IsComplete>
+              <Not>
+                <Dependency path="../form1065Box4bIsNonzero" />
+              </Not>
+              <Not>
+                <Dependency path="../form1065Box4cDoesNotMatch" />
+              </Not>
+              <Not>
+                <Dependency path="../form1065Box4aInconsistentWithBox14" />
+              </Not>
+            </All>
+          </Any>
           <IsComplete>
             <Dependency path="../k1Interest" />
           </IsComplete>
@@ -2719,6 +2955,18 @@
               <IsComplete>
                 <Dependency path="../box5IncludesCleanRenewableEnergyBondInterest" />
               </IsComplete>
+              <IsComplete>
+                <Dependency path="../form1065Box4a" />
+              </IsComplete>
+              <IsComplete>
+                <Dependency path="../form1065Box4b" />
+              </IsComplete>
+              <IsComplete>
+                <Dependency path="../form1065Box4c" />
+              </IsComplete>
+              <Not>
+                <Dependency path="../form1065Box4cDoesNotMatch" />
+              </Not>
             </All>
           </Any>
           <IsComplete>
@@ -2779,8 +3027,8 @@
     <Fact path="/scheduleEPartIILine28AColumnK">
       <Name>Schedule E line 28A column (k)</Name>
       <Description>
-        Nonpassive income on line 28A. Same amount as that entity's box 1 when the supported path applies.
-        Cite on /scheduleEK1s/*/columnK.
+        Nonpassive income on line 28, row A. Same amount as that entity's column (k): box 1, plus Form 1065
+        box 4a for a partnership, when the supported path applies. Cite on /scheduleEK1s/*/columnK.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -3293,11 +3541,66 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital">
+      <Name>Knockout: Form 1065 box 4b guaranteed payments for capital</Name>
+      <Description>
+        Any nonzero Form 1065 box 4b. Partner's Instructions for Schedule K-1 (Form 1065) (2025), PDF p. 15,
+        Box 4b: guaranteed payments for capital also go in column (k). Treas. Reg. 1.1411-4(g)(10)
+        (https://www.law.cornell.edu/cfr/text/26/1.1411-4) reserves the net investment income treatment of
+        guaranteed payments for the use of capital. That treatment is not computed. Complete false when
+        /scheduleEHasPartIIIncome is false. An S corporation is not asked.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/form1065Box4bIsNonzero" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutScheduleEPartIIGuaranteedPaymentsInconsistent">
+      <Name>Knockout: Form 1065 box 4a is greater than box 14 code A</Name>
+      <Description>
+        Box 4a is greater than zero and box 14 code A is blank or less than box 4a. Guaranteed payments for
+        services are included in box 14 code A. 26 U.S.C. 1402(a). Partner's Instructions (2025), PDF p. 15,
+        Box 4a. An unanswered box 14 code A stays incomplete. Complete false when
+        /scheduleEHasPartIIIncome is false, and when box 4a is zero or box 14 code A is at least box 4a.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleEHasPartIIIncome" />
+          <GreaterThan>
+            <Left>
+              <Count>
+                <Dependency path="/scheduleEK1s/*/form1065Box4aInconsistentWithBox14" />
+              </Count>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/flowKnockoutScheduleEPartIIOtherK1Amount">
       <Name>Knockout: Schedule K-1 amount other than box 1</Name>
       <Description>
-        Any separately stated K-1 amount. Cites on /scheduleEK1s/*/hasOtherK1Amount. Complete false when
-        /scheduleEHasPartIIIncome is false.
+        Any separately stated K-1 amount, including Form 1065 box 4b. Box 4a is not this stop. Cites on
+        /scheduleEK1s/*/hasOtherK1Amount. Complete false when /scheduleEHasPartIIIncome is false.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -6290,6 +6593,8 @@
           <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeALimitedPartner" />
           <Dependency path="/flowKnockoutScheduleEPartIIBox14CodeAMfj" />
           <Dependency path="/flowKnockoutScheduleEPartIIQbiCode" />
+          <Dependency path="/flowKnockoutScheduleEPartIIGuaranteedPaymentsForCapital" />
+          <Dependency path="/flowKnockoutScheduleEPartIIGuaranteedPaymentsInconsistent" />
           <Dependency path="/flowKnockoutScheduleEPartIIOtherK1Amount" />
           <Dependency path="/flowKnockoutScheduleEPartIIPtep" />
           <Dependency path="/flowKnockoutScheduleEPartIICleanRenewableEnergyBond" />
@@ -6460,7 +6765,9 @@
         Qualified business income. A blank box 20 code Z or box
         17 code V leaves Form 8995 lines 6-9 at zero.
         A statement stops the return. Box 1 is not treated as qualified
-        business income.
+        business income. Form 1065 box 4a is column (k) and is not Form 8995 line 1. 26 U.S.C.
+        199A(c)(4)(B). Box 4b stops the return. Box 4c must equal box 4a plus box 4b; a mismatch is not a
+        stop. Box 4a greater than box 14 code A stops the return.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -7436,6 +7743,61 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1GuaranteedPaymentsForServices">
+      <Name>Partnership K-1 guaranteed payments for services, unrounded</Name>
+      <Description>
+        Sum of Form 1065 box 4a before rounding. Partner's Instructions (2025), PDF p. 15, Box 4a. $0 when
+        Part II is unanswered or no, or the partnership list is not complete. An unanswered box 4a on a
+        listed partnership leaves the sum incomplete. An S corporation contributes $0. Cents stay in the
+        sum. The printed line 28 column (k) rounds box 1 plus box 4a once. 26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/scheduleEK1PortfolioReady" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleEK1s/*/form1065Box4aAmount" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1GuaranteedPaymentsForServicesNonzero">
+      <Name>Partnership K-1 guaranteed payments for services total is not zero</Name>
+      <Description>
+        True when the unrounded Form 1065 box 4a total is not zero, including cents that round to zero on
+        Schedule E line 28. Incomplete when the total is incomplete, so a PA-40 with an unanswered box 4a
+        stays incomplete. Partner's Instructions (2025), PDF p. 15, Box 4a.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Not>
+          <Equal>
+            <Left>
+              <Dependency path="/scheduleEK1GuaranteedPaymentsForServices" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </Equal>
+        </Not>
       </Derived>
     </Fact>
 

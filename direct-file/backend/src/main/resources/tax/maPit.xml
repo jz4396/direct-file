@@ -1,0 +1,1958 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 6: 2026 Form 1 for a full-year Massachusetts resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-7041067411
+      Scope: Single, or married filing jointly with both spouses in Massachusetts all year. No dependents,
+      under 65, not blind, full-year minimum creditable coverage. Line 3 is W-2 box 16. Lines 4 through 9,
+      15, and 20 are zero in scope, so line 10 equals line 3, line 16 is 11a + 11b + 14, and line 21 equals
+      line 19. There is no line 12 or 13 on the 2025 form.
+      Line 22 is line 21 times 5 percent, or 5.85 percent when the filer elects that rate, rounded once,
+      half up, to the dollar. Dollar times Rational scales to cents half-even before Round half-up, so
+      /maLine22 corrects that second step the way /ilLine12, /ncLine15, and /azLine46 do. 49,610 times
+      0.05 is 2,480.50, which rounds half-up to 2,481. Half-even would leave 2,480. The correction
+      subtracts $1 only when the cent-then-dollar result exceeds the exact product by more than 50 cents,
+      so an exact half dollar stays the half-up dollar.
+      The 5 percent fact is Rational 1/20, which is 0.05. M.G.L. c. 62, § 4(b) still prints 5.3 per cent
+      and a floor of not less than 5 per cent. The filled amount uses the August 4, 2026 Form 1
+      instructions: multiply by 0.05. The 5.85 percent election is in those instructions, not in § 4.
+      Form structure: 2025 Form 1 and Schedule HC, used until the 2026 forms are posted. Amounts entered
+      are tax year 2026. A stop below is BlockSubmissionOnTrue and print-refusing.
+      Line 2e is U.S. Schedule A line 4. Itemizing stops the return so that line is not silently zero.
+      Line 33, voluntary contributions, is zero because the line is not offered. Line 14 rounds rent
+      divided by 2 half-up to the dollar before the $4,000 cap, which is the form's whole-dollar method.
+      The specified rents divide evenly, so that round does not change them.
+    -->
+
+    <Fact path="/maPersonalExemptionSingle">
+      <Name>Massachusetts personal exemption, single</Name>
+      <Description>Form 1 line 2a for a single filer. M.G.L. c. 62, § 3B(b)(1)(A): "The personal exemption
+        shall not exceed $4,400." 2025 Form 1 instructions, line 2a: "If you are single or married filing
+        a separate return, enter $4,400 in line 2a." Married filing separately is not in scope.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>4400</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maPersonalExemptionMfj">
+      <Name>Massachusetts personal exemption, married filing jointly</Name>
+      <Description>Form 1 line 2a for a joint return. M.G.L. c. 62, § 3B(b)(2)(A): "The personal exemption
+        shall not exceed $8,800." 2025 Form 1 instructions, line 2a: "If married filing a joint return,
+        enter $8,800 in line 2a."</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>8800</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maTaxRate">
+      <Name>Massachusetts Part B income tax rate</Name>
+      <Description>Form 1 line 22. 2025 Form 1 instructions, revised August 4, 2026: "If line 21 is greater
+        than $24,000 multiply by 0.05 and enter the result in line 22." M.G.L. c. 62, § 4(b) taxes Part B
+        income at 5.3 per cent and then reduces that rate, and says "Part B taxable income shall be taxed
+        at a rate of not less than 5 per cent." The filled rate is that 5 percent floor, stored as 1/20.
+        The amount is rounded once, half up, to the dollar.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>1/20</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maOptionalTaxRate">
+      <Name>Massachusetts optional 5.85 percent rate</Name>
+      <Description>2025 Form 1 instructions, line 22: "Personal income tax forms must provide an election to
+        voluntarily pay tax at a rate of 5.85% on taxable income which would otherwise be taxed at a rate
+        of 5.0%." "If choosing the optional 5.85% tax rate, multiply line 21 and Schedule D, line 21 by
+        0.0585 and fill in the oval." Schedule D is out of scope. Stored as 585/10000, which is 0.0585.
+        This election is not in M.G.L. c. 62, § 4.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>585/10000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maFicaCap">
+      <Name>Massachusetts Social Security, Medicare, and retirement deduction cap</Name>
+      <Description>Form 1 lines 11a and 11b. M.G.L. c. 62, § 3B(a)(3) deducts FICA and railroad retirement
+        taxes, and the aggregate with retirement-fund contributions "attributable to any one taxpayer"
+        shall not "exceed two thousand dollars." 2025 Form 1 instructions, line 11: enter the amount paid
+        "but not more than $2,000 each." The cap is per person. The two spouses are not combined.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>2000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maRentalCap">
+      <Name>Massachusetts rental deduction cap</Name>
+      <Description>Form 1 line 14. M.G.L. c. 62, § 3B(a)(9): "an amount equal to 50 per cent of such rent;
+        provided, however, that such deduction shall not exceed $4,000 for a single person, for a person
+        that qualifies as a head of household under section two (b) of the Code, or for a husband and
+        wife." 2025 Form 1 instructions, line 14: enter half of line 14a, "or $4,000 ($2,000 if married
+        filing a separate return), whichever is smaller." Married filing separately is not in scope, so
+        the cap on a supported return is $4,000.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>4000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maTaxTableThreshold">
+      <Name>Massachusetts tax table threshold</Name>
+      <Description>2025 Form 1 instructions, line 22: "If line 21 is less than $24,000, find the proper tax
+        by using the tax tables found in the back of this booklet. If line 21 is greater than $24,000
+        multiply by 0.05." The tax table, No Tax Status, and the Limited Income Credit are not calculated.
+        A return stops when line 21 is less than $24,000. Exactly $24,000 is 5 percent of an exact $1,200,
+        so it is computed. The same threshold covers No Tax Status and the Limited Income Credit, because
+        those income limits leave line 21 under $24,000 after the exemptions in scope.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>24000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maSurtaxStop">
+      <Name>Massachusetts 4 percent surtax stop</Name>
+      <Description>M.G.L. c. 62, § 4(d): where the sum of Part A, Part B, and Part C taxable income "exceeds
+        $1,000,000 in a taxable year, the portion of such taxable income exceeding $1,000,000 shall be
+        taxed" at the Part A, B, and C rates "plus an additional 4 per cent." The threshold is adjusted
+        for the cost of living. 2025 Form 1 instructions: the 2025 threshold is $1,083,150. The 2026
+        indexed figure is not pinned, so a return stops when line 21 is greater than $1,000,000. Exactly
+        $1,000,000 has no portion exceeding the statutory base, so it is computed at 5 percent with no
+        surtax.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>1000000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maResidencyOptions">
+      <Name>Massachusetts residency answers</Name>
+      <Description>Full-year resident is the supported Form 1. Part-year residents and nonresidents use
+        Form 1-NR/PY. A joint return is a full-year Form 1 only when both spouses lived in Massachusetts
+        all year.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>nonresident</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maResidencyStatus">
+      <Name>Massachusetts residency</Name>
+      <Description>Full year means you, and your spouse if you file jointly, lived in Massachusetts all
+        year. Part-year and nonresident stop. Form 1 and Form 1-NR/PY.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Enum optionsPath="/maResidencyOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/maResidencyIsPartYearOrNonresident">
+      <Name>Massachusetts residency is part-year or nonresident</Name>
+      <Description>True for Form 1-NR/PY. Incomplete until /maResidencyStatus is answered.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="/maResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/maResidencyOptions">partYear</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/maResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/maResidencyOptions">nonresident</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maRentPaid">
+      <Name>Qualified Massachusetts rent paid</Name>
+      <Description>Form 1 line 14a. 2025 Form 1 instructions, line 14: "Enter the total amount of qualified
+        rent paid by you during 2025 in line 14a." Incomplete until answered, so line 14 is not treated
+        as zero on a return that has not been asked.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Dollar />
+      </Writable>
+    </Fact>
+
+    <Fact path="/maElectsOptionalRate">
+      <Name>Elects the optional 5.85 percent rate</Name>
+      <Description>2025 Form 1 instructions, line 22, require an election to pay 5.85 percent instead of
+        5.0 percent. The default is no, which fills line 22 at 5 percent and leaves the oval blank. Yes
+        multiplies line 21 by 0.0585 and fills the oval.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+      <Placeholder>
+        <False />
+      </Placeholder>
+    </Fact>
+
+    <Fact path="/maHasUseTax">
+      <Name>Massachusetts use tax owed</Name>
+      <Description>Form 1 line 34, use tax due on internet, mail order, and other out-of-state purchases.
+        The worksheet is not calculated. Yes stops the return. Incomplete until answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/maHasFullYearMcc">
+      <Name>Full-year minimum creditable coverage</Name>
+      <Description>M.G.L. c. 111M, § 2(b): every resident filer shall indicate whether the person "had
+        creditable coverage in force for each of the 12 months of the taxable year." Schedule HC is
+        required with a resident Form 1. No stops the return. The penalty worksheet is not calculated.
+        Incomplete until answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/maSpouseHasFullYearMcc">
+      <Name>Spouse full-year minimum creditable coverage</Name>
+      <Description>The same M.G.L. c. 111M, § 2(b) indication for the spouse on a joint return. Asked only
+        on a joint return. No stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/maHasRetirementContribution">
+      <Name>Massachusetts retirement contribution in W-2 box 14</Name>
+      <Description>A contribution to a U.S. or Massachusetts retirement system shown in W-2 box 14 changes
+        lines 11a and 11b. M.G.L. c. 62, § 3B(a)(3) and (4) cap those contributions together with FICA at
+        two thousand dollars per taxpayer. This return uses boxes 4 and 6 only, so yes stops the return.
+        Incomplete until answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/maInsurerName">
+      <Name>Insurer on Form MA 1099-HC</Name>
+      <Description>Schedule HC line 4f, the name of the private insurer or program from Form MA 1099-HC
+        box 1. Filled on a supported full-year resident return.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>36</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/maSubscriberId">
+      <Name>Subscriber or member number on Form MA 1099-HC</Name>
+      <Description>Schedule HC line 4f, the subscriber number from Form MA 1099-HC, or the identification
+        number on the health insurance card when no 1099-HC was issued.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>20</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/maSpouseInsurerName">
+      <Name>Spouse's insurer on Form MA 1099-HC</Name>
+      <Description>Schedule HC line 4g for the spouse on a joint return.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>36</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/maSpouseSubscriberId">
+      <Name>Spouse's subscriber or member number on Form MA 1099-HC</Name>
+      <Description>Schedule HC line 4g subscriber number for the spouse on a joint return.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <String />
+        <Limit type="MaxLength">
+          <Int>20</Int>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/maAskSpouse">
+      <Name>Ask the spouse Massachusetts questions</Name>
+      <Description>Spouse coverage, and the spouse lines on Schedule HC, are on a joint Form 1. A single
+        return does not wait on them.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency module="stateReturn" path="/stateReturnIsMa" />
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine2a">
+      <Name>Form 1 line 2a personal exemption</Name>
+      <Description>$4,400 single or $8,800 joint. Other filing statuses are not this amount; those returns
+        stop, and this fact is zero for them so the exemption is not a supported number.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            </When>
+            <Then>
+              <Dependency path="/maPersonalExemptionSingle" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dependency path="/maPersonalExemptionMfj" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine2g">
+      <Name>Form 1 line 2g total exemptions</Name>
+      <Description>Add lines 2a through 2f. Lines 2b through 2f are zero in scope, so this equals line 2a.
+        It is also entered on line 18.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine2a" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine3">
+      <Name>Form 1 line 3 Massachusetts wages</Name>
+      <Description>2025 Form 1 instructions, line 3: "Report in line 3 total state wages and allocated tips
+        from Form(s) W-2." This is the sum of W-2 box 16. A blank box 15 is in scope and its box 16 is
+        included. Massachusetts does not adopt IRC section 224 or 225, and line 3 is not federal AGI, so
+        a federal Schedule 1-A deduction does not change this line and is not a stop.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/stateWages" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine10">
+      <Name>Form 1 line 10 total 5.0 percent income</Name>
+      <Description>Add lines 3 through 9. Lines 4 through 9 are zero in scope, so this equals line 3.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine3" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/maFica">
+      <Name>This W-2's Social Security and Medicare tax</Name>
+      <Description>Box 4 plus box 6. Lines 11a and 11b use this amount, not a retirement amount from box 14.
+        A blank box 4 or box 6 is zero.</Description>
+      <Derived>
+        <Add>
+          <Dependency path="../oasdiWithholding" />
+          <Dependency path="../medicareWithholding" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/maFicaPrimary">
+      <Name>This W-2's Social Security and Medicare tax for the primary filer</Name>
+      <Description>Box 4 plus box 6 when the W-2 belongs to the primary filer, otherwise zero.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../belongsToPrimaryFiler" />
+            </When>
+            <Then>
+              <Dependency path="../maFica" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/maFicaSecondary">
+      <Name>This W-2's Social Security and Medicare tax for the spouse</Name>
+      <Description>Box 4 plus box 6 when the W-2 belongs to the spouse. Used only on a joint return, so a
+        single return does not wait on the spouse.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../belongsToSecondaryFiler" />
+            </When>
+            <Then>
+              <Dependency path="../maFica" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maFicaPrimaryTotal">
+      <Name>Primary filer's Social Security and Medicare tax</Name>
+      <Description>Sum of box 4 and box 6 on the primary filer's W-2s, before the $2,000 cap.</Description>
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/maFicaPrimary" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maFicaSecondaryTotal">
+      <Name>Spouse's Social Security and Medicare tax</Name>
+      <Description>Sum of box 4 and box 6 on the spouse's W-2s, before the $2,000 cap. Zero when the
+        return is not joint.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/formW2s/*/maFicaSecondary" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine11a">
+      <Name>Form 1 line 11a</Name>
+      <Description>Primary filer's box 4 plus box 6, not more than $2,000. 2025 Form 1 instructions, line 11.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <LesserOf>
+          <Dependency path="/maFicaPrimaryTotal" />
+          <Dependency path="/maFicaCap" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine11b">
+      <Name>Form 1 line 11b</Name>
+      <Description>Spouse's box 4 plus box 6, not more than $2,000, on a joint return. Zero on a single
+        return. 2025 Form 1 instructions, line 11.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <LesserOf>
+                <Dependency path="/maFicaSecondaryTotal" />
+                <Dependency path="/maFicaCap" />
+              </LesserOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine14Half">
+      <Name>Half of qualified rent, whole dollars</Name>
+      <Description>Line 14a divided by 2, rounded half-up to the dollar. The form uses the whole-dollar
+        method. The specified test rents divide evenly.</Description>
+      <Derived>
+        <Round>
+          <Divide>
+            <Dividend>
+              <Dependency path="/maRentPaid" />
+            </Dividend>
+            <Divisors>
+              <Int>2</Int>
+            </Divisors>
+          </Divide>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine14">
+      <Name>Form 1 line 14 rental deduction</Name>
+      <Description>The smaller of half the qualified rent and $4,000. 2025 Form 1 instructions, line 14.
+        M.G.L. c. 62, § 3B(a)(9).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <LesserOf>
+          <Dependency path="/maLine14Half" />
+          <Dependency path="/maRentalCap" />
+        </LesserOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine15">
+      <Name>Form 1 line 15 Schedule Y</Name>
+      <Description>Other deductions from Schedule Y are zero in scope. The 2025 form has no lines 12 or 13.
+        Line 16 is the sum of lines 11 through 15, which in scope is line 11a plus line 11b plus line 14.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine16">
+      <Name>Form 1 line 16 total deductions</Name>
+      <Description>Add lines 11 through 15. In scope that is line 11a plus line 11b plus line 14.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/maLine11a" />
+          <Dependency path="/maLine11b" />
+          <Dependency path="/maLine14" />
+          <Dependency path="/maLine15" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine17">
+      <Name>Form 1 line 17 5.0 percent income after deductions</Name>
+      <Description>Subtract line 16 from line 10. Not less than 0. 2025 Form 1 instructions, line 17.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/maLine10" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/maLine16" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine18">
+      <Name>Form 1 line 18 exemption amount</Name>
+      <Description>From line 2g.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine2g" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine19">
+      <Name>Form 1 line 19 5.0 percent income after exemptions</Name>
+      <Description>Subtract line 18 from line 17. Not less than 0. 2025 Form 1 instructions, line 19.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/maLine17" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/maLine18" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine20">
+      <Name>Form 1 line 20 interest and dividend income</Name>
+      <Description>Schedule B interest and dividend income is zero in scope. That income stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine21">
+      <Name>Form 1 line 21 total taxable 5.0 percent income</Name>
+      <Description>Add lines 19 and 20. Line 20 is zero in scope, so this equals line 19.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine19" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maAppliedRate">
+      <Name>Rate applied on Form 1 line 22</Name>
+      <Description>5.85 percent when the optional rate is elected, otherwise 5 percent.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/maElectsOptionalRate" />
+            </When>
+            <Then>
+              <Dependency path="/maOptionalTaxRate" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/maTaxRate" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine22CentRound">
+      <Name>Form 1 line 22 after the cent-then-dollar round</Name>
+      <Description>Round(line 21 times the applied rate). Dollar times Rational scales to cents half-even
+        before Round half-up, so a product whose exact fraction is just under half a dollar can become
+        50 cents and then round up a dollar. This is not the amount entered on the form.</Description>
+      <Derived>
+        <Round>
+          <Multiply>
+            <Dependency path="/maLine21" />
+            <Dependency path="/maAppliedRate" />
+          </Multiply>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine22Times100">
+      <Name>One hundred times the exact Form 1 line 22</Name>
+      <Description>Line 21 times 5 at 5 percent, or line 21 times 117/20 at 5.85 percent. That is 100 times
+        the exact tax, and for a whole-dollar line 21 it is exact to the cent. 49,610 times 5 is 248,050
+        cents, which is 2,480.50 dollars. 127,200 times 117/20 is 744,120 cents, which is 7,441.20 dollars.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="/maElectsOptionalRate" />
+            </When>
+            <Then>
+              <Multiply>
+                <Dependency path="/maLine21" />
+                <Rational>117/20</Rational>
+              </Multiply>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Multiply>
+                <Dependency path="/maLine21" />
+                <Int>5</Int>
+              </Multiply>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine22">
+      <Name>Form 1 line 22 tax</Name>
+      <Description>Line 21 times 5 percent, or 5.85 percent when elected, rounded once, half up, to the
+        dollar. The cent-then-dollar result is one dollar high when it exceeds this exact product by more
+        than 50 cents. An exact half dollar, 2,480.50, stays 2,481. 2025 Form 1 instructions, line 22.
+        M.G.L. c. 62, § 4(b).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Multiply>
+                        <Dependency path="/maLine22CentRound" />
+                        <Int>100</Int>
+                      </Multiply>
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="/maLine22Times100" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Dollar>50</Dollar>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/maLine22CentRound" />
+                </Minuend>
+                <Subtrahends>
+                  <Dollar>1</Dollar>
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/maLine22CentRound" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine28a">
+      <Name>Form 1 line 28a income tax</Name>
+      <Description>Add lines 22 through 26. Lines 23 through 26 are zero in scope, so this equals line 22.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine22" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine28">
+      <Name>Form 1 line 28 total tax</Name>
+      <Description>Line 28a plus line 28b. The 4 percent surtax is zero because a return over $1,000,000
+        stops. This equals line 28a.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine28a" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine32">
+      <Name>Form 1 line 32 income tax after credits</Name>
+      <Description>Line 28 minus lines 29 through 31, not less than zero. Those credits are zero. The
+        Massachusetts EITC is not calculated; a federal earned income credit greater than zero stops the
+        return. This equals line 28.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine28" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine33">
+      <Name>Form 1 line 33 voluntary contributions</Name>
+      <Description>Voluntary fund contributions are zero because the line is not offered. The return does
+        not ask for a contribution.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine34">
+      <Name>Form 1 line 34 use tax</Name>
+      <Description>Zero. Any use tax owed stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine35">
+      <Name>Form 1 line 35 health care penalty</Name>
+      <Description>Zero. A filer without full-year minimum creditable coverage stops the return, so the
+        penalty worksheet is not calculated. Schedule HC is still enclosed for a supported return.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine37">
+      <Name>Form 1 line 37 tax after credits, contributions, use tax, and penalty</Name>
+      <Description>Add lines 32 through 36. Lines 33 through 36 are zero, so this equals line 32, which
+        equals the line 22 tax.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine32" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/maWithholding">
+      <Name>This W-2's Massachusetts withholding</Name>
+      <Description>Box 17 when box 15 is Massachusetts (the same state as the residence). A blank box 15
+        is in scope and contributes zero. A box 15 for another state stops the return and contributes
+        zero here.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../writableState" />
+                </IsComplete>
+                <Equal>
+                  <Left>
+                    <Dependency path="../writableState" />
+                  </Left>
+                  <Right>
+                    <Enum optionsPath="/incomeFormStateOptions">sameState</Enum>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../stateWithholding" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine38a">
+      <Name>Form 1 line 38a Massachusetts income tax withheld</Name>
+      <Description>Sum of W-2 box 17 where box 15 is Massachusetts. 2025 Form 1, line 38a.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/maWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine38">
+      <Name>Form 1 line 38 total Massachusetts income tax withheld</Name>
+      <Description>Add lines 38a through 38c. Lines 38b and 38c are zero, so this equals line 38a.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine38a" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine51">
+      <Name>Form 1 line 51 total payments and credits</Name>
+      <Description>Add lines 38 through 42 and lines 48 through 50. Estimated payments, the extension, and
+        the refundable credits are zero, so this equals line 38.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/maLine38" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine52">
+      <Name>Form 1 line 52 overpayment</Name>
+      <Description>Line 51 minus line 37 when line 51 is larger, otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/maLine51" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/maLine37" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine54">
+      <Name>Form 1 line 54 refund</Name>
+      <Description>Line 52 minus line 53. Nothing is applied to next year's estimated tax, so the refund
+        equals line 52.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/maLine52" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine55">
+      <Name>Form 1 line 55 tax due</Name>
+      <Description>Line 37 minus line 51 when line 37 is larger, otherwise zero.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/maLine37" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/maLine51" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maZero">
+      <Name>Form 1 zero</Name>
+      <Description>Printed on lines this return does not calculate. Dependents, age 65, blindness, Schedule
+        Y, Schedule B, credits, use tax, the health care penalty, and voluntary contributions are zero
+        because those cases stop or the line is not offered.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <!-- Stops. Each is complete false when this is not a Massachusetts return, and incomplete when the
+         fact it depends on has not been answered. -->
+
+    <Fact path="/maHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, including Massachusetts bank interest on Form 1 line 5, dividends and other
+        Schedule B income, tax-exempt interest, Social Security, a sale or capital gain, 1099-MISC, a
+        1099-R, Schedule C, or Schedule E. Any of that income stops a Form 1. Adjustments that reduce AGI
+        are not this stop. Massachusetts bank interest and Schedule B amounts are interest or dividends
+        on the federal return.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/totalIncome" />
+            </IsComplete>
+            <IsComplete>
+              <Dependency module="formW2s" path="/wages" />
+            </IsComplete>
+            <NotEqual>
+              <Left>
+                <Dependency module="income" path="/totalIncome" />
+              </Left>
+              <Right>
+                <Dependency module="formW2s" path="/wages" />
+              </Right>
+            </NotEqual>
+          </All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="interest" path="/taxExemptInterest" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="socialSecurity" path="/socialSecurityBenefits" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="form1099Rs" path="/form1099Rs" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maHasDependentsOrQualifyingPerson">
+      <Name>Dependents or a qualifying person</Name>
+      <Description>Anyone in the household, including a dependent, or a filer who is a qualifying person
+        for the child and dependent care credit. Form 1 lines 2b, 2f, and the dependent credits are not
+        calculated.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="filers" path="/cdccQualifyingFilersCount" />
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maAgeOrBlind">
+      <Name>Age 65 or blind</Name>
+      <Description>Primary filer is 65 or older or blind. On a joint return, either spouse. Form 1 lines
+        2c and 2d are not calculated. The spouse is checked only on a joint return so a single return
+        does not wait on the spouse.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/primaryFiler/isBlind" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Any>
+              <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+              <Dependency module="filers" path="/secondaryFiler/isBlind" />
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maFilingStatusUnsupported">
+      <Name>Filing status other than single or joint</Name>
+      <Description>The supported Form 1 is single, or married filing jointly with both spouses in
+        Massachusetts all year. Head of household, married filing separately, and qualifying surviving
+        spouse are not calculated.</Description>
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine21BelowTaxTable">
+      <Name>Form 1 line 21 is under $24,000</Name>
+      <Description>The tax table, No Tax Status, and the Limited Income Credit. Less than $24,000 stops.
+        Exactly $24,000 does not.</Description>
+      <Derived>
+        <LessThan>
+          <Left>
+            <Dependency path="/maLine21" />
+          </Left>
+          <Right>
+            <Dependency path="/maTaxTableThreshold" />
+          </Right>
+        </LessThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maLine21AboveSurtaxMargin">
+      <Name>Form 1 line 21 is over $1,000,000</Name>
+      <Description>The 4 percent surtax. Greater than $1,000,000 stops. Exactly $1,000,000 does not.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/maLine21" />
+          </Left>
+          <Right>
+            <Dependency path="/maSurtaxStop" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maHasEarnedIncomeCredit">
+      <Name>Federal earned income credit is greater than zero</Name>
+      <Description>The Massachusetts earned income credit is not calculated. A federal earned income credit
+        greater than zero stops the return.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="eitc" path="/earnedIncomeCredit" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/maHcIdsAnswered">
+      <Name>Schedule HC insurer and subscriber number are entered</Name>
+      <Description>A supported resident Form 1 fills Schedule HC Part 1 and the insurer name and subscriber
+        number from Form MA 1099-HC. Incomplete until both are entered and not blank. On a joint return,
+        the spouse's name and number are required too. This is not a yes stop. It keeps the form from
+        being printed with those lines blank.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/maInsurerName" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/maSubscriberId" />
+                </IsComplete>
+                <NotEqual>
+                  <Left>
+                    <Dependency path="/maInsurerName" />
+                  </Left>
+                  <Right>
+                    <String></String>
+                  </Right>
+                </NotEqual>
+                <NotEqual>
+                  <Left>
+                    <Dependency path="/maSubscriberId" />
+                  </Left>
+                  <Right>
+                    <String></String>
+                  </Right>
+                </NotEqual>
+                <Any>
+                  <Not>
+                    <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                  </Not>
+                  <All>
+                    <IsComplete>
+                      <Dependency path="/maSpouseInsurerName" />
+                    </IsComplete>
+                    <IsComplete>
+                      <Dependency path="/maSpouseSubscriberId" />
+                    </IsComplete>
+                    <NotEqual>
+                      <Left>
+                        <Dependency path="/maSpouseInsurerName" />
+                      </Left>
+                      <Right>
+                        <String></String>
+                      </Right>
+                    </NotEqual>
+                    <NotEqual>
+                      <Left>
+                        <Dependency path="/maSpouseSubscriberId" />
+                      </Left>
+                      <Right>
+                        <String></String>
+                      </Right>
+                    </NotEqual>
+                  </All>
+                </Any>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaPartYearOrNonresident">
+      <Name>Flow knockout: Massachusetts part-year or nonresident</Name>
+      <Description>Form 1-NR/PY is not calculated. Complete false when this is not a Massachusetts return.
+        Incomplete until /maResidencyStatus is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maResidencyIsPartYearOrNonresident" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maResidencyIsPartYearOrNonresident" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maResidencyIsPartYearOrNonresident" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaW2NotMassachusetts">
+      <Name>Flow knockout: a W-2 box 15 is not Massachusetts</Name>
+      <Description>Any W-2 whose box 15 is a state other than Massachusetts. A blank box 15 is in scope and
+        is not this stop. Complete false when this is not a Massachusetts return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaOtherFederalIncome">
+      <Name>Flow knockout: income other than W-2 wages</Name>
+      <Description>Any federal income other than W-2 wages, including Massachusetts bank interest and
+        Schedule B. Complete false when this is not a Massachusetts return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maHasOtherFederalIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maHasOtherFederalIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maHasOtherFederalIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaDependentsOrQualifyingPerson">
+      <Name>Flow knockout: dependents or a qualifying person</Name>
+      <Description>Lines 2b and the dependent credits are not calculated. Complete false when this is not
+        a Massachusetts return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maHasDependentsOrQualifyingPerson" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maHasDependentsOrQualifyingPerson" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maHasDependentsOrQualifyingPerson" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaAgeOrBlind">
+      <Name>Flow knockout: age 65 or blind</Name>
+      <Description>Lines 2c and 2d are not calculated. Complete false when this is not a Massachusetts
+        return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maAgeOrBlind" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maAgeOrBlind" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maAgeOrBlind" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaFilingStatus">
+      <Name>Flow knockout: filing status other than single or joint</Name>
+      <Description>Head of household, married filing separately, and qualifying surviving spouse are not
+        calculated. Complete false when this is not a Massachusetts return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maFilingStatusUnsupported" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maFilingStatusUnsupported" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maFilingStatusUnsupported" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaItemizedDeductions">
+      <Name>Flow knockout: itemized deductions</Name>
+      <Description>Form 1 line 2e is the medical and dental amount from U.S. Schedule A, line 4. That
+        amount is not calculated, so a return that itemizes stops. Complete false when this is not a
+        Massachusetts return. Incomplete until the itemizing choice is answered. Charitable gifts that
+        are not itemized are not this stop.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleA" path="/itemizesDeductions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaTaxTable">
+      <Name>Flow knockout: line 21 is under $24,000</Name>
+      <Description>The tax table, No Tax Status, and the Limited Income Credit are not calculated. Complete
+        false when this is not a Massachusetts return. Incomplete until line 21 is complete, which waits
+        on rent and the W-2 amounts.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maLine21BelowTaxTable" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maLine21BelowTaxTable" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maLine21BelowTaxTable" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaSurtax">
+      <Name>Flow knockout: line 21 is over $1,000,000</Name>
+      <Description>The 4 percent surtax on line 28b is not calculated. The 2026 indexed threshold is not
+        pinned, so the stop is the statutory $1,000,000 with margin. Complete false when this is not a
+        Massachusetts return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maLine21AboveSurtaxMargin" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maLine21AboveSurtaxMargin" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maLine21AboveSurtaxMargin" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaEarnedIncomeCredit">
+      <Name>Flow knockout: federal earned income credit</Name>
+      <Description>The Massachusetts earned income credit is not calculated. Complete false when this is
+        not a Massachusetts return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maHasEarnedIncomeCredit" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maHasEarnedIncomeCredit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maHasEarnedIncomeCredit" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaUseTax">
+      <Name>Flow knockout: Massachusetts use tax</Name>
+      <Description>Line 34 is not calculated. Yes stops the return. Complete false when this is not a
+        Massachusetts return. Incomplete until the question is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maHasUseTax" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maHasUseTax" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maHasUseTax" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaNoFullYearMcc">
+      <Name>Flow knockout: no full-year minimum creditable coverage</Name>
+      <Description>Schedule HC penalty worksheet is not calculated. No, for the filer or for the spouse on
+        a joint return, stops the return. Complete false when this is not a Massachusetts return. A single
+        return does not wait on the spouse.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maHasFullYearMcc" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maHasFullYearMcc" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/maHasFullYearMcc" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                <Not>
+                  <IsComplete>
+                    <Dependency path="/maSpouseHasFullYearMcc" />
+                  </IsComplete>
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="/maSpouseHasFullYearMcc" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                <Not>
+                  <Dependency path="/maSpouseHasFullYearMcc" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaRetirementContribution">
+      <Name>Flow knockout: Massachusetts retirement contribution in box 14</Name>
+      <Description>A box 14 retirement contribution would change lines 11a and 11b. Yes stops the return.
+        Complete false when this is not a Massachusetts return. Incomplete until the question is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maHasRetirementContribution" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maHasRetirementContribution" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/maHasRetirementContribution" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutMaScheduleHcIdentifiers">
+      <Name>Flow knockout: Schedule HC insurer and subscriber number</Name>
+      <Description>Incomplete until the Form MA 1099-HC insurer name and subscriber number are entered, and
+        on a joint return until the spouse's are entered. Complete false once they are entered, and when
+        this is not a Massachusetts return. Schedule HC is enclosed with every supported resident Form 1.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsMa" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/maHcIdsAnswered" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/maHcIdsAnswered" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

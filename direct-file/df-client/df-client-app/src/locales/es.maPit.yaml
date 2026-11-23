@@ -1,0 +1,131 @@
+# Cadenas del Formulario 1 de Massachusetts (#93, parte 6).
+subsubcategories:
+  /flow/your-taxes/amount:
+    ma-form-1: Declaración de Massachusetts
+dataviews:
+  /flow/your-taxes/amount:
+    /maResidencyStatus: Dónde vivió para su declaración de Massachusetts
+    /maHasUseTax: Impuesto de uso de Massachusetts
+    /maRentPaid: Alquiler calificado pagado en Massachusetts
+    /maElectsOptionalRate: Tasa opcional del 5.85% de Massachusetts
+    /maHasFullYearMcc: Cobertura acreditable mínima de todo el año
+    /maSpouseHasFullYearMcc: Cobertura acreditable mínima de todo el año del cónyuge
+    /maHasRetirementContribution: Aportación de jubilación de Massachusetts en la casilla 14
+    /maInsurerName: Aseguradora de salud
+    /maSubscriberId: Número de suscriptor o de miembro
+    /maSpouseInsurerName: Aseguradora de salud del cónyuge
+    /maSpouseSubscriberId: Número de suscriptor o de miembro del cónyuge
+fields:
+  /maResidencyOptions:
+    fullYear: Viví en Massachusetts todo el año
+    partYear: Viví en Massachusetts parte del año
+    nonresident: No viví en Massachusetts
+  /maRentPaid:
+    name: Alquiler calificado que pagó por su residencia principal en Massachusetts
+  /maInsurerName:
+    name: Nombre de su aseguradora de salud, del Formulario MA 1099-HC
+  /maSubscriberId:
+    name: Su número de suscriptor o de miembro
+  /maSpouseInsurerName:
+    name: Nombre de la aseguradora de salud de su cónyuge, del Formulario MA 1099-HC
+  /maSpouseSubscriberId:
+    name: Número de suscriptor o de miembro de su cónyuge
+headings:
+  /heading/your-taxes/amount/ma-residency: ¿Cuál de estas opciones describe su declaración de Massachusetts?
+  /heading/your-taxes/amount/ma-use-tax: ¿Debe impuesto de uso de Massachusetts?
+  /heading/your-taxes/amount/ma-rent: ¿Cuánto alquiler calificado pagó en Massachusetts?
+  /heading/your-taxes/amount/ma-optional-rate: ¿Quiere pagar el impuesto de Massachusetts al 5.85%?
+  /heading/your-taxes/amount/ma-mcc: ¿Tuvo cobertura acreditable mínima durante los 12 meses?
+  /heading/your-taxes/amount/ma-spouse-mcc: ¿Su cónyuge tuvo cobertura acreditable mínima durante los 12 meses?
+  /heading/your-taxes/amount/ma-retirement: ¿Algún formulario W-2 incluye en la casilla 14 una aportación de jubilación de Massachusetts?
+  /heading/your-taxes/amount/ma-insurer: ¿Cómo se llama su aseguradora de salud?
+  /heading/your-taxes/amount/ma-subscriber: ¿Cuál es su número de suscriptor o de miembro?
+  /heading/your-taxes/amount/ma-spouse-insurer: ¿Cómo se llama la aseguradora de salud de su cónyuge?
+  /heading/your-taxes/amount/ma-spouse-subscriber: ¿Cuál es el número de suscriptor o de miembro de su cónyuge?
+  /heading/knockout/ma-part-year: Esta herramienta todavía no admite una declaración de Massachusetts de residente parcial o no residente
+  /heading/knockout/ma-w2: Esta herramienta todavía no admite un W-2 de un estado que no sea Massachusetts
+  /heading/knockout/ma-other-income: Esta herramienta todavía no admite declaraciones de Massachusetts con ingresos distintos de los salarios del W-2
+  /heading/knockout/ma-dependents: Esta herramienta todavía no admite dependientes en una declaración de Massachusetts
+  /heading/knockout/ma-age-blind: Esta herramienta todavía no admite una declaración de Massachusetts de alguien de 65 años o más, o con ceguera
+  /heading/knockout/ma-filing-status: Esta herramienta todavía no admite este estado civil en Massachusetts
+  /heading/knockout/ma-itemized: Esta herramienta todavía no admite declaraciones de Massachusetts que detallan deducciones
+  /heading/knockout/ma-use-tax: Esta herramienta todavía no admite el impuesto de uso de Massachusetts
+  /heading/knockout/ma-mcc: Esta herramienta todavía no admite una declaración de Massachusetts sin cobertura de salud de todo el año
+  /heading/knockout/ma-retirement: Esta herramienta todavía no admite una aportación de jubilación de Massachusetts en la casilla 14
+  /heading/knockout/ma-tax-table: Esta herramienta todavía no admite este impuesto de Massachusetts
+  /heading/knockout/ma-surtax: Esta herramienta todavía no admite el recargo del 4% de Massachusetts
+  /heading/knockout/ma-eitc: Esta herramienta todavía no admite el crédito por ingreso del trabajo de Massachusetts
+info:
+  /info/your-taxes/amount/ma-residency:
+    body:
+      Un año completo significa que usted, y su cónyuge si presentan en conjunto, vivieron en Massachusetts todo el año.
+      Esa es la Forma 1. Los residentes parciales y los no residentes usan la Forma 1-NR/PY.
+  /info/your-taxes/amount/ma-use-tax:
+    body: La línea 34 es el impuesto de uso sobre compras por internet, por correo y de otros estados. Si debe alguno, esta herramienta no puede preparar la declaración.
+  /info/your-taxes/amount/ma-rent:
+    body:
+      Esta es la línea 14a. La deducción es la mitad de ese alquiler, hasta $4,000. Escriba 0 si no pagó alquiler
+      calificado por su residencia principal en Massachusetts.
+  /info/your-taxes/amount/ma-optional-rate:
+    body:
+      La Forma 1 permite elegir pagar 5.85% en lugar de 5% sobre el ingreso gravado al 5%. No es la respuesta habitual.
+      Sí marca el óvalo de la línea 22.
+  /info/your-taxes/amount/ma-mcc:
+    body:
+      El Anexo HC pregunta si tuvo cobertura acreditable mínima durante cada uno de los 12 meses. Use el Formulario MA
+      1099-HC de su aseguradora.
+  /info/your-taxes/amount/ma-spouse-mcc:
+    body: Una declaración conjunta hace la misma pregunta sobre su cónyuge.
+  /info/your-taxes/amount/ma-retirement:
+    body:
+      Las líneas 11a y 11b usan el impuesto del Seguro Social y de Medicare de las casillas 4 y 6, hasta $2,000. Una
+      aportación de jubilación de Massachusetts en la casilla 14 cambia esa deducción.
+  /info/your-taxes/amount/ma-insurer:
+    body: El Anexo HC imprime el nombre de la aseguradora de la casilla 1 del Formulario MA 1099-HC.
+  /info/your-taxes/amount/ma-subscriber:
+    body: El Anexo HC imprime el número de suscriptor del Formulario MA 1099-HC, o el número de su tarjeta del seguro.
+  /info/your-taxes/amount/ma-spouse-insurer:
+    body: Una declaración conjunta imprime la aseguradora de su cónyuge en el Anexo HC.
+  /info/your-taxes/amount/ma-spouse-subscriber:
+    body: Una declaración conjunta imprime el número de suscriptor de su cónyuge en el Anexo HC.
+  /info/knockout/ma-part-year:
+    alertText: Las declaraciones de residente parcial y de no residente de Massachusetts todavía no están admitidas
+    body: Esas declaraciones usan la Forma 1-NR/PY, que esta herramienta no calcula.
+  /info/knockout/ma-w2:
+    alertText: Un W-2 de otro estado no está admitido en esta declaración de Massachusetts
+    body: La casilla 15 tiene que ser Massachusetts, o estar en blanco. La retención cuenta solo cuando la casilla 15 es Massachusetts.
+  /info/knockout/ma-other-income:
+    alertText: Esta declaración de Massachusetts solo puede incluir salarios del W-2
+    body: Los intereses bancarios de Massachusetts, el Anexo B, la jubilación, el Seguro Social, el negocio, el alquiler y otros ingresos no están admitidos.
+  /info/knockout/ma-dependents:
+    alertText: Los dependientes no están admitidos en esta declaración de Massachusetts
+    body: La exención por dependientes y los créditos que dependen de ella no se calculan.
+  /info/knockout/ma-age-blind:
+    alertText: La edad de 65 años o la ceguera no está admitida en esta declaración de Massachusetts
+    body: Las exenciones de las líneas 2c y 2d no se calculan.
+  /info/knockout/ma-filing-status:
+    alertText: Este estado civil todavía no está admitido en una declaración de Massachusetts
+    body: Esta herramienta prepara la Forma 1 para solteros y para una declaración conjunta cuando ambos cónyuges vivieron en Massachusetts todo el año.
+  /info/knockout/ma-itemized:
+    alertText: Las deducciones detalladas no están admitidas en esta declaración de Massachusetts
+    body: La línea 2e, el monto médico y dental del Anexo A federal, no se calcula.
+  /info/knockout/ma-use-tax:
+    alertText: El impuesto de uso de Massachusetts todavía no está admitido
+    body: La línea 34 no se calcula.
+  /info/knockout/ma-mcc:
+    alertText: Una declaración sin cobertura de salud de todo el año todavía no está admitida
+    body: La hoja de la penalidad del Anexo HC no se calcula.
+  /info/knockout/ma-retirement:
+    alertText: Una aportación de jubilación de Massachusetts en la casilla 14 todavía no está admitida
+    body: Ese monto cambia la deducción de las líneas 11a y 11b.
+  /info/knockout/ma-tax-table:
+    alertText: Este impuesto de Massachusetts todavía no está admitido
+    body:
+      Cuando la línea 21 es menor de $24,000, el impuesto sale de la tabla. El estado sin impuesto y el crédito por
+      ingreso limitado están en ese rango, y no se calculan.
+  /info/knockout/ma-surtax:
+    alertText: El recargo del 4% de Massachusetts todavía no está admitido
+    body: El recargo aplica al ingreso gravable que pasa de $1,000,000, ajustado por inflación. Esta declaración se detiene por encima de $1,000,000.
+  /info/knockout/ma-eitc:
+    alertText: El crédito por ingreso del trabajo de Massachusetts todavía no está admitido
+    body: Un crédito federal por ingreso del trabajo mayor que cero no se calcula en la Forma 1.

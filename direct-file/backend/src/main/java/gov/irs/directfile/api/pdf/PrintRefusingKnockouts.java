@@ -103,6 +103,11 @@ public final class PrintRefusingKnockouts {
             // PA-40 IN (2025) p. 17, LINE 5. 72 P.S. §7303(a)(3). Complete false when the return is not a
             // PA-40 or both totals are zero. A loss is nonzero and refuses the print.
             "/flowKnockoutPaK1PartIICapitalGain",
+            // A nonzero Form 1065 box 4a on a PA-40. Federal Schedule E line 28 column (k) is not copied onto
+            // a PA-40 line. PA Schedule RK-1 is not produced. Same treatment as
+            // /flowKnockoutPaK1PartIICapitalGain. 72 P.S. §7303. Complete false when the return is not a
+            // PA-40 or the unrounded box 4a total is zero.
+            "/flowKnockoutPaK1GuaranteedPayments",
             // A nonzero Schedule K-1 (Form 1041) box 7 on any PA-40. Federal Schedule E line 33 column (d)
             // is not PA-40 line 6. PA-40 IN (2025) p. 19, LINE 7, reports estate or trust income on PA
             // Schedule J from a PA-41 Schedule RK-1, and a beneficiary cannot report a loss. PA Schedule J
@@ -157,6 +162,25 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutAzLowIncomeCredit",
             "/flowKnockoutAzSchedule1A",
             "/flowKnockoutAzFilingStatus",
+            // #93 slice 6: Massachusetts stops. Each is complete false when the return is not a Form 1, and incomplete
+            // when the Massachusetts question is unanswered, so the PDF is not printed with the unmodeled line as
+            // zero. Derived stops are complete false when the condition is false.
+            // 2025 Form 1 and Schedule HC, used until the 2026 forms are posted. M.G.L. c. 62, §§ 3 and 4; c. 111M,
+            // § 2. Line 22 is 5 percent, or 5.85 percent when that rate is elected, rounded once.
+            "/flowKnockoutMaPartYearOrNonresident",
+            "/flowKnockoutMaW2NotMassachusetts",
+            "/flowKnockoutMaOtherFederalIncome",
+            "/flowKnockoutMaDependentsOrQualifyingPerson",
+            "/flowKnockoutMaAgeOrBlind",
+            "/flowKnockoutMaFilingStatus",
+            "/flowKnockoutMaItemizedDeductions",
+            "/flowKnockoutMaTaxTable",
+            "/flowKnockoutMaSurtax",
+            "/flowKnockoutMaEarnedIncomeCredit",
+            "/flowKnockoutMaUseTax",
+            "/flowKnockoutMaNoFullYearMcc",
+            "/flowKnockoutMaRetirementContribution",
+            "/flowKnockoutMaScheduleHcIdentifiers",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
@@ -239,7 +263,11 @@ public final class PrintRefusingKnockouts {
             // that is not the supported nonfarm Form 1065 amount on Schedule SE line 2, a section 199A
             // statement, an out-of-scope estate or trust, Part IV), refuses the print. A REMIC
             // yes (Schedule Q (Form 1066)) refuses through this same path even when the K-1 answer is no.
-            // This list does not gain another Schedule E path. Asked of every filer, not only after Part I.
+            // Nonnegative Form 1065 box 4a (guaranteed payments for services) is line 28 column (k) and may
+            // print. It is not Form 8995 line 1 (26 U.S.C. 199A(c)(4)(B)) and not Form 8960 line 4a
+            // (26 U.S.C. 1411(c)(6)). Box 4b and a box 4a greater than box 14 code A refuse the print through
+            // this same path. This list does not gain another Schedule E path. Asked of every filer, not only
+            // after Part I.
             "/flowKnockoutScheduleEPartII",
             // More than four partnerships or S corporations. 2026 draft Instructions for Schedule E, PDF p. 9: attach
             // a continuation sheet. Lines 29a, 30, and 32 include every entity, and line 28 has only four rows, so

@@ -528,6 +528,22 @@ direct-file:
         configuration-location: pdf/2026/AZ140/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: MA1
+        year: 2026
+        language-code: en
+        location: pdf/2026/MA1/en/2025_form-1.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/MA1/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
+      - name: MAHC
+        year: 2026
+        language-code: en
+        location: pdf/2026/MAHC/en/2025_schedule-hc.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/MAHC/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: DF1099R
         year: 2026
         language-code: es

@@ -482,6 +482,39 @@
     "/writableHasPtcQualifyingPlan": {
       "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
       "item": false
+    },
+    "/maResidencyStatus": {
+      "$type": "gov.irs.factgraph.persisters.EnumWrapper",
+      "item": {
+        "enumOptionsPath": "/maResidencyOptions",
+        "value": [
+          "fullYear"
+        ]
+      }
+    },
+    "/maRentPaid": {
+      "$type": "gov.irs.factgraph.persisters.DollarWrapper",
+      "item": "0.00"
+    },
+    "/maHasUseTax": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/maHasFullYearMcc": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": true
+    },
+    "/maHasRetirementContribution": {
+      "$type": "gov.irs.factgraph.persisters.BooleanWrapper",
+      "item": false
+    },
+    "/maInsurerName": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "Bay State Health"
+    },
+    "/maSubscriberId": {
+      "$type": "gov.irs.factgraph.persisters.StringWrapper",
+      "item": "HC100"
     }
   }
 }

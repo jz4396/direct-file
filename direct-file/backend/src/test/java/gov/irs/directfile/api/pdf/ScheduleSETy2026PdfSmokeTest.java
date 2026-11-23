@@ -521,4 +521,112 @@ class ScheduleSETy2026PdfSmokeTest {
             amount(f1040, "Page2[0].f2_40[0]", 1851, "balance due");
         }
     }
+
+    /**
+     * Golden T (#135). Florida, married filing jointly. Primary W-2 $120,000. Spouse Schedule C $40,000, no expenses.
+     * Form 1099-DIV box 1a $5,000, box 1b $3,000, box 2a $4,000, box 2d $1,000. Estimated payments $8,000. The facts
+     * are {@code golden-profileT-complete.json}. Form 8995 has no MeF mapping, so submission stops. The print path
+     * still fills the forms.
+     *
+     * <p>Spouse Schedule SE: line 4a $36,940, line 10 $4,581, line 11 $1,071, line 12 $5,652, line 13 $2,826. The
+     * spouse has no W-2, so line 8a is blank. QBI is $37,174. Form 8995 line 5 is $7,435 and line 14 is $25,395. Form
+     * 1040 line 13b is $7,435 and line 13a is blank. Taxable income is $126,539. Schedule D line 18 is $1,000, so line
+     * 20 is No and the tax on line 16 is $16,843. Total tax is $22,495. Payments are $22,000. Balance due is $495.
+     */
+    @Test
+    void goldenTPrintsSpouseScheduleCScheduleSeScheduleDScheduleBAndForm8995() throws Exception {
+        byte[] bytes = ScheduleATy2026PdfSmokeTest.generatePublicPrintOf(
+                "submission-blocking/golden-profileT-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sc = fieldsOnPages(doc, "Schedule C (Form 1040) 2026");
+            assertTrue(value(sc, "Page1[0].f1_1[0]").toUpperCase().contains("EDEN"), "Schedule C proprietor");
+            assertEquals("444002014", value(sc, "Page1[0].f1_2[0]").replaceAll("\\D", ""), "Schedule C SSN");
+            assertEquals("Example Studio", value(sc, "Page1[0].f1_5[0]").trim(), "Schedule C business name");
+            amount(sc, "Page1[0].f1_13[0]", 40000, "Schedule C line 1");
+            amount(sc, "Page1[0].f1_19[0]", 40000, "Schedule C line 7");
+            amount(sc, "Page1[0].f1_47[0]", 40000, "Schedule C line 29");
+            amount(sc, "Page1[0].f1_51[0]", 40000, "Schedule C line 31");
+
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertTrue(value(se, "Page1[0].f1_1[0]").toUpperCase().contains("EDEN"), "Schedule SE name");
+            assertEquals("444002014", value(se, "Page1[0].f1_2[0]").replaceAll("\\D", ""), "Schedule SE SSN");
+            amount(se, "Page1[0].f1_5[0]", 40000, "2");
+            amount(se, "Page1[0].f1_7[0]", 36940, "4a");
+            blank(se, "Page1[0].f1_14[0]", "8a (spouse has no W-2)");
+            amount(se, "Page1[0].f1_19[0]", 4581, "10");
+            amount(se, "Page1[0].f1_20[0]", 1071, "11");
+            amount(se, "Page1[0].f1_21[0]", 5652, "12");
+            amount(se, "Page1[0].f1_22[0]", 2826, "13");
+
+            Map<String, String> sd = fieldsOnPages(doc, "Schedule D (Form 1040) 2026");
+            amount(sd, "Page1[0].f1_41[0]", 4000, "Schedule D line 13");
+            amount(sd, "Page1[0].f1_43[0]", 4000, "Schedule D line 15");
+            amount(sd, "Page2[0].f2_1[0]", 4000, "Schedule D line 16");
+            amount(sd, "Page2[0].f2_2[0]", 1000, "Schedule D line 18");
+            blank(sd, "Page2[0].f2_3[0]", "Schedule D line 19");
+            assertTrue(Ty2026PdfPackageTest.checked(sd, "Page2[0].c2_1[0]"), "Schedule D line 17 Yes");
+            assertFalse(Ty2026PdfPackageTest.checked(sd, "Page2[0].c2_1[1]"), "Schedule D line 17 No");
+            assertFalse(Ty2026PdfPackageTest.checked(sd, "Page2[0].c2_2[0]"), "Schedule D line 20 Yes");
+            assertTrue(Ty2026PdfPackageTest.checked(sd, "Page2[0].c2_2[1]"), "Schedule D line 20 No");
+
+            Map<String, String> sb = fieldsOnPages(doc, "Schedule B (Form 1040) 2026");
+            // Part II row 0 sits under ReadOrderControl, so the payer name does not end with Page1[0].f1_34.
+            assertEquals("Example Dividend Fund", value(sb, "f1_34[0]").trim(), "Schedule B payer");
+            amount(sb, "f1_35[0]", 5000, "Schedule B line 5");
+            amount(sb, "f1_64[0]", 5000, "Schedule B line 6");
+            assertFalse(Ty2026PdfPackageTest.checked(sb, "c1_1[0]"), "Schedule B line 7a Yes");
+            assertTrue(Ty2026PdfPackageTest.checked(sb, "c1_1[1]"), "Schedule B line 7a No");
+
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "Page1[0].f1_07[0]", 40000, "Schedule 1 line 3");
+            amount(s1, "Page2[0].f2_05[0]", 2826, "Schedule 1 line 15");
+            Map<String, String> s2 = fieldsOnPages(doc, "Schedule 2 (Form 1040) 2026");
+            amount(s2, "Page1[0].f1_15[0]", 5652, "Schedule 2 line 4");
+
+            Map<String, String> f8995 = fieldsOnPages(doc, "Form 8995 (2026)");
+            assertEquals("Example Studio", value(f8995, "Table[0].Row1i[0].f1_3[0]").trim(), "Form 8995 name");
+            amount(f8995, "Table[0].Row1i[0].f1_5[0]", 37174, "Form 8995 line 1(i)(c)");
+            amount(f8995, "Page1[0].f1_18[0]", 37174, "line 2");
+            amount(f8995, "Page1[0].f1_21[0]", 7435, "line 5");
+            amount(f8995, "Page1[0].f1_27[0]", 133974, "line 11");
+            amount(f8995, "Page1[0].f1_28[0]", 7000, "line 12");
+            amount(f8995, "Page1[0].f1_30[0]", 25395, "line 14");
+            amount(f8995, "Page1[0].f1_32[0]", 400, "line 16");
+            amount(f8995, "Page1[0].f1_33[0]", 7435, "line 17");
+
+            Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
+            assertTrue(value(f1040, "Page1[0].f1_14[0]").toUpperCase().contains("WREN"), "Form 1040 first name");
+            assertTrue(value(f1040, "Page1[0].f1_17[0]").toUpperCase().contains("EDEN"), "Form 1040 spouse");
+            amount(f1040, "Page1[0].f1_47[0]", 120000, "line 1a");
+            amount(f1040, "Page1[0].f1_60[0]", 3000, "line 3a");
+            amount(f1040, "Page1[0].f1_61[0]", 5000, "line 3b");
+            amount(f1040, "Page1[0].f1_70[0]", 4000, "line 7a");
+            amount(f1040, "Page1[0].f1_73[0]", 169000, "line 9");
+            amount(f1040, "Page1[0].f1_74[0]", 2826, "line 10");
+            amount(f1040, "Page1[0].f1_75[0]", 166174, "line 11a");
+            amount(f1040, "Page2[0].f2_02[0]", 32200, "line 12e");
+            blank(f1040, "Page2[0].f2_04[0]", "line 13a");
+            amount(f1040, "Page2[0].f2_05[0]", 7435, "line 13b");
+            amount(f1040, "Page2[0].f2_06[0]", 39635, "line 14");
+            amount(f1040, "Page2[0].f2_07[0]", 126539, "line 15");
+            amount(f1040, "Page2[0].f2_09[0]", 16843, "line 16");
+            amount(f1040, "Page2[0].f2_16[0]", 5652, "line 23");
+            amount(f1040, "Page2[0].f2_17[0]", 22495, "line 24a");
+            // Line 25a sits under Line25_ReadOrder, so the name does not end with Page2[0].f2_20.
+            amount(f1040, "f2_20[0]", 14000, "line 25a");
+            amount(f1040, "Page2[0].f2_24[0]", 8000, "line 26");
+            amount(f1040, "Page2[0].f2_34[0]", 22000, "line 33");
+            blank(f1040, "Page2[0].f2_35[0]", "line 34");
+            amount(f1040, "Page2[0].f2_40[0]", 495, "line 37");
+
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("Form 6251 (2026)"), "no Form 6251");
+            assertFalse(text.contains("Form 8959 (2026)"), "no Form 8959");
+            assertFalse(text.contains("Form 8960 (2026)"), "no Form 8960");
+            assertFalse(text.contains("SCHEDULE A (Form 1040) 2026"), "no Schedule A");
+            assertFalse(
+                    PaPit40ScheduleSpTy2026PdfSmokeTest.pageWith(doc, PaPit40ScheduleSpTy2026PdfSmokeTest.PA40_PAGE1),
+                    "no PA-40");
+        }
+    }
 }

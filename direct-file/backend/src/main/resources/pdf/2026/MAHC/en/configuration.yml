@@ -1,0 +1,39 @@
+# #93 slice 6: Massachusetts Schedule HC. YEAR-BASED MAPPING: 2025 SCHEDULE AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# Enclosed with every supported full-year resident Form 1. Part 2 marks full-year minimum creditable coverage.
+# Source: https://www.mass.gov/doc/2025-schedule-hc-health-care-information/download
+# SHA-256 3f4f6f04e4a82de0b938a0d7e780039730cb60a41561f788aa515c638eabb970
+# MaHcPdfForm fills the ~maHc* pseudo-facts (name, dates of birth, family size, full-year MCC, private insurance).
+includeWhen: /stateReturnIsMa
+otherRequiredFacts:
+  - /isFilingStatusMFJ
+  - /filingStatus
+  - /primaryFiler/firstName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/lastName
+  - /primaryFiler/tin
+  - /primaryFiler/dateOfBirth
+  - /secondaryFiler/dateOfBirth
+  - /maHasFullYearMcc
+  - /maSpouseHasFullYearMcc
+  - /agi
+  - /maInsurerName
+  - /maSubscriberId
+  - /maSpouseInsurerName
+  - /maSpouseSubscriberId
+form:
+  'Taxpayer''s First Name': ~maHcFirst
+  'Taxpayer''s Middle Initial': ~maHcMiddle
+  'Taxpayer''s Last Name': ~maHcLast
+  'Taxpayer''s Social Security Number': /primaryFiler/tin
+  'Line 1a. Date of Birth': ~maHcDob
+  'Line 1b. Spouse’s date of birth': ~maHcSpouseDob
+  'line 1c. Family size. See instructions': ~maHcFamilySize
+  'Line 2. Federal adjusted gross income (required information; from U.S. Form 1040, line 11a). If married filing separately, see instructions': /agi
+  '3a. Indicate the time period that you were enrolled in a Minimum Creditable Coverage (MCC) health insurance plan(s). See Form MA 1099-HC from your insurer or Schedule HC instructions': ~maHcMcc
+  '3b. Indicate the time period that your spouse was enrolled in a Minimum Creditable Coverage (MCC) health insurance plan(s). See Form MA 1099-HC from your insurer or Schedule HC instructions': ~maHcSpouseMcc
+  '4a. Private insurance including ConnectorCare': ~maHcPrivate
+  '4a. Spouse Private insurance including ConnectorCare': ~maHcSpousePrivate
+  '4f line 1. Name of private insurance company, administrator or other government program (from box 1 of form ma 1099-hc)': /maInsurerName
+  '4f line 1a. Subscriber number (from form ma 1099-hc) note: if you were not issued form ma 1099-hc, enter the identification number from your health insurance card': /maSubscriberId
+  '4g Line 1. Name of private insurance company, administrator or other government program for spouse (from box 1 of form ma 1099-hc)': /maSpouseInsurerName
+  '4g Line 1a. Subscriber number (from form ma 1099-hc) note: if you were not issued form ma 1099-hc, enter the identification number from your health insurance card': /maSpouseSubscriberId

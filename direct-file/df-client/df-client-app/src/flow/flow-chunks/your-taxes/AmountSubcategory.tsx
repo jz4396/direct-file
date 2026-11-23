@@ -182,6 +182,16 @@ export const AmountSubcategory = (
         <DFAlert i18nKey='/info/knockout/pa-k1-part-ii-capital-gain' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
+      <Screen
+        route='pa-k1-guaranteed-payments-knockout'
+        condition='/flowKnockoutPaK1GuaranteedPayments'
+        isKnockout={true}
+      >
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/pa-k1-guaranteed-payments' />
+        <DFAlert i18nKey='/info/knockout/pa-k1-guaranteed-payments' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
       <Screen route='pa-k1-1041-capital-gain-knockout' condition='/flowKnockoutPaK11041CapitalGain' isKnockout={true}>
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/pa-k1-1041-capital-gain' />
@@ -568,6 +578,153 @@ export const AmountSubcategory = (
         <IconDisplay name='ErrorOutline' size={9} isCentered />
         <Heading i18nKey='/heading/knockout/az-filing-status' />
         <DFAlert i18nKey='/info/knockout/az-filing-status' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
+    {/* #93 slice 6: full-year Massachusetts resident, W-2 wages only. No local return. */}
+    <SubSubcategory route='ma-form-1'>
+      <Screen route='ma-residency' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-residency' />
+        <Enum path='/maResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-part-year-knockout' condition='/flowKnockoutMaPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-part-year' />
+        <DFAlert i18nKey='/info/knockout/ma-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-w2-knockout' condition='/flowKnockoutMaW2NotMassachusetts' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-w2' />
+        <DFAlert i18nKey='/info/knockout/ma-w2' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-other-income-knockout' condition='/flowKnockoutMaOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-other-income' />
+        <DFAlert i18nKey='/info/knockout/ma-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-dependents-knockout' condition='/flowKnockoutMaDependentsOrQualifyingPerson' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-dependents' />
+        <DFAlert i18nKey='/info/knockout/ma-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-age-blind-knockout' condition='/flowKnockoutMaAgeOrBlind' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-age-blind' />
+        <DFAlert i18nKey='/info/knockout/ma-age-blind' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-filing-status-knockout' condition='/flowKnockoutMaFilingStatus' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-filing-status' />
+        <DFAlert i18nKey='/info/knockout/ma-filing-status' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-itemized-knockout' condition='/flowKnockoutMaItemizedDeductions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-itemized' />
+        <DFAlert i18nKey='/info/knockout/ma-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-use-tax' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-use-tax' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-use-tax' />
+        <Boolean path='/maHasUseTax' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-use-tax-knockout' condition='/flowKnockoutMaUseTax' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-use-tax' />
+        <DFAlert i18nKey='/info/knockout/ma-use-tax' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-rent' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-rent' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-rent' />
+        <Dollar path='/maRentPaid' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-optional-rate' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-optional-rate' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-optional-rate' />
+        <Boolean path='/maElectsOptionalRate' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-mcc' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-mcc' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-mcc' />
+        <Boolean path='/maHasFullYearMcc' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-spouse-mcc' condition='/maAskSpouse'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-spouse-mcc' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-spouse-mcc' />
+        <Boolean path='/maSpouseHasFullYearMcc' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-mcc-knockout' condition='/flowKnockoutMaNoFullYearMcc' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-mcc' />
+        <DFAlert i18nKey='/info/knockout/ma-mcc' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-retirement' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-retirement' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-retirement' />
+        <Boolean path='/maHasRetirementContribution' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-retirement-knockout' condition='/flowKnockoutMaRetirementContribution' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-retirement' />
+        <DFAlert i18nKey='/info/knockout/ma-retirement' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-insurer' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-insurer' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-insurer' />
+        <GenericString path='/maInsurerName' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-subscriber' condition='/stateReturnIsMa'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-subscriber' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-subscriber' />
+        <GenericString path='/maSubscriberId' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-spouse-insurer' condition='/maAskSpouse'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-spouse-insurer' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-spouse-insurer' />
+        <GenericString path='/maSpouseInsurerName' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-spouse-subscriber' condition='/maAskSpouse'>
+        <Heading i18nKey='/heading/your-taxes/amount/ma-spouse-subscriber' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ma-spouse-subscriber' />
+        <GenericString path='/maSpouseSubscriberId' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ma-tax-table-knockout' condition='/flowKnockoutMaTaxTable' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-tax-table' />
+        <DFAlert i18nKey='/info/knockout/ma-tax-table' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-surtax-knockout' condition='/flowKnockoutMaSurtax' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-surtax' />
+        <DFAlert i18nKey='/info/knockout/ma-surtax' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ma-eitc-knockout' condition='/flowKnockoutMaEarnedIncomeCredit' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ma-eitc' />
+        <DFAlert i18nKey='/info/knockout/ma-eitc' headingLevel='h3' type='warning' />
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>

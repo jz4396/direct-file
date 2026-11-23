@@ -137,7 +137,10 @@ abstract class PdfTemplate {
             // #93 slice 4: Form D-400. No local return. 2025 web-fill is the interim template.
             new NcD400PdfForm("NCD400"),
             // #93 slice 5: Form 140. No local return. 2025 ADOR form is the interim template.
-            new Az140PdfForm("AZ140"));
+            new Az140PdfForm("AZ140"),
+            // #93 slice 6: Form 1 and Schedule HC. No local return. 2025 DOR forms are the interim templates.
+            new Ma1PdfForm("MA1"),
+            new MaHcPdfForm("MAHC"));
 
     protected PdfTemplate(
             final String templateName, final boolean shouldRemoveTinDashes, final boolean shouldRoundCurrency) {

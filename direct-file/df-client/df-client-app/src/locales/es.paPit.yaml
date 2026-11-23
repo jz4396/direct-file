@@ -89,10 +89,13 @@ headings:
   /heading/knockout/pa-k1-part-ii-capital-gain:
     Esta herramienta aún no admite la ganancia de capital de una sociedad o sociedad anónima de tipo S en una
     declaración de Pensilvania
+  /heading/knockout/pa-k1-guaranteed-payments:
+    Esta herramienta aún no admite pagos garantizados por servicios en una declaración de Pensilvania
   /heading/knockout/pa-k1-1041-capital-gain:
     Esta herramienta aún no admite la ganancia de capital de un caudal o fideicomiso en una declaración de Pensilvania
   /heading/knockout/pa-k1-1041-box-7:
-    Esta herramienta aún no admite el ingreso de alquiler de bienes raíces de un caudal o fideicomiso en una declaración de Pensilvania
+    Esta herramienta aún no admite el ingreso de alquiler de bienes raíces de un caudal o fideicomiso en una declaración
+    de Pensilvania
 info:
   /info/your-taxes/amount/pa-exempt-obligation-dividends:
     body:
@@ -298,9 +301,9 @@ info:
     alertText:
       body:
         - p:
-            Su declaración de Pensilvania necesita el Anexo B de PA para un importe que esta herramienta no incluye en el
-            anexo. Esto incluye distribuciones de ganancias de capital en una declaración conjunta o de residente parte
-            del año, dividendos de fondos provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que
+            Su declaración de Pensilvania necesita el Anexo B de PA para un importe que esta herramienta no incluye en
+            el anexo. Esto incluye distribuciones de ganancias de capital en una declaración conjunta o de residente
+            parte del año, dividendos de fondos provenientes de obligaciones de EE. UU. o de Pensilvania, dividendos que
             recibió como nominatario, o dividendos ordinarios que recibió mientras vivía fuera de Pensilvania.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
@@ -328,14 +331,25 @@ info:
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:
         Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
+  /info/knockout/pa-k1-guaranteed-payments:
+    alertText:
+      body:
+        - p:
+            La casilla 4a del Formulario 1065 son pagos garantizados por servicios. En una declaración federal esa
+            cantidad va en la columna (k) de la línea 28 del Anexo E. En el PA-40 no se copia de esa línea federal.
+            Pensilvania usa el Anexo RK-1 de PA. Esta herramienta aún no completa ese RK-1.
+        - p: Aún puede presentar su declaración federal aquí.
+        - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
+      urls:
+        Link1: https://www.pa.gov/agencies/revenue/forms-and-publications/pa-personal-income-tax-guide.html
   /info/knockout/pa-k1-1041-capital-gain:
     alertText:
       body:
         - p:
             La casilla 3 o la casilla 4a del Anexo K-1 (Formulario 1041) es ingreso de un caudal hereditario o
-            fideicomiso. En el PA-40 esa cantidad se declara en la línea 7, Ingreso de caudal hereditario o
-            fideicomiso, con el Anexo J de PA y el Anexo RK-1 del PA-41. No es la línea 5 del PA-40. Un beneficiario
-            no puede declarar una pérdida. Esta herramienta aún no completa el Anexo J de PA.
+            fideicomiso. En el PA-40 esa cantidad se declara en la línea 7, Ingreso de caudal hereditario o fideicomiso,
+            con el Anexo J de PA y el Anexo RK-1 del PA-41. No es la línea 5 del PA-40. Un beneficiario no puede
+            declarar una pérdida. Esta herramienta aún no completa el Anexo J de PA.
         - p: Aún puede presentar su declaración federal aquí.
         - p: <Link1>Encuentre otras maneras de presentar su declaración de Pensilvania.</Link1>
       urls:

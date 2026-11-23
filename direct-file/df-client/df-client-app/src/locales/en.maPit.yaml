@@ -1,0 +1,131 @@
+# Massachusetts Form 1 strings (#93 slice 6). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    ma-form-1: Massachusetts return
+dataviews:
+  /flow/your-taxes/amount:
+    /maResidencyStatus: Where you lived for your Massachusetts return
+    /maHasUseTax: Massachusetts use tax
+    /maRentPaid: Qualified rent paid in Massachusetts
+    /maElectsOptionalRate: Optional 5.85% Massachusetts tax rate
+    /maHasFullYearMcc: Full-year minimum creditable coverage
+    /maSpouseHasFullYearMcc: Spouse full-year minimum creditable coverage
+    /maHasRetirementContribution: Massachusetts retirement contribution in box 14
+    /maInsurerName: Health insurer
+    /maSubscriberId: Subscriber or member number
+    /maSpouseInsurerName: Spouse's health insurer
+    /maSpouseSubscriberId: Spouse's subscriber or member number
+fields:
+  /maResidencyOptions:
+    fullYear: I lived in Massachusetts all year
+    partYear: I lived in Massachusetts for part of the year
+    nonresident: I did not live in Massachusetts
+  /maRentPaid:
+    name: Qualified rent you paid for your principal residence in Massachusetts
+  /maInsurerName:
+    name: Name of your health insurer, from Form MA 1099-HC
+  /maSubscriberId:
+    name: Your subscriber or member number
+  /maSpouseInsurerName:
+    name: Name of your spouse's health insurer, from Form MA 1099-HC
+  /maSpouseSubscriberId:
+    name: Your spouse's subscriber or member number
+headings:
+  /heading/your-taxes/amount/ma-residency: Which of these describes your Massachusetts return?
+  /heading/your-taxes/amount/ma-use-tax: Do you owe Massachusetts use tax?
+  /heading/your-taxes/amount/ma-rent: How much qualified rent did you pay in Massachusetts?
+  /heading/your-taxes/amount/ma-optional-rate: Do you want to pay Massachusetts tax at 5.85%?
+  /heading/your-taxes/amount/ma-mcc: Did you have minimum creditable coverage for all 12 months?
+  /heading/your-taxes/amount/ma-spouse-mcc: Did your spouse have minimum creditable coverage for all 12 months?
+  /heading/your-taxes/amount/ma-retirement: Does any W-2 box 14 include a Massachusetts retirement contribution?
+  /heading/your-taxes/amount/ma-insurer: What is the name of your health insurer?
+  /heading/your-taxes/amount/ma-subscriber: What is your subscriber or member number?
+  /heading/your-taxes/amount/ma-spouse-insurer: What is the name of your spouse's health insurer?
+  /heading/your-taxes/amount/ma-spouse-subscriber: What is your spouse's subscriber or member number?
+  /heading/knockout/ma-part-year: This tool doesn’t yet support a Massachusetts part-year or nonresident return
+  /heading/knockout/ma-w2: This tool doesn’t yet support a W-2 from a state other than Massachusetts
+  /heading/knockout/ma-other-income: This tool doesn’t yet support Massachusetts returns with income other than W-2 wages
+  /heading/knockout/ma-dependents: This tool doesn’t yet support dependents on a Massachusetts return
+  /heading/knockout/ma-age-blind: This tool doesn’t yet support a Massachusetts return for someone who is 65 or older or blind
+  /heading/knockout/ma-filing-status: This tool doesn’t yet support this Massachusetts filing status
+  /heading/knockout/ma-itemized: This tool doesn’t yet support Massachusetts returns that itemize
+  /heading/knockout/ma-use-tax: This tool doesn’t yet support Massachusetts use tax
+  /heading/knockout/ma-mcc: This tool doesn’t yet support a Massachusetts return without full-year health coverage
+  /heading/knockout/ma-retirement: This tool doesn’t yet support a Massachusetts retirement contribution in box 14
+  /heading/knockout/ma-tax-table: This tool doesn’t yet support this Massachusetts tax
+  /heading/knockout/ma-surtax: This tool doesn’t yet support the Massachusetts 4% surtax
+  /heading/knockout/ma-eitc: This tool doesn’t yet support the Massachusetts earned income credit
+info:
+  /info/your-taxes/amount/ma-residency:
+    body:
+      A full year means you, and your spouse if you file jointly, lived in Massachusetts all year. That is Form 1.
+      Part-year residents and nonresidents use Form 1-NR/PY.
+  /info/your-taxes/amount/ma-use-tax:
+    body: Line 34 is use tax on internet, mail order, and other out-of-state purchases. If you owe any, this tool cannot prepare the return.
+  /info/your-taxes/amount/ma-rent:
+    body:
+      This is line 14a. The deduction is half of that rent, up to $4,000. Enter 0 if you did not pay qualified rent
+      for your principal residence in Massachusetts.
+  /info/your-taxes/amount/ma-optional-rate:
+    body:
+      Form 1 lets you choose to pay 5.85% instead of 5% on the income taxed at 5%. No is the usual answer. Yes fills
+      the oval on line 22.
+  /info/your-taxes/amount/ma-mcc:
+    body:
+      Schedule HC asks whether you had minimum creditable coverage for each of the 12 months. Use Form MA 1099-HC
+      from your insurer.
+  /info/your-taxes/amount/ma-spouse-mcc:
+    body: A joint return asks the same question about your spouse.
+  /info/your-taxes/amount/ma-retirement:
+    body:
+      Lines 11a and 11b use Social Security and Medicare tax from boxes 4 and 6, up to $2,000. A Massachusetts
+      retirement contribution in box 14 changes that deduction.
+  /info/your-taxes/amount/ma-insurer:
+    body: Schedule HC prints the insurer name from box 1 of Form MA 1099-HC.
+  /info/your-taxes/amount/ma-subscriber:
+    body: Schedule HC prints the subscriber number from Form MA 1099-HC, or the number on your health insurance card.
+  /info/your-taxes/amount/ma-spouse-insurer:
+    body: A joint return prints your spouse's insurer on Schedule HC.
+  /info/your-taxes/amount/ma-spouse-subscriber:
+    body: A joint return prints your spouse's subscriber number on Schedule HC.
+  /info/knockout/ma-part-year:
+    alertText: Massachusetts part-year and nonresident returns are not supported yet
+    body: Those returns use Form 1-NR/PY, which this tool does not calculate.
+  /info/knockout/ma-w2:
+    alertText: A W-2 from another state is not supported on this Massachusetts return
+    body: Box 15 has to be Massachusetts, or blank. Withholding counts only when box 15 is Massachusetts.
+  /info/knockout/ma-other-income:
+    alertText: This Massachusetts return can include W-2 wages only
+    body: Massachusetts bank interest, Schedule B, retirement, Social Security, business, rental, and other income are not supported.
+  /info/knockout/ma-dependents:
+    alertText: Dependents are not supported on this Massachusetts return
+    body: The dependent exemption and the credits that follow from it are not calculated.
+  /info/knockout/ma-age-blind:
+    alertText: Age 65 or blindness is not supported on this Massachusetts return
+    body: The exemptions on lines 2c and 2d are not calculated.
+  /info/knockout/ma-filing-status:
+    alertText: This filing status is not supported on a Massachusetts return yet
+    body: This tool prepares Form 1 for single filers and for a joint return when both spouses lived in Massachusetts all year.
+  /info/knockout/ma-itemized:
+    alertText: Itemized deductions are not supported on this Massachusetts return
+    body: Line 2e, the medical and dental amount from U.S. Schedule A, is not calculated.
+  /info/knockout/ma-use-tax:
+    alertText: Massachusetts use tax is not supported yet
+    body: Line 34 is not calculated.
+  /info/knockout/ma-mcc:
+    alertText: A return without full-year health coverage is not supported yet
+    body: The Schedule HC penalty worksheet is not calculated.
+  /info/knockout/ma-retirement:
+    alertText: A Massachusetts retirement contribution in box 14 is not supported yet
+    body: That amount changes the deduction on lines 11a and 11b.
+  /info/knockout/ma-tax-table:
+    alertText: This Massachusetts tax is not supported yet
+    body:
+      When line 21 is less than $24,000, the tax comes from the tax table. No Tax Status and the Limited Income Credit
+      are in that range, and they are not calculated.
+  /info/knockout/ma-surtax:
+    alertText: The Massachusetts 4% surtax is not supported yet
+    body: The surtax applies to taxable income over $1,000,000, adjusted for inflation. This return stops above $1,000,000.
+  /info/knockout/ma-eitc:
+    alertText: The Massachusetts earned income credit is not supported yet
+    body: A federal earned income credit greater than zero is not calculated on Form 1.
