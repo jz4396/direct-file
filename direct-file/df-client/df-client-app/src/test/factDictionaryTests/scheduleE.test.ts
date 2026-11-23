@@ -4,6 +4,7 @@ import {
   createCollectionWrapper,
   createDayWrapper,
   createDollarWrapper,
+  createEinWrapper,
   createEnumWrapper,
   createStringWrapper,
   createTinWrapper,
@@ -2625,5 +2626,244 @@ describe(`Schedule K-1 (Form 1065) box 4a guaranteed payments for services`, () 
     expect(money(g, `/scheduleEK1s/#${sCorpId}/columnK`)).toBe(`12000.00`);
     expect(get(g, `/scheduleEK1s/#${sCorpId}/isSupportedOrdinaryIncome`).get).toBe(true);
     expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+  });
+});
+
+/**
+ * Form 1120-S box 17 code V on Form 8995 line 1. 26 U.S.C. 199A(a), (b)(2), (c)(1). The 2025 instructions
+ * (Who Can Take the Deduction) still print the 2025 threshold. This return uses /qbiThresholdAmount.
+ */
+const box17vStatement = (qbi = `40000`, extra: Record<string, unknown> = {}) => ({
+  [`/scheduleEK1s/#${sCorpId}/hasQbiStatement`]: createBooleanWrapper(true),
+  [`/scheduleEK1s/#${sCorpId}/employerIdentificationNumber`]: createEinWrapper(`12`, `3456789`),
+  [`/scheduleEK1s/#${sCorpId}/form1120SBox17VQbi`]: createDollarWrapper(qbi),
+  [`/scheduleEK1s/#${sCorpId}/form1120SBox17VMoreThanOneTrade`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${sCorpId}/form1120SBox17VAggregationElection`]: createBooleanWrapper(false),
+  [`/scheduleEK1s/#${sCorpId}/form1120SBox17VQualifiedReitDividends`]: createDollarWrapper(`0`),
+  [`/scheduleEK1s/#${sCorpId}/form1120SBox17VQualifiedPtpIncome`]: createDollarWrapper(`0`),
+  ...extra,
+});
+const box17vFacts = (
+  wages: number,
+  statement: Record<string, unknown> | null = box17vStatement(),
+  extra: Record<string, unknown> = {}
+) => {
+  const minimal = Object.fromEntries(
+    Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+  );
+  return {
+    ...minimal,
+    ...baseFilerData,
+    ...singleFilerData,
+    [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+    '/flowHasSeenDeductions': createBooleanWrapper(true),
+    ...makeW2Data(wages),
+    [`/formW2s/#${w2Id}/writableFederalWithholding`]: createDollarWrapper(`12000`),
+    [`/formW2s/#${w2Id}/writableOasdiWages`]: createDollarWrapper(`${wages}`),
+    [`/formW2s/#${w2Id}/writableMedicareWages`]: createDollarWrapper(`${wages}`),
+    '/interestReports': createCollectionWrapper([]),
+    '/hadSelfEmploymentIncome': createBooleanWrapper(false),
+    '/hadFarmSelfEmploymentIncome': createBooleanWrapper(false),
+    '/hadChurchEmployeeIncome': createBooleanWrapper(false),
+    '/usesSeOptionalMethod': createBooleanWrapper(false),
+    '/hasMinisterOrSeExemption': createBooleanWrapper(false),
+    '/hasNotarySeExclusion': createBooleanWrapper(false),
+    '/hadForm8919Wages': createBooleanWrapper(false),
+    '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+    '/qbiIsCooperativePatron': createBooleanWrapper(false),
+    ...residence(`fl`),
+    ...oneK1(`S`, {
+      [`/scheduleEK1s/#${sCorpId}/box1`]: createDollarWrapper(`40000`),
+      ...(statement ?? {}),
+    }),
+    ...extra,
+  };
+};
+const box17vGraph = (
+  wages = 60000,
+  statement: Record<string, unknown> | null = box17vStatement(),
+  extra: Record<string, unknown> = {}
+) => setupFactGraph(box17vFacts(wages, statement, extra)).factGraph;
+
+describe(`Schedule K-1 (Form 1120-S) box 17 code V on Form 8995`, () => {
+  it(`puts a matching code V statement on Form 8995 line 1 under the threshold`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1120SBox17VQbi`,
+      `/scheduleEK1s/*/form1120SBox17VSupported`,
+      `/scheduleEK1s/*/box17VQbiForForm8995`,
+      `/scheduleEK1Box17VQbiTotal`,
+      `/scheduleEHasSupportedBox17VQbi`,
+      `/form8995Line1iName`,
+      `/form8995Line1iTin`,
+      `/form8995Line1iQbi`,
+      `/form8995Line2`,
+      `/form8995Line5`,
+      `/form8995Line11`,
+      `/form8995Line12`,
+      `/form8995Line13`,
+      `/form8995Line14`,
+      `/form8995Line15`,
+      `/form8995Line16`,
+      `/form8995Line17`,
+      `/qualifiedBusinessIncomeDeduction`,
+      `/scheduleEPartIILine28AColumnK`,
+      `/scheduleEPartIILine32`,
+      `/scheduleELine41`,
+      `/agi`,
+      `/standardDeduction`,
+      `/taxableIncome`,
+      `/roundedTaxableIncome`,
+      `/taxOnTaxableIncomeRegularRates`,
+      `/totalTax`,
+      `/overpayment`,
+      `/primaryFilerSeTaxApplies`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowKnockoutScheduleEPartIIQbiCode`,
+      `/flowKnockoutQbiAboveThreshold`,
+      `/flowKnockoutForm8995WithoutTy2026Template`,
+    ];
+    // Single. W-2 $60,000, box 2 $12,000. One S corporation, material participation, box 1 $40,000, code V
+    // QBI $40,000. Rev. Proc. 2025-32 §4.14 standard deduction $16,100. Tax table midpoint $75,925:
+    // 5,800 + 22% x 25,525 = $11,416. The 2026 draft line 16 minimum is $400; line 17 stays $8,000.
+    const g = box17vGraph();
+    const k1Path = `/scheduleEK1s/#${sCorpId}`;
+    expect(get(g, `${k1Path}/form1120SBox17VSupported`).get).toBe(true);
+    expect(get(g, `${k1Path}/qbiStatementStops`).get).toBe(false);
+    expect(get(g, `${k1Path}/isSupportedOrdinaryIncome`).get).toBe(true);
+    expect(money(g, `${k1Path}/columnK`)).toBe(`40000.00`);
+    expect(money(g, `/scheduleEPartIILine28AColumnK`)).toBe(`40000.00`);
+    expect(money(g, `/scheduleEPartIILine29aColumnK`)).toBe(`40000.00`);
+    expect(money(g, `/scheduleEPartIILine32`)).toBe(`40000.00`);
+    expect(money(g, `/scheduleELine41`)).toBe(`40000.00`);
+    expect(get(g, `/primaryFilerSeTaxApplies`).get).toBe(false);
+    expect(money(g, `/selfEmploymentTax`)).toBe(`0.00`);
+    expect(money(g, `/agi`)).toBe(`100000.00`);
+    expect(money(g, `/standardDeduction`)).toBe(`16100.00`);
+    expect(money(g, `/form8995Line11`)).toBe(`83900.00`);
+    expect(get(g, `/form8995Line1iName`).get.toString()).toBe(`Northwind Inc`);
+    expect(get(g, `/form8995Line1iTin`).get.toString()).toBe(`12-3456789`);
+    expect(money(g, `/form8995Line1iQbi`)).toBe(`40000.00`);
+    expect(get(g, `/form8995Line1iiQbi`).complete).toBe(false);
+    expect(money(g, `/form8995Line2`)).toBe(`40000.00`);
+    expect(money(g, `/form8995Line5`)).toBe(`8000.00`);
+    expect(money(g, `/form8995Line12`)).toBe(`0.00`);
+    expect(money(g, `/form8995Line13`)).toBe(`83900.00`);
+    expect(money(g, `/form8995Line14`)).toBe(`16780.00`);
+    expect(money(g, `/form8995Line15`)).toBe(`8000.00`);
+    expect(money(g, `/form8995Line16`)).toBe(`400.00`);
+    expect(money(g, `/form8995Line17`)).toBe(`8000.00`);
+    expect(money(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`8000.00`);
+    expect(money(g, `/taxableIncome`)).toBe(`75900.00`);
+    expect(money(g, `/roundedTaxableIncome`)).toBe(`75925.00`);
+    expect(money(g, `/taxOnTaxableIncomeRegularRates`)).toBe(`11416.00`);
+    expect(money(g, `/totalTax`)).toBe(`11416.00`);
+    expect(money(g, `/overpayment`)).toBe(`584.00`);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIQbiCode`).get).toBe(false);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).get).toBe(false);
+    expect(get(g, `/flowKnockoutQbiPriorYearCarryforward`).get).toBe(false);
+    expect(get(g, `/flowKnockoutQbiCooperativePatron`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm8995WithoutTy2026Template`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`does not take the deduction when box 17 code V is absent`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/form8995Line15`,
+      `/form8995Required`,
+      `/qualifiedBusinessIncomeDeduction`,
+      `/taxableIncome`,
+      `/flowKnockoutScheduleEPartIIQbiCode`,
+    ];
+    const g = box17vGraph(60000, null);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/form1120SBox17VSupported`).get).toBe(false);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/qbiStatementStops`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIQbiCode`).get).toBe(false);
+    expect(get(g, `/form8995Required`).get).toBe(false);
+    expect(money(g, `/form8995Line15`)).toBe(`0.00`);
+    expect(money(g, `/qualifiedBusinessIncomeDeduction`)).toBe(`0.00`);
+    expect(money(g, `/taxableIncome`)).toBe(`83900.00`);
+    expect(money(g, `/overpayment`)).not.toBe(`584.00`);
+  });
+
+  it(`stops when statement QBI does not equal box 1`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/qbiStatementStops`,
+      `/flowKnockoutScheduleEPartIIQbiCode`,
+      `/flowIsKnockedOut`,
+    ];
+    const g = box17vGraph(60000, box17vStatement(`39000`));
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/form1120SBox17VSupported`).get).toBe(false);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/qbiStatementStops`).get).toBe(true);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/isComplete`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIQbiCode`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`stops when taxable income before the deduction is above the Form 8995 threshold`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutQbiAboveThreshold`, `/form8995Line11`, `/qbiThresholdAmount`];
+    // W-2 $180,000 plus box 1 $40,000, standard deduction $16,100. Line 11 is $203,900, above $201,750.
+    const g = box17vGraph(180000);
+    expect(get(g, `/scheduleEK1s/#${sCorpId}/form1120SBox17VSupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIQbiCode`).get).toBe(false);
+    expect(money(g, `/form8995Line11`)).toBe(`203900.00`);
+    expect(money(g, `/qbiThresholdAmount`)).toBe(`201750.00`);
+    expect(get(g, `/flowKnockoutQbiAboveThreshold`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`still stops Form 1065 box 20 code Z without the S corporation statement facts`, ({ task }) => {
+    task.meta.testedFactPaths = [`/scheduleEK1s/*/qbiStatementStops`, `/flowKnockoutScheduleEPartIIQbiCode`];
+    const g = fg(
+      oneK1(`P`, {
+        [`/scheduleEK1s/#${partnershipId}/hasQbiStatement`]: createBooleanWrapper(true),
+      })
+    );
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/form1120SBox17VSupported`).get).toBe(false);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/qbiStatementStops`).get).toBe(true);
+    expect(get(g, `/scheduleEK1s/#${partnershipId}/isComplete`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIQbiCode`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`stops a statement with REIT dividends, an aggregation, more than one trade, or a prior-year loss`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEK1s/*/form1120SBox17VQualifiedReitDividends`,
+      `/scheduleEK1s/*/form1120SBox17VQualifiedPtpIncome`,
+      `/scheduleEK1s/*/form1120SBox17VAggregationElection`,
+      `/scheduleEK1s/*/form1120SBox17VMoreThanOneTrade`,
+      `/flowKnockoutQbiPriorYearCarryforward`,
+      `/flowKnockoutPaUnsupportedIncome`,
+    ];
+    const stops = [
+      box17vStatement(`40000`, {
+        [`/scheduleEK1s/#${sCorpId}/form1120SBox17VQualifiedReitDividends`]: createDollarWrapper(`1`),
+      }),
+      box17vStatement(`40000`, {
+        [`/scheduleEK1s/#${sCorpId}/form1120SBox17VQualifiedPtpIncome`]: createDollarWrapper(`1`),
+      }),
+      box17vStatement(`40000`, {
+        [`/scheduleEK1s/#${sCorpId}/form1120SBox17VAggregationElection`]: createBooleanWrapper(true),
+      }),
+      box17vStatement(`40000`, {
+        [`/scheduleEK1s/#${sCorpId}/form1120SBox17VMoreThanOneTrade`]: createBooleanWrapper(true),
+      }),
+      box17vStatement(`-1`),
+    ];
+    for (const statement of stops) {
+      const g = box17vGraph(60000, statement);
+      expect(get(g, `/scheduleEK1s/#${sCorpId}/form1120SBox17VSupported`).get).toBe(false);
+      expect(get(g, `/scheduleEK1s/#${sCorpId}/qbiStatementStops`).get).toBe(true);
+      expect(get(g, `/flowKnockoutScheduleEPartIIQbiCode`).get).toBe(true);
+    }
+    const carry = box17vGraph(60000, box17vStatement(), {
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(true),
+    });
+    expect(get(carry, `/scheduleEK1s/#${sCorpId}/form1120SBox17VSupported`).get).toBe(true);
+    expect(get(carry, `/flowKnockoutQbiPriorYearCarryforward`).get).toBe(true);
+    const pa = box17vGraph(60000, box17vStatement(), residence(`pa`));
+    expect(get(pa, `/flowKnockoutPaUnsupportedIncome`).get).toBe(true);
+    expect(get(pa, `/flowIsKnockedOut`).get).toBe(true);
   });
 });

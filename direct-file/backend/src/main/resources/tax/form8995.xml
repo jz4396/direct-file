@@ -14,20 +14,22 @@
     line 13b: "Qualified business income deduction from Form 8995 or Form 8995-A".
 
   Supported slice: qualified business income from Schedule C, a Schedule E Part I property the filer marks as a
-  section 162 trade or business (scheduleE /scheduleEProperties), and qualified REIT dividends from Form 1099-DIV
+  section 162 trade or business (scheduleE /scheduleEProperties), a supported Schedule K-1 (Form 1120-S) box 17
+  code V statement (scheduleE /scheduleEK1s/*/form1120SBox17VQbi), and qualified REIT dividends from Form 1099-DIV
   box 5. Schedule C column (c) reduces each business by its owner's share of deductible self-employment tax
   (Treas. Reg. 1.199A-3(b)(1)(vi)). A rental row is not reduced: 26 U.S.C. 1402(a)(1) excludes real-estate rentals
   from net earnings from self-employment. Column (b) on a rental row is the filer's SSN or ITIN, and is blank only
   when the rental is aggregated. One secondary-filer business is allowed on a joint return. More than one, a
   business owned by the spouse on a return that is not married filing jointly, a qualified joint venture, and a
   community-property state still stop submission (scheduleC /flowKnockoutScheduleCSpouseBusiness and the two stops
-  next to it). More than five trades or businesses, counting Schedule C and these rentals
-  together, stops the print (/flowKnockoutForm8995MoreThanFiveBusinesses): the instructions require a statement this
+  next to it). More than five trades or businesses, counting Schedule C, these rentals, and supported box 17 code V
+  rows together, stops the print (/flowKnockoutForm8995MoreThanFiveBusinesses): the instructions require a statement this
   package does not attach. Taxable income before the deduction at or below the threshold, no prior-year loss
   carryforward, not a cooperative patron. Line 6 is the sum of box 5 (no PTP income). A REIT dividend that fails the
   45-day holding period stops (dividends /flowKnockoutSection199ADividendsHoldingPeriod). Every other source of 199A
   income stays a stop with BlockSubmissionOnTrue: a PTP (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp) and a
-  K-1 section 199A statement (scheduleE /flowKnockoutScheduleEPartIIQbiCode). A Rev. Proc. 2019-38 safe harbor, an
+  Form 1065 box 20 code Z statement (scheduleE /flowKnockoutScheduleEPartIIQbiCode). A supported Form 1120-S
+  box 17 code V statement is a line 1 row. Statement REIT dividends and PTP income must be zero. A Rev. Proc. 2019-38 safe harbor, an
   aggregation, a suspended passive loss, or section 162 amounts above the Schedule E Part I totals stay a stop
   (scheduleE /flowKnockoutScheduleETradeOrBusinessQbi). Line 7 stays $0.
 
@@ -120,16 +122,19 @@
     <Fact path="/form8995HasQbi">
       <Name>Return has qualified business income or loss on Form 8995</Name>
       <Description>
-        True when /form8995HasScheduleCQbi is true or the filer answered yes to a section 162 Schedule E
-        rental (/scheduleETradeOrBusinessAnsweredYes). 26 U.S.C. 199A(c)(1). An unanswered rental question
-        is complete false on that fact, so a Schedule C return does not go incomplete because Schedule E
-        has not been reached.
+        True when /form8995HasScheduleCQbi is true, the filer answered yes to a section 162 Schedule E
+        rental (/scheduleETradeOrBusinessAnsweredYes), or a Schedule K-1 (Form 1120-S) box 17 code V
+        statement is supported (scheduleE /scheduleEHasSupportedBox17VQbi). 26 U.S.C. 199A(c)(1). An
+        unanswered rental question is complete false on that fact, and Part II unanswered or no is complete
+        false on the K-1 fact, so a Schedule C return does not go incomplete because Schedule E has not
+        been reached.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Any>
           <Dependency path="/form8995HasScheduleCQbi" />
           <Dependency module="scheduleE" path="/scheduleETradeOrBusinessAnsweredYes" />
+          <Dependency module="scheduleE" path="/scheduleEHasSupportedBox17VQbi" />
         </Any>
       </Derived>
     </Fact>
@@ -242,7 +247,10 @@
         (/primaryFilerDeductibleSelfEmploymentTax or /secondaryFilerDeductibleSelfEmploymentTax), so the rows
         still add to line 2.
         A section 162 rental's line 1(c) is scheduleE /scheduleETradeOrBusinessQbi and is not reduced by
-        self-employment tax (26 U.S.C. 1402(a)(1)). Line 2 adds that amount to the Schedule C component.
+        self-employment tax (26 U.S.C. 1402(a)(1)). A supported Form 1120-S box 17 code V row is
+        scheduleE /scheduleEK1Box17VQbiTotal. An S corporation shareholder has no self-employment tax on
+        box 1, so Treas. Reg. 1.199A-3(b)(1)(vi) does not reduce it. Line 2 adds both amounts to the
+        Schedule C component.
         When Schedule SE line 2 also includes Form 1065 box 14 code A, the deductible part has to be split
         between the Schedule C trade and the partnership. That split is not computed, so the return stops
         (/flowKnockoutScheduleCQbiAndK1Box14CodeA). A rental alone does not fire that stop. Schedule 1
@@ -253,6 +261,7 @@
           <Add>
             <Dependency path="/form8995ScheduleCComponent" />
             <Dependency module="scheduleE" path="/scheduleETradeOrBusinessQbi" />
+            <Dependency module="scheduleE" path="/scheduleEK1Box17VQbiTotal" />
           </Add>
         </Round>
       </Derived>
@@ -345,8 +354,9 @@
         (https://www.law.cornell.edu/uscode/text/26/199A): 20 percent of "the aggregate amount of the qualified REIT
         dividends and qualified publicly traded partnership income". This line is the sum of 1099-DIV box 5
         (dividends /totalSection199ADividends), rounded to whole dollars (26 U.S.C. 6102(a)). No PTP income is
-        included: a PTP stops the return (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp). A supported Part II
-        K-1 has no box 20 code Z or box 17 code V, so it adds nothing here. A box 5 amount that is not a qualified
+        included: a PTP stops the return (scheduleE /flowKnockoutScheduleEPartIIForeignOrPtp). A supported
+        box 17 code V statement has zero qualified REIT dividends and zero qualified PTP income, so it adds
+        nothing here. Form 1065 box 20 code Z still stops the return. A box 5 amount that is not a qualified
         REIT dividend stops (dividends /flowKnockoutSection199ADividendsHoldingPeriod) rather than being omitted.
       </Description>
       <Derived>
@@ -3636,12 +3646,14 @@
       <Name>Count of active trades or businesses on Form 8995</Name>
       <Description>
         Schedule C businesses with material participation plus section 162 rentals with material
-        participation. 26 U.S.C. 199A(i)(2)(B), 469(h).
+        participation plus supported box 17 code V K-1s, which all materially participate.
+        26 U.S.C. 199A(i)(2)(B), 469(h).
       </Description>
       <Derived>
         <Add>
           <Dependency path="/form8995ScheduleCActiveCount" />
           <Dependency module="scheduleE" path="/scheduleEActiveTradeOrBusinessCount" />
+          <Dependency path="/form8995K1Count" />
         </Add>
       </Derived>
     </Fact>
@@ -3773,11 +3785,213 @@
       </Derived>
     </Fact>
 
+
+    <Fact path="/form8995K1Count">
+      <Name>Count of supported Form 1120-S box 17 code V rows on Form 8995</Name>
+      <Description>
+        0 when Part II is unanswered or no, or the K-1 list is unset. Otherwise the size of
+        scheduleE /scheduleEK1sWithBox17V. Incomplete while a statement is unfinished.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleE" path="/scheduleEK1s" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSize>
+                <Dependency module="scheduleE" path="/scheduleEK1sWithBox17V" />
+              </CollectionSize>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995K1Row0">
+      <Name>Form 8995 line 1 Schedule K-1 at row index 0</Name>
+      <Description>
+        scheduleE /scheduleEK1sWithBox17V at index 0 minus /form8995ScheduleCCount minus
+        /form8995ScheduleECount. Schedule C and section 162 rentals occupy the earlier rows. Out of range
+        is incomplete.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEK1sWithBox17V" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>0</Int>
+              </Minuend>
+              <Subtrahends>
+                <Add>
+                  <Dependency path="/form8995ScheduleCCount" />
+                  <Dependency path="/form8995ScheduleECount" />
+                </Add>
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995K1Row1">
+      <Name>Form 8995 line 1 Schedule K-1 at row index 1</Name>
+      <Description>
+        scheduleE /scheduleEK1sWithBox17V at index 1 minus /form8995ScheduleCCount minus
+        /form8995ScheduleECount. Schedule C and section 162 rentals occupy the earlier rows. Out of range
+        is incomplete.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEK1sWithBox17V" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>1</Int>
+              </Minuend>
+              <Subtrahends>
+                <Add>
+                  <Dependency path="/form8995ScheduleCCount" />
+                  <Dependency path="/form8995ScheduleECount" />
+                </Add>
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995K1Row2">
+      <Name>Form 8995 line 1 Schedule K-1 at row index 2</Name>
+      <Description>
+        scheduleE /scheduleEK1sWithBox17V at index 2 minus /form8995ScheduleCCount minus
+        /form8995ScheduleECount. Schedule C and section 162 rentals occupy the earlier rows. Out of range
+        is incomplete.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEK1sWithBox17V" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>2</Int>
+              </Minuend>
+              <Subtrahends>
+                <Add>
+                  <Dependency path="/form8995ScheduleCCount" />
+                  <Dependency path="/form8995ScheduleECount" />
+                </Add>
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995K1Row3">
+      <Name>Form 8995 line 1 Schedule K-1 at row index 3</Name>
+      <Description>
+        scheduleE /scheduleEK1sWithBox17V at index 3 minus /form8995ScheduleCCount minus
+        /form8995ScheduleECount. Schedule C and section 162 rentals occupy the earlier rows. Out of range
+        is incomplete.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEK1sWithBox17V" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>3</Int>
+              </Minuend>
+              <Subtrahends>
+                <Add>
+                  <Dependency path="/form8995ScheduleCCount" />
+                  <Dependency path="/form8995ScheduleECount" />
+                </Add>
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8995K1Row4">
+      <Name>Form 8995 line 1 Schedule K-1 at row index 4</Name>
+      <Description>
+        scheduleE /scheduleEK1sWithBox17V at index 4 minus /form8995ScheduleCCount minus
+        /form8995ScheduleECount. Schedule C and section 162 rentals occupy the earlier rows. Out of range
+        is incomplete.
+      </Description>
+      <Derived>
+        <IndexOf>
+          <Collection>
+            <Dependency module="scheduleE" path="/scheduleEK1sWithBox17V" />
+          </Collection>
+          <Index>
+            <Subtract>
+              <Minuend>
+                <Int>4</Int>
+              </Minuend>
+              <Subtrahends>
+                <Add>
+                  <Dependency path="/form8995ScheduleCCount" />
+                  <Dependency path="/form8995ScheduleECount" />
+                </Add>
+              </Subtrahends>
+            </Subtract>
+          </Index>
+        </IndexOf>
+      </Derived>
+    </Fact>
+
     <Fact path="/form8995Line1iName">
       <Name>Form 8995 line 1(i) column (a)</Name>
       <Description>
         Form 8995 (2026) draft line 1(i) column (a): trade, business, or aggregation name. Schedule C
-        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        fills the earlier rows. A later row is the section 162 rental property name, then a supported Schedule K-1 (Form 1120-S). Incomplete when this
         row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
@@ -3815,6 +4029,25 @@
               <Dependency path="/form8995ScheduleERow0/propertyName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row0/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3825,7 +4058,7 @@
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
         Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
-        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). A supported Schedule K-1 (Form 1120-S) prints the S corporation's EIN. Column (b) is text so a TIN and an EIN share the switch. Column (b) stays
         blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
         you aggregated multiple trades or businesses into a single business, enter the aggregation group name
         ... and leave line 1(b) blank."
@@ -3844,7 +4077,9 @@
               </GreaterThan>
             </When>
             <Then>
-              <Dependency path="/form8995Business0/filer/tin" />
+              <AsString>
+                <Dependency path="/form8995Business0/filer/tin" />
+              </AsString>
             </Then>
           </Case>
           <Case>
@@ -3867,7 +4102,30 @@
               </All>
             </When>
             <Then>
-              <Dependency module="filers" path="/primaryFiler/tin" />
+              <AsString>
+                <Dependency module="filers" path="/primaryFiler/tin" />
+              </AsString>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <AsString>
+                <Dependency path="/form8995K1Row0/employerIdentificationNumber" />
+              </AsString>
             </Then>
           </Case>
         </Switch>
@@ -3880,8 +4138,8 @@
         for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
         self-employment tax". A Schedule C row is that business's net profit or loss minus
         /form8995Business0SeShare. A section 162 rental row is the property's net income or loss and is not
-        reduced by self-employment tax (26 U.S.C. 1402(a)(1)). Across the rows that exist, column (c) sums
-        to line 2.
+        reduced by self-employment tax (26 U.S.C. 1402(a)(1)). A box 17 code V row is the statement's
+        qualified business income. Across the rows that exist, column (c) sums to line 2.
       </Description>
       <Derived>
         <Switch>
@@ -3925,6 +4183,25 @@
               <Dependency path="/form8995ScheduleERow0/netIncomeOrLoss" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row0/box17VQbiForForm8995" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3932,7 +4209,7 @@
       <Name>Form 8995 line 1(ii) column (a)</Name>
       <Description>
         Form 8995 (2026) draft line 1(ii) column (a): trade, business, or aggregation name. Schedule C
-        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        fills the earlier rows. A later row is the section 162 rental property name, then a supported Schedule K-1 (Form 1120-S). Incomplete when this
         row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
@@ -3970,6 +4247,25 @@
               <Dependency path="/form8995ScheduleERow1/propertyName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row1/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -3980,7 +4276,7 @@
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
         Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
-        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). A supported Schedule K-1 (Form 1120-S) prints the S corporation's EIN. Column (b) is text so a TIN and an EIN share the switch. Column (b) stays
         blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
         you aggregated multiple trades or businesses into a single business, enter the aggregation group name
         ... and leave line 1(b) blank."
@@ -3999,7 +4295,9 @@
                 </GreaterThan>
             </When>
             <Then>
-              <Dependency path="/form8995Business1/filer/tin" />
+              <AsString>
+                <Dependency path="/form8995Business1/filer/tin" />
+              </AsString>
             </Then>
           </Case>
           <Case>
@@ -4022,7 +4320,30 @@
               </All>
             </When>
             <Then>
-              <Dependency module="filers" path="/primaryFiler/tin" />
+              <AsString>
+                <Dependency module="filers" path="/primaryFiler/tin" />
+              </AsString>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <AsString>
+                <Dependency path="/form8995K1Row1/employerIdentificationNumber" />
+              </AsString>
             </Then>
           </Case>
         </Switch>
@@ -4034,7 +4355,7 @@
         Form 8995 (2026) draft line 1(ii) column (c): qualified business income or (loss). 2026 Instructions
         for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
         self-employment tax". This row's Schedule C net profit or loss minus /form8995Business1SeShare. Across the
-        rows that exist, column (c) sums to line 2.
+        rows that exist, column (c) sums to line 2. A box 17 code V row is the statement's qualified business income.
       </Description>
       <Derived>
         <Switch>
@@ -4078,6 +4399,25 @@
               <Dependency path="/form8995ScheduleERow1/netIncomeOrLoss" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row1/box17VQbiForForm8995" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4085,7 +4425,7 @@
       <Name>Form 8995 line 1(iii) column (a)</Name>
       <Description>
         Form 8995 (2026) draft line 1(iii) column (a): trade, business, or aggregation name. Schedule C
-        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        fills the earlier rows. A later row is the section 162 rental property name, then a supported Schedule K-1 (Form 1120-S). Incomplete when this
         row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
@@ -4123,6 +4463,25 @@
               <Dependency path="/form8995ScheduleERow2/propertyName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row2/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4133,7 +4492,7 @@
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
         Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
-        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). A supported Schedule K-1 (Form 1120-S) prints the S corporation's EIN. Column (b) is text so a TIN and an EIN share the switch. Column (b) stays
         blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
         you aggregated multiple trades or businesses into a single business, enter the aggregation group name
         ... and leave line 1(b) blank."
@@ -4152,7 +4511,9 @@
                 </GreaterThan>
             </When>
             <Then>
-              <Dependency path="/form8995Business2/filer/tin" />
+              <AsString>
+                <Dependency path="/form8995Business2/filer/tin" />
+              </AsString>
             </Then>
           </Case>
           <Case>
@@ -4175,7 +4536,30 @@
               </All>
             </When>
             <Then>
-              <Dependency module="filers" path="/primaryFiler/tin" />
+              <AsString>
+                <Dependency module="filers" path="/primaryFiler/tin" />
+              </AsString>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <AsString>
+                <Dependency path="/form8995K1Row2/employerIdentificationNumber" />
+              </AsString>
             </Then>
           </Case>
         </Switch>
@@ -4187,7 +4571,7 @@
         Form 8995 (2026) draft line 1(iii) column (c): qualified business income or (loss). 2026 Instructions
         for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
         self-employment tax". This row's Schedule C net profit or loss minus /form8995Business2SeShare. Across the
-        rows that exist, column (c) sums to line 2.
+        rows that exist, column (c) sums to line 2. A box 17 code V row is the statement's qualified business income.
       </Description>
       <Derived>
         <Switch>
@@ -4231,6 +4615,25 @@
               <Dependency path="/form8995ScheduleERow2/netIncomeOrLoss" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row2/box17VQbiForForm8995" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4238,7 +4641,7 @@
       <Name>Form 8995 line 1(iv) column (a)</Name>
       <Description>
         Form 8995 (2026) draft line 1(iv) column (a): trade, business, or aggregation name. Schedule C
-        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        fills the earlier rows. A later row is the section 162 rental property name, then a supported Schedule K-1 (Form 1120-S). Incomplete when this
         row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
@@ -4276,6 +4679,25 @@
               <Dependency path="/form8995ScheduleERow3/propertyName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>3</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row3/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4286,7 +4708,7 @@
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
         Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
-        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). A supported Schedule K-1 (Form 1120-S) prints the S corporation's EIN. Column (b) is text so a TIN and an EIN share the switch. Column (b) stays
         blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
         you aggregated multiple trades or businesses into a single business, enter the aggregation group name
         ... and leave line 1(b) blank."
@@ -4305,7 +4727,9 @@
                 </GreaterThan>
             </When>
             <Then>
-              <Dependency path="/form8995Business3/filer/tin" />
+              <AsString>
+                <Dependency path="/form8995Business3/filer/tin" />
+              </AsString>
             </Then>
           </Case>
           <Case>
@@ -4328,7 +4752,30 @@
               </All>
             </When>
             <Then>
-              <Dependency module="filers" path="/primaryFiler/tin" />
+              <AsString>
+                <Dependency module="filers" path="/primaryFiler/tin" />
+              </AsString>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>3</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <AsString>
+                <Dependency path="/form8995K1Row3/employerIdentificationNumber" />
+              </AsString>
             </Then>
           </Case>
         </Switch>
@@ -4340,7 +4787,7 @@
         Form 8995 (2026) draft line 1(iv) column (c): qualified business income or (loss). 2026 Instructions
         for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
         self-employment tax". This row's Schedule C net profit or loss minus /form8995Business3SeShare. Across the
-        rows that exist, column (c) sums to line 2.
+        rows that exist, column (c) sums to line 2. A box 17 code V row is the statement's qualified business income.
       </Description>
       <Derived>
         <Switch>
@@ -4384,6 +4831,25 @@
               <Dependency path="/form8995ScheduleERow3/netIncomeOrLoss" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>3</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row3/box17VQbiForForm8995" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4391,7 +4857,7 @@
       <Name>Form 8995 line 1(v) column (a)</Name>
       <Description>
         Form 8995 (2026) draft line 1(v) column (a): trade, business, or aggregation name. Schedule C
-        fills the earlier rows. A later row is the section 162 rental property name. Incomplete when this
+        fills the earlier rows. A later row is the section 162 rental property name, then a supported Schedule K-1 (Form 1120-S). Incomplete when this
         row has no trade or business, so the PDF field stays blank.
       </Description>
       <Derived>
@@ -4429,6 +4895,25 @@
               <Dependency path="/form8995ScheduleERow4/propertyName" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row4/entityName" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
@@ -4439,7 +4924,7 @@
         Instructions, Line 1: "Enter on line 1(b) the employer identification number (EIN). If you don't have an EIN,
         enter your social security number (SSN) or individual taxpayer identification number (ITIN)." The supported
         Schedule C does not collect an EIN, so this is the owner's TIN. A section 162 rental that is not
-        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). An EIN is not collected. Column (b) stays
+        aggregated uses the filer's SSN or ITIN (/primaryFiler/tin). A supported Schedule K-1 (Form 1120-S) prints the S corporation's EIN. Column (b) is text so a TIN and an EIN share the switch. Column (b) stays
         blank only when the rental is aggregated. 2026 Instructions for Form 8995 draft, PDF p. 5, Line 1: "If
         you aggregated multiple trades or businesses into a single business, enter the aggregation group name
         ... and leave line 1(b) blank."
@@ -4458,7 +4943,9 @@
                 </GreaterThan>
             </When>
             <Then>
-              <Dependency path="/form8995Business4/filer/tin" />
+              <AsString>
+                <Dependency path="/form8995Business4/filer/tin" />
+              </AsString>
             </Then>
           </Case>
           <Case>
@@ -4481,7 +4968,30 @@
               </All>
             </When>
             <Then>
-              <Dependency module="filers" path="/primaryFiler/tin" />
+              <AsString>
+                <Dependency module="filers" path="/primaryFiler/tin" />
+              </AsString>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <AsString>
+                <Dependency path="/form8995K1Row4/employerIdentificationNumber" />
+              </AsString>
             </Then>
           </Case>
         </Switch>
@@ -4493,7 +5003,7 @@
         Form 8995 (2026) draft line 1(v) column (c): qualified business income or (loss). 2026 Instructions
         for Form 8995 draft, PDF p. 4: the total QBI "includes, but isn't limited to, ... deductible part of
         self-employment tax". This row's Schedule C net profit or loss minus /form8995Business4SeShare. Across the
-        rows that exist, column (c) sums to line 2.
+        rows that exist, column (c) sums to line 2. A box 17 code V row is the statement's qualified business income.
       </Description>
       <Derived>
         <Switch>
@@ -4535,6 +5045,25 @@
             </When>
             <Then>
               <Dependency path="/form8995ScheduleERow4/netIncomeOrLoss" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Add>
+                    <Dependency path="/form8995ScheduleCCount" />
+                    <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
+                  </Add>
+                </Left>
+                <Right>
+                  <Int>4</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Dependency path="/form8995K1Row4/box17VQbiForForm8995" />
             </Then>
           </Case>
         </Switch>
@@ -4594,7 +5123,8 @@
       <Name>Form 8995 is filed</Name>
       <Description>
         The return has Schedule C qualified business income or loss, a section 162 Schedule E rental (a loss still
-        files Form 8995 to report the line 18 carryforward), or 1099-DIV box 5 is more than $0. 2026 Instructions
+        files Form 8995 to report the line 18 carryforward), a supported Form 1120-S box 17 code V statement,
+        or 1099-DIV box 5 is more than $0. 2026 Instructions
         for Form 8995 draft, PDF p. 5, Line 4: there is no deduction for a qualified business net loss "unless you
         have qualified REIT dividends or qualified PTP income". 26 U.S.C. 199A(b)(1)(B). Box 5 with no Schedule C
         business and no section 162 rental still files the form.
@@ -4650,8 +5180,9 @@
         to the next year." The 2026 draft Form 8995 is the print template (pdf/2026/IRS8995, #17), so the package can
         include it, including in a loss year (26 U.S.C. 199A(c)(2)). There is still no MeF mapping, so submitting
         line 13b would leave Form 8995 off the electronic return. True whenever /form8995Required is true; complete
-        false when it is not required (no Schedule C qualified business income, no section 162 rental, and no
-        1099-DIV box 5, including when those questions are answered no or not yet answered).
+        false when it is not required (no Schedule C qualified business income, no section 162 rental, no
+        supported box 17 code V statement, and no 1099-DIV box 5, including when those questions are
+        answered no or not yet answered).
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -4667,8 +5198,8 @@
         businesses, attach a statement with the name and taxpayer identification number of the trade(s) or
         business(es) and include the income and loss from those trade(s) or business(es) in the total for line 2."
         This package does not attach that statement. Column (c) is split only across lines 1(i) through 1(v), so a
-        sixth trade or business would be omitted while line 2 still included it. Schedule C businesses and
-        section 162 rentals are counted together. True when /form8995HasQbi is true and that count is more than
+        sixth trade or business would be omitted while line 2 still included it. Schedule C businesses, section 162 rentals, and supported box 17 code V rows are counted
+        together. True when /form8995HasQbi is true and that count is more than
         five. Complete false when Form 8995 is not required, a list is not finished (that count is 0), or the
         finished lists together have five or fewer.
       </Description>
@@ -4693,6 +5224,7 @@
                   <Add>
                     <Dependency path="/form8995ScheduleCCount" />
                     <Dependency path="/form8995ScheduleECount" />
+                    <Dependency path="/form8995K1Count" />
                   </Add>
                 </Left>
                 <Right>
@@ -4750,8 +5282,8 @@
       <Name>Knockout: prior-year QBI or REIT/PTP loss carryforward</Name>
       <Description>Cites on /qbiHasPriorYearLossCarryforward. Form 8995 (2026) draft line 7: "Qualified REIT dividends
         and qualified PTP (loss) carryforward from the prior year". Complete false when Form 8995 is not filed, or
-        on "no". Incomplete while a filer with Schedule C income, a section 162 rental, or 1099-DIV box 5 has not
-        answered (#186). Line 7 stays $0 on a supported return.</Description>
+        on "no". Incomplete while a filer with Schedule C income, a section 162 rental, a supported box 17 code V
+        statement, or 1099-DIV box 5 has not answered (#186). Line 7 stays $0 on a supported return.</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>

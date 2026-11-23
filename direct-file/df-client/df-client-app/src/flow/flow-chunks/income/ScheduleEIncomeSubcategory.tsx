@@ -6,6 +6,7 @@ import {
   ContextHeading,
   Dollar,
   DFAlert,
+  Ein,
   Enum,
   Heading,
   InfoDisplay,
@@ -27,6 +28,7 @@ import type { ConditionString } from '../../Condition.js';
  * Nonfarm Form 1065 box 14 code A is Schedule SE line 2 (26 U.S.C. 1402(a)) except on a joint return.
  * Form 1065 box 4a (guaranteed payments for services) is Schedule E line 28 column (k) and is not QBI.
  * Box 4b stays a stop. Box 4c must equal box 4a plus box 4b.
+ * Form 1120-S box 17 code V is a Form 8995 line 1 row on the supported path. Form 1065 box 20 code Z stays a stop.
  * Part III supported: domestic estate or trust, nonnegative box 6 in column (f), nonnegative box 7 in
  * column (d), material participation. A negative box 7 and a prior-year unallowed passive loss stop the return.
  * Box 8 is other rental income (26 U.S.C. 469(c)(2) and 469(c)(4)) and stops the return.
@@ -281,6 +283,17 @@ export const ScheduleEIncomeSubcategory = (
             <Boolean path='/scheduleEK1s/*/hasOtherK1Amount' />
             <SaveAndOrContinueButton />
           </Screen>
+          <Screen route='schedule-e-k1-box-17v' condition='/scheduleEK1s/*/asksBox17V'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-box-17v' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-box-17v' />
+            <Ein path='/scheduleEK1s/*/employerIdentificationNumber' />
+            <Dollar path='/scheduleEK1s/*/form1120SBox17VQbi' />
+            <Boolean path='/scheduleEK1s/*/form1120SBox17VMoreThanOneTrade' />
+            <Boolean path='/scheduleEK1s/*/form1120SBox17VAggregationElection' />
+            <Dollar path='/scheduleEK1s/*/form1120SBox17VQualifiedReitDividends' />
+            <Dollar path='/scheduleEK1s/*/form1120SBox17VQualifiedPtpIncome' />
+            <SaveAndOrContinueButton />
+          </Screen>
           <Screen route='schedule-e-k1-columns'>
             <Heading i18nKey='/heading/income/schedule-e/k1-columns' />
             <InfoDisplay i18nKey='/info/income/schedule-e/k1-columns' />
@@ -380,13 +393,13 @@ export const ScheduleEIncomeSubcategory = (
           </Screen>
         </SubSubcategory>
       </CollectionLoop>
-      <Screen route='schedule-e-qbi-carryforward' condition='/scheduleERentalIsTradeOrBusiness'>
+      <Screen route='schedule-e-qbi-carryforward' condition='/scheduleEAsksQbiLimits'>
         <Heading i18nKey='/heading/income/schedule-e/qbi-carryforward' />
         <InfoDisplay i18nKey='/info/income/schedule-e/qbi-carryforward' />
         <Boolean path='/qbiHasPriorYearLossCarryforward' />
         <SaveAndOrContinueButton />
       </Screen>
-      <Screen route='schedule-e-qbi-cooperative' condition='/scheduleERentalIsTradeOrBusiness'>
+      <Screen route='schedule-e-qbi-cooperative' condition='/scheduleEAsksQbiLimits'>
         <Heading i18nKey='/heading/income/schedule-e/qbi-cooperative' />
         <InfoDisplay i18nKey='/info/income/schedule-e/qbi-cooperative' />
         <Boolean path='/qbiIsCooperativePatron' />

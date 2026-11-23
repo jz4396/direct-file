@@ -55,6 +55,7 @@ headings:
   /heading/income/schedule-e/k1-portfolio-s-corp:
     Anote los intereses, dividendos y ganancia de capital del Anexo K-1 (Formulario 1120-S)
   /heading/income/schedule-e/k1-other: ¿Este Anexo K-1 declara algo más?
+  /heading/income/schedule-e/k1-box-17v: Declaración de la sección 199A, casilla 17 código V
   /heading/income/schedule-e/k1-columns: ¿Tiene que marcar la columna (e) o la columna (f) en la línea 28 del Anexo E?
   /heading/knockout/schedule-e-part-ii: Esta herramienta todavía no acepta esta situación del Anexo K-1
   /heading/knockout/schedule-c-k1-box14:
@@ -225,7 +226,8 @@ info:
   /info/income/schedule-e/k1-other:
     body: >-
       Conteste que sí a la primera pregunta si el K-1 incluye una declaración para la casilla 20, código Z (Formulario
-      1065) o la casilla 17, código V (Formulario 1120-S). Conteste que sí a la segunda pregunta si alguna casilla
+      1065) o la casilla 17, código V (Formulario 1120-S). La casilla 17 código V continúa en la pantalla siguiente. La
+      casilla 20 código Z detiene esta declaración. Conteste que sí a la segunda pregunta si alguna casilla
       distinta de la casilla 1, de la casilla 4a, de la casilla 14 código A, de las casillas de intereses y dividendos y
       de las casillas de ganancia neta de capital tiene una cantidad. Esas casillas son las casillas 4a, 5, 6a, 6b, 8 y
       9a del Formulario 1065, o las casillas 4, 5a, 5b, 7 y 8a del Formulario 1120-S. La casilla 4a, pagos garantizados
@@ -235,6 +237,15 @@ info:
       sí. No se declaran en el Formulario 1040. Las casillas 9b y 9c del Formulario 1065, y las casillas 8b y 8c del
       Formulario 1120-S, son sí. La declaración de intereses de bonos de energía renovable limpia en la casilla 5 es la
       pregunta anterior de la sociedad colectiva, no esta.
+  /info/income/schedule-e/k1-box-17v:
+    body: >-
+      Anote el número de identificación del empleador de la sociedad anónima S y las cantidades de la declaración de
+      la casilla 17 código V. Anote el ingreso de negocio calificado del único negocio. Tiene que ser igual a la
+      casilla 1. Conteste que sí si la declaración enumera más de un negocio, o si eligió agrupar negocios. Anote 0
+      para los dividendos de REIT calificados y el ingreso de PTP calificado cuando esas líneas están en blanco o en
+      cero. Un sí, una cantidad que no es igual a la casilla 1, una cantidad negativa, o una cantidad distinta de cero
+      para esos dividendos o ese ingreso de PTP detiene esta declaración. La casilla 20 código Z del Formulario 1065
+      todavía detiene esta declaración.
   /info/income/schedule-e/k1-guaranteed-payments:
     body: >-
       Anote la casilla 4a (pagos garantizados por servicios), la casilla 4b (pagos garantizados por capital) y la
@@ -673,6 +684,14 @@ fields:
     boolean:
       "yes": Sí, hay una declaración para la casilla 20 código Z o la casilla 17 código V
       "no": "No"
+  /scheduleEK1s/*/form1120SBox17VMoreThanOneTrade:
+    boolean:
+      "yes": Sí, la declaración enumera más de un negocio
+      "no": No, la declaración enumera un solo negocio
+  /scheduleEK1s/*/form1120SBox17VAggregationElection:
+    boolean:
+      "yes": Sí, elegí agrupar negocios
+      "no": No, no elegí agrupar negocios
   /scheduleEK1s/*/hasOtherK1Amount:
     boolean:
       "yes": Sí, otra casilla tiene una cantidad
@@ -768,6 +787,12 @@ dataviews:
     /scheduleEK1s/*/dividendIncludesPtep:
       ¿Alguno de estos dividendos incluye ganancias y utilidades previamente gravadas?
     /scheduleEK1s/*/hasQbiStatement: ¿Hay una declaración para la casilla 20 código Z o la casilla 17 código V?
+    /scheduleEK1s/*/employerIdentificationNumber: Número de identificación del empleador
+    /scheduleEK1s/*/form1120SBox17VQbi: Ingreso de negocio calificado de la declaración de la casilla 17 código V
+    /scheduleEK1s/*/form1120SBox17VMoreThanOneTrade: ¿La declaración enumera más de un negocio?
+    /scheduleEK1s/*/form1120SBox17VAggregationElection: ¿Eligió agrupar negocios?
+    /scheduleEK1s/*/form1120SBox17VQualifiedReitDividends: Dividendos de REIT calificados en la declaración
+    /scheduleEK1s/*/form1120SBox17VQualifiedPtpIncome: Ingreso de PTP calificado en la declaración
     /scheduleEK1s/*/form1065Box4a: Casilla 4a, pagos garantizados por servicios
     /scheduleEK1s/*/form1065Box4b: Casilla 4b, pagos garantizados por capital
     /scheduleEK1s/*/form1065Box4c: Casilla 4c, total de pagos garantizados
