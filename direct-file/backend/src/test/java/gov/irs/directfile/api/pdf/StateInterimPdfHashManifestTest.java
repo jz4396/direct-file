@@ -27,6 +27,7 @@ class StateInterimPdfHashManifestTest {
     static final String NCDOR = "https://www.ncdor.gov/";
     static final String ADOR = "https://azdor.gov/";
     static final String MDOR = "https://www.mass.gov/";
+    static final String IDAHO = "https://tax.idaho.gov/";
 
     @Test
     void committedStateInterimPdfsMatchPinnedSha256() throws Exception {
@@ -70,8 +71,12 @@ class StateInterimPdfHashManifestTest {
                     assertTrue(
                             cols[1].matches("MA(1|HC)/en/2025_.*\\.pdf"),
                             "Massachusetts interim template keeps 2025 in the file name: " + row);
+                } else if (cols[2].startsWith(IDAHO)) {
+                    assertTrue(
+                            cols[1].matches("ID40/en/2025_.*\\.pdf"),
+                            "Idaho interim template keeps 2025 in the file name: " + row);
                 } else {
-                    fail("source is the PA, Illinois, North Carolina, Arizona, or Massachusetts department of revenue: "
+                    fail("source is the PA, Illinois, North Carolina, Arizona, Massachusetts, or Idaho department of revenue: "
                             + row);
                 }
                 MessageDigest sha = MessageDigest.getInstance("SHA-256");

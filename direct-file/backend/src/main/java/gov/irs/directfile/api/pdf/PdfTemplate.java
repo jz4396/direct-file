@@ -140,7 +140,9 @@ abstract class PdfTemplate {
             new Az140PdfForm("AZ140"),
             // #93 slice 6: Form 1 and Schedule HC. No local return. 2025 DOR forms are the interim templates.
             new Ma1PdfForm("MA1"),
-            new MaHcPdfForm("MAHC"));
+            new MaHcPdfForm("MAHC"),
+            // #93 slice 7: Form 40. No local return. 2025 Form 40 is the interim template.
+            new Id40PdfForm("ID40"));
 
     protected PdfTemplate(
             final String templateName, final boolean shouldRemoveTinDashes, final boolean shouldRoundCurrency) {
