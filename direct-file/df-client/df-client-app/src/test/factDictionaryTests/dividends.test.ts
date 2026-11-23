@@ -5,7 +5,9 @@
 // is not added again. Box 2d is the collectibles (28%) portion of box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)) and is
 // not added again. A portion one dollar over its parent box stops the return. A box 2d greater than $0 with a
 // Schedule D line 7 loss or a line 14 capital loss carryover stops the return. A nonzero box 6 on a
-// PA-40 stops the return. Boxes 2c, 8, 9, 10 and 14-16 still stop. Box 11 (FATCA filing requirement) does
+// PA-40 stops the return. Boxes 2c, 9, and 10, and box 14 greater than $0, still stop. Box 8 does not stop when
+// box 7 is $0 or meets 26 U.S.C. 904(j). Boxes 15 and 16 do not stop when box 14 is $0, except a box 16 amount
+// that differs from box 1a plus box 2a on a computed PA, IL, NC, or AZ return. Box 11 (FATCA filing requirement) does
 // not stop by itself: it asks /requiredToFileForm8938. Yes stops (26 U.S.C. 6038D). No proceeds. Form 1099-DIV
 // (Rev. December 2027) draft, Instructions for Recipient, Box 11. Instructions for Form 8938: a specified individual
 // living in the United States who is unmarried files when specified foreign financial assets are more than $50,000
@@ -65,6 +67,10 @@ type Div = {
   box4?: number;
   box5?: number;
   box7?: number;
+  box8?: string;
+  box14?: number;
+  box15?: string;
+  box16?: number;
   box12?: number;
   box13?: number;
   holdingNotMet?: boolean;
@@ -102,6 +108,14 @@ const divItem = (f: Div) => {
         }
       : {}),
     ...opt(id, `ForeignTaxPaid`, f.box7),
+    ...(f.box8 === undefined
+      ? {}
+      : { [`/dividendReports/#${id}/writableForeignCountry`]: createStringWrapper(f.box8) }),
+    ...opt(id, `StateTaxWithheld`, f.box14),
+    ...(f.box15 === undefined
+      ? {}
+      : { [`/dividendReports/#${id}/writableStateIdNumber`]: createStringWrapper(f.box15) }),
+    ...opt(id, `StateDistribution`, f.box16),
     ...opt(id, `ExemptInterestDividends`, f.box12),
     ...opt(id, `SpecifiedPrivateActivityBondInterestDividends`, f.box13),
     ...(f.box1b
@@ -167,6 +181,7 @@ const build = (extra: Record<string, unknown>, status: Record<string, unknown> =
 
 const FEDERAL_KOS = [
   `/flowKnockoutDividendUnsupportedBoxes`,
+  `/flowKnockoutDividendStateDistribution`,
   `/flowKnockoutNondividendDistributionsOverBasis`,
   `/flowKnockoutQualifiedDividendsHoldingPeriod`,
   `/flowKnockoutSection199ADividendsHoldingPeriod`,
@@ -483,9 +498,20 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
       `/flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12`
     );
   });
-  it(`boxes 2b, 2c, 2d, 8, 9, 10 and 14-16 still stop; box 11, 2e, 2f and 6 do not`, ({ task }) => {
+  it(`box 2c (section 1202 gain) still stops the return`, ({ task }) => {
+    // Form 1099-DIV instructions. Boxes 2c, 9, and 10 share /dividendReports/*/hasUnsupportedBoxes.
     task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
     blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
+  });
+  it(`box 9 (cash liquidation distribution) still stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
+    blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
+  });
+  it(`box 10 (noncash liquidation distribution) still stops the return`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
+    blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
+  });
+  it(`boxes 2b, 2d, 2e, 2f, and 6 do not use the unsupported-box stop`, () => {
     const supported = build(divs({ box1a: 100, box2a: 40, box2e: 100, box2f: 40, box6: 100, otherBoxes: false }));
     expect(get(supported, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
     noKnockouts(supported);
@@ -1620,5 +1646,207 @@ describe(`#154 PA Schedule B dividend knockout`, () => {
   });
   it(`not a PA return (NJ): $10,000 of dividends and box 2a never stop it`, () => {
     expect(scheduleB(build(divs({ box1a: 10000, box2a: 50 })))).toBe(false);
+  });
+});
+
+describe(`1099-DIV box 8 and boxes 14-16 (#86)`, () => {
+  // FL single, W-2 $60,000. Standard deduction $16,100 (Rev. Proc. 2025-32 §4.14). The $300 limit is
+  // 26 U.S.C. 904(j)(2)(B), not an indexed Rev. Proc. amount. Qualified payee statement is the existing
+  // /dividendReports/*/foreignTaxElectionRequirementsMet yes (Form 1040 instr. (2025) Schedule 3 line 1).
+  const election = {
+    box1a: 2000,
+    box1b: 2000,
+    box7: 120,
+    box8: `Various`,
+    ftcOk: true,
+  } satisfies Div;
+  const fl = (form: Div) => build({ ...divs(form), ...state(`fl`), ...paW2(60000) });
+  const dollars = (g: Fg) => ({
+    wages: val(g, `/wages`),
+    line3b: val(g, `/ordinaryDividends`),
+    line3a: val(g, `/qualifiedDividends`),
+    totalIncome: val(g, `/totalIncome`),
+    standardDeduction: val(g, `/standardDeduction`),
+    taxableIncome: val(g, `/taxableIncome`),
+    foreignTax: val(g, `/totalDividendForeignTaxPaid`),
+    limit: val(g, `/dividendForeignTaxElectionLimit`),
+    sched3Line1: val(g, `/sched3Line1`),
+    scheduleALine5a: val(g, `/scheduleAStateLocalIncomeOrSalesTax`),
+  });
+
+  it(`box 8 "Various" with box 7 $120 is Schedule 3 line 1 $120 and Schedule B prints`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/foreignCountry`,
+      `/dividendForeignTaxElectionLimit`,
+      `/sched3Line1`,
+      `/requiresScheduleB`,
+      `/flowPrintRefuseScheduleBPartIII`,
+      `/flowKnockoutDividendForeignTaxPaid`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+    ];
+    const g = fl(election);
+    expect(val(g, `/wages`)).toBe(`60000.00`);
+    expect(val(g, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(g, `/qualifiedDividends`)).toBe(`2000.00`);
+    expect(val(g, `/totalIncome`)).toBe(`62000.00`);
+    expect(val(g, `/standardDeduction`)).toBe(`16100.00`);
+    expect(val(g, `/taxableIncome`)).toBe(`45900.00`);
+    expect(val(g, `/totalDividendForeignTaxPaid`)).toBe(`120.00`);
+    expect(val(g, `/dividendForeignTaxElectionLimit`)).toBe(`300.00`);
+    expect(val(g, `/sched3Line1`)).toBe(`120.00`);
+    expect(val(g, `/dividendReports/#${d1}/foreignCountry`)).toBe(`Various`);
+    expect(get(g, `/dividendReports/#${d1}/foreignTaxElectionRequirementsMet`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    expect(get(g, `/scheduleBPartIIIAnswered`).get).toBe(true);
+    expect(get(g, `/flowPrintRefuseScheduleBPartIII`).get).toBe(false);
+    expect(get(g, `/hasSchedule3`).get).toBe(true);
+    expect(Number(val(g, `/tentativeTaxFromTaxableIncome`))).toBeGreaterThan(120);
+    noKnockouts(g);
+  });
+
+  it(`boxes 15-16 with box 14 $0 leave the computed amounts unchanged`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/stateIdNumber`,
+      `/dividendReports/*/stateDistribution`,
+      `/dividendReports/*/stateTaxWithheld`,
+      `/sched3Line1`,
+      `/scheduleAStateLocalIncomeOrSalesTax`,
+    ];
+    const before = fl(election);
+    const after = fl({ ...election, box14: 0, box15: `FL 123`, box16: 2000 });
+    expect(dollars(after)).toEqual(dollars(before));
+    expect(val(after, `/wages`)).toBe(`60000.00`);
+    expect(val(after, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(after, `/qualifiedDividends`)).toBe(`2000.00`);
+    expect(val(after, `/totalDividendForeignTaxPaid`)).toBe(`120.00`);
+    expect(val(after, `/dividendForeignTaxElectionLimit`)).toBe(`300.00`);
+    expect(val(after, `/sched3Line1`)).toBe(`120.00`);
+    expect(val(after, `/dividendReports/#${d1}/stateTaxWithheld`)).toBe(`0.00`);
+    expect(val(after, `/dividendReports/#${d1}/stateIdNumber`)).toBe(`FL 123`);
+    expect(val(after, `/dividendReports/#${d1}/stateDistribution`)).toBe(`2000.00`);
+    expect(get(after, `/dividendReports/#${d1}/hasStateTaxWithheld`).get).toBe(false);
+    expect(val(after, `/scheduleAStateLocalIncomeOrSalesTax`)).toBe(`0.00`);
+    noKnockouts(after);
+  });
+
+  it(`box 14 $25 stops and is not added to Schedule A line 5a`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/stateTaxWithheld`,
+      `/dividendReports/*/hasStateTaxWithheld`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+      `/scheduleAStateLocalIncomeOrSalesTax`,
+    ];
+    const g = fl({ ...election, box14: 25, box15: `FL 123`, box16: 2000 });
+    expect(val(g, `/dividendReports/#${d1}/stateTaxWithheld`)).toBe(`25.00`);
+    expect(get(g, `/dividendReports/#${d1}/hasStateTaxWithheld`).get).toBe(true);
+    expect(val(g, `/scheduleAStateLocalIncomeOrSalesTax`)).toBe(`0.00`);
+    expect(val(g, `/totalDividendForeignTaxPaid`)).toBe(`120.00`);
+    blocks(g, `/flowKnockoutDividendUnsupportedBoxes`);
+  });
+
+  it(`box 7 $400 single with box 8 set is the existing 904(j) stop`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutDividendForeignTaxPaid`,
+      `/totalDividendForeignTaxPaid`,
+      `/dividendForeignTaxElectionLimit`,
+      `/dividendReports/*/foreignCountry`,
+    ];
+    const g = fl({ ...election, box7: 400 });
+    expect(val(g, `/wages`)).toBe(`60000.00`);
+    expect(val(g, `/totalDividendForeignTaxPaid`)).toBe(`400.00`);
+    expect(val(g, `/dividendForeignTaxElectionLimit`)).toBe(`300.00`);
+    expect(val(g, `/dividendReports/#${d1}/foreignCountry`)).toBe(`Various`);
+    expect(get(g, `/dividendReports/#${d1}/foreignTaxElectionRequirementsMet`).get).toBe(true);
+    blocks(g, `/flowKnockoutDividendForeignTaxPaid`);
+  });
+
+  it(`a PA return stops when box 16 differs from box 1a plus box 2a, and an equal amount does not`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutDividendStateDistribution`,
+      `/dividendReports/*/stateDistributionDiffersFromFederal`,
+      `/dividendReports/*/stateDistribution`,
+    ];
+    const mismatch = build({
+      ...divs({ box1a: 2000, box2a: 500, box16: 2000, box14: 0 }),
+      ...state(`pa`),
+    });
+    expect(val(mismatch, `/dividendReports/#${d1}/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(mismatch, `/dividendReports/#${d1}/capitalGainDistributions`)).toBe(`500.00`);
+    expect(val(mismatch, `/dividendReports/#${d1}/stateDistribution`)).toBe(`2000.00`);
+    expect(val(mismatch, `/dividendReports/#${d1}/stateTaxWithheld`)).toBe(`0.00`);
+    expect(get(mismatch, `/stateReturnComputed`).get).toBe(true);
+    expect(get(mismatch, `/dividendReports/#${d1}/stateDistributionDiffersFromFederal`).get).toBe(true);
+    blocks(mismatch, `/flowKnockoutDividendStateDistribution`);
+
+    const match = build({
+      ...divs({ box1a: 2000, box2a: 500, box16: 2500, box14: 0 }),
+      ...state(`pa`),
+    });
+    expect(val(match, `/dividendReports/#${d1}/stateDistribution`)).toBe(`2500.00`);
+    expect(get(match, `/dividendReports/#${d1}/stateDistributionDiffersFromFederal`).get).toBe(false);
+    expect(get(match, `/flowKnockoutDividendStateDistribution`).get).toBe(false);
+    noKnockouts(match);
+
+    const blank = build({ ...divs({ box1a: 2000, box2a: 500, box14: 0 }), ...state(`pa`) });
+    expect(val(blank, `/dividendReports/#${d1}/stateDistribution`)).toBe(`0.00`);
+    expect(get(blank, `/flowKnockoutDividendStateDistribution`).get).toBe(false);
+    noKnockouts(blank);
+
+    const florida = build({
+      ...divs({ box1a: 2000, box2a: 500, box16: 2000, box14: 0 }),
+      ...state(`fl`),
+    });
+    expect(get(florida, `/stateReturnComputed`).get).toBe(false);
+    expect(get(florida, `/dividendReports/#${d1}/stateDistributionDiffersFromFederal`).get).toBe(true);
+    expect(get(florida, `/flowKnockoutDividendStateDistribution`).get).toBe(false);
+    noKnockouts(florida);
+  });
+
+  const computedStateMismatch = (
+    task: { meta: { testedFactPaths: string[] } },
+    st: string,
+    otherIncome: string,
+    screeners: Record<string, unknown>
+  ) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendStateDistribution`, `/stateReturnComputed`, otherIncome];
+    const mismatch = build({
+      ...divs({ box1a: 2000, box2a: 500, box16: 2000, box14: 0 }),
+      ...state(st),
+      ...screeners,
+    });
+    expect(val(mismatch, `/dividendReports/#${d1}/stateDistribution`)).toBe(`2000.00`);
+    expect(val(mismatch, `/dividendReports/#${d1}/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(mismatch, `/dividendReports/#${d1}/capitalGainDistributions`)).toBe(`500.00`);
+    expect(get(mismatch, `/stateReturnComputed`).get).toBe(true);
+    expect(get(mismatch, `/flowKnockoutDividendStateDistribution`).get).toBe(true);
+    expect(get(mismatch, `/flowIsKnockedOut`).get).toBe(true);
+    expect(submissionBlockingFacts).toContain(`/flowKnockoutDividendStateDistribution`);
+    // Dividends are already other federal income on these returns. A matching box 16 does not clear that stop.
+    expect(get(mismatch, otherIncome).get).toBe(true);
+
+    const match = build({
+      ...divs({ box1a: 2000, box2a: 500, box16: 2500, box14: 0 }),
+      ...state(st),
+      ...screeners,
+    });
+    expect(val(match, `/dividendReports/#${d1}/stateDistribution`)).toBe(`2500.00`);
+    expect(get(match, `/flowKnockoutDividendStateDistribution`).get).toBe(false);
+    expect(get(match, otherIncome).get).toBe(true);
+    expect(get(match, `/flowIsKnockedOut`).get).toBe(true);
+  };
+  it(`an Illinois return stops when box 16 differs from box 1a plus box 2a`, ({ task }) => {
+    computedStateMismatch(task, `il`, `/flowKnockoutIlOtherFederalIncome`, {
+      '/ilResidencyStatus': createEnumWrapper(`fullYear`, `/ilResidencyOptions`),
+    });
+  });
+  it(`a North Carolina return stops when box 16 differs from box 1a plus box 2a`, ({ task }) => {
+    computedStateMismatch(task, `nc`, `/flowKnockoutNcOtherFederalIncome`, {
+      '/ncResidencyStatus': createEnumWrapper(`fullYear`, `/ncResidencyOptions`),
+    });
+  });
+  it(`an Arizona return stops when box 16 differs from box 1a plus box 2a`, ({ task }) => {
+    computedStateMismatch(task, `az`, `/flowKnockoutAzOtherFederalIncome`, {
+      '/azResidencyStatus': createEnumWrapper(`fullYear`, `/azResidencyOptions`),
+    });
   });
 });

@@ -185,7 +185,7 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       ...ord,
       [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(false),
     });
-    expect(at(unchecked, `1099-div-box-11`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    expect(at(unchecked, `1099-div-box-11`, task)).toRouteNextTo(`${path}/1099-div-boxes-14-16`);
     const checked = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
@@ -196,7 +196,7 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
       '/requiredToFileForm8938': createBooleanWrapper(false),
     });
-    expect(at(form8938No, `1099-div-form-8938`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    expect(at(form8938No, `1099-div-form-8938`, task)).toRouteNextTo(`${path}/1099-div-boxes-14-16`);
     const form8938Yes = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
@@ -208,10 +208,27 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       '/hasForeignAccounts': createBooleanWrapper(true),
       [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(true),
     });
-    expect(at(line7aYes, `1099-div-box-11`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    expect(at(line7aYes, `1099-div-box-11`, task)).toRouteNextTo(`${path}/1099-div-boxes-14-16`);
   });
   it(`other boxes and nominee answers route to their knockouts`, ({ task }) => {
     const ord = { [`/dividendReports/#${id}/ordinaryDividends`]: createDollarWrapper(`500`) };
+    const stateInfo = base(`single`, {
+      ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+    });
+    expect(at(stateInfo, `1099-div-boxes-14-16`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    const box14 = base(`single`, {
+      ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+      [`/dividendReports/#${id}/writableStateTaxWithheld`]: createDollarWrapper(`25`),
+    });
+    expect(at(box14, `1099-div-boxes-14-16`, task)).toRouteNextTo(`${path}/1099-div-box-14-knockout`);
+    const box16 = base(`single`, {
+      ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+      [`/dividendReports/#${id}/writableStateDistribution`]: createDollarWrapper(`100`),
+    });
+    expect(at(box16, `1099-div-boxes-14-16`, task)).toRouteNextTo(`${path}/1099-div-box-16-knockout`);
     const other = base(`single`, {
       ...ord,
       [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(true),
@@ -219,6 +236,7 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
     expect(at(other, `1099-div-unsupported-boxes`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes-knockout`);
     const none = base(`single`, {
       ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
       [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
     });
     expect(at(none, `1099-div-unsupported-boxes`, task)).toRouteNextTo(`${path}/1099-div-nominee`);
