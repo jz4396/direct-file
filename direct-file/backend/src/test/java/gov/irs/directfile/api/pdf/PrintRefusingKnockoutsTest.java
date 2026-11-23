@@ -265,6 +265,19 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutMaNoFullYearMcc",
                 "/flowKnockoutMaRetirementContribution",
                 "/flowKnockoutMaScheduleHcIdentifiers",
+                "/flowKnockoutIdPartYearOrNonresident",
+                "/flowKnockoutIdW2NotIdaho",
+                "/flowKnockoutIdOtherFederalIncome",
+                "/flowKnockoutIdDependents",
+                "/flowKnockoutIdAgeOrBlind",
+                "/flowKnockoutIdClaimedAsDependent",
+                "/flowKnockoutIdFilingStatus",
+                "/flowKnockoutIdItemizedDeductions",
+                "/flowKnockoutIdSchedule1A",
+                "/flowKnockoutIdPublicAssistance",
+                "/flowKnockoutIdUseTax",
+                "/flowKnockoutIdSnapOrIncarcerated",
+                "/flowKnockoutIdForm39R",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -316,9 +329,10 @@ class PrintRefusingKnockoutsTest {
         // make /flowIsKnockedOut true.
         // #86 appends the 1099-DIV stops, including /flowKnockoutDividendStateDistribution, and does not list
         // Part III again. #347 adds /flowKnockoutPaK1GuaranteedPayments. #93 slice 6 adds the fourteen Massachusetts
-        // stops. 112 on main plus the box 16 stop is 113.
+        // stops. 112 on main plus the box 16 stop is 113. #93 slice 7 adds the thirteen Idaho stops. 113 plus 13 is
+        // 126.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(113, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(126, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -919,6 +933,19 @@ class PrintRefusingKnockoutsTest {
                     }
                 }
             }
+            // #93 slice 7: an Idaho resident return refuses the same way.
+            Result<Object> idReturn = graph.get("/stateReturnIsId");
+            if (idReturn.complete() && Boolean.TRUE.equals(idReturn.get())) {
+                for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+                    if (!path.startsWith("/flowKnockoutId")) {
+                        continue;
+                    }
+                    Result<Object> knock = graph.get(path);
+                    if (!(knock.complete() && Boolean.FALSE.equals(knock.get()))) {
+                        expected.add(path);
+                    }
+                }
+            }
             // refusingPaths follows FACT_PATHS. Arizona stops sit ahead of the Form 8962 stops, so an Arizona
             // scenario that also refuses on a premium tax credit is listed with the Arizona paths first.
             List<String> ordered = new ArrayList<>();
@@ -977,6 +1004,7 @@ class PrintRefusingKnockoutsTest {
         // already refused. 152 minus those thirteen is 139. #93 slice 6: 29 Massachusetts resident returns that
         // previously printed now refuse, because a Form 1 stop is true or a Form 1 question is unanswered.
         // 139 minus 29 is 110. The in-scope full-year W-2 scenarios that answer those questions still print.
+        // #93 slice 7 adds the Idaho stops. No packaged scenario is an Idaho resident, so 110 is unchanged.
         assertEquals(110, printed, "scenarios that print");
     }
 

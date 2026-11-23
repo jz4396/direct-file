@@ -544,6 +544,14 @@ direct-file:
         configuration-location: pdf/2026/MAHC/en/configuration.yml
         configuration-location-type: classpath
         cache-in-memory: true
+      - name: ID40
+        year: 2026
+        language-code: en
+        location: pdf/2026/ID40/en/2025_form-40.pdf
+        location-type: classpath
+        configuration-location: pdf/2026/ID40/en/configuration.yml
+        configuration-location-type: classpath
+        cache-in-memory: true
       - name: DF1099R
         year: 2026
         language-code: es

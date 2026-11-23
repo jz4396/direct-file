@@ -1,0 +1,137 @@
+# #93 slice 7: Idaho Form 40. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# The 2026 Form 40 is not the template. This 2025 fillable form (EFO00089, rev. 03-02-2026) stands in.
+# Amounts are tax year 2026. Preprinted text that still says 2025 is left as printed.
+# The $10 on line 31 is preprinted. Line 32 includes it. The 2025 standard-deduction margin figures are not entered.
+# Line 16 and the standard-deduction worksheet use the 2026 federal standard deduction.
+# Source: https://tax.idaho.gov/wp-content/uploads/forms/EFO00089/EFO00089_03-02-2026.pdf
+# SHA-256 1390489138a7df67095155aaf34e6e8f39a4fd36041594f95b766f5e33bb8a13
+# Included when /stateReturnIsId. Stops in idPit refuse the package, so the zero lines below are the supported entry.
+# Whole dollars, no commas, no decimals. Zero prints 0.
+# Id40PdfForm fills the ~id40* pseudo-facts (name, address, phone, filing-status boxes, food-credit months).
+includeWhen: /stateReturnIsId
+otherRequiredFacts:
+  - /isFilingStatusMFJ
+  - /filingStatus
+  - /address
+  - /phone
+  - /primaryFiler/firstName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/lastName
+  - /primaryFiler/tin
+  - /secondaryFiler/firstName
+  - /secondaryFiler/middleInitial
+  - /secondaryFiler/lastName
+  - /secondaryFiler/tin
+  - /idResidencyStatus
+  - /idHasUseTax
+  - /idReceivedPublicAssistance
+  - /idReceivedSnapOrIncarcerated
+  - /idLine7
+  - /idLine16
+  - /idLine20
+  - /idLine43
+  - /idLine46
+  - /idLine56
+form:
+  FirstName1: ~id40First
+  Initial1: ~id40Initial
+  LastName1: ~id40Last
+  SSN: /primaryFiler/tin
+  FirstName2: ~id40SpouseFirst
+  MiddleInitial2: ~id40SpouseInitial
+  LastName2: ~id40SpouseLast
+  SpouseSSN: ~id40SpouseSsn
+  CurrentMailing: ~id40Street
+  City: ~id40City
+  StateAbbrv: ~id40State
+  ZIPcode: ~id40Zip
+  'TaxpayerPhoneNo 2': ~id40Phone
+  FilingStatusSingle: ~id40Single
+  FilingStatusMarriedJoint: ~id40Joint
+  FilingStatusMarriedSeparate: ~id40Off
+  FilingStatusHead: ~id40Off
+  SpouseDeceased: ~id40Off
+  Deceased: ~id40Off
+  'SpouseDeceased 2': ~id40Off
+  'L12aYourself ': ~id40Off
+  L12aSpouse: ~id40Off
+  L12bYourself: ~id40Off
+  L12bSpouse: ~id40Off
+  L12cDependent: ~id40Off
+  6aYourself: /idHouseholdSelf
+  6bSpouse: /idHouseholdSpouse
+  6cDependents: /idZero
+  6dTotalHousehold: /idHouseholdTotal
+  IncomeL7: /idLine7
+  IncomeL8: /idZero
+  IncomeL9: /idLine9
+  IncomeL10: /idZero
+  IncomeL11: /idLine11
+  IncomeL19: /idLine19
+  TxCompL13: /idZero
+  TxCompL14: /idZero
+  TxCompL15: /idZero
+  TxCompL16: /idLine16
+  TxCompL17: /idLine17
+  TxCompL18: /idLine18
+  TxCompL20: /idLine20
+  CreditsL21: /idZero
+  CreditsL22: /idZero
+  CreditsL23: /idZero
+  CreditsL24: /idZero
+  CreditsL25: /idZero
+  CreditsL26: /idLine26
+  OtherTaxesL27: /idZero
+  OtherTaxesL28: /idZero
+  OtherTaxesL29: /idZero
+  OtherTaxesL30: /idZero
+  OtherTaxesL31Check: ~id40Off
+  OtherTaxesL32: /idLine32
+  DonationsL33: /idZero
+  DonationsL34: /idZero
+  DonationsL35: /idZero
+  DonationsL36: /idZero
+  DonationsL37: /idZero
+  DonationsL38: /idZero
+  DonationsL39: /idZero
+  DonationsL40: /idZero
+  DonationsL41: /idLine41
+  'FoodCreditL42 Amount 2': /idZero
+  'FoodCreditL43-1 Amount 1': /idLine43
+  FoodCreditL43-3 DonateCheckbox: ~id40Off
+  'PymntOtherCredit Donate L43-4 Amount 4': /idZero
+  PymntOtherCreditL44: /idZero
+  'PymntOtherCreditL45-1 SpecialFuels 3': /idZero
+  'PymntOtherCreditL45-2 Gasoline 3': /idZero
+  'PymntOtherCreditL45-3 Amount 3': /idZero
+  PymntOtherCreditL46: /idLine46
+  PymntOtherCreditL47: /idZero
+  'PymntOtherCreditL48-1 Paid 3': /idZero
+  'PymntOtherCreditL48-2 Withheld 3': /idZero
+  'PymntOtherCreditL48-3 ABE 3': /idZero
+  'PymntOtherCreditL48-4 Amount 3': /idZero
+  'PymntOtherCreditL49-1 Incentive 3': /idZero
+  'PymntOtherCreditL49-2 Claim 3': /idZero
+  'PymntOtherCreditL49-3 Amount 3': /idZero
+  'PymntOtherCreditL50 Total 3': /idLine50
+  TxDueRefundL51: /idLine51
+  'TxDueRefundL52-1 Penalty 3': /idZero
+  'TxDueRefundL52-2 Interest 3': /idZero
+  'TxDueRefundL52-3 Total 3': /idZero
+  L53: /idZero
+  TxDueRefundL54: /idLine54
+  TxDueRefundL55: /idLine55
+  RefundedL56-1: /idLine56
+  AppliedL56-2: /idZero
+  Frm40StdWorksheetL2: /idLine16
+  Frm40StdWorksheetL7: /idLine16
+  Frm40TaxWorksheetL8: /idLine19
+  Frm40TaxWorksheetL9: /idTaxThreshold
+  Frm40TaxWorksheetL10: /idWorksheetLine3
+  Frm40TaxWorksheetL11: /idLine20
+  Frm40TaxWorksheetL12: /idLine20
+  Frm40GroceryCreditWorksheetYourselfL2: ~id40SelfMonths
+  Frm40GroceryCreditWorksheetYourselfL3: /idFoodTaxCreditPerFiler
+  Frm40GroceryCreditWorksheetYourselfL4: ~id40SpouseMonths
+  Frm40GroceryCreditWorksheetSpouseL5: /idFoodCreditSpouse
+  Frm40GroceryCreditWorksheetL6: /idLine43
