@@ -221,8 +221,23 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       ...ord,
       '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
       [`/dividendReports/#${id}/writableStateTaxWithheld`]: createDollarWrapper(`25`),
+      [`/dividendReports/#${id}/writableState`]: createEnumWrapper(`sameState`, `/incomeFormStateOptions`),
     });
     expect(at(box14, `1099-div-boxes-14-16`, task)).toRouteNextTo(`${path}/1099-div-box-14-knockout`);
+    const nyBox14 = base(`single`, {
+      ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`ny`, `/scopedStateOptions`),
+      [`/dividendReports/#${id}/writableStateTaxWithheld`]: createDollarWrapper(`100`),
+      [`/dividendReports/#${id}/writableState`]: createEnumWrapper(`sameState`, `/incomeFormStateOptions`),
+    });
+    expect(at(nyBox14, `1099-div-boxes-14-16`, task)).toRouteNextTo(`${path}/1099-div-unsupported-boxes`);
+    const nyOtherState = base(`single`, {
+      ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`ny`, `/scopedStateOptions`),
+      [`/dividendReports/#${id}/writableStateTaxWithheld`]: createDollarWrapper(`25`),
+      [`/dividendReports/#${id}/writableState`]: createEnumWrapper(`differentState`, `/incomeFormStateOptions`),
+    });
+    expect(at(nyOtherState, `1099-div-boxes-14-16`, task)).toRouteNextTo(`${path}/1099-div-box-14-knockout`);
     const box16 = base(`single`, {
       ...ord,
       '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
