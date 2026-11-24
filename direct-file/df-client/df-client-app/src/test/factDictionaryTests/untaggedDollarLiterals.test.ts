@@ -130,6 +130,14 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `half-up guard: multiply the cent-then-dollar round by 100, and subtract $1 only when that exceeds the exact product by more than 50 cents. 38,783 times 5.3% stays $2,055. Refs #93.`,
   },
+  '/ksLine8Times100': {
+    kind: `structural`,
+    reason: `100 times Form K-40 line 8 before the dollar round: line 7 times 558/100, which is 100 times the 5.58% rate in /ksTaxRate, minus 100 times the worksheet subtraction. The rate itself is the tax-year parameter. Refs #93.`,
+  },
+  '/ksLine8': {
+    kind: `structural`,
+    reason: `half-up guard: multiply the cent-then-dollar round by 100, and subtract $1 only when that exceeds the exact product by more than 50 cents. 100,224 times 5.58% minus $87 stays $5,505. Refs #93.`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,

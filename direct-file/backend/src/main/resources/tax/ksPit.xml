@@ -1,0 +1,1458 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 8: 2026 Form K-40 for a full-year Kansas resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-7133296506
+      Scope: Single, or married filing jointly with both spouses in Kansas all year. No dependents,
+      under 65, not blind, nobody can claim a filer as a dependent, federal standard deduction.
+      Line 1 is federal AGI. Line 2 is zero, so line 3 equals line 1. Line 4 is the Kansas standard
+      deduction. Line 5 is the Kansas exemption allowance. Line 6 is 4 plus 5. Line 7 is line 3 minus
+      line 6, not below zero.
+      Line 8 is computed only when line 7 is more than $100,000. The 2025 tax table is not modeled, so
+      line 7 of $100,000 or less stops. Over $100,000, the page 34 Tax Computation Worksheet is
+      line 7 times 5.58 percent minus $87 (single) or $175 (joint), rounded once, half up, to the dollar.
+      Dollar times Rational scales to cents half-even before Round half-up, so /ksLine8 corrects that
+      second step the way /ilLine12, /ncLine15, /azLine46, /maLine22, and /idLine20 do.
+      100,224 times 0.0558 is 5,592.4992, minus $87 is 5,505.4992, which must stay 5,505. Cents first
+      would make 5,505.50 and then 5,506. The correction subtracts $1 only when the cent-then-dollar
+      result exceeds the exact product by more than 50 cents, so an exact half dollar stays the half-up
+      dollar.
+      The worksheet's $87 and $175 are not the statute's $1,196 and $2,392 bracket bases. Converting
+      K.S.A. 79-32,110b(a)(2)(B) and (a)(1)(B) into the worksheet's income-times-rate form gives $87.40
+      and $174.80. The worksheet amounts differ from those by $0.40 and $0.20. The form uses the worksheet.
+      The deduction, exemption, rate, worksheet subtractions, and $100,000 table limit are 2025 booklet
+      amounts. Re-pin them from the 2026 booklet when it is posted. K.S.A. 79-32,110b sets the rates for
+      tax year 2024 and all tax years thereafter.
+      Form structure: 2025 Form K-40 (rev. 8-5-25), used until the 2026 form is posted. Amounts entered
+      are the 2025 booklet figures the statute still states for every later year. A stop below is
+      BlockSubmissionOnTrue and print-refusing.
+    -->
+
+    <Fact path="/ksStandardDeductionSingle">
+      <Name>Kansas standard deduction, single</Name>
+      <Description>Form K-40 line 4 for a single filer. K.S.A. 79-32,119(c)(2): "For tax year 2024, and all
+        tax years thereafter, the standard deduction amount of an individual, including husband and wife who
+        are either both residents or who file a joint return as if both were residents, shall be as follows:
+        Single individual filing status, $3,605; married filing status, $8,240; and head of household filing
+        status, $6,180." 2025 Kansas Individual Income Tax Booklet (ip25, rev. 9-26-25), page 6, Kansas
+        Standard Deduction: "Single $3,605." Head of household and married filing separate are not in scope.
+        These are the 2025 booklet amounts. Re-pin this amount from the 2026 booklet when it is posted.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>3605</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksStandardDeductionMfj">
+      <Name>Kansas standard deduction, married filing jointly</Name>
+      <Description>Form K-40 line 4 for a joint return. K.S.A. 79-32,119(c)(2): "married filing status,
+        $8,240." 2025 Kansas Individual Income Tax Booklet, page 2: "Married Filing Joint $8,240." Married
+        filing separate is not in scope. These are the 2025 booklet amounts. Re-pin this amount from the
+        2026 booklet when it is posted.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>8240</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksExemptionSingle">
+      <Name>Kansas exemption allowance, single</Name>
+      <Description>Form K-40 line 5 for a single filer. K.S.A. 79-32,121(a)(2): "in the case of all other
+        individuals with a filing status of single, head of household or married filing separate, a personal
+        exemption of $9,160." 2025 Kansas Individual Income Tax Booklet, page 6: "If your filing status is
+        single, married filing separate or head of household, check the box to indicate filing status, enter
+        one in the box for number of exemptions and $9,160 in the amount box." No dependents are in scope, so
+        the $2,320 dependent exemption is not added. These are the 2025 booklet amounts. Re-pin this amount
+        from the 2026 booklet when it is posted.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>9160</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksExemptionMfj">
+      <Name>Kansas exemption allowance, married filing jointly</Name>
+      <Description>Form K-40 line 5 for a joint return. K.S.A. 79-32,121(a)(1): "In the case of married
+        individuals filing a joint return, a personal exemption of $18,320." 2025 Kansas Individual Income
+        Tax Booklet, page 6: "If your filing status is married filing joint, check the box to indicate filing
+        status, enter 2 in the box for the number of exemptions and $18,320 in the amount box." These are the
+        2025 booklet amounts. Re-pin this amount from the 2026 booklet when it is posted.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>18320</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksTaxRate">
+      <Name>Kansas income tax rate above the second bracket</Name>
+      <Description>Tax Computation Worksheet column (b) when line 7 is over $100,000. K.S.A.
+        79-32,110b(a)(2)(B), for tax year 2024 and all tax years thereafter: "Over $23,000 $1,196 plus 5.58%
+        of excess over $23,000." Subsection (a)(1)(B) uses the same 5.58% rate for a joint return over
+        $46,000. 2025 booklet, page 34, Tax Computation Worksheet: "5.58% (.0558)." Stored as 558/10000.
+        The amount on line 8 is rounded once, half up, to the dollar.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>558/10000</Rational>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksWorksheetSubtractionSingle">
+      <Name>Kansas tax worksheet subtraction, single</Name>
+      <Description>Tax Computation Worksheet column (d) for a single filer when line 7 is over $23,000.
+        2025 booklet, page 34: "5.58% (.0558)" and subtraction amount "$87." K.S.A. 79-32,110b(a)(2)(B)
+        states "$1,196 plus 5.58% of excess over $23,000." Five and fifty-eight hundredths percent of $23,000
+        is $1,283.40, and $1,283.40 minus $1,196 is $87.40. The worksheet subtracts $87, which is $0.40 less.
+        The form uses the worksheet. Re-pin this amount from the 2026 booklet when it is posted.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>87</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksWorksheetSubtractionMfj">
+      <Name>Kansas tax worksheet subtraction, married filing jointly</Name>
+      <Description>Tax Computation Worksheet column (d) for a joint return when line 7 is over $46,000.
+        2025 booklet, page 34: "5.58% (.0558)" and subtraction amount "$175." K.S.A. 79-32,110b(a)(1)(B)
+        states "$2,392 plus 5.58% of excess over $46,000." Five and fifty-eight hundredths percent of $46,000
+        is $2,566.80, and $2,566.80 minus $2,392 is $174.80. The worksheet subtracts $175, which is $0.20
+        more. The form uses the worksheet. Re-pin this amount from the 2026 booklet when it is posted.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>175</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksTaxTableLimit">
+      <Name>Kansas tax table limit</Name>
+      <Description>Form K-40 line 8 uses the tax tables when line 7 is this amount or less. 2025 booklet,
+        page 7: "If line 7 is $100,000 or less, use the Tax Tables beginning on page 27 to find the amount of
+        your tax. If line 7 is more than $100,000, you will need to use the Tax Computation Worksheet on page
+        34 to compute your tax." Page 34 of the table: "100,001 and over – use the Tax Computation Worksheet."
+        The 2025 table is not modeled. Line 7 of $100,000 or less stops. Re-pin this amount from the 2026
+        booklet when it is posted.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>100000</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksResidencyOptions">
+      <Name>Kansas residency answers</Name>
+      <Description>Full-year resident is the supported Form K-40. Part-year residents and nonresidents
+        complete Schedule S Part B. A joint return is a full-year Form K-40 only when both spouses lived in
+        Kansas all year.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>nonresident</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksResidencyStatus">
+      <Name>Kansas residency</Name>
+      <Description>Full year means you, and your spouse if you file jointly, lived in Kansas all year.
+        Part-year and nonresident stop. Form K-40 and Schedule S Part B.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Enum optionsPath="/ksResidencyOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/ksResidencyIsPartYearOrNonresident">
+      <Name>Kansas residency is part-year or nonresident</Name>
+      <Description>True for Schedule S Part B. Incomplete until /ksResidencyStatus is answered.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left>
+              <Dependency path="/ksResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/ksResidencyOptions">partYear</Enum>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <Dependency path="/ksResidencyStatus" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/ksResidencyOptions">nonresident</Enum>
+            </Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine1">
+      <Name>Form K-40 line 1 federal adjusted gross income</Name>
+      <Description>Federal AGI. 2025 Form K-40, line 1: "Federal adjusted gross income (as reported on your
+        federal income tax return)."</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine2">
+      <Name>Form K-40 line 2 modifications</Name>
+      <Description>Zero. Schedule S modifications are not in scope. 2025 Form K-40, line 2: "Modifications
+        (from Schedule S, line A27)."</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine3">
+      <Name>Form K-40 line 3 Kansas adjusted gross income</Name>
+      <Description>Line 2 added to or subtracted from line 1. Line 2 is zero, so this equals line 1.
+        2025 Form K-40, line 3.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/ksLine1" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine4">
+      <Name>Form K-40 line 4 standard deduction</Name>
+      <Description>$3,605 for single. $8,240 for married filing jointly. Other filing statuses use the
+        single amount and stop. K.S.A. 79-32,119(c)(2). Itemized deductions stop the return, so this is the
+        standard deduction. Age 65 and blindness stop, so the page 6 worksheet for people 65 or older or
+        blind is not used.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dependency path="/ksStandardDeductionMfj" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/ksStandardDeductionSingle" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine5">
+      <Name>Form K-40 line 5 exemption allowance</Name>
+      <Description>$9,160 for single. $18,320 for married filing jointly. K.S.A. 79-32,121(a). Dependents,
+      a child born this year, a stillbirth, and the disabled-veteran exemption are not in scope. Being
+      claimed as a dependent stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dependency path="/ksExemptionMfj" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/ksExemptionSingle" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine6">
+      <Name>Form K-40 line 6 total deductions</Name>
+      <Description>Add lines 4 and 5. 2025 Form K-40, line 6.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Dependency path="/ksLine4" />
+          <Dependency path="/ksLine5" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine7">
+      <Name>Form K-40 line 7 taxable income</Name>
+      <Description>Subtract line 6 from line 3. If less than zero, enter 0. 2025 Form K-40, line 7, and
+        2025 booklet, page 7, LINE 7.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/ksLine3" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/ksLine6" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine7OverTaxTable">
+      <Name>Form K-40 line 7 is over the tax table</Name>
+      <Description>True when line 7 is more than $100,000, so line 8 uses the Tax Computation Worksheet.
+        $100,000 or less uses the tax tables, which are not modeled, and stops.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/ksLine7" />
+          </Left>
+          <Right>
+            <Dependency path="/ksTaxTableLimit" />
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksWorksheetSubtraction">
+      <Name>Kansas tax worksheet subtraction</Name>
+      <Description>$87 for single. $175 for married filing jointly. Other filing statuses use $87 and stop.
+        2025 booklet, page 34, Tax Computation Worksheet, column (d).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Dependency path="/ksWorksheetSubtractionMfj" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/ksWorksheetSubtractionSingle" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine8CentRound">
+      <Name>Form K-40 line 8 after the cent-then-dollar round</Name>
+      <Description>Round(line 7 times 5.58% minus the worksheet subtraction). Dollar times Rational scales
+        to cents half-even before Round half-up, so a product whose exact fraction is just under half a
+        dollar can become 50 cents and then round up a dollar. 100,224 times 0.0558 is 5,592.4992. Minus $87
+        is 5,505.4992, which that path turns into 5,506. This is not the amount entered on the form.</Description>
+      <Derived>
+        <Round>
+          <Subtract>
+            <Minuend>
+              <Multiply>
+                <Dependency path="/ksLine7" />
+                <Dependency path="/ksTaxRate" />
+              </Multiply>
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/ksWorksheetSubtraction" />
+            </Subtrahends>
+          </Subtract>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine8Times100">
+      <Name>One hundred times the exact Form K-40 line 8</Name>
+      <Description>Line 7 times 558/100, minus 100 times the worksheet subtraction. That is 100 times
+        (line 7 times 0.0558 minus the subtraction), and for a whole-dollar line 7 it keeps the exact
+        hundredth of a cent. 100,224 times 558/100 is 559,249.92, which is 5,592.4992 dollars. Minus $8,700
+        is 550,549.92 cents, which is 5,505.4992 dollars. The 5.58% rate itself is /ksTaxRate.</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Multiply>
+              <Dependency path="/ksLine7" />
+              <Rational>558/100</Rational>
+            </Multiply>
+          </Minuend>
+          <Subtrahends>
+            <Multiply>
+              <Dependency path="/ksWorksheetSubtraction" />
+              <Int>100</Int>
+            </Multiply>
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine8">
+      <Name>Form K-40 line 8 tax</Name>
+      <Description>Line 7 times 5.58 percent, minus $87 or $175, rounded once, half up, to the dollar.
+        Computed only when line 7 is more than $100,000. Otherwise this fact is incomplete and the return
+        stops, because the tax tables are not modeled. The cent-then-dollar result is one dollar high when
+        it exceeds this exact product by more than 50 cents. 100,224 times 0.0558 minus $87 is 5,505.4992
+        and stays 5,505. 2025 booklet, page 34: "Subtract (d) from (c). Enter total here and line 8 of
+        K-40." The form says whole dollars only. K.S.A. 79-32,110b(a).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/ksLine7OverTaxTable" />
+                <GreaterThan>
+                  <Left>
+                    <Subtract>
+                      <Minuend>
+                        <Multiply>
+                          <Dependency path="/ksLine8CentRound" />
+                          <Int>100</Int>
+                        </Multiply>
+                      </Minuend>
+                      <Subtrahends>
+                        <Dependency path="/ksLine8Times100" />
+                      </Subtrahends>
+                    </Subtract>
+                  </Left>
+                  <Right>
+                    <Dollar>50</Dollar>
+                  </Right>
+                </GreaterThan>
+              </All>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend>
+                  <Dependency path="/ksLine8CentRound" />
+                </Minuend>
+                <Subtrahends>
+                  <Dollar>1</Dollar>
+                </Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksLine7OverTaxTable" />
+            </When>
+            <Then>
+              <Dependency path="/ksLine8CentRound" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine12">
+      <Name>Form K-40 line 12 total income tax</Name>
+      <Description>Residents add lines 8 and 11. Line 11 is zero because there is no lump-sum distribution,
+        so this equals line 8. Lines 9 and 10 are skipped for a resident. 2025 booklet, page 7, LINE 12.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/ksLine8" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine16">
+      <Name>Form K-40 line 16 subtotal</Name>
+      <Description>Subtract lines 13, 14, and 15 from line 12. Those credits are zero in scope, so this
+        equals line 12. A federal Form 2441 credit greater than zero stops, so the 50 percent Kansas credit
+        on line 14 is not calculated. 2025 Form K-40, line 16.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/ksLine12" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine18">
+      <Name>Form K-40 line 18 total tax balance</Name>
+      <Description>Subtract line 17 from line 16, not below zero. Line 17 is zero because the federal earned
+        income credit is zero in scope, so this equals line 16. A federal earned income credit greater than
+        zero stops, so the 17 percent Kansas credit is not calculated. 2025 booklet, page 8, LINE 18.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency path="/ksLine16" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/ksWithholding">
+      <Name>This W-2's Kansas withholding</Name>
+      <Description>Box 17 when box 15 is Kansas (the same state as the residence). A blank box 15 is in
+        scope and contributes zero. A box 15 for another state stops the return and contributes zero here.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../writableState" />
+                </IsComplete>
+                <Equal>
+                  <Left>
+                    <Dependency path="../writableState" />
+                  </Left>
+                  <Right>
+                    <Enum optionsPath="/incomeFormStateOptions">sameState</Enum>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../stateWithholding" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine19">
+      <Name>Form K-40 line 19 Kansas income tax withheld</Name>
+      <Description>Sum of W-2 box 17 where box 15 is Kansas. 2025 booklet, page 8, LINE 19: "Add the Kansas
+        withholding amounts shown on your W-2 forms."</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/ksWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine27">
+      <Name>Form K-40 line 27 total refundable credits</Name>
+      <Description>Add lines 19 through 25 and subtract line 26. Lines 20 through 26 are zero, so this
+        equals line 19. 2025 Form K-40, line 27.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/ksLine19" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine28">
+      <Name>Form K-40 line 28 underpayment</Name>
+      <Description>If line 18 is greater than line 27, the difference. Otherwise zero. 2025 Form K-40,
+        line 28.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/ksLine18" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/ksLine27" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine32">
+      <Name>Form K-40 line 32 amount owed</Name>
+      <Description>Add lines 28 through 31 and lines 35 through 42. Interest, penalties, and the contribution
+        lines are zero, so this equals line 28. 2025 Form K-40, line 32.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/ksLine28" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine33">
+      <Name>Form K-40 line 33 overpayment</Name>
+      <Description>If line 18 is less than line 27, the difference. Otherwise zero. 2025 Form K-40, line 33.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/ksLine27" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/ksLine18" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksLine43">
+      <Name>Form K-40 line 43 refund</Name>
+      <Description>Subtract lines 34 through 42 from line 33. The credit-forward and contribution lines are
+        zero, so this equals line 33. 2025 Form K-40, line 43.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/ksLine33" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksZero">
+      <Name>Form K-40 zero</Name>
+      <Description>Printed on lines this return does not calculate: modifications, credits, estimates,
+        penalties, and contributions. Those cases stop or are not offered.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksExemptionCount">
+      <Name>Form K-40 exemption count</Name>
+      <Description>1 for single. 2 for a joint return. 2025 booklet, page 6. Dependents are not in scope.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <Int>2</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Int>1</Int>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <!-- Stops. Each is complete false when this is not a Kansas return, and incomplete when the fact it
+         depends on has not been answered. -->
+
+    <Fact path="/ksHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, tax-exempt interest, Social Security, a sale or capital gain, 1099-MISC, a
+        1099-R, Schedule C, or Schedule E. Any of that income stops a Form K-40.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/totalIncome" />
+            </IsComplete>
+            <IsComplete>
+              <Dependency module="formW2s" path="/wages" />
+            </IsComplete>
+            <NotEqual>
+              <Left>
+                <Dependency module="income" path="/totalIncome" />
+              </Left>
+              <Right>
+                <Dependency module="formW2s" path="/wages" />
+              </Right>
+            </NotEqual>
+          </All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="interest" path="/taxExemptInterest" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="socialSecurity" path="/socialSecurityBenefits" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="form1099Rs" path="/form1099Rs" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksHasDependents">
+      <Name>Dependents or a qualifying person</Name>
+      <Description>Anyone in the household, or a filer who is a qualifying person for the child and
+        dependent care credit. The $2,320 dependent exemption and the line 14 credit are not calculated.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="filers" path="/cdccQualifyingFilersCount" />
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksAgeOrBlind">
+      <Name>Age 65 or blind</Name>
+      <Description>Primary filer is 65 or older or blind. On a joint return, either spouse. 2025 booklet,
+        page 6: "If you or your spouse is over 65 and/or blind, complete WORKSHEET for Standard Deduction
+        for People 65 or Older and/or Blind." That worksheet is not calculated. The spouse is checked only
+        on a joint return so a single return does not wait on the spouse.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/primaryFiler/isBlind" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Any>
+              <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+              <Dependency module="filers" path="/secondaryFiler/isBlind" />
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksClaimedAsDependent">
+      <Name>Filer can be claimed as a dependent</Name>
+      <Description>The primary filer, or either spouse on a joint return. 2025 booklet, page 6: "If you are
+        claimed as a dependent by another taxpayer, enter 0 in the number of dependents box." The dependent
+        standard deduction is not applied. The spouse is checked only on a joint return.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/canBeClaimed" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency module="filers" path="/secondaryFiler/canBeClaimed" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksFilingStatusUnsupported">
+      <Name>Filing status other than single or joint</Name>
+      <Description>The supported Form K-40 is single, or married filing jointly with both spouses in Kansas
+        all year. Head of household, married filing separately, and qualifying surviving spouse are not
+        calculated. A federal qualifying surviving spouse would check the Kansas head of household box.
+        2025 booklet, page 6, FILING STATUS.</Description>
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksHasSchedule1A">
+      <Name>Federal Schedule 1-A is more than zero</Name>
+      <Description>Qualified tips, overtime, car-loan interest, or the senior deduction on Schedule 1-A
+        line 44. The READY spec calls this stop 1040 line 13b. The 2026 draft Form 1040 in this tool prints
+        Schedule 1-A on line 13a and the qualified business income deduction on line 13b. Kansas conformity
+        for Schedule 1-A is not pinned, so the deduction is not entered. Incomplete when line 44 is
+        incomplete.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="schedule1A" path="/schedule1ALine44" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksHasEarnedIncomeCredit">
+      <Name>Federal earned income credit is more than zero</Name>
+      <Description>Form K-40 line 17 is 17 percent of the federal earned income credit. 2025 booklet, page 8,
+        Earned Income Tax Credit Worksheet: "Kansas EITC (multiply line 1 by 17%)." That credit is not
+        calculated. Incomplete when the federal credit is incomplete.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="eitc" path="/earnedIncomeCredit" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ksHasForm2441Credit">
+      <Name>Federal Form 2441 credit is more than zero</Name>
+      <Description>Form K-40 line 14 is 50 percent of the federal child and dependent care credit. 2025
+        booklet, page 8, LINE 14: "Multiply amount of credit allowed on (federal Form 2441) by 50%." That
+        credit is not calculated. The federal amount is Form 2441 line 11. Incomplete when that credit is
+        incomplete.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="cdcc" path="/cdccTotalCredit" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsPartYearOrNonresident">
+      <Name>Flow knockout: Kansas part-year or nonresident</Name>
+      <Description>Schedule S Part B is not calculated. Complete false when this is not a Kansas return.
+        Incomplete until /ksResidencyStatus is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksResidencyIsPartYearOrNonresident" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksResidencyIsPartYearOrNonresident" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksResidencyIsPartYearOrNonresident" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsW2NotKansas">
+      <Name>Flow knockout: a W-2 box 15 is not Kansas</Name>
+      <Description>Any W-2 whose box 15 is a state other than Kansas. A blank box 15 is in scope and is not
+        this stop. Complete false when this is not a Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsOtherFederalIncome">
+      <Name>Flow knockout: income other than W-2 wages</Name>
+      <Description>Any federal income other than W-2 wages. Complete false when this is not a Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksHasOtherFederalIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksHasOtherFederalIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksHasOtherFederalIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsDependents">
+      <Name>Flow knockout: dependents</Name>
+      <Description>The dependent exemption and the line 14 credit are not calculated. Complete false when
+        this is not a Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksHasDependents" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksHasDependents" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksHasDependents" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsAgeOrBlind">
+      <Name>Flow knockout: age 65 or blind</Name>
+      <Description>The page 6 standard-deduction worksheet is not calculated. Complete false when this is
+        not a Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksAgeOrBlind" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksAgeOrBlind" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksAgeOrBlind" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsClaimedAsDependent">
+      <Name>Flow knockout: claimed as a dependent</Name>
+      <Description>The dependent standard deduction is not calculated. Complete false when this is not a
+        Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksClaimedAsDependent" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksClaimedAsDependent" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksClaimedAsDependent" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsFilingStatus">
+      <Name>Flow knockout: filing status other than single or joint</Name>
+      <Description>Head of household, married filing separately, and qualifying surviving spouse are outside
+        this Form K-40. Complete false when this is not a Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksFilingStatusUnsupported" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksFilingStatusUnsupported" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksFilingStatusUnsupported" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsItemizedDeductions">
+      <Name>Flow knockout: itemized deductions</Name>
+      <Description>Kansas Schedule A is not calculated. 2025 booklet, page 7: "To compute your Kansas
+        itemized deductions you must complete Kansas Schedule A." Complete false when this is not a Kansas
+        return. Incomplete until the itemizing choice is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleA" path="/itemizesDeductions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsEarnedIncomeCredit">
+      <Name>Flow knockout: federal earned income credit</Name>
+      <Description>Line 17, 17 percent of the federal earned income credit, is not calculated. Complete
+        false when this is not a Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksHasEarnedIncomeCredit" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksHasEarnedIncomeCredit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksHasEarnedIncomeCredit" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsForm2441">
+      <Name>Flow knockout: federal Form 2441 credit</Name>
+      <Description>Line 14, 50 percent of the federal child and dependent care credit, is not calculated.
+        Complete false when this is not a Kansas return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksHasForm2441Credit" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksHasForm2441Credit" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksHasForm2441Credit" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsSchedule1A">
+      <Name>Flow knockout: federal Schedule 1-A deduction</Name>
+      <Description>Schedule 1-A line 44 is greater than zero, including qualified overtime. The READY spec
+        names that stop as 1040 line 13b. This draft prints Schedule 1-A on line 13a. Kansas conformity is
+        not pinned. Complete false when this is not a Kansas return and when line 44 is zero.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksHasSchedule1A" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksHasSchedule1A" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/ksHasSchedule1A" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutKsTaxTable">
+      <Name>Flow knockout: line 7 is in the Kansas tax table</Name>
+      <Description>Line 7 is $100,000 or less. The 2025 tax table is not modeled. Complete false when this
+        is not a Kansas return. Incomplete until line 7 is complete.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsKs" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/ksLine7OverTaxTable" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/ksLine7OverTaxTable" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/ksLine7OverTaxTable" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>

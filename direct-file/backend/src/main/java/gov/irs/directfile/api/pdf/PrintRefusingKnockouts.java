@@ -199,6 +199,23 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutIdUseTax",
             "/flowKnockoutIdSnapOrIncarcerated",
             "/flowKnockoutIdForm39R",
+            // #93 slice 8: Kansas stops. Each is complete false when the return is not a Form K-40, and incomplete
+            // when the Kansas question is unanswered, so the PDF is not printed with the unmodeled line as zero.
+            // Derived stops are complete false when the condition is false. 2025 Form K-40 (rev. 8-5-25), used until
+            // the 2026 form is posted. K.S.A. 79-32,110b, 79-32,119, and 79-32,121. Line 8 is line 7 times 5.58
+            // percent minus the worksheet subtraction, rounded once, and only when line 7 is more than $100,000.
+            "/flowKnockoutKsPartYearOrNonresident",
+            "/flowKnockoutKsW2NotKansas",
+            "/flowKnockoutKsOtherFederalIncome",
+            "/flowKnockoutKsDependents",
+            "/flowKnockoutKsAgeOrBlind",
+            "/flowKnockoutKsClaimedAsDependent",
+            "/flowKnockoutKsFilingStatus",
+            "/flowKnockoutKsItemizedDeductions",
+            "/flowKnockoutKsEarnedIncomeCredit",
+            "/flowKnockoutKsForm2441",
+            "/flowKnockoutKsSchedule1A",
+            "/flowKnockoutKsTaxTable",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.

@@ -13,6 +13,7 @@
       Arizona (#93 slice 5) is a computed return: /livedInAz and /stateReturnIsAz feed /stateReturnComputed and these Switches the same way. Form 140 has no local return.
       Massachusetts (#93 slice 6) is a computed return: /livedInMa and /stateReturnIsMa feed /stateReturnComputed and these Switches the same way. Form 1 has no local return.
       Idaho (#93 slice 7) is a computed return: /livedInId and /stateReturnIsId feed /stateReturnComputed and these Switches the same way. Form 40 has no local return.
+      Kansas (#93 slice 8) is a computed return: /livedInKs and /stateReturnIsKs feed /stateReturnComputed and these Switches the same way. Form K-40 has no local return.
     -->
     <Fact path="/stateReturnIsPa">
       <Name>State return: Pennsylvania</Name>
@@ -107,6 +108,22 @@
             <Dependency module="filers" path="/filerResidenceAndIncomeState" />
           </IsComplete>
           <Dependency module="filers" path="/livedInId" />
+        </All>
+      </Derived>
+    </Fact>
+    <Fact path="/stateReturnIsKs">
+      <Name>State return: Kansas</Name>
+      <Description>#93 slice 8: the filer chose Kansas as the one state they lived in and earned income in.
+        filers /livedInKs. Full-year W-2 wages with line 7 over $100,000 are ksPit Form K-40. Part-year,
+        nonresident, the tax table, and the other stops are BlockSubmissionOnTrue facts on that module. No
+        local return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency module="filers" path="/filerResidenceAndIncomeState" />
+          </IsComplete>
+          <Dependency module="filers" path="/livedInKs" />
         </All>
       </Derived>
     </Fact>
@@ -305,12 +322,13 @@
           <Dependency path="/stateReturnIsAz" />
           <Dependency path="/stateReturnIsMa" />
           <Dependency path="/stateReturnIsId" />
+          <Dependency path="/stateReturnIsKs" />
         </Any>
       </Derived>
     </Fact>
     <Fact path="/stateTaxLiability">
       <Name>stateTaxLiability</Name>
-      <Description>#78 state framework: State tax liability (PA-40 line 12, IL-1040 line 12, D-400 line 15, Form 140 line 46, Form 1 line 22, or Form 40 line 20). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax liability (PA-40 line 12, IL-1040 line 12, D-400 line 15, Form 140 line 46, Form 1 line 22, Form 40 line 20, or Form K-40 line 8). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -362,12 +380,20 @@
               <Dependency module="idPit" path="/idLine20" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsKs" />
+            </When>
+            <Then>
+              <Dependency module="ksPit" path="/ksLine8" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateTaxWithheld">
       <Name>stateTaxWithheld</Name>
-      <Description>#78 state framework: State tax withheld (PA-40 line 13, IL-1040 line 25, D-400 lines 20a and 20b, Form 140 line 53, Form 1 line 38, or Form 40 line 46). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax withheld (PA-40 line 13, IL-1040 line 25, D-400 lines 20a and 20b, Form 140 line 53, Form 1 line 38, Form 40 line 46, or Form K-40 line 19). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -419,12 +445,20 @@
               <Dependency module="idPit" path="/idLine46" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsKs" />
+            </When>
+            <Then>
+              <Dependency module="ksPit" path="/ksLine19" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateRefund">
       <Name>stateRefund</Name>
-      <Description>#78 state framework: State overpayment (PA-40 line 29, IL-1040 line 38, D-400 line 34, Form 140 refund, Form 1 line 54, or Form 40 line 56). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State overpayment (PA-40 line 29, IL-1040 line 38, D-400 line 34, Form 140 refund, Form 1 line 54, Form 40 line 56, or Form K-40 line 43). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -476,12 +510,20 @@
               <Dependency module="idPit" path="/idLine56" />
             </Then>
           </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsKs" />
+            </When>
+            <Then>
+              <Dependency module="ksPit" path="/ksLine43" />
+            </Then>
+          </Case>
         </Switch>
       </Derived>
     </Fact>
     <Fact path="/stateAmountOwed">
       <Name>stateAmountOwed</Name>
-      <Description>#78 state framework: State tax due (PA-40 line 26, IL-1040 line 41, D-400 line 27, Form 140 amount owed, Form 1 line 55, or Form 40 line 51). Undefined when no state return is computed.</Description>
+      <Description>#78 state framework: State tax due (PA-40 line 26, IL-1040 line 41, D-400 line 27, Form 140 amount owed, Form 1 line 55, Form 40 line 51, or Form K-40 line 32). Undefined when no state return is computed.</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
@@ -531,6 +573,14 @@
             </When>
             <Then>
               <Dependency module="idPit" path="/idLine51" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/stateReturnIsKs" />
+            </When>
+            <Then>
+              <Dependency module="ksPit" path="/ksLine32" />
             </Then>
           </Case>
         </Switch>
@@ -651,6 +701,23 @@
               <Dependency module="idPit" path="/flowKnockoutIdUseTax" />
               <Dependency module="idPit" path="/flowKnockoutIdSnapOrIncarcerated" />
               <Dependency module="idPit" path="/flowKnockoutIdForm39R" />
+            </Any>
+          </All>
+          <All>
+            <Dependency path="/stateReturnIsKs" />
+            <Any>
+              <Dependency module="ksPit" path="/flowKnockoutKsPartYearOrNonresident" />
+              <Dependency module="ksPit" path="/flowKnockoutKsW2NotKansas" />
+              <Dependency module="ksPit" path="/flowKnockoutKsOtherFederalIncome" />
+              <Dependency module="ksPit" path="/flowKnockoutKsDependents" />
+              <Dependency module="ksPit" path="/flowKnockoutKsAgeOrBlind" />
+              <Dependency module="ksPit" path="/flowKnockoutKsClaimedAsDependent" />
+              <Dependency module="ksPit" path="/flowKnockoutKsFilingStatus" />
+              <Dependency module="ksPit" path="/flowKnockoutKsItemizedDeductions" />
+              <Dependency module="ksPit" path="/flowKnockoutKsEarnedIncomeCredit" />
+              <Dependency module="ksPit" path="/flowKnockoutKsForm2441" />
+              <Dependency module="ksPit" path="/flowKnockoutKsSchedule1A" />
+              <Dependency module="ksPit" path="/flowKnockoutKsTaxTable" />
             </Any>
           </All>
         </Any>
