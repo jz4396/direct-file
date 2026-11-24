@@ -281,6 +281,18 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutIdUseTax",
                 "/flowKnockoutIdSnapOrIncarcerated",
                 "/flowKnockoutIdForm39R",
+                "/flowKnockoutKsPartYearOrNonresident",
+                "/flowKnockoutKsW2NotKansas",
+                "/flowKnockoutKsOtherFederalIncome",
+                "/flowKnockoutKsDependents",
+                "/flowKnockoutKsAgeOrBlind",
+                "/flowKnockoutKsClaimedAsDependent",
+                "/flowKnockoutKsFilingStatus",
+                "/flowKnockoutKsItemizedDeductions",
+                "/flowKnockoutKsEarnedIncomeCredit",
+                "/flowKnockoutKsForm2441",
+                "/flowKnockoutKsSchedule1A",
+                "/flowKnockoutKsTaxTable",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -334,9 +346,10 @@ class PrintRefusingKnockoutsTest {
         // #86 appends the 1099-DIV stops, including /flowKnockoutDividendStateDistribution, and does not list
         // Part III again. #347 adds /flowKnockoutPaK1GuaranteedPayments. #93 slice 6 adds the fourteen Massachusetts
         // stops. 112 on main plus the box 16 stop is 113. #93 slice 7 adds the thirteen Idaho stops. 113 plus 13 is
-        // 126. #85 adds /flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits. 126 plus 1 is 127.
+        // 126. #93 slice 8 adds the twelve Kansas stops. 126 plus 12 is 138. #85 adds
+        // /flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits. 138 plus 1 is 139.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(127, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(139, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -929,6 +942,19 @@ class PrintRefusingKnockoutsTest {
             if (maReturn.complete() && Boolean.TRUE.equals(maReturn.get())) {
                 for (String path : PrintRefusingKnockouts.FACT_PATHS) {
                     if (!path.startsWith("/flowKnockoutMa")) {
+                        continue;
+                    }
+                    Result<Object> knock = graph.get(path);
+                    if (!(knock.complete() && Boolean.FALSE.equals(knock.get()))) {
+                        expected.add(path);
+                    }
+                }
+            }
+            // #93 slice 8: a Kansas resident return refuses the same way.
+            Result<Object> ksReturn = graph.get("/stateReturnIsKs");
+            if (ksReturn.complete() && Boolean.TRUE.equals(ksReturn.get())) {
+                for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+                    if (!path.startsWith("/flowKnockoutKs")) {
                         continue;
                     }
                     Result<Object> knock = graph.get(path);

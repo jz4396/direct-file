@@ -2605,6 +2605,25 @@
       </Derived>
     </Fact>
 
+    <Fact path="/livedInKs">
+      <Name>The filer(s) lives in Kansas</Name>
+      <Description>#93 slice 8: /filerResidenceAndIncomeState is Kansas. K.S.A. 79-32,110b imposes the
+        individual income tax. Wired into stateReturn /stateReturnIsKs, /stateReturnComputed, and the state
+        Switches the way a computed return is wired. Kansas is already in /scopedStateOptions. Form K-40 has
+        no local return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">ks</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
     <Fact path="/livedInWa">
       <Name>The filer(s) lives in Washington State</Name>
       <Description>Washington has a Working Families Tax Credit, so we need a condition to send the
