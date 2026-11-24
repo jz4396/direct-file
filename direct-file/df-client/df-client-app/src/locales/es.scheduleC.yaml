@@ -5,6 +5,7 @@ subsubcategories:
     schedule-c-eligibility: Ingresos de trabajo por cuenta propia
     schedule-c-business: Información del negocio
     schedule-c-spouse: Negocio del cónyuge
+    schedule-c-simplified-home: Método simplificado para más de un negocio
 headings:
   /heading/income/schedule-c: Ingresos de trabajo por cuenta propia
   /heading/income/schedule-c/intro:
@@ -100,6 +101,12 @@ headings:
   /heading/income/schedule-c/home-office-rental: "¿Esta deducción es por un uso distinto del alquiler del hogar?"
   /heading/income/schedule-c/home-office-carryover: "¿No tiene un traslado de gastos reales del Formulario 8829?"
   /heading/income/schedule-c/home-office-square-feet: "Ingrese los pies cuadrados del hogar y del área del negocio"
+  /heading/income/schedule-c/primary-one-home:
+    "¿Todos sus negocios del método simplificado están en el mismo hogar?"
+  /heading/income/schedule-c/secondary-one-home:
+    "¿Todos los negocios del método simplificado de su cónyuge están en el mismo hogar?"
+  /heading/income/schedule-c/spouses-same-space:
+    "¿Confirma que usted y su cónyuge no reclaman la misma parte del hogar?"
   /heading/income/schedule-c/energy: "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
   /heading/income/schedule-c/has-expenses: "¿Este negocio tuvo gastos deducibles?"
   /heading/income/schedule-c/which-expenses: "¿Qué gastos tuvo este negocio?"
@@ -454,8 +461,24 @@ info:
     body:
       "Ingrese el total de pies cuadrados del hogar y luego los pies cuadrados que realmente usó para este negocio. El
       área del negocio no puede ser mayor que el hogar. La deducción usa esa área del negocio, pero no más de 300 pies
-      cuadrados, por $5. Si más de un negocio usa el método simplificado, esta herramienta no puede dividir los 300 pies
-      cuadrados."
+      cuadrados en total para todos sus negocios en el hogar, por $5. Ingrese solo los pies cuadrados que asigna a este
+      negocio. No puede asignar más de lo que este negocio realmente usa. Cada cónyuge tiene un máximo aparte de 300
+      pies cuadrados."
+  /info/income/schedule-c/primary-one-home:
+    body:
+      "Si tiene más de un negocio en su hogar que usa el método simplificado, esos negocios deben estar en el mismo
+      hogar. Los 300 pies cuadrados son el total de todos ellos. Otro hogar necesita el Formulario 8829. Conteste que
+      sí si todos están en un solo hogar. Conteste que no si están en más de un hogar."
+  /info/income/schedule-c/secondary-one-home:
+    body:
+      "Si su cónyuge tiene más de un negocio en el hogar que usa el método simplificado, esos negocios deben estar en
+      el mismo hogar. Su cónyuge tiene un máximo aparte de 300 pies cuadrados. Conteste que sí si todos están en un
+      solo hogar. Conteste que no si están en más de un hogar."
+  /info/income/schedule-c/spouses-same-space:
+    body:
+      "En una declaración conjunta, cada uno puede elegir el método simplificado, pero no para la misma parte del
+      hogar. Cada uno tiene un máximo aparte de 300 pies cuadrados. Conteste que sí si no reclaman la misma parte.
+      Conteste que no si la reclaman."
   /info/income/schedule-c/energy:
     body: "Conteste que sí si reclama la deducción de la línea 27a. Necesita el Formulario 7205."
   /info/income/schedule-c/has-expenses:
@@ -519,7 +542,9 @@ info:
             agotamiento, el alquiler o arrendamiento de un vehículo, el Formulario 8829, espacio
             compartido, uso del
             hogar como alquiler, un traslado previo del Formulario 8829, un método simplificado que esta herramienta no
-            calcula, más de un negocio que usa el método simplificado, el Formulario 7205, comidas que no están
+            calcula, más de 300 pies cuadrados del método simplificado para usted o para su cónyuge, el método
+            simplificado y el Formulario 8829 para los negocios en el hogar de la misma persona, más de un hogar, o
+            usted y su cónyuge reclamando la misma parte del hogar, el Formulario 7205, comidas que no están
             limitadas al 50 por ciento, créditos por empleo, intereses que deben asignarse, amortización nueva, más de
             tres otros gastos, ingresos de la línea 6 de otro formulario, una pérdida en la que no participó
             materialmente, una pérdida que no está totalmente en riesgo, una pérdida de más de $128,000 en la línea 3
@@ -897,6 +922,18 @@ fields:
     errorMessages:
       ExceedsMinLimit: "Ingrese pies cuadrados de 0 o más"
       InvalidCharacters: "Ingrese pies cuadrados enteros, como 150"
+  /scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome:
+    boolean:
+      "yes": "Sí, todos están en el mismo hogar"
+      "no": "No, están en más de un hogar"
+  /scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome:
+    boolean:
+      "yes": "Sí, todos están en el mismo hogar"
+      "no": "No, están en más de un hogar"
+  /scheduleCSpousesDoNotClaimSameHomeSpace:
+    boolean:
+      "yes": "Sí, no reclamamos la misma parte del hogar"
+      "no": "No, reclamamos la misma parte del hogar"
   /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
     boolean:
       "yes": "Sí"
@@ -1031,6 +1068,12 @@ dataviews:
       "¿No tiene un traslado de gastos reales del Formulario 8829?"
     /scheduleCBusinesses/*/writableHomeTotalSquareFeet: "Total de pies cuadrados del hogar"
     /scheduleCBusinesses/*/writableBusinessUseSquareFeet: "Pies cuadrados usados para este negocio"
+    /scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome:
+      "¿Todos sus negocios del método simplificado están en el mismo hogar?"
+    /scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome:
+      "¿Todos los negocios del método simplificado de su cónyuge están en el mismo hogar?"
+    /scheduleCSpousesDoNotClaimSameHomeSpace:
+      "¿Confirma que usted y su cónyuge no reclaman la misma parte del hogar?"
     /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
       "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
     /scheduleCBusinesses/*/hasDeductibleExpenses: "¿Este negocio tuvo gastos deducibles?"

@@ -199,6 +199,23 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutIdUseTax",
             "/flowKnockoutIdSnapOrIncarcerated",
             "/flowKnockoutIdForm39R",
+            // #93 slice 8: Kansas stops. Each is complete false when the return is not a Form K-40, and incomplete
+            // when the Kansas question is unanswered, so the PDF is not printed with the unmodeled line as zero.
+            // Derived stops are complete false when the condition is false. 2025 Form K-40 (rev. 8-5-25), used until
+            // the 2026 form is posted. K.S.A. 79-32,110b, 79-32,119, and 79-32,121. Line 8 is line 7 times 5.58
+            // percent minus the worksheet subtraction, rounded once, and only when line 7 is more than $100,000.
+            "/flowKnockoutKsPartYearOrNonresident",
+            "/flowKnockoutKsW2NotKansas",
+            "/flowKnockoutKsOtherFederalIncome",
+            "/flowKnockoutKsDependents",
+            "/flowKnockoutKsAgeOrBlind",
+            "/flowKnockoutKsClaimedAsDependent",
+            "/flowKnockoutKsFilingStatus",
+            "/flowKnockoutKsItemizedDeductions",
+            "/flowKnockoutKsEarnedIncomeCredit",
+            "/flowKnockoutKsForm2441",
+            "/flowKnockoutKsSchedule1A",
+            "/flowKnockoutKsTaxTable",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
@@ -340,7 +357,13 @@ public final class PrintRefusingKnockouts {
             // or Part IV line 47a answered no. Also line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, a vehicle
             // lease on line 20a (inclusion amount, Pub. 463 ch. 4; listed property, 26 U.S.C. 280F(c) and
             // 280F(d)(4)). Machinery and equipment rent that is not a vehicle prints on line 20a and does not refuse
-            // the print. Line 30 home office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that
+            // the print. Line 30 home office (2026 draft Instructions for Schedule C, i1040sc--dft.pdf, Oct 8, 2026,
+            // PDF p. 12). Several simplified-method businesses in one home print when that filer's allowable square
+            // feet are not more than 300 and each line 30 is $5 times that business's square feet, not more than that
+            // business's line 29. On a joint return each spouse has a separate 300 square foot maximum. The same path
+            // still refuses the print for Form 8829, square feet over 300 for one filer, the simplified method and
+            // Form 8829 for the same filer, more than one home, or spouses who claim the same portion of the home.
+            // Line 27a Form 7205, line 24b meals that
             // are not 50 percent (PDF p. 11, 26 U.S.C. 274(n)), line 26 employment credits, lines 16a and 16c
             // interest allocation (PDF p. 9), Form 4562-B amortization (PDF p. 17), a loss without material
             // participation (Form 8582, 26 U.S.C. 469) or that is not fully at risk (line 32b, Form 6198,
