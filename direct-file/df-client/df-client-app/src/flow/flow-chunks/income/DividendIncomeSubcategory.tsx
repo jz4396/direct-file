@@ -35,6 +35,10 @@ import type { ConditionString } from '../../Condition.js';
  * Box 8 is the foreign country for box 7 and does not stop when the 904(j) election applies or box 7 is $0.
  * Boxes 15 and 16 are allowed when box 14 is $0. On a Pennsylvania, Illinois, North Carolina, or Arizona
  * return, a box 16 amount that is not box 1a plus box 2a stops the return.
+ * Ordinary and qualified dividends received as a nominee are subtracted on Schedule B line 5 (a subtotal,
+ * then "Nominee Distribution") and on Form 1040 lines 3b and 3a. A nominee share of another box, an amount
+ * over box 1a or box 1b, or any nominee amount on a computed state return still stops the return. The tool
+ * does not file Form 1096 or Form 1099-DIV.
  * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
@@ -291,16 +295,8 @@ export const DividendIncomeSubcategory = (
           <Dollar path='/dividendReports/*/writableStateDistribution' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
-        {knockout(
-          `1099-div-box-14-knockout`,
-          `/dividendReports/*/hasStateTaxWithheld`,
-          `dividends-unsupported-boxes`
-        )}
-        {knockout(
-          `1099-div-box-16-knockout`,
-          `/flowKnockoutDividendStateDistribution`,
-          `dividends-state-distribution`
-        )}
+        {knockout(`1099-div-box-14-knockout`, `/dividendReports/*/hasStateTaxWithheld`, `dividends-unsupported-boxes`)}
+        {knockout(`1099-div-box-16-knockout`, `/flowKnockoutDividendStateDistribution`, `dividends-state-distribution`)}
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />
           <InfoDisplay i18nKey='/info/income/dividends/unsupported-boxes' />
@@ -316,10 +312,38 @@ export const DividendIncomeSubcategory = (
           <Heading i18nKey='/heading/income/dividends/nominee' />
           <InfoDisplay i18nKey='/info/income/dividends/nominee' />
           <Boolean path='/dividendReports/*/receivedAsNominee' />
-          <SetFactAction path='/dividendReports/*/hasSeenLastAvailableScreen' source='/flowTrue' />
+          <SetFactAction
+            path='/dividendReports/*/hasSeenLastAvailableScreen'
+            source='/flowTrue'
+            condition={{ operator: `isFalse`, condition: `/dividendReports/*/receivedAsNominee` }}
+          />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='1099-div-nominee-ordinary' condition='/dividendReports/*/receivedAsNominee'>
+          <Heading i18nKey='/heading/income/dividends/nominee-ordinary' />
+          <InfoDisplay i18nKey='/info/income/dividends/nominee-ordinary' />
+          <Dollar path='/dividendReports/*/writableNomineeOrdinaryDividends' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='1099-div-nominee-qualified' condition='/dividendReports/*/askNomineeQualifiedDividends'>
+          <Heading i18nKey='/heading/income/dividends/nominee-qualified' />
+          <InfoDisplay i18nKey='/info/income/dividends/nominee-qualified' />
+          <Dollar path='/dividendReports/*/writableNomineeQualifiedDividends' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='1099-div-nominee-other-boxes' condition='/dividendReports/*/receivedAsNominee'>
+          <Heading i18nKey='/heading/income/dividends/nominee-other-boxes' />
+          <InfoDisplay i18nKey='/info/income/dividends/nominee-other-boxes' />
+          <Boolean path='/dividendReports/*/nomineeShareOfOtherBoxes' />
           <SaveAndOrContinueButton />
         </Screen>
         {knockout(`1099-div-nominee-knockout`, `/flowKnockoutDividendNominee`, `dividends-nominee`)}
+        <Screen route='1099-div-nominee-filing-duty' condition='/dividendReports/*/showNomineeFilingDuty'>
+          <Heading i18nKey='/heading/income/dividends/nominee-filing-duty' />
+          <InfoDisplay i18nKey='/info/income/dividends/nominee-filing-duty' />
+          <SetFactAction path='/dividendReports/*/hasSeenLastAvailableScreen' source='/flowTrue' />
+          <SaveAndOrContinueButton />
+        </Screen>
       </SubSubcategory>
     </CollectionLoop>
   </Subcategory>

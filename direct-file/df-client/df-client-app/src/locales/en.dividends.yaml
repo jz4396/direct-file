@@ -33,6 +33,10 @@ headings:
   /heading/income/dividends/box-11: Is the FATCA filing requirement box (box 11) checked?
   /heading/income/dividends/unsupported-boxes: Does this 1099-DIV show anything in any other box?
   /heading/income/dividends/nominee: Did you receive any of these dividends for someone else (as a nominee)?
+  /heading/income/dividends/nominee-ordinary: How much of box 1a belongs to someone else?
+  /heading/income/dividends/nominee-qualified: How much of that amount is qualified dividends (box 1b)?
+  /heading/income/dividends/nominee-other-boxes: Does any of that amount come from a box other than 1a or 1b?
+  /heading/income/dividends/nominee-filing-duty: Give the owner a Form 1099-DIV and file it with the IRS
   /heading/knockout/dividends-holding-period: This tool doesn’t yet support box 1b dividends that aren’t qualified
   /heading/knockout/dividends-nondividend-over-basis:
     This tool doesn’t yet support nondividend distributions above your basis
@@ -46,7 +50,7 @@ headings:
   /heading/knockout/dividends-state-distribution:
     This tool can’t use a state distribution that doesn’t match your federal dividends
   /heading/knockout/dividends-box-13-exceeds-box-12: Box 13 cannot be more than box 12
-  /heading/knockout/dividends-nominee: This tool doesn’t yet support dividends received as a nominee
+  /heading/knockout/dividends-nominee: This tool can’t finish this return with these nominee dividends
 info:
   /info/knockout/form-8615:
     alertText:
@@ -170,10 +174,10 @@ info:
           Box 11 means the payer met its own reporting requirement. You may still have to file Form 8938, Statement of
           Specified Foreign Financial Assets, with your tax return.
       - p:
-          A specified individual living in the United States who is unmarried has to file Form 8938 when the total
-          value of specified foreign financial assets is more than $50,000 on the last day of the year or more than
-          $75,000 at any time during the year. Direct File does not compute that test and does not file Form 8938. If
-          you are required to file it, you can’t finish in Direct File.
+          A specified individual living in the United States who is unmarried has to file Form 8938 when the total value
+          of specified foreign financial assets is more than $50,000 on the last day of the year or more than $75,000 at
+          any time during the year. Direct File does not compute that test and does not file Form 8938. If you are
+          required to file it, you can’t finish in Direct File.
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
@@ -185,6 +189,27 @@ info:
       - p:
           You’re a nominee if the form includes dividends that actually belong to someone else, such as a family member
           who shares the account.
+  /info/income/dividends/nominee-ordinary:
+    body:
+      - p:
+          Enter the ordinary dividends from box 1a that actually belong to someone else. The amount can’t be more than
+          box 1a. Schedule B lists the full box 1a, then subtracts this amount.
+  /info/income/dividends/nominee-qualified:
+    body:
+      - p:
+          Qualified dividends are part of box 1a. Enter the part of the nominee amount that is included in box 1b. It
+          can’t be more than the nominee ordinary amount or box 1b.
+  /info/income/dividends/nominee-other-boxes:
+    body:
+      - p:
+          Answer yes if any of the dividends you received as a nominee are from box 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12,
+          or 13.
+  /info/income/dividends/nominee-filing-duty:
+    body:
+      - p:
+          If you received dividends as a nominee, you must give the actual owner a Form 1099-DIV (unless the owner is
+          your spouse) and file Forms 1096 and 1099-DIV with the IRS.
+      - p: This tool does not file Form 1096 or Form 1099-DIV.
   /info/income/dividends/secondary-filer-income-without-mfj:
     alertText:
       heading: Remove {{/secondaryFiler/firstName}}’s dividends to continue
@@ -253,8 +278,14 @@ info:
     alertText:
       body:
         - p:
-            Nominee dividends are subtracted on Schedule B, which this tool doesn’t support for dividends yet. You’ll
-            need another way to file this return.
+            The nominee amount can’t be more than box 1a, and the qualified part can’t be more than the nominee ordinary
+            amount or box 1b.
+        - p:
+            The nominee share also can’t include box 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12, or 13. A computed state return
+            uses the federal dividend amounts, so a nominee amount on that return can’t be subtracted here. Schedule B
+            line 5 has 15 rows. This return also stops when the payer rows leave no room for the subtotal and the
+            Nominee Distribution row.
+        - p: You’ll need another way to file this return.
 fields:
   /dividendReports:
     controls:
@@ -283,6 +314,12 @@ fields:
     name: Payer name
   /dividendReports/*/ordinaryDividends:
     name: <strong>Box 1a</strong> - Total ordinary dividends
+  /dividendReports/*/writableNomineeOrdinaryDividends:
+    name: Ordinary dividends that belong to someone else
+  /dividendReports/*/writableNomineeQualifiedDividends:
+    name: Qualified dividends that belong to someone else
+  /dividendReports/*/nomineeShareOfOtherBoxes:
+    name: Does any of that amount come from a box other than 1a or 1b?
   /dividendReports/*/writableQualifiedDividends:
     name: <strong>Box 1b</strong> - Qualified dividends
   /dividendReports/*/writableCapitalGainDistributions:
@@ -356,5 +393,8 @@ dataviews:
     /dividendReports/*/fatcaFilingRequirement: Box 11 - FATCA filing requirement
     /dividendReports/*/hasUnsupportedBoxes: Does this 1099-DIV show anything in another box?
     /dividendReports/*/receivedAsNominee: Did you receive any of these dividends as a nominee?
+    /dividendReports/*/writableNomineeOrdinaryDividends: Ordinary dividends that belong to someone else
+    /dividendReports/*/writableNomineeQualifiedDividends: Qualified dividends that belong to someone else
+    /dividendReports/*/nomineeShareOfOtherBoxes: Does any of that amount come from a box other than 1a or 1b?
     primaryFiler: Your dividends
     secondaryFiler: Your spouse’s dividends

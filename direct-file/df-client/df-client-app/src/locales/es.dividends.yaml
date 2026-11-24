@@ -29,7 +29,8 @@ headings:
   /heading/income/dividends/box-5-holding:
     ¿Tuvo cada acción de REIT más de 45 días alrededor de la fecha del dividendo y no tuvo que pagar el dividendo a otra
     persona?
-  /heading/income/dividends/box-7: Ingrese el <strong>encasillado 7</strong> y el <strong>encasillado 8</strong>, si los hay.
+  /heading/income/dividends/box-7:
+    Ingrese el <strong>encasillado 7</strong> y el <strong>encasillado 8</strong>, si los hay.
   /heading/income/dividends/boxes-14-16:
     Ingrese la información estatal de los <strong>encasillados 14, 15 y 16</strong>, si la hay.
   /heading/income/dividends/box-12: Ingrese la cantidad del <strong>encasillado 12</strong>, si la hay.
@@ -37,6 +38,11 @@ headings:
   /heading/income/dividends/box-11: ¿Está marcada la casilla del requisito de presentación de FATCA (encasillado 11)?
   /heading/income/dividends/unsupported-boxes: ¿Este Formulario 1099-DIV muestra algo en algún otro encasillado?
   /heading/income/dividends/nominee: ¿Recibió alguno de estos dividendos para otra persona (como nominatario)?
+  /heading/income/dividends/nominee-ordinary: ¿Cuánto del encasillado 1a pertenece a otra persona?
+  /heading/income/dividends/nominee-qualified: ¿Cuánto de esa cantidad son dividendos calificados (encasillado 1b)?
+  /heading/income/dividends/nominee-other-boxes:
+    ¿Alguna parte de esa cantidad viene de un encasillado que no sea el 1a o el 1b?
+  /heading/income/dividends/nominee-filing-duty: Entregue al dueño un Formulario 1099-DIV y preséntelo ante el IRS
   /heading/knockout/dividends-holding-period:
     Esta herramienta aún no admite dividendos del encasillado 1b que no son calificados
   /heading/knockout/dividends-nondividend-over-basis:
@@ -53,7 +59,8 @@ headings:
   /heading/knockout/dividends-state-distribution:
     Esta herramienta no puede usar una distribución estatal que no coincida con sus dividendos federales
   /heading/knockout/dividends-box-13-exceeds-box-12: El encasillado 13 no puede ser mayor que el encasillado 12
-  /heading/knockout/dividends-nominee: Esta herramienta aún no admite dividendos recibidos como nominatario
+  /heading/knockout/dividends-nominee:
+    Esta herramienta no puede terminar esta declaración con estos dividendos de nominatario
 info:
   /info/knockout/form-8615:
     alertText:
@@ -173,14 +180,14 @@ info:
   /info/income/dividends/box-13:
     body:
       - p:
-          El encasillado 13 es la parte del encasillado 12 que proviene de bonos de actividad privada especificados. Está
-          incluido en el encasillado 12 y se declara en la línea 2g del Formulario 6251. No puede ser mayor que el
+          El encasillado 13 es la parte del encasillado 12 que proviene de bonos de actividad privada especificados.
+          Está incluido en el encasillado 12 y se declara en la línea 2g del Formulario 6251. No puede ser mayor que el
           encasillado 12. Deje el encasillado 13 en blanco si está vacío en su formulario.
   /info/income/dividends/box-11:
     body:
       - p:
-          Si el encasillado 11 está marcado, el pagador informa en este Formulario 1099-DIV para cumplir su requisito
-          de informar la cuenta conforme al capítulo 4 del Código de Impuestos Internos. Usted también puede tener un
+          Si el encasillado 11 está marcado, el pagador informa en este Formulario 1099-DIV para cumplir su requisito de
+          informar la cuenta conforme al capítulo 4 del Código de Impuestos Internos. Usted también puede tener un
           requisito de presentación. Vea las Instrucciones del Formulario 8938. Una marca en el encasillado 11 no es,
           por sí sola, un motivo para detenerse.
   /info/income/dividends/form-8938:
@@ -205,6 +212,29 @@ info:
       - p:
           Usted es nominatario si el formulario incluye dividendos que en realidad pertenecen a otra persona, como un
           familiar que comparte la cuenta.
+  /info/income/dividends/nominee-ordinary:
+    body:
+      - p:
+          Ingrese los dividendos ordinarios del encasillado 1a que en realidad pertenecen a otra persona. La cantidad no
+          puede ser mayor que el encasillado 1a. El Anexo B anota el encasillado 1a completo y luego resta esta
+          cantidad.
+  /info/income/dividends/nominee-qualified:
+    body:
+      - p:
+          Los dividendos calificados son parte del encasillado 1a. Ingrese la parte de la cantidad de nominatario que
+          está incluida en el encasillado 1b. No puede ser mayor que la cantidad ordinaria de nominatario ni que el
+          encasillado 1b.
+  /info/income/dividends/nominee-other-boxes:
+    body:
+      - p:
+          Responda sí si alguno de los dividendos que recibió como nominatario viene del encasillado 2a, 2b, 2c, 2d, 2e,
+          2f, 3, 5, 7, 12 o 13.
+  /info/income/dividends/nominee-filing-duty:
+    body:
+      - p:
+          Si recibió dividendos como nominatario, tiene que entregar al dueño real un Formulario 1099-DIV (a menos que
+          el dueño sea su cónyuge) y presentar los Formularios 1096 y 1099-DIV ante el IRS.
+      - p: Esta herramienta no presenta el Formulario 1096 ni el Formulario 1099-DIV.
   /info/income/dividends/secondary-filer-income-without-mfj:
     alertText:
       heading: Elimine los dividendos de {{/secondaryFiler/firstName}} para continuar
@@ -279,8 +309,15 @@ info:
     alertText:
       body:
         - p:
-            Los dividendos de nominatario se restan en el Anexo B, que esta herramienta aún no admite para dividendos.
-            Necesitará otra manera de presentar esta declaración.
+            La cantidad de nominatario no puede ser mayor que el encasillado 1a, y la parte calificada no puede ser
+            mayor que la cantidad ordinaria de nominatario ni que el encasillado 1b.
+        - p:
+            La parte de nominatario tampoco puede incluir el encasillado 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12 o 13. Una
+            declaración estatal calculada usa las cantidades federales de dividendos, así que una cantidad de
+            nominatario en esa declaración no se puede restar aquí. La línea 5 del Anexo B tiene 15 filas. Esta
+            declaración también se detiene cuando las filas de los pagadores no dejan espacio para el subtotal y la
+            fila Nominee Distribution.
+        - p: Necesitará otra manera de presentar esta declaración.
 fields:
   /dividendReports:
     controls:
@@ -311,6 +348,12 @@ fields:
     name: Nombre del pagador
   /dividendReports/*/ordinaryDividends:
     name: <strong>Encasillado 1a</strong> - Total de dividendos ordinarios
+  /dividendReports/*/writableNomineeOrdinaryDividends:
+    name: Dividendos ordinarios que pertenecen a otra persona
+  /dividendReports/*/writableNomineeQualifiedDividends:
+    name: Dividendos calificados que pertenecen a otra persona
+  /dividendReports/*/nomineeShareOfOtherBoxes:
+    name: ¿Alguna parte de esa cantidad viene de un encasillado que no sea el 1a o el 1b?
   /dividendReports/*/writableQualifiedDividends:
     name: <strong>Encasillado 1b</strong> - Dividendos calificados
   /dividendReports/*/writableCapitalGainDistributions:
@@ -362,8 +405,7 @@ dataviews:
     /dividendReports/*/qualifiedDividendsHoldingPeriodNotMet: ¿Hay dividendos del encasillado 1b que no son calificados?
     /dividendReports/*/writableCapitalGainDistributions:
       Encasillado 2a - Total de distribuciones de ganancias de capital
-    /dividendReports/*/writableUnrecapturedSection1250Gain:
-      Encasillado 2b - Ganancia no recuperada de la sección 1250
+    /dividendReports/*/writableUnrecapturedSection1250Gain: Encasillado 2b - Ganancia no recuperada de la sección 1250
     /dividendReports/*/writableCollectibles28RateGain: Encasillado 2d - Ganancia de artículos de colección (28%)
     /dividendReports/*/writableSection897OrdinaryDividends: Encasillado 2e - Dividendos ordinarios de la sección 897
     /dividendReports/*/writableSection897CapitalGain: Encasillado 2f - Ganancia de capital de la sección 897
@@ -386,5 +428,9 @@ dataviews:
     /dividendReports/*/fatcaFilingRequirement: Encasillado 11 - Requisito de presentación de FATCA
     /dividendReports/*/hasUnsupportedBoxes: ¿Este Formulario 1099-DIV muestra algo en otro encasillado?
     /dividendReports/*/receivedAsNominee: ¿Recibió alguno de estos dividendos como nominatario?
+    /dividendReports/*/writableNomineeOrdinaryDividends: Dividendos ordinarios que pertenecen a otra persona
+    /dividendReports/*/writableNomineeQualifiedDividends: Dividendos calificados que pertenecen a otra persona
+    /dividendReports/*/nomineeShareOfOtherBoxes:
+      ¿Alguna parte de esa cantidad viene de un encasillado que no sea el 1a o el 1b?
     primaryFiler: Sus dividendos
     secondaryFiler: Los dividendos de su cónyuge

@@ -245,6 +245,39 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
       [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(true),
     });
-    expect(at(nominee, `1099-div-nominee`, task)).toRouteNextTo(`${path}/1099-div-nominee-knockout`);
+    expect(at(nominee, `1099-div-nominee`, task)).toRouteNextTo(`${path}/1099-div-nominee-ordinary`);
+    const qualified = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableQualifiedDividends`]: createDollarWrapper(`200`),
+      [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+      [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(true),
+      [`/dividendReports/#${id}/writableNomineeOrdinaryDividends`]: createDollarWrapper(`100`),
+    });
+    expect(at(qualified, `1099-div-nominee-ordinary`, task)).toRouteNextTo(`${path}/1099-div-nominee-qualified`);
+    const otherBoxes = base(`single`, {
+      ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+      [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+      [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(true),
+      [`/dividendReports/#${id}/writableNomineeOrdinaryDividends`]: createDollarWrapper(`100`),
+    });
+    expect(at(otherBoxes, `1099-div-nominee-ordinary`, task)).toRouteNextTo(`${path}/1099-div-nominee-other-boxes`);
+    const stops = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+      [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(true),
+      [`/dividendReports/#${id}/writableNomineeOrdinaryDividends`]: createDollarWrapper(`100`),
+      [`/dividendReports/#${id}/nomineeShareOfOtherBoxes`]: createBooleanWrapper(true),
+    });
+    expect(at(stops, `1099-div-nominee-other-boxes`, task)).toRouteNextTo(`${path}/1099-div-nominee-knockout`);
+    const supported = base(`single`, {
+      ...ord,
+      '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+      [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(false),
+      [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(true),
+      [`/dividendReports/#${id}/writableNomineeOrdinaryDividends`]: createDollarWrapper(`100`),
+      [`/dividendReports/#${id}/nomineeShareOfOtherBoxes`]: createBooleanWrapper(false),
+    });
+    expect(at(supported, `1099-div-nominee-other-boxes`, task)).toRouteNextTo(`${path}/1099-div-nominee-filing-duty`);
   });
 });
