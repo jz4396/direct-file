@@ -30,7 +30,8 @@
 // one primary W-2, a spouse-owned Schedule C and Schedule SE, Form 1099-DIV box 2d through the Schedule D Tax
 // Worksheet, the section 199A deduction, and estimated tax payments), and profile U
 // (Golden U: full-year Florida resident, single, under 65, no dependents, standard deduction, Form 1099-DIV
-// boxes 1a, 1b, 2a, 12, and 13, Form 6251 Part III, and Form 8960).
+// boxes 1a, 1b, 2a, 12, and 13, Form 6251 Part III, and Form 8960), and profile W
+// (Golden W: full-year Arizona resident, married filing jointly, both under 65, no dependents, two W-2s, Form 140).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -152,7 +153,8 @@
 //      also group 00: the cite names 9xx SSNs, and Tin.isSSN is false for a 9xx area, which would zero the child
 //      tax credit under IRC §24(h)(7). Profile S uses 444-00-2011 and 444-00-2012, also group 00: the cite names
 //      9xx SSNs, and Tin.isSSN is false for a 9xx area. Profile S has no child. Profile T uses 444-00-2013 and 444-00-2014, also group 00. Profile T has no child. Profile U uses
-//      444-00-2015, also group 00. Profile U has no child. Every
+//      444-00-2015, also group 00. Profile U has no child. Profile W uses 444-00-2017 and 444-00-2018, also group 00,
+//      the next pair after Golden V. Profile W has no child. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
 //      "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), and profile F's AGI
 //      is above that amount too, so EITC is $0 on both. Profile G is under the two-child joint completed phaseout and
@@ -171,6 +173,12 @@
 //      (https://www.irs.gov/pub/irs-dft/f1040s1--dft.pdf), form page 1, line 8g: "Alaska Permanent Fund dividends";
 //      line 9: "Total other income. Add lines 8a through 8z"; line 10: "Combine lines 1 through 7 and 9. Enter here
 //      and on Form 1040, 1040-SR, or 1040-NR, line 8."
+// [AZ] Arizona Form 140, azPit cites. 2025 Form 140 instructions are the interim tax year 2026 template. Line 46:
+//      "Multiply line 45 by 2.5% (.025) and enter the result." A.R.S. 43-1011 levies the tax. A.R.S. 43-1041(A) and
+//      (H) adjust the standard deduction the same way as the federal basic standard deduction ([RP] §4.14). Line 12
+//      is federal AGI. Line 42 equals line 12 when additions, subtractions, and exemptions are zero. Line 43 is the
+//      standard deduction. Line 45 is line 42 minus line 43. Line 53 is Arizona income tax withheld. Credits on
+//      lines 49, 50, and 51 are zero on this return, so the refund is line 53 minus line 46.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import { setupFactGraph } from '../setupFactGraph.js';
@@ -262,6 +270,9 @@ import {
   profileUDividendId,
   profileUFlSingleAmtPartIii,
   profileUW2,
+  profileWAzMfjW2,
+  profileWPrimaryW2,
+  profileWSpouseW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -336,7 +347,8 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
         name.startsWith(`profileR`) ||
         name.startsWith(`profileS`) ||
         name.startsWith(`profileT`) ||
-        name.startsWith(`profileU`);
+        name.startsWith(`profileU`) ||
+        name.startsWith(`profileW`);
       const hasChild =
         name.startsWith(`profileD`) ||
         name.startsWith(`profileF`) ||
@@ -5069,9 +5081,9 @@ describe(`golden end-to-end scenario (synthetic data): profile U, Golden U, Flor
     expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
     expect(get(g, `/requiresForm8959`).get).toBe(false);
     expect(get(g, pdfIncludeWhen(`IRS8960`) as string).get).toBe(true);
-    expect(get(g, pdfIncludeWhen(`IRS8959`) as string).complete && get(g, pdfIncludeWhen(`IRS8959`) as string).get).toBe(
-      false
-    );
+    expect(
+      get(g, pdfIncludeWhen(`IRS8959`) as string).complete && get(g, pdfIncludeWhen(`IRS8959`) as string).get
+    ).toBe(false);
     const nii = Number(get(g, `/form8960Line16`).get.toString());
     // 3.8% × 30,000 = 1,140 exactly. 26 U.S.C. 1411(a)(1).
     expect(nii).toBe(30000);
@@ -5150,6 +5162,166 @@ describe(`golden end-to-end scenario (synthetic data): profile U, Golden U, Flor
         path.resolve(
           __dirname,
           `../../../../../backend/src/test/resources/submission-blocking/golden-profileU-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`nothing stops the return`, () => {
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile W, Golden W, full-year AZ, MFJ, two W-2s, Form 140`, () => {
+  // Indy Example, born 1985-04-18, and Jules Example, born 1987-10-03. Married filing jointly, both under 65, not
+  //   blind. No dependents. Both lived in Arizona all year [AZ]. Address 123 Example St, Phoenix, AZ 85004. Standard
+  //   deduction. SSNs are group 00 (444-00-2017 and 444-00-2018) [SSA], the next pair after Golden V. A 9xx area is
+  //   not an SSN (Tin.isSSN). There is no child.
+  // Two W-2s, box 15 Arizona. Indy, Example Sonoran Payroll LLC: boxes 1, 3, and 5 $70,000; box 2 $5,800; box 16
+  //   $70,000; box 17 $1,300. Jules, Example Canyon Payroll LLC: boxes 1, 3, and 5 $45,000; box 2 $3,700; box 16
+  //   $45,000; box 17 $800. Box 4 is 6.2% of box 3 and box 6 is 1.45% of box 5 (26 U.S.C. 3101(a), 3101(b)(1)).
+  //   Neither employer paid over $200,000, so there is no 0.9% [3102]. Indy: box 4 $4,340, box 6 $1,015. Jules:
+  //   box 4 $2,790, box 6 $652.50.
+  // Form 1040: line 1z, line 9, and line 11 are 70,000 + 45,000 = 115,000. Line 12e standard deduction 32,200.
+  //   Rev. Proc. 2025-32 §4.14(1), PDF p. 18: "Married Individuals Filing Joint Returns and Surviving Spouses
+  //   ... $32,200". Neither spouse is 65 or older or blind. Line 15 taxable income 82,800.
+  // Line 16, Tax Table [GI p. 36]. The $82,800–$82,850 row's midpoint is $82,825. [RP] §4.01 Table 1 (joint): 10%
+  //   to $24,800, then "Over $24,800 but not over $100,800 $2,480 plus 12% of the excess over $24,800".
+  //   2,480 + 12% × (82,825 − 24,800) = 2,480 + 12% × 58,025 = 2,480 + 6,963 = 9,443.
+  // Line 24 total tax 9,443. Line 25a is 5,800 + 3,700 = 9,500. Line 34 refund is 9,500 − 9,443 = 57.
+  // Form 140 [AZ]. Line 12 and line 42 are federal AGI, 115,000. Line 43 is 32,200. Line 45 is 82,800. Line 46 is
+  //   82,800 × 2.5% = 2,070 exactly. Credits are $0, so line 52 equals line 46. Line 53 is 1,300 + 800 = 2,100.
+  //   Refund is 2,100 − 2,070 = 30.
+  const g = graph(profileWAzMfjW2);
+  const azKnockouts = [
+    `/flowKnockoutAzPartYearOrNonresident`,
+    `/flowKnockoutAzW2NotArizona`,
+    `/flowKnockoutAzOtherFederalIncome`,
+    `/flowKnockoutAzDependentsOrQualifyingPerson`,
+    `/flowKnockoutAzAgeOrBlind`,
+    `/flowKnockoutAzItemizedDeductions`,
+    `/flowKnockoutAzCharitableContributions`,
+    `/flowKnockoutAzLowIncomeCredit`,
+    `/flowKnockoutAzSchedule1A`,
+    `/flowKnockoutAzFilingStatus`,
+  ];
+
+  it(`Form 1040 wages, the standard deduction, and the Tax Table tax`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`marriedFilingJointly`);
+    expect(get(g, `/itemizesDeductions`).get).toBe(false);
+    expect(get(g, `/wantsStandardDeduction`).get).toBe(true);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/secondaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/primaryFiler/age65OrOlder`).get).toBe(false);
+    expect(get(g, `/secondaryFiler/age65OrOlder`).get).toBe(false);
+    const taxable = Number(get(g, `/taxableIncome`).get.toString());
+    expect(taxable).toBe(82800);
+    // [RP] §4.01 Table 1. Midpoint $82,825. 2,480 + 12% × 58,025 = 9,443 exactly.
+    const midpoint = Number(get(g, `/roundedTaxableIncome`).get.toString());
+    expect(midpoint).toBe(82825);
+    const taxCents = 2480 * 100 + (midpoint - 24800) * 12;
+    expect(taxCents).toBe(944300);
+    expectDollars(g, {
+      '/wages': `115000.00`,
+      '/employerIncomeSubtotal': `115000.00`,
+      '/totalIncome': `115000.00`,
+      '/agi': `115000.00`,
+      '/standardDeduction': `32200.00`,
+      '/standardOrItemizedDeductions': `32200.00`,
+      '/schedule1ALine44': `0.00`,
+      '/totalDeductions': `32200.00`,
+      '/taxableIncome': `82800.00`,
+      '/roundedTaxableIncome': `82825.00`,
+      '/tentativeTaxFromTaxableIncome': `9443.00`,
+      [`/formW2s/#${profileWPrimaryW2.id}/oasdiWages`]: `70000.00`,
+      [`/formW2s/#${profileWPrimaryW2.id}/oasdiWithholding`]: `4340.00`,
+      [`/formW2s/#${profileWPrimaryW2.id}/medicareWages`]: `70000.00`,
+      [`/formW2s/#${profileWPrimaryW2.id}/medicareWithholding`]: `1015.00`,
+      [`/formW2s/#${profileWSpouseW2.id}/oasdiWages`]: `45000.00`,
+      [`/formW2s/#${profileWSpouseW2.id}/oasdiWithholding`]: `2790.00`,
+      [`/formW2s/#${profileWSpouseW2.id}/medicareWages`]: `45000.00`,
+      // Writable box 6 is the exact 1.45%, $652.50. The derived box 6 rounds half up to a whole dollar.
+      [`/formW2s/#${profileWSpouseW2.id}/medicareWithholding`]: `653.00`,
+    });
+  });
+
+  it(`total tax is $9,443, withholding is $9,500, and the refund is $57`, () => {
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/hasScheduleCBusinesses`).get).toBe(false);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, `/totalCtc`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/earnedIncomeCredit`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/dueRefund`).get).toBe(true);
+    expectDollars(g, {
+      '/amt': `0.00`,
+      '/nonRefundableCredits': `0.00`,
+      '/taxLessNonRefundableCredits': `9443.00`,
+      '/line21OfSchedule2': `0.00`,
+      '/totalTax': `9443.00`,
+      '/formW2Withholding': `9500.00`,
+      '/otherFormWithholding': `0.00`,
+      '/totalWithholding': `9500.00`,
+      '/totalPayments': `9500.00`,
+      '/overpayment': `57.00`,
+      '/balanceDue': `0.00`,
+    });
+  });
+
+  it(`Form 140 tax is $2,070, withholding is $2,100, and the refund is $30`, () => {
+    expect(get(g, `/livedInAz`).get).toBe(true);
+    expect(get(g, `/stateReturnIsAz`).get).toBe(true);
+    expect(get(g, `/stateReturnComputed`).get).toBe(true);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(false);
+    expect(get(g, `/hasNoStateIncomeTax`).get).toBe(false);
+    expect(get(g, `/flowKnockoutStateReturn`).get).toBe(false);
+    expect(get(g, `/flowKnockoutUnsupportedState`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS1040`) as string).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`AZ140`) as string).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`PA40`) as string).complete && get(g, pdfIncludeWhen(`PA40`) as string).get).toBe(
+      false
+    );
+    const line45 = Number(get(g, `/azLine45`).get.toString());
+    expect(line45).toBe(82800);
+    // [AZ] line 46. 82,800 × 0.025 = 2,070 exactly, so the half-up dollar is 2,070.
+    expect(line45 * 25).toBe(2070000);
+    for (const k of azKnockouts) {
+      expect(get(g, k).complete, k).toBe(true);
+      expect(get(g, k).get, k).toBe(false);
+    }
+    expectDollars(g, {
+      '/azLine12': `115000.00`,
+      '/azLine42': `115000.00`,
+      '/azLine43': `32200.00`,
+      '/azLine44': `0.00`,
+      '/azLine45': `82800.00`,
+      '/azLine46': `2070.00`,
+      '/azLine48': `2070.00`,
+      '/azLine52': `2070.00`,
+      '/azLine53': `2100.00`,
+      '/azLine59': `2100.00`,
+      '/azLine60': `0.00`,
+      '/azLine61': `30.00`,
+      '/azRefund': `30.00`,
+      '/azAmountOwed': `0.00`,
+      '/stateTaxLiability': `2070.00`,
+      '/stateTaxWithheld': `2100.00`,
+      '/stateRefund': `30.00`,
+      '/stateAmountOwed': `0.00`,
+    });
+  });
+
+  it(`golden-profileW-complete.json is the persisted profileWAzMfjW2 return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileW-complete.json`
         ),
         `utf8`
       )
