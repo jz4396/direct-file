@@ -55,6 +55,8 @@ direct-file/df-client/package-lock.json	GHSA-698v-4r3x-3vcv	npm	vite	5.4.15
 direct-file/df-client/package-lock.json	GHSA-6g55-p6wh-862q	npm	postcss	8.4.47
 direct-file/df-client/package-lock.json	GHSA-6j4f-fj2g-mc7p	npm	brace-expansion	1.1.11
 direct-file/df-client/package-lock.json	GHSA-6j4f-fj2g-mc7p	npm	brace-expansion	2.0.1
+# GHSA-6jcc-5g8w-32mx moderate deepExtend DoS; only addResourceBundle(deep, overwrite). App code does not call that; 8 test calls do. No 23/24/25 patch (fixed 26.3.4). Expires 2027-02-22. Lockfile unchanged.
+direct-file/df-client/package-lock.json	GHSA-6jcc-5g8w-32mx	npm	i18next	23.16.4
 direct-file/df-client/package-lock.json	GHSA-6q6h-j7hj-3r64	npm	happy-dom	15.10.2
 direct-file/df-client/package-lock.json	GHSA-73rr-hh4g-fpgx	npm	diff	4.0.2
 direct-file/df-client/package-lock.json	GHSA-73wf-gq98-2v4g	npm	browserslist	4.24.2
