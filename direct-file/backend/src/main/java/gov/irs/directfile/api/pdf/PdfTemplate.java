@@ -142,7 +142,9 @@ abstract class PdfTemplate {
             new Ma1PdfForm("MA1"),
             new MaHcPdfForm("MAHC"),
             // #93 slice 7: Form 40. No local return. 2025 Form 40 is the interim template.
-            new Id40PdfForm("ID40"));
+            new Id40PdfForm("ID40"),
+            // #93 slice 8: Form K-40. No local return. 2025 Form K-40 is the interim template.
+            new Ks40PdfForm("KS40"));
 
     protected PdfTemplate(
             final String templateName, final boolean shouldRemoveTinDashes, final boolean shouldRoundCurrency) {

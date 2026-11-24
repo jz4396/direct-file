@@ -230,6 +230,17 @@
       "url": "https://tax.idaho.gov/wp-content/uploads/forms/EIN00046/EIN00046_03-02-2026.pdf",
       "kind": "web"
     },
+    "ksa-79-32": {
+      "title": "Kansas Statutes Annotated, article 32, income tax",
+      "url": "https://www.kslegislature.gov/",
+      "kind": "statute"
+    },
+    "k-40-booklet-2025": {
+      "title": "2025 Kansas Individual Income Tax Booklet, ip25 rev. 9-26-25, used for the 2026 return until the 2026 booklet is posted",
+      "url": "https://www.ksrevenue.gov/pdf/ip25.pdf",
+      "kind": "web",
+      "sha256": "8cbc2ea8d4f877a0d57e1e008c203ec06aa087fb3d4ab7319d91c157ee628871"
+    },
     "i1040sc-dft": {
       "title": "2026 Instructions for Schedule C, draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
@@ -4333,6 +4344,158 @@
         {
           "source": "id-form-40-instr-2025",
           "quote": "The credit is either $155 each for you, your spouse, and your qualifying dependents"
+        }
+      ]
+    },
+    {
+      "fact": "/ksStandardDeductionSingle",
+      "file": "ksPit.xml",
+      "values": [
+        "Dollar:3605"
+      ],
+      "cite": [
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,119(c)(2)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0119_section/079_032_0119_k",
+          "quote": "For tax year 2024, and all tax years thereafter, the standard deduction amount of an individual, including husband and wife who are either both residents or who file a joint return as if both were residents, shall be as follows: Single individual filing status, $3,605; married filing status, $8,240; and head of household filing status, $6,180."
+        },
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "Single...........................................  $3,605"
+        }
+      ]
+    },
+    {
+      "fact": "/ksStandardDeductionMfj",
+      "file": "ksPit.xml",
+      "values": [
+        "Dollar:8240"
+      ],
+      "cite": [
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,119(c)(2)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0119_section/079_032_0119_k",
+          "quote": "Single individual filing status, $3,605; married filing status, $8,240; and head of household filing status, $6,180."
+        },
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "Married Filing Joint ......................  $8,240"
+        }
+      ]
+    },
+    {
+      "fact": "/ksExemptionSingle",
+      "file": "ksPit.xml",
+      "values": [
+        "Dollar:9160"
+      ],
+      "cite": [
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,121(a)(2)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0121_section/079_032_0121_k/",
+          "quote": "in the case of all other individuals with a filing status of single, head of household or married filing separate, a personal exemption of $9,160"
+        },
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "If your filing status is single, head of household, or married filing separate, the exemption allowance is $9,160."
+        }
+      ]
+    },
+    {
+      "fact": "/ksExemptionMfj",
+      "file": "ksPit.xml",
+      "values": [
+        "Dollar:18320"
+      ],
+      "cite": [
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,121(a)(1)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0121_section/079_032_0121_k/",
+          "quote": "In the case of married individuals filing a joint return, a personal exemption of $18,320"
+        },
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "if your filing status is married filing joint the exemption allowance is $18,320."
+        }
+      ]
+    },
+    {
+      "fact": "/ksTaxRate",
+      "file": "ksPit.xml",
+      "values": [
+        "Rational:558/10000"
+      ],
+      "cite": [
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,110b(a)(2)(B)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0110b_section/079_032_0110b_k/",
+          "quote": "Over $23,000 $1,196 plus 5.58% of excess over $23,000"
+        },
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,110b(a)(1)(B)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0110b_section/079_032_0110b_k/",
+          "quote": "Over $46,000 $2,392 plus 5.58% of excess over $46,000"
+        },
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "5.58% (.0558)"
+        }
+      ]
+    },
+    {
+      "fact": "/ksWorksheetSubtractionSingle",
+      "file": "ksPit.xml",
+      "values": [
+        "Dollar:87"
+      ],
+      "cite": [
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "$23,001 and over  $ 5.58%  (.0558)  $ $87"
+        },
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,110b(a)(2)(B)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0110b_section/079_032_0110b_k/",
+          "quote": "Over $23,000 $1,196 plus 5.58% of excess over $23,000"
+        }
+      ]
+    },
+    {
+      "fact": "/ksWorksheetSubtractionMfj",
+      "file": "ksPit.xml",
+      "values": [
+        "Dollar:175"
+      ],
+      "cite": [
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "$46,001 and over  $ 5.58%  (.0558)  $ $175"
+        },
+        {
+          "source": "ksa-79-32",
+          "section": "§ 79-32,110b(a)(1)(B)",
+          "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0110b_section/079_032_0110b_k/",
+          "quote": "Over $46,000 $2,392 plus 5.58% of excess over $46,000"
+        }
+      ]
+    },
+    {
+      "fact": "/ksTaxTableLimit",
+      "file": "ksPit.xml",
+      "values": [
+        "Dollar:100000"
+      ],
+      "cite": [
+        {
+          "source": "k-40-booklet-2025",
+          "quote": "If line 7 is $100,000 or less, use the Tax Tables beginning on page 27 to find the amount of your tax."
         }
       ]
     }

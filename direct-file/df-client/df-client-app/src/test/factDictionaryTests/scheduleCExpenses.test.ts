@@ -406,6 +406,7 @@ describe(`Schedule C expense lines`, () => {
     });
     expect(capped.get(p(biz, `businessUseSquareFeet`)).get).toBe(400);
     expect(capped.get(p(biz, `allowableHomeOfficeSquareFeet`)).get).toBe(300);
+    expect(capped.get(`/scheduleCSimplifiedHomeOfficeSquareFeetOverCap`).get).toBe(false);
     expect(capped.get(p(biz, `line30`)).get.toString()).toBe(`1500.00`);
     expect(capped.get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`8500.00`);
 
@@ -434,7 +435,7 @@ describe(`Schedule C expense lines`, () => {
     expect(loss.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
   });
 
-  it(`stops Form 8829, a simplified method this tool does not figure, and two simplified-method businesses`, () => {
+  it(`stops Form 8829 and a simplified method this tool does not figure`, () => {
     const common = lineItemIncome(biz, `5000`);
     const form8829 = base([biz], {
       ...business(biz, common),
@@ -506,16 +507,169 @@ describe(`Schedule C expense lines`, () => {
     expect(tooBig.get(p(biz, `scheduleCFormStop`)).get).toBe(false);
     expect(tooBig.get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
 
-    const two = base([biz, biz2], {
+  });
+
+  function advertising(id: string, amount: string) {
+    return {
+      ...flag(p(id, `hasDeductibleExpenses`), true),
+      [p(id, `expenseLinesChosen`)]: createMultEnumWrapper([`advertising`], options),
+      ...dollars(p(id, `writableAdvertising`), amount),
+    };
+  }
+
+  /**
+   * Two simplified-method businesses in one home. 2026 draft Instructions for Schedule C
+   * (i1040sc--dft.pdf, Oct 8, 2026), Line 30, PDF p. 12. Hand check:
+   * A line 29 $15,000 and 200 sq ft → line 30 $1,000, line 31 $14,000.
+   * B line 29 $300 and 100 sq ft → $500 limited to $300, line 31 $0.
+   * Schedule 1 line 3 $14,000. 200 + 100 is the 300 square foot maximum.
+   */
+  it(`allocates the simplified method across two businesses in one home and limits each line 30 by line 29`, () => {
+    const { get } = base([biz, biz2], {
+      ...business(biz, {
+        ...lineItemIncome(biz, `20000`),
+        ...dollars(p(biz, `writableAdvertising`), `5000`),
+      }),
+      ...simplifiedYes(biz, `2000`, `200`),
+      ...advertising(biz, `5000`),
+      [p(biz, `businessName`)]: createStringWrapper(`Business A`),
+      ...business(biz2, {
+        ...lineItemIncome(biz2, `3000`),
+        ...dollars(p(biz2, `writableAdvertising`), `2700`),
+      }),
+      ...simplifiedYes(biz2, `2000`, `100`),
+      ...advertising(biz2, `2700`),
+      [p(biz2, `businessName`)]: createStringWrapper(`Business B`),
+      '/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome': createBooleanWrapper(true),
+    });
+    expect(get(`/scheduleCPrimaryFilerSimplifiedHomeOfficeSquareFeet`).get).toBe(300);
+    expect(get(`/scheduleCSimplifiedHomeOfficeSquareFeetOverCap`).get).toBe(false);
+    expect(get(`/asksScheduleCPrimaryFilerOneHome`).get).toBe(true);
+    expect(get(`/scheduleCSimplifiedHomeOfficesUseMoreThanOneHome`).get).toBe(false);
+    expect(get(`/asksScheduleCSpousesDoNotClaimSameHomeSpace`).get).toBe(false);
+    expect(get(p(biz, `line29TentativeProfit`)).get.toString()).toBe(`15000.00`);
+    expect(get(p(biz, `line30`)).get.toString()).toBe(`1000.00`);
+    expect(get(p(biz, `netProfitOrLoss`)).get.toString()).toBe(`14000.00`);
+    expect(get(p(biz2, `line29TentativeProfit`)).get.toString()).toBe(`300.00`);
+    expect(get(p(biz2, `line30`)).get.toString()).toBe(`300.00`);
+    expect(get(p(biz2, `netProfitOrLoss`)).get.toString()).toBe(`0.00`);
+    expect(get(`/schedule1Line3`).get.toString()).toBe(`14000.00`);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(true);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+  });
+
+  it(`stops simplified-method square feet over 300, Form 8829 with the simplified method, and more than one home`, () => {
+    const over = base([biz, biz2], {
+      ...business(biz, lineItemIncome(biz, `20000`)),
+      ...simplifiedYes(biz, `2000`, `200`),
+      ...business(biz2, lineItemIncome(biz2, `3000`)),
+      ...simplifiedYes(biz2, `2000`, `150`),
+      '/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome': createBooleanWrapper(true),
+    });
+    expect(over.get(`/scheduleCPrimaryFilerSimplifiedHomeOfficeSquareFeet`).get).toBe(350);
+    expect(over.get(`/scheduleCSimplifiedHomeOfficeSquareFeetOverCap`).get).toBe(true);
+    expect(over.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(over.get(p(biz, `line30`)).complete).toBe(false);
+    expect(over.get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+
+    const mixed = base([biz, biz2], {
+      ...business(biz, lineItemIncome(biz, `20000`)),
+      ...simplifiedYes(biz, `2000`, `100`),
+      ...business(biz2, lineItemIncome(biz2, `3000`)),
+      ...stops(biz2, { hasHomeOffice: true }),
+      ...flag(p(biz2, `homeOfficeUsesSimplifiedMethod`), false),
+    });
+    expect(mixed.get(`/scheduleCSimplifiedAndForm8829`).get).toBe(true);
+    expect(mixed.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(mixed.get(p(biz, `line30`)).complete).toBe(false);
+
+    const anotherHome = base([biz, biz2], {
+      ...business(biz, lineItemIncome(biz, `8000`)),
+      ...simplifiedYes(biz, `2000`, `100`),
+      ...business(biz2, lineItemIncome(biz2, `4000`)),
+      ...simplifiedYes(biz2, `2000`, `50`),
+      '/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome': createBooleanWrapper(false),
+    });
+    expect(anotherHome.get(`/scheduleCSimplifiedHomeOfficeSquareFeetOverCap`).get).toBe(false);
+    expect(anotherHome.get(`/scheduleCSimplifiedHomeOfficesUseMoreThanOneHome`).get).toBe(true);
+    expect(anotherHome.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
+    expect(anotherHome.get(p(biz, `line30`)).complete).toBe(false);
+
+    const unanswered = base([biz, biz2], {
       ...business(biz, lineItemIncome(biz, `8000`)),
       ...simplifiedYes(biz, `2000`, `100`),
       ...business(biz2, lineItemIncome(biz2, `4000`)),
       ...simplifiedYes(biz2, `2000`, `50`),
     });
-    expect(two.get(`/scheduleCMultipleSimplifiedHomeOffices`).get).toBe(true);
-    expect(two.get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(true);
-    expect(two.get(p(biz, `line30`)).complete).toBe(false);
-    expect(two.get(p(biz, `netProfitOrLoss`)).complete).toBe(false);
+    expect(unanswered.get(`/asksScheduleCPrimaryFilerOneHome`).get).toBe(true);
+    expect(unanswered.get(`/scheduleCSimplifiedHomeOfficesUseMoreThanOneHome`).complete).toBe(false);
+    expect(unanswered.get(p(biz, `line30`)).complete).toBe(false);
+    expect(unanswered.get(`/flowKnockoutScheduleCOutOfScope`).complete).toBe(false);
+  });
+
+  /**
+   * Joint return. Each spouse has one business at 300 square feet and line 29 of at least $1,500, and they do not
+   * claim the same portion of the home. Each line 30 is $1,500. PDF p. 12: each spouse may elect the simplified
+   * method, but not for the same portion of the home.
+   */
+  it(`gives each spouse a separate 300 square foot maximum when they do not claim the same space`, () => {
+    const spouseId = `859c03d1-af4a-447f-96aa-d19397048a48`;
+    const { factGraph } = setupFactGraph({
+      '/filers': createCollectionWrapper([primaryFilerId, spouseId]),
+      [`/filers/#${primaryFilerId}/firstName`]: createStringWrapper(`Test`),
+      [`/filers/#${primaryFilerId}/isPrimaryFiler`]: createBooleanWrapper(true),
+      [`/filers/#${spouseId}/firstName`]: createStringWrapper(`Spouse`),
+      [`/filers/#${spouseId}/isPrimaryFiler`]: createBooleanWrapper(false),
+      '/maritalStatus': createEnumWrapper(`married`, `/maritalStatusOptions`),
+      '/filingStatus': createEnumWrapper(`marriedFilingJointly`, `/filingStatusOptions`),
+      '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
+      '/scheduleCIsQualifiedJointVenture': createBooleanWrapper(false),
+      '/scheduleCBusinesses': createCollectionWrapper([biz, biz2]),
+      '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      ...business(biz, lineItemIncome(biz, `10000`)),
+      ...simplifiedYes(biz, `2000`, `300`),
+      ...business(biz2, lineItemIncome(biz2, `10000`)),
+      ...simplifiedYes(biz2, `2000`, `300`),
+      [p(biz2, `filer`)]: createCollectionItemWrapper(spouseId),
+      '/scheduleCSpousesDoNotClaimSameHomeSpace': createBooleanWrapper(true),
+    });
+    const get = (path: string) => factGraph.get(path as ConcretePath);
+    expect(get(`/scheduleCPrimaryFilerSimplifiedHomeOfficeSquareFeet`).get).toBe(300);
+    expect(get(`/scheduleCSecondaryFilerSimplifiedHomeOfficeSquareFeet`).get).toBe(300);
+    expect(get(`/scheduleCSimplifiedHomeOfficeSquareFeetOverCap`).get).toBe(false);
+    expect(get(`/asksScheduleCSpousesDoNotClaimSameHomeSpace`).get).toBe(true);
+    expect(get(`/scheduleCSpousesClaimSameHomeSpace`).get).toBe(false);
+    expect(get(p(biz, `line30`)).get.toString()).toBe(`1500.00`);
+    expect(get(p(biz2, `line30`)).get.toString()).toBe(`1500.00`);
+    expect(get(`/flowKnockoutScheduleCOutOfScope`).get).toBe(false);
+
+    const shared = setupFactGraph({
+      '/filers': createCollectionWrapper([primaryFilerId, spouseId]),
+      [`/filers/#${primaryFilerId}/firstName`]: createStringWrapper(`Test`),
+      [`/filers/#${primaryFilerId}/isPrimaryFiler`]: createBooleanWrapper(true),
+      [`/filers/#${spouseId}/firstName`]: createStringWrapper(`Spouse`),
+      [`/filers/#${spouseId}/isPrimaryFiler`]: createBooleanWrapper(false),
+      '/maritalStatus': createEnumWrapper(`married`, `/maritalStatusOptions`),
+      '/filingStatus': createEnumWrapper(`marriedFilingJointly`, `/filingStatusOptions`),
+      '/hadSelfEmploymentIncome': createBooleanWrapper(true),
+      '/qbiHasPriorYearLossCarryforward': createBooleanWrapper(false),
+      '/qbiIsCooperativePatron': createBooleanWrapper(false),
+      '/scheduleCIsQualifiedJointVenture': createBooleanWrapper(false),
+      '/scheduleCBusinesses': createCollectionWrapper([biz, biz2]),
+      '/scheduleCBusinessesIsDone': createBooleanWrapper(true),
+      ...business(biz, lineItemIncome(biz, `10000`)),
+      ...simplifiedYes(biz, `2000`, `300`),
+      ...business(biz2, lineItemIncome(biz2, `10000`)),
+      ...simplifiedYes(biz2, `2000`, `300`),
+      [p(biz2, `filer`)]: createCollectionItemWrapper(spouseId),
+      '/scheduleCSpousesDoNotClaimSameHomeSpace': createBooleanWrapper(false),
+    }).factGraph;
+    expect(shared.get(`/scheduleCSpousesClaimSameHomeSpace` as ConcretePath).get).toBe(true);
+    expect(shared.get(`/flowKnockoutScheduleCOutOfScope` as ConcretePath).get).toBe(true);
+    expect(shared.get(p(biz, `line30`) as ConcretePath).complete).toBe(false);
+    expect(shared.get(p(biz2, `line30`) as ConcretePath).complete).toBe(false);
   });
 });
 

@@ -1,0 +1,124 @@
+# #93 slice 8: Kansas Form K-40. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# The 2026 Form K-40 is not posted. This 2025 fillable form (rev. 8-5-25) stands in.
+# Amounts are the 2025 booklet figures K.S.A. 79-32,110b, 79-32,119, and 79-32,121 still state for later years.
+# Preprinted text that still says 2025 is left as printed.
+# Source: https://ksrevenue.gov/pdf/k-4025.pdf
+# SHA-256 dfff7caae33d2527ae9655f562a3469835556cc6ec6ab40297641caf10379fdb
+# Included when /stateReturnIsKs. Stops in ksPit refuse the package, so the zero lines below are the supported entry.
+# Whole dollars, no commas, no decimals. Zero prints 0. Lines 9 and 10 stay blank because a resident skips them.
+# Ks40PdfForm fills the ~ks40* pseudo-facts (name, address, phone, filing status, residency, exemption boxes).
+includeWhen: /stateReturnIsKs
+otherRequiredFacts:
+  - /isFilingStatusMFJ
+  - /filingStatus
+  - /address
+  - /phone
+  - /primaryFiler/firstName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/lastName
+  - /primaryFiler/tin
+  - /secondaryFiler/firstName
+  - /secondaryFiler/middleInitial
+  - /secondaryFiler/lastName
+  - /secondaryFiler/tin
+  - /ksResidencyStatus
+  - /ksLine1
+  - /ksLine3
+  - /ksLine4
+  - /ksLine5
+  - /ksLine6
+  - /ksLine7
+  - /ksLine8
+  - /ksLine12
+  - /ksLine16
+  - /ksLine18
+  - /ksLine19
+  - /ksLine27
+  - /ksLine28
+  - /ksLine32
+  - /ksLine33
+  - /ksLine43
+form:
+  'your first name': ~ks40First
+  'your middle initial': ~ks40Initial
+  'your last name': ~ks40Last
+  'enter the first four letters of your last name - all CAPS': ~ks40Last4
+  'your social security number': /primaryFiler/tin
+  'spouses first name': ~ks40SpouseFirst
+  'spouses middle initial': ~ks40SpouseInitial
+  'spouses last name': ~ks40SpouseLast
+  'enter the first four letters of your spouses last name - all CAPS': ~ks40SpouseLast4
+  'your spouses social security number': ~ks40SpouseSsn
+  'mailing address': ~ks40Street
+  'city town or post office': ~ks40City
+  'state - abbreviation': ~ks40State
+  'zip code - 5 digit': ~ks40Zip
+  'daytime telephone number': ~ks40Phone
+  'check if your name or address has changed since last year': ~ks40Off
+  'check if taxpayer or spouse if filing joint died during this tax year': ~ks40Off
+  'amended return - amended affects kansas only': ~ks40Off
+  'amended return - amended federal tax return': ~ks40Off
+  'amended return - adjustment by the irs': ~ks40Off
+  'filing status - single': ~ks40Single
+  'filing status - married filing joint': ~ks40Joint
+  'filing status - married filing separate': ~ks40Off
+  'filing status - head of household': ~ks40Off
+  'residency status - resident': ~ks40Resident
+  'residency status - part-year resident': ~ks40PartYear
+  'residency status - nonresident': ~ks40Nonresident
+  'Check Box - Married individuals filing a joint return, check the box to the left, enter 2 in the box to the right and enter $18,320 in the currency box': ~ks40JointBox
+  'Enter "2" in this box - Only if Married filing Joint': ~ks40ExCountJoint
+  'Enter $18,320 - Only if Married Filing Joint Return': ~ks40ExDollarsJoint
+  'Check Box - Married individuals filing a seperate return, individuals with a filing status of Single or Head of Household, check the box to the left, enter "1" in the box to the right and $9,160 in the currency box': ~ks40SingleBox
+  'Enter "1" in this box - Only if married filing seperate, filing status of single, or Heads of Household': ~ks40ExCountSingle
+  'Enter $9,160 - Only if married filing seperate, filing status of single, or Heads of Household': ~ks40ExDollarsSingle
+  'Dependents, enter the number of individuals you may claim as a dependent in the first box, multiply by $2,320 and enter total in the currency box to the right': /ksZero
+  'multiply number of dependents by $2,320 and enter total here': /ksZero
+  'total kansas exemptions': ~ks40ExTotal
+  'Total Kansas Exemption Amount. Add all amounts and enter result here': /ksLine5
+  '1 if a negative check this field': ~ks40Off
+  '1 federal adjusted gross income, as reported on your federal income tax return': /ksLine1
+  '2 if a negative check this field': ~ks40Off
+  '2 modifications, from Sch S line a27, enclose sch s': /ksZero
+  '3 if a negative check this field': ~ks40Off
+  '3 kansas adjusted gross income, line 2 added or subtracted from line 1': /ksLine3
+  '4 standard deduction or itemized deductions': /ksLine4
+  '5 exemption allowance, x number of exemptions claimed': /ksLine5
+  '6 total dudecutions, add lines 4 and 5': /ksLine6
+  '7 taxable income, subtract line6 from line 3; if less than zero enter 0': /ksLine7
+  '8 tax, use tax tables ot tax computation schedule': /ksLine8
+  '11 kansas tax on lump sum distributions, residents only': /ksZero
+  '12 total income tax, residnets add lines 8 and 11; nonresidents enter amount form line 10': /ksLine12
+  '13 credit for taxes paid to other states - enclose return(s) from other states': /ksZero
+  '14 credit for child and dependent care expenses': /ksZero
+  '15 other credits': /ksZero
+  '16 subtotal, subtract lines 13, 14 and 15 from line 12': /ksLine16
+  '17 earned income tax credit': /ksZero
+  '18 total tax balance, subtract lines 17 from line 16; Cannot be less than zero': /ksLine18
+  '19 kansas income tax withheld from w2 and or 1099s': /ksLine19
+  '20 estimated tax paid': /ksZero
+  '21 amount paid with kansas extension': /ksZero
+  '22 refundable portion of earned income tax credit': /ksZero
+  '23 refundable portion of tax credits': /ksZero
+  '24 payments remitted with original return': /ksZero
+  '25 credit for tax paid on the K-120S, enlcose K-9': /ksZero
+  '26 overpayment from original return': /ksZero
+  '27 if a negative check this field': ~ks40Off
+  '27 total refundable credits, add lines 19 - 25 and subtract line 26': /ksLine27
+  '28 underpayment, if line 18 is greater than line 27 enter the difference here': /ksLine28
+  '29 interest': /ksZero
+  '30 penalty': /ksZero
+  '31 mark box if engaged in commercial farming or fishing in 2025': ~ks40Off
+  '31 estimated tax penalty': /ksZero
+  '32 amount you owe, add lines 28 - 31 and any entries on lines 35 - 42': /ksLine32
+  '33 overpayment, if line 18 is less than 27 enter differnce here': /ksLine33
+  '34 credit forward, enter amount you wish to be applied to your 2026 estimated tax': /ksZero
+  '35 chickadee checkoff': /ksZero
+  '36 senior citizens meals on wheels contribution program': /ksZero
+  '37 breast cancer research fund': /ksZero
+  '38 military emergency relief fund': /ksZero
+  '39 kansas hometown heros fund': /ksZero
+  '40 kansas creative arts industry fund': /ksZero
+  '41 local school district contribution fund': /ksZero
+  '42 Kansas Histric Site Contribution Fund': /ksZero
+  '43 refund, subtract lines 34 - 42 from line 33': /ksLine43
