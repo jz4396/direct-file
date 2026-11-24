@@ -135,7 +135,7 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
     expect(get(lossOnly, `/flowKnockoutScheduleEPartII`).get).toBe(false);
   });
 
-  it(`married filing separately uses line 2; a joint return stops`, ({ task }) => {
+  it(`married filing separately uses line 2; a joint return without an owner stays incomplete`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/primaryFilerSeNetProfit`,
       `/flowKnockoutScheduleEPartIIBox14CodeAMfj`,
@@ -143,18 +143,18 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
       `/flowKnockoutScheduleEPartII`,
     ];
     // 2026 draft Instructions for Schedule SE, PDF p. 3: each spouse files a separate Schedule SE.
-    // The K-1 row does not record which spouse holds the interest. 26 U.S.C. 1402(b).
+    // Married filing separately is the primary filer's Schedule SE. 26 U.S.C. 1402(b). A joint return
+    // with no owner stays incomplete, not false, and does not file the amount as zero.
     const rows = partII([partnershipId], k1(partnershipId, `8000`));
     const separate = fg({ ...mfsFilerData, ...rows });
     expect(get(separate, `/primaryFilerSeNetProfit`).get.toString()).toBe(`8000.00`);
     expect(get(separate, `/flowKnockoutScheduleEPartIIBox14CodeAMfj`).get).toBe(false);
     const joint = fg({ ...mfjFilerData, ...rows });
-    expect(get(joint, `/primaryFilerSeNetProfit`).get.toString()).toBe(`0.00`);
-    expect(get(joint, `/flowKnockoutScheduleEPartIIBox14CodeAMfj`).complete).toBe(true);
-    expect(get(joint, `/flowKnockoutScheduleEPartIIBox14CodeAMfj`).get).toBe(true);
-    expect(get(joint, `/flowKnockoutScheduleEPartIIBox14CodeA`).get).toBe(true);
-    expect(get(joint, `/flowKnockoutScheduleEPartII`).get).toBe(true);
-    expect(get(joint, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(joint, `/primaryFilerSeNetProfit`).complete).toBe(false);
+    expect(get(joint, `/flowKnockoutScheduleEPartIIBox14CodeAMfj`).complete).toBe(false);
+    expect(get(joint, `/flowKnockoutScheduleEPartIIBox14CodeA`).get).toBe(false);
+    expect(get(joint, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
+    expect(get(joint, `/flowIsKnockedOut`).complete).toBe(false);
   });
 
   it(`a joint return with box 14 code A at zero does not stop`, ({ task }) => {
@@ -380,8 +380,8 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
       `/primaryFilerSeLine5a`,
       `/askSecondaryFilerChurchEmployeeIncome`,
     ];
-    // 26 U.S.C. 3121(w), 1402(b), and 1402(j). Box 14 code A stays on line 2. The spouse's church wages
-    // are not added to line 5a. 2026 draft Instructions for Schedule SE, PDF p. 3.
+    // 26 U.S.C. 3121(w), 1402(b), and 1402(j). The spouse's church wages are not added to line 5a.
+    // 2026 draft Instructions for Schedule SE, PDF p. 3.
     const rows = partII([partnershipId], k1(partnershipId, `8000`));
     const base = {
       ...rows,
@@ -400,15 +400,19 @@ describe(`Schedule SE line 2 from Form 1065 box 14 code A (#84)`, () => {
     expect(get(spouse, `/flowIsKnockedOut`).get).toBe(true);
     const primary = fg({
       ...base,
+      [`/scheduleEK1s/#${partnershipId}/owner`]: createEnumWrapper(`primary`, `/scheduleEK1OwnerOptions`),
       '/hadChurchEmployeeIncome': createBooleanWrapper(true),
       '/churchEmployeeIncome': createDollarWrapper(`1000.00`),
       '/hadSecondaryFilerChurchEmployeeIncome': createBooleanWrapper(false),
     });
-    // A joint return does not put box 14 code A on one spouse's line 2. Line 6 is line 5b only.
-    // 26 U.S.C. 1402(b). $1,000 × 0.9235 = $923.50, so line 5b is $924.
+    // The primary filer owns the interest, so box 14 code A is on that spouse's line 2. Line 6 is line
+    // 4c plus line 5b. 26 U.S.C. 1402(a) and 1402(b). $8,000 × 0.9235 = $7,388. $1,000 × 0.9235 =
+    // $923.50, so line 5b is $924. Line 6 is $8,312.
+    expect(get(primary, `/primaryFilerSeNetProfit`).get.toString()).toBe(`8000.00`);
     expect(get(primary, `/primaryFilerSeLine5a`).get.toString()).toBe(`1000.00`);
     expect(get(primary, `/primaryFilerSeLine5b`).get.toString()).toBe(`924.00`);
-    expect(get(primary, `/primaryFilerSeIncome`).get.toString()).toBe(`924.00`);
+    expect(get(primary, `/primaryFilerSeIncome`).get.toString()).toBe(`8312.00`);
+    expect(get(primary, `/flowKnockoutScheduleEPartIIBox14CodeAMfj`).get).toBe(false);
     expect(get(primary, `/flowKnockoutScheduleSEOutOfScope`).get).toBe(false);
   });
 });

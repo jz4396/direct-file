@@ -406,6 +406,15 @@ public final class PrintRefusingKnockouts {
             // total of Schedule SE lines 3 and 4b. Not part of /scheduleCSectionIsComplete. Complete false when the
             // method does not apply, without reading the credits.
             "/flowKnockoutScheduleSENonfarmOptionalMethodCredits",
+            // Form 1065 box 14 code A that reaches Schedule SE, together with the CDCC or the CTC/ACTC.
+            // 26 U.S.C. 32(c)(2)(A)(ii), used by 24(d) and 21(e)(1). 26 U.S.C. 21(d)(1)(B). 2026 draft
+            // Instructions for Form 2441, PDF p. 5, lines 4 and 5, item 2: Schedule SE line 3 minus
+            // Schedule 1 line 15. Those earned-income facts still read only Schedule C net profit, so a
+            // spouse whose only income is the K-1 would be $0 on Form 2441 line 5. Same credit conditions
+            // as /flowKnockoutScheduleCEarnedIncomeCredits, plus a yes to qualifying care expenses. The
+            // EITC stays on /flowKnockoutScheduleEEitc. Complete false when the Schedule SE amount is $0,
+            // without reading the credits. Not part of /scheduleESectionIsComplete.
+            "/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits",
             // Form 6251 lines 2c-2f, 2h, 2i, 2k-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4
             // would combine lines 1b through 3 as if those adjustments were zero. Line 2g is /form6251Line2g. Line 2j
             // is /form6251Line2j (Schedule K-1 (Form 1041) box 12 code A). Form 6251
