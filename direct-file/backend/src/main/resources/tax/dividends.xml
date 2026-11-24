@@ -10,9 +10,15 @@
       (PA handling lives in paPit.xml: per-spouse Schedule B lines 1, 5, 6, 10, and 12, /paLine3, and
       /flowKnockoutPaScheduleB).
   Per-form data: /dividendReports (collection), boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15
-  and 16 per form. Box 8 (/dividendReports/*/foreignCountry) is the country or U.S. possession for box 7. Boxes 15
-  (/dividendReports/*/stateIdNumber) and 16 (/dividendReports/*/stateDistribution) are the payer's state ID and the
-  state distribution. None of those three is added to a federal or state line.
+  and 16 per form. Box 8 (/dividendReports/*/foreignCountry) is the country or U.S. possession for box 7. Box 14
+  (/dividendReports/*/stateTaxWithheld) is the state tax withheld. Box 15 is the state (/dividendReports/*/state,
+  sameState or differentState on /incomeFormStateOptions, the same answer W-2 box 15 uses) and the payer's state
+  identification number (/dividendReports/*/stateIdNumber). Box 16 (/dividendReports/*/stateDistribution) is the
+  state distribution. None of those is added to a federal or state line. Form 1099-DIV (Rev. December 2027) draft,
+  Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf (SHA-256
+  eed4f9db9bedd67a54fdf31698828f8dcf764cafae3225eb19893eb7c4a70e25): "Boxes 14–16. State income tax withheld
+  reporting boxes." The form face labels box 14 "State", box 15 "State identification no.", and box 16 "State tax
+  withheld". This module keeps the boxes already collected under the names above.
   Box 11 (FATCA filing requirement) is not a stop by itself. A check asks income /requiredToFileForm8938
   (26 U.S.C. 6038D). Yes stops because Form 8938 is not produced. No proceeds.
   Boxes 2b, 2e, 2f and 6 are portions already included in box 1a or box 2a. They are not added again.
@@ -48,14 +54,20 @@
   Box 13 specified private activity bond interest dividends are Form 6251 line 2g
   (form6251 /form6251Line2g). Box 13 cannot exceed box 12.
   Out of scope, all stopped (BlockSubmissionOnTrue, in /flowIsKnockedOut, and PrintRefusingKnockouts), never zeroed:
-    boxes 2c, 9 and 10, or box 14 > $0           -> /flowKnockoutDividendUnsupportedBoxes
+    boxes 2c, 9 and 10, or box 14 > $0 that is
+      not the supported path below               -> /flowKnockoutDividendUnsupportedBoxes
     box 16 ≠ box 1a + box 2a on a computed
-      PA, IL, NC, or AZ return                   -> /flowKnockoutDividendStateDistribution
+      PA, IL, NC, AZ, MA, or ID return           -> /flowKnockoutDividendStateDistribution
   Box 8 is allowed when /flowKnockoutDividendForeignTaxPaid is false (box 7 is $0 or meets 26 U.S.C. 904(j)). The
   election does not use the country (904(j); Form 1040 instr. (2025) Schedule 3 line 1). A box 7 that fails 904(j)
   stays that stop, including when box 8 is filled in. Boxes 15 and 16 are allowed when box 14 is $0 on every form.
-  Box 14 greater than $0 would be Schedule A line 5a and each state module's withholding line. Neither is wired, so
-  it stops. A blank box 14 is $0.
+  Box 14 greater than $0 is allowed only when /stateReturnComputed is false, the resident state is not one with a
+  W-2 box 17 stop (filers /livedInAk, /livedInFl, /livedInNv, /livedInSd, /livedInTx, /livedInWy, /livedInWa,
+  /livedInTn, /livedInNh: Alaska, Florida, Nevada, South Dakota, Texas, Wyoming, Washington, Tennessee, and New
+  Hampshire), and that form's box 15 state is the resident state (sameState). It is not added to Schedule A line 5a.
+  The filer includes it in /scheduleAWritableStateLocalIncomeOrSalesTax. A blank box 14 is $0. A computed state
+  return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho), a no-income-tax resident, or a
+  box 15 state other than the resident state still stops. The 1099-INT box 17 stop is unchanged.
     box 11 FATCA checked, Form 8938 required     -> income /scheduleBPartIIIOutOfScope
                                                    (interest /flowKnockoutScheduleBPartIII)
     box 13 larger than box 12                    -> /flowKnockoutSpecifiedPrivateActivityBondDividendsExceedBox12
@@ -662,11 +674,15 @@
     <Fact path="/dividendReports/*/stateTaxWithheld">
       <Name>1099-DIV box 14: state tax withheld</Name>
       <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: boxes 14-16 are state income tax withholding. Box 14 is the
-        state tax withheld. It would be Schedule A (Form 1040) line 5a and each computed state's withholding line.
-        Neither is wired, so an amount greater than $0 stops the return
-        (/flowKnockoutDividendUnsupportedBoxes). $0, including a blank box, does not. The amount is not added to
-        Schedule A line 5a or to a state withholding line.</Description>
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
+        This fact is the withheld amount. It is not added to Schedule A (Form 1040) line 5a or to a state withholding
+        line. Instructions for Schedule A (Form 1040) (2025) draft, https://www.irs.gov/pub/irs-dft/i1040sca--dft.pdf
+        (the posted draft is still the 2025 instructions; no 2026 Schedule A instructions draft is posted), Line 5a:
+        "include on line 5a the state and local income taxes listed next" and "State and local income taxes withheld
+        from your salary during 2025." The filer includes this amount in
+        scheduleA /scheduleAWritableStateLocalIncomeOrSalesTax. $0, including a blank box, does not stop the return.
+        An amount greater than $0 is allowed only on /dividendReports/*/stateTaxWithheldIsSupported. Otherwise it
+        stops the return (/flowKnockoutDividendUnsupportedBoxes).</Description>
       <Derived>
         <Switch>
           <Case>
@@ -693,7 +709,8 @@
 
     <Fact path="/dividendReports/*/hasStateTaxWithheld">
       <Name>1099-DIV box 14 is more than $0</Name>
-      <Description>Box 14 greater than $0. A blank box is $0.</Description>
+      <Description>Box 14 greater than $0. A blank box is $0. This alone does not stop the return. See
+        /dividendReports/*/stateTaxWithheldUnsupported.</Description>
       <Derived>
         <GreaterThan>
           <Left>
@@ -706,10 +723,135 @@
       </Derived>
     </Fact>
 
+    <Fact path="/dividendResidentStateHasNoIncomeTax">
+      <Name>Resident state is one with a W-2 box 17 stop</Name>
+      <Description>True when /filerResidenceAndIncomeState is Alaska, Florida, Nevada, South Dakota, Texas, Wyoming,
+        Washington, Tennessee, or New Hampshire. Those are the states whose W-2 box 17 stops are filers /livedInAk,
+        /livedInFl, /livedInNv, /livedInSd, /livedInTx, /livedInWy, /livedInWa, /livedInTn, and /livedInNh. None of
+        them has a state income tax to withhold for. Incomplete when residence is unanswered. A box 14 greater than
+        $0 for one of these residents stops the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/livedInAk" />
+          <Dependency module="filers" path="/livedInFl" />
+          <Dependency module="filers" path="/livedInNv" />
+          <Dependency module="filers" path="/livedInSd" />
+          <Dependency module="filers" path="/livedInTx" />
+          <Dependency module="filers" path="/livedInWy" />
+          <Dependency module="filers" path="/livedInWa" />
+          <Dependency module="filers" path="/livedInTn" />
+          <Dependency module="filers" path="/livedInNh" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/stateTaxWithheldIsSupported">
+      <Name>1099-DIV box 14 is allowed on this form</Name>
+      <Description>True only when all three hold: stateReturn /stateReturnComputed is complete false; the resident
+        state is not one with a W-2 box 17 stop (/dividendResidentStateHasNoIncomeTax is complete false); and this
+        form's box 15 state (/dividendReports/*/state) is sameState, the resident state. Form 1099-DIV
+        (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
+        The amount is not added to a line. Complete false when any condition fails, including a blank box 15 state.
+        Incomplete only when a dependency the All has not resolved is incomplete; the stop treats that as not
+        supported.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency module="stateReturn" path="/stateReturnComputed" />
+          </IsComplete>
+          <Not>
+            <Dependency module="stateReturn" path="/stateReturnComputed" />
+          </Not>
+          <IsComplete>
+            <Dependency path="/dividendResidentStateHasNoIncomeTax" />
+          </IsComplete>
+          <Not>
+            <Dependency path="/dividendResidentStateHasNoIncomeTax" />
+          </Not>
+          <IsComplete>
+            <Dependency path="../writableState" />
+          </IsComplete>
+          <Equal>
+            <Left>
+              <Dependency path="../state" />
+            </Left>
+            <Right>
+              <Enum optionsPath="/incomeFormStateOptions">sameState</Enum>
+            </Right>
+          </Equal>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/stateTaxWithheldUnsupported">
+      <Name>1099-DIV box 14 stops this form</Name>
+      <Description>True when box 14 is greater than $0 and /dividendReports/*/stateTaxWithheldIsSupported is not
+        true. That is a computed state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or
+        Idaho), a resident of a state with a W-2 box 17 stop, a box 15 state other than the resident state, or a
+        blank box 15 state. Complete false when box 14 is $0 or blank, and when the supported path holds. One
+        boolean for this form. The interview knockout counts these into one boolean
+        (/flowKnockoutDividendUnsupportedBoxes).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../hasStateTaxWithheld" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="../stateTaxWithheldIsSupported" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableState">
+      <Name>1099-DIV box 15: state (as entered)</Name>
+      <Description>The state on box 15 of the 1099-DIV. Optional. sameState is the filer's resident state
+        (/filerResidenceAndIncomeState). differentState is any other state. Use /dividendReports/*/state downstream.
+        Not added to any line.</Description>
+      <Writable>
+        <Enum optionsPath="/incomeFormStateOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/state">
+      <Name>1099-DIV box 15: state</Name>
+      <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
+        The form face labels box 15 "State identification no." This fact is the state portion of box 15, the same
+        sameState or differentState answer as W-2 box 15 (/incomeFormStateOptions). sameState equals the resident
+        state. It is not added to any line. Incomplete when blank. A box 14 greater than $0 is allowed only when this
+        is sameState and the other conditions on /dividendReports/*/stateTaxWithheldIsSupported hold.</Description>
+      <Derived>
+        <Dependency path="../writableState" />
+      </Derived>
+    </Fact>
+
     <Fact path="/dividendReports/*/writableStateIdNumber">
       <Name>1099-DIV box 15: state identification number (as entered)</Name>
-      <Description>Box 15 on the 1099-DIV. Optional. Use /dividendReports/*/stateIdNumber downstream. Not added to any
-        line.</Description>
+      <Description>The payer's state identification number on box 15 of the 1099-DIV. Optional. Use
+        /dividendReports/*/stateIdNumber downstream. Not added to any line.</Description>
       <Writable>
         <String />
         <Limit type="MaxLength">
@@ -721,10 +863,11 @@
     <Fact path="/dividendReports/*/stateIdNumber">
       <Name>1099-DIV box 15: state identification number</Name>
       <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 15 is the payer's state identification number. It is
-        used only for a state return and is not added to any line. Empty when blank. Allowed when box 14 is $0 on
-        every form. A box 14 greater than $0 stops the return for that reason
-        (/flowKnockoutDividendUnsupportedBoxes).</Description>
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 15 on the form face is "State identification no." This
+        fact is that identification number. The state portion of box 15 is /dividendReports/*/state. The number is
+        used only for a state return and is not added to any line. Empty when blank. It does not stop the return.
+        A box 14 greater than $0 stops or continues based on /dividendReports/*/stateTaxWithheldIsSupported, not on
+        this number.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -764,12 +907,13 @@
     <Fact path="/dividendReports/*/stateDistribution">
       <Name>1099-DIV box 16: state distribution</Name>
       <Description>Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 16 is the state distribution. It is payer state-income
-        information, used only for a state return, and is not added to any line. $0 when blank. Allowed when box 14
-        is $0 on every form. On a computed state return (stateReturn /stateReturnComputed: Pennsylvania, including a
-        part-year PA-40, Illinois, North Carolina, or Arizona) an entered amount that is not this form's box 1a plus
-        box 2a stops the return (/flowKnockoutDividendStateDistribution). Those modules read the federal amounts. A
-        blank box 16 is not an amount and does not stop.</Description>
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
+        This fact is the state distribution. It is payer state-income information, used only for a state return, and
+        is not added to any line. $0 when blank. Allowed when box 14 is $0 on every form. On a computed state return
+        (stateReturn /stateReturnComputed: Pennsylvania, including a part-year PA-40, Illinois, North Carolina,
+        Arizona, Massachusetts, or Idaho) an entered amount that is not this form's box 1a plus box 2a stops the
+        return (/flowKnockoutDividendStateDistribution). Those modules read the federal amounts. A blank box 16 is
+        not an amount and does not stop.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -1089,8 +1233,8 @@
 
     <Fact path="/dividendReports/*/hasUnsupportedBoxes">
       <Name>1099-DIV has an amount in an unsupported box</Name>
-      <Description>Yes if the form has an amount in box 2c, 9, or 10. Box 14 greater than $0 is the same stop, from
-        /dividendReports/*/hasStateTaxWithheld, not from this answer. Box 8
+      <Description>Yes if the form has an amount in box 2c, 9, or 10. Box 14 greater than $0 stops only when
+        /dividendReports/*/stateTaxWithheldUnsupported is true, not from this answer. Box 8
         (/dividendReports/*/foreignCountry) is not this answer: it is allowed when
         /flowKnockoutDividendForeignTaxPaid is false. Boxes 15 and 16
         (/dividendReports/*/stateIdNumber and /dividendReports/*/stateDistribution) are not this answer when box 14
@@ -1103,8 +1247,9 @@
         (/dividendReports/*/exemptInterestDividends) and box 13 is specified private activity bond interest dividends
         (/dividendReports/*/specifiedPrivateActivityBondInterestDividends). None of those is one of these boxes. Form
         1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 2c "Section 1202 gain" (still this stop), boxes 9-10
-        liquidation distributions (still this stop), box 14 state tax withheld (still this stop when greater than $0).
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
+        Box 2c "Section 1202 gain" (still this stop), boxes 9-10 liquidation distributions (still this stop). Box 14
+        state tax withheld stops when /dividendReports/*/stateTaxWithheldUnsupported is true.
         Box 13 is Form 6251 line 2g (26 U.S.C. 57(a)(5)).</Description>
       <Writable>
         <Boolean />
@@ -1921,16 +2066,25 @@
 
     <Fact path="/flowKnockoutDividendUnsupportedBoxes">
       <Name>Knockout: 1099-DIV box this tool can't compute</Name>
-      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes (box 2c, 9, or 10), or box 14 greater than $0
-        (/dividendReports/*/hasStateTaxWithheld). Box 2c needs the section 1202 part of the 28% Rate Gain Worksheet
-        (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1 requires that
-        none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section 1202 gain), or
-        box 2d (collectibles (28%) gain)"). Boxes 2b and 2d are supported and are not this stop. Boxes 9-10 are
-        liquidation distributions (basis recovery). Box 14 is state tax withheld. It would be Schedule A line 5a and
-        each state module's withholding line, and neither is wired, so an amount greater than $0 stops. $0 does not.
-        Box 8 is a foreign country (/dividendReports/*/foreignCountry) and is not this stop. Boxes 15 and 16 are not
-        this stop when box 14 is $0. A box 16 amount that differs from box 1a plus box 2a on a computed state return
-        stops at /flowKnockoutDividendStateDistribution. Box 11 (FATCA filing requirement) is not this stop. Form
+      <Description>Yes to /dividendReports/*/hasUnsupportedBoxes (box 2c, 9, or 10), or box 14 greater than $0 that
+        fails /dividendReports/*/stateTaxWithheldIsSupported
+        (/dividendReports/*/stateTaxWithheldUnsupported). Box 2c needs the section 1202 part of the 28% Rate Gain
+        Worksheet (Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 31, Line 7a, Exception 1
+        requires that none of the forms "have an amount in box 2b (unrecaptured section 1250 gain), box 2c (section
+        1202 gain), or box 2d (collectibles (28%) gain)"). Boxes 2b and 2d are supported and are not this stop.
+        Boxes 9-10 are liquidation distributions (basis recovery). Box 14 is state tax withheld. Form 1099-DIV
+        (Rev. December 2027) draft, Instructions for Recipient, https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf:
+        "Boxes 14–16. State income tax withheld reporting boxes." It is not added to Schedule A line 5a. Instructions
+        for Schedule A (Form 1040) (2025) draft, https://www.irs.gov/pub/irs-dft/i1040sca--dft.pdf, Line 5a, includes
+        "state and local income taxes withheld" in the amount the filer enters. An amount greater than $0 is allowed
+        only when /stateReturnComputed is false, the resident state is not Alaska, Florida, Nevada, South Dakota,
+        Texas, Wyoming, Washington, Tennessee, or New Hampshire, and box 15 state is the resident state. A computed
+        state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho), a no-income-tax
+        resident, or a different box 15 state stops. $0 does not. Box 8 is a foreign country
+        (/dividendReports/*/foreignCountry) and is not this stop. Boxes 15 and 16 are not this stop when box 14 is
+        $0. A box 16 amount that differs from box 1a plus box 2a on a computed state return stops at
+        /flowKnockoutDividendStateDistribution. The 1099-INT box 17 stop is not this stop. Box 11 (FATCA filing
+        requirement) is not this stop. Form
         1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
         https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf, Box 11: the payer is reporting to satisfy its chapter 4
         account reporting requirement. A check asks income /requiredToFileForm8938 (26 U.S.C. 6038D). Yes stops
@@ -1974,7 +2128,7 @@
                 <GreaterThan>
                   <Left>
                     <Count>
-                      <Dependency path="/dividendReports/*/hasStateTaxWithheld" />
+                      <Dependency path="/dividendReports/*/stateTaxWithheldUnsupported" />
                     </Count>
                   </Left>
                   <Right>
@@ -1999,13 +2153,14 @@
     <Fact path="/flowKnockoutDividendStateDistribution">
       <Name>Knockout: 1099-DIV box 16 differs from box 1a plus box 2a on a computed state return</Name>
       <Description>A computed state return (stateReturn /stateReturnComputed: full-year or part-year Pennsylvania,
-        Illinois, North Carolina, or Arizona) and an entered box 16 that is not that form's box 1a plus box 2a.
-        Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
-        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: box 16 is the state distribution. PA-40 Schedule B reads
-        federal box 1a (line 1) and box 2a (line 10). Illinois, North Carolina, and Arizona read federal total income,
-        which includes those amounts. A different state distribution is not computed, so the return stops. Blank box
-        16 is not an amount. An amount equal to box 1a plus box 2a does not stop. A return that is not a computed
-        state return, including Florida, is complete false. Box 14 greater than $0 is
+        Illinois, North Carolina, Arizona, Massachusetts, or Idaho) and an entered box 16 that is not that form's
+        box 1a plus box 2a. Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
+        https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf: "Boxes 14–16. State income tax withheld reporting boxes."
+        This stop is the state distribution. PA-40 Schedule B reads federal box 1a (line 1) and box 2a (line 10).
+        Illinois, North Carolina, Arizona, Massachusetts, and Idaho read federal total income, which includes those
+        amounts. A different state distribution is not computed, so the return stops. Blank box 16 is not an amount.
+        An amount equal to box 1a plus box 2a does not stop. A return that is not a computed state return, including
+        Florida, is complete false. Box 14 greater than $0 that is not the supported path is
         /flowKnockoutDividendUnsupportedBoxes, not this stop. Complete false when /stateReturnComputed is not a
         complete true, when no Form 1099-DIV is entered, or when every entered box 16 equals that form's box 1a plus
         box 2a.</Description>
