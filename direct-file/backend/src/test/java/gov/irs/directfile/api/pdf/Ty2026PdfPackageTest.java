@@ -104,9 +104,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   filer too, so the 24(h)(7) SSN requirement is met); one care provider paid $2,000.
  *   Prints Form 1040, Schedule 3, Schedule 3-A (#239), Form 2441, Schedule 8812 and the W-2.
  * Scenario 5, saver (single-simple-savers-credit.json): single; W-2 $24,469 with $4,000 elective deferrals.
+ *   The file is a Massachusetts resident, but line 21 is under the $24,000 tax-table threshold, so the
+ *   printed package is the same return filed from Florida (no personal income tax; box 17 is $0).
  *   Prints Form 1040, Schedule 3, Form 8880 and the W-2.
- * Scenario 6, HSA (hsa-single-filer-contributions-only.json): single; two W-2s ($39,674 total, $260 employer HSA
- *   contributions); self-only HDHP; $770 own HSA contributions. Prints Form 1040, Schedule 1, Form 8889 and two W-2s.
+ * Scenario 6, HSA (hsa-single-filer-contributions-only.json): single full-year Massachusetts resident;
+ *   two W-2s ($39,674 box 16, $260 employer HSA contributions); self-only HDHP; $770 own HSA contributions.
+ *   Line 21 is $33,274, so Form 1 and Schedule HC print with Form 1040, Schedule 1, Form 8889 and two W-2s.
  * Scenario 7, self-employed family (#179 review): head of household; three children under 17 (group-00 test SSNs,
  *   filer too); $13,000 ordinary dividends; Schedule C profit $4,000 (or $10,000); no W-2.
  *   Prints Form 1040, Schedules 1, 2, 3-A, B, C, SE, Form 8995 (#17) and 8812 (Part II-B, lines 22-27).
@@ -181,6 +184,8 @@ class Ty2026PdfPackageTest {
             Map.entry("PA40B", 1),
             Map.entry("PA40C", 2),
             Map.entry("PA40SP", 2),
+            Map.entry("MA1", 4),
+            Map.entry("MAHC", 4),
             Map.entry("IRSW2", 1));
 
     /**
@@ -192,7 +197,13 @@ class Ty2026PdfPackageTest {
             Map.entry("SCHEDULE_LEP", "2024 Schedule LEP template only (language preference)"),
             Map.entry("CTC_DEPENDENTS_STATEMENT", "2024 Form 8862 statement template only"),
             Map.entry("ODC_DEPENDENTS_STATEMENT", "2024 Form 8862 statement template only"),
-            Map.entry("DF1099R", "2024 Form 1099-R copy template only; no 2026 form committed"));
+            Map.entry("DF1099R", "2024 Form 1099-R copy template only; no 2026 form committed"),
+            Map.entry("IL1040", "Illinois Form IL-1040; these scenarios are not Illinois residents"),
+            Map.entry("ILWIT", "Illinois Schedule IL-WIT; these scenarios are not Illinois residents"),
+            Map.entry("NCD400", "North Carolina Form D-400; these scenarios are not North Carolina residents"),
+            Map.entry("AZ140", "Arizona Form 140; these scenarios are not Arizona residents"),
+            Map.entry("ID40", "Idaho Form 40; these scenarios are not Idaho residents"),
+            Map.entry("KS40", "Kansas Form K-40; these scenarios are not Kansas residents"));
 
     static final ObjectMapper MAPPER = new ObjectMapper();
     static FactGraphService factGraphService;
@@ -491,9 +502,12 @@ class Ty2026PdfPackageTest {
                 Form8862Ty2026PdfSmokeTest.eitcWithoutChildren())) {
             printed.addAll(render(s, null, null).forms.keySet());
         }
-        for (String s : List.of(FAMILY, SAVER, HSA)) {
+        for (String s : List.of(FAMILY, HSA)) {
             printed.addAll(renderFacts(scenarioFile(s), null, null).forms.keySet());
         }
+        // The saver file is a Massachusetts resident whose Form 1 line 21 is under $24,000.
+        // The federal package is that return filed from Florida. See federalSaver.
+        printed.addAll(renderFacts(federalSaver(), null, null).forms.keySet());
         // #88: ptc-annual-amounts-rounding files Form 8962. The scenario leaves the income-based special enrollment
         // question unanswered, which refuses the print; "no" is the supported answer (26 U.S.C. 36B(c)(3)(A)(iii)).
         Map<String, FactTypeWithItem> ptc = scenarioFile(PrintRefusingKnockoutsTest.PTC_SCENARIO);
@@ -1077,9 +1091,17 @@ class Ty2026PdfPackageTest {
                 invalid.complete() && Boolean.FALSE.equals(invalid.get()), CreditFormsTy2026PdfSmokeTest.INVALID_TIN);
     }
 
+    /**
+     * Saver scenario filed from Florida. See {@link CreditFormsTy2026PdfSmokeTest#saverAsFloridaResident}.
+     * Wages stay $24,469, in the Form 8880 20 percent band (Notice 2025-67).
+     */
+    static Map<String, FactTypeWithItem> federalSaver() throws Exception {
+        return CreditFormsTy2026PdfSmokeTest.saverAsFloridaResident(scenarioFile(SAVER));
+    }
+
     @Test
     void saverPackage() throws Exception {
-        Pkg pkg = renderFacts(scenarioFile(SAVER), "e2e-ty2026-saver.pdf");
+        Pkg pkg = renderFacts(federalSaver(), "e2e-ty2026-saver.pdf");
         pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S3", 1, "IRS8880", 1, "IRSW2", 1));
         Map<String, String> f8880 = pkg.fields("IRS8880", 0);
         Map<String, String> s3 = pkg.fields("IRS1040S3", 0);
@@ -1096,8 +1118,13 @@ class Ty2026PdfPackageTest {
 
     @Test
     void hsaPackage() throws Exception {
-        Pkg pkg = renderFacts(scenarioFile(HSA), "e2e-ty2026-hsa.pdf");
-        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S1", 1, "IRS8889", 1, "IRSW2", 2));
+        Map<String, FactTypeWithItem> facts = scenarioFile(HSA);
+        // The scenario leaves the optional 5.85 percent election unanswered, so line 22 stays
+        // incomplete. The Part B tax is 5 percent unless the taxpayer elects 5.85 percent.
+        // M.G.L. c. 62, § 4(b). This package is the return that does not elect it.
+        facts.put("/maElectsOptionalRate", MAPPER.readValue(bool(false), FactTypeWithItem.class));
+        Pkg pkg = renderFacts(facts, "e2e-ty2026-hsa.pdf");
+        pkg.assertForms(Map.of("IRS1040", 1, "IRS1040S1", 1, "IRS8889", 1, "IRSW2", 2, "MA1", 1, "MAHC", 1));
         Map<String, String> f8889 = pkg.fields("IRS8889", 0);
         Map<String, String> s1 = pkg.fields("IRS1040S1", 0);
         Map<String, String> f1040 = pkg.fields("IRS1040", 0);
@@ -1110,6 +1137,41 @@ class Ty2026PdfPackageTest {
         assertEquals(770, amt(f8889, "Page1[0].f1_14[0]"), "13 = smaller of 2 or 12");
         assertEquals(770, amt(s1, "Page2[0].f2_03[0]"), "Schedule 1 line 13 = Form 8889 line 13");
         assertEquals(770, amt(f1040, "Page1[0].f1_74[0]"), "Form 1040 line 10 = Schedule 1 line 26");
+        // 2025 Form 1, full-year resident. Line 3 is box 16: $15,205 + $24,469 = $39,674.
+        // Line 11a is box 4 plus box 6 ($3,035), capped at $2,000. No rent, so line 16 is $2,000.
+        // Line 17 is $37,674. The single exemption is $4,400 (M.G.L. c. 62, § 3B(b)(1)(A)), so line 21
+        // is $33,274. That is over $24,000, so line 22 is 5 percent, rounded once, half up: $1,664.
+        // 2025 Form 1 instructions, line 22; M.G.L. c. 62, § 4(b). Box 17 is $507 + $1,502 = $2,009.
+        Map<String, String> ma1 = pkg.fields("MA1", 0);
+        assertEquals(
+                39674,
+                amt(ma1, "line 3. Wages, salaries, tips and other employee compensation (from all Forms W-2)"),
+                "Form 1 line 3");
+        assertEquals(
+                2000,
+                amt(
+                        ma1,
+                        "line 11a. Amount you paid to Social Security, Medicare, Railroad, U.S. or Massachusetts retirement. Not more than $2,000"),
+                "Form 1 line 11a");
+        assertEquals(2000, amt(ma1, "line 16. Total deductions. Add lines 11 through 15"), "Form 1 line 16");
+        assertEquals(
+                33274, amt(ma1, "line 21. Total Taxable 5.0% Income. Add lines 19 and 20"), "Form 1 line 21");
+        assertEquals(
+                1664,
+                amt(ma1, "line 22. Tax On 5.0% Income (from tax table). If line 21 is more than $24,000, multiply by .05"),
+                "Form 1 line 22");
+        assertEquals(
+                2009,
+                amt(ma1, "Line 38a. Massachusetts income tax withheld from Form(s) W-2"),
+                "Form 1 line 38a");
+        Map<String, String> hc = pkg.fields("MAHC", 0);
+        assertEquals("1", text(hc, "line 1c. Family size. See instructions"), "Schedule HC family size");
+        assertEquals(
+                "Bay State Health",
+                text(
+                        hc,
+                        "4f line 1. Name of private insurance company, administrator or other government program (from box 1 of form ma 1099-hc)"),
+                "Schedule HC insurer");
     }
 
     // ---------------------------------------------------------------- rendering
