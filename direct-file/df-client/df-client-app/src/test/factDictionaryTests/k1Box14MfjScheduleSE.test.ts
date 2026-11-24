@@ -12,7 +12,14 @@ import {
   createTinWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
-import { filerWithW2NoDeductionsNoCreditsBaseData, mfjFilerData, primaryFilerId, spouseId } from '../testData.js';
+import {
+  filerWithW2NoDeductionsNoCreditsBaseData,
+  makeCareProviderData,
+  makeChildData,
+  mfjFilerData,
+  primaryFilerId,
+  spouseId,
+} from '../testData.js';
 
 /**
  * Form 1065 box 14 code A on the owning spouse's Schedule SE. #85.
@@ -32,6 +39,9 @@ import { filerWithW2NoDeductionsNoCreditsBaseData, mfjFilerData, primaryFilerId,
  */
 const partnershipId = `b7e1c2a0-1111-4222-8333-444455556685`;
 const w2Id = `b7e1c2a0-1111-4222-8333-444455556686`;
+const childId = `b7e1c2a0-1111-4222-8333-444455556687`;
+const providerId = `b7e1c2a0-1111-4222-8333-444455556688`;
+const EARNED_INCOME_KO = `/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits`;
 
 const noW2 = {
   ...Object.fromEntries(
@@ -114,6 +124,31 @@ const mfjFl = {
   '/scheduleEK1sIsDone': createBooleanWrapper(true),
 };
 
+const careFor = (amount: number) => ({
+  '/familyAndHousehold': createCollectionWrapper([childId]),
+  ...makeChildData(childId, `2018-01-01`),
+  [`/familyAndHousehold/#${childId}/ownSupport`]: createBooleanWrapper(false),
+  '/flowKnockoutHouseholdEmployee': createBooleanWrapper(false),
+  '/hasCdccCarryoverAmountFromPriorTaxYear': createBooleanWrapper(false),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(true),
+  [`/familyAndHousehold/#${childId}/cdccHasDependentCareExpenses`]: createBooleanWrapper(true),
+  [`/familyAndHousehold/#${childId}/cdccHadExpensesPaidToQualifyingProvider`]: createBooleanWrapper(true),
+  [`/familyAndHousehold/#${childId}/writableCdccQualifyingExpenseAmount`]: createDollarWrapper(`${amount}`),
+  '/writableHasCdccForfeitedCredits': createBooleanWrapper(false),
+  '/cdccHasCreditForPriorYearExpenses': createBooleanWrapper(false),
+  ...makeCareProviderData(providerId),
+  [`/cdccCareProviders/#${providerId}/writableAmountPaidForCare`]: createDollarWrapper(`${amount}`),
+  '/cdccCareProviders': createCollectionWrapper([providerId]),
+  '/cdccCareProvidersIsDone': createBooleanWrapper(true),
+});
+
+const qualifyingChild = {
+  '/familyAndHousehold': createCollectionWrapper([childId]),
+  ...makeChildData(childId, `2016-01-01`),
+  '/writableCdccHasQualifyingExpenses': createBooleanWrapper(false),
+  '/receivedImproperClaims': createBooleanWrapper(false),
+};
+
 const fg = (extra: Record<string, unknown>) => setupFactGraph({ ...mfjFl, ...extra }).factGraph;
 const get = (g: ReturnType<typeof fg>, p: string) => g.get(p as ConcretePath);
 
@@ -143,6 +178,7 @@ describe(`Form 1065 box 14 code A on the owning spouse's Schedule SE (#85)`, () 
       `/form8959Line13`,
       `/flowKnockoutScheduleEPartIIBox14CodeAMfj`,
       `/flowKnockoutScheduleEEitc`,
+      `/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits`,
     ];
     // Line 2 = $30,000. Line 4a = 30,000 × 0.9235 = 27,705.
     // Line 10 unrounded 27,705 × 0.124 = 3,435.42, rounded $3,435.
@@ -171,6 +207,8 @@ describe(`Form 1065 box 14 code A on the owning spouse's Schedule SE (#85)`, () 
     expect(get(g, `/flowKnockoutScheduleEPartIIBox14CodeA`).get).toBe(false);
     expect(get(g, `/flowKnockoutScheduleEEitc`).get).toBe(false);
     expect(get(g, `/scheduleCNetProfitForEarnedIncome`).get.toString()).toBe(`0.00`);
+    expect(get(g, EARNED_INCOME_KO).complete).toBe(true);
+    expect(get(g, EARNED_INCOME_KO).get).toBe(false);
   });
 
   it(`primary owns the K-1: line 9 uses the primary filer's W-2 boxes 3 and 7`, ({ task }) => {
@@ -222,6 +260,78 @@ describe(`Form 1065 box 14 code A on the owning spouse's Schedule SE (#85)`, () 
     expect(get(g, `/scheduleEK1s/#${partnershipId}/isComplete`).complete).toBe(true);
     expect(get(g, `/scheduleEK1s/#${partnershipId}/isComplete`).get).toBe(false);
     expect(get(g, `/flowKnockoutScheduleEPartII`).complete).toBe(false);
+  });
+
+  it(`stops when nonzero box 14 code A reaches Schedule SE and the CDCC applies`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      EARNED_INCOME_KO,
+      `/cdccEarnedIncomeLine5`,
+      `/secondaryFilerSeReportedNetProfit`,
+      `/secondaryFilerSelfEmploymentTax`,
+    ];
+    // Form 2441 line 5 ignores the K-1, so the spouse's earned income stays $0. The Schedule SE
+    // amounts are unchanged. A yes to qualifying expenses stops even when the computed credit is $0.
+    const expensesOnly = fg({
+      ...w2(primaryFilerId, 80000),
+      ...k1(`secondary`),
+      '/familyAndHousehold': createCollectionWrapper([]),
+      '/writableCdccHasQualifyingExpenses': createBooleanWrapper(true),
+    });
+    expect(get(expensesOnly, `/ctcQualified`).get).toBe(false);
+    expect(get(expensesOnly, `/writableCdccHasQualifyingExpenses`).get).toBe(true);
+    expect(get(expensesOnly, EARNED_INCOME_KO).get).toBe(true);
+    expect(get(expensesOnly, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(expensesOnly, `/secondaryFilerSeReportedNetProfit`).get.toString()).toBe(`30000.00`);
+    expect(get(expensesOnly, `/secondaryFilerSelfEmploymentTax`).get.toString()).toBe(`4238.00`);
+
+    const withChildAndCare = fg({ ...w2(primaryFilerId, 80000), ...k1(`secondary`), ...careFor(3000) });
+    expect(get(withChildAndCare, `/cdccEarnedIncomeLine5`).get.toString()).toBe(`0.00`);
+    expect(get(withChildAndCare, EARNED_INCOME_KO).get).toBe(true);
+    expect(get(withChildAndCare, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(withChildAndCare, `/secondaryFilerSeReportedNetProfit`).get.toString()).toBe(`30000.00`);
+    expect(get(withChildAndCare, `/secondaryFilerSeNetEarnings`).get.toString()).toBe(`27705.00`);
+    expect(get(withChildAndCare, `/secondaryFilerSeSocialSecurityTax`).get.toString()).toBe(`3435.00`);
+    expect(get(withChildAndCare, `/secondaryFilerSeMedicareTax`).get.toString()).toBe(`803.00`);
+    expect(get(withChildAndCare, `/secondaryFilerSelfEmploymentTax`).get.toString()).toBe(`4238.00`);
+  });
+
+  it(`stops when nonzero box 14 code A reaches Schedule SE and the ACTC could apply`, ({ task }) => {
+    task.meta.testedFactPaths = [EARNED_INCOME_KO, `/ctcQualified`, `/secondaryFilerSeReportedNetProfit`];
+    const g = fg({ ...w2(primaryFilerId, 80000), ...k1(`secondary`), ...qualifyingChild });
+    expect(get(g, `/cdccQualified`).get).toBe(false);
+    expect(get(g, `/writableCdccHasQualifyingExpenses`).get).toBe(false);
+    expect(get(g, `/ctcQualified`).get).toBe(true);
+    expect(get(g, EARNED_INCOME_KO).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/secondaryFilerSeReportedNetProfit`).get.toString()).toBe(`30000.00`);
+    expect(get(g, `/secondaryFilerSelfEmploymentTax`).get.toString()).toBe(`4238.00`);
+  });
+
+  it(`does not stop when neither the CDCC nor the ACTC applies`, ({ task }) => {
+    task.meta.testedFactPaths = [EARNED_INCOME_KO, `/secondaryFilerSeReportedNetProfit`];
+    const g = fg({ ...w2(primaryFilerId, 80000), ...k1(`secondary`) });
+    expect(get(g, `/cdccQualified`).get).toBe(false);
+    expect(get(g, `/ctcQualified`).get).toBe(false);
+    expect(get(g, EARNED_INCOME_KO).complete).toBe(true);
+    expect(get(g, EARNED_INCOME_KO).get).toBe(false);
+    expect(get(g, `/secondaryFilerSeReportedNetProfit`).get.toString()).toBe(`30000.00`);
+    expect(get(g, `/secondaryFilerSelfEmploymentTax`).get.toString()).toBe(`4238.00`);
+    expect(get(g, `/schedule1Line15`).get.toString()).toBe(`2119.00`);
+  });
+
+  it(`does not stop when box 14 code A is $0`, ({ task }) => {
+    task.meta.testedFactPaths = [EARNED_INCOME_KO, `/scheduleEK1Box14CodeANonfarmTotal`];
+    const g = fg({
+      ...w2(primaryFilerId, 80000),
+      ...k1(`secondary`, { [`/scheduleEK1s/#${partnershipId}/box14CodeA`]: createDollarWrapper(`0`) }),
+      ...qualifyingChild,
+      ...careFor(3000),
+    });
+    expect(get(g, `/scheduleEK1Box14CodeANonfarmTotal`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/writableCdccHasQualifyingExpenses`).get).toBe(true);
+    expect(get(g, EARNED_INCOME_KO).complete).toBe(true);
+    expect(get(g, EARNED_INCOME_KO).get).toBe(false);
+    expect(get(g, `/secondaryFilerSeReportedNetProfit`).get.toString()).toBe(`0.00`);
   });
 
   it(`the limited-partner stop still fires on a joint return`, ({ task }) => {

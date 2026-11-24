@@ -108,6 +108,9 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_SE_NONFARM_OPTIONAL_KNOCKOUT = "/flowKnockoutScheduleSENonfarmOptionalMethod";
     static final String SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT =
             "/flowKnockoutScheduleSENonfarmOptionalMethodCredits";
+    /** Box 14 code A on Schedule SE together with the CDCC or the CTC/ACTC. */
+    static final String SCHEDULE_E_K1_BOX14_EARNED_INCOME_CREDITS_KNOCKOUT =
+            "/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     /**
      * Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). Lines 2g and 2j are
@@ -302,6 +305,7 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT, // Schedule SE line this tool does not compute
                 SCHEDULE_SE_NONFARM_OPTIONAL_KNOCKOUT, // nonfarm optional method not allowed on this return
                 SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT, // election with the EITC, ACTC, or CDCC
+                SCHEDULE_E_K1_BOX14_EARNED_INCOME_CREDITS_KNOCKOUT, // box 14 code A with the CDCC or ACTC
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 (not lines 2g and 2j)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
@@ -330,9 +334,9 @@ class PrintRefusingKnockoutsTest {
         // #86 appends the 1099-DIV stops, including /flowKnockoutDividendStateDistribution, and does not list
         // Part III again. #347 adds /flowKnockoutPaK1GuaranteedPayments. #93 slice 6 adds the fourteen Massachusetts
         // stops. 112 on main plus the box 16 stop is 113. #93 slice 7 adds the thirteen Idaho stops. 113 plus 13 is
-        // 126.
+        // 126. #85 adds /flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits. 126 plus 1 is 127.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(126, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(127, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(

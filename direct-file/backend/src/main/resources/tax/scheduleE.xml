@@ -4442,6 +4442,55 @@
       </Derived>
     </Fact>
 
+    <Fact path="/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits">
+      <Name>Knockout: Form 1065 box 14 code A with the CDCC or ACTC</Name>
+      <Description>
+        #85. Box 14 code A is net earnings from self-employment. 26 U.S.C. 32(c)(2)(A)(ii)
+        (https://www.law.cornell.edu/uscode/text/26/32#c_2_A), used by 24(d) and 21(e)(1), makes that
+        amount earned income. 26 U.S.C. 21(d)(1)(B) (https://www.law.cornell.edu/uscode/text/26/21#d_1)
+        limits the child and dependent care credit to the lesser of the two spouses' earned incomes.
+        2026 draft Instructions for Form 2441 (https://www.irs.gov/pub/irs-dft/i2441--dft.pdf, SHA-256
+        7fdecfe193df435542bb452ba108bee011bef7032fda8abe972d6fbd5de233e7), PDF p. 5, lines 4 and 5,
+        item 2: "The amount shown on Schedule SE (Form 1040), line 3, minus any deduction you claim
+        on Schedule 1 (Form 1040), line 15." /earnedIncomeWithAllCombatPay (Form 8812 line 18a) and
+        /primaryFilerEarnedIncomeForCdccBase add only scheduleC /scheduleCNetProfitForEarnedIncome, so
+        a K-1 amount is not in those facts. A spouse whose only income is that K-1 is $0 on Form 2441
+        line 5, and the additional child tax credit is understated. Stop when any nonzero box 14 code
+        A reaches Schedule SE (/scheduleEK1Box14CodeANonfarmTotal, either filer, any filing status)
+        and the CDCC or the CTC applies, the same credit conditions as
+        /flowKnockoutScheduleCEarnedIncomeCredits (/cdccQualified or /ctcQualified). A yes to
+        qualifying expenses (/writableCdccHasQualifyingExpenses) also stops, because the computed
+        credit can be $0 while line 5 ignores the K-1. The EITC stays on /flowKnockoutScheduleEEitc.
+        Putting the amount into the earned-income facts is a later slice. Not part of
+        /scheduleESectionIsComplete. Complete false when the Schedule SE amount is $0, without reading
+        the credits, and when the amount is nonzero and neither credit applies. An unanswered expenses
+        question is not a yes.
+      </Description>
+      <BlockSubmissionOnTrue />
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <GreaterThan>
+            <Left>
+              <Dependency path="/scheduleEK1Box14CodeANonfarmTotal" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Any>
+            <Dependency module="cdcc" path="/cdccQualified" />
+            <Dependency module="ctcOdc" path="/ctcQualified" />
+            <All>
+              <IsComplete>
+                <Dependency module="cdcc" path="/writableCdccHasQualifyingExpenses" />
+              </IsComplete>
+              <Dependency module="cdcc" path="/writableCdccHasQualifyingExpenses" />
+            </All>
+          </Any>
+        </All>
+      </Derived>
+    </Fact>
 
     <Fact path="/scheduleEK1sWithBox17V">
       <Name>Schedule K-1 rows with a supported Form 1120-S box 17 code V statement</Name>
