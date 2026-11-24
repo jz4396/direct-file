@@ -822,4 +822,79 @@ class PaPit40ScheduleSpTy2026PdfSmokeTest {
                     fieldsOnPages(doc, "Qualifying Child Information").isEmpty(), "no Schedule EIC when the EIC is $0");
         }
     }
+
+    /**
+     * Golden V (#135), public print path. The facts are {@code golden-profileV-complete.json}, the persisted client
+     * profile {@code profileVPaToFlWages}: Jules Example, single, under 65, no dependents. Moved from Pennsylvania to
+     * Florida on 2026-07-01, so the PA residency period is January 1 through June 30. Wages only.
+     *
+     * <p>Pennsylvania W-2: boxes 1, 3, and 5 $40,000, box 2 $4,500, box 16 $40,000, box 17 $1,200. Florida W-2: boxes
+     * 1, 3, and 5 $45,000, box 2 $5,600, no state boxes, and $0 allocated to the Pennsylvania residency period.
+     *
+     * <p>Form 1040 line 1a and line 1z are $85,000. Line 2b is blank. Line 9 and line 11 are $85,000. Line 12e is the
+     * $16,100 standard deduction. Rev. Proc. 2025-32 §4.14(1), PDF p. 18. Line 15 is $68,900. The Tax Table row is
+     * $68,900–$68,950; the tax on the $68,925 midpoint is $5,800 + 22% × ($68,925 − $50,400) = $9,876. Rev. Proc.
+     * 2025-32 §4.01 Table 3, PDF p. 11. Instructions for Form 1040 (2025), PDF pp. 36 and 69. Line 24 is $9,876. Line
+     * 25a is $10,100. Line 34 and line 35a are the $224 refund.
+     *
+     * <p>PA-40 residency oval (P), from 01/01 to 06/30. PA-40 IN (2025) p. 6. School code 99999. Line 1a is $40,000.
+     * Line 2 is blank. Line 11 is $40,000. Line 12 is 40,000 × 3.07% = $1,228.00. 72 P.S. §7302. Line 13 is $1,200.
+     * Line 26 and line 28 are the $28.00 due. Schedule SP is not in the package.
+     */
+    @Test
+    void goldenVPrintsForm1040AndPa40OnThePublicPath() throws Exception {
+        byte[] bytes = generatePublicPrintOf("submission-blocking/golden-profileV-complete.json");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> f = fieldsOnPages(doc, Schedules123Ty2026PdfSmokeTest.F1040);
+            assertTrue(
+                    Schedules123Ty2026PdfSmokeTest.any(f, "f1_14[0]").toUpperCase().contains("JULES"),
+                    "Form 1040 first name");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_47[0]", 85000, "Form 1040 line 1a wages");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_57[0]", 85000, "Form 1040 line 1z");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f1_59[0]", "Form 1040 line 2b ($0 interest)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_73[0]", 85000, "Form 1040 line 9");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f1_74[0]", "Form 1040 line 10 ($0 adjustments)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f1_75[0]", 85000, "Form 1040 line 11a AGI");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_01[0]", 85000, "Form 1040 line 11b AGI");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_02[0]", 16100, "Form 1040 line 12e standard deduction");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_07[0]", 68900, "Form 1040 line 15 taxable income");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_09[0]", 9876, "Form 1040 line 16 tax");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_17[0]", 9876, "Form 1040 line 24a total tax");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_20[0]", 10100, "Form 1040 line 25a withholding");
+            Schedules123Ty2026PdfSmokeTest.blank2(f, "f2_26[0]", "Form 1040 line 27a EITC ($0)");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_23[0]", 10100, "Form 1040 line 25d");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_34[0]", 10100, "Form 1040 line 33 payments");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_35[0]", 224, "Form 1040 line 34 overpayment");
+            Schedules123Ty2026PdfSmokeTest.amount2(f, "f2_36[0]", 224, "Form 1040 line 35a refund");
+
+            Map<String, String> pa = fieldsOnPages(doc, PA40_PAGE1);
+            assertFalse(pa.isEmpty(), "PA-40 printed");
+            is(pa, "Residency Status", "3", "(P) Part-Year Resident (p. 6)");
+            is(pa, "Part Year Resident from", "01/01", "PA residency from");
+            is(pa, "Part year resident to", "06/30", "to the day before the move to FL");
+            is(pa, "Filing Status", "1", "(S) Single");
+            is(pa, "Enter five digit School Code from list on pags 42 & 43", "99999", "p. 6, not in PA on Dec. 31");
+            blank(pa, "Name of School District", "no district for 99999");
+            is(pa, "1a. Gross Compensation", "40,000.00", "line 1a (PA W-2 box 16)");
+            is(pa, "1c. Net Compensation", "40,000.00", "line 1c");
+            blank(pa, "2. Interest Income", "line 2");
+            is(pa, "9. Total PA Taxable Income", "40,000.00", "line 9");
+            is(pa, "11. Adjusted PA Taxable Income", "40,000.00", "line 11");
+            Map<String, String> p2 = fieldsOnPages(doc, PA40_PAGE2);
+            is(p2, "12. PA Tax Liability. Multiply Line 11 by 3.07%", "1,228.00", "line 12 = 40,000 x 3.07%");
+            is(p2, "13. Total PA Tax Withheld", "1,200.00", "line 13 = box 17");
+            is(p2, "24. Total Payments and Credits", "1,200.00", "line 24");
+            is(p2, "Tax Forgiveness", "Off", "line 19a (Schedule SP does not apply)");
+            blank(p2, "21. Tax Forgiveness Credit", "line 21");
+            is(p2, "26. TAX DUE", "28.00", "line 26");
+            is(p2, "28. TOTAL PAYMENT", "28.00", "line 28");
+            blank(p2, "29. OVERPAYMENT", "line 29");
+            assertTrue(fieldsOnPages(doc, SP_PAGE1).isEmpty(), "no Schedule SP");
+
+            String text = new PDFTextStripper().getText(doc);
+            assertFalse(text.contains("Schedule B (Form 1040) 2026"), "no Schedule B");
+            assertFalse(text.contains("The draft you are looking for begins on the next page"), "cover sheets dropped");
+            assertTrue(Form6251Ty2026PdfSmokeTest.form6251Fields(doc).isEmpty(), "Form 6251 is not attached");
+        }
+    }
 }
