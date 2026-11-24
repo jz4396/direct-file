@@ -1,0 +1,67 @@
+# Kansas Form K-40 strings (#93 slice 8). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    ks-form-k-40: Kansas return
+dataviews:
+  /flow/your-taxes/amount:
+    /ksResidencyStatus: Where you lived for your Kansas return
+fields:
+  /ksResidencyOptions:
+    fullYear: I lived in Kansas all year
+    partYear: I lived in Kansas for part of the year
+    nonresident: I did not live in Kansas
+headings:
+  /heading/your-taxes/amount/ks-residency: Which of these describes your Kansas return?
+  /heading/knockout/ks-part-year: This tool doesn’t yet support a Kansas part-year or nonresident return
+  /heading/knockout/ks-w2: This tool doesn’t yet support a W-2 from a state other than Kansas
+  /heading/knockout/ks-other-income: This tool doesn’t yet support Kansas returns with income other than W-2 wages
+  /heading/knockout/ks-dependents: This tool doesn’t yet support dependents on a Kansas return
+  /heading/knockout/ks-age-blind: This tool doesn’t yet support a Kansas return for someone who is 65 or older or blind
+  /heading/knockout/ks-claimed: This tool doesn’t yet support a Kansas return for someone who can be claimed as a dependent
+  /heading/knockout/ks-filing-status: This tool doesn’t yet support this Kansas filing status
+  /heading/knockout/ks-itemized: This tool doesn’t yet support Kansas returns that itemize
+  /heading/knockout/ks-eitc: This tool doesn’t yet support a federal earned income credit on a Kansas return
+  /heading/knockout/ks-form-2441: This tool doesn’t yet support a federal child and dependent care credit on a Kansas return
+  /heading/knockout/ks-schedule-1a: This tool doesn’t yet support a federal Schedule 1-A deduction on a Kansas return
+  /heading/knockout/ks-tax-table: This tool doesn’t yet support a Kansas return with taxable income of $100,000 or less
+info:
+  /info/your-taxes/amount/ks-residency:
+    body:
+      A full year means you, and your spouse if you file jointly, lived in Kansas all year. That is Form K-40.
+      Part-year residents and nonresidents complete Schedule S, Part B.
+  /info/knockout/ks-part-year:
+    alertText: Kansas part-year and nonresident returns are not supported yet
+    body: Those returns use Schedule S, Part B, which this tool does not calculate.
+  /info/knockout/ks-w2:
+    alertText: A W-2 from another state is not supported on this Kansas return
+    body: Box 15 has to be Kansas, or blank. Withholding counts only when box 15 is Kansas.
+  /info/knockout/ks-other-income:
+    alertText: This Kansas return can include W-2 wages only
+    body: Interest, Social Security, a sale, retirement, business, rental, and other income are not supported.
+  /info/knockout/ks-dependents:
+    alertText: Dependents are not supported on this Kansas return
+    body: The $2,320 dependent exemption is not calculated.
+  /info/knockout/ks-age-blind:
+    alertText: Age 65 or blindness is not supported on this Kansas return
+    body: The standard-deduction worksheet for people 65 or older or blind is not calculated.
+  /info/knockout/ks-claimed:
+    alertText: Being claimed as a dependent is not supported on this Kansas return
+    body: The exemption for someone claimed on another return is not calculated.
+  /info/knockout/ks-filing-status:
+    alertText: This filing status is not supported on a Kansas return yet
+    body: This tool prepares Form K-40 for single filers and for a joint return when both spouses lived in Kansas all year.
+  /info/knockout/ks-itemized:
+    alertText: Itemized deductions are not supported on this Kansas return
+    body: Kansas Schedule A is not calculated.
+  /info/knockout/ks-eitc:
+    alertText: A federal earned income credit is not supported on this Kansas return
+    body: Line 17, 17 percent of the federal credit, is not calculated.
+  /info/knockout/ks-form-2441:
+    alertText: A federal child and dependent care credit is not supported on this Kansas return
+    body: Line 14, 50 percent of the federal Form 2441 credit, is not calculated.
+  /info/knockout/ks-schedule-1a:
+    alertText: A federal Schedule 1-A deduction is not supported on this Kansas return
+    body: Qualified overtime, tips, car-loan interest, and the senior deduction are not entered. Kansas conformity for that deduction is not pinned.
+  /info/knockout/ks-tax-table:
+    alertText: Kansas taxable income of $100,000 or less is not supported yet
+    body: Line 8 uses the tax tables at that amount. Those tables are not calculated. The tax computation worksheet is used only when line 7 is more than $100,000.

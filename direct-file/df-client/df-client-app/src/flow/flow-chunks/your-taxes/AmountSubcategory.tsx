@@ -833,6 +833,87 @@ export const AmountSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
+    {/* #93 slice 8: full-year Kansas resident, W-2 wages only, line 7 over $100,000. No local return. */}
+    <SubSubcategory route='ks-form-k-40'>
+      <Screen route='ks-residency' condition='/stateReturnIsKs'>
+        <Heading i18nKey='/heading/your-taxes/amount/ks-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/ks-residency' />
+        <Enum path='/ksResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='ks-part-year-knockout' condition='/flowKnockoutKsPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-part-year' />
+        <DFAlert i18nKey='/info/knockout/ks-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-w2-knockout' condition='/flowKnockoutKsW2NotKansas' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-w2' />
+        <DFAlert i18nKey='/info/knockout/ks-w2' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-other-income-knockout' condition='/flowKnockoutKsOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-other-income' />
+        <DFAlert i18nKey='/info/knockout/ks-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-dependents-knockout' condition='/flowKnockoutKsDependents' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-dependents' />
+        <DFAlert i18nKey='/info/knockout/ks-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-age-blind-knockout' condition='/flowKnockoutKsAgeOrBlind' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-age-blind' />
+        <DFAlert i18nKey='/info/knockout/ks-age-blind' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-claimed-knockout' condition='/flowKnockoutKsClaimedAsDependent' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-claimed' />
+        <DFAlert i18nKey='/info/knockout/ks-claimed' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-filing-status-knockout' condition='/flowKnockoutKsFilingStatus' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-filing-status' />
+        <DFAlert i18nKey='/info/knockout/ks-filing-status' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-itemized-knockout' condition='/flowKnockoutKsItemizedDeductions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-itemized' />
+        <DFAlert i18nKey='/info/knockout/ks-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-eitc-knockout' condition='/flowKnockoutKsEarnedIncomeCredit' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-eitc' />
+        <DFAlert i18nKey='/info/knockout/ks-eitc' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-form-2441-knockout' condition='/flowKnockoutKsForm2441' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-form-2441' />
+        <DFAlert i18nKey='/info/knockout/ks-form-2441' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-schedule-1a-knockout' condition='/flowKnockoutKsSchedule1A' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-schedule-1a' />
+        <DFAlert i18nKey='/info/knockout/ks-schedule-1a' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='ks-tax-table-knockout' condition='/flowKnockoutKsTaxTable' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/ks-tax-table' />
+        <DFAlert i18nKey='/info/knockout/ks-tax-table' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     {/* #77 Form 6251 cases this tool doesn't compute */}
     <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />
