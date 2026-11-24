@@ -30,7 +30,8 @@ if ! grep -qx 'sbt/bin/sbt' "$tmp/list"; then
   exit 1
 fi
 tar -xzf "$tar" -C "$DEST"
-installed="$("$DEST/sbt/bin/sbt" --script-version)"
+# The first run also prints "copying runtime jar..." on stdout. The version is the last line.
+installed="$("$DEST/sbt/bin/sbt" --script-version | tail -n 1 | tr -d '\r')"
 if [[ "$installed" != "$SBT_VERSION" ]]; then
   echo "sbt reported ${installed}, expected ${SBT_VERSION}; failing closed." >&2
   exit 1
