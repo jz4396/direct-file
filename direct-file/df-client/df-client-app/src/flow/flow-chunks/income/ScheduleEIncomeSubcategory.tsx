@@ -238,6 +238,12 @@ export const ScheduleEIncomeSubcategory = (
             <Boolean path='/scheduleEK1s/*/box14CodeANotLimitedPartnerAmount' />
             <SaveAndOrContinueButton />
           </Screen>
+          <Screen route='schedule-e-k1-owner' condition='/scheduleEK1s/*/asksOwner'>
+            <Heading i18nKey='/heading/income/schedule-e/k1-owner' />
+            <InfoDisplay i18nKey='/info/income/schedule-e/k1-owner' />
+            <Enum path='/scheduleEK1s/*/owner' />
+            <SaveAndOrContinueButton />
+          </Screen>
           <Screen route='schedule-e-k1-guaranteed-payments' condition='/scheduleEK1s/*/isPartnership'>
             <Heading i18nKey='/heading/income/schedule-e/k1-guaranteed-payments' />
             <InfoDisplay i18nKey='/info/income/schedule-e/k1-guaranteed-payments' />

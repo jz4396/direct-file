@@ -41,6 +41,7 @@ headings:
   /heading/income/schedule-e/k1-box1: Enter ordinary business income and whether you materially participated
   /heading/income/schedule-e/k1-box14: Enter self-employment earnings from Schedule K-1 (Form 1065), box 14, code A
   /heading/income/schedule-e/k1-box14-scope: Is this the amount that belongs on Schedule SE?
+  /heading/income/schedule-e/k1-owner: Which spouse owns this partnership interest?
   /heading/income/schedule-e/k1-guaranteed-payments: Enter guaranteed payments from Schedule K-1 (Form 1065), box 4
   /heading/income/schedule-e/k1-portfolio-partnership:
     Enter interest, dividends, and capital gain from Schedule K-1 (Form 1065)
@@ -174,6 +175,11 @@ info:
       Schedule SE line 2 includes this amount when it is not from farming, you did not reduce it, and it is the right
       amount for a limited partner. A reduction needs an attached explanation. Farming and box 14 code B go on line 1a.
       A limited partner includes only guaranteed payments for services.
+  /info/income/schedule-e/k1-owner:
+    body: >-
+      On a joint return, each spouse files a separate Schedule SE. Box 14 code A goes on the Schedule SE of
+      the spouse who owns the partnership interest. That spouse’s W-2 boxes 3 and 7 are the only wages that
+      reduce that Schedule SE’s Social Security wage base.
   /info/income/schedule-e/k1-portfolio-partnership:
     body: >-
       Enter box 5 (interest), box 6a (ordinary dividends), and box 6b (qualified dividends). Enter 0 if a box is blank.
@@ -262,7 +268,7 @@ info:
             Schedule K-1 (Form 1065) box 14 code A that is not from farming. A loss, a passive activity, a foreign
             partnership, a publicly traded partnership, a distribution or other basis computation, a capital loss, a
             foreign-source long-term capital gain, farming, a reduction of that self-employment amount, a limited
-            partner amount that is not only guaranteed payments for services, a joint return with that amount,
+            partner amount that is not only guaranteed payments for services,
             previously taxed earnings and profits, interest from the credit for holders of clean renewable energy bonds,
             or any other K-1 amount needs forms this tool doesn’t support yet. You’ll need another way to file this
             return.
@@ -596,6 +602,14 @@ fields:
     boolean:
       "yes": Yes, I am a limited partner and this amount is not only guaranteed payments for services
       "no": No, this is the right amount for Schedule SE
+  /scheduleEK1OwnerOptions:
+    primary: You
+    secondary: Your spouse
+  /scheduleEK1s/*/owner:
+    name: Who owns this partnership interest?
+    /scheduleEK1OwnerOptions:
+      primary: You (the primary filer)
+      secondary: Your spouse
   /scheduleEK1s/*/form1065Box4a:
     name: Box 4a, guaranteed payments for services
   /scheduleEK1s/*/form1065Box4b:
@@ -723,6 +737,7 @@ dataviews:
     /scheduleEK1s/*/box14CodeAIsFarm: Is this farm income, or do you have box 14 code B?
     /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount:
       Is box 14 code A more than guaranteed payments for services because you are a limited partner?
+    /scheduleEK1s/*/owner: Which spouse owns this partnership interest?
     /scheduleEK1s/*/form1065Box5: Box 5, interest income
     /scheduleEK1s/*/form1065Box6a: Box 6a, ordinary dividends
     /scheduleEK1s/*/form1065Box6b: Box 6b, qualified dividends

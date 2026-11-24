@@ -1264,6 +1264,25 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEK1OwnerOptions">
+      <Name>Which spouse owns this Schedule K-1 (Form 1065) interest</Name>
+      <Description>
+        Primary filer or secondary filer. Asked on a joint return for every Form 1065 Schedule K-1.
+        2026 draft Instructions for Schedule SE
+        (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
+        8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses
+        have self-employment income, each must file a separate Schedule SE." 26 U.S.C. 1402(a) and
+        1402(b) (https://www.law.cornell.edu/uscode/text/26/1402) figure net earnings and the wage
+        base for the individual. A return that is not married filing jointly is the primary filer's.
+      </Description>
+      <Derived>
+        <EnumOptions>
+          <String>primary</String>
+          <String>secondary</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleEK1s">
       <Name>Schedule K-1 entities reported on Schedule E line 28</Name>
       <Description>
@@ -1495,9 +1514,11 @@
         allowable expenses attributable to that income." PDF p. 13:
         "Your share of the net income of an S corporation is
         not subject to self-employment tax." A partnership amount that was not reduced, is not from
-        farming, and is the right limited-partner amount is added to Schedule SE line 2 on a return that
-        is not a joint return. Enter zero when box 14 code A is blank, including every S corporation. A
-        nonzero amount on an S corporation stops the return.
+        farming, and is the right limited-partner amount is added to Schedule SE line 2. On a joint
+        return it is added to the Schedule SE of the spouse who owns the interest
+        (/scheduleEK1s/*/owner). A return that is not a joint return uses the primary filer's Schedule
+        SE. Enter zero when box 14 code A is blank, including every S corporation. A nonzero amount on
+        an S corporation stops the return.
       </Description>
       <Writable>
         <Dollar />
@@ -1546,6 +1567,21 @@
       </Description>
       <Writable>
         <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/owner">
+      <Name>Which spouse owns this partnership interest</Name>
+      <Description>
+        Primary or secondary filer. Asked on a married-filing-jointly return for every Form 1065
+        Schedule K-1 (/scheduleEK1s/*/asksOwner). Required when box 14 code A is not zero: an
+        unanswered owner leaves /flowKnockoutScheduleEPartIIBox14CodeAMfj incomplete, not false, and
+        the amount is not placed on either Schedule SE as zero. A return that is not a joint return
+        does not ask this and treats the interest as the primary filer's. 2026 draft Instructions for
+        Schedule SE, PDF p. 3. 26 U.S.C. 1402(a) and 1402(b).
+      </Description>
+      <Writable>
+        <Enum optionsPath="/scheduleEK1OwnerOptions" />
       </Writable>
     </Fact>
 
@@ -2421,6 +2457,21 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEK1s/*/asksOwner">
+      <Name>Ask which spouse owns this Form 1065 interest</Name>
+      <Description>
+        True on a married-filing-jointly return for every Form 1065 Schedule K-1. An S corporation is
+        not asked. A return that is not a joint return is not asked; the interest is the primary
+        filer's. 2026 draft Instructions for Schedule SE, PDF p. 3. 26 U.S.C. 1402(b).
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="../isPartnership" />
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleEK1s/*/form1065Box4aAmount">
       <Name>Guaranteed payments for services from this K-1</Name>
       <Description>
@@ -2854,10 +2905,10 @@
       <Name>This box 14 code A is included on Schedule SE line 2</Name>
       <Description>
         A partnership amount that was not reduced, is not from farming, and is the right amount under
-        26 U.S.C. 1402(a)(13), on a return that is not married filing jointly. A joint return has no fact
-        for which spouse holds the partnership interest, and each spouse files a separate Schedule SE
-        (2026 draft Instructions for Schedule SE, PDF p. 3). The amount is not assigned to one spouse.
-        An S corporation is not included. 26 U.S.C. 1402(a).
+        26 U.S.C. 1402(a)(13). On a joint return the amount is placed on the owning spouse's Schedule SE
+        (/scheduleEK1s/*/owner). A return that is not a joint return places it on the primary filer's
+        Schedule SE. An S corporation is not included. 26 U.S.C. 1402(a). 2026 draft Instructions for
+        Schedule SE, PDF p. 3 and PDF p. 5.
       </Description>
       <Derived>
         <All>
@@ -2870,9 +2921,6 @@
           </Not>
           <Not>
             <Dependency path="../box14CodeANotLimitedPartnerAmount" />
-          </Not>
-          <Not>
-            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
           </Not>
         </All>
       </Derived>
@@ -2906,12 +2954,226 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEK1s/*/box14CodeAOnPrimaryScheduleSE">
+      <Name>Box 14 code A on the primary filer's Schedule SE line 2</Name>
+      <Description>
+        The eligible box 14 code A when this interest is the primary filer's, otherwise $0. A return
+        that is not married filing jointly is the primary filer's and does not read /scheduleEK1s/*/owner.
+        On a joint return an unanswered owner with a nonzero eligible amount leaves this incomplete, not
+        $0. 2026 draft Schedule SE, line 2. 2026 draft Instructions for Schedule SE, PDF p. 3. 26 U.S.C.
+        1402(a) and 1402(b).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="../box14CodeAOnScheduleSE" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../box14CodeA" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../box14CodeAIncludedOnScheduleSE" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../owner" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/scheduleEK1OwnerOptions">primary</Enum>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dependency path="../box14CodeA" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../owner" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/scheduleEK1OwnerOptions">secondary</Enum>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAOnSecondaryScheduleSE">
+      <Name>Box 14 code A on the secondary filer's Schedule SE line 2</Name>
+      <Description>
+        The eligible box 14 code A when a joint return's /scheduleEK1s/*/owner is the secondary filer,
+        otherwise $0. A return that is not married filing jointly is $0 and does not read the owner.
+        On a joint return an unanswered owner with a nonzero eligible amount leaves this incomplete, not
+        $0. 2026 draft Schedule SE, line 2. 2026 draft Instructions for Schedule SE, PDF p. 3. 26 U.S.C.
+        1402(a) and 1402(b).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../box14CodeA" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../box14CodeAIncludedOnScheduleSE" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../owner" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/scheduleEK1OwnerOptions">secondary</Enum>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dependency path="../box14CodeA" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Dependency path="../owner" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/scheduleEK1OwnerOptions">primary</Enum>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1s/*/box14CodeAMfjOwnerResolved">
+      <Name>Joint-return box 14 code A has an owner, or does not need one</Name>
+      <Description>
+        Complete true when this K-1 is not a partnership, the return is not married filing jointly, box
+        14 code A is zero, or /scheduleEK1s/*/owner is answered. Incomplete when a joint return has a
+        nonzero box 14 code A and the owner is unanswered. Not false in that case. 2026 draft
+        Instructions for Schedule SE, PDF p. 3. 26 U.S.C. 1402(b).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../isPartnership" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../box14CodeAIsNonzero" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="../owner" />
+              </IsComplete>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleEK1s/*/box14CodeAExcludedFromScheduleSE">
       <Name>Nonzero box 14 code A is not on Schedule SE line 2</Name>
       <Description>
         True when box 14 code A is not zero and it is not included on line 2. That is an S corporation
-        amount, a reduction, farming, a limited-partner amount that is not only guaranteed payments for
-        services, or a joint return.
+        amount, a reduction, farming, or a limited-partner amount that is not only guaranteed payments
+        for services. A joint return with an owner is not excluded.
       </Description>
       <Derived>
         <All>
@@ -2927,7 +3189,8 @@
       <Name>Box 14 code A is in the supported Part II path</Name>
       <Description>
         An S corporation with box 14 code A at zero, or a partnership that did not reduce the amount, is
-        not farming, and reports the 26 U.S.C. 1402(a)(13) amount. A joint return is a separate stop.
+        not farming, and reports the 26 U.S.C. 1402(a)(13) amount. On a joint return the owning spouse
+        is /scheduleEK1s/*/owner. An unanswered owner with a nonzero amount stays incomplete.
       </Description>
       <Derived>
         <Any>
@@ -2963,10 +3226,12 @@
     <Fact path="/scheduleEK1Box14CodeANonfarmTotal">
       <Name>Schedule SE line 2: nonfarm Form 1065 box 14 code A</Name>
       <Description>
-        Sum of /scheduleEK1s/*/box14CodeAOnScheduleSE, rounded to the dollar. 26 U.S.C. 6102(a). $0 when
-        /scheduleEHasPartIIIncome is unanswered or no, and when the K-1 list is not started, so a return
-        with no K-1 does not leave Schedule SE line 2 incomplete. A started list with an unanswered box 14
-        question leaves the sum incomplete. 2026 draft Schedule SE, line 2. 26 U.S.C. 1402(a).
+        Sum of /scheduleEK1s/*/box14CodeAOnScheduleSE, rounded to the dollar. 26 U.S.C. 6102(a). Both
+        spouses are included. Each spouse's own Schedule SE uses /scheduleEK1PrimaryFilerBox14CodeA or
+        /scheduleEK1SecondaryFilerBox14CodeA. $0 when /scheduleEHasPartIIIncome is unanswered or no, and
+        when the K-1 list is not started, so a return with no K-1 does not leave Schedule SE line 2
+        incomplete. A started list with an unanswered box 14 question leaves the sum incomplete. 2026
+        draft Schedule SE, line 2. 26 U.S.C. 1402(a).
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -3021,12 +3286,195 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleEK1PrimaryFilerBox14CodeA">
+      <Name>Primary filer: Schedule SE line 2 from Form 1065 box 14 code A</Name>
+      <Description>
+        Sum of /scheduleEK1s/*/box14CodeAOnPrimaryScheduleSE, rounded to the dollar. 26 U.S.C. 6102(a).
+        Added to the primary filer's Schedule C line 31 on Schedule SE line 2. A return that is not a
+        joint return includes every eligible amount. On a joint return only the primary filer's
+        interests are included. $0 when Part II is unanswered or no, or the K-1 list is not started.
+        Incomplete when a joint return has a nonzero eligible amount and the owner is unanswered, so
+        the amount is not filed as zero. 2026 draft Schedule SE, line 2. 2026 draft Instructions for
+        Schedule SE, PDF p. 3. 26 U.S.C. 1402(a) and 1402(b).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1s" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleEK1s/*/box14CodeAOnPrimaryScheduleSE" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1SecondaryFilerBox14CodeA">
+      <Name>Secondary filer: Schedule SE line 2 from Form 1065 box 14 code A</Name>
+      <Description>
+        Sum of /scheduleEK1s/*/box14CodeAOnSecondaryScheduleSE, rounded to the dollar. 26 U.S.C.
+        6102(a). Added to the secondary filer's Schedule C line 31 on that spouse's Schedule SE line 2.
+        $0 on a return that is not married filing jointly, without reading the owner. $0 when Part II
+        is unanswered or no, or the K-1 list is not started. Incomplete when a joint return has a
+        nonzero eligible amount and the owner is unanswered. 2026 draft Schedule SE, line 2. 2026 draft
+        Instructions for Schedule SE, PDF p. 3. 26 U.S.C. 1402(a) and 1402(b).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1s" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleEK1s/*/box14CodeAOnSecondaryScheduleSE" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEK1Box14CodeAMfjOwnersResolved">
+      <Name>Every joint-return box 14 code A that needs an owner has one</Name>
+      <Description>
+        Complete true when the K-1 list is not started, or every listed K-1 has
+        /scheduleEK1s/*/box14CodeAMfjOwnerResolved complete and true. Incomplete when any joint-return
+        partnership has nonzero box 14 code A and /scheduleEK1s/*/owner is unanswered. Not false in
+        that case. 2026 draft Instructions for Schedule SE, PDF p. 3. 26 U.S.C. 1402(b).
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1s" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleEK1s/*/box14CodeAMfjOwnerResolved" />
+                  </Count>
+                </Left>
+                <Right>
+                  <CollectionSize>
+                    <Dependency path="/scheduleEK1s" />
+                  </CollectionSize>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleEK1HasNonzeroBox14CodeA">
       <Name>A Schedule K-1 has nonzero box 14 code A</Name>
       <Description>
-        True when any /scheduleEK1s/*/box14CodeA is not zero. Used to stop a joint return and a return
-        that also has Schedule C qualified business income. Complete false when the K-1 list is empty or
-        not started. Incomplete while a listed K-1 has not answered box 14 code A.
+        True when any /scheduleEK1s/*/box14CodeA is not zero. Used to ask the Schedule SE out-of-scope
+        questions and to stop a return that also has Schedule C qualified business income. Complete false
+        when the K-1 list is empty or not started. Incomplete while a listed K-1 has not answered box 14
+        code A. A joint return places a nonzero amount on the owning spouse's Schedule SE.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -3371,6 +3819,17 @@
               <IsComplete>
                 <Dependency path="../box14CodeANotLimitedPartnerAmount" />
               </IsComplete>
+              <Any>
+                <Not>
+                  <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+                </Not>
+                <Not>
+                  <Dependency path="../box14CodeAIsNonzero" />
+                </Not>
+                <IsComplete>
+                  <Dependency path="../owner" />
+                </IsComplete>
+              </Any>
               <IsComplete>
                 <Dependency path="../box5IncludesCleanRenewableEnergyBondInterest" />
               </IsComplete>
@@ -3839,10 +4298,11 @@
       <Name>Knockout: box 14 code A is not on Schedule SE line 2</Name>
       <Description>
         A nonzero box 14 code A that is not included on Schedule SE line 2. The supported case (nonfarm
-        Form 1065 code A, not reduced, the 26 U.S.C. 1402(a)(13) amount, not a joint return) is false
-        here and the amount is /scheduleEK1Box14CodeANonfarmTotal. An S corporation amount, a reduction,
-        farming, a limited-partner amount that is not only guaranteed payments, or a joint return is true.
-        Complete false when /scheduleEHasPartIIIncome is false. Cites on /scheduleEK1s/*/box14CodeA.
+        Form 1065 code A, not reduced, the 26 U.S.C. 1402(a)(13) amount) is false here. On a joint return
+        the amount is the owning spouse's /scheduleEK1PrimaryFilerBox14CodeA or
+        /scheduleEK1SecondaryFilerBox14CodeA. An S corporation amount, a reduction, farming, or a
+        limited-partner amount that is not only guaranteed payments is true. Complete false when
+        /scheduleEHasPartIIIncome is false. Cites on /scheduleEK1s/*/box14CodeA.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -3943,23 +4403,42 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleEPartIIBox14CodeAMfj">
-      <Name>Knockout: joint return with Form 1065 box 14 code A</Name>
+      <Name>Knockout: joint return with Form 1065 box 14 code A and no owner</Name>
       <Description>
-        Each spouse with self-employment income files a separate Schedule SE. 2026 draft Instructions for
-        Schedule SE, PDF p. 3. 26 U.S.C. 1402(b) tests net earnings for the individual. The Schedule K-1
-        row does not record which spouse holds the interest, so a nonzero box 14 code A on a joint return
-        cannot be placed on one Schedule SE. A zero amount has nothing to place and does not stop the
-        return. Complete false when /scheduleEHasPartIIIncome is false or the filing status is not married
-        filing jointly.
+        Lifted for a joint return that names the spouse who owns the interest. Each spouse with
+        self-employment income files a separate Schedule SE. 2026 draft Instructions for Schedule SE,
+        PDF p. 3. 26 U.S.C. 1402(a) and 1402(b) figure net earnings and the wage base for that individual.
+        The amount is /scheduleEK1PrimaryFilerBox14CodeA or /scheduleEK1SecondaryFilerBox14CodeA. Complete
+        false when every nonzero amount has an owner, when box 14 code A is zero, when there is no Part
+        II income, or when the return is not married filing jointly. Incomplete, not false, when a joint
+        return has nonzero box 14 code A and /scheduleEK1s/*/owner is unanswered, so the amount is not
+        filed as zero and the return is not treated as in scope.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <All>
-          <Dependency path="/scheduleEHasPartIIIncome" />
-          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
-          <Dependency path="/scheduleEK1HasNonzeroBox14CodeA" />
-        </All>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEK1Box14CodeAMfjOwnersResolved" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/scheduleEK1Box14CodeAMfjOwnersResolved" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -7464,12 +7943,15 @@
         /scheduleEPartIIILine37. 26 U.S.C. 702(a), 1366(a), 652(a),
         and 662(a).
 
-        Self-employment. Nonfarm Form 1065 box 14 code A is scheduleSE /primaryFilerSeNetProfit (Schedule
-        SE line 2) when it was not reduced, it is the 26 U.S.C. 1402(a)(13) amount, and the return is not
-        a joint return. A reduction, farming or box 14 code B, a limited-partner amount that is not only
-        guaranteed payments, a joint return, or an S corporation amount is
-        /flowKnockoutScheduleEPartIIBox14CodeA or the matching stop. 26 U.S.C. 1402(a). 2026 draft
-        Schedule SE, PDF p. 2, line 2. 2026 draft Instructions for Schedule SE, PDF p. 5.
+        Self-employment. Nonfarm Form 1065 box 14 code A is added to the owning spouse's Schedule SE
+        line 2 (scheduleSE /primaryFilerSeNetProfit or /secondaryFilerSeNetProfit) when it was not
+        reduced and it is the 26 U.S.C. 1402(a)(13) amount. On a joint return the spouse is
+        /scheduleEK1s/*/owner. A return that is not a joint return uses the primary filer. A reduction,
+        farming or box 14 code B, a limited-partner amount that is not only guaranteed payments, or an
+        S corporation amount is /flowKnockoutScheduleEPartIIBox14CodeA or the matching stop. An
+        unanswered owner on a joint return with a nonzero amount stays incomplete
+        (/flowKnockoutScheduleEPartIIBox14CodeAMfj). 26 U.S.C. 1402(a) and 1402(b). 2026 draft
+        Schedule SE, PDF p. 2, line 2. 2026 draft Instructions for Schedule SE, PDF p. 3 and PDF p. 5.
 
         Net investment income. 26 U.S.C. 1411(c)(2) includes a passive activity or trading in financial
         instruments

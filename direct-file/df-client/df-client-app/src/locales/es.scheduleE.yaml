@@ -48,6 +48,7 @@ headings:
   /heading/income/schedule-e/k1-box14:
     Anote las ganancias del trabajo por cuenta propia del Anexo K-1 (Formulario 1065), casilla 14, código A
   /heading/income/schedule-e/k1-box14-scope: ¿Esta es la cantidad que corresponde al Anexo SE?
+  /heading/income/schedule-e/k1-owner: ¿Cuál de los cónyuges es dueño de esta participación en la sociedad?
   /heading/income/schedule-e/k1-guaranteed-payments:
     Anote los pagos garantizados del Anexo K-1 (Formulario 1065), casilla 4
   /heading/income/schedule-e/k1-portfolio-partnership:
@@ -197,6 +198,11 @@ info:
       La línea 2 del Anexo SE incluye esta cantidad cuando no es de agricultura, usted no la redujo y es la cantidad
       correcta para un socio comanditario. Una reducción necesita una explicación adjunta. La agricultura y la casilla
       14 código B van en la línea 1a. Un socio comanditario incluye solo los pagos garantizados por servicios.
+  /info/income/schedule-e/k1-owner:
+    body: >-
+      En una declaración conjunta, cada cónyuge presenta su propio Anexo SE. La casilla 14 código A va en el Anexo SE
+      del cónyuge que es dueño de la participación en la sociedad. Las casillas 3 y 7 del Formulario W-2 de ese cónyuge
+      son los únicos salarios que reducen la base salarial del Seguro Social de ese Anexo SE.
   /info/income/schedule-e/k1-portfolio-partnership:
     body: >-
       Anote la casilla 5 (intereses), la casilla 6a (dividendos ordinarios) y la casilla 6b (dividendos calificados).
@@ -363,8 +369,8 @@ info:
             agricultura. Una pérdida, una actividad pasiva, una sociedad extranjera, una sociedad que cotiza en bolsa,
             una distribución u otro cálculo de base, una pérdida de capital, una ganancia de capital a largo plazo de
             fuente extranjera, la agricultura, una reducción de esa cantidad del trabajo por cuenta propia, una cantidad
-            de socio comanditario que no es solo pagos garantizados por servicios, una declaración conjunta con esa
-            cantidad, las ganancias y utilidades previamente gravadas, los intereses del crédito para tenedores de bonos
+            de socio comanditario que no es solo pagos garantizados por servicios,
+            las ganancias y utilidades previamente gravadas, los intereses del crédito para tenedores de bonos
             de energía renovable limpia u otra cantidad del Anexo K-1 necesitan formularios que esta herramienta todavía
             no acepta. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-c-k1-box14:
@@ -642,6 +648,14 @@ fields:
     boolean:
       "yes": Sí, soy socio comanditario y esta cantidad no es solo pagos garantizados por servicios
       "no": No, esta es la cantidad correcta para el Anexo SE
+  /scheduleEK1OwnerOptions:
+    primary: Usted
+    secondary: Su cónyuge
+  /scheduleEK1s/*/owner:
+    name: ¿Quién es dueño de esta participación en la sociedad?
+    /scheduleEK1OwnerOptions:
+      primary: Usted (el contribuyente principal)
+      secondary: Su cónyuge
   /scheduleEK1s/*/form1065Box4a:
     name: Casilla 4a, pagos garantizados por servicios
   /scheduleEK1s/*/form1065Box4b:
@@ -770,6 +784,7 @@ dataviews:
     /scheduleEK1s/*/box14CodeAIsFarm: ¿Es ingreso de agricultura, o tiene la casilla 14 código B?
     /scheduleEK1s/*/box14CodeANotLimitedPartnerAmount:
       ¿La casilla 14 código A es más que los pagos garantizados por servicios porque es socio comanditario?
+    /scheduleEK1s/*/owner: ¿Cuál de los cónyuges es dueño de esta participación en la sociedad?
     /scheduleEK1s/*/form1065Box5: Casilla 5, ingresos por intereses
     /scheduleEK1s/*/form1065Box6a: Casilla 6a, dividendos ordinarios
     /scheduleEK1s/*/form1065Box6b: Casilla 6b, dividendos calificados
