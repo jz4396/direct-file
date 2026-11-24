@@ -697,6 +697,29 @@ export const ScheduleCIncomeSubcategory = (
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
 
+    <SubSubcategory route='schedule-c-simplified-home'>
+      <Screen route='schedule-c-primary-one-home' condition='/asksScheduleCPrimaryFilerOneHome'>
+        <Heading i18nKey='/heading/income/schedule-c/primary-one-home' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/primary-one-home' />
+        <Boolean path='/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+
+      <Screen route='schedule-c-secondary-one-home' condition='/asksScheduleCSecondaryFilerOneHome'>
+        <Heading i18nKey='/heading/income/schedule-c/secondary-one-home' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/secondary-one-home' />
+        <Boolean path='/scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome' />
+        <SaveAndOrContinueButton />
+      </Screen>
+
+      <Screen route='schedule-c-spouses-same-space' condition='/asksScheduleCSpousesDoNotClaimSameHomeSpace'>
+        <Heading i18nKey='/heading/income/schedule-c/spouses-same-space' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/spouses-same-space' />
+        <Boolean path='/scheduleCSpousesDoNotClaimSameHomeSpace' />
+        <SaveAndOrContinueButton />
+      </Screen>
+    </SubSubcategory>
+
     <Screen route='schedule-c-out-of-scope-knockout' condition='/flowKnockoutScheduleCOutOfScope' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />
       <Heading i18nKey='/heading/knockout/schedule-c-out-of-scope' />
