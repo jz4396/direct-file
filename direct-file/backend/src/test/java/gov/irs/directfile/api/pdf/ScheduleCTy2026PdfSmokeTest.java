@@ -886,6 +886,139 @@ class ScheduleCTy2026PdfSmokeTest {
         }
     }
 
+    /**
+     * Qualified joint venture, 26 U.S.C. 761(f). 2026 Instructions for Schedule C draft, PDF p. 2: each spouse
+     * files a separate Schedule C. MFJ, both W-2s $0, each share line 1 $30,000, line 28 $10,000, line 31
+     * $20,000. Each Schedule SE line 4a is $18,470 and line 12 is $2,826 (18,470 × 0.153 = $2,825.91 before the
+     * module's per-line rounding). Schedule 1 line 3 is $40,000 and line 15 is $2,826. Schedule 2 line 4 is
+     * $5,652, the same whole-dollar result as one owner with $40,000 of net profit. The same dollars print when
+     * the election is no.
+     */
+    @Test
+    void qualifiedJointVenturePrintsEachSpousesScheduleCAndScheduleSE() throws Exception {
+        Map<String, String> qualified = qualifiedJointVenture(true);
+        try (PDDocument doc = Loader.loadPDF(generate(qualified))) {
+            assertQualifiedJointVentureDollars(doc);
+        }
+        Map<String, String> withoutElection = qualifiedJointVenture(false);
+        try (PDDocument doc = Loader.loadPDF(generate(withoutElection))) {
+            assertQualifiedJointVentureDollars(doc);
+        }
+    }
+
+    private static Map<String, String> qualifiedJointVenture(boolean election) {
+        String spouse = "859c03d1-af4a-447f-96aa-d19397048a48";
+        String spouseBiz = "b0000000-5e00-4000-8000-000000000002";
+        String primary = ScheduleSETy2026PdfSmokeTest.BIZ;
+        String w2 = ScheduleSETy2026PdfSmokeTest.W2;
+        Map<String, String> m = ScheduleSETy2026PdfSmokeTest.spouseOwnedScheduleC();
+        m.put("/formW2s/#" + w2 + "/writableWages", dollar("0.00"));
+        m.put("/formW2s/#" + w2 + "/writableOasdiWages", dollar("0.00"));
+        m.put("/formW2s/#" + w2 + "/writableMedicareWages", dollar("0.00"));
+        m.put("/formW2s/#" + w2 + "/writableFederalWithholding", dollar("0.00"));
+        m.put("/scheduleCBusinesses", ScheduleATy2026PdfSmokeTest.collection(primary, spouseBiz));
+        putShare(m, primary, w2, "Primary Share", true);
+        putShare(m, spouseBiz, spouse, "Spouse Share", false);
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(m, spouseBiz);
+        m.put("/scheduleCIsQualifiedJointVenture", bool(election));
+        if (election) {
+            m.put("/scheduleCQjvSpousesAreOnlyOwners", bool(true));
+            m.put("/scheduleCQjvHeldThroughLlc", bool(false));
+        }
+        return m;
+    }
+
+    private static void putShare(Map<String, String> facts, String id, String filer, String name, boolean started) {
+        String b = "/scheduleCBusinesses/#" + id + "/";
+        facts.put(b + "filer", Form8959Form8960Ty2026PdfSmokeTest.collectionItem(filer));
+        facts.put(b + "businessName", string(name));
+        facts.put(b + "writableGrossReceipts", dollar("30000.00"));
+        facts.put(b + "writableTotalExpenses", dollar("10000.00"));
+        facts.put(b + "accountingMethod", scheduleCEnum("cash"));
+        facts.put(b + "startedOrAcquiredThisYear", bool(started));
+        facts.put(b + "materiallyParticipates", bool(true));
+    }
+
+    private static void assertQualifiedJointVentureDollars(PDDocument doc) throws Exception {
+        Map<String, String> primary = scheduleCPageNamed(doc, "Primary Share");
+        Map<String, String> spouse = scheduleCPageNamed(doc, "Spouse Share");
+        assertTrue(value(primary, "Page1[0].f1_1[0]").toUpperCase().contains("AVERY"), "primary proprietor");
+        assertTrue(value(spouse, "Page1[0].f1_1[0]").toUpperCase().contains("BLAIR"), "spouse proprietor");
+        for (Map<String, String> sc : List.of(primary, spouse)) {
+            amount(sc, "Page1[0].f1_13[0]", 30000, "line 1");
+            amount(sc, "Page1[0].f1_46[0]", 10000, "line 28");
+            amount(sc, "Page1[0].f1_51[0]", 20000, "line 31");
+            assertTrue(checked(sc, "Page1[0].c1_1[0]"), "F cash");
+            assertTrue(checked(sc, "Page1[0].c1_2[0]"), "G yes");
+        }
+        assertTrue(checked(primary, "Page1[0].c1_3[0]"), "primary H");
+        blank(spouse, "Page1[0].c1_3[0]", "spouse H");
+
+        Map<String, String> primarySe = scheduleSePageNamed(doc, "AVERY");
+        Map<String, String> spouseSe = scheduleSePageNamed(doc, "BLAIR");
+        for (Map<String, String> se : List.of(primarySe, spouseSe)) {
+            amount(se, "Page1[0].f1_7[0]", 18470, "4a");
+            amount(se, "Page1[0].f1_19[0]", 2290, "10");
+            amount(se, "Page1[0].f1_20[0]", 536, "11");
+            amount(se, "Page1[0].f1_21[0]", 2826, "12");
+            amount(se, "Page1[0].f1_22[0]", 1413, "13");
+        }
+        Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+        amount(s1, "Page1[0].f1_07[0]", 40000, "Schedule 1 line 3");
+        amount(s1, "Page2[0].f2_05[0]", 2826, "Schedule 1 line 15");
+        Map<String, String> s2 = fieldsOnPages(doc, "Schedule 2 (Form 1040) 2026");
+        amount(s2, "Page1[0].f1_15[0]", 5652, "Schedule 2 line 4");
+    }
+
+    /** One Schedule SE page whose name field contains {@code name}. A second copy's fields may be renamed. */
+    private static Map<String, String> scheduleSePageNamed(PDDocument doc, String name) throws Exception {
+        PDFTextStripper stripper = new PDFTextStripper();
+        var form = doc.getDocumentCatalog().getAcroForm();
+        Map<String, String> found = null;
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            stripper.setStartPage(i + 1);
+            stripper.setEndPage(i + 1);
+            if (!stripper.getText(doc).contains(ScheduleSETy2026PdfSmokeTest.SE_FOOTER)) {
+                continue;
+            }
+            Set<COSBase> widgets = new HashSet<>();
+            for (PDAnnotation annotation : doc.getPage(i).getAnnotations()) {
+                if (annotation instanceof PDAnnotationWidget widget) {
+                    widgets.add(widget.getCOSObject());
+                }
+            }
+            Map<String, String> values = new HashMap<>();
+            for (PDField field : form.getFieldTree()) {
+                if (field instanceof PDTerminalField terminal) {
+                    for (PDAnnotationWidget widget : terminal.getWidgets()) {
+                        if (widgets.contains(widget.getCOSObject())) {
+                            String value = field.getValueAsString();
+                            values.put(field.getFullyQualifiedName(), value == null ? "" : value.trim());
+                        }
+                    }
+                }
+            }
+            String proprietor = null;
+            for (var entry : values.entrySet()) {
+                if (entry.getKey().endsWith("f1_1[0]")) {
+                    proprietor = entry.getValue();
+                }
+            }
+            if (proprietor == null || !proprietor.toUpperCase().contains(name)) {
+                continue;
+            }
+            assertTrue(found == null, "one Schedule SE page contains " + name);
+            Map<String, String> normalized = new HashMap<>();
+            for (var entry : values.entrySet()) {
+                int at = entry.getKey().lastIndexOf("Page1[0]");
+                normalized.put(at >= 0 ? entry.getKey().substring(at) : entry.getKey(), entry.getValue());
+            }
+            found = normalized;
+        }
+        assertNotNull(found, "a Schedule SE page contains " + name);
+        return found;
+    }
+
     private static boolean checked(Map<String, String> fields, String suffix) {
         String v = value(fields, suffix);
         return !v.isEmpty() && !"Off".equals(v);

@@ -12,6 +12,9 @@ headings:
     {{/taxYear}}?
   /heading/income/schedule-c/qualified-joint-venture:
     ¿Usted y su cónyuge eligen tratar este negocio como una empresa conjunta calificada?
+  /heading/income/schedule-c/qjv-only-owners: ¿Usted y su cónyuge son los únicos dueños de este negocio?
+  /heading/income/schedule-c/qjv-not-an-entity:
+    ¿Este negocio es propiedad de una LLC u otra entidad de derecho estatal, y lo operan a través de ella?
   /heading/income/schedule-c/qbi-carryforward:
     ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
   /heading/income/schedule-c/qbi-cooperative: ¿Es usted cliente de una cooperativa agrícola u hortícola?
@@ -30,7 +33,7 @@ headings:
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
   /heading/knockout/schedule-c-qualified-joint-venture:
-    Esta herramienta no puede presentar una empresa conjunta calificada
+    Esta empresa conjunta calificada no se puede presentar aquí
   /heading/knockout/schedule-c-spouse-business:
     Esta herramienta no puede presentar más de un negocio de su cónyuge
   /heading/knockout/schedule-c-community-property:
@@ -280,14 +283,63 @@ info:
   /info/income/schedule-c/qualified-joint-venture:
     body: >-
       Una empresa conjunta calificada es un negocio que usted y su cónyuge poseen y operan juntos y eligen declarar
-      como propietarios únicos. Conteste que sí si hace esa elección. Esta herramienta no puede presentarla.
-  /info/knockout/schedule-c-qualified-joint-venture:
+      como propietarios únicos. Pueden elegir si cada uno participa materialmente en el negocio, son los únicos
+      dueños y presentan una declaración conjunta. Dividan el ingreso, la ganancia, la pérdida, la deducción y el
+      crédito según su participación en el negocio. Cada uno presenta un Anexo C por separado. Un negocio que se
+      posee y opera a través de una LLC no califica.
+  /info/income/schedule-c/qjv-only-owners:
+    body: La elección requiere que usted y su cónyuge sean los únicos dueños del negocio.
+  /info/income/schedule-c/qjv-not-an-entity:
+    body: >-
+      Un negocio que los cónyuges poseen y operan a través de una LLC no califica para la elección. Solo califica
+      un negocio que los cónyuges poseen y operan como copropietarios, y no a nombre de una entidad de derecho
+      estatal.
+  /info/knockout/schedule-c-qjv-not-joint-return:
     alertText:
       body:
         - p: >-
-            Eligió el tratamiento de empresa conjunta calificada. Cada cónyuge declararía una parte de ese negocio.
-            Esta herramienta no puede presentar esa elección. Tendrá que usar otra manera de presentar esta
+            Eligió el tratamiento de empresa conjunta calificada. La elección requiere que presente una declaración
+            conjunta. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-second-business:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada y uno de ustedes tiene un segundo negocio. Esta
+            herramienta puede presentar la elección solo cuando cada cónyuge tiene exactamente un Anexo C para ese
+            negocio. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-not-one-each:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Cada uno debe presentar un Anexo C por separado.
+            Esta herramienta puede presentar la elección solo cuando la declaración tiene un Anexo C para usted y
+            uno para su cónyuge. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-material-participation:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Cada cónyuge debe participar materialmente en el
+            negocio. La línea G debe ser Sí en ambos Anexos C. Tendrá que usar otra manera de presentar esta
             declaración.
+  /info/knockout/schedule-c-qjv-not-only-owners:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Los cónyuges deben ser los únicos dueños del
+            negocio. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-llc:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Un negocio que los cónyuges poseen y operan a
+            través de una LLC no califica para la elección. Tendrá que usar otra manera de presentar esta
+            declaración.
+  /info/knockout/schedule-c-qjv-community-property:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada y vive en un estado de bienes gananciales. Esta
+            herramienta no divide el ingreso ganancial. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-c-spouse-business:
     alertText:
       body:

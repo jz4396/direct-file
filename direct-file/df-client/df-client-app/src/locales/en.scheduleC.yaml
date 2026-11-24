@@ -10,6 +10,9 @@ headings:
   /heading/income/schedule-c/intro: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
   /heading/income/schedule-c/qualified-joint-venture:
     Are you and your spouse electing to treat this business as a qualified joint venture?
+  /heading/income/schedule-c/qjv-only-owners: Are you and your spouse the only owners of this business?
+  /heading/income/schedule-c/qjv-not-an-entity:
+    Is this business owned and operated through an LLC or other state-law entity?
   /heading/income/schedule-c/qbi-carryforward: Do you have a qualified business loss carryforward from a prior year?
   /heading/income/schedule-c/qbi-cooperative: Are you a patron of an agricultural or horticultural cooperative?
   /heading/income/schedule-c/material-participation: Did you materially participate in this business?
@@ -27,7 +30,7 @@ headings:
   /heading/income/schedule-c/file-1099: If “Yes,” did you or will you file required Form(s) 1099?
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
   /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
-  /heading/knockout/schedule-c-qualified-joint-venture: This tool can't file a qualified joint venture
+  /heading/knockout/schedule-c-qualified-joint-venture: This qualified joint venture can't be filed here
   /heading/knockout/schedule-c-spouse-business: This tool can't file more than one business for your spouse
   /heading/knockout/schedule-c-community-property:
     This tool can't file your spouse's business from a community property state
@@ -112,13 +115,60 @@ info:
   /info/income/schedule-c/qualified-joint-venture:
     body: >-
       A qualified joint venture is a business you and your spouse jointly own and operate and elect to report as
-      sole proprietors. Answer yes if you are making that election. This tool cannot file it.
-  /info/knockout/schedule-c-qualified-joint-venture:
+      sole proprietors. You can elect if you each materially participate in the business, you are the only owners,
+      and you file a joint return. Divide the income, gain, loss, deduction, and credit based on your interests in
+      the business. Each of you files a separate Schedule C. A business owned and operated through an LLC does not
+      qualify.
+  /info/income/schedule-c/qjv-only-owners:
+    body: The election requires that you and your spouse are the only owners of the business.
+  /info/income/schedule-c/qjv-not-an-entity:
+    body: >-
+      A business owned and operated by spouses through an LLC does not qualify for the election. Only a business
+      owned and operated by the spouses as co-owners, and not in the name of a state-law entity, qualifies.
+  /info/knockout/schedule-c-qjv-not-joint-return:
     alertText:
       body:
         - p: >-
-            You elected qualified joint venture treatment. Each spouse would report a share of that business. This
-            tool cannot file that election. You will need another way to file this return.
+            You elected qualified joint venture treatment. The election requires you to file a joint return. You
+            will need another way to file this return.
+  /info/knockout/schedule-c-qjv-second-business:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment, and one of you has a second business. This tool can file
+            the election only when each spouse has exactly one Schedule C for that business. You will need another
+            way to file this return.
+  /info/knockout/schedule-c-qjv-not-one-each:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. Each of you must file a separate Schedule C. This tool
+            can file the election only when the return has one Schedule C for you and one for your spouse. You will
+            need another way to file this return.
+  /info/knockout/schedule-c-qjv-material-participation:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. Each spouse must materially participate in the business.
+            Line G must be Yes on both Schedules C. You will need another way to file this return.
+  /info/knockout/schedule-c-qjv-not-only-owners:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. The spouses must be the only owners of the business. You
+            will need another way to file this return.
+  /info/knockout/schedule-c-qjv-llc:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. A business owned and operated by spouses through an LLC
+            does not qualify for the election. You will need another way to file this return.
+  /info/knockout/schedule-c-qjv-community-property:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment, and you live in a community property state. This tool
+            does not split community income. You will need another way to file this return.
   /info/knockout/schedule-c-spouse-business:
     alertText:
       body:

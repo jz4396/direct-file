@@ -640,6 +640,18 @@ export const ScheduleCIncomeSubcategory = (
         <Boolean path='/scheduleCIsQualifiedJointVenture' />
         <SaveAndOrContinueButton />
       </Screen>
+      <Screen route='schedule-c-qjv-only-owners' condition='/askScheduleCQjvFollowUps'>
+        <Heading i18nKey='/heading/income/schedule-c/qjv-only-owners' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/qjv-only-owners' />
+        <Boolean path='/scheduleCQjvSpousesAreOnlyOwners' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='schedule-c-qjv-not-an-entity' condition='/askScheduleCQjvFollowUps'>
+        <Heading i18nKey='/heading/income/schedule-c/qjv-not-an-entity' />
+        <InfoDisplay i18nKey='/info/income/schedule-c/qjv-not-an-entity' />
+        <Boolean path='/scheduleCQjvHeldThroughLlc' />
+        <SaveAndOrContinueButton />
+      </Screen>
     </SubSubcategory>
 
     <Screen
@@ -649,7 +661,48 @@ export const ScheduleCIncomeSubcategory = (
     >
       <IconDisplay name='ErrorOutline' size={9} isCentered />
       <Heading i18nKey='/heading/knockout/schedule-c-qualified-joint-venture' />
-      <DFAlert i18nKey='/info/knockout/schedule-c-qualified-joint-venture' headingLevel='h2' type='warning' />
+      <DFAlert
+        condition='/scheduleCQjvReasonNotJointReturn'
+        i18nKey='/info/knockout/schedule-c-qjv-not-joint-return'
+        headingLevel='h2'
+        type='warning'
+      />
+      <DFAlert
+        condition='/scheduleCQjvReasonSecondBusiness'
+        i18nKey='/info/knockout/schedule-c-qjv-second-business'
+        headingLevel='h2'
+        type='warning'
+      />
+      <DFAlert
+        condition='/scheduleCQjvReasonNotOneEach'
+        i18nKey='/info/knockout/schedule-c-qjv-not-one-each'
+        headingLevel='h2'
+        type='warning'
+      />
+      <DFAlert
+        condition='/scheduleCQjvReasonMaterialParticipation'
+        i18nKey='/info/knockout/schedule-c-qjv-material-participation'
+        headingLevel='h2'
+        type='warning'
+      />
+      <DFAlert
+        condition='/scheduleCQjvReasonNotOnlyOwners'
+        i18nKey='/info/knockout/schedule-c-qjv-not-only-owners'
+        headingLevel='h2'
+        type='warning'
+      />
+      <DFAlert
+        condition='/scheduleCQjvReasonLlc'
+        i18nKey='/info/knockout/schedule-c-qjv-llc'
+        headingLevel='h2'
+        type='warning'
+      />
+      <DFAlert
+        condition='/scheduleCQjvReasonCommunityProperty'
+        i18nKey='/info/knockout/schedule-c-qjv-community-property'
+        headingLevel='h2'
+        type='warning'
+      />
       <KnockoutButton i18nKey='button.knockout' />
     </Screen>
 

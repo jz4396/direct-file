@@ -2875,7 +2875,8 @@
         answered when line I is yes, the Schedule SE
         out-of-scope questions are answered, church employee income on line 5a is complete, the
         nonfarm optional method is not stopped for eligibility, and the qualified joint venture question
-        is answered when a joint return has exactly one spouse-owned business. A yes on /hadChurchEmployeeIncome is
+        is answered when a joint return has a spouse-owned business. A supported one-each yes also needs both
+        follow-up answers. A yes on /hadChurchEmployeeIncome is
         complete only after /churchEmployeeIncome is entered. On a joint return,
         /hadSecondaryFilerChurchEmployeeIncome must be answered. A yes stops the section: that income
         is not entered on the primary filer's line 5a. 26 U.S.C. 3121(w), 1402(b), and 1402(j). The
