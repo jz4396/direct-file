@@ -139,7 +139,8 @@ class PrintRefusingKnockoutsTest {
     static final String DIVIDEND_FOREIGN_TAX_KNOCKOUT = "/flowKnockoutDividendForeignTaxPaid";
     /**
      * Nominee dividends that are not the Schedule B subtraction: another box, an amount over box 1a or box 1b, a
-     * computed state return, or subtotal rows that do not fit. A supported box 1a / box 1b nominee amount prints.
+     * subtraction that leaves box 1b above box 1a, a computed state return, or subtotal rows that do not fit. A
+     * supported box 1a / box 1b nominee amount prints.
      */
     static final String DIVIDEND_NOMINEE_KNOCKOUT = "/flowKnockoutDividendNominee";
     /** Box 1b or box 5 larger than box 1a, or box 2b, 2d, or 2f larger than box 2a. */
@@ -1537,7 +1538,8 @@ class PrintRefusingKnockoutsTest {
         assertEquals(
                 List.of(DIVIDEND_FOREIGN_TAX_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(fgs.getGraph(foreignTax)));
 
-        // Golden box 1a and box 1b are $1,000,000. A supported nominee share prints and is not a refusing path.
+        // Golden box 1a and box 1b are $1,000,000. Nominee qualified $1,000 keeps line 3a equal to line 3b.
+        // Nominee qualified $800 would leave line 3a $200 above line 3b, which stops.
         Map<String, FactTypeWithItem> nomineePrints = commonDividendReturn(mapper);
         putJson(nomineePrints, mapper, div + "/receivedAsNominee", ScheduleATy2026PdfSmokeTest.bool(true));
         putJson(
@@ -1549,14 +1551,42 @@ class PrintRefusingKnockoutsTest {
                 nomineePrints,
                 mapper,
                 div + "/writableNomineeQualifiedDividends",
-                ScheduleATy2026PdfSmokeTest.dollar("800.00"));
+                ScheduleATy2026PdfSmokeTest.dollar("1000.00"));
         putJson(nomineePrints, mapper, div + "/nomineeShareOfOtherBoxes", ScheduleATy2026PdfSmokeTest.bool(false));
         Graph nomineePrinted = fgs.getGraph(nomineePrints);
         assertEquals("999000.00", nomineePrinted.get("/ordinaryDividends").get().toString(), "line 3b after nominee");
-        assertEquals("999200.00", nomineePrinted.get("/qualifiedDividends").get().toString(), "line 3a after nominee");
+        assertEquals("999000.00", nomineePrinted.get("/qualifiedDividends").get().toString(), "line 3a after nominee");
         assertFalse(
                 PrintRefusingKnockouts.refusingPaths(nomineePrinted).contains(DIVIDEND_NOMINEE_KNOCKOUT),
                 "supported nominee dividends print");
+
+        Map<String, FactTypeWithItem> nomineeQualifiedOverOrdinary = commonDividendReturn(mapper);
+        putJson(
+                nomineeQualifiedOverOrdinary, mapper, div + "/receivedAsNominee", ScheduleATy2026PdfSmokeTest.bool(true));
+        putJson(
+                nomineeQualifiedOverOrdinary,
+                mapper,
+                div + "/writableNomineeOrdinaryDividends",
+                ScheduleATy2026PdfSmokeTest.dollar("1000.00"));
+        putJson(
+                nomineeQualifiedOverOrdinary,
+                mapper,
+                div + "/writableNomineeQualifiedDividends",
+                ScheduleATy2026PdfSmokeTest.dollar("800.00"));
+        putJson(
+                nomineeQualifiedOverOrdinary,
+                mapper,
+                div + "/nomineeShareOfOtherBoxes",
+                ScheduleATy2026PdfSmokeTest.bool(false));
+        Graph qualifiedOverOrdinary = fgs.getGraph(nomineeQualifiedOverOrdinary);
+        assertEquals(
+                Boolean.FALSE,
+                qualifiedOverOrdinary
+                        .get("/dividendReports/#" + DIVIDEND_ID + "/nomineeAmountsOverLimit")
+                        .get(),
+                "box limits still hold");
+        assertEquals(
+                List.of(DIVIDEND_NOMINEE_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(qualifiedOverOrdinary));
 
         Map<String, FactTypeWithItem> nomineeOtherBox = commonDividendReturn(mapper);
         putJson(nomineeOtherBox, mapper, div + "/receivedAsNominee", ScheduleATy2026PdfSmokeTest.bool(true));
@@ -1569,7 +1599,7 @@ class PrintRefusingKnockoutsTest {
                 nomineeOtherBox,
                 mapper,
                 div + "/writableNomineeQualifiedDividends",
-                ScheduleATy2026PdfSmokeTest.dollar("800.00"));
+                ScheduleATy2026PdfSmokeTest.dollar("1000.00"));
         putJson(nomineeOtherBox, mapper, div + "/nomineeShareOfOtherBoxes", ScheduleATy2026PdfSmokeTest.bool(true));
         assertEquals(
                 List.of(DIVIDEND_NOMINEE_KNOCKOUT),

@@ -310,7 +310,9 @@ info:
       body:
         - p:
             La cantidad de nominatario no puede ser mayor que el encasillado 1a, y la parte calificada no puede ser
-            mayor que la cantidad ordinaria de nominatario ni que el encasillado 1b.
+            mayor que la cantidad ordinaria de nominatario ni que el encasillado 1b. Después de restar esas cantidades,
+            el encasillado 1b que queda no puede ser mayor que el encasillado 1a que queda. Los dividendos calificados
+            son parte de los dividendos ordinarios, así que la línea 3a no puede ser mayor que la línea 3b.
         - p:
             La parte de nominatario tampoco puede incluir el encasillado 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12 o 13. Una
             declaración estatal calculada usa las cantidades federales de dividendos, así que una cantidad de

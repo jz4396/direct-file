@@ -701,6 +701,7 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     expect(val(g, `/qualifiedDividends`)).toBe(`1200.00`);
     expect(val(g, `/qdcgLine2`)).toBe(`1200.00`);
     expect(val(g, `/schDTaxWsLine2`)).toBe(`1200.00`);
+    expect(get(g, `/dividendReports/#${d1}/nomineeQualifiedExceedsOrdinary`).get).toBe(false);
     expect(get(g, `/requiresScheduleB`).get).toBe(true);
     noKnockouts(g);
     const plain = flForm({ box1a: 2000, box1b: 1200 });
@@ -754,6 +755,42 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
       ),
       `/flowKnockoutDividendNominee`
     );
+  });
+  it(`nominee subtraction that leaves box 1b above box 1a stops`, ({ task }) => {
+    // Box 1b is included in box 1a, so remaining box 1b cannot exceed remaining box 1a.
+    // Form 1040 instr. (2025) p. 25, Line 3a. Box 1a $3,000, box 1b $2,500, nominee ordinary $1,000,
+    // nominee qualified $200: remaining $2,300 > remaining $2,000. The box limits still hold.
+    task.meta.testedFactPaths = [
+      `/flowKnockoutDividendNominee`,
+      `/dividendReports/*/nomineeQualifiedExceedsOrdinary`,
+    ];
+    const over = build(
+      divs({
+        box1a: 3000,
+        box1b: 2500,
+        nominee: true,
+        nomineeOrdinary: 1000,
+        nomineeQualified: 200,
+        nomineeOtherBoxes: false,
+      })
+    );
+    expect(get(over, `/dividendReports/#${d1}/nomineeAmountsOverLimit`).get).toBe(false);
+    expect(get(over, `/dividendReports/#${d1}/nomineeQualifiedExceedsOrdinary`).get).toBe(true);
+    blocks(over, `/flowKnockoutDividendNominee`);
+    const equal = build(
+      divs({
+        box1a: 3000,
+        box1b: 2500,
+        nominee: true,
+        nomineeOrdinary: 1000,
+        nomineeQualified: 500,
+        nomineeOtherBoxes: false,
+      })
+    );
+    expect(get(equal, `/dividendReports/#${d1}/nomineeQualifiedExceedsOrdinary`).get).toBe(false);
+    expect(val(equal, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(equal, `/qualifiedDividends`)).toBe(`2000.00`);
+    noKnockouts(equal);
   });
   it(`nominee qualified dividends over the nominee ordinary amount stop`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`];

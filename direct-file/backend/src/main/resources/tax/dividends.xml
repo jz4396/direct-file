@@ -70,6 +70,7 @@
     box 7 foreign tax not meeting 904(j)         -> /flowKnockoutDividendForeignTaxPaid
     nominee share of box 2a-2f, 3, 5, 7, 12 or 13,
       a nominee amount over box 1a or box 1b,
+      remaining box 1b above remaining box 1a,
       or any nominee amount on a computed state  -> /flowKnockoutDividendNominee
     box 1b, 2e, 5 or 6 larger than box 1a,
       or box 2b, 2d or 2f larger than box 2a       -> /flowKnockoutDividendAmountsInconsistent
@@ -1416,6 +1417,67 @@
       </Derived>
     </Fact>
 
+    <Fact path="/dividendReports/*/nomineeQualifiedExceedsOrdinary">
+      <Name>Nominee subtraction leaves qualified dividends above ordinary dividends</Name>
+      <Description>Qualified dividends are a portion of ordinary dividends. Form 1099-DIV box 1b is included in box 1a,
+        and Form 1040 line 3a is included in line 3b (Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 3a: qualified dividends "are also included in the
+        ordinary dividend total required to be shown on line 3b"). After this form's nominee subtraction, remaining
+        box 1b cannot exceed remaining box 1a: (box 1b − nominee qualified) &gt; (box 1a − nominee ordinary), which is
+        the same as nominee ordinary − nominee qualified &gt; box 1a − box 1b. A separate reason from
+        /dividendReports/*/nomineeAmountsOverLimit. An equal remainder does not stop. Complete false when this form
+        has no nominee amount or box 1a or box 1b is not complete.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../ordinaryDividends" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../qualifiedDividends" />
+                </IsComplete>
+                <Dependency path="../hasNomineeDividendAmount" />
+              </All>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="../qualifiedDividends" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="../nomineeQualifiedDividends" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="../ordinaryDividends" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="../nomineeOrdinaryDividends" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
     <Fact path="/dividendReports/*/hasNomineeDividendAmount">
       <Name>This form has a nominee dividend amount</Name>
       <Description>Nominee ordinary or nominee qualified dividends are more than $0.</Description>
@@ -1444,8 +1506,9 @@
     <Fact path="/dividendReports/*/nomineeStopsReturn">
       <Name>This nominee Form 1099-DIV stops the return</Name>
       <Description>Stops when the nominee share includes a box other than 1a or 1b, a nominee amount is over its limit,
-        or this form has a nominee amount and the return is a computed state return. One complete boolean per form.
-        Complete false when none of those is a complete true.</Description>
+        the nominee subtraction leaves this form's remaining box 1b above its remaining box 1a, or this form has a
+        nominee amount and the return is a computed state return. One complete boolean per form. Complete false when
+        none of those is a complete true.</Description>
       <Derived>
         <Switch>
           <Case>
@@ -1458,6 +1521,7 @@
                   <Dependency path="../nomineeShareOfOtherBoxes" />
                 </All>
                 <Dependency path="../nomineeAmountsOverLimit" />
+                <Dependency path="../nomineeQualifiedExceedsOrdinary" />
                 <All>
                   <IsComplete>
                     <Dependency module="stateReturn" path="/stateReturnComputed" />
@@ -2814,7 +2878,8 @@
       <Name>Knockout: nominee dividends that are not the Schedule B subtraction</Name>
       <Description>Ordinary and qualified nominee dividends are subtracted on Schedule B line 5 and Form 1040 lines 3b
         and 3a. The return still stops when a nominee share includes box 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12, or 13,
-        when a nominee amount is over box 1a, the nominee ordinary amount, or box 1b, when any nominee amount is on a
+        when a nominee amount is over box 1a, the nominee ordinary amount, or box 1b, when the subtraction leaves
+        remaining box 1b above remaining box 1a (line 3a cannot exceed line 3b), when any nominee amount is on a
         computed state return (those returns read the federal dividend amounts; PA Schedule B line 4 is not computed),
         or when the subtotal and Nominee Distribution rows do not fit on line 5. 2026 draft Instructions for Schedule B
         (Form 1040) https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256

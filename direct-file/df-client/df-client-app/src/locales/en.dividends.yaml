@@ -279,7 +279,8 @@ info:
       body:
         - p:
             The nominee amount can’t be more than box 1a, and the qualified part can’t be more than the nominee ordinary
-            amount or box 1b.
+            amount or box 1b. After those amounts are subtracted, the remaining box 1b can’t be more than the remaining
+            box 1a. Qualified dividends are part of ordinary dividends, so line 3a can’t be more than line 3b.
         - p:
             The nominee share also can’t include box 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12, or 13. A computed state return
             uses the federal dividend amounts, so a nominee amount on that return can’t be subtracted here. Schedule B

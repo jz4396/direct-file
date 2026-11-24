@@ -448,8 +448,9 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutDividendForeignTaxPaid",
             // Nominee dividends that are not the Schedule B line 5 subtraction. Ordinary and qualified nominee
             // dividends print ("Nominee Distribution") and are removed from lines 3b and 3a. The return still stops
-            // when a nominee share includes another box, an amount is over box 1a or box 1b, any nominee amount is
-            // on a computed state return, or the subtotal rows do not fit. 2026 draft Instructions for Schedule B
+            // when a nominee share includes another box, an amount is over box 1a or box 1b, the subtraction leaves
+            // remaining box 1b above remaining box 1a (line 3a is included in line 3b), any nominee amount is on a
+            // computed state return, or the subtotal rows do not fit. 2026 draft Instructions for Schedule B
             // PDF p. 3 (printed p. 2), Line 5, Nominees. 1099-INT nominee interest is a separate stop.
             "/flowKnockoutDividendNominee",
             // Box 1b, box 2e, box 5, or box 6 larger than box 1a, or box 2b, box 2d, or box 2f larger than box 2a.

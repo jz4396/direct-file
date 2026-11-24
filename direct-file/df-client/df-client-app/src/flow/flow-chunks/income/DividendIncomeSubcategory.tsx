@@ -37,8 +37,8 @@ import type { ConditionString } from '../../Condition.js';
  * return, a box 16 amount that is not box 1a plus box 2a stops the return.
  * Ordinary and qualified dividends received as a nominee are subtracted on Schedule B line 5 (a subtotal,
  * then "Nominee Distribution") and on Form 1040 lines 3b and 3a. A nominee share of another box, an amount
- * over box 1a or box 1b, or any nominee amount on a computed state return still stops the return. The tool
- * does not file Form 1096 or Form 1099-DIV.
+ * over box 1a or box 1b, a subtraction that leaves remaining box 1b above remaining box 1a, or any nominee
+ * amount on a computed state return still stops the return. The tool does not file Form 1096 or Form 1099-DIV.
  * Computations and cites live in backend/src/main/resources/tax/dividends.xml.
  */
 const knockout = (route: string, condition: ConditionString, key: string) => (
