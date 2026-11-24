@@ -33,7 +33,8 @@
 // Form 1099-DIV with qualified dividends, capital gain distributions, and boxes 12 and 13, so Form 6251 Part III
 // taxes the preferential income at 15% and Form 8960 computes net investment income tax), and profile V
 // (Golden V: single filer who moves from Pennsylvania to Florida on July 1, wages only, so the PA-40 is a part-year
-// return with residency oval P and no Schedule A).
+// return with residency oval P and no Schedule A), and profile W
+// (Golden W: full-year Arizona resident, married filing jointly, both under 65, no dependents, two W-2s, Form 140).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -92,6 +93,8 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2014`,
   `444-00-2015`,
   `444-00-2016`,
+  `444-00-2017`,
+  `444-00-2018`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1632,6 +1635,85 @@ export const profileVPaToFlWages = {
   ...w2s(jules.ssn, profileVPaW2, profileVFlW2),
 };
 
+/**
+ * Profile W (Golden W, #135): full-year Arizona resident, married filing jointly, both under 65, not blind, no
+ * dependents. Both spouses lived in Arizona all year, so this is Form 140 (not Form 140PY or Form 140NR). Standard
+ * deduction. Two W-2s, each with box 15 Arizona.
+ *
+ * Primary, Example Sonoran Payroll LLC: boxes 1, 3, and 5 $70,000; box 2 $5,800; box 16 $70,000; box 17 $1,300.
+ * Spouse, Example Canyon Payroll LLC: boxes 1, 3, and 5 $45,000; box 2 $3,700; box 16 $45,000; box 17 $800.
+ * The cite names boxes 1, 3, and 5, not 4 or 6. Box 4 is 6.2% of box 3 and box 6 is 1.45% of box 5. Both wages are
+ * under the OASDI wage base and under $200,000, so there is no 0.9% Additional Medicare Tax.
+ * Primary box 4 is 6.2% × 70,000 = 4,340. Primary box 6 is 1.45% × 70,000 = 1,015. 26 U.S.C. 3101(a), 3101(b)(1).
+ * Spouse box 4 is 6.2% × 45,000 = 2,790. Spouse box 6 is 1.45% × 45,000 = 652.50. 26 U.S.C. 3102(f)(1).
+ *
+ * SSNs are group 00 (444-00-2017 and 444-00-2018), the next pair after Golden V. Group 00 is never assigned by SSA.
+ * Fixed ids in the 13500000-0000-4000-8000-0000000026xx range.
+ *
+ * Federal, Rev. Proc. 2025-32. Line 1z, line 9, and line 11 are 70,000 + 45,000 = 115,000. Line 12 is the joint
+ * standard deduction $32,200 (§4.14; the 2026 draft prints it on line 12e). Line 15 is 115,000 − 32,200 = 82,800.
+ * Line 16 uses the Tax Table because taxable income is under $100,000. The row is 82,800–82,850 and the midpoint is
+ * 82,825. §4.01 Table 1 (MFJ): 10% to $24,800, then 12% to $100,800. 2,480 + 12% × (82,825 − 24,800) = 2,480 + 12% ×
+ * 58,025 = 9,443. Line 24 is 9,443. Line 25a is 5,800 + 3,700 = 9,500. Line 34 refund is 9,500 − 9,443 = 57.
+ *
+ * Arizona Form 140, azPit cites, 2025 Form 140 instructions as the interim template. Line 12 and line 42 are federal
+ * AGI, 115,000. Line 43 is the same $32,200 (A.R.S. 43-1041; Rev. Proc. 2025-32 §4.14). Line 45 is 82,800. Line 46 is
+ * 82,800 × 0.025 = 2,070 exactly (2025 Form 140 instructions, line 46; A.R.S. 43-1011). Credits are $0. Line 53 is
+ * 1,300 + 800 = 2,100. The refund is 2,100 − 2,070 = 30.
+ */
+const indy: Person = { first: `Indy`, last: `Example`, ssn: [`444`, `00`, `2017`], dob: `1985-04-18` };
+const julesW: Person = { first: `Jules`, last: `Example`, ssn: [`444`, `00`, `2018`], dob: `1987-10-03` };
+export const profileWPrimaryW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002601`,
+  employer: `Example Sonoran Payroll LLC`,
+  ein: [`00`, `0002601`],
+  box1: 70000,
+  box2: 5800,
+  box3: 70000,
+  // 6.2% × 70,000 = 4,340. 26 U.S.C. 3101(a). Under the wage base.
+  box4: 4340,
+  box5: 70000,
+  // 1.45% × 70,000 = 1,015. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 1015,
+  // Form 140 line 53 includes box 17 when box 15 is Arizona. Box 16 is the Arizona wage.
+  box16: 70000,
+  box17: 1300,
+  filerId: primaryFilerId,
+  tin: indy.ssn,
+};
+export const profileWSpouseW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002602`,
+  employer: `Example Canyon Payroll LLC`,
+  ein: [`00`, `0002602`],
+  box1: 45000,
+  box2: 3700,
+  box3: 45000,
+  // 6.2% × 45,000 = 2,790. 26 U.S.C. 3101(a). Under the wage base.
+  box4: 2790,
+  box5: 45000,
+  // 1.45% × 45,000 = 652.50. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 652.5,
+  box16: 45000,
+  box17: 800,
+  filerId: spouseId,
+  tin: julesW.ssn,
+};
+export const profileWAzMfjW2 = {
+  ...single(indy, { street: `123 Example St`, city: `Phoenix`, zip: `85004`, state: `AZ` }),
+  ...mfjFilerData,
+  ...spouse(julesW),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(indy.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`az`, `/scopedStateOptions`),
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  // Both W-2s have box 15 Arizona, the residence state.
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`onlySame`, `/primaryFilerW2And1099IntStateOptions`),
+  // Full year means both spouses lived in Arizona all year. Form 140, not Form 140PY or Form 140NR.
+  '/azResidencyStatus': createEnumWrapper(`fullYear`, `/azResidencyOptions`),
+  ...w2s(indy.ssn, profileWPrimaryW2, profileWSpouseW2),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1661,4 +1743,5 @@ export const goldenProfiles = {
   profileTFlMfjSpouseScheduleC,
   profileUFlSingleAmtPartIii,
   profileVPaToFlWages,
+  profileWAzMfjW2,
 };

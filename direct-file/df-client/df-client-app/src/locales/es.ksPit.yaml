@@ -1,0 +1,67 @@
+# Cadenas del formulario K-40 de Kansas (#93, parte 8).
+subsubcategories:
+  /flow/your-taxes/amount:
+    ks-form-k-40: Declaración de Kansas
+dataviews:
+  /flow/your-taxes/amount:
+    /ksResidencyStatus: Dónde vivió para su declaración de Kansas
+fields:
+  /ksResidencyOptions:
+    fullYear: Viví en Kansas todo el año
+    partYear: Viví en Kansas parte del año
+    nonresident: No viví en Kansas
+headings:
+  /heading/your-taxes/amount/ks-residency: ¿Cuál de estas opciones describe su declaración de Kansas?
+  /heading/knockout/ks-part-year: Esta herramienta todavía no prepara una declaración de Kansas de residente parcial o de no residente
+  /heading/knockout/ks-w2: Esta herramienta todavía no admite un W-2 de un estado distinto de Kansas
+  /heading/knockout/ks-other-income: Esta herramienta todavía no admite declaraciones de Kansas con ingresos distintos de salarios de un W-2
+  /heading/knockout/ks-dependents: Esta herramienta todavía no admite dependientes en una declaración de Kansas
+  /heading/knockout/ks-age-blind: Esta herramienta todavía no admite una declaración de Kansas de alguien de 65 años o más, o con ceguera
+  /heading/knockout/ks-claimed: Esta herramienta todavía no admite una declaración de Kansas de alguien a quien pueden reclamar como dependiente
+  /heading/knockout/ks-filing-status: Esta herramienta todavía no admite este estado civil en Kansas
+  /heading/knockout/ks-itemized: Esta herramienta todavía no admite declaraciones de Kansas que detallan deducciones
+  /heading/knockout/ks-eitc: Esta herramienta todavía no admite el crédito federal por ingreso del trabajo en una declaración de Kansas
+  /heading/knockout/ks-form-2441: Esta herramienta todavía no admite el crédito federal por cuidado de hijos y dependientes en una declaración de Kansas
+  /heading/knockout/ks-schedule-1a: Esta herramienta todavía no admite una deducción del Anexo 1-A federal en una declaración de Kansas
+  /heading/knockout/ks-tax-table: Esta herramienta todavía no admite una declaración de Kansas con ingreso tributable de $100,000 o menos
+info:
+  /info/your-taxes/amount/ks-residency:
+    body:
+      Un año completo significa que usted, y su cónyuge si presenta una declaración conjunta, vivieron en Kansas todo el año. Ese es el formulario K-40.
+      Los residentes parciales y los no residentes completan el Anexo S, Parte B.
+  /info/knockout/ks-part-year:
+    alertText: Las declaraciones de Kansas de residente parcial y de no residente todavía no están disponibles
+    body: Esas declaraciones usan el Anexo S, Parte B, que esta herramienta no calcula.
+  /info/knockout/ks-w2:
+    alertText: Un W-2 de otro estado no está disponible en esta declaración de Kansas
+    body: La casilla 15 tiene que ser Kansas, o estar en blanco. La retención cuenta solo cuando la casilla 15 es Kansas.
+  /info/knockout/ks-other-income:
+    alertText: Esta declaración de Kansas solo puede incluir salarios de un W-2
+    body: Intereses, Seguro Social, una venta, jubilación, negocio, alquiler y otros ingresos no están disponibles.
+  /info/knockout/ks-dependents:
+    alertText: Los dependientes no están disponibles en esta declaración de Kansas
+    body: La exención de $2,320 por dependiente no se calcula.
+  /info/knockout/ks-age-blind:
+    alertText: Tener 65 años o más, o ceguera, no está disponible en esta declaración de Kansas
+    body: La hoja de la deducción estándar para personas de 65 años o más, o con ceguera, no se calcula.
+  /info/knockout/ks-claimed:
+    alertText: Que lo reclamen como dependiente no está disponible en esta declaración de Kansas
+    body: La exención de quien figura en otra declaración no se calcula.
+  /info/knockout/ks-filing-status:
+    alertText: Este estado civil todavía no está disponible en una declaración de Kansas
+    body: Esta herramienta prepara el formulario K-40 para solteros y para una declaración conjunta cuando ambos cónyuges vivieron en Kansas todo el año.
+  /info/knockout/ks-itemized:
+    alertText: Las deducciones detalladas no están disponibles en esta declaración de Kansas
+    body: El Anexo A de Kansas no se calcula.
+  /info/knockout/ks-eitc:
+    alertText: El crédito federal por ingreso del trabajo no está disponible en esta declaración de Kansas
+    body: La línea 17, el 17 por ciento del crédito federal, no se calcula.
+  /info/knockout/ks-form-2441:
+    alertText: El crédito federal por cuidado de hijos y dependientes no está disponible en esta declaración de Kansas
+    body: La línea 14, el 50 por ciento del crédito del formulario federal 2441, no se calcula.
+  /info/knockout/ks-schedule-1a:
+    alertText: Una deducción del Anexo 1-A federal no está disponible en esta declaración de Kansas
+    body: Las horas extra calificadas, las propinas, el interés de un préstamo de auto y la deducción para personas mayores no se anotan. La conformidad de Kansas con esa deducción no está fijada.
+  /info/knockout/ks-tax-table:
+    alertText: Un ingreso tributable de Kansas de $100,000 o menos todavía no está disponible
+    body: La línea 8 usa las tablas de impuestos con ese monto. Esas tablas no se calculan. La hoja de cómputo se usa solo cuando la línea 7 es mayor de $100,000.
