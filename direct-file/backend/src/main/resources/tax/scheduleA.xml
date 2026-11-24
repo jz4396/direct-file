@@ -55,7 +55,13 @@
     <Fact path="/scheduleAWritableStateLocalIncomeOrSalesTax">
       <Name>Schedule A state and local income taxes or general sales taxes (input)</Name>
       <Description>#37: state and local income taxes or general sales taxes, Schedule A (Form 1040) 2026 draft,
-        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a.</Description>
+        https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf line 5a. Instructions for Schedule A (Form 1040) (2025)
+        draft, https://www.irs.gov/pub/irs-dft/i1040sca--dft.pdf (the posted draft is still the 2025 instructions;
+        no 2026 Schedule A instructions draft is posted), Line 5a: "include on line 5a the state and local income
+        taxes listed next" and "State and local income taxes withheld from your salary during 2025. Your Form(s) W-2
+        will show these amounts. Forms W-2G, 1099-G, 1099-R, 1099-MISC, and 1099-NEC may also show state and local
+        income taxes withheld." Form 1099-DIV box 14 (dividends /dividendReports/*/stateTaxWithheld) is state income
+        tax withheld and is included in the amount the filer enters here. It is not added by the tool.</Description>
       <Writable>
         <Dollar />
       </Writable>
