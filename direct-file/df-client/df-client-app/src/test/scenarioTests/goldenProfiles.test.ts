@@ -30,7 +30,8 @@
 // one primary W-2, a spouse-owned Schedule C and Schedule SE, Form 1099-DIV box 2d through the Schedule D Tax
 // Worksheet, the section 199A deduction, and estimated tax payments), and profile U
 // (Golden U: full-year Florida resident, single, under 65, no dependents, standard deduction, Form 1099-DIV
-// boxes 1a, 1b, 2a, 12, and 13, Form 6251 Part III, and Form 8960).
+// boxes 1a, 1b, 2a, 12, and 13, Form 6251 Part III, and Form 8960), and profile V
+// (Golden V: single filer who moves from Pennsylvania to Florida on July 1, wages only, PA-40 part-year oval P).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -139,7 +140,7 @@
 // [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
-//      fixture SSNs other than profiles C, D, F, G, Q, R, S, T, and U are in the 900 area, which SSA never issues; the app reads them
+//      fixture SSNs other than profiles C, D, F, G, Q, R, S, T, U, and V are in the 900 area, which SSA never issues; the app reads them
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
 //      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
@@ -152,7 +153,8 @@
 //      also group 00: the cite names 9xx SSNs, and Tin.isSSN is false for a 9xx area, which would zero the child
 //      tax credit under IRC §24(h)(7). Profile S uses 444-00-2011 and 444-00-2012, also group 00: the cite names
 //      9xx SSNs, and Tin.isSSN is false for a 9xx area. Profile S has no child. Profile T uses 444-00-2013 and 444-00-2014, also group 00. Profile T has no child. Profile U uses
-//      444-00-2015, also group 00. Profile U has no child. Every
+//      444-00-2015, also group 00. Profile U has no child. Profile V uses 444-00-2016, also group 00. The cite
+//      names that SSN. Profile V has no child. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
 //      "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), and profile F's AGI
 //      is above that amount too, so EITC is $0 on both. Profile G is under the two-child joint completed phaseout and
@@ -262,6 +264,9 @@ import {
   profileUDividendId,
   profileUFlSingleAmtPartIii,
   profileUW2,
+  profileVFlW2,
+  profileVPaToFlWages,
+  profileVPaW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -336,7 +341,8 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
         name.startsWith(`profileR`) ||
         name.startsWith(`profileS`) ||
         name.startsWith(`profileT`) ||
-        name.startsWith(`profileU`);
+        name.startsWith(`profileU`) ||
+        name.startsWith(`profileV`);
       const hasChild =
         name.startsWith(`profileD`) ||
         name.startsWith(`profileF`) ||
@@ -5150,6 +5156,173 @@ describe(`golden end-to-end scenario (synthetic data): profile U, Golden U, Flor
         path.resolve(
           __dirname,
           `../../../../../backend/src/test/resources/submission-blocking/golden-profileU-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`nothing stops the return`, () => {
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile V, Golden V, PA to FL part-year, wages only`, () => {
+  // Jules Example, born 1989-03-22. Single, under 65, not blind. No dependents. Moved PA → FL; the move date
+  //   2026-07-01 is the first day in Florida, so the PA residency period is 01/01/2026–06/30/2026. Address 123
+  //   Example St, Tampa, FL 33602 (the year-end home). SSN is the cite's 444-00-2016, group 00 [SSA]. No Form
+  //   1099-INT. PA-40 IN (2025) p. 31 requires PA Schedule A when PA-taxable interest is not the federal amount,
+  //   and this tool does not produce that schedule.
+  // W-2 #1, Example Keystone Staffing, January–June. Boxes 1, 3, and 5 $40,000. Box 2 $4,500. Box 15 PA. Box 16
+  //   $40,000. Box 17 $1,200. Box 4 is 6.2% × 40,000 = 2,480 (26 U.S.C. 3101(a)). Box 6 is 1.45% × 40,000 = 580
+  //   (26 U.S.C. 3101(b)(1)). The cite names boxes 1, 3, and 5; boxes 4 and 6 are those statutory shares.
+  // W-2 #2, Example Gulf Payroll LLC, July–December, work done in Florida. Boxes 1, 3, and 5 $45,000. Box 2
+  //   $5,600. No box 15, 16, or 17. Box 4 is 6.2% × 45,000 = 2,790. Box 6 is 1.45% × 45,000 = 652.50. The filer
+  //   allocates $0 to the PA residency period and answers no to PA-source pay while not a PA resident. PA-40 IN
+  //   (2025) p. 43.
+  // Form 1040: line 1z $85,000. No interest, so line 2b is $0 and Schedule B is not required (interest is not over
+  //   $1,500). Line 9 and line 11 AGI $85,000. Line 12e standard deduction $16,100. Rev. Proc. 2025-32 §4.14(1),
+  //   PDF p. 18: unmarried individuals (other than surviving spouses and heads of households) $16,100. Line 15
+  //   taxable income $68,900.
+  // Line 16, Tax Table. Instructions for Form 1040 (2025) p. 36: taxable income under $100,000 uses the Tax Table.
+  //   p. 69: the tax is the tax on the row midpoint. Row $68,900–$68,950, midpoint $68,925. Rev. Proc. 2025-32
+  //   §4.01 Table 3, PDF p. 11: $5,800 plus 22% of the excess over $50,400. $5,800 + 22% × ($68,925 − $50,400) =
+  //   $5,800 + 22% × $18,525 = $5,800 + $4,075.50 = $9,875.50, which rounds to $9,876.
+  // Line 24 is $9,876. Line 25a is $4,500 + $5,600 = $10,100. Line 34 refund is $224. The result is a refund, so
+  //   Form 2210 is not filed. No Form 8959: Medicare wages $85,000 are under $200,000. No Form 6251 is required:
+  //   AMTI is AGI $85,000, under the $90,100 unmarried exemption. Rev. Proc. 2025-32 §4.10, PDF p. 16.
+  // PA-40. Oval (P). Dates 01/01 through 06/30. PA-40 IN (2025) p. 6. Line 1a is the PA W-2's box 16, $40,000. The
+  //   FL W-2's PA compensation is the residency-period allocation, $0. Line 2 is $0 (no interest). Line 11 is
+  //   $40,000. Line 12 is 40,000 × 307/10000 = $1,228.00. 72 P.S. §7302; PA-40 IN (2025) p. 21, LINE 12. Line 13 is
+  //   box 17, $1,200. Line 26 and line 28 tax due are $28.00. Schedule SP does not apply: eligibility income is far
+  //   over the unmarried table. No estimated-tax penalty.
+  const g = graph(profileVPaToFlWages);
+
+  it(`Form 1040 wages, the standard deduction, taxable income $68,900, and tax $9,876`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`single`);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, `/usesQdcgTaxWorksheet`).get).toBe(false);
+    // [RP] §4.01 Table 3. 5,800 + 22% × (68,925 − 50,400) = 9,875.50, which rounds to 9,876.
+    const midpoint = 68925;
+    const unrounded = 5800 * 100 + (midpoint - 50400) * 22;
+    expect(unrounded).toBe(987550);
+    expect(Math.round(unrounded / 100)).toBe(9876);
+    expectDollars(g, {
+      '/wages': `85000.00`,
+      '/employerIncomeSubtotal': `85000.00`,
+      '/interestIncome': `0.00`,
+      '/totalIncome': `85000.00`,
+      '/agi': `85000.00`,
+      '/standardDeduction': `16100.00`,
+      '/standardOrItemizedDeductions': `16100.00`,
+      '/schedule1ALine44': `0.00`,
+      '/totalDeductions': `16100.00`,
+      '/taxableIncome': `68900.00`,
+      '/tentativeTaxFromTaxableIncome': `9876.00`,
+      [`/formW2s/#${profileVPaW2.id}/oasdiWages`]: `40000.00`,
+      [`/formW2s/#${profileVPaW2.id}/oasdiWithholding`]: `2480.00`,
+      [`/formW2s/#${profileVPaW2.id}/medicareWages`]: `40000.00`,
+      [`/formW2s/#${profileVPaW2.id}/medicareWithholding`]: `580.00`,
+      [`/formW2s/#${profileVPaW2.id}/stateWages`]: `40000.00`,
+      [`/formW2s/#${profileVPaW2.id}/stateWithholding`]: `1200.00`,
+      [`/formW2s/#${profileVFlW2.id}/oasdiWages`]: `45000.00`,
+      [`/formW2s/#${profileVFlW2.id}/oasdiWithholding`]: `2790.00`,
+      [`/formW2s/#${profileVFlW2.id}/medicareWages`]: `45000.00`,
+      // 1.45% × 45,000 = 652.50. The derived box 6 rounds half-up to a whole dollar, so it is 653.
+      [`/formW2s/#${profileVFlW2.id}/medicareWithholding`]: `653.00`,
+    });
+    expect(get(g, `/formW2s/#${profileVFlW2.id}/writableStateWages` as string).complete).toBe(false);
+    expect(get(g, `/formW2s/#${profileVFlW2.id}/writableStateWithholding` as string).complete).toBe(false);
+  });
+
+  it(`total tax is $9,876, withholding is $10,100, and the refund is $224`, () => {
+    expect(get(g, `/requiresSchedule2`).get).toBe(false);
+    expect(get(g, `/requiresSchedule1`).complete).toBe(false);
+    expect(get(g, `/requiresForm8959`).get).toBe(false);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, `/itemizesDeductions`).get).toBe(false);
+    expect(get(g, `/wantsStandardDeduction`).get).toBe(true);
+    expect(get(g, `/totalCtc`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/earnedIncomeCredit`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/form2210AskPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/dueRefund`).get).toBe(true);
+    expectDollars(g, {
+      '/totalTentativeTax': `9876.00`,
+      '/nonRefundableCredits': `0.00`,
+      '/taxLessNonRefundableCredits': `9876.00`,
+      '/totalTax': `9876.00`,
+      '/formW2Withholding': `10100.00`,
+      '/otherFormWithholding': `0.00`,
+      '/totalWithholding': `10100.00`,
+      '/totalPayments': `10100.00`,
+      '/overpayment': `224.00`,
+      '/balanceDue': `0.00`,
+    });
+  });
+
+  it(`PA-40 line 11 is $40,000, line 12 is $1,228.00, and tax due is $28.00`, () => {
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(true);
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/paResidencyStatusPartYear`).get).toBe(true);
+    expect(get(g, `/paPartYearMovedOut`).get).toBe(true);
+    expect(get(g, `/paPartYearMoveDate`).get.toString()).toBe(`2026-07-01`);
+    expect(get(g, `/paSchoolCode`).get).toBe(`99999`);
+    expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaScheduleA`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleA`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaPartYear`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaNonresidentPaSourcePay`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaNonresidentPaSourcePay`).get).toBe(false);
+    const line11 = Number(get(g, `/paLine11`).get.toString());
+    expect(line11).toBe(40000);
+    // 72 P.S. §7302; [PA] p. 21, LINE 12. 40,000 × 307/10000 = 1,228.00 exactly.
+    expect((line11 * 307) / 10000).toBe(1228);
+    expectDollars(g, {
+      [`/formW2s/#${profileVPaW2.id}/paCompensation`]: `40000.00`,
+      [`/formW2s/#${profileVFlW2.id}/paCompensation`]: `0.00`,
+      '/paLine1a': `40000.00`,
+      '/paLine1c': `40000.00`,
+      '/paLine2': `0.00`,
+      '/paLine9': `40000.00`,
+      '/paLine10': `0.00`,
+      '/paLine11': `40000.00`,
+      '/paLine12': `1228.00`,
+      '/paLine13': `1200.00`,
+      '/paLine15': `0.00`,
+      '/paLine21': `0.00`,
+      '/paLine24': `1200.00`,
+      '/paLine26': `28.00`,
+      '/paLine29': `0.00`,
+      '/stateTaxLiability': `1228.00`,
+      '/stateAmountOwed': `28.00`,
+      '/stateRefund': `0.00`,
+    });
+  });
+
+  it(`Form 1040 and the PA-40 are in the package`, () => {
+    for (const form of [`IRS1040`, `PA40`]) {
+      expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(true);
+    }
+    for (const form of [`IRS1040SB`, `IRS1040SD`, `IRS6251`, `IRS8959`, `IRS8960`, `IRS1040S1`]) {
+      const included = get(g, pdfIncludeWhen(form) as string);
+      expect(included.complete && included.get === true, form).toBe(false);
+    }
+  });
+
+  it(`golden-profileV-complete.json is the persisted profileVPaToFlWages return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileV-complete.json`
         ),
         `utf8`
       )

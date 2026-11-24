@@ -31,7 +31,9 @@
 // Worksheet, the section 199A deduction, and estimated tax payments), and profile U
 // (Golden U: full-year Florida resident, single, under 65, no dependents, standard deduction, one W-2, and one
 // Form 1099-DIV with qualified dividends, capital gain distributions, and boxes 12 and 13, so Form 6251 Part III
-// taxes the preferential income at 15% and Form 8960 computes net investment income tax).
+// taxes the preferential income at 15% and Form 8960 computes net investment income tax), and profile V
+// (Golden V: single filer who moves from Pennsylvania to Florida on July 1, wages only, so the PA-40 is a part-year
+// return with residency oval P and no Schedule A).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -89,6 +91,7 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2013`,
   `444-00-2014`,
   `444-00-2015`,
+  `444-00-2016`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1569,6 +1572,66 @@ export const profileUFlSingleAmtPartIii = {
     createDollarWrapper(`50000`),
 };
 
+/**
+ * Profile V (Golden V, #135): single, under 65, not blind, no dependents. Moved from Pennsylvania to Florida;
+ * /paPartYearMoveDate is 2026-07-01, so the PA residency period is 01/01/2026–06/30/2026. Wages only. No Form
+ * 1099-INT: PA-40 IN (2025) p. 31 requires PA Schedule A when PA-taxable interest differs from the federal amount,
+ * and this tool does not produce that schedule (/flowKnockoutPaScheduleA).
+ *
+ * W-2 #1, Pennsylvania employer, January–June: boxes 1, 3, and 5 $40,000; box 2 $4,500; box 15 PA; box 16 $40,000;
+ * box 17 $1,200. Box 4 is 6.2% × $40,000 = $2,480 (26 U.S.C. 3101(a)). Box 6 is 1.45% × $40,000 = $580
+ * (26 U.S.C. 3101(b)(1)). The cite names boxes 1, 3, and 5; boxes 4 and 6 are those statutory employee shares so
+ * the W-2 is complete.
+ *
+ * W-2 #2, Florida employer, July–December, work done in Florida: boxes 1, 3, and 5 $45,000; box 2 $5,600; no box
+ * 15, 16, or 17. Box 4 is 6.2% × $45,000 = $2,790. Box 6 is 1.45% × $45,000 = $652.50. The filer allocates $0 of
+ * this W-2 to the PA residency period (/formW2s/paPartYearResidentPeriodWages) and answers no to PA-source pay
+ * earned while not a PA resident (/paPartYearHasNonresidentPaSourcePay). PA-40 IN (2025) p. 43.
+ *
+ * The cite names the SSN: 444-00-2016, group 00, the same kind Golden U uses. Group 00 is never assigned by SSA.
+ * Fixed ids in the 13500000-0000-4000-8000-0000000025xx range.
+ */
+const jules: Person = { first: `Jules`, last: `Example`, ssn: [`444`, `00`, `2016`], dob: `1989-03-22` };
+export const profileVPaW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002501`,
+  employer: `Example Keystone Staffing`,
+  ein: [`00`, `0002501`],
+  box1: 40000,
+  box2: 4500,
+  box3: 40000,
+  // 6.2% × 40,000 = 2,480. 26 U.S.C. 3101(a).
+  box4: 2480,
+  box5: 40000,
+  // 1.45% × 40,000 = 580. 26 U.S.C. 3101(b)(1). Under $200,000, so no 0.9%. 26 U.S.C. 3101(b)(2).
+  box6: 580,
+  box16: 40000,
+  box17: 1200,
+  paPartYearState: `pa`,
+};
+export const profileVFlW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002502`,
+  employer: `Example Gulf Payroll LLC`,
+  ein: [`00`, `0002502`],
+  box1: 45000,
+  box2: 5600,
+  box3: 45000,
+  // 6.2% × 45,000 = 2,790. 26 U.S.C. 3101(a).
+  box4: 2790,
+  box5: 45000,
+  // 1.45% × 45,000 = 652.50. 26 U.S.C. 3101(b)(1).
+  box6: 652.5,
+  paPartYearState: `fl`,
+  residentPeriodWages: 0,
+};
+export const profileVPaToFlWages = {
+  ...single(jules, { street: `123 Example St`, city: `Tampa`, zip: `33602`, state: `FL` }),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`moreThanOne`, `/scopedStateOptions`),
+  '/paPartYearMove': createEnumWrapper(`paToFl`, `/paPartYearMoveOptions`),
+  '/paPartYearMoveDate': createDayWrapper(`2026-07-01`),
+  '/paPartYearHasNonresidentPaSourcePay': createBooleanWrapper(false),
+  ...w2s(jules.ssn, profileVPaW2, profileVFlW2),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1597,4 +1660,5 @@ export const goldenProfiles = {
   profileSFlMfjStandardAmt,
   profileTFlMfjSpouseScheduleC,
   profileUFlSingleAmtPartIii,
+  profileVPaToFlWages,
 };
