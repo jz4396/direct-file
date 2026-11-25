@@ -212,7 +212,7 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     const yes = setupFactGraph({ ...baseSingle, '/hadSelfEmploymentIncome': createBooleanWrapper(true) }).factGraph;
     expect(yes.get(`/scheduleCNetProfitOrLoss` as ConcretePath).complete).toBe(false);
   });
-  it(`One spouse-owned business on a joint return is allowed; two, a non-joint return, a QJV, or community property still stop`, ({
+  it(`One spouse-owned business on a joint return is allowed; two, a non-joint return, a QJV without one Schedule C each, or community property still stop`, ({
     task,
   }) => {
     task.meta.testedFactPaths = [
@@ -259,6 +259,7 @@ describe(`Schedule C + SE tax (TY2026 vertical slice)`, () => {
     expect(notJoint.get(`/flowKnockoutScheduleCSpouseBusiness` as ConcretePath).get).toBe(true);
     const qjv = mk([spouseId], { '/scheduleCIsQualifiedJointVenture': createBooleanWrapper(true) });
     expect(qjv.get(`/flowKnockoutScheduleCQualifiedJointVenture` as ConcretePath).get).toBe(true);
+    expect(qjv.get(`/scheduleCQjvReasonNotOneEach` as ConcretePath).get).toBe(true);
     const community = mk([spouseId], {
       '/filerResidenceAndIncomeState': createEnumWrapper(`ca`, `/scopedStateOptions`),
     });

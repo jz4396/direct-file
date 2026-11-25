@@ -127,12 +127,15 @@
         /primaryFilerSeLine5b), not line 3. 26 U.S.C. 3121(w) and 1402(j)(1)(B). The secondary filer's
         church employee income is not line 5a. The nonfarm optional method skips line 2 when
         /primaryFilerNonfarmOptionalMethodApplies is true. An election that is not allowed stops the return
-        (/flowKnockoutScheduleSENonfarmOptionalMethod). Box 14 code A is scheduleE
-        /scheduleEK1Box14CodeANonfarmTotal. A reduction, farming, a limited-partner amount that is not only
-        guaranteed payments (26 U.S.C. 1402(a)(13)), a joint return, or an S corporation amount stops the
-        return (scheduleE /flowKnockoutScheduleEPartIIBox14CodeA and the matching stops; 2026 draft
-        Instructions for Schedule SE, PDF p. 5, Partnership Income or Loss) instead of filing line 2 without
-        the amount or on the wrong spouse's Schedule SE. Schedule C qualified business income together with
+        (/flowKnockoutScheduleSENonfarmOptionalMethod). Box 14 code A is this filer's scheduleE
+        /scheduleEK1PrimaryFilerBox14CodeA. On a joint return the secondary filer's amounts are
+        /scheduleEK1SecondaryFilerBox14CodeA on that spouse's line 2. A return that is not a joint return
+        puts every eligible amount here. A reduction, farming, a limited-partner amount that is not only
+        guaranteed payments (26 U.S.C. 1402(a)(13)), or an S corporation amount stops the return
+        (scheduleE /flowKnockoutScheduleEPartIIBox14CodeA and the matching stops; 2026 draft Instructions
+        for Schedule SE, PDF p. 5, Partnership Income or Loss) instead of filing line 2 without the amount.
+        An unanswered owner on a joint return with a nonzero amount leaves this incomplete (scheduleE
+        /flowKnockoutScheduleEPartIIBox14CodeAMfj). Schedule C qualified business income together with
         a nonzero box 14 code A stops the return (form8995 /flowKnockoutScheduleCQbiAndK1Box14CodeA) because
         the deductible part of self-employment tax is not split between the trades (Treas. Reg.
         1.199A-3(b)(1)(vi)). An unanswered K-1 question also stops the print (scheduleE
@@ -148,7 +151,7 @@
       <Derived>
         <Add>
           <Dependency module="scheduleC" path="/scheduleCPrimaryFilerNetProfitOrLoss" />
-          <Dependency module="scheduleE" path="/scheduleEK1Box14CodeANonfarmTotal" />
+          <Dependency module="scheduleE" path="/scheduleEK1PrimaryFilerBox14CodeA" />
         </Add>
       </Derived>
     </Fact>
@@ -1208,13 +1211,16 @@
     <Fact path="/secondaryFilerSeNetProfit">
       <Name>Secondary filer: Schedule SE line 3</Name>
       <Description>
-        Secondary filer's Schedule C net profit or (loss) from all of their businesses, minus that filer's
-        notary net profit (26 U.S.C. 1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2
-        item 2), floored at $0 (2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf,
-        SHA-256 a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines
-        1a, 1b, and 2"). The nonfarm optional method, when /secondaryFilerNonfarmOptionalMethodApplies is
-        true, skips this amount and uses Part II line 17. The farm optional method stops the return. Each
-        spouse files their own Schedule SE: 2026 draft Instructions for Schedule SE
+        Secondary filer's Schedule C line 31 plus that spouse's nonfarm Schedule K-1 (Form 1065) box 14
+        code A (scheduleE /scheduleEK1SecondaryFilerBox14CodeA), minus that filer's notary net profit
+        (26 U.S.C. 1402(c)(1); 2026 draft Instructions for Schedule SE, PDF p. 5, Line 2 item 2), floored
+        at $0 (2026 draft Schedule SE (https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf, SHA-256
+        a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c), line 3: "Combine lines 1a, 1b,
+        and 2"). Line 2 as printed is /secondaryFilerSeReportedNetProfit and can be a loss. The nonfarm
+        optional method, when /secondaryFilerNonfarmOptionalMethodApplies is true, skips this amount and
+        uses Part II line 17. The farm optional method stops the return. Lines 8a through 10 use this
+        spouse's W-2 boxes 3 and 7 only (26 U.S.C. 1402(b)(1)). Each spouse files their own Schedule SE:
+        2026 draft Instructions for Schedule SE
         (https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf, SHA-256
         8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3), PDF p. 3: "If both spouses have
         self-employment income, each must file a separate Schedule SE. Include the total profits or losses
@@ -1226,7 +1232,10 @@
           <Subtract>
             <Minuend>
               <GreaterOf>
-                <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+                <Add>
+                  <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+                  <Dependency module="scheduleE" path="/scheduleEK1SecondaryFilerBox14CodeA" />
+                </Add>
                 <Dollar>0</Dollar>
               </GreaterOf>
             </Minuend>
@@ -1520,10 +1529,11 @@
       <Description>
         2026 draft Schedule SE, line 2: "Skip line 2 if you use the nonfarm optional method." When
         /secondaryFilerNonfarmOptionalMethodApplies is true, line 2 is $0. Otherwise this is the secondary
-        filer's Schedule C net profit or (loss), which can be a loss. 2026 Instructions for Schedule SE
-        (https://www.irs.gov/instructions/i1040sse, SHA-256 prefix 7054fa6c86d89301), p. 2: each spouse files
-        a separate Schedule SE. This is the amount printed on that spouse's Schedule SE. The tax uses
-        /secondaryFilerSeNetProfit, which floors a loss at $0 after subtracting notary net profit.
+        filer's Schedule C line 31 plus that spouse's nonfarm Schedule K-1 (Form 1065) box 14 code A
+        (scheduleE /scheduleEK1SecondaryFilerBox14CodeA), which can be a loss. 2026 draft Instructions for
+        Schedule SE, PDF p. 3: each spouse files a separate Schedule SE. This is the amount printed on that
+        spouse's Schedule SE. The tax uses /secondaryFilerSeNetProfit, which floors a loss at $0 after
+        subtracting notary net profit. 26 U.S.C. 1402(a).
       </Description>
       <Derived>
         <Switch>
@@ -1540,7 +1550,10 @@
               <True />
             </When>
             <Then>
-              <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+              <Add>
+                <Dependency module="scheduleC" path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+                <Dependency module="scheduleE" path="/scheduleEK1SecondaryFilerBox14CodeA" />
+              </Add>
             </Then>
           </Case>
         </Switch>
@@ -2875,7 +2888,8 @@
         answered when line I is yes, the Schedule SE
         out-of-scope questions are answered, church employee income on line 5a is complete, the
         nonfarm optional method is not stopped for eligibility, and the qualified joint venture question
-        is answered when a joint return has exactly one spouse-owned business. A yes on /hadChurchEmployeeIncome is
+        is answered when a joint return has a spouse-owned business. A supported one-each yes also needs both
+        follow-up answers. A yes on /hadChurchEmployeeIncome is
         complete only after /churchEmployeeIncome is entered. On a joint return,
         /hadSecondaryFilerChurchEmployeeIncome must be answered. A yes stops the section: that income
         is not entered on the primary filer's line 5a. 26 U.S.C. 3121(w), 1402(b), and 1402(j). The
