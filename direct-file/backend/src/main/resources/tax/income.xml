@@ -971,23 +971,70 @@
       <Description>Qualified dividend income to report on line 3a of Form 1040. #86: total of Form 1099-DIV box 1b
         (dividends /totalQualifiedDividends), plus Schedule K-1 (Form 1041) box 2b (scheduleE
         /scheduleEEstateK1QualifiedDividends), plus Schedule K-1 (Form 1065) box 6b and Schedule K-1 (Form
-        1120-S) box 5b (scheduleE /scheduleEK1QualifiedDividends). Schedule K-1 (Form 1041) (2025) page 2:
-        "2b. Qualified dividends — Form 1040 or 1040-SR, line 3a". Partner's Instructions for Schedule K-1
-        (Form 1065) (2025), PDF p. 15, Box 6b: "Report any qualified dividends on Form 1040 or 1040-SR,
-        line 3a." Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5b, is the
-        same sentence. 26 U.S.C. 702(a)(5); 702(b); 1366(b). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        1120-S) box 5b
+        (scheduleE /scheduleEK1QualifiedDividends). Schedule K-1 (Form 1041) (2025) page 2:
+        "2b. Qualified dividends —
+        Form 1040 or 1040-SR, line 3a". Partner's Instructions for Schedule K-1
+        (Form 1065) (2025), PDF p. 15, Box 6b:
+        "Report any qualified dividends on Form 1040 or 1040-SR,
+        line 3a." Shareholder's Instructions for Schedule K-1
+        (Form 1120-S) (2025), PDF p. 7, Box 5b, is the
+        same sentence. 26 U.S.C. 702(a)(5); 702(b); 1366(b). Form 1040
+        instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
         p. 25,
-        Line 3a: "Enter your total qualified dividends on line 3a. ... Generally, these dividends are shown in
+        Line 3a: "Enter your total qualified dividends on
+        line 3a. ... Generally, these dividends are shown in
         box 1b of
-        Form(s) 1099-DIV." 26 U.S.C. 1(h)(11). Taxed through the QDCG Tax Worksheet (scheduleD3 /qdcgLine2).
-        Cents are included in the addition and only the total is rounded (p. 23).</Description>
+        Form(s) 1099-DIV." 26 U.S.C. 1(h)(11). Qualified
+        dividends are a portion of ordinary dividends, so the nominee
+        share of box 1b (dividends
+        /totalNomineeQualifiedDividends) is subtracted before the total is rounded. The
+        QDCG Tax Worksheet and the
+        Schedule D Tax Worksheet read this reduced line 3a (scheduleD3 /qdcgLine2 and
+        /schDTaxWsLine2). Cents are
+        included in the addition and only the total is rounded (p. 23).</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
         <Round>
+          <Subtract>
+            <Minuend>
+              <Add>
+                <Dependency module="dividends" path="/totalQualifiedDividends" />
+                <Dependency module="scheduleE" path="/scheduleEEstateK1QualifiedDividends" />
+                <Dependency module="scheduleE" path="/scheduleEK1QualifiedDividends" />
+              </Add>
+            </Minuend>
+            <Subtrahends>
+              <Dependency module="dividends" path="/totalNomineeQualifiedDividends" />
+            </Subtrahends>
+          </Subtract>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/ordinaryDividendsBeforeNominee">
+      <Name>Ordinary dividends before the nominee subtraction</Name>
+      <Description>The Schedule B Part II line 5 subtotal, before "Nominee Distribution". Total of Form 1099-DIV box
+        1a
+        (dividends /totalOrdinaryDividends), plus Schedule K-1 (Form 1041) box 2a (scheduleE
+        /scheduleEEstateK1OrdinaryDividends), plus Schedule K-1 (Form 1065) box 6a and Schedule K-1 (Form 1120-S) box
+        5a
+        (scheduleE /scheduleEK1OrdinaryDividends). 2026 draft Instructions for Schedule B (Form 1040)
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3 (printed p. 2), Line 5, Nominees:
+        "Under your last entry on line 5, put a subtotal of all ordinary dividends listed on line 5." This is the same
+        whole-dollar total line 3b used before the nominee subtraction. It can differ by $1 from the sum of the
+        rounded
+        payer rows when those amounts have cents. Cents are included in the addition and only the total is
+        rounded (Form
+        1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23).</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
           <Add>
-            <Dependency module="dividends" path="/totalQualifiedDividends" />
-            <Dependency module="scheduleE" path="/scheduleEEstateK1QualifiedDividends" />
-            <Dependency module="scheduleE" path="/scheduleEK1QualifiedDividends" />
+            <Dependency module="dividends" path="/totalOrdinaryDividends" />
+            <Dependency module="scheduleE" path="/scheduleEEstateK1OrdinaryDividends" />
+            <Dependency module="scheduleE" path="/scheduleEK1OrdinaryDividends" />
           </Add>
         </Round>
       </Derived>
@@ -998,25 +1045,39 @@
       <Description>Ordinary dividend income to report on line 3b of Form 1040. #86: total of Form 1099-DIV box 1a
         (dividends /totalOrdinaryDividends), plus Schedule K-1 (Form 1041) box 2a (scheduleE
         /scheduleEEstateK1OrdinaryDividends), plus Schedule K-1 (Form 1065) box 6a and Schedule K-1 (Form
-        1120-S) box 5a (scheduleE /scheduleEK1OrdinaryDividends). Schedule K-1 (Form 1041) (2025) page 2:
-        "2a. Ordinary dividends — Form 1040 or 1040-SR, line 3b". Partner's Instructions for Schedule K-1
-        (Form 1065) (2025), PDF p. 15, Box 6a: "Report ordinary dividends on Form 1040 or 1040-SR,
-        line 3b." Shareholder's Instructions for Schedule K-1 (Form 1120-S) (2025), PDF p. 7, Box 5a, is the
-        same rule. 26 U.S.C. 702(b); 1366(b). Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        1120-S) box 5a
+        (scheduleE /scheduleEK1OrdinaryDividends). Schedule K-1 (Form 1041) (2025) page 2:
+        "2a. Ordinary dividends — Form
+        1040 or 1040-SR, line 3b". Partner's Instructions for Schedule K-1
+        (Form 1065) (2025), PDF p. 15, Box 6a: "Report
+        ordinary dividends on Form 1040 or 1040-SR,
+        line 3b." Shareholder's Instructions for Schedule K-1 (Form 1120-S)
+        (2025), PDF p. 7, Box 5a, is the
+        same rule. 26 U.S.C. 702(b); 1366(b). Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
         p. 26,
-        Line 3b: "Enter your total ordinary dividends on line 3b. This amount should be shown in box 1a of
+        Line 3b: "Enter your total ordinary dividends on line 3b. This
+        amount should be shown in box 1a of
         Form(s)
-        1099-DIV." 26 U.S.C. 61(a)(7) (https://www.law.cornell.edu/uscode/text/26/61). 26 U.S.C. 662(b) and
-        652(b). Cents are included in the addition and only the total is rounded (p. 23).</Description>
+        1099-DIV." 26 U.S.C. 61(a)(7)
+        (https://www.law.cornell.edu/uscode/text/26/61). 26 U.S.C. 662(b) and
+        652(b). 2026 draft Instructions for
+        Schedule B (Form 1040)
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3 (printed p. 2), Line 5, Nominees:
+        "Subtract this amount from the subtotal and enter the result on line 6." Line 6 and line 3b are
+        /ordinaryDividendsBeforeNominee minus the whole-dollar nominee ordinary total (dividends
+        /totalNomineeOrdinaryDividendsRounded). When that nominee total is $0, line 3b is unchanged.</Description>
       <Export downstreamFacts="true" mef="true" />
       <Derived>
-        <Round>
-          <Add>
-            <Dependency module="dividends" path="/totalOrdinaryDividends" />
-            <Dependency module="scheduleE" path="/scheduleEEstateK1OrdinaryDividends" />
-            <Dependency module="scheduleE" path="/scheduleEK1OrdinaryDividends" />
-          </Add>
-        </Round>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/ordinaryDividendsBeforeNominee" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency module="dividends" path="/totalNomineeOrdinaryDividendsRounded" />
+          </Subtrahends>
+        </Subtract>
       </Derived>
     </Fact>
 

@@ -1397,12 +1397,12 @@
         for Schedule B (2025) p. 2, Line 5: "Report on line 5 all of your
         ordinary dividends. This amount should be shown
         in box 1a of your Forms 1099-DIV or substitute
-        statements." Reads income /ordinaryDividends, the whole-dollar
-        total of Form 1099-DIV box 1a plus Schedule K-1 (Form 1041) box 2a, Schedule K-1 (Form 1065) box 6a, and Schedule K-1 (Form 1120-S) box 5a (Form 1040
-        instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23:
-        "include cents when adding the amounts
-        and round off only the total"), the same rounding as
-        /requiresScheduleBForInterest.</Description>
+        statements." Reads income /ordinaryDividends, Form 1040 line 3b after the nominee subtraction: the
+        whole-dollar total of Form 1099-DIV box 1a plus Schedule K-1 (Form 1041) box 2a, Schedule K-1 (Form 1065) box
+        6a, and Schedule K-1 (Form 1120-S) box 5a, minus nominee ordinary dividends (Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23: "include cents when adding the amounts and round off only
+        the total"). A nominee amount that leaves line 3b at $1,500 or less still requires Schedule B through
+        dividends /requiresScheduleBForNomineeDividends.</Description>
 
       <Derived>
         <GreaterThan>
@@ -1431,13 +1431,18 @@
         transferor to, a foreign trust." The
         other listed triggers (seller-financed mortgage interest, accrued
         interest, OID or bond premium adjustments, Form
-        8815 exclusion, nominee amounts) are not reported in
-        this return.</Description>
+        8815 exclusion, and 1099-INT nominee interest) are not reported in
+        this return. Ordinary dividends received as a nominee are reported (2026 draft Instructions for Schedule B
+        (Form 1040) https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 2 (printed p. 1), General
+        Instructions: "You received interest or ordinary dividends as a nominee.") and require Schedule B through
+        dividends /requiresScheduleBForNomineeDividends even when line 6 is not over $1,500.</Description>
       <Export mef="true" />
       <Derived>
         <Any>
           <Dependency path="/requiresScheduleBForInterest" />
           <Dependency path="/requiresScheduleBForOrdinaryDividends" />
+          <Dependency module="dividends" path="/requiresScheduleBForNomineeDividends" />
           <Dependency module="income" path="/hasForeignAccountsOrTrusts" />
         </Any>
       </Derived>
@@ -9487,12 +9492,97 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleBPartIIEntryCount">
+      <Name>Schedule B Part II line 5 entry count</Name>
+      <Description>How many line 5 payer rows are filled: Form 1099-DIV, then Schedule K-1 (Form 1041) box 2a, then partnership and S corporation ordinary dividends. Each count is 0 while its collection is incomplete.</Description>
+      <Derived>
+        <Add>
+          <Dependency path="/scheduleBDividendReportCount" />
+          <Dependency module="scheduleE" path="/scheduleBEstateBox2aCount" />
+          <Dependency module="scheduleE" path="/scheduleBK1OrdinaryDividendCount" />
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIIShowsNomineeRows">
+      <Name>Schedule B prints the nominee subtotal rows</Name>
+      <Description>The whole-dollar nominee ordinary total is more than $0, so line 5 prints a subtotal row and a Nominee Distribution row. 2026 draft Instructions for Schedule B (Form 1040) https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3 (printed p. 2), Line 5, Nominees.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="dividends" path="/totalNomineeOrdinaryDividendsRounded" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIINomineeRowsDoNotFit">
+      <Name>The nominee rows do not fit on Schedule B line 5</Name>
+      <Description>Line 5 has 15 rows. The subtotal and Nominee Distribution need two rows after the payers. When 14 or 15 payer rows are already filled, those two rows do not fit. 2026 draft Instructions for Schedule B (Form 1040) https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256 94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 2 (printed p. 1): "If you still need more space, attach separate statements using the same format as lines 1 and 5, but show your totals on Schedule B." This tool stops instead of attaching a statement (dividends /flowKnockoutDividendNominee). Complete false when the nominee rows are not printed.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+          <GreaterThan>
+            <Left>
+              <Dependency path="/scheduleBPartIIEntryCount" />
+            </Left>
+            <Right>
+              <Int>13</Int>
+            </Right>
+          </GreaterThan>
+        </All>
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleBPartIIRow0Payer">
       <Name>Schedule B Part II line 5 payer 1</Name>
       <Description>Schedule B (Form 1040) Part II line 5. Form 1099-DIV rows are listed first, then each estate or trust with Schedule K-1 (Form 1041) box 2a greater than zero. Beneficiary's Instructions (2025) PDF p. 2, Box 2a: ordinary dividends are reported on Schedule B Part II line 5 if applicable. The K-1 payer is the estate or trust name. The amount is the whole-dollar ordinary dividends or rounded box 2a. Line 6 is income /ordinaryDividends, the rounded total, which can differ by $1 from the sum of these rows when there are cents. 26 U.S.C. 61(a)(7); 662(b); 652(b). After those rows, each partnership or S corporation with Form 1065 box 6a or Form 1120-S box 5a greater than zero. Partner's Instructions (2025), PDF p. 15, Box 6a, and Shareholder's Instructions (2025), PDF p. 7, Box 5a, report ordinary dividends on Form 1040 line 3b. The payer is the partnership or S corporation. 26 U.S.C. 702(b); 1366(b).</Description>
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>0</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>0</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -9570,6 +9660,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>0</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>0</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -9643,6 +9772,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>1</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>1</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -9745,6 +9913,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>1</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>1</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -9843,6 +10050,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>2</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>2</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -9970,6 +10216,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>2</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>2</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -10093,6 +10378,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>3</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>3</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -10245,6 +10569,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>3</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>3</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -10393,6 +10756,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>4</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>4</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -10570,6 +10972,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>4</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>4</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -10743,6 +11184,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>5</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>5</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -10945,6 +11425,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>5</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>5</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -11143,6 +11662,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>6</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>6</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -11370,6 +11928,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>6</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>6</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -11593,6 +12190,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>7</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>7</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -11845,6 +12481,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>7</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>7</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -12093,6 +12768,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>8</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>8</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -12370,6 +13084,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>8</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>8</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -12643,6 +13396,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>9</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>9</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -12945,6 +13737,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>9</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>9</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -13243,6 +14074,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>10</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>10</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -13570,6 +14440,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>10</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>10</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -13893,6 +14802,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>11</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>11</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -14245,6 +15193,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>11</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>11</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -14593,6 +15580,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>12</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>12</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -14970,6 +15996,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>12</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>12</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -15343,6 +16408,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>13</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>13</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -15745,6 +16849,45 @@
         <Switch>
           <Case>
             <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>13</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>13</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
               <GreaterThan>
                 <Left>
                   <Dependency path="/scheduleBDividendReportCount" />
@@ -16143,6 +17286,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>14</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Subtotal</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>14</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <String>Nominee Distribution</String>
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>
@@ -16568,6 +17750,45 @@
       <Export downstreamFacts="true" />
       <Derived>
         <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>14</Int>
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleBPartIIEntryCount" />
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="income" path="/ordinaryDividendsBeforeNominee" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="/scheduleBPartIIShowsNomineeRows" />
+                <Equal>
+                  <Left>
+                    <Int>14</Int>
+                  </Left>
+                  <Right>
+                    <Add>
+                      <Dependency path="/scheduleBPartIIEntryCount" />
+                      <Int>1</Int>
+                    </Add>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency module="dividends" path="/scheduleBPartIINomineeAmount" />
+            </Then>
+          </Case>
           <Case>
             <When>
               <GreaterThan>

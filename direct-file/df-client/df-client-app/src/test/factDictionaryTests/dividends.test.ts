@@ -83,6 +83,9 @@ type Div = {
   otherBoxes?: boolean;
   box11?: boolean;
   nominee?: boolean;
+  nomineeOrdinary?: number;
+  nomineeQualified?: number;
+  nomineeOtherBoxes?: boolean;
   ftcOk?: boolean;
   reitHoldingMet?: boolean;
   reitCarryforward?: boolean;
@@ -146,6 +149,21 @@ const divItem = (f: Div) => {
       ? {}
       : { [`/dividendReports/#${id}/fatcaFilingRequirement`]: createBooleanWrapper(f.box11) }),
     [`/dividendReports/#${id}/receivedAsNominee`]: createBooleanWrapper(f.nominee ?? false),
+    ...(f.nominee
+      ? {
+          [`/dividendReports/#${id}/writableNomineeOrdinaryDividends`]: createDollarWrapper(
+            `${f.nomineeOrdinary ?? 0}`
+          ),
+          ...(f.box1b === undefined
+            ? {}
+            : {
+                [`/dividendReports/#${id}/writableNomineeQualifiedDividends`]: createDollarWrapper(
+                  `${f.nomineeQualified ?? 0}`
+                ),
+              }),
+          [`/dividendReports/#${id}/nomineeShareOfOtherBoxes`]: createBooleanWrapper(f.nomineeOtherBoxes ?? false),
+        }
+      : {}),
     [`/dividendReports/#${id}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
   };
 };
@@ -650,12 +668,182 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     expect(get(g, `/dividendReports/#${d2}/askForm8938BecauseBox11`).get).toBe(true);
     expect(get(g, `/flowShouldAskForm8938`).get).toBe(true);
   });
-  it(`received as nominee`, ({ task }) => {
+  it(`nominee ordinary and qualified dividends are subtracted on Schedule B and lines 3b and 3a`, ({ task }) => {
+    // 2026 draft Instructions for Schedule B, PDF p. 3 (printed p. 2), Line 5, Nominees.
+    // FL single, W-2 $60,000. Box 1a $3,000, box 1b $2,000. Nominee ordinary $1,000, nominee qualified $800.
+    task.meta.testedFactPaths = [
+      `/totalNomineeOrdinaryDividends`,
+      `/totalNomineeQualifiedDividends`,
+      `/ordinaryDividendsBeforeNominee`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/qdcgLine2`,
+      `/schDTaxWsLine2`,
+      `/scheduleBPartIIRow0Payer`,
+      `/scheduleBPartIIRow0Amount`,
+      `/scheduleBPartIIRow1Payer`,
+      `/scheduleBPartIIRow1Amount`,
+      `/scheduleBPartIIRow2Payer`,
+      `/scheduleBPartIIRow2Amount`,
+      `/scheduleBPartIINomineeAmount`,
+      `/requiresScheduleB`,
+      `/flowKnockoutDividendNominee`,
+    ];
+    const flForm = (form: Div) => build({ ...divs(form), ...state(`fl`), ...paW2(60000) });
+    const g = flForm({
+      box1a: 3000,
+      box1b: 2000,
+      nominee: true,
+      nomineeOrdinary: 1000,
+      nomineeQualified: 800,
+      nomineeOtherBoxes: false,
+    });
+    expect(val(g, `/ordinaryDividendsBeforeNominee`)).toBe(`3000.00`);
+    expect(val(g, `/scheduleBPartIIRow0Payer`)).toBe(`Index Fund Co`);
+    expect(val(g, `/scheduleBPartIIRow0Amount`)).toBe(`3000.00`);
+    expect(val(g, `/scheduleBPartIIRow1Payer`)).toBe(`Subtotal`);
+    expect(val(g, `/scheduleBPartIIRow1Amount`)).toBe(`3000.00`);
+    expect(val(g, `/scheduleBPartIIRow2Payer`)).toBe(`Nominee Distribution`);
+    expect(val(g, `/scheduleBPartIIRow2Amount`)).toBe(`-1000.00`);
+    expect(val(g, `/scheduleBPartIINomineeAmount`)).toBe(`-1000.00`);
+    expect(get(g, `/scheduleBPartIIRow3Payer`).complete).toBe(false);
+    expect(val(g, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(g, `/qualifiedDividends`)).toBe(`1200.00`);
+    expect(val(g, `/qdcgLine2`)).toBe(`1200.00`);
+    expect(val(g, `/schDTaxWsLine2`)).toBe(`1200.00`);
+    expect(get(g, `/dividendReports/#${d1}/nomineeQualifiedExceedsOrdinary`).get).toBe(false);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    noKnockouts(g);
+    const plain = flForm({ box1a: 2000, box1b: 1200 });
+    expect(val(g, `/taxableIncome`)).toBe(val(plain, `/taxableIncome`));
+    expect(val(g, `/totalTax`)).toBe(val(plain, `/totalTax`));
+  });
+  it(`nominee dividends require Schedule B even when line 6 is not over $1,500`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/requiresScheduleBForNomineeDividends`,
+      `/requiresScheduleBForOrdinaryDividends`,
+      `/requiresScheduleB`,
+    ];
+    const g = build(
+      divs({ box1a: 1000, nominee: true, nomineeOrdinary: 400, nomineeOtherBoxes: false })
+      // build() already sets a filer; state stays the default non-computed state.
+    );
+    expect(val(g, `/ordinaryDividends`)).toBe(`600.00`);
+    expect(get(g, `/requiresScheduleBForOrdinaryDividends`).get).toBe(false);
+    expect(get(g, `/requiresScheduleBForNomineeDividends`).get).toBe(true);
+    expect(get(g, `/requiresScheduleB`).get).toBe(true);
+    noKnockouts(g);
+  });
+  it(`a nominee amount equal to box 1a and box 1b does not stop`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`, `/ordinaryDividends`, `/qualifiedDividends`];
+    const g = build(
+      divs({
+        box1a: 2000,
+        box1b: 2000,
+        nominee: true,
+        nomineeOrdinary: 2000,
+        nomineeQualified: 2000,
+        nomineeOtherBoxes: false,
+      })
+    );
+    expect(val(g, `/ordinaryDividends`)).toBe(`0.00`);
+    expect(val(g, `/qualifiedDividends`)).toBe(`0.00`);
+    noKnockouts(g);
+  });
+  it(`nominee amount over box 1a stops`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`, `/dividendReports/*/nomineeAmountsOverLimit`];
+    blocks(
+      build(
+        divs({
+          box1a: 3000,
+          box1b: 2000,
+          nominee: true,
+          nomineeOrdinary: 3500,
+          nomineeQualified: 0,
+          nomineeOtherBoxes: false,
+        })
+      ),
+      `/flowKnockoutDividendNominee`
+    );
+  });
+  it(`nominee subtraction that leaves box 1b above box 1a stops`, ({ task }) => {
+    // Box 1b is included in box 1a, so remaining box 1b cannot exceed remaining box 1a.
+    // Form 1040 instr. (2025) p. 25, Line 3a. Box 1a $3,000, box 1b $2,500, nominee ordinary $1,000,
+    // nominee qualified $200: remaining $2,300 > remaining $2,000. The box limits still hold.
+    task.meta.testedFactPaths = [
+      `/flowKnockoutDividendNominee`,
+      `/dividendReports/*/nomineeQualifiedExceedsOrdinary`,
+    ];
+    const over = build(
+      divs({
+        box1a: 3000,
+        box1b: 2500,
+        nominee: true,
+        nomineeOrdinary: 1000,
+        nomineeQualified: 200,
+        nomineeOtherBoxes: false,
+      })
+    );
+    expect(get(over, `/dividendReports/#${d1}/nomineeAmountsOverLimit`).get).toBe(false);
+    expect(get(over, `/dividendReports/#${d1}/nomineeQualifiedExceedsOrdinary`).get).toBe(true);
+    blocks(over, `/flowKnockoutDividendNominee`);
+    const equal = build(
+      divs({
+        box1a: 3000,
+        box1b: 2500,
+        nominee: true,
+        nomineeOrdinary: 1000,
+        nomineeQualified: 500,
+        nomineeOtherBoxes: false,
+      })
+    );
+    expect(get(equal, `/dividendReports/#${d1}/nomineeQualifiedExceedsOrdinary`).get).toBe(false);
+    expect(val(equal, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(equal, `/qualifiedDividends`)).toBe(`2000.00`);
+    noKnockouts(equal);
+  });
+  it(`nominee qualified dividends over the nominee ordinary amount stop`, ({ task }) => {
     task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`];
-    blocks(build(divs({ box1a: 100, nominee: true })), `/flowKnockoutDividendNominee`);
-    const withBox5 = build(divs({ box1a: 500, box5: 50, nominee: true }));
+    blocks(
+      build(
+        divs({
+          box1a: 3000,
+          box1b: 2000,
+          nominee: true,
+          nomineeOrdinary: 1000,
+          nomineeQualified: 1200,
+          nomineeOtherBoxes: false,
+        })
+      ),
+      `/flowKnockoutDividendNominee`
+    );
+  });
+  it(`a nominee share of another box stops`, ({ task }) => {
+    task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`, `/dividendReports/*/nomineeShareOfOtherBoxes`];
+    const withBox5 = build(
+      divs({
+        box1a: 500,
+        box5: 50,
+        nominee: true,
+        nomineeOrdinary: 100,
+        nomineeOtherBoxes: true,
+      })
+    );
     expect(get(withBox5, `/flowKnockoutSection199ADividendsHoldingPeriod`).get).toBe(false);
     blocks(withBox5, `/flowKnockoutDividendNominee`);
+    blocks(
+      build(
+        divs({
+          box1a: 3000,
+          box1b: 2000,
+          nominee: true,
+          nomineeOrdinary: 1000,
+          nomineeQualified: 800,
+          nomineeOtherBoxes: true,
+        })
+      ),
+      `/flowKnockoutDividendNominee`
+    );
   });
   it(`ordinary dividends over $1,500 do not stop the return (Schedule B Part II lines 5-6)`, ({ task }) => {
     task.meta.testedFactPaths = [`/dividendReports/*/roundedOrdinaryDividends`, `/dividendReports/*/payer`];
@@ -1622,9 +1810,13 @@ describe(`#154 PA Schedule B dividend knockout`, () => {
     expect(scheduleB(cents)).toBe(false);
   });
   it(`Line 4: dividends received as a nominee stop it (and the federal return)`, () => {
-    const g = paBuild(divs({ box1a: 100, nominee: true }));
+    // PA reads federal box 1a and does not compute the nominee subtraction. Any nominee amount stops.
+    const g = paBuild(divs({ box1a: 3000, nominee: true, nomineeOrdinary: 1000, nomineeOtherBoxes: false }));
     expect(scheduleB(g)).toBe(true);
     expect(get(g, `/flowKnockoutDividendNominee`).get).toBe(true);
+    expect(get(g, `/flowKnockoutPaScheduleB`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
   });
   it(`Line 4: dividends received while not a PA resident stop it`, () => {
     const partYear = (box1a: number, resident: string) =>

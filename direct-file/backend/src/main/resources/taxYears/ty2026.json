@@ -5,246 +5,290 @@
     "rp-2025-32": {
       "title": "Rev. Proc. 2025-32",
       "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "revProc",
       "sha256": "e9ada115fb43a4af5ea326ca91edd40ab0bf29b9be01d2c13d7b8fa96214635b"
     },
     "rp-2025-19": {
       "title": "Rev. Proc. 2025-19",
       "url": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "revProc",
       "sha256": "ff2ba4bac62ef6940c57578d70f8be88ff3898ac806e921ad52787c11da35bf4"
     },
     "n-2025-67": {
       "title": "Notice 2025-67",
       "url": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "final",
       "sha256": "1eea8f141b0cddd182f9f09b3bc8ffad683d27ceb806dfc6da126811dc0a1f8d"
     },
     "p4164": {
       "title": "Publication 4164, Modernized e-File (MeF) Guide for Software Developers and Transmitters (Processing Year 2026)",
       "url": "https://www.irs.gov/pub/irs-pdf/p4164.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "final",
       "sha256": "af0c0383cdee12bbb89c196d843eaf27e22b1528761e2f11154446d2bd59b4d7"
     },
     "fr-2025-19763": {
       "title": "90 FR 49047 (Nov. 3, 2025), Cost-of-Living Increase and Other Determinations for 2026",
       "url": "https://www.federalregister.gov/d/2025-19763",
-      "kind": "web"
+      "medium": "web",
+      "kind": "final"
     },
     "irc": {
       "title": "Internal Revenue Code, 26 U.S.C.",
       "url": "https://www.law.cornell.edu/uscode/text/26",
+      "medium": "statute",
       "kind": "statute"
     },
     "ak-dor-26-004": {
       "title": "Alaska Department of Revenue press release 26-004 (Sept. 18, 2026), DOR announces 2026 PFD amount",
       "url": "https://dor.alaska.gov/docs/default-source/press-releases/2026-004-dor-announces-2026-pfd-amount.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "final",
       "sha256": "3f45616c0ceb5542332806f729977c38e96af1b5aef91ba9c31b9ce14b81528e"
     },
     "i1099sa": {
       "title": "Instructions for Forms 1099-SA and 5498-SA",
       "url": "https://www.irs.gov/instructions/i1099sa",
-      "kind": "web"
+      "medium": "web",
+      "kind": "final"
     },
     "usc5": {
       "title": "Title 5, U.S. Code",
       "url": "https://www.law.cornell.edu/uscode/text/5",
+      "medium": "statute",
       "kind": "statute"
     },
     "fr-2025-01377": {
       "title": "90 FR 5917 (Jan. 17, 2025), Annual Update of the HHS Poverty Guidelines",
       "url": "https://www.govinfo.gov/content/pkg/FR-2025-01-17/pdf/2025-01377.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "final",
       "sha256": "a239506cedee787b4c164ac17fa43b2ad9a147e3c848cd935c54a692ee2cebce"
     },
     "f8880-2026-dft": {
       "title": "Form 8880 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f8880--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "97a6b5b3df449310dbfb1f9574edb06dd2009f1b04d86261bb1c88fc087c9e01"
     },
     "i1040gi-2025": {
       "title": "Instructions for Form 1040 (2025)",
       "url": "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
       "sha256": "482e9c487c608f1bbeaceef35bc3c0933e8b35443cfff447e4279d590468364a"
     },
     "f6251-dft": {
       "title": "Form 6251 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f6251--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "a547fc9d629e1f04bdc30e088214c716667b88cb1b45447c580c0ae33095b5cc"
     },
     "f1040sa-dft": {
       "title": "Schedule A (Form 1040) (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "d49acff9afc2faa178b7bf1f70d826d03c2c6def43700880f8ae5bb8bb5a0ffa"
     },
     "f1040s1a-dft": {
       "title": "Schedule 1-A (Form 1040) (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "e22aec7feb2f5b734e16ee74d70acfdfdc0d66a5292f69cf0ced3b87543d95ac"
     },
     "f8959-dft": {
       "title": "Form 8959 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f8959--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "8f663b2ca3dd052537a4d8aea4ae9aada0606b0f7dc7711fa8948489ef870d2f"
     },
     "i8960-2025": {
       "title": "2025 Instructions for Form 8960",
       "url": "https://www.irs.gov/pub/irs-pdf/i8960.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
       "sha256": "b10fbb23ff4a053db197285497a00914c558e3ae0cdf5c956b7c0c7867376428"
     },
     "f1040sb-dft": {
       "title": "Schedule B (Form 1040) (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f1040sb--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "aa6272f6b3b8a8c6a2aa6ef9d1069f1edb88fb9df4df60278d198da89cdfd93f"
     },
     "i8615-dft": {
       "title": "Instructions for Form 8615 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/i8615--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "ac1ec51a5367dfa8187ea9fef43fb6cbf87b4ca1324bf3084c5557407a03160f"
     },
     "rp-2025-25": {
       "title": "Rev. Proc. 2025-25, Applicable Percentage Table and Required Contribution Percentage for 2026",
       "url": "https://www.irs.gov/pub/irs-drop/rp-25-25.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "revProc",
       "sha256": "ba950034c6d6d7f6ca70b9dc94754d923acc34f3d5646593fd12340fb6b67697"
     },
     "f8962-dft": {
       "title": "Form 8962 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f8962--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "5b692171ee43a4596eabfcaad83bea920e6356c492656a1648f2aaf018cd1d35"
     },
     "i2441-dft": {
       "title": "Instructions for Form 2441 (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/i2441--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "7fdecfe193df435542bb452ba108bee011bef7032fda8abe972d6fbd5de233e7"
     },
     "i1040sr-dft": {
       "title": "Instructions for Schedule R (Form 1040) (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sr--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "6f30613aacd956f145fea666527ad68bea5d5f8a87072270f9a17e14f41ae661"
     },
     "f1040sr": {
       "title": "Schedule R (Form 1040) (2026)",
       "url": "https://www.irs.gov/pub/irs-pdf/f1040sr.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "final",
       "sha256": "945275e6be3cc7353a3faf165ddd7ccb79e3c8a43abe6678d4c47f8207594cb5"
     },
     "f1040s8-dft": {
       "title": "Schedule 8812 (Form 1040) (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "0638b2863bdaeadfd3fccee12a9145bf92a442d8de156584c5602cc7e3881422"
     },
     "f1040sse-dft": {
       "title": "Schedule SE (Form 1040) (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "a59fa5dcf2f0a8a5a71c46aa3837e9e8e605eeecc0a666bcb784a368900d141c"
     },
     "i1040sse-dft": {
       "title": "Instructions for Schedule SE (Form 1040) (2026), draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "8c6b42b7d5852813bd03030c05afcd7d3126f3271a463ed007918165a0e388d3"
     },
     "pa-trc": {
       "title": "Tax Reform Code of 1971, section 302 (72 P.S. § 7302)",
       "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/1971/0/0002..HTM",
+      "medium": "statute",
       "kind": "statute"
     },
     "ilcs-5-201": {
       "title": "Illinois Income Tax Act, 35 ILCS 5/201",
       "url": "https://www.ilga.gov/legislation/ilcs/",
+      "medium": "statute",
       "kind": "statute"
     },
     "idor-fy-2026-15": {
       "title": "Illinois Department of Revenue FY 2026-15, 2026 income tax figures",
       "url": "https://tax.illinois.gov/content/dam/soi/en/web/tax/research/publications/bulletins/documents/2026/fy-2026-15.pdf",
-      "kind": "web"
+      "medium": "web",
+      "kind": "final"
     },
     "il-1040-instr-2025": {
       "title": "2025 IL-1040 instructions (structure used for the 2026 return until the 2026 booklet is final)",
       "url": "https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/incometax/documents/currentyear/individual/il-1040-instr.pdf",
-      "kind": "web"
+      "medium": "web",
+      "kind": "priorYear"
     },
     "nc-gs-105": {
       "title": "North Carolina General Statutes, Chapter 105",
       "url": "https://www.ncleg.gov/",
+      "medium": "statute",
       "kind": "statute"
     },
     "d-401-2025": {
       "title": "2025 North Carolina Individual Income Tax Instructions, Form D-401 (structure and standard-deduction chart used for the 2026 return until the 2026 booklet is posted)",
       "url": "https://www.ncdor.gov/2025-d-401-individual-income-tax-instructions/open",
-      "kind": "web"
+      "medium": "web",
+      "kind": "priorYear"
     },
     "ncdor-nc-30": {
       "title": "NCDOR NC-30, Individual Income Tax Rates",
       "url": "https://www.ncdor.gov/taxes-forms/individual-income-tax/tax-rate-schedules",
-      "kind": "web"
+      "medium": "web",
+      "kind": "final"
     },
     "ars-title-43": {
       "title": "Arizona Revised Statutes Title 43",
       "url": "https://www.azleg.gov/",
+      "medium": "statute",
       "kind": "statute"
     },
     "az-140-instr-2025": {
       "title": "2025 Arizona Form 140 instructions (structure used for the 2026 return until the 2026 booklet is posted)",
       "url": "https://azdor.gov/sites/default/files/document/FORMS_INDIVIDUAL_2025_140i.pdf",
-      "kind": "web"
+      "medium": "web",
+      "kind": "priorYear"
     },
     "mgl-c62": {
       "title": "Massachusetts General Laws Chapter 62",
       "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleIX/Chapter62/",
+      "medium": "statute",
       "kind": "statute"
     },
     "mgl-c111m": {
       "title": "Massachusetts General Laws Chapter 111M",
       "url": "https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXVI/Chapter111M/",
+      "medium": "statute",
       "kind": "statute"
     },
     "ma-form-1-instr-2025": {
       "title": "2025 Massachusetts Form 1 instructions (revised August 4, 2026), used for the 2026 return until the 2026 booklet is posted",
       "url": "https://www.mass.gov/doc/2025-form-1-instructions/download",
-      "kind": "web"
+      "medium": "web",
+      "kind": "priorYear"
     },
     "idaho-code": {
       "title": "Idaho Code, Title 63, Chapter 30",
       "url": "https://legislature.idaho.gov/statutesrules/idstat/",
+      "medium": "statute",
       "kind": "statute"
     },
     "id-form-40-instr-2025": {
       "title": "2025 Idaho Form 40 instructions, EIN00046 rev. 03-02-2026, used for the 2026 return until the 2026 booklet is posted",
       "url": "https://tax.idaho.gov/wp-content/uploads/forms/EIN00046/EIN00046_03-02-2026.pdf",
-      "kind": "web"
+      "medium": "web",
+      "kind": "priorYear"
     },
     "ksa-79-32": {
       "title": "Kansas Statutes Annotated, article 32, income tax",
       "url": "https://www.kslegislature.gov/",
+      "medium": "statute",
       "kind": "statute"
     },
     "k-40-booklet-2025": {
       "title": "2025 Kansas Individual Income Tax Booklet, ip25 rev. 9-26-25, used for the 2026 return until the 2026 booklet is posted",
       "url": "https://www.ksrevenue.gov/pdf/ip25.pdf",
-      "kind": "web",
+      "medium": "web",
+      "kind": "priorYear",
       "sha256": "8cbc2ea8d4f877a0d57e1e008c203ec06aa087fb3d4ab7319d91c157ee628871"
     },
     "i1040sc-dft": {
       "title": "2026 Instructions for Schedule C, draft",
       "url": "https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf",
-      "kind": "pdf",
+      "medium": "pdf",
+      "kind": "draft",
       "sha256": "27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9"
     }
   },
@@ -1534,7 +1578,12 @@
           "page": 3,
           "quote": "If line 17 is $244,500 or less ($122,250 or less if married filing separately), multiply line 17 by 26% (0.26). Otherwise, multiply line 17 by 28% (0.28) and subtract $4,890 ($2,445 if married filing separately) from the result"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f6251-dft (draft).",
+        "repinFrom": "final 2026 Form 6251",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/flowKnockoutAmtMfsAddBack",
@@ -1594,7 +1643,12 @@
           "page": 2,
           "quote": "Enter the smaller of line 5d or $40,400 ($20,200 if married filing separately). If Form 1040 or 1040-SR, line 11b, is more than $505,000 ($252,500 if married filing separately)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sa-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule A (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/scheduleASaltLimitBeforeMfsHalving",
@@ -1770,7 +1824,12 @@
           "page": 4,
           "quote": "Multiply line 39 by 6% (0.06)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040s1a-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule 1-A (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/cdccCareExpensesFallOffThreshold",
@@ -1896,7 +1955,12 @@
           "page": 2,
           "quote": "The applicable threshold amount is based on your filing status. • Married filing jointly or Qualifying surviving spouse is $250,000. • Married filing separately is $125,000. • Single or Head of household is $200,000."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i8960-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "2026 Instructions for Form 8960",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/netInvestmentIncomeThresholdForSingleOrHoh",
@@ -1960,7 +2024,12 @@
           "quote": "Enter the following amount for your filing status: Married filing jointly $250,000; Married filing separately $125,000; Single, Head of household, or Qualifying surviving spouse $200,000",
           "form": "table"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f8959-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 8959",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maxNonMFSorMFJMedicareWages",
@@ -2113,7 +2182,12 @@
           "page": 2,
           "quote": "Certain distributions received after 2023 and before the due date (including"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f8880-2026-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 8880",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/federalPovertyLineMagicNumberStartingNumber",
@@ -2244,7 +2318,12 @@
           "quote": "Applicable figure. Using your line 5 percentage, locate your “applicable figure” on the table in the instructions"
         }
       ],
-      "note": "Tier floors are Ints (percent of the poverty line). Table percentages are Rationals over 10000 (2.10% = 210/10000); each tier's slope is (final - initial) / tier width per percentage point (e.g. (4.19% - 3.14%) / 17 = 105/170000), the linear sliding scale of Treas. Reg. 1.36B-3(g)(1). /applicableFigure rounds the result to 4 decimals."
+      "note": "Tier floors are Ints (percent of the poverty line). Table percentages are Rationals over 10000 (2.10% = 210/10000); each tier's slope is (final - initial) / tier width per percentage point (e.g. (4.19% - 3.14%) / 17 = 105/170000), the linear sliding scale of Treas. Reg. 1.36B-3(g)(1). /applicableFigure rounds the result to 4 decimals.",
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f8962-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: rp-2025-25 (revProc), irc (statute).",
+        "repinFrom": "final 2026 Form 8962",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/qbiThresholdAmount",
@@ -2349,7 +2428,12 @@
           "quote": "The earnings required for a quarter of coverage in 2026 is $1,890."
         }
       ],
-      "note": "Four 2026 quarters of coverage at $1,890. 1402(l)(2) is 150 percent of that lower limit ($11,340), the farm gross-income threshold, not line 14."
+      "note": "Four 2026 quarters of coverage at $1,890. 1402(l)(2) is 150 percent of that lower limit ($11,340), the farm gross-income threshold, not line 14.",
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute), fr-2025-19763 (final).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/seNonfarmOptionalMethodNetProfitLimit",
@@ -2370,7 +2454,12 @@
           "page": 7,
           "quote": "your net nonfarm profits were less than $8,186 and also less than 72.189% of your gross nonfarm income"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft), i1040sse-dft (draft).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040); final 2026 Instructions for Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/seNonfarmOptionalMethodGrossIncomeRatio",
@@ -2391,7 +2480,12 @@
           "page": 7,
           "quote": "your net nonfarm profits were less than $8,186 and also less than 72.189% of your gross nonfarm income"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft), i1040sse-dft (draft).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040); final 2026 Instructions for Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/seNonfarmOptionalMethodTwoThirds",
@@ -2406,7 +2500,12 @@
           "page": 3,
           "quote": "Enter the smaller of: two-thirds (2/3) of gross nonfarm income (not less than zero) or the amount on line 16."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/dividendForeignTaxElectionLimit",
@@ -2458,7 +2557,12 @@
           "page": 2,
           "quote": "In each column, enter the smaller of line 5 or $2,000"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f8880-2026-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 8880",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/saversMaxCreditAmountNotMFJ",
@@ -2479,7 +2583,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/25B",
           "quote": "if the adjusted gross income of the taxpayer is not over $30,000, 50 percent"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f8880-2026-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 8880",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/edcExemptionAmount",
@@ -2636,7 +2745,12 @@
           "page": 32,
           "quote": "Enter $12,000 if married filing jointly; $9,000 if single, head of household, qualifying surviving spouse, or married filing separately and you lived apart from your spouse for all of 2025"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040gi-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "2026 Instructions for Form 1040",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maximumSocialSecurityBenefitsRepaidSupported",
@@ -2749,7 +2863,12 @@
           "page": 12,
           "quote": "For taxable years beginning in 2026, the amount in § 1(g)(4)(A)(ii)(I), which is used to reduce the net unearned income reported on the child's return that is subject to the \"kiddie tax,\" is $1,350."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i8615-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: rp-2025-32 (revProc).",
+        "repinFrom": "final 2026 Instructions for Form 8615",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maximumTaxableInterestIncomeBeforeScheduleB",
@@ -2764,7 +2883,12 @@
           "page": 2,
           "quote": "You must complete this part if you (a) had over $1,500 of taxable interest or ordinary dividends"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sb-dft (draft).",
+        "repinFrom": "final 2026 Schedule B (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/cdccMaxAllowedCreditWithOneQP",
@@ -2785,7 +2909,12 @@
           "page": 2,
           "quote": "Beginning in 2026, the maximum percentage used to figure the credit for child and dependent care expenses is increased from 35% to 50%"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i2441-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Form 2441",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/cdccMaxAllowedCreditWithTwoQP",
@@ -2806,7 +2935,12 @@
           "page": 2,
           "quote": "For 2026, the percentage used to figure the credit ranges from 50% to 20%, compared to 35% to 20% for 2025."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i2441-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Form 2441",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/cdccMinAllowedPercentage",
@@ -2827,7 +2961,12 @@
           "page": 2,
           "quote": "As adjusted gross income increases, the percentage used to figure the credit is reduced, but not below 20%."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i2441-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Form 2441",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/cdccMaxAllowedPercentage",
@@ -2848,7 +2987,12 @@
           "page": 2,
           "quote": "Beginning in 2026, the maximum percentage used to figure the credit for child and dependent care expenses is increased from 35% to 50%"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i2441-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Form 2441",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/nonItemizerCharitableCap",
@@ -2894,7 +3038,12 @@
           "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
           "form": "table"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040sr-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Schedule R (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/edcMaxMfsAgiLimit",
@@ -2924,7 +3073,12 @@
           "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
           "form": "table"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040sr-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Schedule R (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/edcMaxMfjBothAgiLimit",
@@ -2954,7 +3108,12 @@
           "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
           "form": "table"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040sr-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Schedule R (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/edcMaxMfjOnlyOneAgiLimit",
@@ -2984,7 +3143,12 @@
           "quote": "Table 1. Income Limits. single, head of household, or qualifying surviving spouse $17,500 or more $5,000; married filing jointly and only one spouse is a qualifying individual $20,000 or more $5,000; married filing jointly and both spouses are qualifying individuals $25,000 or more $7,500; married filing separately and you lived apart from your spouse for all of 2026 $12,500 or more $3,750",
           "form": "table"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040sr-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Instructions for Schedule R (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/statusBasedDisabilityIncome",
@@ -3043,7 +3207,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/24",
           "quote": "The amount of the credit allowable under subsection (a) shall be reduced (but not below zero) by $50 for each $1,000 (or fraction thereof) by which the taxpayer’s modified adjusted gross income exceeds the threshold amount."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040s8-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule 8812 (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/regularMaximumActc",
@@ -3117,7 +3286,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/55",
           "quote": "28 percent of so much of the taxable excess as exceeds $175,000."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f6251-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 6251",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/form6251Line18",
@@ -3145,7 +3319,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/55",
           "quote": "28 percent of so much of the taxable excess as exceeds $175,000."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f6251-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 6251",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/form6251Line39",
@@ -3173,7 +3352,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/55",
           "quote": "28 percent of so much of the taxable excess as exceeds $175,000."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f6251-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 6251",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/form6251Line31",
@@ -3194,7 +3378,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/1",
           "quote": "15 percent of the lesser of"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f6251-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 6251",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/form6251Line34",
@@ -3215,7 +3404,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/1",
           "quote": "20 percent of the adjusted net capital gain (or, if less, taxable income) in excess of the sum of the amounts on which tax is determined under subparagraphs (B) and (C)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f6251-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Form 6251",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/form8995Line5",
@@ -3341,7 +3535,12 @@
           "page": 2,
           "quote": "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235). Otherwise, enter amount from line 3"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/primaryFilerSeLine5b",
@@ -3383,7 +3582,12 @@
           "url": "https://www.law.cornell.edu/uscode/text/26/1402",
           "quote": "Paragraph (1) shall not apply to any amount allowable as a deduction under subsection (a)(12), and paragraph (1) shall be applied before determining the amount so allowable."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft), i1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040); final 2026 Instructions for Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/secondaryFilerSeNetEarnings",
@@ -3402,7 +3606,12 @@
           "page": 2,
           "quote": "If line 3 is more than zero, multiply line 3 by 92.35% (0.9235). Otherwise, enter amount from line 3"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/primaryFilerSeSocialSecurityTax",
@@ -3423,7 +3632,12 @@
           "page": 2,
           "quote": "Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/secondaryFilerSeSocialSecurityTax",
@@ -3442,7 +3656,12 @@
           "page": 2,
           "quote": "Multiply the smaller of line 6 or line 9 by 12.4% (0.124)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/primaryFilerSeMedicareTax",
@@ -3463,7 +3682,12 @@
           "page": 2,
           "quote": "Multiply line 6 by 2.9% (0.029)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/secondaryFilerSeMedicareTax",
@@ -3482,7 +3706,12 @@
           "page": 2,
           "quote": "Multiply line 6 by 2.9% (0.029)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/primaryFilerDeductibleSelfEmploymentTax",
@@ -3503,7 +3732,12 @@
           "page": 2,
           "quote": "Deduction for one-half of self-employment tax. Multiply line 12 by 50% (0.50)."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/secondaryFilerDeductibleSelfEmploymentTax",
@@ -3522,7 +3756,12 @@
           "page": 2,
           "quote": "Deduction for one-half of self-employment tax. Multiply line 12 by 50% (0.50)."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040sse-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule SE (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/form8959Line7",
@@ -3780,7 +4019,12 @@
           "page": 4,
           "quote": "Multiply line 34 by $200"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: f1040s1a-dft (draft). Statute, Rev. Proc., or other non-form cites do not make that form cite final: irc (statute).",
+        "repinFrom": "final 2026 Schedule 1-A (Form 1040)",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/saversCreditMultiplierAsRational",
@@ -3859,7 +4103,12 @@
           "page": 14,
           "quote": "3a. Maximum allowable amount $5"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040sc-dft (draft).",
+        "repinFrom": "final 2026 Instructions for Schedule C",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/scheduleCSimplifiedMethodMaxSquareFeet",
@@ -3874,7 +4123,12 @@
           "page": 14,
           "quote": "Allowable square footage for the qualified business use. Don't enter more than 300 square feet."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040sc-dft (draft).",
+        "repinFrom": "final 2026 Instructions for Schedule C",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ilBasicExemption",
@@ -3900,7 +4154,12 @@
           "source": "il-1040-instr-2025",
           "quote": "Multiply the number of boxes checked by $1,000."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: il-1040-instr-2025 (priorYear).",
+        "repinFrom": "2026 IL-1040 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ilExemptionAgiLimit",
@@ -3913,7 +4172,12 @@
           "source": "il-1040-instr-2025",
           "quote": "greater than $250,000"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: il-1040-instr-2025 (priorYear).",
+        "repinFrom": "2026 IL-1040 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ilExemptionAgiLimitMfj",
@@ -3926,7 +4190,12 @@
           "source": "il-1040-instr-2025",
           "quote": "greater than $500,000"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: il-1040-instr-2025 (priorYear).",
+        "repinFrom": "2026 IL-1040 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ilTaxRate",
@@ -3960,7 +4229,12 @@
           "url": "https://www.ncleg.gov/EnactedLegislation/Statutes/HTML/BySection/Chapter_105/GS_105-153.5.html",
           "quote": "G.S. 105-153.5(a)(1) standard deduction."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: d-401-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: nc-gs-105 (statute).",
+        "repinFrom": "2026 North Carolina Form D-401 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ncStandardDeductionMfjOrQss",
@@ -3973,7 +4247,12 @@
           "source": "d-401-2025",
           "quote": "Married filing jointly/Qualifying widow(er)/Surviving spouse $25,500."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: d-401-2025 (priorYear).",
+        "repinFrom": "2026 North Carolina Form D-401 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ncStandardDeductionHoh",
@@ -3986,7 +4265,12 @@
           "source": "d-401-2025",
           "quote": "Head of household $19,125."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: d-401-2025 (priorYear).",
+        "repinFrom": "2026 North Carolina Form D-401 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ncTaxRate",
@@ -4068,7 +4352,12 @@
           "url": "https://www.azleg.gov/ars/43/01011.htm",
           "quote": "There shall be levied, collected and paid for each taxable year on the entire taxable income of every resident of this state"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: az-140-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ars-title-43 (statute).",
+        "repinFrom": "2026 Arizona Form 140 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/azLowIncomeLimitSingle",
@@ -4081,7 +4370,12 @@
           "source": "az-140-instr-2025",
           "quote": "If you are single or married filing a separate return, you may claim this credit if the amount on Form 140, page 1, line 12 is $12,500 or less."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: az-140-instr-2025 (priorYear).",
+        "repinFrom": "2026 Arizona Form 140 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/azLowIncomeLimitMfj",
@@ -4094,7 +4388,12 @@
           "source": "az-140-instr-2025",
           "quote": "If you are married filing a joint return, or a head of household, you may claim this credit if the amount on Form 140, page 1, line 12 is $25,000 or less."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: az-140-instr-2025 (priorYear).",
+        "repinFrom": "2026 Arizona Form 140 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maPersonalExemptionSingle",
@@ -4113,7 +4412,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "If you are single or married filing a separate return, enter $4,400 in line 2a."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: mgl-c62 (statute).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maPersonalExemptionMfj",
@@ -4132,7 +4436,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "If married filing a joint return, enter $8,800 in line 2a."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: mgl-c62 (statute).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maTaxRate",
@@ -4151,7 +4460,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "If line 21 is greater than $24,000 multiply by 0.05 and enter the result in line 22."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: mgl-c62 (statute).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maOptionalTaxRate",
@@ -4168,7 +4482,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "If choosing the optional 5.85% tax rate, multiply line 21 and Schedule D, line 21 by 0.0585 and fill in the oval."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maFicaCap",
@@ -4187,7 +4506,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "Enter in lines 11a and 11b the amount you, and your spouse if filing jointly, paid to Social Security (FICA), Medicare or Railroad Retirement and the U.S. or Massachusetts retirement systems during 2025 as shown on your Form W-2, but not more than $2,000 each."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: mgl-c62 (statute).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maRentalCap",
@@ -4206,7 +4530,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "Divide line 14a by 2 and enter the result, or $4,000 ($2,000 if married filing a separate return), whichever is smaller, in line 14."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: mgl-c62 (statute).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maTaxTableThreshold",
@@ -4219,7 +4548,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "If line 21 is less than $24,000, find the proper tax by using the tax tables found in the back of this booklet. If line 21 is greater than $24,000 multiply by 0.05 and enter the result in line 22."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/maSurtaxStop",
@@ -4238,7 +4572,12 @@
           "source": "ma-form-1-instr-2025",
           "quote": "personal income taxpayers must pay an additional 4% on taxable income over $1,000,000, increased annually for inflation. For the 2025 tax year, the threshold is $1,083,150."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: ma-form-1-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: mgl-c62 (statute).",
+        "repinFrom": "2026 Massachusetts Form 1 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/idTaxThresholdSingle",
@@ -4263,7 +4602,12 @@
           "source": "id-form-40-instr-2025",
           "quote": "Single or married filing separately, enter $4,811"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: id-form-40-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: idaho-code (statute).",
+        "repinFrom": "2026 Idaho Form 40 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/idTaxThresholdMfj",
@@ -4282,7 +4626,12 @@
           "source": "id-form-40-instr-2025",
           "quote": "Married filing jointly, head of household, or qualifying surviving spouse, enter $9,622"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: id-form-40-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: idaho-code (statute).",
+        "repinFrom": "2026 Idaho Form 40 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/idTaxRate",
@@ -4301,7 +4650,12 @@
           "source": "id-form-40-instr-2025",
           "quote": "Multiply subtotal by 5.3%"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: id-form-40-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: idaho-code (statute).",
+        "repinFrom": "2026 Idaho Form 40 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/idPermanentBuildingFundTax",
@@ -4320,7 +4674,12 @@
           "source": "id-form-40-instr-2025",
           "quote": "You must pay the $10 PBF tax if Idaho requires you to file an Idaho income tax return."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: id-form-40-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: idaho-code (statute).",
+        "repinFrom": "2026 Idaho Form 40 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/idFoodTaxCreditPerFiler",
@@ -4345,7 +4704,12 @@
           "source": "id-form-40-instr-2025",
           "quote": "The credit is either $155 each for you, your spouse, and your qualifying dependents"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: id-form-40-instr-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: idaho-code (statute).",
+        "repinFrom": "2026 Idaho Form 40 instructions",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksStandardDeductionSingle",
@@ -4364,7 +4728,12 @@
           "source": "k-40-booklet-2025",
           "quote": "Single...........................................  $3,605"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ksa-79-32 (statute).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksStandardDeductionMfj",
@@ -4383,7 +4752,12 @@
           "source": "k-40-booklet-2025",
           "quote": "Married Filing Joint ......................  $8,240"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ksa-79-32 (statute).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksExemptionSingle",
@@ -4402,7 +4776,12 @@
           "source": "k-40-booklet-2025",
           "quote": "If your filing status is single, head of household, or married filing separate, the exemption allowance is $9,160."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ksa-79-32 (statute).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksExemptionMfj",
@@ -4421,7 +4800,12 @@
           "source": "k-40-booklet-2025",
           "quote": "if your filing status is married filing joint the exemption allowance is $18,320."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ksa-79-32 (statute).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksTaxRate",
@@ -4446,7 +4830,12 @@
           "source": "k-40-booklet-2025",
           "quote": "5.58% (.0558)"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ksa-79-32 (statute).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksWorksheetSubtractionSingle",
@@ -4465,7 +4854,12 @@
           "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0110b_section/079_032_0110b_k/",
           "quote": "Over $23,000 $1,196 plus 5.58% of excess over $23,000"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ksa-79-32 (statute).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksWorksheetSubtractionMfj",
@@ -4484,7 +4878,12 @@
           "url": "https://www.kslegislature.gov/b2025_26/laws/079_000_0000_chapter/079_032_0000_article/079_032_0110b_section/079_032_0110b_k/",
           "quote": "Over $46,000 $2,392 plus 5.58% of excess over $46,000"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear). Statute, Rev. Proc., or other non-form cites do not make that form cite final: ksa-79-32 (statute).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/ksTaxTableLimit",
@@ -4497,7 +4896,12 @@
           "source": "k-40-booklet-2025",
           "quote": "If line 7 is $100,000 or less, use the Tax Tables beginning on page 27 to find the amount of your tax."
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear).",
+        "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
     }
   ],
   "pendingReview": [
@@ -4556,7 +4960,12 @@
           "page": 9,
           "quote": "Married filing separately any age $5"
         }
-      ]
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: i1040gi-2025 (priorYear).",
+        "repinFrom": "2026 Instructions for Form 1040",
+        "tracking": "#91"
+      }
     },
     {
       "fact": "/studentLoanAmountPhaseOutAmount",

@@ -48,7 +48,7 @@ abstract class PdfTemplate {
             new PdfForm("IRS1040SA"),
 
             // ASN 08
-            new PdfForm("IRS1040SB"),
+            new Irs1040SbPdfForm(),
 
             // ASN 09 (#239: 2026 draft Schedule C)
             new PdfForm("IRS1040SC"),
