@@ -30,7 +30,10 @@
 # FinCEN Form 114 is not attached (instructions: file it with FinCEN). Form 3520 and Form 8938 are not produced.
 # Nominee interest, accrued interest, and U.S. savings bond interest previously reported are subtracted below a
 # subtotal on line 1 (Instructions for Schedule B). This map puts the full taxable interest on line 1, so a yes
-# refuses the print instead of omitting the subtraction. $0 amounts print blank (FactGraphService zero suppression).
+# refuses the print instead of omitting the subtraction. Ordinary dividends received as a nominee do print: each
+# payer at full box 1a, then a subtotal, then "Nominee Distribution" in parentheses, and line 6 is the difference
+# (2026 draft Instructions for Schedule B, PDF p. 3 (printed p. 2), Line 5, Nominees). $0 amounts print blank
+# (FactGraphService zero suppression).
 includeWhen: /requiresScheduleB
 customMaps:
   template:

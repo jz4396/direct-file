@@ -28,18 +28,22 @@
   Box 2d is collectibles (28%) gain already inside box 2a. The total is 28% Rate Gain Worksheet line 4
   (scheduleD2 /rateGainWsLine4). Line 7 of that worksheet is Schedule D line 18. It is not added to
   Schedule D line 13 or Form 1040 line 7a.
-  Schedule B Part II line 5 rows: 1099-DIV payers first (/dividendReports/*/payer and
+  Schedule B Part II line 5 rows: 1099-DIV payers first at the full box 1a (/dividendReports/*/payer and
     /dividendReports/*/roundedOrdinaryDividends), then Schedule K-1 (Form 1041) box 2a
-    (interest /scheduleBPartIIRow* Payer and Amount). Line 6 is income /ordinaryDividends (Form 1040 line 3b),
-    which adds box 2a.
+    (interest /scheduleBPartIIRow* Payer and Amount). When ordinary dividends were received as a nominee, the next
+    row is the subtotal (income /ordinaryDividendsBeforeNominee) and the row after that is "Nominee Distribution"
+    (the whole-dollar nominee ordinary total, shown in parentheses). Line 6 is that subtotal minus the nominee
+    total (income /ordinaryDividends, Form 1040 line 3b).
   Totals for other modules (Schedule B Part II, QDCG worksheet): /totalOrdinaryDividends (box 1a),
-    /totalQualifiedDividends (box 1b), /totalCapitalGainDistributions (box 2a), /totalNondividendDistributions
+    /totalQualifiedDividends (box 1b), /totalNomineeOrdinaryDividends, /totalNomineeQualifiedDividends,
+    /totalCapitalGainDistributions (box 2a), /totalNondividendDistributions
     (box 3), /totalDividendFederalTaxWithheld (box 4), /totalSection199ADividends (box 5),
     /totalDividendForeignTaxPaid (box 7), /totalExemptInterestDividends (box 12, Form 1040 line 2a),
     /totalSpecifiedPrivateActivityBondInterestDividends (box 13, Form 6251 line 2g).
-  Computed: Form 1040 line 3b = total box 1a plus Schedule K-1 (Form 1041) box 2a (income /ordinaryDividends),
-    line 3a = total box 1b plus Schedule K-1 (Form 1041) box 2b
-    (income /qualifiedDividends; taxed through the existing QDCG worksheet, scheduleD3.xml), line 25b
+  Computed: Form 1040 line 3b = total box 1a plus Schedule K-1 ordinary dividends, minus nominee ordinary dividends
+    (income /ordinaryDividends), line 3a = total box 1b plus Schedule K-1 qualified dividends, minus nominee
+    qualified dividends (income /qualifiedDividends; the QDCG worksheet and the Schedule D Tax Worksheet read that
+    reduced line 3a, scheduleD3 /qdcgLine2 and /schDTaxWsLine2), line 25b
     includes total box 4 (taxCalculations /form1099Withholding), Schedule 3 line 1 = box 7 under the
     904(j) election (/dividendForeignTaxCredit, schedule3 /sched3Line1). Box 2a (#86b): Form 1040 line 7a
     with the line 7b "Schedule D not required" box under line 7a Exception 1 (/capitalGainDistributionsWithoutScheduleD,
@@ -76,7 +80,10 @@
     box 5 that is not a qualified REIT dividend  -> /flowKnockoutSection199ADividendsHoldingPeriod
     (box 5 that is a qualified REIT dividend is Form 8995 line 6; /flowKnockoutSection199ADividends is no longer a stop)
     box 7 foreign tax not meeting 904(j)         -> /flowKnockoutDividendForeignTaxPaid
-    dividends received as a nominee              -> /flowKnockoutDividendNominee
+    nominee share of box 2a-2f, 3, 5, 7, 12 or 13,
+      a nominee amount over box 1a or box 1b,
+      remaining box 1b above remaining box 1a,
+      or any nominee amount on a computed state  -> /flowKnockoutDividendNominee
     box 1b, 2e, 5 or 6 larger than box 1a,
       or box 2b, 2d or 2f larger than box 2a       -> /flowKnockoutDividendAmountsInconsistent
     box 2d with a Schedule D line 7 loss or a
@@ -1365,11 +1372,343 @@
       <Name>Dividends received as a nominee</Name>
       <Description>Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: "You must fill in
         and attach Schedule B if the total is over $1,500 or you received, as a nominee, ordinary dividends that
-        actually belong to someone else." Schedule B Part II nominee subtraction is not modeled here.</Description>
+        actually belong to someone else." 2026 draft Instructions for Schedule B (Form 1040)
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3 (printed p. 2), Line 5, Nominees:
+        report the total on line 5, then a subtotal, then "Nominee Distribution". Yes asks the ordinary and qualified
+        nominee amounts. 1099-INT nominee interest still stops (interest /flowKnockoutInterestScheduleBSubtraction).</Description>
       <Writable>
         <Boolean />
       </Writable>
     </Fact>
+
+    <Fact path="/dividendReports/*/writableNomineeOrdinaryDividends">
+      <Name>Ordinary dividends received as a nominee (as entered)</Name>
+      <Description>The part of box 1a that actually belongs to someone else. Required when
+        /dividendReports/*/receivedAsNominee is yes. Cannot exceed box 1a
+        (/dividendReports/*/nomineeAmountsOverLimit). Until an amount is entered, the nominee ordinary total treats
+        it as $0.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/nomineeOrdinaryDividends">
+      <Name>Ordinary dividends received as a nominee</Name>
+      <Description>2026 draft Instructions for Schedule B (Form 1040)
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf
+        (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3 (printed p. 2), Line 5,
+        Nominees:
+        "show the total ordinary dividends you received as a nominee." $0 when this form was not received as a
+        nominee
+        or the amount is blank. Must be less than or equal to box 1a.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../receivedAsNominee" />
+                <IsComplete>
+                  <Dependency path="../writableNomineeOrdinaryDividends" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../writableNomineeOrdinaryDividends" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/askNomineeQualifiedDividends">
+      <Name>Ask the nominee qualified dividends amount</Name>
+      <Description>Box 1b is more than $0 and this form was received as a nominee. Qualified dividends are a portion of
+        box 1a (Form 1099-DIV box 1b), so the nominee share of box 1b is asked only then.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../receivedAsNominee" />
+          <Dependency path="../hasQualifiedDividends" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/writableNomineeQualifiedDividends">
+      <Name>Qualified dividends received as a nominee (as entered)</Name>
+      <Description>The part of box 1b that is included in the nominee ordinary amount. Cannot exceed that nominee
+        ordinary amount or box 1b.</Description>
+      <Writable>
+        <Dollar />
+        <Limit type="Min">
+          <Dollar>0</Dollar>
+        </Limit>
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/nomineeQualifiedDividends">
+      <Name>Qualified dividends received as a nominee</Name>
+      <Description>The nominee share of box 1b. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf
+        p.
+        25, Line 3a: qualified dividends "are also included in the ordinary dividend total required to be shown on
+        line
+        3b." Subtracted from line 3a. $0 when this form was not received as a nominee, box 1b is $0, or the amount
+        is
+        blank. Must be less than or equal to the nominee ordinary amount and to box 1b.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../askNomineeQualifiedDividends" />
+                <IsComplete>
+                  <Dependency path="../writableNomineeQualifiedDividends" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../writableNomineeQualifiedDividends" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/nomineeShareOfOtherBoxes">
+      <Name>Nominee share of a box other than 1a or 1b</Name>
+      <Description>Yes when any of the amount received as a nominee is a share of box 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7,
+        12, or 13. Those boxes are not subtracted. Yes stops the return (/flowKnockoutDividendNominee).</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/dividendReports/*/nomineeAmountsOverLimit">
+      <Name>A nominee dividend is larger than the box it comes from</Name>
+      <Description>Nominee ordinary dividends cannot exceed box 1a. Nominee qualified dividends cannot exceed the
+        nominee ordinary amount or box 1b. An amount equal to that limit does not stop. Complete false when box 1a or
+        box 1b is not complete.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../ordinaryDividends" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../qualifiedDividends" />
+                </IsComplete>
+                <Any>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="../nomineeOrdinaryDividends" />
+                    </Left>
+                    <Right>
+                      <Dependency path="../ordinaryDividends" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="../nomineeQualifiedDividends" />
+                    </Left>
+                    <Right>
+                      <Dependency path="../nomineeOrdinaryDividends" />
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="../nomineeQualifiedDividends" />
+                    </Left>
+                    <Right>
+                      <Dependency path="../qualifiedDividends" />
+                    </Right>
+                  </GreaterThan>
+                </Any>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/nomineeQualifiedExceedsOrdinary">
+      <Name>Nominee subtraction leaves qualified dividends above ordinary dividends</Name>
+      <Description>Qualified dividends are a portion of ordinary dividends. Form 1099-DIV box 1b is included in box 1a,
+        and Form 1040 line 3a is included in line 3b (Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 3a: qualified dividends "are also included in the
+        ordinary dividend total required to be shown on line 3b"). After this form's nominee subtraction, remaining
+        box 1b cannot exceed remaining box 1a: (box 1b − nominee qualified) &gt; (box 1a − nominee ordinary), which is
+        the same as nominee ordinary − nominee qualified &gt; box 1a − box 1b. A separate reason from
+        /dividendReports/*/nomineeAmountsOverLimit. An equal remainder does not stop. Complete false when this form
+        has no nominee amount or box 1a or box 1b is not complete.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../ordinaryDividends" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../qualifiedDividends" />
+                </IsComplete>
+                <Dependency path="../hasNomineeDividendAmount" />
+              </All>
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="../qualifiedDividends" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="../nomineeQualifiedDividends" />
+                    </Subtrahends>
+                  </Subtract>
+                </Left>
+                <Right>
+                  <Subtract>
+                    <Minuend>
+                      <Dependency path="../ordinaryDividends" />
+                    </Minuend>
+                    <Subtrahends>
+                      <Dependency path="../nomineeOrdinaryDividends" />
+                    </Subtrahends>
+                  </Subtract>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/hasNomineeDividendAmount">
+      <Name>This form has a nominee dividend amount</Name>
+      <Description>Nominee ordinary or nominee qualified dividends are more than $0.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <Dependency path="../nomineeOrdinaryDividends" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency path="../nomineeQualifiedDividends" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/nomineeStopsReturn">
+      <Name>This nominee Form 1099-DIV stops the return</Name>
+      <Description>Stops when the nominee share includes a box other than 1a or 1b, a nominee amount is over its limit,
+        the nominee subtraction leaves this form's remaining box 1b above its remaining box 1a, or this form has a
+        nominee amount and the return is a computed state return. One complete boolean per form. Complete false when
+        none of those is a complete true.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Any>
+                <All>
+                  <IsComplete>
+                    <Dependency path="../nomineeShareOfOtherBoxes" />
+                  </IsComplete>
+                  <Dependency path="../nomineeShareOfOtherBoxes" />
+                </All>
+                <Dependency path="../nomineeAmountsOverLimit" />
+                <Dependency path="../nomineeQualifiedExceedsOrdinary" />
+                <All>
+                  <IsComplete>
+                    <Dependency module="stateReturn" path="/stateReturnComputed" />
+                  </IsComplete>
+                  <Dependency module="stateReturn" path="/stateReturnComputed" />
+                  <Dependency path="../hasNomineeDividendAmount" />
+                </All>
+              </Any>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/dividendReports/*/showNomineeFilingDuty">
+      <Name>Show the nominee Form 1099-DIV filing duty</Name>
+      <Description>This form was received as a nominee and does not stop the return. The screen states the filing duty
+        and does not file Form 1096 or Form 1099-DIV.</Description>
+      <Derived>
+        <All>
+          <IsComplete>
+            <Dependency path="../receivedAsNominee" />
+          </IsComplete>
+          <Dependency path="../receivedAsNominee" />
+          <Not>
+            <Dependency path="../nomineeStopsReturn" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
 
     <Fact path="/dividendReports/*/qualifiedDividendsHoldingPeriodNotMet">
       <Name>Some box 1b dividends aren't qualified dividends</Name>
@@ -1605,6 +1944,33 @@
           </IsComplete>
           <Any>
             <Not>
+              <Dependency path="../receivedAsNominee" />
+            </Not>
+            <IsComplete>
+              <Dependency path="../writableNomineeOrdinaryDividends" />
+            </IsComplete>
+          </Any>
+          <Any>
+            <Not>
+              <Dependency path="../receivedAsNominee" />
+            </Not>
+            <Not>
+              <Dependency path="../hasQualifiedDividends" />
+            </Not>
+            <IsComplete>
+              <Dependency path="../writableNomineeQualifiedDividends" />
+            </IsComplete>
+          </Any>
+          <Any>
+            <Not>
+              <Dependency path="../receivedAsNominee" />
+            </Not>
+            <IsComplete>
+              <Dependency path="../nomineeShareOfOtherBoxes" />
+            </IsComplete>
+          </Any>
+          <Any>
+            <Not>
               <Dependency path="../hasQualifiedDividends" />
             </Not>
             <IsComplete>
@@ -1745,6 +2111,126 @@
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/totalNomineeOrdinaryDividends">
+      <Name>Total ordinary dividends received as a nominee</Name>
+      <Description>Sum of /dividendReports/*/nomineeOrdinaryDividends. 2026 draft Instructions for Schedule B
+        (Form 1040)
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3 (printed p. 2), Line 5, Nominees:
+        "show the total ordinary dividends you received as a nominee. Subtract this amount from the subtotal and enter
+        the result on line 6." $0 when no form is entered.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/dividendReports/*/nomineeOrdinaryDividends" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/totalNomineeOrdinaryDividendsRounded">
+      <Name>Nominee ordinary dividends, whole dollars</Name>
+      <Description>The Nominee Distribution amount subtracted from the Schedule B line 5 subtotal. Whole dollars, the
+        same rounding as the payer rows. Form 1040 instr. (2025) https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 23,
+        Rounding Off to Whole Dollars.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Round>
+          <Dependency path="/totalNomineeOrdinaryDividends" />
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleBPartIINomineeAmount">
+      <Name>Schedule B Nominee Distribution amount</Name>
+      <Description>The nominee ordinary total shown below the line 5 subtotal. Negative so the printed amount is in
+        parentheses. 2026 draft Instructions for Schedule B PDF p. 3 (printed p. 2), Line 5, Nominees.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dollar>0</Dollar>
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/totalNomineeOrdinaryDividendsRounded" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/totalNomineeQualifiedDividends">
+      <Name>Total qualified dividends received as a nominee</Name>
+      <Description>Sum of /dividendReports/*/nomineeQualifiedDividends. Subtracted from Form 1040 line 3a. Qualified
+        dividends are included in ordinary dividends (Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 25, Line 3a). $0 when no form is entered.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <IsComplete>
+                <Dependency path="/dividendReports" />
+              </IsComplete>
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/dividendReports/*/nomineeQualifiedDividends" />
+              </CollectionSum>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/requiresScheduleBForNomineeDividends">
+      <Name>Schedule B required because of nominee dividends</Name>
+      <Description>2026 draft Instructions for Schedule B (Form 1040)
+        https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf
+        (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 2 (printed p. 1), General
+        Instructions: "You received interest or ordinary dividends as a nominee." Also Form 1040 instr. (2025)
+        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b. True when the whole-dollar nominee ordinary total
+        is
+        more than $0, even if line 6 is not over $1,500. 1099-INT nominee interest still stops.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency path="/totalNomineeOrdinaryDividendsRounded" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
       </Derived>
     </Fact>
 
@@ -2544,11 +3030,16 @@
     </Fact>
 
     <Fact path="/flowKnockoutDividendNominee">
-      <Name>Knockout: dividends received as a nominee</Name>
-      <Description>Yes to /dividendReports/*/receivedAsNominee. Form 1040 instr. (2025)
-        https://www.irs.gov/pub/irs-pdf/i1040gi.pdf p. 26, Line 3b: Schedule B is required if "you received, as a
-        nominee, ordinary dividends that actually belong to someone else"; the Schedule B Part II nominee subtraction is
-        not modeled here.</Description>
+      <Name>Knockout: nominee dividends that are not the Schedule B subtraction</Name>
+      <Description>Ordinary and qualified nominee dividends are subtracted on Schedule B line 5 and Form 1040 lines 3b
+        and 3a. The return still stops when a nominee share includes box 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12, or 13,
+        when a nominee amount is over box 1a, the nominee ordinary amount, or box 1b, when the subtraction leaves
+        remaining box 1b above remaining box 1a (line 3a cannot exceed line 3b), when any nominee amount is on a
+        computed state return (those returns read the federal dividend amounts; PA Schedule B line 4 is not computed),
+        or when the subtotal and Nominee Distribution rows do not fit on line 5. 2026 draft Instructions for Schedule B
+        (Form 1040) https://www.irs.gov/pub/irs-dft/i1040sb--dft.pdf (SHA-256
+        94d34f2eae6ff134bb31b8ba9d5f52961b44e029b1dec2b39db6b62ca5a6a57b) PDF p. 3 (printed p. 2), Line 5, Nominees.
+        1099-INT nominee interest still stops (interest /flowKnockoutInterestScheduleBSubtraction).</Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -2561,21 +3052,19 @@
               </IsComplete>
             </When>
             <Then>
-              <GreaterThan>
-                <Left>
-                  <Count>
-                    <All>
-                      <IsComplete>
-                        <Dependency path="/dividendReports/*/receivedAsNominee" />
-                      </IsComplete>
-                      <Dependency path="/dividendReports/*/receivedAsNominee" />
-                    </All>
-                  </Count>
-                </Left>
-                <Right>
-                  <Int>0</Int>
-                </Right>
-              </GreaterThan>
+              <Any>
+                <GreaterThan>
+                  <Left>
+                    <Count>
+                      <Dependency path="/dividendReports/*/nomineeStopsReturn" />
+                    </Count>
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <Dependency module="interest" path="/scheduleBPartIINomineeRowsDoNotFit" />
+              </Any>
             </Then>
           </Case>
           <Case>

@@ -252,6 +252,57 @@ class ScheduleBAndETy2026PdfSmokeTest {
         }
     }
 
+    /**
+     * FL, one 1099-DIV: box 1a $3,000, box 1b $2,000, nominee ordinary $1,000, nominee qualified $800. Schedule B
+     * line 5 lists the payer, then Subtotal, then Nominee Distribution. Line 6 and Form 1040 line 3b are $2,000.
+     * Line 3a is $1,200. 2026 draft Instructions for Schedule B, PDF p. 3 (printed p. 2), Line 5, Nominees.
+     */
+    @Test
+    void scheduleBPrintsNomineeDistributionAndReducesLines3aAnd3b() throws Exception {
+        Map<String, String> m = partI();
+        m.put("/formW2s/#" + W2 + "/writableWages", dollar("60000.00"));
+        m.put("/formW2s/#" + W2 + "/writableOasdiWages", dollar("60000.00"));
+        m.put("/formW2s/#" + W2 + "/writableMedicareWages", dollar("60000.00"));
+        m.put("/filerResidenceAndIncomeState", enumValue("fl", "/scopedStateOptions"));
+        String div = "d1e2f3a4-1111-4222-8333-444455556601";
+        m.put("/dividendReports", collection(div));
+        m.put("/dividendReportsIsDone", bool(true));
+        String p = "/dividendReports/#" + div + "/";
+        m.put(p + "filer", collectionItem(W2));
+        m.put(p + "payer", string("Index Fund Co"));
+        m.put(p + "ordinaryDividends", dollar("3000.00"));
+        m.put(p + "writableQualifiedDividends", dollar("2000.00"));
+        m.put(p + "qualifiedDividendsHoldingPeriodNotMet", bool(false));
+        m.put(p + "hasUnsupportedBoxes", bool(false));
+        m.put(p + "receivedAsNominee", bool(true));
+        m.put(p + "writableNomineeOrdinaryDividends", dollar("1000.00"));
+        m.put(p + "writableNomineeQualifiedDividends", dollar("800.00"));
+        m.put(p + "nomineeShareOfOtherBoxes", bool(false));
+        m.put(p + "hasSeenLastAvailableScreen", bool(true));
+        byte[] bytes = generate(m);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> sb = fieldsOnPages(doc, SB_FOOTER);
+            assertEquals(
+                    "Index Fund Co",
+                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_34[0]").trim());
+            amount(sb, "f1_35[0]", 3000, "line 5 payer");
+            assertEquals(
+                    "Subtotal",
+                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_36[0]").trim());
+            amount(sb, "f1_37[0]", 3000, "line 5 subtotal");
+            assertEquals(
+                    "Nominee Distribution",
+                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_38[0]").trim());
+            String nomineeAmount = ScheduleSETy2026PdfSmokeTest.value(sb, "f1_39[0]");
+            assertTrue(nomineeAmount.contains("("), "Nominee Distribution is in parentheses: " + nomineeAmount);
+            assertEquals(100000, cents(nomineeAmount), "Nominee Distribution $1,000");
+            amount(sb, "f1_64[0]", 2000, "line 6");
+            Map<String, String> f1040 = fieldsOnPages(doc, "Form 1040 (2026)");
+            amount(f1040, "f1_60[0]", 1200, "line 3a");
+            amount(f1040, "f1_61[0]", 2000, "line 3b");
+        }
+    }
+
     @Test
     void scheduleBPrintsK1Form1041InterestAndOrdinaryDividends() throws Exception {
         // Schedule K-1 (Form 1041) (2025) page 2: box 1 is Form 1040 line 2b; box 2a is line 3b.
@@ -266,11 +317,15 @@ class ScheduleBAndETy2026PdfSmokeTest {
         try (PDDocument doc = Loader.loadPDF(bytes)) {
             Map<String, String> sb = fieldsOnPages(doc, SB_FOOTER);
             assertFalse(sb.isEmpty(), "Schedule B printed");
-            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(sb, "f1_03[0]").trim());
+            assertEquals(
+                    "Harbor Trust",
+                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_03[0]").trim());
             amount(sb, "f1_04[0]", 900, "Part I box 1");
             amount(sb, "f1_31[0]", 900, "line 2");
             amount(sb, "f1_33[0]", 900, "line 4");
-            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(sb, "f1_34[0]").trim());
+            assertEquals(
+                    "Harbor Trust",
+                    ScheduleSETy2026PdfSmokeTest.value(sb, "f1_34[0]").trim());
             amount(sb, "f1_35[0]", 1600, "Part II box 2a");
             amount(sb, "f1_64[0]", 1600, "line 6");
         }
