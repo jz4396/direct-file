@@ -157,6 +157,36 @@ class CreditFormsTy2026PdfSmokeTest {
         return generate(scenario, scenarioFacts(scenario));
     }
 
+    /**
+     * The saver scenario's federal facts, filed from Florida instead of Massachusetts.
+     *
+     * <p>The scenario is a full-year Massachusetts resident with one W-2 of $24,469, no rent, and
+     * Social Security and Medicare tax under the $2,000 line 11a cap. Form 1 line 21 is under $24,000
+     * after the $4,400 single exemption, so the return stops: the tax table, No Tax Status, and the
+     * Limited Income Credit are not calculated. 2025 Form 1 instructions, line 22 ("If line 21 is less
+     * than $24,000, find the proper tax by using the tax tables"); M.G.L. c. 62, § 3B(b)(1)(A)
+     * ($4,400); M.G.L. c. 62, § 4(b) (5 percent). Raising the wages enough to clear that threshold
+     * would leave the Form 8880 20 percent band (Notice 2025-67: single limits $24,250 and $26,250).
+     *
+     * <p>Florida levies no personal income tax, so this federal return has no state form. Fla. Const.
+     * art. VII, § 5(a). Box 17 is $0. A Florida W-2 with state income tax withheld stops the return.
+     */
+    static Map<String, FactTypeWithItem> saverAsFloridaResident(Map<String, FactTypeWithItem> facts)
+            throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        facts.put(
+                "/filerResidenceAndIncomeState",
+                mapper.readValue(
+                        PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("fl", "/scopedStateOptions"),
+                        FactTypeWithItem.class));
+        for (String k : new ArrayList<>(facts.keySet())) {
+            if (k.startsWith("/formW2s/#") && k.endsWith("/writableStateWithholding")) {
+                facts.put(k, mapper.readValue(ScheduleATy2026PdfSmokeTest.dollar("0.00"), FactTypeWithItem.class));
+            }
+        }
+        return facts;
+    }
+
     /** The real PdfService over application.yaml's direct-file.pdfs settings. */
     static PdfService pdfService(FactGraphService fgs) throws Exception {
         StandardEnvironment env = new StandardEnvironment();
@@ -582,7 +612,10 @@ class CreditFormsTy2026PdfSmokeTest {
     @Test
     void saversCreditReturnPrints2026Form8880OnOnePage() throws Exception {
         // single-simple-savers-credit.json: single, $24,469 W-2 wages with $4,000 elective deferrals (box 12 AA).
-        try (PDDocument doc = Loader.loadPDF(generateScenario("single-simple-savers-credit.json"))) {
+        // Filed from Florida so Form 1's tax-table stop does not apply. See saverAsFloridaResident.
+        try (PDDocument doc = Loader.loadPDF(generate(
+                "single-simple-savers-credit.json",
+                saverAsFloridaResident(scenarioFacts("single-simple-savers-credit.json"))))) {
             List<String> texts = pageTexts(doc);
             assertFalse(String.join(" ", texts).contains(COVER_SHEET), "draft cover sheet dropped");
             List<Integer> p8880 = pages(texts, CreditFormsTy2026PdfSmokeTest::is8880);
