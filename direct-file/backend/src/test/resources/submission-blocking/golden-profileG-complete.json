@@ -238,7 +238,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/hasAmtPreferenceItems": {
@@ -413,7 +413,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/filers/#859c03d1-af4a-447f-96aa-d19397048a48/occupation": {

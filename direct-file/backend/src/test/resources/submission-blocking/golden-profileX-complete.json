@@ -236,7 +236,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/formW2s/#13500000-0000-4000-8000-000000002701/hasSeenLastAvailableScreen": {
@@ -522,7 +522,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/scheduleEHasPartIVIncome": {
