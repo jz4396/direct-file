@@ -59,6 +59,8 @@ import idPitEn from './en.idPit.yaml';
 import idPitEs from './es.idPit.yaml';
 import ksPitEn from './en.ksPit.yaml';
 import ksPitEs from './es.ksPit.yaml';
+import nmPitEn from './en.nmPit.yaml';
+import nmPitEs from './es.nmPit.yaml';
 
 type Tree = Record<string, unknown>;
 
@@ -159,6 +161,8 @@ for (const [locale, overlay] of [
   [esLocale, idPitEs],
   [enLocale, ksPitEn],
   [esLocale, ksPitEs],
+  [enLocale, nmPitEn],
+  [esLocale, nmPitEs],
 ] as const) {
   Object.assign(locale, deepMerge(locale as Tree, overlay as Tree));
 }

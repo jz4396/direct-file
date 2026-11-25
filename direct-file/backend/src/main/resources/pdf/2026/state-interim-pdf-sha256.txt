@@ -8,7 +8,10 @@
 # are not the templates, so the 2025 DOR forms stand in and each file keeps 2025 in its name. The 2026 Idaho
 # Form 40 is not the template, so the 2025 Form 40 (EFO00089, rev. 03-02-2026) stands in and the file keeps 2025
 # in its name. The 2026 Kansas Form K-40 is not posted, so the 2025 Form K-40 (rev. 8-5-25) stands in and the file
-# keeps 2025 in its name. Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the
+# keeps 2025 in its name. The 2026 New Mexico PIT-1 is not posted, so the 2025 PIT-1 stands in and the
+# file keeps 2025 in its name. The published PDF has no fillable fields. The committed file is that
+# download with AcroForm fields added, so this hash is not the untouched download
+# (70a37142468c02661f871cb53030a86fa3666492bfb94a09ea8fa801f2a08e03). Format: <sha256>  <path relative to pdf/2026>  <source URL>. Rechecked against the
 # committed files by StateInterimPdfHashManifestTest. When the 2026 form is published (#124), download it, hash it,
 # re-verify the field map in that template's configuration.yml, and replace the row.
 # #124 swap: then run Ty2026TemplateSwapHarnessTest with -Dty2026.templates.write=true; it fails on any mapped field
@@ -25,3 +28,4 @@ cf8c6d0b819f90fa56993f0647895e7e4000e36e42607c36a6a89d9170d82a5b  PA40SP/en/2025
 3f4f6f04e4a82de0b938a0d7e780039730cb60a41561f788aa515c638eabb970  MAHC/en/2025_schedule-hc.pdf  https://www.mass.gov/doc/2025-schedule-hc-health-care-information/download
 1390489138a7df67095155aaf34e6e8f39a4fd36041594f95b766f5e33bb8a13  ID40/en/2025_form-40.pdf  https://tax.idaho.gov/wp-content/uploads/forms/EFO00089/EFO00089_03-02-2026.pdf
 dfff7caae33d2527ae9655f562a3469835556cc6ec6ab40297641caf10379fdb  KS40/en/2025_k-40.pdf  https://ksrevenue.gov/pdf/k-4025.pdf
+d3e8250468622d6e6debb0ae271af35f464c4996b1ace36a97df72cbb8dc16f4  NMPIT1/en/2025_pit-1.pdf  https://realfile.tax.newmexico.gov/2025pit-1.pdf

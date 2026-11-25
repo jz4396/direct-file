@@ -216,6 +216,23 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutKsForm2441",
             "/flowKnockoutKsSchedule1A",
             "/flowKnockoutKsTaxTable",
+            // #93 slice 9: New Mexico stops. Each is complete false when the return is not a PIT-1, and incomplete
+            // when the New Mexico question is unanswered, so the PDF is not printed with the unmodeled line as zero.
+            // 2025 PIT-1 is the interim template until the 2026 form is posted. NMSA 1978 § 7-2-7 (Laws 2024, ch. 67).
+            // Line 18 is the tax rate table at the row midpoint when line 17 is $100,000 or less (lo < line 17 <= hi),
+            // and the page T-7 worksheet when line 17 is over $100,000. The worksheet bases are $2 under the statute.
+            "/flowKnockoutNmPartYearOrNonresident",
+            "/flowKnockoutNmW2NotNewMexico",
+            "/flowKnockoutNmOtherFederalIncome",
+            "/flowKnockoutNmDependents",
+            "/flowKnockoutNmAgeOrBlind",
+            "/flowKnockoutNmClaimedAsDependent",
+            "/flowKnockoutNmFilingStatus",
+            "/flowKnockoutNmItemizedDeductions",
+            "/flowKnockoutNmSchedule1A",
+            "/flowKnockoutNmLowAgi",
+            "/flowKnockoutNmPitAdj",
+            "/flowKnockoutNmCreditForTaxesPaid",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.

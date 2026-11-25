@@ -1,0 +1,76 @@
+# #93 slice 9: New Mexico PIT-1. YEAR-BASED MAPPING: 2025 FORM AS THE INTERIM TAX YEAR 2026 TEMPLATE.
+# The 2026 PIT-1 is not posted. This 2025 form stands in. The published PDF has no fillable fields;
+# the fields below were added on that form. Preprinted text that still says 2025 is left as printed.
+# Source: https://realfile.tax.newmexico.gov/2025pit-1.pdf
+# SHA-256 70a37142468c02661f871cb53030a86fa3666492bfb94a09ea8fa801f2a08e03
+# Included when /stateReturnIsNm. Stops in nmPit refuse the package, so the zero lines below are the supported entry.
+# Whole dollars, no commas, no decimals. Zero prints 0.
+# NmPit1PdfForm fills the ~nm* pseudo-facts (name, address, filing status, residency, rate-table indicator).
+includeWhen: /stateReturnIsNm
+otherRequiredFacts:
+  - /isFilingStatusMFJ
+  - /filingStatus
+  - /address
+  - /primaryFiler/firstName
+  - /primaryFiler/middleInitial
+  - /primaryFiler/lastName
+  - /primaryFiler/tin
+  - /secondaryFiler/firstName
+  - /secondaryFiler/middleInitial
+  - /secondaryFiler/lastName
+  - /secondaryFiler/tin
+  - /nmResidencyStatus
+  - /nmPit1Line9
+  - /nmPit1Line10
+  - /nmPit1Line11
+  - /nmPit1Line12
+  - /nmPit1Line13
+  - /nmPit1Line14
+  - /nmPit1Line15
+  - /nmPit1Line17
+  - /nmPit1Line18
+  - /nmPit1Line19
+  - /nmPit1Line20
+  - /nmPit1Line21
+  - /nmPit1Line22
+  - /nmPit1Line23
+  - /nmPit1Line27
+  - /nmPit1Line32
+  - /nmPit1Line33
+  - /nmPit1Line38
+  - /nmPit1Line39
+  - /nmPit1Line42
+form:
+  NmName: ~nmName
+  NmSsn: /primaryFiler/tin
+  NmSpouseName: ~nmSpouseName
+  NmSpouseSsn: ~nmSpouseSsn
+  NmStreet: ~nmStreet
+  NmCity: ~nmCity
+  NmState: ~nmState
+  NmZip: ~nmZip
+  NmSingle: ~nmSingle
+  NmJoint: ~nmJoint
+  NmResidency: ~nmResidency
+  Nm18a: ~nmRate
+  NmL9: /nmPit1Line9
+  NmL10: /nmPit1Line10
+  NmL11: /nmPit1Line11
+  NmL12: /nmPit1Line12
+  NmL13: /nmPit1Line13
+  NmL14: /nmPit1Line14
+  NmL15: /nmPit1Line15
+  NmL17: /nmPit1Line17
+  NmL18: /nmPit1Line18
+  NmL19: /nmPit1Line19
+  NmL20: /nmPit1Line20
+  NmL21: /nmPit1Line21
+  NmL22: /nmPit1Line22
+  NmSsn2: /primaryFiler/tin
+  NmL23: /nmPit1Line23
+  NmL27: /nmPit1Line27
+  NmL32: /nmPit1Line32
+  NmL33: /nmPit1Line33
+  NmL38: /nmPit1Line38
+  NmL39: /nmPit1Line39
+  NmL42: /nmPit1Line42

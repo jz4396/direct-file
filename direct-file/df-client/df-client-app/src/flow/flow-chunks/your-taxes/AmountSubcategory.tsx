@@ -914,6 +914,99 @@ export const AmountSubcategory = (
         <KnockoutButton i18nKey='button.knockout' />
       </Screen>
     </SubSubcategory>
+    {/* #93 slice 9: full-year New Mexico resident, W-2 wages only. No local return. */}
+    <SubSubcategory route='nm-pit-1'>
+      <Screen route='nm-residency' condition='/stateReturnIsNm'>
+        <Heading i18nKey='/heading/your-taxes/amount/nm-residency' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nm-residency' />
+        <Enum path='/nmResidencyStatus' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nm-part-year-knockout' condition='/flowKnockoutNmPartYearOrNonresident' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-part-year' />
+        <DFAlert i18nKey='/info/knockout/nm-part-year' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-w2-knockout' condition='/flowKnockoutNmW2NotNewMexico' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-w2' />
+        <DFAlert i18nKey='/info/knockout/nm-w2' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-other-income-knockout' condition='/flowKnockoutNmOtherFederalIncome' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-other-income' />
+        <DFAlert i18nKey='/info/knockout/nm-other-income' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-dependents-knockout' condition='/flowKnockoutNmDependents' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-dependents' />
+        <DFAlert i18nKey='/info/knockout/nm-dependents' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-age-blind-knockout' condition='/flowKnockoutNmAgeOrBlind' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-age-blind' />
+        <DFAlert i18nKey='/info/knockout/nm-age-blind' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-claimed-knockout' condition='/flowKnockoutNmClaimedAsDependent' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-claimed' />
+        <DFAlert i18nKey='/info/knockout/nm-claimed' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-filing-status-knockout' condition='/flowKnockoutNmFilingStatus' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-filing-status' />
+        <DFAlert i18nKey='/info/knockout/nm-filing-status' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-itemized-knockout' condition='/flowKnockoutNmItemizedDeductions' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-itemized' />
+        <DFAlert i18nKey='/info/knockout/nm-itemized' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-schedule-1a-knockout' condition='/flowKnockoutNmSchedule1A' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-schedule-1a' />
+        <DFAlert i18nKey='/info/knockout/nm-schedule-1a' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-low-agi-knockout' condition='/flowKnockoutNmLowAgi' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-low-agi' />
+        <DFAlert i18nKey='/info/knockout/nm-low-agi' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-pit-adj' condition='/stateReturnIsNm'>
+        <Heading i18nKey='/heading/your-taxes/amount/nm-pit-adj' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nm-pit-adj' />
+        <Boolean path='/nmHasPitAdj' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nm-pit-adj-knockout' condition='/flowKnockoutNmPitAdj' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-pit-adj' />
+        <DFAlert i18nKey='/info/knockout/nm-pit-adj' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+      <Screen route='nm-other-state' condition='/stateReturnIsNm'>
+        <Heading i18nKey='/heading/your-taxes/amount/nm-other-state-credit' />
+        <InfoDisplay i18nKey='/info/your-taxes/amount/nm-other-state-credit' />
+        <Boolean path='/nmHasCreditForTaxesPaid' />
+        <SaveAndOrContinueButton />
+      </Screen>
+      <Screen route='nm-other-state-knockout' condition='/flowKnockoutNmCreditForTaxesPaid' isKnockout={true}>
+        <IconDisplay name='ErrorOutline' size={9} isCentered />
+        <Heading i18nKey='/heading/knockout/nm-other-state' />
+        <DFAlert i18nKey='/info/knockout/nm-other-state' headingLevel='h3' type='warning' />
+        <KnockoutButton i18nKey='button.knockout' />
+      </Screen>
+    </SubSubcategory>
     {/* #77 Form 6251 cases this tool doesn't compute */}
     <Screen route='amt-mfs-add-back-knockout' condition='/flowKnockoutAmtMfsAddBack' isKnockout={true}>
       <IconDisplay name='ErrorOutline' size={9} isCentered />

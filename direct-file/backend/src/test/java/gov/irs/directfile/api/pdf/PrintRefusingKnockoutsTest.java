@@ -299,6 +299,18 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutKsForm2441",
                 "/flowKnockoutKsSchedule1A",
                 "/flowKnockoutKsTaxTable",
+                "/flowKnockoutNmPartYearOrNonresident",
+                "/flowKnockoutNmW2NotNewMexico",
+                "/flowKnockoutNmOtherFederalIncome",
+                "/flowKnockoutNmDependents",
+                "/flowKnockoutNmAgeOrBlind",
+                "/flowKnockoutNmClaimedAsDependent",
+                "/flowKnockoutNmFilingStatus",
+                "/flowKnockoutNmItemizedDeductions",
+                "/flowKnockoutNmSchedule1A",
+                "/flowKnockoutNmLowAgi",
+                "/flowKnockoutNmPitAdj",
+                "/flowKnockoutNmCreditForTaxesPaid",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -356,8 +368,9 @@ class PrintRefusingKnockoutsTest {
         // /flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits. 138 plus 1 is 139. Lifting the nonnegative
         // Schedule K-1 (Form 1041) box 8 stop does not add or remove a path: /flowKnockoutScheduleEPartIIIBox8
         // stays inside /flowKnockoutScheduleEPartII, and a loss still refuses the print. 139 plus 0 is 139.
+        // #93 slice 9 adds the twelve New Mexico stops. 139 plus 12 is 151.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(139, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(151, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
