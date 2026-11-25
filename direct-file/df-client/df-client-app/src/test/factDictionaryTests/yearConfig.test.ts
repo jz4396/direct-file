@@ -183,6 +183,7 @@ describe(`accepted authorities`, () => {
   };
 
   it(`a statute cite (IRC section, URL, and quote) with no Rev. Proc. cite`, () => {
+    expect(config.sources[`irc`].medium).toBe(`statute`);
     expect(config.sources[`irc`].kind).toBe(`statute`);
     for (const fact of [
       `/scheduleASaltLimitBeforeMfsHalving`,
@@ -198,7 +199,8 @@ describe(`accepted authorities`, () => {
   });
 
   it(`the HHS poverty guidelines notice (Federal Register page and quote) as the source of a dollar amount`, () => {
-    expect(config.sources[`fr-2025-01377`].kind).toBe(`pdf`);
+    expect(config.sources[`fr-2025-01377`].medium).toBe(`pdf`);
+    expect(config.sources[`fr-2025-01377`].kind).toBe(`final`);
     for (const fact of [`/federalPovertyLineMagicNumberStartingNumber`, `/federalPovertyLineMagicNumberIncrement`]) {
       expect(validateConfig(onlyFrom(fact, `fr-2025-01377`), facts)).toEqual([]);
     }
