@@ -5,6 +5,7 @@ subsubcategories:
     schedule-c-eligibility: Ingresos de trabajo por cuenta propia
     schedule-c-business: Información del negocio
     schedule-c-spouse: Negocio del cónyuge
+    schedule-c-simplified-home: Método simplificado para más de un negocio
 headings:
   /heading/income/schedule-c: Ingresos de trabajo por cuenta propia
   /heading/income/schedule-c/intro:
@@ -12,6 +13,9 @@ headings:
     {{/taxYear}}?
   /heading/income/schedule-c/qualified-joint-venture:
     ¿Usted y su cónyuge eligen tratar este negocio como una empresa conjunta calificada?
+  /heading/income/schedule-c/qjv-only-owners: ¿Usted y su cónyuge son los únicos dueños de este negocio?
+  /heading/income/schedule-c/qjv-not-an-entity:
+    ¿Este negocio es propiedad de una LLC u otra entidad de derecho estatal, y lo operan a través de ella?
   /heading/income/schedule-c/qbi-carryforward:
     ¿Tiene una pérdida de negocio calificada que se traslada de un año anterior?
   /heading/income/schedule-c/qbi-cooperative: ¿Es usted cliente de una cooperativa agrícola u hortícola?
@@ -30,7 +34,7 @@ headings:
   /heading/income/schedule-c/amounts: Ingrese los ingresos brutos y los gastos
   /heading/knockout/schedule-c-qbi: Esta herramienta no puede calcular su deducción por ingreso calificado de negocios
   /heading/knockout/schedule-c-qualified-joint-venture:
-    Esta herramienta no puede presentar una empresa conjunta calificada
+    Esta empresa conjunta calificada no se puede presentar aquí
   /heading/knockout/schedule-c-spouse-business:
     Esta herramienta no puede presentar más de un negocio de su cónyuge
   /heading/knockout/schedule-c-community-property:
@@ -100,6 +104,12 @@ headings:
   /heading/income/schedule-c/home-office-rental: "¿Esta deducción es por un uso distinto del alquiler del hogar?"
   /heading/income/schedule-c/home-office-carryover: "¿No tiene un traslado de gastos reales del Formulario 8829?"
   /heading/income/schedule-c/home-office-square-feet: "Ingrese los pies cuadrados del hogar y del área del negocio"
+  /heading/income/schedule-c/primary-one-home:
+    "¿Todos sus negocios del método simplificado están en el mismo hogar?"
+  /heading/income/schedule-c/secondary-one-home:
+    "¿Todos los negocios del método simplificado de su cónyuge están en el mismo hogar?"
+  /heading/income/schedule-c/spouses-same-space:
+    "¿Confirma que usted y su cónyuge no reclaman la misma parte del hogar?"
   /heading/income/schedule-c/energy: "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
   /heading/income/schedule-c/has-expenses: "¿Este negocio tuvo gastos deducibles?"
   /heading/income/schedule-c/which-expenses: "¿Qué gastos tuvo este negocio?"
@@ -280,14 +290,63 @@ info:
   /info/income/schedule-c/qualified-joint-venture:
     body: >-
       Una empresa conjunta calificada es un negocio que usted y su cónyuge poseen y operan juntos y eligen declarar
-      como propietarios únicos. Conteste que sí si hace esa elección. Esta herramienta no puede presentarla.
-  /info/knockout/schedule-c-qualified-joint-venture:
+      como propietarios únicos. Pueden elegir si cada uno participa materialmente en el negocio, son los únicos
+      dueños y presentan una declaración conjunta. Dividan el ingreso, la ganancia, la pérdida, la deducción y el
+      crédito según su participación en el negocio. Cada uno presenta un Anexo C por separado. Un negocio que se
+      posee y opera a través de una LLC no califica.
+  /info/income/schedule-c/qjv-only-owners:
+    body: La elección requiere que usted y su cónyuge sean los únicos dueños del negocio.
+  /info/income/schedule-c/qjv-not-an-entity:
+    body: >-
+      Un negocio que los cónyuges poseen y operan a través de una LLC no califica para la elección. Solo califica
+      un negocio que los cónyuges poseen y operan como copropietarios, y no a nombre de una entidad de derecho
+      estatal.
+  /info/knockout/schedule-c-qjv-not-joint-return:
     alertText:
       body:
         - p: >-
-            Eligió el tratamiento de empresa conjunta calificada. Cada cónyuge declararía una parte de ese negocio.
-            Esta herramienta no puede presentar esa elección. Tendrá que usar otra manera de presentar esta
+            Eligió el tratamiento de empresa conjunta calificada. La elección requiere que presente una declaración
+            conjunta. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-second-business:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada y uno de ustedes tiene un segundo negocio. Esta
+            herramienta puede presentar la elección solo cuando cada cónyuge tiene exactamente un Anexo C para ese
+            negocio. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-not-one-each:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Cada uno debe presentar un Anexo C por separado.
+            Esta herramienta puede presentar la elección solo cuando la declaración tiene un Anexo C para usted y
+            uno para su cónyuge. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-material-participation:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Cada cónyuge debe participar materialmente en el
+            negocio. La línea G debe ser Sí en ambos Anexos C. Tendrá que usar otra manera de presentar esta
             declaración.
+  /info/knockout/schedule-c-qjv-not-only-owners:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Los cónyuges deben ser los únicos dueños del
+            negocio. Tendrá que usar otra manera de presentar esta declaración.
+  /info/knockout/schedule-c-qjv-llc:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada. Un negocio que los cónyuges poseen y operan a
+            través de una LLC no califica para la elección. Tendrá que usar otra manera de presentar esta
+            declaración.
+  /info/knockout/schedule-c-qjv-community-property:
+    alertText:
+      body:
+        - p: >-
+            Eligió el tratamiento de empresa conjunta calificada y vive en un estado de bienes gananciales. Esta
+            herramienta no divide el ingreso ganancial. Tendrá que usar otra manera de presentar esta declaración.
   /info/knockout/schedule-c-spouse-business:
     alertText:
       body:
@@ -454,8 +513,24 @@ info:
     body:
       "Ingrese el total de pies cuadrados del hogar y luego los pies cuadrados que realmente usó para este negocio. El
       área del negocio no puede ser mayor que el hogar. La deducción usa esa área del negocio, pero no más de 300 pies
-      cuadrados, por $5. Si más de un negocio usa el método simplificado, esta herramienta no puede dividir los 300 pies
-      cuadrados."
+      cuadrados en total para todos sus negocios en el hogar, por $5. Ingrese solo los pies cuadrados que asigna a este
+      negocio. No puede asignar más de lo que este negocio realmente usa. Cada cónyuge tiene un máximo aparte de 300
+      pies cuadrados."
+  /info/income/schedule-c/primary-one-home:
+    body:
+      "Si tiene más de un negocio en su hogar que usa el método simplificado, esos negocios deben estar en el mismo
+      hogar. Los 300 pies cuadrados son el total de todos ellos. Otro hogar necesita el Formulario 8829. Conteste que
+      sí si todos están en un solo hogar. Conteste que no si están en más de un hogar."
+  /info/income/schedule-c/secondary-one-home:
+    body:
+      "Si su cónyuge tiene más de un negocio en el hogar que usa el método simplificado, esos negocios deben estar en
+      el mismo hogar. Su cónyuge tiene un máximo aparte de 300 pies cuadrados. Conteste que sí si todos están en un
+      solo hogar. Conteste que no si están en más de un hogar."
+  /info/income/schedule-c/spouses-same-space:
+    body:
+      "En una declaración conjunta, cada uno puede elegir el método simplificado, pero no para la misma parte del
+      hogar. Cada uno tiene un máximo aparte de 300 pies cuadrados. Conteste que sí si no reclaman la misma parte.
+      Conteste que no si la reclaman."
   /info/income/schedule-c/energy:
     body: "Conteste que sí si reclama la deducción de la línea 27a. Necesita el Formulario 7205."
   /info/income/schedule-c/has-expenses:
@@ -519,7 +594,9 @@ info:
             agotamiento, el alquiler o arrendamiento de un vehículo, el Formulario 8829, espacio
             compartido, uso del
             hogar como alquiler, un traslado previo del Formulario 8829, un método simplificado que esta herramienta no
-            calcula, más de un negocio que usa el método simplificado, el Formulario 7205, comidas que no están
+            calcula, más de 300 pies cuadrados del método simplificado para usted o para su cónyuge, el método
+            simplificado y el Formulario 8829 para los negocios en el hogar de la misma persona, más de un hogar, o
+            usted y su cónyuge reclamando la misma parte del hogar, el Formulario 7205, comidas que no están
             limitadas al 50 por ciento, créditos por empleo, intereses que deben asignarse, amortización nueva, más de
             tres otros gastos, ingresos de la línea 6 de otro formulario, una pérdida en la que no participó
             materialmente, una pérdida que no está totalmente en riesgo, una pérdida de más de $128,000 en la línea 3
@@ -897,6 +974,18 @@ fields:
     errorMessages:
       ExceedsMinLimit: "Ingrese pies cuadrados de 0 o más"
       InvalidCharacters: "Ingrese pies cuadrados enteros, como 150"
+  /scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome:
+    boolean:
+      "yes": "Sí, todos están en el mismo hogar"
+      "no": "No, están en más de un hogar"
+  /scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome:
+    boolean:
+      "yes": "Sí, todos están en el mismo hogar"
+      "no": "No, están en más de un hogar"
+  /scheduleCSpousesDoNotClaimSameHomeSpace:
+    boolean:
+      "yes": "Sí, no reclamamos la misma parte del hogar"
+      "no": "No, reclamamos la misma parte del hogar"
   /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
     boolean:
       "yes": "Sí"
@@ -1031,6 +1120,12 @@ dataviews:
       "¿No tiene un traslado de gastos reales del Formulario 8829?"
     /scheduleCBusinesses/*/writableHomeTotalSquareFeet: "Total de pies cuadrados del hogar"
     /scheduleCBusinesses/*/writableBusinessUseSquareFeet: "Pies cuadrados usados para este negocio"
+    /scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome:
+      "¿Todos sus negocios del método simplificado están en el mismo hogar?"
+    /scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome:
+      "¿Todos los negocios del método simplificado de su cónyuge están en el mismo hogar?"
+    /scheduleCSpousesDoNotClaimSameHomeSpace:
+      "¿Confirma que usted y su cónyuge no reclaman la misma parte del hogar?"
     /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
       "¿Reclamó la deducción por edificios comerciales de eficiencia energética?"
     /scheduleCBusinesses/*/hasDeductibleExpenses: "¿Este negocio tuvo gastos deducibles?"

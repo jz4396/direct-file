@@ -7,6 +7,7 @@ import {
   ContextHeading,
   DFAlert,
   Dollar,
+  Enum,
   GenericString,
   Heading,
   IconDisplay,
@@ -31,10 +32,11 @@ import type { ConditionString } from '../../Condition.js';
  * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Box 11 (FATCA) asks /requiredToFileForm8938. Yes stops.
  * No proceeds. Box 2d is the collectibles (28%) portion of box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)) and is
  * not added again. A box 2d greater than $0 with a Schedule D line 7 loss or a line 14 capital loss
- * carryover stops the return. Boxes 2c, 9, and 10, and box 14 greater than $0, still stop the return.
+ * carryover stops the return. Boxes 2c, 9, and 10 still stop the return. Box 14 greater than $0 is allowed
+ * only when the state return is not computed, the resident state has an income tax, and box 15 is that state.
  * Box 8 is the foreign country for box 7 and does not stop when the 904(j) election applies or box 7 is $0.
- * Boxes 15 and 16 are allowed when box 14 is $0. On a Pennsylvania, Illinois, North Carolina, or Arizona
- * return, a box 16 amount that is not box 1a plus box 2a stops the return.
+ * Boxes 15 and 16 are allowed when box 14 is $0. On a Pennsylvania, Illinois, North Carolina, Arizona,
+ * Massachusetts, or Idaho return, a box 16 amount that is not box 1a plus box 2a stops the return.
  * Ordinary and qualified dividends received as a nominee are subtracted on Schedule B line 5 (a subtotal,
  * then "Nominee Distribution") and on Form 1040 lines 3b and 3a. A nominee share of another box, an amount
  * over box 1a or box 1b, a subtraction that leaves remaining box 1b above remaining box 1a, or any nominee
@@ -291,12 +293,21 @@ export const DividendIncomeSubcategory = (
           <Heading i18nKey='/heading/income/dividends/boxes-14-16' />
           <InfoDisplay i18nKey='/info/income/dividends/boxes-14-16' />
           <Dollar path='/dividendReports/*/writableStateTaxWithheld' required={false} />
+          <Enum path='/dividendReports/*/writableState' renderAs='select' required={false} />
           <GenericString path='/dividendReports/*/writableStateIdNumber' required={false} />
           <Dollar path='/dividendReports/*/writableStateDistribution' required={false} />
           <SaveAndOrContinueButton />
         </Screen>
-        {knockout(`1099-div-box-14-knockout`, `/dividendReports/*/hasStateTaxWithheld`, `dividends-unsupported-boxes`)}
-        {knockout(`1099-div-box-16-knockout`, `/flowKnockoutDividendStateDistribution`, `dividends-state-distribution`)}
+        {knockout(
+          `1099-div-box-14-knockout`,
+          `/dividendReports/*/stateTaxWithheldUnsupported`,
+          `dividends-unsupported-boxes`
+        )}
+        {knockout(
+          `1099-div-box-16-knockout`,
+          `/flowKnockoutDividendStateDistribution`,
+          `dividends-state-distribution`
+        )}
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />
           <InfoDisplay i18nKey='/info/income/dividends/unsupported-boxes' />

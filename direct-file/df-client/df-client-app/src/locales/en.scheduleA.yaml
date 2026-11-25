@@ -16,7 +16,7 @@ info:
   /info/credits-and-deductions/deductions/itemize-unsupported:
     body: "Mortgage debt over $750,000 ($375,000 if married filing separately) or mortgage interest not reported on Form 1098; investment interest; gifts to charity other than cash or check; charitable contribution carryovers; casualty or theft losses; other taxes or other itemized deductions such as gambling losses; or foreign income you excluded from tax."
   /info/credits-and-deductions/deductions/itemize-amounts:
-    body: "Enter 0 for anything that doesn’t apply. State and local taxes are limited to $40,400 ($20,200 if married filing separately), less at higher incomes. Medical expenses count only above 7.5% of your adjusted gross income, and cash gifts only above 0.5% of it."
+    body: "Enter 0 for anything that doesn’t apply. Include state and local income taxes withheld during the year, including Form 1099-DIV box 14. That box is not added for you. State and local taxes are limited to $40,400 ($20,200 if married filing separately), less at higher incomes. Medical expenses count only above 7.5% of your adjusted gross income, and cash gifts only above 0.5% of it."
   /info/credits-and-deductions/deductions/itemize-elect:
     body: "Most people should answer no. Some people itemize anyway, for example if their state return requires it or a spouse filing separately itemizes."
   /info/knockout/schedule-a-unsupported:

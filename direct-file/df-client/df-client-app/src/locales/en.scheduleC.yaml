@@ -5,11 +5,15 @@ subsubcategories:
     schedule-c-eligibility: Self-employment income
     schedule-c-business: Business information
     schedule-c-spouse: Spouse's business
+    schedule-c-simplified-home: Simplified method for more than one business
 headings:
   /heading/income/schedule-c: Self-employment income
   /heading/income/schedule-c/intro: Did you have self-employment, gig, or freelance income in {{/taxYear}}?
   /heading/income/schedule-c/qualified-joint-venture:
     Are you and your spouse electing to treat this business as a qualified joint venture?
+  /heading/income/schedule-c/qjv-only-owners: Are you and your spouse the only owners of this business?
+  /heading/income/schedule-c/qjv-not-an-entity:
+    Is this business owned and operated through an LLC or other state-law entity?
   /heading/income/schedule-c/qbi-carryforward: Do you have a qualified business loss carryforward from a prior year?
   /heading/income/schedule-c/qbi-cooperative: Are you a patron of an agricultural or horticultural cooperative?
   /heading/income/schedule-c/material-participation: Did you materially participate in this business?
@@ -27,7 +31,7 @@ headings:
   /heading/income/schedule-c/file-1099: If “Yes,” did you or will you file required Form(s) 1099?
   /heading/income/schedule-c/amounts: Enter gross receipts and expenses
   /heading/knockout/schedule-c-qbi: This tool can’t figure your qualified business income deduction
-  /heading/knockout/schedule-c-qualified-joint-venture: This tool can't file a qualified joint venture
+  /heading/knockout/schedule-c-qualified-joint-venture: This qualified joint venture can't be filed here
   /heading/knockout/schedule-c-spouse-business: This tool can't file more than one business for your spouse
   /heading/knockout/schedule-c-community-property:
     This tool can't file your spouse's business from a community property state
@@ -90,6 +94,12 @@ headings:
   /heading/income/schedule-c/home-office-rental: "Is this deduction for a use other than rental of the home?"
   /heading/income/schedule-c/home-office-carryover: "Do you have no carryover of actual expenses from Form 8829?"
   /heading/income/schedule-c/home-office-square-feet: "Enter the square feet of the home and of the business area"
+  /heading/income/schedule-c/primary-one-home:
+    "Are all of your simplified-method businesses in the same home?"
+  /heading/income/schedule-c/secondary-one-home:
+    "Are all of your spouse's simplified-method businesses in the same home?"
+  /heading/income/schedule-c/spouses-same-space:
+    "Do you confirm that you and your spouse do not claim the same portion of the home?"
   /heading/income/schedule-c/energy: "Did you claim the energy efficient commercial buildings deduction?"
   /heading/income/schedule-c/has-expenses: "Did this business have deductible expenses?"
   /heading/income/schedule-c/which-expenses: "Which expenses did this business have?"
@@ -112,13 +122,60 @@ info:
   /info/income/schedule-c/qualified-joint-venture:
     body: >-
       A qualified joint venture is a business you and your spouse jointly own and operate and elect to report as
-      sole proprietors. Answer yes if you are making that election. This tool cannot file it.
-  /info/knockout/schedule-c-qualified-joint-venture:
+      sole proprietors. You can elect if you each materially participate in the business, you are the only owners,
+      and you file a joint return. Divide the income, gain, loss, deduction, and credit based on your interests in
+      the business. Each of you files a separate Schedule C. A business owned and operated through an LLC does not
+      qualify.
+  /info/income/schedule-c/qjv-only-owners:
+    body: The election requires that you and your spouse are the only owners of the business.
+  /info/income/schedule-c/qjv-not-an-entity:
+    body: >-
+      A business owned and operated by spouses through an LLC does not qualify for the election. Only a business
+      owned and operated by the spouses as co-owners, and not in the name of a state-law entity, qualifies.
+  /info/knockout/schedule-c-qjv-not-joint-return:
     alertText:
       body:
         - p: >-
-            You elected qualified joint venture treatment. Each spouse would report a share of that business. This
-            tool cannot file that election. You will need another way to file this return.
+            You elected qualified joint venture treatment. The election requires you to file a joint return. You
+            will need another way to file this return.
+  /info/knockout/schedule-c-qjv-second-business:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment, and one of you has a second business. This tool can file
+            the election only when each spouse has exactly one Schedule C for that business. You will need another
+            way to file this return.
+  /info/knockout/schedule-c-qjv-not-one-each:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. Each of you must file a separate Schedule C. This tool
+            can file the election only when the return has one Schedule C for you and one for your spouse. You will
+            need another way to file this return.
+  /info/knockout/schedule-c-qjv-material-participation:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. Each spouse must materially participate in the business.
+            Line G must be Yes on both Schedules C. You will need another way to file this return.
+  /info/knockout/schedule-c-qjv-not-only-owners:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. The spouses must be the only owners of the business. You
+            will need another way to file this return.
+  /info/knockout/schedule-c-qjv-llc:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment. A business owned and operated by spouses through an LLC
+            does not qualify for the election. You will need another way to file this return.
+  /info/knockout/schedule-c-qjv-community-property:
+    alertText:
+      body:
+        - p: >-
+            You elected qualified joint venture treatment, and you live in a community property state. This tool
+            does not split community income. You will need another way to file this return.
   /info/knockout/schedule-c-spouse-business:
     alertText:
       body:
@@ -410,8 +467,24 @@ info:
   /info/income/schedule-c/home-office-square-feet:
     body:
       "Enter the total square feet of the home, then the square feet you actually used for this business. The business
-      area cannot be larger than the home. The deduction uses that business area, but not more than 300 square feet,
-      times $5. If more than one business uses the simplified method, this tool cannot split the 300 square feet."
+      area cannot be larger than the home. The deduction uses that business area, but not more than 300 square feet
+      for all of your businesses in the home, times $5. Enter only the square feet you allocate to this business.
+      You may not allocate more than this business actually uses. Each spouse has a separate 300 square foot maximum."
+  /info/income/schedule-c/primary-one-home:
+    body:
+      "If you have more than one business in your home that uses the simplified method, those businesses must be in
+      the same home. The 300 square feet are the total for all of them. Another home needs Form 8829. Answer yes if
+      they are all in one home. Answer no if they are in more than one home."
+  /info/income/schedule-c/secondary-one-home:
+    body:
+      "If your spouse has more than one business in the home that uses the simplified method, those businesses must be
+      in the same home. Your spouse has a separate 300 square foot maximum. Answer yes if they are all in one home.
+      Answer no if they are in more than one home."
+  /info/income/schedule-c/spouses-same-space:
+    body:
+      "On a joint return, each of you may elect the simplified method, but not for the same portion of the home. Each
+      of you has a separate maximum of 300 square feet. Answer yes if you do not claim the same portion. Answer no if
+      you do."
   /info/income/schedule-c/energy:
     body: "Answer yes if you claim the line 27a deduction. It needs Form 7205."
   /info/income/schedule-c/has-expenses:
@@ -466,7 +539,9 @@ info:
             for a vehicle, no evidence for the vehicle deduction, depreciation, depletion, a vehicle lease, Form 8829,
             shared space,
             rental use of the home, a prior Form 8829 carryover, a simplified method this tool does not figure, more
-            than one business using the simplified method, Form 7205, meals that are not limited to 50 percent,
+            than 300 simplified-method square feet for you or for your spouse, the simplified method and Form 8829 for
+            the same person's home businesses, more than one home, or you and your spouse claiming the same portion of
+            the home, Form 7205, meals that are not limited to 50 percent,
             employment credits, interest that must be allocated, new amortization, more than three other expenses, line
             6 income from another form, a loss you did not materially participate in, a loss that is not fully at risk,
             a loss of more than $128,000 on Schedule 1 (Form 1040), line 3 (Form 461, excess business loss), or an
@@ -843,6 +918,18 @@ fields:
     errorMessages:
       ExceedsMinLimit: "Enter square feet that are 0 or more"
       InvalidCharacters: "Enter whole square feet, like 150"
+  /scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome:
+    boolean:
+      "yes": "Yes, they are all in the same home"
+      "no": "No, they are in more than one home"
+  /scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome:
+    boolean:
+      "yes": "Yes, they are all in the same home"
+      "no": "No, they are in more than one home"
+  /scheduleCSpousesDoNotClaimSameHomeSpace:
+    boolean:
+      "yes": "Yes, we do not claim the same portion of the home"
+      "no": "No, we claim the same portion of the home"
   /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
     boolean:
       "yes": "Yes"
@@ -973,6 +1060,12 @@ dataviews:
       "Do you have no carryover of actual expenses from Form 8829?"
     /scheduleCBusinesses/*/writableHomeTotalSquareFeet: "Total square feet of the home"
     /scheduleCBusinesses/*/writableBusinessUseSquareFeet: "Square feet used for this business"
+    /scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome:
+      "Are all of your simplified-method businesses in the same home?"
+    /scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome:
+      "Are all of your spouse's simplified-method businesses in the same home?"
+    /scheduleCSpousesDoNotClaimSameHomeSpace:
+      "Do you confirm that you and your spouse do not claim the same portion of the home?"
     /scheduleCBusinesses/*/hasEnergyEfficientBuildingsDeduction:
       "Did you claim the energy efficient commercial buildings deduction?"
     /scheduleCBusinesses/*/hasDeductibleExpenses: "Did this business have deductible expenses?"

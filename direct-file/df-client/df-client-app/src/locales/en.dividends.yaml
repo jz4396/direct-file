@@ -148,9 +148,13 @@ info:
   /info/income/dividends/boxes-14-16:
     body:
       - p:
-          Box 14 is state income tax withheld. An amount greater than $0 stops this return. Box 15 is the payer’s state
-          identification number. Box 16 is the state distribution. Boxes 15 and 16 are not added to your federal return.
-          Leave a box blank if it’s empty on your form.
+          Box 14 is state income tax withheld. An amount greater than $0 is allowed when you live in a state that has an
+          income tax, this tool does not compute that state’s return, and box 15 is that state. It stops the return when
+          this tool computes your state return, when your state has no income tax, or when box 15 is a different state.
+          Box 14 is not added for you. If you itemize, include it with the state and local income taxes you enter on
+          Schedule A. Box 15 is the state and the payer’s state identification number. Box 16 is the state distribution.
+          On a Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho return, an amount in box 16 has
+          to equal box 1a plus box 2a. Leave a box blank if it’s empty on your form.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -253,14 +257,17 @@ info:
     alertText:
       body:
         - p:
-            This tool doesn’t support an amount in box 2c, 9, or 10, or state tax withheld in box 14. You’ll need
-            another way to file this return.
+            This tool doesn’t support an amount in box 2c, 9, or 10. State tax withheld in box 14 stops this return
+            when this tool computes your state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts,
+            or Idaho), when you live in Alaska, Florida, Nevada, South Dakota, Texas, Wyoming, Washington, Tennessee,
+            or New Hampshire, or when box 15 is a different state. You’ll need another way to file this return.
   /info/knockout/dividends-state-distribution:
     alertText:
       body:
         - p:
-            On a Pennsylvania, Illinois, North Carolina, or Arizona return, box 16 has to equal box 1a plus box 2a.
-            Those state returns use the federal amounts. You’ll need another way to file this return.
+            On a Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho return, box 16 has to equal
+            box 1a plus box 2a. Those state returns use the federal amounts. You’ll need another way to file this
+            return.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:
@@ -347,6 +354,8 @@ fields:
     name: <strong>Box 8</strong> - Foreign country or U.S. possession
   /dividendReports/*/writableStateTaxWithheld:
     name: <strong>Box 14</strong> - State tax withheld
+  /dividendReports/*/writableState:
+    name: <strong>Box 15</strong> - State
   /dividendReports/*/writableStateIdNumber:
     name: <strong>Box 15</strong> - State identification number
   /dividendReports/*/writableStateDistribution:
@@ -385,6 +394,7 @@ dataviews:
     /dividendReports/*/writableForeignTaxPaid: Box 7 - Foreign tax paid
     /dividendReports/*/writableForeignCountry: Box 8 - Foreign country or U.S. possession
     /dividendReports/*/writableStateTaxWithheld: Box 14 - State tax withheld
+    /dividendReports/*/writableState: Box 15 - State
     /dividendReports/*/writableStateIdNumber: Box 15 - State identification number
     /dividendReports/*/writableStateDistribution: Box 16 - State distribution
     /dividendReports/*/foreignTaxElectionRequirementsMet: Do all of the foreign tax requirements apply?

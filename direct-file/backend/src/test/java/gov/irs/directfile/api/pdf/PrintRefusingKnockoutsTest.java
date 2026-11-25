@@ -108,6 +108,9 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_SE_NONFARM_OPTIONAL_KNOCKOUT = "/flowKnockoutScheduleSENonfarmOptionalMethod";
     static final String SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT =
             "/flowKnockoutScheduleSENonfarmOptionalMethodCredits";
+    /** Box 14 code A on Schedule SE together with the CDCC or the CTC/ACTC. */
+    static final String SCHEDULE_E_K1_BOX14_EARNED_INCOME_CREDITS_KNOCKOUT =
+            "/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits";
     static final String FORM_8995_KNOCKOUT = "/flowKnockoutForm8995WithoutTy2026Template";
     /**
      * Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 are not computed (26 U.S.C. 55(b)(2), 56, 57). Lines 2g and 2j are
@@ -122,12 +125,14 @@ class PrintRefusingKnockoutsTest {
     /** 26 U.S.C. 55(d)(2) last sentence: MFS AMTI add-back above the $640,200 complete phaseout. */
     static final String AMT_MFS_ADD_BACK_KNOCKOUT = "/flowKnockoutAmtMfsAddBack";
     /**
-     * Form 1099-DIV boxes 2c, 9, and 10, and box 14 greater than $0, including section 1202 gain. Boxes 2b and 2d
-     * are supported. Box 8 and boxes 15-16 are supported when box 14 is $0. Box 11
+     * Form 1099-DIV boxes 2c, 9, and 10, and box 14 greater than $0 that is not the supported path, including
+     * section 1202 gain. Box 14 is allowed when the state return is not computed, the resident state has an income
+     * tax, and box 15 is that state. Boxes 2b and 2d are supported. Box 8 and boxes 15-16 are supported when box 14
+     * is $0. Box 11
      * (FATCA) asks Form 8938 and is not this stop. Boxes 2e, 2f and 6 are portions of box 1a or 2a. Box 13 is line 2g.
      */
     static final String DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT = "/flowKnockoutDividendUnsupportedBoxes";
-    /** 1099-DIV box 16 differs from box 1a plus box 2a on a computed PA, IL, NC, or AZ return. */
+    /** 1099-DIV box 16 differs from box 1a plus box 2a on a computed Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho return. */
     static final String DIVIDEND_STATE_DISTRIBUTION_KNOCKOUT = "/flowKnockoutDividendStateDistribution";
     /** 26 U.S.C. 301(c)(3)(A): box 3 above basis, reported on Form 8949. */
     static final String DIVIDEND_OVER_BASIS_KNOCKOUT = "/flowKnockoutNondividendDistributionsOverBasis";
@@ -282,6 +287,18 @@ class PrintRefusingKnockoutsTest {
                 "/flowKnockoutIdUseTax",
                 "/flowKnockoutIdSnapOrIncarcerated",
                 "/flowKnockoutIdForm39R",
+                "/flowKnockoutKsPartYearOrNonresident",
+                "/flowKnockoutKsW2NotKansas",
+                "/flowKnockoutKsOtherFederalIncome",
+                "/flowKnockoutKsDependents",
+                "/flowKnockoutKsAgeOrBlind",
+                "/flowKnockoutKsClaimedAsDependent",
+                "/flowKnockoutKsFilingStatus",
+                "/flowKnockoutKsItemizedDeductions",
+                "/flowKnockoutKsEarnedIncomeCredit",
+                "/flowKnockoutKsForm2441",
+                "/flowKnockoutKsSchedule1A",
+                "/flowKnockoutKsTaxTable",
                 FORM_2210_KNOCKOUT)); // Form 2210 Part II box B, C, D, A or E
         expected.addAll(PTC_KNOCKOUTS); // Form 8962 unresolved, or a case the draft does not compute
         expected.addAll(List.of(
@@ -306,11 +323,12 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_SE_OUT_OF_SCOPE_KNOCKOUT, // Schedule SE line this tool does not compute
                 SCHEDULE_SE_NONFARM_OPTIONAL_KNOCKOUT, // nonfarm optional method not allowed on this return
                 SCHEDULE_SE_NONFARM_OPTIONAL_CREDITS_KNOCKOUT, // election with the EITC, ACTC, or CDCC
+                SCHEDULE_E_K1_BOX14_EARNED_INCOME_CREDITS_KNOCKOUT, // box 14 code A with the CDCC or ACTC
                 AMT_PREFERENCE_KNOCKOUT, // Form 6251 lines 2c-2f, 2h-2i, 2k-2t, 3 and 8 (not lines 2g and 2j)
                 AMT_PREFERENCE_UNANSWERED_KNOCKOUT, // required Form 6251, preference question not complete
                 AMT_MFS_ADD_BACK_KNOCKOUT, // MFS AMTI over $640,200, add-back not computed
-                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2c, 9, 10, and box 14 > $0
-                DIVIDEND_STATE_DISTRIBUTION_KNOCKOUT, // box 16 ≠ box 1a + box 2a on a computed PA, IL, NC, or AZ return
+                DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT, // 1099-DIV boxes 2c, 9, 10, and unsupported box 14 > $0
+                DIVIDEND_STATE_DISTRIBUTION_KNOCKOUT, // box 16 ≠ box 1a + box 2a on a computed Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho return
                 DIVIDEND_OVER_BASIS_KNOCKOUT, // box 3 above basis
                 DIVIDEND_HOLDING_PERIOD_KNOCKOUT, // box 1b that is not qualified
                 DIVIDEND_REIT_HOLDING_PERIOD_KNOCKOUT, // box 5 that is not a qualified REIT dividend
@@ -334,9 +352,10 @@ class PrintRefusingKnockoutsTest {
         // #86 appends the 1099-DIV stops, including /flowKnockoutDividendStateDistribution, and does not list
         // Part III again. #347 adds /flowKnockoutPaK1GuaranteedPayments. #93 slice 6 adds the fourteen Massachusetts
         // stops. 112 on main plus the box 16 stop is 113. #93 slice 7 adds the thirteen Idaho stops. 113 plus 13 is
-        // 126.
+        // 126. #93 slice 8 adds the twelve Kansas stops. 126 plus 12 is 138. #85 adds
+        // /flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits. 138 plus 1 is 139.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
-        assertEquals(126, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
+        assertEquals(139, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());
         assertThrows(UnsupportedOperationException.class, () -> PrintRefusingKnockouts.FACT_PATHS.add("/x"));
         assertEquals(
@@ -937,6 +956,19 @@ class PrintRefusingKnockoutsTest {
                     }
                 }
             }
+            // #93 slice 8: a Kansas resident return refuses the same way.
+            Result<Object> ksReturn = graph.get("/stateReturnIsKs");
+            if (ksReturn.complete() && Boolean.TRUE.equals(ksReturn.get())) {
+                for (String path : PrintRefusingKnockouts.FACT_PATHS) {
+                    if (!path.startsWith("/flowKnockoutKs")) {
+                        continue;
+                    }
+                    Result<Object> knock = graph.get(path);
+                    if (!(knock.complete() && Boolean.FALSE.equals(knock.get()))) {
+                        expected.add(path);
+                    }
+                }
+            }
             // #93 slice 7: an Idaho resident return refuses the same way.
             Result<Object> idReturn = graph.get("/stateReturnIsId");
             if (idReturn.complete() && Boolean.TRUE.equals(idReturn.get())) {
@@ -1455,13 +1487,58 @@ class PrintRefusingKnockoutsTest {
                 List.of(DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT),
                 PrintRefusingKnockouts.refusingPaths(fgs.getGraph(boxes)));
 
-        // Box 14 $25 is state tax withheld. It is not Schedule A line 5a. Boxes 2c, 9, and 10 use the same stop.
+        // Florida golden return. Box 14 $25 is state tax withheld for a no-income-tax resident, so it stops.
+        // It is not Schedule A line 5a. Boxes 2c, 9, and 10 use the same stop.
         Map<String, FactTypeWithItem> box14 = commonDividendReturn(mapper);
         putJson(box14, mapper, div + "/writableStateTaxWithheld", ScheduleATy2026PdfSmokeTest.dollar("25.00"));
+        putJson(
+                box14,
+                mapper,
+                div + "/writableState",
+                "{\"$type\":\"gov.irs.factgraph.persisters.EnumWrapper\",\"item\":{\"value\":[\"sameState\"],\"enumOptionsPath\":\"/incomeFormStateOptions\"}}");
         Graph box14Graph = fgs.getGraph(box14);
         assertEquals("25.00", box14Graph.get(div + "/stateTaxWithheld").get().toString());
+        assertEquals(Boolean.TRUE, box14Graph.get("/dividendResidentStateHasNoIncomeTax").get());
         assertEquals(
                 List.of(DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT), PrintRefusingKnockouts.refusingPaths(box14Graph));
+
+        // New York single. Box 14 $100 and box 15 the resident state. The state return is not computed, and New
+        // York has an income tax, so the print is not refused. Federal lines match the same return without box 14.
+        // The amount is not Schedule A line 5a.
+        Map<String, FactTypeWithItem> nyWithout = commonDividendReturn(mapper);
+        putJson(
+                nyWithout,
+                mapper,
+                "/filerResidenceAndIncomeState",
+                "{\"$type\":\"gov.irs.factgraph.persisters.EnumWrapper\",\"item\":{\"value\":[\"ny\"],\"enumOptionsPath\":\"/scopedStateOptions\"}}");
+        Map<String, FactTypeWithItem> nyWith = new HashMap<>(nyWithout);
+        putJson(nyWith, mapper, div + "/writableStateTaxWithheld", ScheduleATy2026PdfSmokeTest.dollar("100.00"));
+        putJson(
+                nyWith,
+                mapper,
+                div + "/writableState",
+                "{\"$type\":\"gov.irs.factgraph.persisters.EnumWrapper\",\"item\":{\"value\":[\"sameState\"],\"enumOptionsPath\":\"/incomeFormStateOptions\"}}");
+        Graph nyWithoutGraph = fgs.getGraph(nyWithout);
+        Graph nyWithGraph = fgs.getGraph(nyWith);
+        assertEquals("100.00", nyWithGraph.get(div + "/stateTaxWithheld").get().toString());
+        assertEquals(Boolean.FALSE, nyWithGraph.get("/stateReturnComputed").get());
+        assertEquals(Boolean.FALSE, nyWithGraph.get("/dividendResidentStateHasNoIncomeTax").get());
+        assertEquals(Boolean.FALSE, nyWithGraph.get(DIVIDEND_UNSUPPORTED_BOXES_KNOCKOUT).get());
+        assertEquals(List.of(), PrintRefusingKnockouts.refusingPaths(nyWithGraph), "NY box 14 prints");
+        for (String line : List.of(
+                "/ordinaryDividends",
+                "/qualifiedDividends",
+                "/totalIncome",
+                "/agi",
+                "/standardDeduction",
+                "/taxableIncome",
+                "/scheduleAStateLocalIncomeOrSalesTax")) {
+            assertEquals(
+                    nyWithoutGraph.get(line).get().toString(),
+                    nyWithGraph.get(line).get().toString(),
+                    line);
+        }
+        assertEquals("0.00", nyWithGraph.get("/scheduleAStateLocalIncomeOrSalesTax").get().toString());
 
         // Florida: box 8 "Various", box 15 "FL 123", box 16 $2,000, box 14 $0. Box 16 is not box 1a plus box 2a
         // ($1,000,000 + $500). A return that is not a computed state return still prints.

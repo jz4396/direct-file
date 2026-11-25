@@ -33,6 +33,35 @@
   - Excess business loss: 26 U.S.C. 461(l) (https://www.law.cornell.edu/uscode/text/26/461). Rev. Proc. 2025-32
     §4.31, PDF p. 23: the amount under § 461(l)(3)(A)(ii)(II) for 2026 is $256,000 ($512,000 for joint returns).
     A Schedule 1 line 3 loss of more than $128,000 stops the return (Form 461, Who Must File (ii)).
+  - Line 30 simplified method for more than one business in one home: 2026 draft Instructions for Schedule C
+    (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), Line 30, PDF p. 12.
+    The election applies to all qualified business uses of that home. The maximum is 300 square feet for all
+    of the businesses in the home, allocated among them, and not more square feet than that business actually
+    uses. Each line 30 is $5 times that business's square feet, not more than that business's line 29.
+    Rev. Proc. 2013-13 §4. 26 U.S.C. 280A(c)(5). On a joint return each spouse has a separate 300 square foot
+    maximum and may not claim the same portion of the home.
+
+  Qualified joint venture (26 U.S.C. 761(f)(1)–(2), https://www.law.cornell.edu/uscode/text/26/761#f):
+  spouses who file a joint return may elect not to treat the venture as a partnership when the only members
+  are the two spouses and both materially participate (section 469(h), without regard to paragraph (5)).
+  All items of income, gain, loss, deduction, and credit are divided between them according to their
+  respective interests, and each spouse takes that share into account as a sole proprietor. 2026 Instructions
+  for Schedule C draft (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf, SHA-256
+  27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9, Oct 8, 2026), "Qualified Joint Venture"
+  (PDF p. 2): the spouses can elect if they "Each materially participate in the business ...; Are the only
+  owners of the business; and File a joint return"; a business "owned and operated by spouses through an LLC
+  does not qualify"; "divide all items of income, gain, loss, deduction, and credit ... based on your
+  respective interests ... Each of you must file a separate Schedule C". The election "does not alter the
+  application of the self-employment tax or the passive loss limitation rules" (PDF p. 3). The community-income
+  paragraph immediately below that sentence stays a separate stop: this tool does not file the community-property
+  sole-proprietorship treatment. A QJV yes while the filers live in a community-property state has its own reason,
+  and /flowKnockoutScheduleCCommunityProperty still stops a spouse-owned business that is not a QJV.
+
+  The supported election is one return-level yes, exactly one Schedule C for the primary filer and one for the
+  spouse (the #345 limit), both line G yes, the spouses are the only owners, and the business is not held
+  through an LLC or other state-law entity. There is no new arithmetic: each spouse's entered share is that
+  spouse's Schedule C, and each Schedule SE runs as in #345. Any other yes still stops, and each unmet
+  condition has its own reason.
 
   Implements gap: docs/tax/GAP-SCHEDULE-C.md (PR #3).
 -->
@@ -138,48 +167,6 @@
                 </Left>
                 <Right>
                   <Int>0</Int>
-                </Right>
-              </GreaterThan>
-            </Then>
-          </Case>
-        </Switch>
-      </Derived>
-    </Fact>
-
-    <Fact path="/scheduleCMultipleSimplifiedHomeOffices">
-      <Name>More than one business uses the simplified method</Name>
-      <Description>2026 draft Instructions for Schedule C
-        (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12: "You are limited to a maximum of 300 square feet
-        for all of the businesses you conduct in your home." This tool does not split that maximum. More than one
-        business that elects the simplified method stops the return. A business that has not started the line-item
-        questions, that does not claim a home office, or that does not elect the simplified method is not counted. An
-        unanswered election on a started line-item business stays incomplete. Rev. Proc. 2013-13.</Description>
-      <Export downstreamFacts="true" />
-      <Derived>
-        <Switch>
-          <Case>
-            <When>
-              <Not>
-                <Dependency path="/hasScheduleCBusinesses" />
-              </Not>
-            </When>
-            <Then>
-              <False />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <True />
-            </When>
-            <Then>
-              <GreaterThan>
-                <Left>
-                  <Count>
-                    <Dependency path="/scheduleCBusinesses/*/usesSimplifiedHomeOffice" />
-                  </Count>
-                </Left>
-                <Right>
-                  <Int>1</Int>
                 </Right>
               </GreaterThan>
             </Then>
@@ -690,8 +677,9 @@
         https://www.law.cornell.edu/uscode/text/26/1402#b_1). Schedule 1 lines 3 and 15, Schedule 2 line 4, Form
         8959, and Form 8995 combine both spouses. Still stopped: more than one business owned by the secondary
         filer, and any secondary-filer business on a return that is not married filing jointly (that net is not
-        reported on a Schedule SE). A qualified joint venture and a community-property state stop on the facts
-        below. EITC, CDCC, and ACTC cases stay on /flowKnockoutScheduleCEarnedIncomeCredits.
+        reported on a Schedule SE). A qualified joint venture that is not the supported one-each election,
+        and a community-property state, stop on the facts below. EITC, CDCC, and ACTC cases stay on
+        /flowKnockoutScheduleCEarnedIncomeCredits.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -769,9 +757,10 @@
       <Name>Electing qualified joint venture treatment</Name>
       <Description>
         Yes when the spouses elect under 26 U.S.C. 761(f)
-        (https://www.law.cornell.edu/uscode/text/26/761#f) to treat a jointly owned and operated business as a
-        qualified joint venture. Asked only when /askScheduleCQualifiedJointVenture is true. An unanswered
-        answer is not an election.
+        (https://www.law.cornell.edu/uscode/text/26/761#f) to treat the business as a qualified joint venture.
+        Asked only when /askScheduleCQualifiedJointVenture is true. An unanswered answer is not an election.
+        The supported yes is /scheduleCQjvHasOneEach plus the follow-up answers. Each spouse's entered share is
+        that spouse's Schedule C. There is no new arithmetic.
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -779,12 +768,96 @@
       </Writable>
     </Fact>
 
+    <Fact path="/scheduleCQjvSpousesAreOnlyOwners">
+      <Name>Spouses are the only owners of the qualified joint venture</Name>
+      <Description>
+        2026 Instructions for Schedule C draft (https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf, SHA-256
+        27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9, Oct 8, 2026), "Qualified Joint Venture"
+        (PDF p. 2): the spouses can elect if they "Are the only owners of the business". Asked when
+        /askScheduleCQjvFollowUps is true. Yes is required for the supported election.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCQjvHeldThroughLlc">
+      <Name>Qualified joint venture is held through an LLC or other state-law entity</Name>
+      <Description>
+        Yes when the business is owned and operated through an LLC or other state-law entity. The same
+        instructions, PDF p. 2: "Only businesses that are owned and operated by spouses as co-owners (and not in
+        the name of a state law entity) qualify for the election. Thus, a business owned and operated by spouses
+        through an LLC does not qualify for the election of a qualified joint venture." Yes stops the return.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCQjvElectionIsYes">
+      <Name>Qualified joint venture election is a completed yes</Name>
+      <Description>
+        Complete false when /scheduleCIsQualifiedJointVenture is unanswered, so an unanswered question is not
+        treated as a yes. Otherwise the election itself.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCIsQualifiedJointVenture" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/scheduleCIsQualifiedJointVenture" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCPrimaryFilerBusinessCount">
+      <Name>Count of Schedule C businesses that are not the secondary filer's</Name>
+      <Description>
+        Collection size of /scheduleCBusinesses minus /scheduleCSecondaryFilerBusinesses. A business whose filer
+        is the primary filer, including the placeholder default, is not in the secondary collection. One integer,
+        not a per-business list.
+      </Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <CollectionSize>
+              <Dependency path="/scheduleCBusinesses" />
+            </CollectionSize>
+          </Minuend>
+          <Subtrahends>
+            <CollectionSize>
+              <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+            </CollectionSize>
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
     <Fact path="/askScheduleCQualifiedJointVenture">
       <Name>Ask the qualified joint venture question</Name>
       <Description>
-        The question is asked on a joint return with exactly one secondary-filer Schedule C business. 26 U.S.C.
-        761(f). More than one spouse business is already stopped. A return that is not married filing jointly
-        does not ask it.
+        Asked on a joint return that has at least one secondary-filer Schedule C business, so a second business
+        on either side can still answer yes and stop. 26 U.S.C. 761(f). A return that is not married filing
+        jointly does not ask it. More than one secondary-filer business is also stopped by
+        /flowKnockoutScheduleCSpouseBusiness.
       </Description>
       <Derived>
         <Switch>
@@ -810,16 +883,16 @@
           </Case>
           <Case>
             <When>
-              <Equal>
+              <GreaterThan>
                 <Left>
                   <CollectionSize>
                     <Dependency path="/scheduleCSecondaryFilerBusinesses" />
                   </CollectionSize>
                 </Left>
                 <Right>
-                  <Int>1</Int>
+                  <Int>0</Int>
                 </Right>
-              </Equal>
+              </GreaterThan>
             </When>
             <Then>
               <True />
@@ -837,11 +910,56 @@
       </Derived>
     </Fact>
 
+    <Fact path="/scheduleCQjvHasOneEach">
+      <Name>Qualified joint venture has one Schedule C for each spouse</Name>
+      <Description>
+        The election is yes, the return is married filing jointly, and there is exactly one primary-filer
+        Schedule C and exactly one secondary-filer Schedule C. That pair is the same return-level election.
+        2026 Instructions for Schedule C draft, PDF p. 2: "Each of you must file a separate Schedule C".
+      </Description>
+      <Derived>
+        <All>
+          <Dependency path="/scheduleCQjvElectionIsYes" />
+          <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          <Equal>
+            <Left>
+              <Dependency path="/scheduleCPrimaryFilerBusinessCount" />
+            </Left>
+            <Right>
+              <Int>1</Int>
+            </Right>
+          </Equal>
+          <Equal>
+            <Left>
+              <CollectionSize>
+                <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>1</Int>
+            </Right>
+          </Equal>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/askScheduleCQjvFollowUps">
+      <Name>Ask the qualified joint venture ownership questions</Name>
+      <Description>
+        True only for the one-each election, so the ownership questions are one boolean screen condition and are
+        not asked when the shape already stops.
+      </Description>
+      <Derived>
+        <Dependency path="/scheduleCQjvHasOneEach" />
+      </Derived>
+    </Fact>
+
     <Fact path="/scheduleCQualifiedJointVentureAnswered">
       <Name>Qualified joint venture question is answered when it applies</Name>
       <Description>
-        True when the question does not apply, or when /scheduleCIsQualifiedJointVenture has been answered.
-        An unanswered election does not leave a return that never sees the question incomplete.
+        True when the question does not apply, when the election is no, or when a yes is already stopped by the
+        shape. A supported one-each yes is answered only after both follow-ups are complete. An unanswered
+        election does not leave a return that never sees the question incomplete.
       </Description>
       <Derived>
         <Switch>
@@ -857,9 +975,383 @@
           </Case>
           <Case>
             <When>
-              <IsComplete>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCIsQualifiedJointVenture" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
                 <Dependency path="/scheduleCIsQualifiedJointVenture" />
-              </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvHasOneEach" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="/scheduleCQjvSpousesAreOnlyOwners" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="/scheduleCQjvHeldThroughLlc" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQjvReasonNotJointReturn">
+      <Name>Qualified joint venture reason: not a joint return</Name>
+      <Description>
+        2026 Instructions for Schedule C draft, PDF p. 2: the spouses can elect if they "File a joint return".
+        26 U.S.C. 761(f)(1). One boolean.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvElectionIsYes" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQjvReasonSecondBusiness">
+      <Name>Qualified joint venture reason: a second business on either side</Name>
+      <Description>
+        The supported election is exactly one Schedule C for each spouse. A second business on the primary side
+        or the secondary side stops. The count facts reduce each collection to one integer.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvElectionIsYes" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/scheduleCPrimaryFilerBusinessCount" />
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleCSecondaryFilerBusinesses" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQjvReasonNotOneEach">
+      <Name>Qualified joint venture reason: not one Schedule C for each spouse</Name>
+      <Description>
+        The election is yes on a joint return, neither spouse has a second business, and the return still does
+        not have exactly one Schedule C for each spouse. 2026 Instructions for Schedule C draft, PDF p. 2:
+        "Each of you must file a separate Schedule C".
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvElectionIsYes" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/scheduleCQjvReasonSecondBusiness" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/scheduleCQjvHasOneEach" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQjvReasonMaterialParticipation">
+      <Name>Qualified joint venture reason: line G is not yes for both spouses</Name>
+      <Description>
+        2026 Instructions for Schedule C draft, PDF p. 2: the spouses can elect if they "Each materially
+        participate in the business". 26 U.S.C. 761(f)(2)(B), material participation under section 469(h)
+        without regard to paragraph (5). Count of /scheduleCBusinesses/*/materiallyParticipates reduces the
+        collection to one integer. Both yes means that count is 2 on the one-each return.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvHasOneEach" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Equal>
+                <Left>
+                  <Count>
+                    <Dependency path="/scheduleCBusinesses/*/materiallyParticipates" />
+                  </Count>
+                </Left>
+                <Right>
+                  <Int>2</Int>
+                </Right>
+              </Equal>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQjvReasonNotOnlyOwners">
+      <Name>Qualified joint venture reason: the spouses are not the only owners</Name>
+      <Description>
+        2026 Instructions for Schedule C draft, PDF p. 2: the spouses can elect if they "Are the only owners of
+        the business". 26 U.S.C. 761(f)(2)(A): the only members are the two spouses.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvHasOneEach" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvSpousesAreOnlyOwners" />
+              </Not>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQjvReasonLlc">
+      <Name>Qualified joint venture reason: held through an LLC or other state-law entity</Name>
+      <Description>
+        2026 Instructions for Schedule C draft, PDF p. 2: "a business owned and operated by spouses through an
+        LLC does not qualify for the election of a qualified joint venture."
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvHasOneEach" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/scheduleCQjvHeldThroughLlc" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCQjvReasonCommunityProperty">
+      <Name>Qualified joint venture reason: community-property state</Name>
+      <Description>
+        2026 Instructions for Schedule C draft, "Community Income" (PDF p. 3): community income is not filed
+        here. An unanswered state is not this reason. /flowKnockoutScheduleCCommunityProperty still stops a
+        spouse-owned business that is not a QJV.
+      </Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleCQjvElectionIsYes" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="filers" path="/livesInCommunityPropertyState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="filers" path="/livesInCommunityPropertyState" />
             </When>
             <Then>
               <True />
@@ -878,56 +1370,27 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCQualifiedJointVenture">
-      <Name>Knockout: qualified joint venture election</Name>
+      <Name>Knockout: qualified joint venture election that this tool cannot file</Name>
       <Description>
-        Stops when the filer elects qualified joint venture treatment. 26 U.S.C. 761(f): each spouse reports
-        their share as a sole proprietor. This tool files one spouse's own Schedule C, not that election.
-        Complete false when self-employment income is no or the election is unanswered or no, without treating
-        an unanswered question as a yes.
+        Stops a yes that is not the supported election. Each unmet condition is its own reason fact, and this
+        fact is the Any of those reasons, one boolean. The supported path is a joint return, exactly one
+        Schedule C for each spouse, line G yes for both, the spouses are the only owners, the business is not
+        held through an LLC or other state-law entity, and the filers do not live in a community-property state.
+        Complete false when the election is unanswered or no. 26 U.S.C. 761(f)(1)–(2). 2026 Instructions for
+        Schedule C draft, PDF pp. 2–3.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
-        <Switch>
-          <Case>
-            <When>
-              <Not>
-                <Dependency path="/hadSelfEmploymentIncome" />
-              </Not>
-            </When>
-            <Then>
-              <False />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Not>
-                <IsComplete>
-                  <Dependency path="/scheduleCIsQualifiedJointVenture" />
-                </IsComplete>
-              </Not>
-            </When>
-            <Then>
-              <False />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <Dependency path="/scheduleCIsQualifiedJointVenture" />
-            </When>
-            <Then>
-              <True />
-            </Then>
-          </Case>
-          <Case>
-            <When>
-              <True />
-            </When>
-            <Then>
-              <False />
-            </Then>
-          </Case>
-        </Switch>
+        <Any>
+          <Dependency path="/scheduleCQjvReasonNotJointReturn" />
+          <Dependency path="/scheduleCQjvReasonSecondBusiness" />
+          <Dependency path="/scheduleCQjvReasonNotOneEach" />
+          <Dependency path="/scheduleCQjvReasonMaterialParticipation" />
+          <Dependency path="/scheduleCQjvReasonNotOnlyOwners" />
+          <Dependency path="/scheduleCQjvReasonLlc" />
+          <Dependency path="/scheduleCQjvReasonCommunityProperty" />
+        </Any>
       </Derived>
     </Fact>
 
@@ -1034,8 +1497,8 @@
         amount still adds the two filers together, so the joint CDCC case stays stopped.
         Stopped elsewhere: more than one spouse-owned business, a spouse business off a
         joint return
-        (/flowKnockoutScheduleCSpouseBusiness), a qualified joint venture, and a
-        community-property state,
+        (/flowKnockoutScheduleCSpouseBusiness), a qualified joint venture that does not meet the
+        election conditions, and a community-property state,
         statutory employees
         (formW2s /flowKnockoutStatutoryEmployee), and
         farm income, the farm optional method, church employee income,
@@ -4317,14 +4780,158 @@
     <Fact path="/scheduleCBusinesses/*/usesSimplifiedHomeOffice">
       <Name>This line-item business elects the simplified method</Name>
       <Description>True only when the line-item questions have started, business use of the home is yes, and the
-        simplified method is elected. A single expense total is not counted, so an unanswered home-office question on
-        that older path does not make /scheduleCMultipleSimplifiedHomeOffices incomplete.</Description>
+        simplified method is elected. A single expense total is not counted. 2026 draft Instructions for Schedule C
+        (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), Line 30, PDF p. 12.</Description>
       <Derived>
         <All>
           <Dependency path="../itemizedStarted" />
           <Dependency path="../hasHomeOffice" />
           <Dependency path="../homeOfficeUsesSimplifiedMethod" />
         </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/usesForm8829HomeOffice">
+      <Name>This line-item business uses Form 8829</Name>
+      <Description>True when the line-item questions have started, business use of the home is yes, and the simplified
+        method is not elected. That is Form 8829. 2026 draft Instructions for Schedule C
+        (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), Line 30, PDF p. 12: "If you
+        conduct more than one business that qualifies for this deduction in your home, your election to use the
+        simplified method applies to all your qualified business uses of your home." Form 8829 is not computed.</Description>
+      <Derived>
+        <All>
+          <Dependency path="../itemizedStarted" />
+          <Dependency path="../hasHomeOffice" />
+          <Not>
+            <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+          </Not>
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCBusinesses/*/simplifiedHomeOfficeSquareFeetForCap">
+      <Name>Allowable square feet counted toward this filer's 300 square foot maximum</Name>
+      <Description>The square feet allocated to this business under the simplified method, not more than 300. Zero when
+        this business does not elect that method, when a simplified-method question this tool does not figure is no, or
+        when the business area is larger than the home. Incomplete while a started simplified-method business has not
+        entered the areas. 2026 draft Instructions for Schedule C (i1040sc--dft.pdf, Oct 8, 2026,
+        https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12: "You are limited to a maximum of 300 square feet
+        for all of the businesses you conduct in your home." "you may not allocate more square feet to a qualified
+        business use than you actually use in that business." Rev. Proc. 2013-13 §4.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../itemizedStarted" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../hasHomeOffice" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../homeOfficeUsesSimplifiedMethod" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../simplifiedMethodSameAreaAllYear" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../simplifiedMethodGrossIncomeIsLine29" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../simplifiedMethodSpaceNotShared" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../simplifiedMethodNotRentalUse" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="../simplifiedMethodNoPrior8829Carryover" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../businessUseSquareFeetWithinHome" />
+                <IsComplete>
+                  <Dependency path="../allowableHomeOfficeSquareFeet" />
+                </IsComplete>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../allowableHomeOfficeSquareFeet" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../businessUseSquareFeet" />
+                </IsComplete>
+                <IsComplete>
+                  <Dependency path="../homeTotalSquareFeet" />
+                </IsComplete>
+                <Not>
+                  <Dependency path="../businessUseSquareFeetWithinHome" />
+                </Not>
+              </All>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -4336,6 +4943,573 @@
         <All>
           <Dependency path="../itemizedStarted" />
           <Dependency path="../hasHomeOffice" />
+        </All>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSimplifiedHomeOfficeCount">
+      <Name>Simplified-method businesses on the return</Name>
+      <Description>How many line-item businesses elect the simplified method. Zero when there is no Schedule C.
+        Incomplete while a started business has not answered the home-office election.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Count>
+                <Dependency path="/scheduleCBusinesses/*/usesSimplifiedHomeOffice" />
+              </Count>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCForm8829HomeOfficeCount">
+      <Name>Form 8829 businesses on the return</Name>
+      <Description>How many line-item businesses use Form 8829 for business use of the home. Zero when there is no
+        Schedule C.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Count>
+                <Dependency path="/scheduleCBusinesses/*/usesForm8829HomeOffice" />
+              </Count>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSecondaryFilerSimplifiedHomeOfficeCount">
+      <Name>Secondary filer's simplified-method businesses</Name>
+      <Description>How many of the secondary filer's businesses elect the simplified method. The primary filer's count
+        is the return total minus this count.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Count>
+                <Dependency path="/scheduleCSecondaryFilerBusinesses/*/usesSimplifiedHomeOffice" />
+              </Count>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSecondaryFilerForm8829Count">
+      <Name>Secondary filer's Form 8829 businesses</Name>
+      <Description>How many of the secondary filer's businesses use Form 8829. The primary filer's count is the return
+        total minus this count.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Count>
+                <Dependency path="/scheduleCSecondaryFilerBusinesses/*/usesForm8829HomeOffice" />
+              </Count>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCPrimaryFilerSimplifiedHomeOfficeCount">
+      <Name>Primary filer's simplified-method businesses</Name>
+      <Description>Simplified-method businesses the primary filer owns. Every business not owned by the secondary filer
+        is the primary filer's.</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/scheduleCSimplifiedHomeOfficeCount" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeCount" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCPrimaryFilerForm8829Count">
+      <Name>Primary filer's Form 8829 businesses</Name>
+      <Description>Form 8829 businesses the primary filer owns.</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/scheduleCForm8829HomeOfficeCount" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/scheduleCSecondaryFilerForm8829Count" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSimplifiedHomeOfficeSquareFeet">
+      <Name>Allowable simplified-method square feet on the return</Name>
+      <Description>Sum of each business's allowable simplified-method square feet. Zero when there is no Schedule C.
+        Incomplete while a simplified-method area is still blank.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleCBusinesses/*/simplifiedHomeOfficeSquareFeetForCap" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSecondaryFilerSimplifiedHomeOfficeSquareFeet">
+      <Name>Secondary filer's allowable simplified-method square feet</Name>
+      <Description>Allowable square feet on the secondary filer's simplified-method businesses. 2026 draft Instructions
+        for Schedule C (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12:
+        each spouse may make their own election. The maximum of 300 square feet is per filer.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <Int>0</Int>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <CollectionSum>
+                <Dependency path="/scheduleCSecondaryFilerBusinesses/*/simplifiedHomeOfficeSquareFeetForCap" />
+              </CollectionSum>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCPrimaryFilerSimplifiedHomeOfficeSquareFeet">
+      <Name>Primary filer's allowable simplified-method square feet</Name>
+      <Description>Allowable square feet on the primary filer's simplified-method businesses. The return total minus
+        the secondary filer's square feet. Not more than 300. 2026 draft Instructions for Schedule C, PDF p. 12.</Description>
+      <Derived>
+        <Subtract>
+          <Minuend>
+            <Dependency path="/scheduleCSimplifiedHomeOfficeSquareFeet" />
+          </Minuend>
+          <Subtrahends>
+            <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeSquareFeet" />
+          </Subtrahends>
+        </Subtract>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSimplifiedHomeOfficeSquareFeetOverCap">
+      <Name>A filer's simplified-method square feet are over 300</Name>
+      <Description>True when the primary filer's allowable square feet, or the secondary filer's, are more than
+        /scheduleCSimplifiedMethodMaxSquareFeet. 300 is allowed. 2026 draft Instructions for Schedule C
+        (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12: "You are limited
+        to a maximum of 300 square feet for all of the businesses you conduct in your home." On a joint return each
+        spouse has a separate maximum. Rev. Proc. 2013-13 §4.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Any>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleCPrimaryFilerSimplifiedHomeOfficeSquareFeet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleCSimplifiedMethodMaxSquareFeet" />
+                  </Right>
+                </GreaterThan>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeSquareFeet" />
+                  </Left>
+                  <Right>
+                    <Dependency path="/scheduleCSimplifiedMethodMaxSquareFeet" />
+                  </Right>
+                </GreaterThan>
+              </Any>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSimplifiedAndForm8829">
+      <Name>One filer uses both the simplified method and Form 8829</Name>
+      <Description>True when the same filer elects the simplified method for one home business and uses Form 8829 for
+        another. 2026 draft Instructions for Schedule C (i1040sc--dft.pdf, Oct 8, 2026,
+        https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12: "If you conduct more than one business that
+        qualifies for this deduction in your home, your election to use the simplified method applies to all your
+        qualified business uses of your home." A spouse's own election is separate. Form 8829 on a business that has
+        no simplified-method sibling still stops on that business's own Form 8829 answer.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/hasScheduleCBusinesses" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Any>
+                <All>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="/scheduleCPrimaryFilerSimplifiedHomeOfficeCount" />
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="/scheduleCPrimaryFilerForm8829Count" />
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                </All>
+                <All>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeCount" />
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                  <GreaterThan>
+                    <Left>
+                      <Dependency path="/scheduleCSecondaryFilerForm8829Count" />
+                    </Left>
+                    <Right>
+                      <Int>0</Int>
+                    </Right>
+                  </GreaterThan>
+                </All>
+              </Any>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/asksScheduleCPrimaryFilerOneHome">
+      <Name>Ask whether the primary filer's simplified-method businesses are in one home</Name>
+      <Description>True when the primary filer has more than one simplified-method business. One business does not ask.
+        Incomplete counts do not ask yet. 2026 draft Instructions for Schedule C, PDF p. 12: the simplified method is
+        for one home, and another home needs Form 8829.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCPrimaryFilerSimplifiedHomeOfficeCount" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/scheduleCPrimaryFilerSimplifiedHomeOfficeCount" />
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/asksScheduleCSecondaryFilerOneHome">
+      <Name>Ask whether the secondary filer's simplified-method businesses are in one home</Name>
+      <Description>True when the secondary filer has more than one simplified-method business. One business does not
+        ask.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeCount" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <GreaterThan>
+                <Left>
+                  <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeCount" />
+                </Left>
+                <Right>
+                  <Int>1</Int>
+                </Right>
+              </GreaterThan>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome">
+      <Name>Primary filer's simplified-method businesses are in one home</Name>
+      <Description>Asked when the primary filer has more than one simplified-method business. Yes means they are all in
+        the same home. No means more than one home, which needs Form 8829. 2026 draft Instructions for Schedule C
+        (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf), PDF p. 12. "you will need to
+        file a separate Schedule C for each business."</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome">
+      <Name>Secondary filer's simplified-method businesses are in one home</Name>
+      <Description>Asked when the secondary filer has more than one simplified-method business. Yes means one home. No
+        means more than one home and stops the return. 2026 draft Instructions for Schedule C, PDF p. 12.</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCSimplifiedHomeOfficesUseMoreThanOneHome">
+      <Name>A filer's simplified-method businesses are in more than one home</Name>
+      <Description>True when a filer with more than one simplified-method business says they are not all in the same
+        home. Form 8829 is required for another home and is not computed. False when the question is not asked.
+        Incomplete while it is asked and not answered.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Any>
+          <All>
+            <Dependency path="/asksScheduleCPrimaryFilerOneHome" />
+            <Not>
+              <Dependency path="/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome" />
+            </Not>
+          </All>
+          <All>
+            <Dependency path="/asksScheduleCSecondaryFilerOneHome" />
+            <Not>
+              <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficesAreOneHome" />
+            </Not>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/asksScheduleCSpousesDoNotClaimSameHomeSpace">
+      <Name>Ask whether the spouses claim the same portion of the home</Name>
+      <Description>True on a joint return when each spouse has at least one simplified-method business. 2026 draft
+        Instructions for Schedule C (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf),
+        PDF p. 12: each of you may make your own election but not for the same portion of the home. One yes/no for the
+        return. False when the return is not a joint return, or when either spouse has no simplified-method business,
+        or while those counts are still incomplete.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCPrimaryFilerSimplifiedHomeOfficeCount" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeCount" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <All>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleCPrimaryFilerSimplifiedHomeOfficeCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+                <GreaterThan>
+                  <Left>
+                    <Dependency path="/scheduleCSecondaryFilerSimplifiedHomeOfficeCount" />
+                  </Left>
+                  <Right>
+                    <Int>0</Int>
+                  </Right>
+                </GreaterThan>
+              </All>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCSpousesDoNotClaimSameHomeSpace">
+      <Name>Spouses do not claim the same portion of the home</Name>
+      <Description>The joint-return confirmation that the spouses do not claim the same portion of the home. Yes means
+        they do not, and each spouse keeps a separate 300 square foot maximum. No stops the return. 2026 draft
+        Instructions for Schedule C (i1040sc--dft.pdf, Oct 8, 2026, https://www.irs.gov/pub/irs-dft/i1040sc--dft.pdf),
+        PDF p. 12: "each of you may make your own election but not for the same portion of the home."</Description>
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/scheduleCSpousesClaimSameHomeSpace">
+      <Name>Spouses claim the same portion of the home</Name>
+      <Description>True when the joint-return confirmation is asked and answered no. That stops the return. False when
+        the question is not asked, or when it is answered yes. Incomplete while it is asked and not answered.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <All>
+          <Dependency path="/asksScheduleCSpousesDoNotClaimSameHomeSpace" />
+          <Not>
+            <Dependency path="/scheduleCSpousesDoNotClaimSameHomeSpace" />
+          </Not>
         </All>
       </Derived>
     </Fact>
@@ -6612,12 +7786,16 @@
         that amount on Schedule C, line 30. If zero or less, enter -0-." Worksheet line 4 is allowable square feet
         times $5. When all gross income is from the home, worksheet line 1 starts with Schedule C line 29 (PDF p. 13).
         The deduction is the smaller of line 29, not below zero, and $5 times the business square feet, not more than
-        300. Rev. Proc. 2013-13. 26 U.S.C. 280A(c)(5). Zero when there is no home office or the return still uses the
-        single expense total. Form 8829, a part-year or changing area, a daycare fraction other than 1.0, a second
-        home, gross income that is not all from the home, a Form 8949 or Form 4797 adjustment, shared space, rental use
-        of the home, a prior Form 8829 carryover, and more than one simplified-method business are not computed. The $5
-        amount is /scheduleCSimplifiedMethodAmount. The 300 square foot limit is
-        /scheduleCSimplifiedMethodMaxSquareFeet. If the business area is larger than the home, line 30 stays
+        300. More than one business in the same home may elect the simplified method. The 300 square feet are the total
+        for that filer's businesses in the home, and each line 30 is still limited by that business's own line 29.
+        On a joint return each spouse has a separate 300 square foot maximum. 2026 draft Instructions for Schedule C
+        (i1040sc--dft.pdf, Oct 8, 2026), Line 30, PDF p. 12. Rev. Proc. 2013-13 §4. 26 U.S.C. 280A(c)(5). Zero when
+        there is no home office or the return still uses the single expense total. Form 8829, a part-year or changing
+        area, a daycare fraction other than 1.0, a second home, gross income that is not all from the home, a Form 8949
+        or Form 4797 adjustment, shared space, rental use of the home, a prior Form 8829 carryover, square feet over
+        300 for one filer, the simplified method and Form 8829 for the same filer, and spouses who claim the same
+        portion of the home are not computed. The $5 amount is /scheduleCSimplifiedMethodAmount. The 300 square foot
+        limit is /scheduleCSimplifiedMethodMaxSquareFeet. If the business area is larger than the home, line 30 stays
         incomplete.</Description>
       <Derived>
         <Switch>
@@ -6650,7 +7828,16 @@
                 <Dependency path="../simplifiedMethodNotRentalUse" />
                 <Dependency path="../simplifiedMethodNoPrior8829Carryover" />
                 <Not>
-                  <Dependency path="/scheduleCMultipleSimplifiedHomeOffices" />
+                  <Dependency path="/scheduleCSimplifiedHomeOfficeSquareFeetOverCap" />
+                </Not>
+                <Not>
+                  <Dependency path="/scheduleCSimplifiedAndForm8829" />
+                </Not>
+                <Not>
+                  <Dependency path="/scheduleCSimplifiedHomeOfficesUseMoreThanOneHome" />
+                </Not>
+                <Not>
+                  <Dependency path="/scheduleCSpousesClaimSameHomeSpace" />
                 </Not>
                 <Dependency path="../businessUseSquareFeetWithinHome" />
                 <IsComplete>
@@ -6690,7 +7877,9 @@
         line 42 below zero, line 35 different from last year's closing inventory, the section 471(c) no-inventory
         method claimed together with Part III, or Part III amounts while the filer says there is no inventory), or a
         vehicle expense this tool does not compute, depreciation, depletion, a vehicle lease, Form 8829, shared space, rental use of the home, a prior
-        Form 8829 carryover, a simplified method this tool does not figure, more than one simplified-method business,
+        Form 8829 carryover, a simplified method this tool does not figure, more than 300 simplified-method square feet
+        for one filer, the simplified method and Form 8829 for the same filer, more than one home, spouses who claim
+        the same portion of the home,
         the line 27a deduction, a non-50-percent meal, wage credits, interest that must be allocated, new
         amortization, a fourth Part V line, or line 6 income that belongs on another form applies. A yes on any stop
         is enough; later blanks do not turn it off. Cash, accrual, cost or lower of cost or market, line 34 no, a
@@ -6747,7 +7936,10 @@
               <Dependency path="../simplifiedMethodNoPrior8829Carryover" />
             </Not>
           </All>
-          <Dependency path="/scheduleCMultipleSimplifiedHomeOffices" />
+          <Dependency path="/scheduleCSimplifiedHomeOfficeSquareFeetOverCap" />
+          <Dependency path="/scheduleCSimplifiedAndForm8829" />
+          <Dependency path="/scheduleCSimplifiedHomeOfficesUseMoreThanOneHome" />
+          <Dependency path="/scheduleCSpousesClaimSameHomeSpace" />
           <Dependency path="../hasEnergyEfficientBuildingsDeduction" />
           <All>
             <Dependency path="../choseMeals" />
@@ -7036,8 +8228,9 @@
         depreciation
         or section 179 (line 13, Form 4562), depletion (line 12), rent or lease of a vehicle
         (line 20a), Form 8829, shared space, rental use of the home, a prior Form 8829 carryover, a simplified method
-        that is not $5 times at most 300 square feet limited by line 29, or more than one business using the simplified
-        method (line 30), the energy efficient
+        that is not $5 times that business's square feet limited by line 29, more than 300 simplified-method square
+        feet for one filer, the simplified method and Form 8829 for the same filer's home businesses, more than one
+        home, or spouses who claim the same portion of the home (line 30), the energy efficient
         commercial buildings deduction
         (line 27a, Form 7205), meals that are not limited to 50 percent
         (line 24b, 26 U.S.C. 274(n)), wages reduced by an

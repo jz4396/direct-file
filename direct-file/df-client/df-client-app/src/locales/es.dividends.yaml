@@ -167,10 +167,16 @@ info:
   /info/income/dividends/boxes-14-16:
     body:
       - p:
-          El encasillado 14 es el impuesto estatal sobre el ingreso retenido. Una cantidad mayor que $0 detiene esta
-          declaración. El encasillado 15 es el número de identificación estatal del pagador. El encasillado 16 es la
-          distribución estatal. Los encasillados 15 y 16 no se suman a su declaración federal. Deje un encasillado en
-          blanco si está vacío en su formulario.
+          El encasillado 14 es el impuesto estatal sobre el ingreso retenido. Una cantidad mayor que $0 se permite
+          cuando usted vive en un estado que tiene un impuesto sobre el ingreso, esta herramienta no calcula la
+          declaración de ese estado y el encasillado 15 es ese estado. Detiene la declaración cuando esta herramienta
+          calcula su declaración estatal, cuando su estado no tiene impuesto sobre el ingreso, o cuando el encasillado
+          15 es un estado distinto. El encasillado 14 no se suma por usted. Si detalla, inclúyalo con los impuestos
+          estatales y locales sobre el ingreso que anota en el Anexo A. El encasillado 15 es el estado y el número de
+          identificación estatal del pagador. El encasillado 16 es la distribución estatal. En una declaración de
+          Pensilvania, Illinois, Carolina del Norte, Arizona, Massachusetts o Idaho, una cantidad en el encasillado 16
+          tiene que ser igual al encasillado 1a más el encasillado 2a. Deje un encasillado en blanco si está vacío en
+          su formulario.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -282,15 +288,18 @@ info:
     alertText:
       body:
         - p:
-            Esta herramienta no admite una cantidad en el encasillado 2c, 9 o 10, ni el impuesto estatal retenido en el
-            encasillado 14. Necesitará otra manera de presentar esta declaración.
+            Esta herramienta no admite una cantidad en el encasillado 2c, 9 o 10. El impuesto estatal retenido en el
+            encasillado 14 detiene esta declaración cuando esta herramienta calcula su declaración estatal
+            (Pensilvania, Illinois, Carolina del Norte, Arizona, Massachusetts o Idaho), cuando usted vive en Alaska,
+            Florida, Nevada, Dakota del Sur, Texas, Wyoming, Washington, Tennessee o Nuevo Hampshire, o cuando el
+            encasillado 15 es un estado distinto. Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-state-distribution:
     alertText:
       body:
         - p:
-            En una declaración de Pensilvania, Illinois, Carolina del Norte o Arizona, el encasillado 16 tiene que ser
-            igual al encasillado 1a más el encasillado 2a. Esas declaraciones estatales usan las cantidades federales.
-            Necesitará otra manera de presentar esta declaración.
+            En una declaración de Pensilvania, Illinois, Carolina del Norte, Arizona, Massachusetts o Idaho, el
+            encasillado 16 tiene que ser igual al encasillado 1a más el encasillado 2a. Esas declaraciones estatales
+            usan las cantidades federales. Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:
@@ -382,6 +391,8 @@ fields:
     name: <strong>Encasillado 8</strong> - País extranjero o posesión de EE. UU.
   /dividendReports/*/writableStateTaxWithheld:
     name: <strong>Encasillado 14</strong> - Impuesto estatal retenido
+  /dividendReports/*/writableState:
+    name: <strong>Encasillado 15</strong> - Estado
   /dividendReports/*/writableStateIdNumber:
     name: <strong>Encasillado 15</strong> - Número de identificación estatal
   /dividendReports/*/writableStateDistribution:
@@ -421,6 +432,7 @@ dataviews:
     /dividendReports/*/writableForeignTaxPaid: Encasillado 7 - Impuesto extranjero pagado
     /dividendReports/*/writableForeignCountry: Encasillado 8 - País extranjero o posesión de EE. UU.
     /dividendReports/*/writableStateTaxWithheld: Encasillado 14 - Impuesto estatal retenido
+    /dividendReports/*/writableState: Encasillado 15 - Estado
     /dividendReports/*/writableStateIdNumber: Encasillado 15 - Número de identificación estatal
     /dividendReports/*/writableStateDistribution: Encasillado 16 - Distribución estatal
     /dividendReports/*/foreignTaxElectionRequirementsMet: ¿Se cumplen todas las condiciones del impuesto extranjero?

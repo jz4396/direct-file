@@ -199,6 +199,23 @@ public final class PrintRefusingKnockouts {
             "/flowKnockoutIdUseTax",
             "/flowKnockoutIdSnapOrIncarcerated",
             "/flowKnockoutIdForm39R",
+            // #93 slice 8: Kansas stops. Each is complete false when the return is not a Form K-40, and incomplete
+            // when the Kansas question is unanswered, so the PDF is not printed with the unmodeled line as zero.
+            // Derived stops are complete false when the condition is false. 2025 Form K-40 (rev. 8-5-25), used until
+            // the 2026 form is posted. K.S.A. 79-32,110b, 79-32,119, and 79-32,121. Line 8 is line 7 times 5.58
+            // percent minus the worksheet subtraction, rounded once, and only when line 7 is more than $100,000.
+            "/flowKnockoutKsPartYearOrNonresident",
+            "/flowKnockoutKsW2NotKansas",
+            "/flowKnockoutKsOtherFederalIncome",
+            "/flowKnockoutKsDependents",
+            "/flowKnockoutKsAgeOrBlind",
+            "/flowKnockoutKsClaimedAsDependent",
+            "/flowKnockoutKsFilingStatus",
+            "/flowKnockoutKsItemizedDeductions",
+            "/flowKnockoutKsEarnedIncomeCredit",
+            "/flowKnockoutKsForm2441",
+            "/flowKnockoutKsSchedule1A",
+            "/flowKnockoutKsTaxTable",
             // Form 2210 Part II box applies: Form 2210 (2026) draft, p. 1, "If box B, C, or D applies, you must figure
             // your penalty and file Form 2210." and "If box A or E applies (but not B, C, or D), file only page 1 of
             // Form 2210." There is no Form 2210 template, so the package would omit it and leave line 38 blank.
@@ -341,7 +358,13 @@ public final class PrintRefusingKnockouts {
             // vehicle
             // lease on line 20a (inclusion amount, Pub. 463 ch. 4; listed property, 26 U.S.C. 280F(c) and
             // 280F(d)(4)). Machinery and equipment rent that is not a vehicle prints on line 20a and does not refuse
-            // the print. Line 30 home office (PDF p. 11, Form 8829), line 27a Form 7205, line 24b meals that
+            // the print. Line 30 home office (2026 draft Instructions for Schedule C, i1040sc--dft.pdf, Oct 8, 2026,
+            // PDF p. 12). Several simplified-method businesses in one home print when that filer's allowable square
+            // feet are not more than 300 and each line 30 is $5 times that business's square feet, not more than that
+            // business's line 29. On a joint return each spouse has a separate 300 square foot maximum. The same path
+            // still refuses the print for Form 8829, square feet over 300 for one filer, the simplified method and
+            // Form 8829 for the same filer, more than one home, or spouses who claim the same portion of the home.
+            // Line 27a Form 7205, line 24b meals that
             // are not 50 percent (PDF p. 11, 26 U.S.C. 274(n)), line 26 employment credits, lines 16a and 16c
             // interest allocation (PDF p. 9), Form 4562-B amortization (PDF p. 17), a loss without material
             // participation (Form 8582, 26 U.S.C. 469) or that is not fully at risk (line 32b, Form 6198,
@@ -384,6 +407,15 @@ public final class PrintRefusingKnockouts {
             // total of Schedule SE lines 3 and 4b. Not part of /scheduleCSectionIsComplete. Complete false when the
             // method does not apply, without reading the credits.
             "/flowKnockoutScheduleSENonfarmOptionalMethodCredits",
+            // Form 1065 box 14 code A that reaches Schedule SE, together with the CDCC or the CTC/ACTC.
+            // 26 U.S.C. 32(c)(2)(A)(ii), used by 24(d) and 21(e)(1). 26 U.S.C. 21(d)(1)(B). 2026 draft
+            // Instructions for Form 2441, PDF p. 5, lines 4 and 5, item 2: Schedule SE line 3 minus
+            // Schedule 1 line 15. Those earned-income facts still read only Schedule C net profit, so a
+            // spouse whose only income is the K-1 would be $0 on Form 2441 line 5. Same credit conditions
+            // as /flowKnockoutScheduleCEarnedIncomeCredits, plus a yes to qualifying care expenses. The
+            // EITC stays on /flowKnockoutScheduleEEitc. Complete false when the Schedule SE amount is $0,
+            // without reading the credits. Not part of /scheduleESectionIsComplete.
+            "/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits",
             // Form 6251 lines 2c-2f, 2h, 2i, 2k-2t, 3 and 8 are not computed. A yes leaves them blank, and line 4
             // would combine lines 1b through 3 as if those adjustments were zero. Line 2g is /form6251Line2g. Line 2j
             // is /form6251Line2j (Schedule K-1 (Form 1041) box 12 code A). Form 6251
@@ -409,9 +441,10 @@ public final class PrintRefusingKnockouts {
             // Rev. Proc. 2025-32 §4.10 complete phaseout amount for a married individual filing a separate return
             // (https://www.irs.gov/pub/irs-drop/rp-25-32.pdf p. 17). Printing line 4 without it understates AMTI.
             "/flowKnockoutAmtMfsAddBack",
-            // Form 1099-DIV boxes this return does not compute (2c, 9, 10, and box 14 greater than $0). Box 8 is the
-            // foreign country and is not this stop when box 7 is $0 or meets 26 U.S.C. 904(j). Boxes 15 and 16 are
-            // not this stop when box 14 is $0. Box 2b is unrecaptured section
+            // Form 1099-DIV boxes this return does not compute (2c, 9, 10, and box 14 greater than $0 that is not the
+            // supported path: no computed state return, an income-tax resident state, and box 15 the resident state).
+            // Box 8 is the foreign country and is not this stop when box 7 is $0 or meets 26 U.S.C. 904(j). Boxes 15
+            // and 16 are not this stop when box 14 is $0. Box 2b is unrecaptured section
             // 1250 gain already inside box 2a and is Schedule D line 19. Box 2d is collectibles (28%) gain already
             // inside box 2a and is Schedule D line 18. Box 2e and box 2f are section 897 portions of box 1a and box
             // 2a (26 U.S.C. 897(a)) and are not added again. Box 6 is included in box 1a and is not deducted
@@ -424,10 +457,10 @@ public final class PrintRefusingKnockouts {
             // or box 2d makes Schedule D required. 26 U.S.C. 1(h)(4), 1(h)(5), 1(h)(6), 1(h)(7). Printing only box
             // 2a would drop box 2c.
             "/flowKnockoutDividendUnsupportedBoxes",
-            // Box 16 entered on a computed state return (Pennsylvania, Illinois, North Carolina, or Arizona) and not
-            // equal to that form's box 1a plus box 2a. Those returns read the federal amounts. A blank box 16, an
-            // equal amount, and a return that is not a computed state return (including Florida) still print. Box 14
-            // greater than $0 is /flowKnockoutDividendUnsupportedBoxes.
+            // Box 16 entered on a computed state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho)
+            // and not equal to that form's box 1a plus box 2a. Those returns read the federal amounts. A blank box 16,
+            // an equal amount, and a return that is not a computed state return (including Florida) still print.
+            // Box 14 greater than $0 on the unsupported path is /flowKnockoutDividendUnsupportedBoxes.
             "/flowKnockoutDividendStateDistribution",
             // Box 3 above basis is capital gain. 26 U.S.C. 301(c)(3)(A). Form 1040 instr. (2025) p. 26, Nondividend
             // Distributions: "After you get back all of your cost (or other basis), you must report these

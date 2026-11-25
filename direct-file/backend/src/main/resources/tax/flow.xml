@@ -187,6 +187,7 @@
           <Dependency module="form2210" path="/flowKnockoutForm2210" />
           <Dependency module="stateReturn" path="/flowKnockoutStateReturn" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCEarnedIncomeCredits" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCSpouseBusiness" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCQualifiedJointVenture" />
           <Dependency module="scheduleC" path="/flowKnockoutScheduleCCommunityProperty" />

@@ -505,6 +505,101 @@ class ScheduleCTy2026PdfSmokeTest {
     }
 
     /**
+     * Two simplified-method businesses in one home. 2026 draft Instructions for Schedule C (i1040sc--dft.pdf, Oct 8,
+     * 2026), Line 30, PDF p. 12. Hand check: A is line 29 $15,000, 200 sq ft, line 30 $1,000, line 31 $14,000. B is
+     * line 29 $300, 100 sq ft, so $500 is limited to $300 and line 31 is $0. Schedule 1 line 3 is $14,000. The $5,000
+     * and $2,700 are advertising, line 8, which is part of line 28.
+     */
+    @Test
+    void twoSimplifiedBusinessesPrintEachLine30LimitedByThatLine29() throws Exception {
+        String secondId = "b0000000-5e00-4000-8000-000000000002";
+        var facts = twoSimplified(secondId, "20000.00", "5000.00", "200.00", "3000.00", "2700.00", "100.00");
+        facts.put("/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome", bool(true));
+        Graph graph = graphOf(facts);
+        assertFalse(
+                PrintRefusingKnockouts.refusingPaths(graph).contains("/flowKnockoutScheduleCOutOfScope"),
+                "200 plus 100 square feet in one home prints");
+        assertEquals(Boolean.FALSE, graph.get("/scheduleCSimplifiedHomeOfficeSquareFeetOverCap").get());
+
+        byte[] bytes = generate(facts);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> a = scheduleCPageNamed(doc, "Business A");
+            Map<String, String> b = scheduleCPageNamed(doc, "Business B");
+            amount(a, "Page1[0].f1_47[0]", 15000, "A line 29");
+            assertEquals("200", value(a, "Page1[0].Line30_ReadOrder[0].f1_49[0]").trim(), "A 30(b)");
+            amount(a, "Page1[0].f1_50[0]", 1000, "A line 30");
+            amount(a, "Page1[0].f1_51[0]", 14000, "A line 31");
+            amount(b, "Page1[0].f1_47[0]", 300, "B line 29");
+            assertEquals("100", value(b, "Page1[0].Line30_ReadOrder[0].f1_49[0]").trim(), "B 30(b)");
+            amount(b, "Page1[0].f1_50[0]", 300, "B line 30");
+            blank(b, "Page1[0].f1_51[0]", "B line 31 zero");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "Page1[0].f1_07[0]", 14000, "Schedule 1 line 3");
+        }
+    }
+
+    /**
+     * Stops: 200 + 150 square feet, the simplified method together with Form 8829, more than one home, and a joint
+     * return that does not confirm the spouses claim different portions of the home. PDF p. 12.
+     */
+    @Test
+    void simplifiedHomeOfficeStopsRefuseThePrint() throws Exception {
+        String secondId = "b0000000-5e00-4000-8000-000000000002";
+        var over = twoSimplified(secondId, "20000.00", "0.00", "200.00", "3000.00", "0.00", "150.00");
+        over.put("/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome", bool(true));
+        assertRefuses(over, "350 square feet");
+
+        var mixed = twoSimplified(secondId, "20000.00", "0.00", "100.00", "3000.00", "0.00", "100.00");
+        String second = "/scheduleCBusinesses/#" + secondId + "/";
+        mixed.put(second + "homeOfficeUsesSimplifiedMethod", bool(false));
+        mixed.remove(second + "simplifiedMethodSameAreaAllYear");
+        mixed.remove(second + "simplifiedMethodGrossIncomeIsLine29");
+        mixed.remove(second + "simplifiedMethodSpaceNotShared");
+        mixed.remove(second + "simplifiedMethodNotRentalUse");
+        mixed.remove(second + "simplifiedMethodNoPrior8829Carryover");
+        mixed.remove(second + "writableHomeTotalSquareFeet");
+        mixed.remove(second + "writableBusinessUseSquareFeet");
+        assertRefuses(mixed, "simplified method and Form 8829");
+
+        var homes = twoSimplified(secondId, "8000.00", "0.00", "100.00", "4000.00", "0.00", "50.00");
+        homes.put("/scheduleCPrimaryFilerSimplifiedHomeOfficesAreOneHome", bool(false));
+        assertRefuses(homes, "more than one home");
+
+        var shared = jointSimplified();
+        shared.put("/scheduleCSpousesDoNotClaimSameHomeSpace", bool(false));
+        assertRefuses(shared, "spouses claim the same portion");
+
+        var separate = jointSimplified();
+        separate.put("/scheduleCSpousesDoNotClaimSameHomeSpace", bool(true));
+        Graph graph = graphOf(separate);
+        assertFalse(
+                PrintRefusingKnockouts.refusingPaths(graph).contains("/flowKnockoutScheduleCOutOfScope"),
+                "each spouse at 300 square feet prints");
+        assertEquals("1500.00", graph.get(biz() + "line30").get().toString());
+        byte[] bytes = generate(separate);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> primary = scheduleCPageNamed(doc, "Primary Consulting");
+            Map<String, String> spouse = scheduleCPageNamed(doc, "Spouse Consulting");
+            amount(primary, "Page1[0].f1_50[0]", 1500, "primary line 30");
+            amount(spouse, "Page1[0].f1_50[0]", 1500, "spouse line 30");
+        }
+    }
+
+    private static void assertRefuses(Map<String, String> facts, String label) throws Exception {
+        assertTrue(
+                PrintRefusingKnockouts.refusingPaths(graphOf(facts)).contains("/flowKnockoutScheduleCOutOfScope"),
+                label + " refuses the print");
+        SubmissionBlockingFactsResponseStatusException e = assertThrows(
+                SubmissionBlockingFactsResponseStatusException.class,
+                () -> generatePublicPrint(facts),
+                label + " blocks the public print");
+        assertTrue(
+                e.getBody().getProperties().get("blockingFacts") instanceof List<?> blocking
+                        && blocking.contains("/flowKnockoutScheduleCOutOfScope"),
+                label + " lists the Schedule C stop");
+    }
+
+    /**
      * Simple Part III. 2026 Schedule C, PDF p. 2: line 36 is purchases less personal use, line 40 adds lines 35
      * through 39, and line 42 (line 40 minus line 41) is line 4. Hand worksheet: 1,000 + (5,000 − 200) + 300 + 400 +
      * 50 = 6,550; 6,550 − 1,500 = 5,050. Line 7 and line 31 are 14,950. Rev. Proc. 2025-32 §4.30 does not stop line 1
@@ -830,6 +925,80 @@ class ScheduleCTy2026PdfSmokeTest {
         return "/scheduleCBusinesses/#" + ScheduleSETy2026PdfSmokeTest.BIZ + "/";
     }
 
+    /** Both businesses are the primary filer's. Advertising of zero leaves the expense lines off. */
+    private static Map<String, String> twoSimplified(
+            String secondId, String grossA, String adA, String sqA, String grossB, String adB, String sqB) {
+        var facts = selfEmployed("170000.00", "170000.00", grossA);
+        String first = biz();
+        facts.put(first + "businessName", string("Business A"));
+        simplifiedOffice(facts, first, sqA, adA);
+        String second = "/scheduleCBusinesses/#" + secondId + "/";
+        facts.put(
+                "/scheduleCBusinesses",
+                ScheduleATy2026PdfSmokeTest.collection(ScheduleSETy2026PdfSmokeTest.BIZ, secondId));
+        facts.put(second + "filer", Form8959Form8960Ty2026PdfSmokeTest.collectionItem(ScheduleSETy2026PdfSmokeTest.W2));
+        facts.put(second + "businessName", string("Business B"));
+        facts.put(second + "writableGrossReceipts", dollar(grossB));
+        facts.put(second + "writableTotalExpenses", dollar("0.00"));
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(facts, secondId);
+        simplifiedOffice(facts, second, sqB, adB);
+        return facts;
+    }
+
+    /** Each spouse has one simplified-method business of 300 square feet and line 29 of $20,000 or $10,000. */
+    private static Map<String, String> jointSimplified() {
+        var facts = ScheduleSETy2026PdfSmokeTest.spouseOwnedScheduleC();
+        String spouseBiz = biz();
+        facts.put(spouseBiz + "businessName", string("Spouse Consulting"));
+        simplifiedOffice(facts, spouseBiz, "300.00", "0.00");
+        String secondId = "b0000000-5e00-4000-8000-000000000002";
+        String primary = "/scheduleCBusinesses/#" + secondId + "/";
+        facts.put(
+                "/scheduleCBusinesses",
+                ScheduleATy2026PdfSmokeTest.collection(ScheduleSETy2026PdfSmokeTest.BIZ, secondId));
+        facts.put(primary + "filer", Form8959Form8960Ty2026PdfSmokeTest.collectionItem(ScheduleSETy2026PdfSmokeTest.W2));
+        facts.put(primary + "businessName", string("Primary Consulting"));
+        facts.put(primary + "writableGrossReceipts", dollar("10000.00"));
+        facts.put(primary + "writableTotalExpenses", dollar("0.00"));
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(facts, secondId);
+        simplifiedOffice(facts, primary, "300.00", "0.00");
+        return facts;
+    }
+
+    private static void simplifiedOffice(Map<String, String> facts, String b, String squareFeet, String advertising) {
+        facts.put(b + "writableReturnsAndAllowances", dollar("0.00"));
+        facts.put(b + "writableOtherIncome", dollar("0.00"));
+        for (String stop : new String[] {
+            "hasInventoryOrCogs",
+            "hasCarTruckOrVehicleLoan",
+            "hasDepreciationOrSection179",
+            "hasDepletion",
+            "hasVehicleRentOrLease",
+            "hasMachineryOrEquipmentRent",
+            "hasEnergyEfficientBuildingsDeduction"
+        }) {
+            facts.put(b + stop, bool(false));
+        }
+        facts.put(b + "hasHomeOffice", bool(true));
+        facts.put(b + "homeOfficeUsesSimplifiedMethod", bool(true));
+        facts.put(b + "simplifiedMethodSameAreaAllYear", bool(true));
+        facts.put(b + "simplifiedMethodGrossIncomeIsLine29", bool(true));
+        facts.put(b + "simplifiedMethodSpaceNotShared", bool(true));
+        facts.put(b + "simplifiedMethodNotRentalUse", bool(true));
+        facts.put(b + "simplifiedMethodNoPrior8829Carryover", bool(true));
+        facts.put(b + "writableHomeTotalSquareFeet", dollar("2000.00"));
+        facts.put(b + "writableBusinessUseSquareFeet", dollar(squareFeet));
+        if ("0.00".equals(advertising)) {
+            facts.put(b + "hasDeductibleExpenses", bool(false));
+        } else {
+            facts.put(b + "hasDeductibleExpenses", bool(true));
+            facts.put(
+                    b + "expenseLinesChosen",
+                    "{\"$type\":\"gov.irs.factgraph.persisters.MultEnumWrapper\",\"item\":{\"enumOptionsPath\":\"/scheduleCExpenseLineOptions\",\"values\":[\"advertising\"]}}");
+            facts.put(b + "writableAdvertising", dollar(advertising));
+        }
+    }
+
     private static Graph graphOf(Map<String, String> extra) throws Exception {
         Map<String, FactTypeWithItem> facts =
                 PrintRefusingKnockoutsTest.scheduleCReturn("20000.00", "20000.00", "0.00");
@@ -884,6 +1053,139 @@ class ScheduleCTy2026PdfSmokeTest {
                         name + " has no /TU tooltip");
             }
         }
+    }
+
+    /**
+     * Qualified joint venture, 26 U.S.C. 761(f). 2026 Instructions for Schedule C draft, PDF p. 2: each spouse
+     * files a separate Schedule C. MFJ, both W-2s $0, each share line 1 $30,000, line 28 $10,000, line 31
+     * $20,000. Each Schedule SE line 4a is $18,470 and line 12 is $2,826 (18,470 × 0.153 = $2,825.91 before the
+     * module's per-line rounding). Schedule 1 line 3 is $40,000 and line 15 is $2,826. Schedule 2 line 4 is
+     * $5,652, the same whole-dollar result as one owner with $40,000 of net profit. The same dollars print when
+     * the election is no.
+     */
+    @Test
+    void qualifiedJointVenturePrintsEachSpousesScheduleCAndScheduleSE() throws Exception {
+        Map<String, String> qualified = qualifiedJointVenture(true);
+        try (PDDocument doc = Loader.loadPDF(generate(qualified))) {
+            assertQualifiedJointVentureDollars(doc);
+        }
+        Map<String, String> withoutElection = qualifiedJointVenture(false);
+        try (PDDocument doc = Loader.loadPDF(generate(withoutElection))) {
+            assertQualifiedJointVentureDollars(doc);
+        }
+    }
+
+    private static Map<String, String> qualifiedJointVenture(boolean election) {
+        String spouse = "859c03d1-af4a-447f-96aa-d19397048a48";
+        String spouseBiz = "b0000000-5e00-4000-8000-000000000002";
+        String primary = ScheduleSETy2026PdfSmokeTest.BIZ;
+        String w2 = ScheduleSETy2026PdfSmokeTest.W2;
+        Map<String, String> m = ScheduleSETy2026PdfSmokeTest.spouseOwnedScheduleC();
+        m.put("/formW2s/#" + w2 + "/writableWages", dollar("0.00"));
+        m.put("/formW2s/#" + w2 + "/writableOasdiWages", dollar("0.00"));
+        m.put("/formW2s/#" + w2 + "/writableMedicareWages", dollar("0.00"));
+        m.put("/formW2s/#" + w2 + "/writableFederalWithholding", dollar("0.00"));
+        m.put("/scheduleCBusinesses", ScheduleATy2026PdfSmokeTest.collection(primary, spouseBiz));
+        putShare(m, primary, w2, "Primary Share", true);
+        putShare(m, spouseBiz, spouse, "Spouse Share", false);
+        ScheduleSETy2026PdfSmokeTest.qbiAnswers(m, spouseBiz);
+        m.put("/scheduleCIsQualifiedJointVenture", bool(election));
+        if (election) {
+            m.put("/scheduleCQjvSpousesAreOnlyOwners", bool(true));
+            m.put("/scheduleCQjvHeldThroughLlc", bool(false));
+        }
+        return m;
+    }
+
+    private static void putShare(Map<String, String> facts, String id, String filer, String name, boolean started) {
+        String b = "/scheduleCBusinesses/#" + id + "/";
+        facts.put(b + "filer", Form8959Form8960Ty2026PdfSmokeTest.collectionItem(filer));
+        facts.put(b + "businessName", string(name));
+        facts.put(b + "writableGrossReceipts", dollar("30000.00"));
+        facts.put(b + "writableTotalExpenses", dollar("10000.00"));
+        facts.put(b + "accountingMethod", scheduleCEnum("cash"));
+        facts.put(b + "startedOrAcquiredThisYear", bool(started));
+        facts.put(b + "materiallyParticipates", bool(true));
+    }
+
+    private static void assertQualifiedJointVentureDollars(PDDocument doc) throws Exception {
+        Map<String, String> primary = scheduleCPageNamed(doc, "Primary Share");
+        Map<String, String> spouse = scheduleCPageNamed(doc, "Spouse Share");
+        assertTrue(value(primary, "Page1[0].f1_1[0]").toUpperCase().contains("AVERY"), "primary proprietor");
+        assertTrue(value(spouse, "Page1[0].f1_1[0]").toUpperCase().contains("BLAIR"), "spouse proprietor");
+        for (Map<String, String> sc : List.of(primary, spouse)) {
+            amount(sc, "Page1[0].f1_13[0]", 30000, "line 1");
+            amount(sc, "Page1[0].f1_46[0]", 10000, "line 28");
+            amount(sc, "Page1[0].f1_51[0]", 20000, "line 31");
+            assertTrue(checked(sc, "Page1[0].c1_1[0]"), "F cash");
+            assertTrue(checked(sc, "Page1[0].c1_2[0]"), "G yes");
+        }
+        assertTrue(checked(primary, "Page1[0].c1_3[0]"), "primary H");
+        blank(spouse, "Page1[0].c1_3[0]", "spouse H");
+
+        Map<String, String> primarySe = scheduleSePageNamed(doc, "AVERY");
+        Map<String, String> spouseSe = scheduleSePageNamed(doc, "BLAIR");
+        for (Map<String, String> se : List.of(primarySe, spouseSe)) {
+            amount(se, "Page1[0].f1_7[0]", 18470, "4a");
+            amount(se, "Page1[0].f1_19[0]", 2290, "10");
+            amount(se, "Page1[0].f1_20[0]", 536, "11");
+            amount(se, "Page1[0].f1_21[0]", 2826, "12");
+            amount(se, "Page1[0].f1_22[0]", 1413, "13");
+        }
+        Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+        amount(s1, "Page1[0].f1_07[0]", 40000, "Schedule 1 line 3");
+        amount(s1, "Page2[0].f2_05[0]", 2826, "Schedule 1 line 15");
+        Map<String, String> s2 = fieldsOnPages(doc, "Schedule 2 (Form 1040) 2026");
+        amount(s2, "Page1[0].f1_15[0]", 5652, "Schedule 2 line 4");
+    }
+
+    /** One Schedule SE page whose name field contains {@code name}. A second copy's fields may be renamed. */
+    private static Map<String, String> scheduleSePageNamed(PDDocument doc, String name) throws Exception {
+        PDFTextStripper stripper = new PDFTextStripper();
+        var form = doc.getDocumentCatalog().getAcroForm();
+        Map<String, String> found = null;
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            stripper.setStartPage(i + 1);
+            stripper.setEndPage(i + 1);
+            if (!stripper.getText(doc).contains(ScheduleSETy2026PdfSmokeTest.SE_FOOTER)) {
+                continue;
+            }
+            Set<COSBase> widgets = new HashSet<>();
+            for (PDAnnotation annotation : doc.getPage(i).getAnnotations()) {
+                if (annotation instanceof PDAnnotationWidget widget) {
+                    widgets.add(widget.getCOSObject());
+                }
+            }
+            Map<String, String> values = new HashMap<>();
+            for (PDField field : form.getFieldTree()) {
+                if (field instanceof PDTerminalField terminal) {
+                    for (PDAnnotationWidget widget : terminal.getWidgets()) {
+                        if (widgets.contains(widget.getCOSObject())) {
+                            String value = field.getValueAsString();
+                            values.put(field.getFullyQualifiedName(), value == null ? "" : value.trim());
+                        }
+                    }
+                }
+            }
+            String proprietor = null;
+            for (var entry : values.entrySet()) {
+                if (entry.getKey().endsWith("f1_1[0]")) {
+                    proprietor = entry.getValue();
+                }
+            }
+            if (proprietor == null || !proprietor.toUpperCase().contains(name)) {
+                continue;
+            }
+            assertTrue(found == null, "one Schedule SE page contains " + name);
+            Map<String, String> normalized = new HashMap<>();
+            for (var entry : values.entrySet()) {
+                int at = entry.getKey().lastIndexOf("Page1[0]");
+                normalized.put(at >= 0 ? entry.getKey().substring(at) : entry.getKey(), entry.getValue());
+            }
+            found = normalized;
+        }
+        assertNotNull(found, "a Schedule SE page contains " + name);
+        return found;
     }
 
     private static boolean checked(Map<String, String> fields, String suffix) {

@@ -5,9 +5,10 @@
 // is not added again. Box 2d is the collectibles (28%) portion of box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)) and is
 // not added again. A portion one dollar over its parent box stops the return. A box 2d greater than $0 with a
 // Schedule D line 7 loss or a line 14 capital loss carryover stops the return. A nonzero box 6 on a
-// PA-40 stops the return. Boxes 2c, 9, and 10, and box 14 greater than $0, still stop. Box 8 does not stop when
+// PA-40 stops the return. Boxes 2c, 9, and 10 still stop. Box 14 greater than $0 is allowed only when the state
+// return is not computed, the resident state has an income tax, and box 15 is that state. Box 8 does not stop when
 // box 7 is $0 or meets 26 U.S.C. 904(j). Boxes 15 and 16 do not stop when box 14 is $0, except a box 16 amount
-// that differs from box 1a plus box 2a on a computed PA, IL, NC, or AZ return. Box 11 (FATCA filing requirement) does
+// that differs from box 1a plus box 2a on a computed PA, IL, NC, AZ, MA, or ID return. Box 11 (FATCA filing requirement) does
 // not stop by itself: it asks /requiredToFileForm8938. Yes stops (26 U.S.C. 6038D). No proceeds. Form 1099-DIV
 // (Rev. December 2027) draft, Instructions for Recipient, Box 11. Instructions for Form 8938: a specified individual
 // living in the United States who is unmarried files when specified foreign financial assets are more than $50,000
@@ -18,6 +19,9 @@
 // included in the ordinary dividend total required to be shown on line 3b." p. 39 line 25b: withholding shown on
 // Form 1099 (1099-DIV box 4). Form 1099-DIV (Rev. December 2027) draft, Instructions for Recipient,
 // https://www.irs.gov/pub/irs-dft/f1099div--dft.pdf.
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import {
@@ -70,6 +74,7 @@ type Div = {
   box8?: string;
   box14?: number;
   box15?: string;
+  box15State?: `sameState` | `differentState`;
   box16?: number;
   box12?: number;
   box13?: number;
@@ -118,6 +123,11 @@ const divItem = (f: Div) => {
     ...(f.box15 === undefined
       ? {}
       : { [`/dividendReports/#${id}/writableStateIdNumber`]: createStringWrapper(f.box15) }),
+    ...(f.box15State === undefined
+      ? {}
+      : {
+          [`/dividendReports/#${id}/writableState`]: createEnumWrapper(f.box15State, `/incomeFormStateOptions`),
+        }),
     ...opt(id, `StateDistribution`, f.box16),
     ...opt(id, `ExemptInterestDividends`, f.box12),
     ...opt(id, `SpecifiedPrivateActivityBondInterestDividends`, f.box13),
@@ -1921,18 +1931,113 @@ describe(`1099-DIV box 8 and boxes 14-16 (#86)`, () => {
     noKnockouts(after);
   });
 
-  it(`box 14 $25 stops and is not added to Schedule A line 5a`, ({ task }) => {
+  it(`box 14 $25 on a Florida return stops and is not added to Schedule A line 5a`, ({ task }) => {
     task.meta.testedFactPaths = [
       `/dividendReports/*/stateTaxWithheld`,
       `/dividendReports/*/hasStateTaxWithheld`,
+      `/dividendReports/*/stateTaxWithheldUnsupported`,
+      `/dividendResidentStateHasNoIncomeTax`,
       `/flowKnockoutDividendUnsupportedBoxes`,
       `/scheduleAStateLocalIncomeOrSalesTax`,
     ];
-    const g = fl({ ...election, box14: 25, box15: `FL 123`, box16: 2000 });
+    const g = fl({ ...election, box14: 25, box15: `FL 123`, box15State: `sameState`, box16: 2000 });
     expect(val(g, `/dividendReports/#${d1}/stateTaxWithheld`)).toBe(`25.00`);
     expect(get(g, `/dividendReports/#${d1}/hasStateTaxWithheld`).get).toBe(true);
+    expect(get(g, `/dividendResidentStateHasNoIncomeTax`).get).toBe(true);
+    expect(get(g, `/dividendReports/#${d1}/stateTaxWithheldIsSupported`).get).toBe(false);
+    expect(get(g, `/dividendReports/#${d1}/stateTaxWithheldUnsupported`).get).toBe(true);
     expect(val(g, `/scheduleAStateLocalIncomeOrSalesTax`)).toBe(`0.00`);
     expect(val(g, `/totalDividendForeignTaxPaid`)).toBe(`120.00`);
+    blocks(g, `/flowKnockoutDividendUnsupportedBoxes`);
+  });
+
+  it(`NY box 14 $100 with box 15 New York does not stop and leaves federal values unchanged`, ({ task }) => {
+    // Single, W-2 $60,000, 1099-DIV box 1a $2,000, box 1b $2,000. Standard deduction $16,100
+    // (Rev. Proc. 2025-32 §4.14). Box 14 is not added to Schedule A line 5a.
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/stateTaxWithheld`,
+      `/dividendReports/*/state`,
+      `/dividendReports/*/stateTaxWithheldIsSupported`,
+      `/dividendReports/*/stateTaxWithheldUnsupported`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+      `/stateReturnComputed`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/totalIncome`,
+      `/agi`,
+      `/taxableIncome`,
+      `/scheduleAStateLocalIncomeOrSalesTax`,
+    ];
+    const baseDiv = { box1a: 2000, box1b: 2000 };
+    const ny = (form: Div) => build({ ...divs(form), ...state(`ny`), ...paW2(60000) });
+    const before = ny(baseDiv);
+    const after = ny({ ...baseDiv, box14: 100, box15: `NY`, box15State: `sameState` });
+    const lines = [
+      `/wages`,
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/totalIncome`,
+      `/agi`,
+      `/standardDeduction`,
+      `/taxableIncome`,
+      `/totalTax`,
+      `/scheduleAStateLocalIncomeOrSalesTax`,
+    ];
+    expect(dollars(after)).toEqual(dollars(before));
+    for (const line of lines) expect(val(after, line), line).toBe(val(before, line));
+    expect(val(after, `/wages`)).toBe(`60000.00`);
+    expect(val(after, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(after, `/qualifiedDividends`)).toBe(`2000.00`);
+    expect(val(after, `/totalIncome`)).toBe(`62000.00`);
+    expect(val(after, `/agi`)).toBe(`62000.00`);
+    expect(val(after, `/standardDeduction`)).toBe(`16100.00`);
+    expect(val(after, `/taxableIncome`)).toBe(`45900.00`);
+    expect(val(after, `/scheduleAStateLocalIncomeOrSalesTax`)).toBe(`0.00`);
+    expect(val(after, `/dividendReports/#${d1}/stateTaxWithheld`)).toBe(`100.00`);
+    expect(val(after, `/dividendReports/#${d1}/stateIdNumber`)).toBe(`NY`);
+    expect(get(after, `/stateReturnComputed`).get).toBe(false);
+    expect(get(after, `/dividendResidentStateHasNoIncomeTax`).get).toBe(false);
+    expect(get(after, `/dividendReports/#${d1}/stateTaxWithheldIsSupported`).get).toBe(true);
+    expect(get(after, `/dividendReports/#${d1}/stateTaxWithheldUnsupported`).get).toBe(false);
+    noKnockouts(after);
+  });
+
+  it(`a Pennsylvania return stops on box 14 $25 even when box 15 is Pennsylvania`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutDividendUnsupportedBoxes`,
+      `/dividendReports/*/stateTaxWithheldUnsupported`,
+      `/stateReturnComputed`,
+    ];
+    const g = build({
+      ...divs({ box1a: 2000, box1b: 2000, box14: 25, box15State: `sameState` }),
+      ...state(`pa`),
+      ...paW2(60000),
+    });
+    expect(val(g, `/dividendReports/#${d1}/stateTaxWithheld`)).toBe(`25.00`);
+    expect(get(g, `/stateReturnComputed`).get).toBe(true);
+    expect(get(g, `/dividendReports/#${d1}/stateTaxWithheldIsSupported`).get).toBe(false);
+    expect(val(g, `/scheduleAStateLocalIncomeOrSalesTax`)).toBe(`0.00`);
+    blocks(g, `/flowKnockoutDividendUnsupportedBoxes`);
+  });
+
+  it(`a New York return stops when box 15 is New Jersey and box 14 is $25`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutDividendUnsupportedBoxes`,
+      `/dividendReports/*/state`,
+      `/dividendReports/*/stateTaxWithheldUnsupported`,
+    ];
+    const g = build({
+      ...divs({ box1a: 2000, box1b: 2000, box14: 25, box15: `NJ`, box15State: `differentState` }),
+      ...state(`ny`),
+      ...paW2(60000),
+    });
+    expect(val(g, `/wages`)).toBe(`60000.00`);
+    expect(val(g, `/dividendReports/#${d1}/stateTaxWithheld`)).toBe(`25.00`);
+    expect(val(g, `/dividendReports/#${d1}/stateIdNumber`)).toBe(`NJ`);
+    expect(get(g, `/stateReturnComputed`).get).toBe(false);
+    expect(get(g, `/dividendResidentStateHasNoIncomeTax`).get).toBe(false);
+    expect(get(g, `/dividendReports/#${d1}/stateTaxWithheldIsSupported`).get).toBe(false);
+    expect(get(g, `/dividendReports/#${d1}/stateTaxWithheldUnsupported`).get).toBe(true);
     blocks(g, `/flowKnockoutDividendUnsupportedBoxes`);
   });
 
@@ -2040,5 +2145,31 @@ describe(`1099-DIV box 8 and boxes 14-16 (#86)`, () => {
     computedStateMismatch(task, `az`, `/flowKnockoutAzOtherFederalIncome`, {
       '/azResidencyStatus': createEnumWrapper(`fullYear`, `/azResidencyOptions`),
     });
+  });
+  it(`a Massachusetts return stops when box 16 differs from box 1a plus box 2a`, ({ task }) => {
+    computedStateMismatch(task, `ma`, `/flowKnockoutMaOtherFederalIncome`, {
+      '/maResidencyStatus': createEnumWrapper(`fullYear`, `/maResidencyOptions`),
+    });
+  });
+  it(`an Idaho return stops when box 16 differs from box 1a plus box 2a`, ({ task }) => {
+    computedStateMismatch(task, `id`, `/flowKnockoutIdOtherFederalIncome`, {
+      '/idResidencyStatus': createEnumWrapper(`fullYear`, `/idResidencyOptions`),
+    });
+  });
+  it(`box 16 stop text names Massachusetts and Idaho`, () => {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const phrase = `Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho`;
+    const sources = [
+      resolve(here, `../../fact-dictionary/generate-src/xml-src/dividends.xml`),
+      resolve(here, `../../locales/en.dividends.yaml`),
+      resolve(here, `../../../../../backend/src/main/java/gov/irs/directfile/api/pdf/PrintRefusingKnockouts.java`),
+      resolve(
+        here,
+        `../../../../../backend/src/test/java/gov/irs/directfile/api/pdf/PrintRefusingKnockoutsTest.java`
+      ),
+    ];
+    for (const file of sources) {
+      expect(readFileSync(file, `utf8`), file).toContain(phrase);
+    }
   });
 });
