@@ -292,8 +292,11 @@ public final class PrintRefusingKnockouts {
             // Boxes 3 and 4a are Schedule D lines 5 and 12 and do not refuse this path. Boxes 4b and 4c
             // still refuse it. Nonnegative box 7 is column (d) and may print. A negative box 7 and a
             // prior-year unallowed passive loss refuse the print (2025 Instructions for Form 8582, PDF p. 1,
-            // Who Must File). Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make a rental
-            // activity passive without regard to material participation, so a nonzero box 8 refuses the print.
+            // Who Must File). Box 8 is other rental income. 2026 draft Schedule K-1 (Form 1041), page 2,
+            // reports "8. Other rental income" on "Schedule E, line 33, column (d) or (f)". 26 U.S.C. 469(c)(2)
+            // and 469(c)(4) make a rental activity passive without regard to material participation, so a
+            // nonnegative box 8 is column (d) and may print. Form 8960 line 4a includes it. A negative box 8
+            // refuses the print. The path is still /flowKnockoutScheduleEPartII; this list does not change.
             // An unanswered question, or any out-of-scope K-1 (loss, passive, foreign, PTP, box 14 code A
             // that is not the supported nonfarm Form 1065 amount on Schedule SE line 2, a section 199A
             // statement, an out-of-scope estate or trust, Part IV), refuses the print. A REMIC

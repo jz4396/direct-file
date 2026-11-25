@@ -678,8 +678,9 @@
         8959, and Form 8995 combine both spouses. Still stopped: more than one business owned by the secondary
         filer, and any secondary-filer business on a return that is not married filing jointly (that net is not
         reported on a Schedule SE). A qualified joint venture that is not the supported one-each election,
-        and a community-property state, stop on the facts below. EITC, CDCC, and ACTC cases stay on
-        /flowKnockoutScheduleCEarnedIncomeCredits.
+        and a community-property state, stop on the facts below. A Schedule C loss with the CTC/ACTC or the
+        CDCC, and a joint return claiming the CDCC, stay on /flowKnockoutScheduleCEarnedIncomeCredits. A
+        childless EITC uses the signed Schedule C loss and does not stop there.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -1469,25 +1470,25 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCEarnedIncomeCredits">
-      <Name>Knockout: Schedule C cases the EITC, CDCC or ACTC earned income can't yet figure</Name>
+      <Name>Knockout: Schedule C loss with the CTC/ACTC or CDCC, or a joint CDCC</Name>
       <Description>
-        #117. The EITC (eitc /eitcEarnedIncomeWithoutCombatPay), the CDCC (income
-        /primaryFilerEarnedIncomeForCdccBase)
-        and the ACTC (income /earnedIncomeWithAllCombatPay) add
-        /scheduleCNetProfitForEarnedIncome. Still stopped:
-        - A Schedule C net loss. Both sources say a loss reduces
-        earned income: Instructions for Form 1040 (2025), PDF
-        p. 47, EIC Worksheet B, line 1e and line 4b ("Combine lines
-        1e, 2c, 3, and 4a"), and the 2026 draft
-        Instructions for Form 2441, PDF p. 5 ("You must reduce your earned income
-        by any loss from self-employment").
-        /scheduleCNetProfitForEarnedIncome is floored at $0, so a loss stops the
-        return when the EITC could apply
-        (AGI below the EITC completed phaseout, eitc /belowEitcAgiLimit, or eitc
-        /eitcQualified), the CDCC applies
-        or the CTC applies. A loss can lower earned income below the EITC limit even
-        when wages alone are above it,
-        so the EITC test is on AGI, which already includes the loss.
+        #84. The CDCC (income /primaryFilerEarnedIncomeForCdccBase) and the ACTC
+        (income /earnedIncomeWithAllCombatPay) add /scheduleCNetProfitForEarnedIncome,
+        which is floored at $0. The EITC (eitc /eitcEarnedIncomeWithoutCombatPay) adds
+        /scheduleCNetProfitOrLossForEitc, the same net without that floor. Instructions
+        for Form 1040 (2025), PDF p. 47, EIC Worksheet B, line 1e (Schedule SE line 3
+        less the deductible part of self-employment tax) and line 4b ("Combine lines
+        1e, 2c, 3, and 4a"): a loss reduces earned income. With a loss there is no
+        self-employment tax, so line 1e equals the Schedule SE line 3 loss. If earned
+        income is $0 or less, the EITC is $0. TY2026 amounts: Rev. Proc. 2025-32, p. 15
+        (no qualifying child: earned income amount $8,680, 7.65%, maximum $664; phaseout
+        starts at $10,860 single / $18,140 MFJ and is complete at $19,540 / $26,820).
+        Still stopped:
+        - A Schedule C net loss when the CTC/ACTC applies (ctcOdc /ctcQualified) or the
+        CDCC applies (cdcc /cdccQualified). The 2026 draft Instructions for Form 2441,
+        PDF p. 5, say "You must reduce your earned income by any loss from
+        self-employment." Those two earned-income facts are still floored at $0, so the
+        return stops. A childless EITC does not stop on the loss.
         - A joint return with
         any Schedule C result and the CDCC:
         Form 2441 lines 4 and 5 need each spouse's
@@ -1512,11 +1513,11 @@
         credit stops on /flowKnockoutScheduleSENonfarmOptionalMethodCredits, which is not part of
         /scheduleCSectionIsComplete. Line 4b is not added to this earned-income amount. Complete
         and false when
-        there is no Schedule C or the Schedule C
+        there is no Schedule C, when the Schedule C
         result is a
         profit on a
         return that isn't a joint return claiming the
-        CDCC.
+        CDCC, or when the result is a loss and neither the CTC nor the CDCC applies.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -1532,8 +1533,6 @@
               </Right>
             </LessThan>
             <Any>
-              <Dependency module="eitc" path="/eitcQualified" />
-              <Dependency module="eitc" path="/belowEitcAgiLimit" />
               <Dependency module="cdcc" path="/cdccQualified" />
               <Dependency module="ctcOdc" path="/ctcQualified" />
             </Any>
@@ -8424,9 +8423,10 @@
         4b. That line 4b amount is not added here. With no notary, this is still Schedule C line 31 minus
         the deductible part of self-employment tax. An election that applies together with the earned
         income credit, the additional child tax credit, or the child and dependent care credit stops the
-        return (scheduleSE /flowKnockoutScheduleSENonfarmOptionalMethodCredits). #117: floored at $0
-        because a loss is not modeled; a loss stops the return wherever it would change a credit
-        (/flowKnockoutScheduleCEarnedIncomeCredits).
+        return (scheduleSE /flowKnockoutScheduleSENonfarmOptionalMethodCredits). Floored at $0. The
+        CDCC and the ACTC still use this amount, and a loss still stops the return when either credit
+        applies (/flowKnockoutScheduleCEarnedIncomeCredits). The EITC uses
+        /scheduleCNetProfitOrLossForEitc, which is this amount without the floor.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -8455,6 +8455,48 @@
             </Subtract>
             <Dollar>0</Dollar>
           </GreaterOf>
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleCNetProfitOrLossForEitc">
+      <Name>Schedule C net profit or (loss) included in EITC earned income</Name>
+      <Description>
+        Signed earned income from self-employment for the EITC only. Each filer's amount is that
+        filer's Schedule C net profit or (loss) minus that filer's notary net profit minus that
+        filer's deductible part of SE tax (that filer's Schedule SE line 13), and the two filers are
+        added. A loss is not floored at $0. 26 U.S.C. 32(c)(2)(A)(ii)
+        (https://www.law.cornell.edu/uscode/text/26/32#c_2_A): earned income includes "net earnings
+        from self-employment ... (within the meaning of section 1402(a)) ... determined with regard
+        to the deduction allowed to the taxpayer by section 164(f)". Instructions for Form 1040
+        (2025) (https://www.irs.gov/pub/irs-pdf/i1040gi.pdf), PDF p. 47, EIC Worksheet B, line 1e is
+        Schedule SE line 3 less line 13, and line 4b says "Combine lines 1e, 2c, 3, and 4a." A loss
+        reduces earned income. With a loss there is no self-employment tax, so line 1e equals the
+        Schedule SE line 3 loss. The CDCC and the ACTC keep the floored
+        /scheduleCNetProfitForEarnedIncome. A loss still stops the return when either of those
+        credits applies (/flowKnockoutScheduleCEarnedIncomeCredits).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Add>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/scheduleCPrimaryFilerNetProfitOrLoss" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/scheduleCPrimaryFilerNotaryNetProfit" />
+              <Dependency module="scheduleSE" path="/primaryFilerDeductibleSelfEmploymentTax" />
+            </Subtrahends>
+          </Subtract>
+          <Subtract>
+            <Minuend>
+              <Dependency path="/scheduleCSecondaryFilerNetProfitOrLoss" />
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/scheduleCSecondaryFilerNotaryNetProfit" />
+              <Dependency module="scheduleSE" path="/secondaryFilerDeductibleSelfEmploymentTax" />
+            </Subtrahends>
+          </Subtract>
         </Add>
       </Derived>
     </Fact>

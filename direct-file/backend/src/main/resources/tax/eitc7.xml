@@ -191,8 +191,8 @@
     </Fact>
     <Fact path="/eitcEarnedIncomeWithoutCombatPay">
       <Name>EITC earned income before combat pay</Name>
-      <Description>#117: earned income for the EITC = Form 1040 line 1z wages (income /employerIncomeSubtotal) plus net
-        earnings from self-employment (scheduleC /scheduleCNetProfitForEarnedIncome). 26 U.S.C. 32(c)(2)(A)
+      <Description>#84: earned income for the EITC = Form 1040 line 1z wages (income /employerIncomeSubtotal) plus net
+        earnings from self-employment (scheduleC /scheduleCNetProfitOrLossForEitc). 26 U.S.C. 32(c)(2)(A)
         (https://www.law.cornell.edu/uscode/text/26/32#c_2_A): earned income means "(i) wages, salaries, tips, and other
         employee compensation ... plus (ii) the amount of the taxpayer's net earnings from self-employment for the
         taxable year (within the meaning of section 1402(a)), but such net earnings shall be determined with regard to
@@ -203,12 +203,17 @@
         from Schedule SE, Part I, line 3. ... d. Enter the amount from Schedule SE, Part I, line 13. ... e. Subtract
         line 1d from line 1c."; Part 2 (net earnings from self-employment less than $400) "b. Enter any net profit or
         (loss) from Schedule C, line 31"; Part 4 "b. Combine lines 1e, 2c, 3, and 4a. This is your total earned income."
-        No 2026 Form 1040 instructions draft is posted yet. A Schedule C net loss would reduce earned income; it is not
-        modeled and stops the return when the EITC could apply (scheduleC /flowKnockoutScheduleCEarnedIncomeCredits).</Description>
+        No 2026 Form 1040 instructions draft is posted yet. A Schedule C net loss reduces this amount. With a loss
+        there is no self-employment tax, so line 1e is the Schedule SE line 3 loss. If earned income is $0 or less,
+        the credit is $0. The CDCC and the ACTC still use the floored scheduleC
+        /scheduleCNetProfitForEarnedIncome, and a loss still stops the return when either of those credits applies
+        (scheduleC /flowKnockoutScheduleCEarnedIncomeCredits). TY2026 amounts: Rev. Proc. 2025-32, p. 15 (no
+        qualifying child: earned income amount $8,680, 7.65%, maximum $664; phaseout starts at $10,860 single /
+        $18,140 MFJ and is complete at $19,540 / $26,820).</Description>
       <Derived>
         <Add>
           <Dependency module="income" path="/employerIncomeSubtotal" />
-          <Dependency module="scheduleC" path="/scheduleCNetProfitForEarnedIncome" />
+          <Dependency module="scheduleC" path="/scheduleCNetProfitOrLossForEitc" />
         </Add>
       </Derived>
     </Fact>
