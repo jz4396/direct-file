@@ -39,7 +39,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/scheduleEHasPartIIIncome": {
@@ -625,7 +625,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/hasHouseholdEmployeeScheduleH": {

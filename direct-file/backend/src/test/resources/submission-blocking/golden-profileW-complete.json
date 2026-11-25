@@ -41,7 +41,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/formW2s/#13500000-0000-4000-8000-000000002602/writableStateWithholding": {
@@ -554,7 +554,7 @@
         "value": [
           "neither"
         ],
-        "enumOptionsPath": "/form1099RsNonstandardCorrectedOptions"
+        "enumOptionsPath": "/w2NonstandardCorrectedOptions"
       }
     },
     "/filers/#959c03d1-af4a-447f-96aa-d19397048a44/isUsCitizenFullYear": {
