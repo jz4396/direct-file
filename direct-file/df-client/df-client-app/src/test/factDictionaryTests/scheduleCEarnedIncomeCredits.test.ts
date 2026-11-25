@@ -6,6 +6,10 @@
 // - Rev. Proc. 2025-32 sec. 4.06, p. 15: 2026 earned income amount $13,020 for one qualifying child, credit
 //   percentage 34% (maximum credit 0.34 x 13,020 = 4,426.80, rounded $4,427)
 // - Schedule SE: 92.35% of net profit, 12.4% and 2.9%, half deductible under 26 U.S.C. 164(f)
+// #84: a Schedule C loss reduces childless EITC earned income and no longer stops that return. Rev. Proc. 2025-32
+// p. 15: no qualifying child, earned income amount $8,680, 7.65%, maximum $664; phaseout starts at $10,860 single /
+// $18,140 MFJ and is complete at $19,540 / $26,820. Worksheet B line 4b uses the $50-row midpoint. A loss still stops
+// when the CTC/ACTC or the CDCC applies. Test SSNs are group 00.
 import { describe, it, expect } from 'vitest';
 import { ConcretePath } from '@irs/js-factgraph-scala';
 import {
@@ -16,6 +20,7 @@ import {
   createDollarWrapper,
   createEnumWrapper,
   createStringWrapper,
+  createTinWrapper,
 } from '../persistenceWrappers.js';
 import { setupFactGraph } from '../setupFactGraph.js';
 import {
@@ -85,6 +90,14 @@ const careFor = (amount: number) => ({
   [`/cdccCareProviders/#${providerId}/writableAmountPaidForCare`]: createDollarWrapper(`${amount}`),
   '/cdccCareProviders': createCollectionWrapper([providerId]),
   '/cdccCareProvidersIsDone': createBooleanWrapper(true),
+});
+
+const w2Id = `e1170000-0000-4000-8000-000000000011`;
+
+/** Born 1996-01-01: age 30 on December 31, 2026. SSN group 00. */
+const age30 = (serial: string) => ({
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(`1996-01-01`),
+  [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial }),
 });
 
 const scheduleC = (gross: number, expenses: number, owner = primaryFilerId) => ({
@@ -197,10 +210,133 @@ describe(`Schedule C earned income for the EITC and CDCC (#117)`, () => {
     expect(get(KO).get).toBe(false);
   });
 
-  it(`a Schedule C loss with an EITC-range AGI knocks out instead of being floored at $0`, ({ task }) => {
-    task.meta.testedFactPaths = [KO];
-    const { get, str } = graph({ ...single, ...withChild, ...scheduleC(1000, 1500) });
+  it(`a Schedule C loss with a CTC qualifying child still stops`, ({ task }) => {
+    task.meta.testedFactPaths = [KO, `/ctcQualified`];
+    // Child born 2016-01-01 is under 17 at the end of 2026, so /ctcQualified applies. The loss no longer stops a
+    // childless EITC; it still stops when the CTC applies because ACTC earned income is floored at $0.
+    const { get, str } = graph({
+      ...single,
+      ...age30(`8405`),
+      ...withChild,
+      '/writableCdccHasQualifyingExpenses': createBooleanWrapper(false),
+      '/receivedImproperClaims': createBooleanWrapper(false),
+      ...scheduleC(1000, 1500),
+    });
     expect(str(`/scheduleCNetProfitOrLoss`)).toBe(`-500.00`);
+    expect(get(`/ctcQualified`).get).toBe(true);
+    expect(get(KO).complete).toBe(true);
+    expect(get(KO).get).toBe(true);
+  });
+
+  it(`single, age 30, W-2 $15,000 and a $2,000 Schedule C loss: childless EITC matches wages of $13,000`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleCNetProfitOrLossForEitc`,
+      `/eitcEarnedIncomeWithoutCombatPay`,
+      `/agi`,
+      `/earnedIncomeCredit`,
+      KO,
+    ];
+    // No SE tax on a loss, so Worksheet B line 1e is the Schedule SE line 3 loss of -$2,000.
+    // Earned income and AGI are 15,000 - 2,000 = 13,000. The $13,000 row midpoint is 13,025.
+    // 13,025 - 10,860 = 2,165. 664 - 7.65% x 2,165 = 498.3775, which rounds to $498.
+    const loss = graph({
+      ...single,
+      ...age30(`8401`),
+      ...makeW2Data(15000, w2Id),
+      ...scheduleC(1000, 3000),
+    });
+    const wagesOnly = graph({
+      ...single,
+      ...age30(`8401`),
+      ...makeW2Data(13000, w2Id),
+      '/hadSelfEmploymentIncome': createBooleanWrapper(false),
+    });
+    expect(loss.str(`/scheduleCNetProfitOrLoss`)).toBe(`-2000.00`);
+    expect(loss.str(`/selfEmploymentTax`)).toBe(`0.00`);
+    expect(loss.str(`/scheduleCNetProfitOrLossForEitc`)).toBe(`-2000.00`);
+    expect(loss.str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`0.00`);
+    expect(loss.str(`/eitcEarnedIncomeWithoutCombatPay`)).toBe(`13000.00`);
+    expect(loss.str(`/agi`)).toBe(`13000.00`);
+    expect(loss.str(`/earnedIncomeWithAllCombatPay`)).toBe(`15000.00`);
+    expect(loss.get(KO).complete).toBe(true);
+    expect(loss.get(KO).get).toBe(false);
+    expect(loss.get(`/eitcQualified`).get).toBe(true);
+    expect(wagesOnly.str(`/eitcEarnedIncomeWithoutCombatPay`)).toBe(`13000.00`);
+    expect(wagesOnly.str(`/earnedIncomeCredit`)).toBe(`498.00`);
+    expect(loss.str(`/earnedIncomeCredit`)).toBe(wagesOnly.str(`/earnedIncomeCredit`));
+    expect(loss.str(`/earnedIncomeCredit`)).toBe(`498.00`);
+  });
+
+  it(`single, W-2 $3,000 and a $3,500 Schedule C loss: earned income -$500 and EITC $0, no stop`, ({ task }) => {
+    task.meta.testedFactPaths = [`/eitcEarnedIncomeWithoutCombatPay`, `/earnedIncomeCredit`, KO];
+    const { get, str } = graph({
+      ...single,
+      ...age30(`8402`),
+      ...makeW2Data(3000, w2Id),
+      ...scheduleC(1000, 4500),
+    });
+    expect(str(`/scheduleCNetProfitOrLoss`)).toBe(`-3500.00`);
+    expect(str(`/scheduleCNetProfitOrLossForEitc`)).toBe(`-3500.00`);
+    expect(str(`/eitcEarnedIncomeWithoutCombatPay`)).toBe(`-500.00`);
+    expect(str(`/earnedIncomeCredit`)).toBe(`0.00`);
+    expect(get(KO).complete).toBe(true);
+    expect(get(KO).get).toBe(false);
+  });
+
+  it(`MFJ, primary W-2 $20,000 and a $4,000 spouse Schedule C loss: childless EITC matches wages of $16,000`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [`/eitcEarnedIncomeWithoutCombatPay`, `/earnedIncomeCredit`, `/agi`, KO];
+    // $16,000 is below the $18,140 MFJ phaseout start, so the credit is the $664 maximum.
+    const joint = {
+      ...single,
+      ...mfjFilerData,
+      [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(`1996-01-01`),
+      [`/filers/#${spouseId}/dateOfBirth`]: createDayWrapper(`1994-03-15`),
+      [`/filers/#${primaryFilerId}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial: `8403` }),
+      [`/filers/#${spouseId}/tin`]: createTinWrapper({ area: `444`, group: `00`, serial: `8404` }),
+      [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+      [`/filers/#${spouseId}/isUsCitizenFullYear`]: createBooleanWrapper(true),
+    };
+    const loss = graph({
+      ...joint,
+      ...makeW2Data(20000, w2Id),
+      ...scheduleC(1000, 5000, spouseId),
+    });
+    const wagesOnly = graph({
+      ...joint,
+      ...makeW2Data(16000, w2Id),
+      '/hadSelfEmploymentIncome': createBooleanWrapper(false),
+    });
+    expect(loss.str(`/scheduleCNetProfitOrLoss`)).toBe(`-4000.00`);
+    expect(loss.str(`/scheduleCSecondaryFilerNetProfitOrLoss`)).toBe(`-4000.00`);
+    expect(loss.str(`/scheduleCNetProfitOrLossForEitc`)).toBe(`-4000.00`);
+    expect(loss.str(`/eitcEarnedIncomeWithoutCombatPay`)).toBe(`16000.00`);
+    expect(loss.str(`/agi`)).toBe(`16000.00`);
+    expect(loss.get(KO).complete).toBe(true);
+    expect(loss.get(KO).get).toBe(false);
+    expect(wagesOnly.str(`/earnedIncomeCredit`)).toBe(`664.00`);
+    expect(loss.str(`/earnedIncomeCredit`)).toBe(wagesOnly.str(`/earnedIncomeCredit`));
+    expect(loss.str(`/earnedIncomeCredit`)).toBe(`664.00`);
+  });
+
+  it(`a Schedule C loss with CDCC expenses still stops`, ({ task }) => {
+    task.meta.testedFactPaths = [`/primaryFilerEarnedIncomeForCdccBase`, `/cdccQualified`, KO];
+    // Wages keep the floored CDCC earned income above $0, so the credit applies. The loss is not subtracted there.
+    const { get, str } = graph({
+      ...single,
+      ...age30(`8406`),
+      ...interest40k,
+      ...careFor(3000),
+      ...makeW2Data(15000, w2Id),
+      ...scheduleC(1000, 3000),
+    });
+    expect(str(`/scheduleCNetProfitOrLoss`)).toBe(`-2000.00`);
+    expect(str(`/scheduleCNetProfitForEarnedIncome`)).toBe(`0.00`);
+    expect(str(`/primaryFilerEarnedIncomeForCdccBase`)).toBe(`15000.00`);
+    expect(get(`/cdccQualified`).get).toBe(true);
     expect(get(KO).complete).toBe(true);
     expect(get(KO).get).toBe(true);
   });

@@ -45,9 +45,13 @@
   income is net investment income under 26 U.S.C. 1411(c)(1)(A)
   (https://www.law.cornell.edu/uscode/text/26/1411) and is on Form 8960. Material-participation box 6 is
   not 26 U.S.C. 1411(c)(2) net investment income and is not on Form 8960. A negative box 5 stops the
-  return. Box 8 is other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity,
-  and 469(c)(4) applies that rule without regard to material participation. It is not 469(c)(7) rental
-  real estate professional income. A nonzero box 8 is column (d) and stops the return. Box 1 interest,
+  return. Box 8 (other rental income) at least zero is line 33 column (d), the same path as box 7.
+  2026 draft Schedule K-1 (Form 1041), page 2, reports "8. Other rental income" on "Schedule E, line 33,
+  column (d) or (f)". 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity, and
+  469(c)(4) applies that rule without regard to material participation. It is not 469(c)(7) rental real
+  estate professional income, so a nonnegative amount is column (d). That amount is on lines 34a, 35, 37,
+  and 41, Schedule 1 line 5, and Form 8960 line 4a. 26 U.S.C. 1411(c)(1)(A)(i). A negative box 8 stops the
+  return. Box 1 interest,
   box 2a ordinary dividends, and box 2b qualified dividends (box 2b not larger than box 2a) are Form 1040
   lines 2b, 3b, and 3a, and Schedule B when required. They are not line 33. Box 12 code A (adjustment for
   minimum tax purposes) is Form 6251 line 2j. 26 U.S.C. 59(c). Codes B through I on box 12 stop the return.
@@ -5387,18 +5391,18 @@
     <Fact path="/scheduleEEstates/*/box8">
       <Name>Schedule K-1 (Form 1041) box 8 other rental income</Name>
       <Description>
-        Schedule K-1 (Form 1041) (2025) page 2: box 8 "Other rental income" is reported on "Schedule E, line
-        33, column (d) or (f)". 26 U.S.C. 469(c)(2) (https://www.law.cornell.edu/uscode/text/26/469): the term
-        passive
-        activity includes any rental activity, except as provided in 469(c)(7). 26 U.S.C. 469(c)(4):
-        material
-        participation is not taken into account in determining whether an activity is a rental activity
-        under (c)(2). Box
-        8 is not 469(c)(7) rental real estate (that exception is box 7, and Schedule E line 43
-        is not computed). A
-        nonnegative amount is column (d) only. Any nonzero amount stops the return. A
-        negative amount also stops the
-        return.
+        2026 draft Schedule K-1 (Form 1041) (https://www.irs.gov/pub/irs-dft/f1041sk1--dft.pdf, SHA-256
+        7f859b4a8219adb4f290f81f6af11973ed1751bc693d9f877d098d50241daa96), page 2: "8. Other rental income"
+        is reported on "Schedule E, line 33, column (d) or (f)". 26 U.S.C. 469(c)(2)
+        (https://www.law.cornell.edu/uscode/text/26/469): "Except as provided in paragraph (7), the term
+        'passive activity' includes any rental activity." 26 U.S.C. 469(c)(4): "Paragraphs (2) and (3) shall
+        be applied without regard to whether or not the taxpayer materially participates in the activity."
+        Box 8 is not 469(c)(7) rental real estate (that exception is box 7, and Schedule E line 43 is not
+        computed), so a nonnegative amount is column (d). It is then lines 34a, 35, 37, and 41, Schedule 1
+        line 5, and Form 8960 line 4a. 26 U.S.C. 1411(c)(1)(A)(i) ("rents"). An amount less than zero stops
+        the return. 2025 Instructions for Form 8582 (https://www.irs.gov/pub/irs-pdf/i8582.pdf), PDF p. 1,
+        Who Must File: "Form 8582 is filed by individuals, estates, and trusts who have passive activity
+        deductions (including prior year unallowed losses)." Zero is column (d) of zero.
       </Description>
       <Writable>
         <Dollar />
@@ -5791,7 +5795,7 @@
       <Description>
         Schedule K-1 (Form 1041) (2025) page 2: box 7 goes on "Schedule E, line 33, column (d) or (f)."
         26 U.S.C. 469(c)(2) puts a nonnegative amount in column (d). Whole dollars, 26 U.S.C. 6102(a). A
-        loss leaves this amount incomplete. Box 8 is not included.
+        loss leaves this amount incomplete. Box 8 is /scheduleEEstates/*/box8ColumnD and is not included.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -5820,8 +5824,8 @@
     <Fact path="/scheduleEEstates/*/box8Nonzero">
       <Name>Box 8 is not zero</Name>
       <Description>
-        Other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4). Not 469(c)(7) rental real estate professional
-        income.
+        Unrounded Schedule K-1 (Form 1041) box 8, including a loss and including cents that round to zero on
+        Schedule E. 26 U.S.C. 469(c)(2) and 469(c)(4). Not 469(c)(7) rental real estate professional income.
       </Description>
       <Derived>
         <Not>
@@ -5834,6 +5838,58 @@
             </Right>
           </Equal>
         </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box8Negative">
+      <Name>Box 8 is a loss</Name>
+      <Description>
+        Schedule K-1 (Form 1041) box 8 less than zero. 26 U.S.C. 469(a)(1)
+        (https://www.law.cornell.edu/uscode/text/26/469). Form 8582 is not computed. 2025 Instructions for
+        Form 8582 (https://www.irs.gov/pub/irs-pdf/i8582.pdf), PDF p. 1, Who Must File: "Form 8582 is filed
+        by individuals, estates, and trusts who have passive activity deductions (including prior year
+        unallowed losses)."
+      </Description>
+      <Derived>
+        <LessThan>
+          <Left>
+            <Dependency path="../box8" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </LessThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEEstates/*/box8ColumnD">
+      <Name>Box 8 on Schedule E line 33 column (d), whole dollars</Name>
+      <Description>
+        2026 draft Schedule K-1 (Form 1041), page 2: "8. Other rental income" is reported on "Schedule E,
+        line 33, column (d) or (f)." 26 U.S.C. 469(c)(2) and 469(c)(4) put a nonnegative amount in column
+        (d). Whole dollars, 26 U.S.C. 6102(a). A loss leaves this amount incomplete. Box 7 is not included.
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThanOrEqual>
+                <Left>
+                  <Dependency path="../box8" />
+                </Left>
+                <Right>
+                  <Dollar>0</Dollar>
+                </Right>
+              </GreaterThanOrEqual>
+            </When>
+            <Then>
+              <Round>
+                <Dependency path="../box8" />
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -5852,9 +5908,9 @@
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (f): "Other income from Schedule K-1". The sum of
         /scheduleEEstates/*/box5ColumnF and /scheduleEEstates/*/box6ColumnF. Nonnegative box 5 and
-        material-participation box 6 are separate facts so Form 8960 can take box 5 only. Box 8 is not
-        included. 26 U.S.C. 469(c)(2) and 469(c)(4) make other rental income passive without regard to
-        material participation, so it is column (d). 26 U.S.C. 6102(a): "the fractional part of a dollar
+        material-participation box 6 are separate facts so Form 8960 can take box 5 only. Box 8 is
+        /scheduleEEstates/*/box8ColumnD and is not included. 26 U.S.C. 469(c)(2) and 469(c)(4) make other
+        rental income passive without regard to material participation, so it is column (d). 26 U.S.C. 6102(a): "the fractional part of a dollar
         shall be disregarded unless it amounts to one-half dollar or more, in which case it shall be
         increased to one dollar." A loss leaves this amount incomplete.
       </Description>
@@ -5873,11 +5929,12 @@
       <Name>Line 33 column (d) passive income</Name>
       <Description>
         Schedule E (2026) draft, PDF p. 3, column (d): "Passive income from Schedule K-1". Nonnegative box 7
-        and box 8 are reported here whether or not the filer materially participates. Schedule K-1 (Form
-        1041) (2025) page 2: box 7 goes on "Schedule E, line 33, column (d) or (f)." 26 U.S.C. 469(c)(2)
-        puts rental real estate in column (d). 26 U.S.C. 469(c)(4) does the same for box 8.
-        A passive filer also reports nonnegative box 6. A filed return may have nonnegative box 7 here.
-        Box 8 and a passive filer still stop the return. A loss leaves this amount incomplete.
+        and box 8 are reported here whether or not the filer materially participates. 2026 draft Schedule
+        K-1 (Form 1041), page 2: "8. Other rental income" is reported on "Schedule E, line 33, column (d) or
+        (f)." 26 U.S.C. 469(c)(2) and 469(c)(4) put that rental income in column (d). A passive filer also
+        reports nonnegative box 6. A filed return may have nonnegative box 7 and nonnegative box 8 here. A
+        filer who does not materially participate still stops the return. A loss leaves this amount
+        incomplete.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -5971,16 +6028,16 @@
       <Name>This estate or trust is in the supported Part III slice</Name>
       <Description>
         Domestic beneficiary, not a foreign trust, no Form 8082, material participation yes, box 5, box 6,
-        and box 7 at least zero, box 8 zero, no prior-year unallowed passive loss, box 2b not larger
+        box 7, and box 8 at least zero, no prior-year unallowed passive loss, box 2b not larger
         than box 2a, box 3 and box 4a answered (a gain, a
         loss, or zero), box 12 codes B through I blank or zero, no K-1 amount other than boxes 1, 2a, 2b, 3,
         4a, 5, 6, 7, 8, and box 12 codes A through J, no basis limit, no amount not at risk, and no passive
-        deduction or loss. Nonnegative box 5 is line 33 column (f) and Form 8960. Nonnegative box 7 is line
-        33 column (d). Box 3 is Schedule D line 5. Box 4a is
+        deduction or loss. Nonnegative box 5 is line 33 column (f) and Form 8960. Nonnegative box 7 and
+        nonnegative box 8 are line 33 column (d) and Form 8960 line 4a. Box 3 is Schedule D line 5. Box 4a is
         Schedule D line 12. Boxes 4b and 4c stay in
         /scheduleEEstates/*/hasOtherK1Amount. Box 12 code A is Form 6251 line 2j. Box 12 code J is answered
-        and is not a stop. Box 8 is a rental activity under 26 U.S.C. 469(c)(2) and 469(c)(4) and is not on
-        the supported path. Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a, not line 33.
+        and is not a stop. A negative box 8 is not on the supported path. 26 U.S.C. 469(c)(2) and 469(c)(4).
+        Boxes 1, 2a, and 2b are Form 1040 lines 2b, 3b, and 3a, not line 33.
       </Description>
       <Derived>
         <All>
@@ -6030,14 +6087,14 @@
               <Dollar>0</Dollar>
             </Right>
           </GreaterThanOrEqual>
-          <Equal>
+          <GreaterThanOrEqual>
             <Left>
               <Dependency path="../box8" />
             </Left>
             <Right>
               <Dollar>0</Dollar>
             </Right>
-          </Equal>
+          </GreaterThanOrEqual>
           <IsComplete>
             <Dependency path="../box12CodeA" />
           </IsComplete>
@@ -6237,7 +6294,8 @@
       <Name>Schedule E line 34a column (d)</Name>
       <Description>
         Sum of line 33 column (d). Schedule E (2026) draft, PDF p. 3, line 34a: "Totals" of column (d).
-        Nonnegative Schedule K-1 (Form 1041) box 7 is included. 26 U.S.C. 469(c)(2). Same completeness rule as
+        Nonnegative Schedule K-1 (Form 1041) box 7 and box 8 are included. 26 U.S.C. 469(c)(2) and 469(c)(4).
+        Same completeness rule as
         column (f). $0 when Part III does not apply.
       </Description>
       <Export downstreamFacts="true" />
@@ -6351,7 +6409,8 @@
         Whole-dollar nonnegative box 7, the column (d) amount that is net investment income. Schedule K-1
         (Form 1041) (2025) page 2: box 7 goes on "Schedule E, line 33, column (d) or (f)." 26 U.S.C. 469(c)(2)
         puts it in column (d). 26 U.S.C. 1411(c)(1)(A)(i) includes that rent on Form 8960 line 4a once it is
-        on Schedule E line 37 and Schedule 1 line 5. Box 6 and box 8 are not included. $0 when Part III does
+        on Schedule E line 37 and Schedule 1 line 5. Box 6 is not included. Box 8 is
+        /scheduleEPartIIIBox8ColumnD and is added separately. $0 when Part III does
         not apply. Incomplete when a listed box 7 is a loss or unanswered, so a loss is not entered as zero.
         26 U.S.C. 6102(a).
       </Description>
@@ -6419,6 +6478,89 @@
               <Round>
                 <CollectionSum>
                   <Dependency path="/scheduleEEstates/*/box7ColumnD" />
+                </CollectionSum>
+              </Round>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/scheduleEPartIIIBox8ColumnD">
+      <Name>Schedule E line 33 column (d) from Schedule K-1 (Form 1041) box 8</Name>
+      <Description>
+        Whole-dollar nonnegative box 8, the column (d) amount that is net investment income. 2026 draft
+        Schedule K-1 (Form 1041), page 2: "8. Other rental income" is reported on "Schedule E, line 33,
+        column (d) or (f)." 26 U.S.C. 469(c)(2) and 469(c)(4) put it in column (d). 26 U.S.C. 1411(c)(1)(A)(i)
+        includes that rent on Form 8960 line 4a once it is on Schedule E line 37 and Schedule 1 line 5. Box
+        6 and box 7 are not included. Box 7 is /scheduleEPartIIIBox7ColumnD and is added separately. $0 when
+        Part III does not apply. Incomplete when a listed box 8 is a loss or unanswered, so a loss is not
+        entered as zero. 26 U.S.C. 6102(a).
+      </Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/scheduleEHasPartIIIIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <Dependency path="/scheduleEHasPartIIIIncome" />
+              </Not>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <GreaterThan>
+                <Left>
+                  <CollectionSize>
+                    <Dependency path="/scheduleEEstates" />
+                  </CollectionSize>
+                </Left>
+                <Right>
+                  <Int>0</Int>
+                </Right>
+              </GreaterThan>
+            </When>
+            <Then>
+              <Round>
+                <CollectionSum>
+                  <Dependency path="/scheduleEEstates/*/box8ColumnD" />
                 </CollectionSum>
               </Round>
             </Then>
@@ -6949,11 +7091,15 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleEPartIIIBox8">
-      <Name>Knockout: Schedule K-1 (Form 1041) box 8</Name>
-      <Description>Other rental income. 26 U.S.C. 469(c)(2) includes any rental activity in the term passive activity.
-        26 U.S.C. 469(c)(4) applies that rule without regard to material participation. Box 8 is not 469(c)(7) rental
-        real estate professional income. A nonzero amount is column (d) and stops the return. Form 8960 line 4a does not
-        take it. Complete false when Part III is no.</Description>
+      <Name>Knockout: Schedule K-1 (Form 1041) box 8 loss</Name>
+      <Description>
+        Other rental income less than zero. 2026 draft Schedule K-1 (Form 1041), page 2, reports "8. Other
+        rental income" on "Schedule E, line 33, column (d) or (f)". 26 U.S.C. 469(c)(2) and 469(c)(4) make a
+        nonnegative amount column (d). That amount does not stop the return. It is on Schedule E lines 34a,
+        35, 37, and 41, Schedule 1 line 5, and Form 8960 line 4a (/scheduleEPartIIIBox8ColumnD).
+        26 U.S.C. 1411(c)(1)(A)(i) ("rents"). A loss needs Form 8582. 26 U.S.C. 469(a)(1). 2025 Instructions
+        for Form 8582, PDF p. 1, Who Must File. Complete false when Part III is no.
+      </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
       <Derived>
@@ -6963,7 +7109,7 @@
           <GreaterThan>
             <Left>
               <Count>
-                <Dependency path="/scheduleEEstates/*/box8Nonzero" />
+                <Dependency path="/scheduleEEstates/*/box8Negative" />
               </Count>
             </Left>
             <Right>
@@ -7549,9 +7695,9 @@
       <Name>Schedule E Part III supported path is complete</Name>
       <Description>
         The filer answered yes, at least one estate or trust is listed, every row is complete, and every row
-        is supported. Nonpassive box 6 and nonnegative box 5 are column (f). Nonnegative box 7 is column (d).
-        Box 8 is not supported.
-        26 U.S.C. 469(c)(2) and 469(c)(4). A prior-year unallowed passive loss is not supported.
+        is supported. Nonpassive box 6 and nonnegative box 5 are column (f). Nonnegative box 7 and nonnegative
+        box 8 are column (d) and Form 8960 line 4a. 26 U.S.C. 469(c)(2) and 469(c)(4). A negative box 8 is not
+        supported. A prior-year unallowed passive loss is not supported.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
@@ -7611,13 +7757,13 @@
         on "Schedule E, line 33, column (d) or (f)". Material
         participation (26 U.S.C. 469(h)(1)) puts a
         nonnegative amount in column (f). 2026 draft Schedule K-1 (Form 1041), page 2, reports nonnegative
-        box 5 on the same column (f). 26 U.S.C. 469(e)(1)(A). Box 8 "Other rental income" is a
-        rental activity. 26 U.S.C. 469(c)(2)
+        box 5 on the same column (f). 26 U.S.C. 469(e)(1)(A). 2026 draft Schedule K-1 (Form 1041), page 2,
+        reports "8. Other rental income" on "Schedule E, line 33, column (d) or (f)". 26 U.S.C. 469(c)(2)
         includes any rental activity in the term passive activity, and 469(c)(4)
         applies that rule without
         regard to material participation. It is not 469(c)(7) rental real estate professional
         income. A
-        nonnegative box 8 is column (d), and any nonzero box 8 stops the return. 2026 draft Schedule E, PDF
+        nonnegative box 8 is column (d) and does not stop the return. A negative box 8 stops the return. 2026 draft Schedule E, PDF
         p.
         3, line 35: "Add columns (d) and (f) of line 34a." Line 37: "Total estate and trust income or
         (loss). Combine
@@ -7625,12 +7771,13 @@
 
         Net investment income. 26 U.S.C. 1411(c)(1)(A)(i) includes rents. Nonnegative box 7 is on Schedule E
         line 37 and Schedule 1 line 5, and form8960 /form8960Line4a includes that amount
-        (/scheduleEPartIIIBox7ColumnD). 26 U.S.C. 1411(c)(1)(A) also includes nonnegative box 5. That amount
+        (/scheduleEPartIIIBox7ColumnD). Nonnegative box 8 is on the same lines and form8960 /form8960Line4a
+        includes it (/scheduleEPartIIIBox8ColumnD). 26 U.S.C. 1411(c)(1)(A)(i) ("rents"). 26 U.S.C. 1411(c)(1)(A)
+        also includes nonnegative box 5. That amount
         is column (f) and form8960 /form8960Line4a includes it (/scheduleEPartIIIBox5ColumnF).
         Material-participation box 6 is not 26 U.S.C. 1411(c)(2) net
-        investment income and is not added. Box 8 is passive under 469(c)(2) and
-        469(c)(4), is not on
-        line 4a, and stops the return. A negative box 5 stops the return. A negative box 7 stops the return. A
+        investment income and is not added. A negative box 5 stops the return. A negative box 7 stops the return. A
+        negative box 8 stops the return. A
         prior-year unallowed passive loss stops the return.
 
         Not self-employment. A
