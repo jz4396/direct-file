@@ -1150,6 +1150,11 @@ class PrintRefusingKnockoutsTest {
 
         Map<String, String> spouseFacts =
                 new HashMap<>(ScheduleSETy2026PdfSmokeTest.selfEmployed("170000.00", "170000.00", "30000.00"));
+        // selfEmployed() answers this "no" for a single filer. On a joint return it is the spouse's
+        // question (26 U.S.C. 1402(j); 26 U.S.C. 3121(w)). 2026 draft Instructions for Schedule SE, p. 3:
+        // if both spouses have self-employment income, each files a separate Schedule SE. The spouse's
+        // church employee income is not the primary filer's line 5a, so it has to be unanswered here.
+        spouseFacts.remove("/hadSecondaryFilerChurchEmployeeIncome");
         spouseFacts.put(
                 "/filingStatus",
                 PaPit40ScheduleSpTy2026PdfSmokeTest.enumValue("marriedFilingJointly", "/filingStatusOptions"));
