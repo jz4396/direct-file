@@ -178,7 +178,7 @@ const w2s = (ssn: [string, string, string], ...forms: W2[]) => {
       [`${p}/hasRRTACodes`]: createBooleanWrapper(false),
       [`${p}/hasSeenLastAvailableScreen`]: createBooleanWrapper(true),
       [`${p}/tin`]: createTinWrapper({ area: tin[0], group: tin[1], serial: tin[2] }),
-      [`${p}/nonstandardOrCorrectedChoice`]: createEnumWrapper(`neither`, `/form1099RsNonstandardCorrectedOptions`),
+      [`${p}/nonstandardOrCorrectedChoice`]: createEnumWrapper(`neither`, `/w2NonstandardCorrectedOptions`),
       [`${p}/writableCombatPay`]: createDollarWrapper(`0`),
       [`${p}/writableDependentCareBenefits`]: createDollarWrapper(`0`),
       [`${p}/writableWages`]: createDollarWrapper(`${f.box1}`),
