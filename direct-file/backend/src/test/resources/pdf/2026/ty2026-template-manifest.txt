@@ -56,6 +56,7 @@ dfff7caae33d2527ae9655f562a3469835556cc6ec6ab40297641caf10379fdb  pdf/2026/KS40/
 0bb62498fda14b515084b83fb4467f379f17d08a712f6390b1cd2fceecb04a07  pdf/2026/MA1/en/2025_form-1.pdf  pages=4  mapped=103  unmapped=60
 3f4f6f04e4a82de0b938a0d7e780039730cb60a41561f788aa515c638eabb970  pdf/2026/MAHC/en/2025_schedule-hc.pdf  pages=4  mapped=16  unmapped=56
 2bf6e0b44e628a05cc401d22f7cf6f8c7b39db529d345f4bcf7d93ccfe170d63  pdf/2026/NCD400/en/2025_d-400.pdf  pages=3  mapped=68  unmapped=24
+d3e8250468622d6e6debb0ae271af35f464c4996b1ace36a97df72cbb8dc16f4  pdf/2026/NMPIT1/en/2025_pit-1.pdf  pages=2  mapped=33  unmapped=0
 fcd7648601f3ce5a7a258be49c54aa1c604e1c61c1fe9175351451ac6087d8b3  pdf/2026/PA40/en/2025_pa-40.pdf  pages=2  mapped=50  unmapped=42
 c6d8f5cdd63045e1e40b6deeced2c80b23006b7700befe3b8f0c430f2b40a0d4  pdf/2026/PA40B/en/2025_pa-40b.pdf  pages=5  mapped=7  unmapped=12
 520555065fec4b85f757fa5cd2f3564c507464954553e376d1922bc7a75b8098  pdf/2026/PA40C/en/pa-40c.pdf  pages=8  mapped=58  unmapped=153
