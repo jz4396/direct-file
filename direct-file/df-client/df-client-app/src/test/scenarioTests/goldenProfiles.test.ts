@@ -33,7 +33,10 @@
 // boxes 1a, 1b, 2a, 12, and 13, Form 6251 Part III, and Form 8960), and profile V
 // (Golden V: single filer who moves from Pennsylvania to Florida on July 1, wages only, PA-40 part-year oval P),
 // and profile W
-// (Golden W: full-year Arizona resident, married filing jointly, both under 65, no dependents, two W-2s, Form 140).
+// (Golden W: full-year Arizona resident, married filing jointly, both under 65, no dependents, two W-2s, Form 140),
+// and profile X
+// (Golden X: full-year Pennsylvania resident, married filing jointly, both under 65, no dependents, two W-2s, Form
+// 8959 at the joint threshold with no employer withholding, and an AMT check that does not apply).
 // The fixtures are in goldenProfiles.ts.
 // Every expected figure below was worked by hand from the cited source, line by line.
 //
@@ -142,7 +145,7 @@
 // [EITC] Rev. Proc. 2025-32 p. 15 §4.06(1): "Completed Phaseout Amount (All other filing statuses)" with no qualifying
 //      children "$19,540". IRC §32(m), https://www.law.cornell.edu/uscode/text/26/32: "a taxpayer identification
 //      number means a social security number issued to an individual by the Social Security Administration". The
-//      fixture SSNs other than profiles C, D, F, G, Q, R, S, T, U, V, and W are in the 900 area, which SSA never issues; the app reads them
+//      fixture SSNs other than profiles C, D, F, G, Q, R, S, T, U, V, W, and X are in the 900 area, which SSA never issues; the app reads them
 //      as neither an SSN nor (with these group numbers) an ITIN, so EITC is $0 on those profiles. Profile H uses
 //      900-46-1009 (group 46, outside the ITIN ranges). Profile J uses 900-49-1012 (group 49, outside the ITIN
 //      ranges; an ITIN group is 50-65, 70-88, 90-92, or 94-99). Profile M uses 900-40-1014 (group 40, outside
@@ -157,7 +160,8 @@
 //      9xx SSNs, and Tin.isSSN is false for a 9xx area. Profile S has no child. Profile T uses 444-00-2013 and 444-00-2014, also group 00. Profile T has no child. Profile U uses
 //      444-00-2015, also group 00. Profile U has no child. Profile V uses 444-00-2016, also group 00. The cite
 //      names that SSN. Profile V has no child. Profile W uses 444-00-2017 and 444-00-2018, also group 00,
-//      the next pair after Golden V. Profile W has no child. Every
+//      the next pair after Golden V. Profile W has no child. Profile X uses 444-00-2019 and 444-00-2020, also
+//      group 00, the next pair after Golden W. The cite names those SSNs. Profile X has no child. Every
 //      childless profile's AGI is above $19,540, so EITC is $0 on each. Profile D's AGI is above the one-child
 //      "Completed Phaseout Amount (All other filing statuses)" of "$51,593" ([RP] p. 15 §4.06(1)), and profile F's AGI
 //      is above that amount too, so EITC is $0 on both. Profile G is under the two-child joint completed phaseout and
@@ -279,6 +283,9 @@ import {
   profileWAzMfjW2,
   profileWPrimaryW2,
   profileWSpouseW2,
+  profileXPaMfj8959,
+  profileXPrimaryW2,
+  profileXSpouseW2,
   form8949Sale,
 } from './goldenProfiles.js';
 
@@ -355,7 +362,8 @@ describe(`golden end-to-end scenario (synthetic data): fixtures`, () => {
         name.startsWith(`profileT`) ||
         name.startsWith(`profileU`) ||
         name.startsWith(`profileV`) ||
-        name.startsWith(`profileW`);
+        name.startsWith(`profileW`) ||
+        name.startsWith(`profileX`);
       const hasChild =
         name.startsWith(`profileD`) ||
         name.startsWith(`profileF`) ||
@@ -5496,6 +5504,278 @@ describe(`golden end-to-end scenario (synthetic data): profile W, Golden W, full
         path.resolve(
           __dirname,
           `../../../../../backend/src/test/resources/submission-blocking/golden-profileW-complete.json`
+        ),
+        `utf8`
+      )
+    ).facts;
+    expect(exported).toEqual(JSON.parse(g.toJSON()));
+  });
+
+  it(`nothing stops the return`, () => {
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expectNotStopped(g);
+  });
+});
+
+describe(`golden end-to-end scenario (synthetic data): profile X, Golden X, full-year PA, MFJ, Form 8959`, () => {
+  // Kerry Example, born 1986-02-14, and Shannon Example, born 1988-09-27. Married filing jointly, both under 65, not
+  //   blind. No dependents. Full-year Pennsylvania [PA] [TRC]. Address 123 Example St, Harrisburg, PA 17101. School
+  //   code 22275 (Harrisburg City, PA-40 IN (2025) pp. 46-47). Standard deduction. No interest, no dividends, no
+  //   sales. SSNs are the cite's 444-00-2019 and 444-00-2020, group 00 [SSA], the next pair after Golden W. A 9xx
+  //   area is not an SSN (Tin.isSSN). There is no child.
+  // Two W-2s, box 15 Pennsylvania. Kerry, Example Keystone Payroll LLC: boxes 1, 3, 5, and 16 $180,000; box 2
+  //   $31,000; box 4 $11,160; box 6 $2,610; box 17 $5,500. Shannon, Example Susquehanna Payroll LLC: boxes 1, 3, 5,
+  //   and 16 $120,000; box 2 $19,000; box 4 $7,440; box 6 $1,740; box 17 $3,700. Box 4 is 6.2% of box 3 (26 U.S.C.
+  //   3101(a)). Box 6 is 1.45% of box 5 [3101 (b)(1)]. Neither employer paid over $200,000, so box 6 has no 0.9%
+  //   [3102 (f)(1)].
+  // Form 1040: line 1a, line 9, and line 11 are 180,000 + 120,000 = 300,000. Line 12e standard deduction 32,200.
+  //   Rev. Proc. 2025-32 §4.14(1), PDF p. 18: "Married Individuals Filing Joint Returns and Surviving Spouses
+  //   ... $32,200" (/MFJStandardDeduction). Neither spouse is 65 or older or blind. Line 15 taxable income 267,800.
+  // Line 16, Tax Computation Worksheet [GI p. 36]. Taxable income is over $100,000. [RP] §4.01 Table 1 (joint):
+  //   "Over $211,400 but not over $403,550 $35,932 plus 24% of the excess over $211,400".
+  //   35,932 + 24% × (267,800 − 211,400) = 35,932 + 24% × 56,400 = 35,932 + 13,536 = 49,468.
+  //   The same figure is 267,800 × 24% − 14,804 = 64,272 − 14,804 = 49,468.
+  // Form 8959 [3101]. f8959 (2026) line 4 is lines 1 through 3, $300,000. Line 5 is the filing-status threshold,
+  //   $250,000 for a joint return (26 U.S.C. 3101(b)(2), 1401(b)(2); /form8959Threshold). Line 6 is line 4 minus
+  //   line 5, $50,000. Line 7 is 50,000 × 0.9% = $450. Line 12 is $450 and goes to Schedule 2 line 17b. There is no
+  //   self-employment income, so line 18 is $0 and Schedule 2 line 11 is $0. The cite writes "5 = 4 = $300,000" and
+  //   "6 $250,000" and "18 $450" and "Schedule 2 line 11 $450". Those labels do not match this draft: line 5 is the
+  //   threshold, line 6 is the excess, line 18 is the self-employment tax, and Schedule 2 line 11 is that
+  //   self-employment tax. The $450 wage tax is line 7, line 12, and Schedule 2 line 17b. Line 19 is 2,610 + 1,740 =
+  //   4,350. Line 20 is 300,000. Line 21 is 300,000 × 1.45% = 4,350. Line 22 and line 24 are $0.
+  // Schedule 2 line 21 and Form 1040 line 23 are $450. Line 24 total tax is 49,468 + 450 = 49,918. Line 25a and
+  //   line 33 are 31,000 + 19,000 = 50,000. Line 34 refund is 82.
+  // Form 6251. The cite's "line 1 $267,800" is draft line 1b. Line 2a is the standard deduction, $32,200. Line 4
+  //   AMTI is $300,000. The exemption is $140,200 [RP §4.10, PDF p. 16]. AMTI is under the $1,000,000 joint phaseout
+  //   start [RP p. 17], so line 5 stays $140,200. Line 6 is 159,800. Line 7 is 159,800 × 26% = 41,548, which is less
+  //   than line 10's $49,468, so line 11 is $0. The cite's "Schedule 2 line 1" is draft line 2 (line 1z is blank).
+  //   Who Must File, item 1, attaches Form 6251 only when line 7 is greater than line 10, so the page is not in the
+  //   package. /flowKnockoutAmtPreferenceItems, /flowKnockoutAmtPreferenceItemsUnanswered, and
+  //   /flowKnockoutAmtMfsAddBack are complete false.
+  // Form 8960. No interest, dividends, or gain, so line 12 and line 17 are $0. MAGI $300,000 is over the $250,000
+  //   joint threshold, so Who Must File attaches the form. Schedule 2 line 6 stays $0, and line 21 stays the Form
+  //   8959 amount.
+  // PA-40 [PA] [TRC]. Residency oval (R). Filing status (J). Line 1a is both box 16 amounts, $300,000. Lines 9 and
+  //   11 are $300,000. Line 12 is 300,000 × 307/10000 = $9,210.00. Line 13 is 5,500 + 3,700 = $9,200. Line 26 and
+  //   line 28 tax due are $10.00. Schedule SP does not apply: eligibility income is far over the married table.
+  const g = graph(profileXPaMfj8959);
+
+  it(`Form 1040 wages, the standard deduction, and the Tax Computation Worksheet tax`, () => {
+    expect(get(g, `/filingStatus`).get.toString()).toBe(`marriedFilingJointly`);
+    expect(get(g, `/itemizesDeductions`).get).toBe(false);
+    expect(get(g, `/wantsStandardDeduction`).get).toBe(true);
+    expect(get(g, `/primaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/secondaryFiler/tin/isSSN`).get).toBe(true);
+    expect(get(g, `/primaryFiler/age65OrOlder`).get).toBe(false);
+    expect(get(g, `/secondaryFiler/age65OrOlder`).get).toBe(false);
+    const taxable = Number(get(g, `/taxableIncome`).get.toString());
+    expect(taxable).toBe(267800);
+    // [RP] §4.01 Table 1. 35,932 + 24% × (267,800 − 211,400) = 49,468 exactly.
+    const taxCents = 35932 * 100 + (taxable - 211400) * 24;
+    expect(taxCents).toBe(4946800);
+    expect(267800 * 24 - 1480400).toBe(4946800);
+    expectDollars(g, {
+      '/wages': `300000.00`,
+      '/employerIncomeSubtotal': `300000.00`,
+      '/totalIncome': `300000.00`,
+      '/agi': `300000.00`,
+      '/MFJStandardDeduction': `32200.00`,
+      '/standardDeduction': `32200.00`,
+      '/standardOrItemizedDeductions': `32200.00`,
+      '/schedule1ALine44': `0.00`,
+      '/totalDeductions': `32200.00`,
+      '/taxableIncome': `267800.00`,
+      '/roundedTaxableIncome': `267800.00`,
+      '/tentativeTaxFromTaxableIncome': `49468.00`,
+      [`/formW2s/#${profileXPrimaryW2.id}/oasdiWages`]: `180000.00`,
+      [`/formW2s/#${profileXPrimaryW2.id}/oasdiWithholding`]: `11160.00`,
+      [`/formW2s/#${profileXPrimaryW2.id}/medicareWages`]: `180000.00`,
+      [`/formW2s/#${profileXPrimaryW2.id}/medicareWithholding`]: `2610.00`,
+      [`/formW2s/#${profileXPrimaryW2.id}/stateWages`]: `180000.00`,
+      [`/formW2s/#${profileXPrimaryW2.id}/stateWithholding`]: `5500.00`,
+      [`/formW2s/#${profileXSpouseW2.id}/oasdiWages`]: `120000.00`,
+      [`/formW2s/#${profileXSpouseW2.id}/oasdiWithholding`]: `7440.00`,
+      [`/formW2s/#${profileXSpouseW2.id}/medicareWages`]: `120000.00`,
+      [`/formW2s/#${profileXSpouseW2.id}/medicareWithholding`]: `1740.00`,
+      [`/formW2s/#${profileXSpouseW2.id}/stateWages`]: `120000.00`,
+      [`/formW2s/#${profileXSpouseW2.id}/stateWithholding`]: `3700.00`,
+    });
+  });
+
+  it(`Form 8959 tax is $450 and no employer withheld the 0.9%`, () => {
+    expect(get(g, `/requiresForm8959`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS8959`) as string).get).toBe(true);
+    const line4 = Number(get(g, `/form8959Line4`).get.toString());
+    const threshold = Number(get(g, `/form8959Threshold`).get.toString());
+    expect(line4).toBe(300000);
+    // f8959 (2026) line 5 is the threshold. The cite's "6 $250,000" is this line.
+    expect(threshold).toBe(250000);
+    const line6 = Number(get(g, `/form8959Line6`).get.toString());
+    expect(line6).toBe(line4 - threshold);
+    expect(line6).toBe(50000);
+    // 50,000 × 0.9% = 450. 26 U.S.C. 3101(b)(2).
+    expect((line6 * 9) / 1000).toBe(450);
+    const line21 = Number(get(g, `/form8959Line21`).get.toString());
+    // 300,000 × 1.45% = 4,350. Box 6 is the same 4,350, so line 22 and line 24 are $0.
+    expect(line21).toBe(4350);
+    expectDollars(g, {
+      '/form8959Line1': `300000.00`,
+      '/form8959Line2': `0.00`,
+      '/form8959Line3': `0.00`,
+      '/form8959Line4': `300000.00`,
+      '/form8959Threshold': `250000.00`,
+      '/form8959Line6': `50000.00`,
+      '/form8959Line7': `450.00`,
+      '/form8959Line12': `450.00`,
+      '/form8959Line13': `0.00`,
+      '/form8959Line18': `0.00`,
+      '/line17bAdditionalMedicareTax': `450.00`,
+      '/line11AdditionalMedicareTax': `0.00`,
+      '/form8959Line19': `4350.00`,
+      '/form8959Line21': `4350.00`,
+      '/form8959Line22': `0.00`,
+      '/form8959Line24': `0.00`,
+      '/line21OfSchedule2': `450.00`,
+    });
+    expect(get(g, `/flowKnockoutForm8959Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8959Unsupported`).get).toBe(false);
+  });
+
+  it(`Form 6251 line 11 is $0 and the AMT knockouts are false`, () => {
+    expect(get(g, `/hasAmtPreferenceItems`).get).toBe(false);
+    for (const k of [
+      `/flowKnockoutAmtPreferenceItems`,
+      `/flowKnockoutAmtPreferenceItemsUnanswered`,
+      `/flowKnockoutAmtMfsAddBack`,
+    ]) {
+      expect(get(g, k).complete, k).toBe(true);
+      expect(get(g, k).get, k).toBe(false);
+    }
+    expect(get(g, `/form6251UsesPartIII`).get).toBe(false);
+    const amti = Number(get(g, `/form6251Line4`).get.toString());
+    expect(amti).toBe(300000);
+    expect(amti).toBeLessThan(1000000);
+    const line6 = amti - 140200;
+    expect(line6).toBe(159800);
+    // 159,800 × 26% = 41,548. Under the $244,500 breakpoint. [RP] §4.10; §55(b)(1)(A).
+    expect(line6 * 26).toBe(4154800);
+    expectDollars(g, {
+      '/form6251ExemptionAmount': `140200.00`,
+      '/form6251PhaseoutThreshold': `1000000.00`,
+      '/form6251Line1b': `267800.00`,
+      '/form6251Line2a': `32200.00`,
+      '/form6251Line4': `300000.00`,
+      '/form6251ExemptionReduction': `0.00`,
+      '/form6251Line5': `140200.00`,
+      '/form6251Line6': `159800.00`,
+      '/form6251Line7': `41548.00`,
+      '/form6251Line9': `41548.00`,
+      '/form6251Line10': `49468.00`,
+      '/amt': `0.00`,
+      '/schedule2Line1z': `0.00`,
+      '/schedule2Line2': `0.00`,
+      '/totalAdditionalTaxesOwed': `0.00`,
+    });
+    expect(get(g, `/form6251Required`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(false);
+  });
+
+  it(`total tax is $49,918, withholding is $50,000, and the refund is $82`, () => {
+    expect(get(g, `/requiresSchedule2`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS1040S2`) as string).get).toBe(true);
+    expect(get(g, `/requiresForm8960`).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS8960`) as string).get).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expect(get(g, `/requiresScheduleB`).get).toBe(false);
+    expect(get(g, `/hasScheduleCBusinesses`).get).toBe(false);
+    expect(get(g, `/requiresScheduleD`).get).toBe(false);
+    expect(get(g, `/totalCtc`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/earnedIncomeCredit`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/form2210AskPartII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutForm2210`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutForm2210`).get).toBe(false);
+    expect(get(g, `/dueRefund`).get).toBe(true);
+    expectDollars(g, {
+      '/form8960Line12': `0.00`,
+      '/form8960Line13': `300000.00`,
+      '/form8960Line14': `250000.00`,
+      '/form8960Line15': `50000.00`,
+      '/form8960Line16': `0.00`,
+      '/form8960Line17': `0.00`,
+      '/schedule2Line6NetInvestmentIncomeTax': `0.00`,
+      '/nonRefundableCredits': `0.00`,
+      '/taxLessNonRefundableCredits': `49468.00`,
+      '/totalTax': `49918.00`,
+      '/formW2Withholding': `50000.00`,
+      '/otherFormWithholding': `0.00`,
+      '/totalWithholding': `50000.00`,
+      '/totalPayments': `50000.00`,
+      '/overpayment': `82.00`,
+      '/balanceDue': `0.00`,
+    });
+  });
+
+  it(`PA-40 line 12 is $9,210.00 and tax due is $10.00`, () => {
+    expect(get(g, `/stateReturnPaFiled`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPa`).get).toBe(true);
+    expect(get(g, `/stateReturnIsPaPartYear`).get).toBe(false);
+    expect(get(g, `/paResidencyStatusPartYear`).get).toBe(false);
+    expect(get(g, `/livedInFl`).get).toBe(false);
+    expect(get(g, `/paSchoolCode`).get).toBe(`22275`);
+    expect(get(g, `/paSpCouldQualify`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaSpUnsupported`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedIncome`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaUnsupportedItems`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaUnsupportedItems`).get).toBe(false);
+    expect(get(g, `/flowKnockoutPaPartYear`).complete).toBe(true);
+    expect(get(g, `/flowKnockoutPaPartYear`).get).toBe(false);
+    expect(get(g, pdfIncludeWhen(`PA40`) as string).get).toBe(true);
+    const line11 = Number(get(g, `/paLine11`).get.toString());
+    expect(line11).toBe(300000);
+    // 72 P.S. §7302; [PA] p. 21, LINE 12. 300,000 × 307/10000 = 9,210.00 exactly.
+    expect((line11 * 307) / 10000).toBe(9210);
+    expectDollars(g, {
+      '/paLine1a': `300000.00`,
+      '/paLine1c': `300000.00`,
+      '/paLine2': `0.00`,
+      '/paLine9': `300000.00`,
+      '/paLine10': `0.00`,
+      '/paLine11': `300000.00`,
+      '/paLine12': `9210.00`,
+      '/paLine13': `9200.00`,
+      '/paLine15': `0.00`,
+      '/paLine21': `0.00`,
+      '/paLine24': `9200.00`,
+      '/paLine26': `10.00`,
+      '/paLine29': `0.00`,
+      '/stateTaxLiability': `9210.00`,
+      '/stateAmountOwed': `10.00`,
+      '/stateRefund': `0.00`,
+    });
+  });
+
+  it(`Form 1040, Schedule 2, Form 8959, and the PA-40 are in the package`, () => {
+    for (const form of [`IRS1040`, `IRS1040S2`, `IRS8959`, `PA40`]) {
+      expect(get(g, pdfIncludeWhen(form) as string).get, form).toBe(true);
+    }
+    // MAGI is over the joint threshold, so Form 8960 is attached even though line 17 is $0.
+    expect(get(g, pdfIncludeWhen(`IRS8960`) as string).get).toBe(true);
+    expect(get(g, pdfIncludeWhen(`IRS6251`) as string).get).toBe(false);
+    for (const form of [`IRS1040SB`, `IRS1040SD`, `IRS1040S1`]) {
+      const included = get(g, pdfIncludeWhen(form) as string);
+      expect(included.complete && included.get === true, form).toBe(false);
+    }
+  });
+
+  it(`golden-profileX-complete.json is the persisted profileXPaMfj8959 return`, () => {
+    const exported = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          __dirname,
+          `../../../../../backend/src/test/resources/submission-blocking/golden-profileX-complete.json`
         ),
         `utf8`
       )

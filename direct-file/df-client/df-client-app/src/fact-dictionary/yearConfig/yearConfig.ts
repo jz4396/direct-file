@@ -6,10 +6,10 @@
  * that carries <TaxYear>YYYY</TaxYear> in the fact dictionary, the fact's literal values in
  * document order and the authority for them. A parameter does not have to cite Rev. Proc. 2025-32:
  * any of these is accepted, alone or together:
- *   - a `pdf` source (Rev. Proc., Notice, IRS form or instructions, or the HHS poverty guidelines
- *     notice in the Federal Register) with a page and a quote;
- *   - a `statute` source (the Internal Revenue Code) with a section like "§ 1211(b)(1)", a URL for
- *     that section, and a quote.
+ *   - a pdf source (`medium: "pdf"`: Rev. Proc., Notice, IRS form or instructions, or the HHS
+ *     poverty guidelines notice in the Federal Register) with a page and a quote;
+ *   - a statute source (`medium: "statute"`) with a section like "§ 1211(b)(1)", a URL for that
+ *     section, and a quote.
  * Every dollar amount and rate the parameter holds must appear in one of its quotes
  * (`22%` / `22 percent`, or a bare whole table token when `form: "table"`).
  *
@@ -17,6 +17,11 @@
  * the fact dictionary XML; yearConfig.test.ts fails if the XML and the file disagree, if a
  * parameter has no cite, or if a cited quote does not contain the dollar amounts and rates the
  * parameter holds.
+ *
+ * `medium` (`pdf`, `statute`, `web`) is what a cite must include: a page for a pdf, a section and
+ * URL for a statute. `kind` (`final`, `draft`, `priorYear`, `statute`, `revProc`) says whether that
+ * authority is final for the year. provisional.ts requires `provisional` when every form or
+ * instruction cite is a draft or a prior-year source.
  *
  * Loading is strict: a year that is not in the registry is an error, never a fallback to another
  * year.
@@ -32,14 +37,36 @@ import path from 'path';
 export const TAX_YEARS_FOLDER = `../../backend/src/main/resources/taxYears/`;
 export const FACT_DICTIONARY_XML_FOLDER = `./src/fact-dictionary/generate-src/xml-src/`;
 
-export type SourceKind = `pdf` | `statute` | `web`;
+/** How the source is read. A `pdf` cite needs a page; a `statute` cite needs a section and URL. */
+export type SourceMedium = `pdf` | `statute` | `web`;
+
+/**
+ * Whether the authority is final for this tax year. `draft` and `priorYear` are interim form or
+ * instruction cites. `statute` and `revProc` count as final on their own. `final` is a final form
+ * or any other authority that is already this year's (a notice, a Federal Register determination,
+ * a state bulletin, a publication).
+ */
+export type SourceAuthority = `final` | `draft` | `priorYear` | `statute` | `revProc`;
+
+export const SOURCE_AUTHORITIES: readonly SourceAuthority[] = [`final`, `draft`, `priorYear`, `statute`, `revProc`];
 
 export interface TaxYearSource {
   title: string;
   url: string;
-  kind: SourceKind;
+  medium: SourceMedium;
+  kind: SourceAuthority;
   /** sha256 of the PDF the page numbers and quotes were checked against. */
   sha256?: string;
+}
+
+/** Set when every form or instruction cite is a draft or a prior-year source. */
+export interface Provisional {
+  /** Why the cite is not final for this tax year. */
+  reason: string;
+  /** The source that should replace the interim cite, for example "2026 K-40 booklet". */
+  repinFrom: string;
+  /** Issue that tracks the re-pin. */
+  tracking: string;
 }
 
 export interface Cite {
@@ -63,6 +90,8 @@ export interface TaxYearParameter {
   /** Use the values of another parameter (for facts that duplicate a table). */
   valuesFrom?: string;
   cite: Cite[];
+  /** Present when the fact still needs a final form or instruction cite. Not a value. */
+  provisional?: Provisional;
 }
 
 export type PendingStatus = `current` | `stale` | `structural` | `unverified`;
@@ -78,6 +107,8 @@ export interface PendingReviewEntry {
   cite?: Cite[];
   note: string;
   tracking: string;
+  /** Present when the fact's cites are still a draft or a prior-year form. Not a value. */
+  provisional?: Provisional;
 }
 
 export interface TaxYearConfig {
@@ -288,10 +319,14 @@ export function citeErrors(config: TaxYearConfig, where: string, cites: Cite[] |
       errors.push(`${label}: unknown source ${cite.source}`);
       return;
     }
+    if (source.medium !== `pdf` && source.medium !== `statute` && source.medium !== `web`) {
+      errors.push(`${label}: source ${cite.source} has no medium`);
+      return;
+    }
     if (!cite.quote || cite.quote.trim().length < 8) {
       errors.push(`${label}: missing quote`);
     }
-    if (source.kind === `pdf`) {
+    if (source.medium === `pdf`) {
       if (!Number.isInteger(cite.page) || (cite.page as number) < 1) {
         errors.push(`${label}: ${cite.source} cite needs a page`);
       }
@@ -299,7 +334,7 @@ export function citeErrors(config: TaxYearConfig, where: string, cites: Cite[] |
         errors.push(`${label}: pageEnd before page`);
       }
     }
-    if (source.kind === `statute`) {
+    if (source.medium === `statute`) {
       if (!cite.section || !/^§ \d/.test(cite.section)) {
         errors.push(`${label}: statute cite needs a section like "§ 1211(b)(1)"`);
       }

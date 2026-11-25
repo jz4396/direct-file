@@ -34,7 +34,11 @@
 // taxes the preferential income at 15% and Form 8960 computes net investment income tax), and profile V
 // (Golden V: single filer who moves from Pennsylvania to Florida on July 1, wages only, so the PA-40 is a part-year
 // return with residency oval P and no Schedule A), and profile W
-// (Golden W: full-year Arizona resident, married filing jointly, both under 65, no dependents, two W-2s, Form 140).
+// (Golden W: full-year Arizona resident, married filing jointly, both under 65, no dependents, two W-2s, Form 140),
+// and profile X
+// (Golden X: full-year Pennsylvania resident, married filing jointly, both under 65, no dependents, two W-2s, Form
+// 8959 Additional Medicare Tax at the joint threshold with no employer withholding, and an AMT check that does not
+// apply).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -95,6 +99,8 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2016`,
   `444-00-2017`,
   `444-00-2018`,
+  `444-00-2019`,
+  `444-00-2020`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1714,6 +1720,99 @@ export const profileWAzMfjW2 = {
   ...w2s(indy.ssn, profileWPrimaryW2, profileWSpouseW2),
 };
 
+/**
+ * Profile X (Golden X, #135): full-year Pennsylvania resident, married filing jointly, both under 65, not blind, no
+ * dependents, standard deduction. Neither spouse's Medicare wages pass $200,000, so neither employer withholds the
+ * 0.9% Additional Medicare Tax. The joint return is over the $250,000 threshold, so the couple owes it on Form 8959.
+ * AMT is checked and does not apply.
+ *
+ * Primary, Example Keystone Payroll LLC: boxes 1, 3, 5, and 16 $180,000; box 2 $31,000; box 4 $11,160; box 6 $2,610;
+ * box 15 PA; box 17 $5,500. Spouse, Example Susquehanna Payroll LLC: boxes 1, 3, 5, and 16 $120,000; box 2 $19,000;
+ * box 4 $7,440; box 6 $1,740; box 15 PA; box 17 $3,700.
+ * Box 4 is 6.2% of box 3. Both wages are under the $184,500 OASDI wage base. 26 U.S.C. 3101(a).
+ * Primary box 4 is 6.2% × 180,000 = 11,160. Spouse box 4 is 6.2% × 120,000 = 7,440.
+ * Box 6 is 1.45% of box 5. Neither employer paid over $200,000, so there is no 0.9%. 26 U.S.C. 3101(b)(1), 3102(f)(1).
+ * Primary box 6 is 1.45% × 180,000 = 2,610. Spouse box 6 is 1.45% × 120,000 = 1,740.
+ *
+ * SSNs are the cite's 444-00-2019 and 444-00-2020, group 00, the next pair after Golden W. Group 00 is never assigned
+ * by SSA. Fixed ids in the 13500000-0000-4000-8000-0000000027xx range.
+ *
+ * Federal, Rev. Proc. 2025-32. Line 1a, line 9, and line 11 are 180,000 + 120,000 = 300,000. Line 12e is the joint
+ * standard deduction $32,200 (§4.14; /MFJStandardDeduction). Line 15 is 300,000 − 32,200 = 267,800. Taxable income is
+ * over $100,000, so line 16 is the Tax Computation Worksheet, not the Tax Table. §4.01 Table 1 (joint): over $211,400
+ * but not over $403,550, $35,932 plus 24% of the excess over $211,400. 35,932 + 24% × (267,800 − 211,400) = 35,932 +
+ * 24% × 56,400 = 35,932 + 13,536 = 49,468. The same figure is 267,800 × 24% − 14,804 = 64,272 − 14,804 = 49,468.
+ *
+ * Form 8959 (2026 draft). Line 1 and line 4 are $300,000. Line 5 is the joint threshold $250,000. 26 U.S.C.
+ * 3101(b)(2), 1401(b)(2). Line 6 is 300,000 − 250,000 = 50,000. Line 7 is 50,000 × 0.9% = 450. Line 12 is 450 and
+ * goes to Schedule 2 line 17b. There is no self-employment income, so line 18 is $0 and Schedule 2 line 11 is $0.
+ * Line 19 is 2,610 + 1,740 = 4,350. Line 20 is 300,000. Line 21 is 300,000 × 1.45% = 4,350. Line 22 and line 24 are
+ * $0. Schedule 2 line 21 and Form 1040 line 23 are $450. Line 24 total tax is 49,468 + 450 = 49,918. Line 25a and
+ * line 33 are 31,000 + 19,000 = 50,000. The refund is 50,000 − 49,918 = 82.
+ *
+ * Form 6251. Line 1b is taxable income $267,800 (the cite's "line 1"). Line 2a is the standard deduction $32,200.
+ * Line 4 AMTI is $300,000. The exemption is $140,200 (§4.10). AMTI is under the $1,000,000 joint phaseout start, so
+ * line 5 stays $140,200. Line 6 is 159,800. Line 7 is 159,800 × 26% = 41,548, under line 10's $49,468, so line 11 is
+ * $0 and Schedule 2 line 2 is $0. Who Must File attaches Form 6251 only when line 7 is greater than line 10, so the
+ * form does not print.
+ *
+ * PA-40, full-year resident, filing status (J). Line 1a is both box 16 amounts, $300,000. Lines 9 and 11 are
+ * $300,000. Line 12 is 300,000 × 307/10000 = $9,210.00. 72 P.S. §7302. Line 13 is 5,500 + 3,700 = $9,200. Tax due is
+ * $10.00.
+ */
+const kerry: Person = { first: `Kerry`, last: `Example`, ssn: [`444`, `00`, `2019`], dob: `1986-02-14` };
+const shannon: Person = { first: `Shannon`, last: `Example`, ssn: [`444`, `00`, `2020`], dob: `1988-09-27` };
+export const profileXPrimaryW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002701`,
+  employer: `Example Keystone Payroll LLC`,
+  ein: [`00`, `0002701`],
+  box1: 180000,
+  box2: 31000,
+  box3: 180000,
+  // 6.2% × 180,000 = 11,160. 26 U.S.C. 3101(a). Under the wage base.
+  box4: 11160,
+  box5: 180000,
+  // 1.45% × 180,000 = 2,610. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 2610,
+  // PA-40 line 1a is box 16. Box 17 is part of PA-40 line 13. 72 P.S. §7302.
+  box16: 180000,
+  box17: 5500,
+  filerId: primaryFilerId,
+  tin: kerry.ssn,
+};
+export const profileXSpouseW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002702`,
+  employer: `Example Susquehanna Payroll LLC`,
+  ein: [`00`, `0002702`],
+  box1: 120000,
+  box2: 19000,
+  box3: 120000,
+  // 6.2% × 120,000 = 7,440. 26 U.S.C. 3101(a). Under the wage base.
+  box4: 7440,
+  box5: 120000,
+  // 1.45% × 120,000 = 1,740. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 1740,
+  box16: 120000,
+  box17: 3700,
+  filerId: spouseId,
+  tin: shannon.ssn,
+};
+export const profileXPaMfj8959 = {
+  ...single(kerry, { street: `123 Example St`, city: `Harrisburg`, zip: `17101`, state: `PA` }),
+  ...mfjFilerData,
+  ...spouse(shannon),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(kerry.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`pa`, `/scopedStateOptions`),
+  '/paSchoolDistrictCode': createStringWrapper(`22275`),
+  '/paHasSpNontaxableIncome': createBooleanWrapper(false),
+  '/spouseLivesInTPState': createEnumWrapper(`sameState`, `/spouseScopedStateOptions`),
+  '/spouseReceivedAlaskaPfd': createBooleanWrapper(false),
+  // Both W-2s have box 15 Pennsylvania, the residence state.
+  '/spouseIncomeFormsInScopedState': createEnumWrapper(`onlySame`, `/primaryFilerW2And1099IntStateOptions`),
+  ...w2s(kerry.ssn, profileXPrimaryW2, profileXSpouseW2),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1744,4 +1843,5 @@ export const goldenProfiles = {
   profileUFlSingleAmtPartIii,
   profileVPaToFlWages,
   profileWAzMfjW2,
+  profileXPaMfj8959,
 };

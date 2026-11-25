@@ -357,7 +357,8 @@ public final class PrintRefusingKnockouts {
             // The same path still refuses the print for actual expenses, more than one vehicle, five or more
             // automobiles used at the same time (Rev. Proc. 2019-46 §4.05), a prior actual-expense or MACRS or
             // section 179 or bonus method, vehicle loan interest (line 16b, Form 4562), Form 4562 otherwise required,
-            // or Part IV line 47a answered no. Also line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, a vehicle
+            // or Part IV line 47a answered no. Also line 13 depreciation (PDF p. 8, Form 4562), line 12 depletion, a
+            // vehicle
             // lease on line 20a (inclusion amount, Pub. 463 ch. 4; listed property, 26 U.S.C. 280F(c) and
             // 280F(d)(4)). Machinery and equipment rent that is not a vehicle prints on line 20a and does not refuse
             // the print. Line 30 home office (2026 draft Instructions for Schedule C, i1040sc--dft.pdf, Oct 8, 2026,
@@ -481,9 +482,12 @@ public final class PrintRefusingKnockouts {
             // Schedule 3 Line 1: "No. See Form 1116 to find out if you can take the credit". Form 1116 is not
             // computed. The election itself (at or under $300, or $600 on a joint return) still prints.
             "/flowKnockoutDividendForeignTaxPaid",
-            // Nominee dividends. Form 1040 instr. (2025) p. 26, Line 3b: Schedule B is required if "you received, as
-            // a nominee, ordinary dividends that actually belong to someone else." The Part II subtraction is not
-            // computed, so the nominee amount is not left in line 3b.
+            // Nominee dividends that are not the Schedule B line 5 subtraction. Ordinary and qualified nominee
+            // dividends print ("Nominee Distribution") and are removed from lines 3b and 3a. The return still stops
+            // when a nominee share includes another box, an amount is over box 1a or box 1b, the subtraction leaves
+            // remaining box 1b above remaining box 1a (line 3a is included in line 3b), any nominee amount is on a
+            // computed state return, or the subtotal rows do not fit. 2026 draft Instructions for Schedule B
+            // PDF p. 3 (printed p. 2), Line 5, Nominees. 1099-INT nominee interest is a separate stop.
             "/flowKnockoutDividendNominee",
             // Box 1b, box 2e, box 5, or box 6 larger than box 1a, or box 2b, box 2d, or box 2f larger than box 2a.
             // Each is a portion of that box (2026 draft Form 1099-DIV, Instructions for Recipient, PDF p. 5). Lines
