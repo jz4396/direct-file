@@ -29,8 +29,9 @@ import {
  * Part III (#85): line 33 column (f) for domestic estate or trust box 6 with material participation, plus
  * nonnegative box 5. Nonnegative box 7 is line 33 column (d) and Schedule 1 line 5. A loss and a prior-year
  * unallowed passive loss stop the return. Box 5 is net investment income on Form 8960. Material-participation
- * box 6 is not. Box 8 is other rental income. 26 U.S.C. 469(c)(2) and 469(c)(4) make it passive, so a
- * nonzero amount is column (d) and stops the return. Box 12 code A is Form 6251 line 2j. Codes B through I
+ * box 6 is not. Nonnegative box 8 is line 33 column (d) and Form 8960 line 4a. 2026 draft Schedule K-1
+ * (Form 1041), page 2: "8. Other rental income" is reported on "Schedule E, line 33, column (d) or (f)".
+ * 26 U.S.C. 469(c)(2) and 469(c)(4). A loss stops the return. Box 12 code A is Form 6251 line 2j. Codes B through I
  * stop the return.
  * Part IV is an explicit stop, including a Schedule Q holder who
  * has no Part II income. Line 39 stays incomplete when the answer is yes.
@@ -735,26 +736,39 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
     expect(get(g, `/scheduleESectionIsComplete`).get).toBe(true);
   });
 
-  it(`box 6 $4,000 stays in column (f) and box 8 $1,500 is column (d) and stops the return`, ({ task }) => {
+  it(`box 6 $4,000 stays in column (f) and nonnegative box 8 $1,500 is column (d) and Form 8960`, ({ task }) => {
     task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box8ColumnD`,
       `/scheduleEPartIIILine33AColumnF`,
       `/scheduleEPartIIILine34aColumnD`,
       `/scheduleEPartIIILine37`,
+      `/scheduleEPartIIIBox8ColumnD`,
+      `/form8960Line4a`,
       `/flowKnockoutScheduleEPartIIIBox8`,
       `/flowKnockoutScheduleEPartIII`,
       `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
     ];
-    // 26 U.S.C. 469(c)(2): a rental activity is passive. 469(c)(4) applies that rule without regard to
-    // material participation. Box 8 is not 469(c)(7) rental real estate professional income.
+    // 2026 draft Schedule K-1 (Form 1041), page 2: "8. Other rental income" is reported on "Schedule E, line
+    // 33, column (d) or (f)". 26 U.S.C. 469(c)(2) and 469(c)(4) put a nonnegative amount in column (d).
+    // 26 U.S.C. 1411(c)(2) leaves material-participation box 6 off Form 8960. 26 U.S.C. 1411(c)(1)(A)(i)
+    // includes the $1,500 of other rental income.
+    const base = fg();
     const g = fg(oneEstate(`4000`, { [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`1500`) }));
+    expect(get(g, `/scheduleEEstates/#${estateId}/box8ColumnD`).get.toString()).toBe(`1500.00`);
     expect(get(g, `/scheduleEPartIIILine33AColumnF`).get.toString()).toBe(`4000.00`);
     expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`1500.00`);
     expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`5500.00`);
     expect(get(g, `/schedule1Line5`).get.toString()).toBe(`5500.00`);
-    expect(get(g, `/flowKnockoutScheduleEPartIIIBox8`).get).toBe(true);
-    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
-    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
-    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEPartIIIBox8ColumnD`).get.toString()).toBe(`1500.00`);
+    expect(Number(get(g, `/form8960Line4a`).get.toString())).toBe(
+      Number(get(base, `/form8960Line4a`).get.toString()) + 1500
+    );
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox8`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
 
   it(`two estates of $3,000 and $2,500 total $5,500 on line 37`, ({ task }) => {
@@ -854,9 +868,9 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
       { [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`-1`) },
     ],
     [
-      `box 8 other rental income`,
+      `box 8 other rental loss`,
       `/flowKnockoutScheduleEPartIIIBox8`,
-      { [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`500`) },
+      { [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`-100`) },
     ],
     [
       `box 12 codes B through I`,
@@ -1117,6 +1131,164 @@ describe(`Schedule E Part III estates and trusts (#85)`, () => {
     expect(get(g, `/form8960MagiOverThreshold`).get).toBe(true);
     expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
     expect(get(g, `/flowKnockoutPaK11041Box7`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  const floridaWages = (wages: number, extra: Record<string, unknown> = {}) => {
+    const minimal = Object.fromEntries(
+      Object.entries(filerWithW2NoDeductionsNoCreditsBaseData).filter(([k]) => !k.startsWith(`/formW2s`))
+    );
+    return setupFactGraph({
+      ...minimal,
+      ...baseFilerData,
+      ...singleFilerData,
+      [`/filers/#${primaryFilerId}/canBeClaimed`]: createBooleanWrapper(false),
+      '/flowHasSeenDeductions': createBooleanWrapper(true),
+      ...makeW2Data(wages),
+      '/interestReports': createCollectionWrapper([]),
+      ...oneEstate(`0`, extra),
+      ...residence(`fl`),
+    }).factGraph;
+  };
+
+  it(`a single Florida filer with box 8 of $2,500 reports it on line 33(d) and AGI $62,500`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box8ColumnD`,
+      `/scheduleEEstates/*/columnD`,
+      `/scheduleEPartIIILine34aColumnD`,
+      `/scheduleEPartIIILine35`,
+      `/scheduleEPartIIILine37`,
+      `/scheduleELine41`,
+      `/schedule1Line5`,
+      `/agi`,
+      `/scheduleEPartIIIBox8ColumnD`,
+      `/form8960Line4a`,
+      `/requiresForm8960`,
+      `/form8960MagiOverThreshold`,
+      `/flowKnockoutScheduleEPartIIIBox8`,
+      `/flowIsKnockedOut`,
+    ];
+    // 2026 draft Schedule K-1 (Form 1041), page 2: "8. Other rental income" is reported on "Schedule E, line
+    // 33, column (d) or (f)". 26 U.S.C. 469(c)(2) and 469(c)(4). W-2 $60,000 plus Schedule 1 line 5 $2,500 is
+    // AGI $62,500. i8960 (2026 draft), Who Must File: Form 8960 is required only when MAGI is over the
+    // threshold. 26 U.S.C. 1411(b) is $200,000 for a single filer.
+    const g = floridaWages(60000, { [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`2500`) });
+    expect(get(g, `/scheduleEEstates/#${estateId}/box8ColumnD`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/scheduleEEstates/#${estateId}/columnD`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/scheduleEPartIIILine35`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/scheduleELine41`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/agi`).get.toString()).toBe(`62500.00`);
+    expect(get(g, `/scheduleEPartIIIBox8ColumnD`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/form8960Line4a`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/form8960Line13`).get.toString()).toBe(`62500.00`);
+    expect(get(g, `/requiresForm8960`).get).toBe(false);
+    expect(get(g, `/form8960MagiOverThreshold`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox8`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`box 7 of $1,000 plus box 8 of $2,500 is $3,500 on line 33 column (d)`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box7ColumnD`,
+      `/scheduleEEstates/*/box8ColumnD`,
+      `/scheduleEEstates/*/columnD`,
+      `/scheduleEPartIIILine34aColumnD`,
+      `/scheduleEPartIIIBox7ColumnD`,
+      `/scheduleEPartIIIBox8ColumnD`,
+      `/scheduleEPartIIILine37`,
+      `/schedule1Line5`,
+      `/form8960Line4a`,
+      `/flowKnockoutScheduleEPartIIIBox7`,
+      `/flowKnockoutScheduleEPartIIIBox8`,
+      `/flowIsKnockedOut`,
+    ];
+    // Both amounts are column (d). 26 U.S.C. 469(c)(2). Box 7 is rental real estate. Box 8 is any other
+    // rental activity, and 26 U.S.C. 469(c)(4) applies that rule without regard to material participation.
+    const base = fg();
+    const g = fg(
+      oneEstate(`0`, {
+        [`/scheduleEEstates/#${estateId}/box7`]: createDollarWrapper(`1000`),
+        [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`2500`),
+      })
+    );
+    expect(get(g, `/scheduleEEstates/#${estateId}/box7ColumnD`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEEstates/#${estateId}/box8ColumnD`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/scheduleEEstates/#${estateId}/columnD`).get.toString()).toBe(`3500.00`);
+    expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`3500.00`);
+    expect(get(g, `/scheduleEPartIIIBox7ColumnD`).get.toString()).toBe(`1000.00`);
+    expect(get(g, `/scheduleEPartIIIBox8ColumnD`).get.toString()).toBe(`2500.00`);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`3500.00`);
+    expect(get(g, `/scheduleELine41`).get.toString()).toBe(`3500.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`3500.00`);
+    expect(Number(get(g, `/form8960Line4a`).get.toString())).toBe(
+      Number(get(base, `/form8960Line4a`).get.toString()) + 3500
+    );
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox7`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox8`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+  });
+
+  it(`stops a box 8 loss of $100 and leaves line 37 incomplete`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEEstates/*/box8Negative`,
+      `/flowKnockoutScheduleEPartIIIBox8`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowKnockoutScheduleEPartII`,
+      `/scheduleEPartIIILine37`,
+      `/scheduleEPartIIIBox8ColumnD`,
+      `/flowIsKnockedOut`,
+    ];
+    // 2025 Instructions for Form 8582, PDF p. 1, Who Must File. A loss is a passive activity deduction.
+    // Form 8582 is not computed. 26 U.S.C. 469(a)(1).
+    const g = fg(oneEstate(`0`, { [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`-100`) }));
+    expect(get(g, `/scheduleEEstates/#${estateId}/box8Negative`).get).toBe(true);
+    expect(get(g, `/scheduleEPartIIILine37`).complete).toBe(false);
+    expect(get(g, `/scheduleEPartIIIBox8ColumnD`).complete).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox8`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(true);
+    expect(get(g, `/scheduleEEstates/#${estateId}/isSupported`).get).toBe(false);
+  });
+
+  it(`a single filer with box 8 of $5,000 and wages of $210,000 owes $190 of net investment income tax`, ({
+    task,
+  }) => {
+    task.meta.testedFactPaths = [
+      `/scheduleEPartIIIBox8ColumnD`,
+      `/form8960Line4a`,
+      `/form8960Line12`,
+      `/form8960Line13`,
+      `/form8960Line15`,
+      `/form8960Line16`,
+      `/form8960Line17`,
+      `/agi`,
+      `/flowKnockoutForm8960Unsupported`,
+      `/flowKnockoutScheduleEPartIIIBox8`,
+      `/flowIsKnockedOut`,
+    ];
+    // 26 U.S.C. 1411(c)(1)(A)(i) includes the rent on line 4a. 26 U.S.C. 1411(a)(1) taxes 3.8 percent of the
+    // lesser of net investment income and the excess of MAGI over the threshold. 26 U.S.C. 1411(b) is
+    // $200,000 for a single filer. W-2 $210,000 plus box 8 $5,000 is MAGI $215,000 (Form 8960 line 13).
+    // The 2026 draft Form 8960 puts the lesser amount on line 16 and the tax on line 17:
+    // min($5,000, $215,000 − $200,000) × 3.8% = $190.00. No Schedule C and no Schedule E Part I, so
+    // /flowKnockoutForm8960Unsupported stays false.
+    const g = floridaWages(210000, { [`/scheduleEEstates/#${estateId}/box8`]: createDollarWrapper(`5000`) });
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/agi`).get.toString()).toBe(`215000.00`);
+    expect(get(g, `/scheduleEPartIIIBox8ColumnD`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/form8960Line4a`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/form8960Line12`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/form8960Line13`).get.toString()).toBe(`215000.00`);
+    expect(get(g, `/form8960Line15`).get.toString()).toBe(`15000.00`);
+    expect(get(g, `/form8960Line16`).get.toString()).toBe(`5000.00`);
+    expect(get(g, `/form8960Line17`).get.toString()).toBe(`190.00`);
+    expect(get(g, `/flowKnockoutForm8960Unsupported`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIBox8`).get).toBe(false);
     expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
   });
 
