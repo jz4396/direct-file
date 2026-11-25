@@ -1,0 +1,78 @@
+# New Mexico PIT-1 strings (#93 slice 9). Overlay merged by locales/featureLocales.ts.
+subsubcategories:
+  /flow/your-taxes/amount:
+    nm-pit-1: New Mexico return
+dataviews:
+  /flow/your-taxes/amount:
+    /nmResidencyStatus: Where you lived for your New Mexico return
+    /nmHasPitAdj: New Mexico additions or deductions
+    /nmHasCreditForTaxesPaid: Tax paid to another state
+fields:
+  /nmResidencyOptions:
+    fullYear: I lived in New Mexico all year
+    partYear: I lived in New Mexico for part of the year
+    firstYear: This is my first year as a New Mexico resident
+    nonresident: I did not live in New Mexico
+headings:
+  /heading/your-taxes/amount/nm-residency: Which of these describes your New Mexico return?
+  /heading/your-taxes/amount/nm-pit-adj: Do you have a New Mexico addition or deduction?
+  /heading/your-taxes/amount/nm-other-state-credit: Did you pay income tax to another state on income New Mexico also taxes?
+  /heading/knockout/nm-part-year: This tool doesn’t yet support a New Mexico part-year, first-year, or nonresident return
+  /heading/knockout/nm-w2: This tool doesn’t yet support a W-2 from a state other than New Mexico
+  /heading/knockout/nm-other-income: This tool doesn’t yet support New Mexico returns with income other than W-2 wages
+  /heading/knockout/nm-dependents: This tool doesn’t yet support dependents on a New Mexico return
+  /heading/knockout/nm-age-blind: This tool doesn’t yet support a New Mexico return for someone who is 65 or older or blind
+  /heading/knockout/nm-claimed: This tool doesn’t yet support a New Mexico return for someone who can be claimed as a dependent
+  /heading/knockout/nm-filing-status: This tool doesn’t yet support this New Mexico filing status
+  /heading/knockout/nm-itemized: This tool doesn’t yet support New Mexico returns that itemize
+  /heading/knockout/nm-schedule-1a: This tool doesn’t yet support a federal Schedule 1-A deduction on a New Mexico return
+  /heading/knockout/nm-low-agi: This tool doesn’t yet support this New Mexico return
+  /heading/knockout/nm-pit-adj: This tool doesn’t yet support New Mexico additions or deductions
+  /heading/knockout/nm-other-state: This tool doesn’t yet support a credit for tax paid to another state
+info:
+  /info/your-taxes/amount/nm-residency:
+    body:
+      A full year means you, and your spouse if you file jointly, lived in New Mexico all year. That is Form PIT-1.
+      Part-year, first-year, and nonresident returns use Schedule PIT-B.
+  /info/your-taxes/amount/nm-pit-adj:
+    body:
+      Answer yes if you have a New Mexico addition or deduction. That includes a New Mexico 529 contribution, armed forces active-duty pay, income earned on a reservation or pueblo by a tribal member, and any other New Mexico addition or deduction.
+  /info/your-taxes/amount/nm-other-state-credit:
+    body:
+      Answer yes if another state taxed income that New Mexico also taxes. Withholding alone is not this credit.
+  /info/knockout/nm-part-year:
+    alertText: New Mexico part-year, first-year, and nonresident returns are not supported yet
+    body: Those returns use Schedule PIT-B, which this tool does not calculate.
+  /info/knockout/nm-w2:
+    alertText: A W-2 from another state is not supported on this New Mexico return
+    body: Box 15 has to be New Mexico, or blank. Withholding counts only when box 15 is New Mexico.
+  /info/knockout/nm-other-income:
+    alertText: This New Mexico return can include W-2 wages only
+    body: Interest, Social Security, a sale, retirement, business, rental, and other income are not supported.
+  /info/knockout/nm-dependents:
+    alertText: Dependents are not supported on this New Mexico return
+    body: The deduction for certain dependents and the child income tax credit are not calculated.
+  /info/knockout/nm-age-blind:
+    alertText: Age 65 or blindness is not supported on this New Mexico return
+    body: The additional standard deduction and the New Mexico deductions and rebates for someone 65 or older are not calculated.
+  /info/knockout/nm-claimed:
+    alertText: Being claimed as a dependent is not supported on this New Mexico return
+    body: The federal standard deduction on line 12 would be limited, and that limited amount is not used.
+  /info/knockout/nm-filing-status:
+    alertText: This filing status is not supported on a New Mexico return yet
+    body: This tool prepares PIT-1 for single filers and for a joint return when both spouses lived in New Mexico all year.
+  /info/knockout/nm-itemized:
+    alertText: Itemized deductions are not supported on this New Mexico return
+    body: The state and local tax add-back on line 10 is not calculated.
+  /info/knockout/nm-schedule-1a:
+    alertText: A federal Schedule 1-A deduction is not supported on this New Mexico return
+    body: Qualified overtime, tips, car-loan interest, and the senior deduction are not entered. New Mexico conformity for that deduction is not pinned.
+  /info/knockout/nm-low-agi:
+    alertText: This New Mexico return is not supported yet
+    body: Federal adjusted gross income of $36,667 or less for a single filer, or $55,000 or less for a joint return, can qualify for the low- and middle-income exemption, the low-income comprehensive tax rebate, and the working families tax credit. Those are not calculated.
+  /info/knockout/nm-pit-adj:
+    alertText: New Mexico additions and deductions are not supported yet
+    body: Schedule PIT-ADJ is not calculated.
+  /info/knockout/nm-other-state:
+    alertText: A credit for tax paid to another state is not supported yet
+    body: PIT-1 line 20 is not calculated.

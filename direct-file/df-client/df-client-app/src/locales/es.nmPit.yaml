@@ -1,0 +1,78 @@
+# Cadenas del formulario PIT-1 de Nuevo México (#93, parte 9).
+subsubcategories:
+  /flow/your-taxes/amount:
+    nm-pit-1: Declaración de Nuevo México
+dataviews:
+  /flow/your-taxes/amount:
+    /nmResidencyStatus: Dónde vivió para su declaración de Nuevo México
+    /nmHasPitAdj: Sumas o deducciones de Nuevo México
+    /nmHasCreditForTaxesPaid: Impuesto pagado a otro estado
+fields:
+  /nmResidencyOptions:
+    fullYear: Viví en Nuevo México todo el año
+    partYear: Viví en Nuevo México parte del año
+    firstYear: Este es mi primer año como residente de Nuevo México
+    nonresident: No viví en Nuevo México
+headings:
+  /heading/your-taxes/amount/nm-residency: ¿Cuál de estas opciones describe su declaración de Nuevo México?
+  /heading/your-taxes/amount/nm-pit-adj: ¿Tiene una suma o una deducción de Nuevo México?
+  /heading/your-taxes/amount/nm-other-state-credit: ¿Pagó impuesto sobre el ingreso a otro estado por un ingreso que Nuevo México también grava?
+  /heading/knockout/nm-part-year: Esta herramienta todavía no prepara una declaración de Nuevo México de residente parcial, de primer año o de no residente
+  /heading/knockout/nm-w2: Esta herramienta todavía no admite un W-2 de un estado distinto de Nuevo México
+  /heading/knockout/nm-other-income: Esta herramienta todavía no admite declaraciones de Nuevo México con ingresos distintos de salarios de un W-2
+  /heading/knockout/nm-dependents: Esta herramienta todavía no admite dependientes en una declaración de Nuevo México
+  /heading/knockout/nm-age-blind: Esta herramienta todavía no admite una declaración de Nuevo México de alguien de 65 años o más, o con ceguera
+  /heading/knockout/nm-claimed: Esta herramienta todavía no admite una declaración de Nuevo México de alguien a quien pueden reclamar como dependiente
+  /heading/knockout/nm-filing-status: Esta herramienta todavía no admite este estado civil en Nuevo México
+  /heading/knockout/nm-itemized: Esta herramienta todavía no admite declaraciones de Nuevo México que detallan deducciones
+  /heading/knockout/nm-schedule-1a: Esta herramienta todavía no admite una deducción del Anexo 1-A federal en una declaración de Nuevo México
+  /heading/knockout/nm-low-agi: Esta herramienta todavía no admite esta declaración de Nuevo México
+  /heading/knockout/nm-pit-adj: Esta herramienta todavía no admite sumas o deducciones de Nuevo México
+  /heading/knockout/nm-other-state: Esta herramienta todavía no admite un crédito por impuesto pagado a otro estado
+info:
+  /info/your-taxes/amount/nm-residency:
+    body:
+      Un año completo significa que usted, y su cónyuge si presenta una declaración conjunta, vivieron en Nuevo México todo el año. Ese es el formulario PIT-1.
+      Las declaraciones de residente parcial, de primer año y de no residente usan el Anexo PIT-B.
+  /info/your-taxes/amount/nm-pit-adj:
+    body:
+      Responda sí si tiene una suma o una deducción de Nuevo México. Eso incluye una aportación a un plan 529 de Nuevo México, la paga por servicio militar activo, el ingreso obtenido en una reservación o un pueblo por un miembro tribal, y cualquier otra suma o deducción de Nuevo México.
+  /info/your-taxes/amount/nm-other-state-credit:
+    body:
+      Responda sí si otro estado gravó un ingreso que Nuevo México también grava. La retención por sí sola no es este crédito.
+  /info/knockout/nm-part-year:
+    alertText: Las declaraciones de Nuevo México de residente parcial, de primer año y de no residente todavía no están disponibles
+    body: Esas declaraciones usan el Anexo PIT-B, que esta herramienta no calcula.
+  /info/knockout/nm-w2:
+    alertText: Un W-2 de otro estado no está disponible en esta declaración de Nuevo México
+    body: La casilla 15 tiene que ser Nuevo México, o estar en blanco. La retención cuenta solo cuando la casilla 15 es Nuevo México.
+  /info/knockout/nm-other-income:
+    alertText: Esta declaración de Nuevo México solo puede incluir salarios de un W-2
+    body: Intereses, Seguro Social, una venta, jubilación, un negocio, un alquiler y otros ingresos no están disponibles.
+  /info/knockout/nm-dependents:
+    alertText: Los dependientes no están disponibles en esta declaración de Nuevo México
+    body: La deducción por ciertos dependientes y el crédito por ingreso de hijos no se calculan.
+  /info/knockout/nm-age-blind:
+    alertText: Tener 65 años o más, o ceguera, no está disponible en esta declaración de Nuevo México
+    body: La deducción estándar adicional y las deducciones y reembolsos de Nuevo México para alguien de 65 años o más no se calculan.
+  /info/knockout/nm-claimed:
+    alertText: Que lo reclamen como dependiente no está disponible en esta declaración de Nuevo México
+    body: La deducción estándar federal de la línea 12 estaría limitada, y esa cantidad limitada no se usa.
+  /info/knockout/nm-filing-status:
+    alertText: Este estado civil todavía no está disponible en una declaración de Nuevo México
+    body: Esta herramienta prepara el PIT-1 para quienes presentan como solteros y para una declaración conjunta cuando ambos cónyuges vivieron en Nuevo México todo el año.
+  /info/knockout/nm-itemized:
+    alertText: Detallar deducciones no está disponible en esta declaración de Nuevo México
+    body: La suma del impuesto estatal y local de la línea 10 no se calcula.
+  /info/knockout/nm-schedule-1a:
+    alertText: Una deducción del Anexo 1-A federal no está disponible en esta declaración de Nuevo México
+    body: Las horas extra calificadas, las propinas, el interés de un préstamo de auto y la deducción para personas mayores no se anotan. La conformidad de Nuevo México con esa deducción no está fijada.
+  /info/knockout/nm-low-agi:
+    alertText: Esta declaración de Nuevo México todavía no está disponible
+    body: Un ingreso bruto ajustado federal de $36,667 o menos para quien presenta como soltero, o de $55,000 o menos para una declaración conjunta, puede calificar para la exención de ingreso bajo y medio, el reembolso integral para ingreso bajo y el crédito para familias trabajadoras. Esos no se calculan.
+  /info/knockout/nm-pit-adj:
+    alertText: Las sumas y deducciones de Nuevo México todavía no están disponibles
+    body: El Anexo PIT-ADJ no se calcula.
+  /info/knockout/nm-other-state:
+    alertText: Un crédito por impuesto pagado a otro estado todavía no está disponible
+    body: La línea 20 del PIT-1 no se calcula.

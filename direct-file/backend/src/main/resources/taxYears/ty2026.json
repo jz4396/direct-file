@@ -290,6 +290,27 @@
       "medium": "pdf",
       "kind": "draft",
       "sha256": "27a6e185504f442c363b2d659a33cfc61613b669025cb2bd3de2ec81599009f9"
+    },
+    "nm-pit-rates-2025": {
+      "title": "New Mexico personal income tax rates for tax years starting 2025, NMSA 1978 § 7-2-7 as amended by Laws 2024, Chapter 67, used for the 2026 return until a 2026 schedule is posted",
+      "url": "https://api.realfile.rtsclients.com/PublicFiles/34821a9573ca43e7b06dfad20f5183fd/fd8f3075-42e7-4cdd-88db-7cab84ef72de/PIT%20rates_2005_2025.pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
+      "sha256": "7cd12eece20b5150c3752a0cc5ee38777dd7d07f5b5e52075b1c14124c8fd4dc"
+    },
+    "nm-pit-1-ins-2025": {
+      "title": "2025 PIT-1 instructions, used for the 2026 return until the 2026 instructions are posted",
+      "url": "https://realfile.tax.newmexico.gov/2025pit-1-ins.pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
+      "sha256": "7d578286a047513ef579659b3683cca5818e21e64448e6b442ae217dce27067a"
+    },
+    "nm-trt-2025": {
+      "title": "2025 New Mexico tax rate table, used for the 2026 return until the 2026 table is posted",
+      "url": "https://realfile.tax.newmexico.gov/2025trt.pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
+      "sha256": "f5f53d534f065836b2fc277f53d7b1eb4eb4bb78518dcd4d1160eb9e544aea9a"
     }
   },
   "parameters": [
@@ -4900,6 +4921,685 @@
       "provisional": {
         "reason": "Every form or instruction cite is draft or priorYear: k-40-booklet-2025 (priorYear).",
         "repinFrom": "2026 Kansas K-40 booklet",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmAgiFloorSingle",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:36667"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-1-ins-2025",
+          "page": 25,
+          "quote": "To claim the exemption, the amount on PIT-1, line 9 must be equal to or less than any of the following: $36,667 (if single)",
+          "section": "Low- and middle-income exemption"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-1-ins-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmAgiFloorMfj",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:55000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-1-ins-2025",
+          "page": 25,
+          "quote": "$55,000 (if married filing jointly, surviving spouse, or head of household)",
+          "section": "Low- and middle-income exemption"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-1-ins-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmTaxTableLimit",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:100000"
+      ],
+      "cite": [
+        {
+          "source": "nm-trt-2025",
+          "page": 7,
+          "quote": "If line 17 of Form PIT-1 (Taxable Income) is over $100,000 use the following table to compute your tax."
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmTableBand60",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:60"
+      ],
+      "cite": [
+        {
+          "source": "nm-trt-2025",
+          "page": 1,
+          "quote": "More Than $0 But Not Over $60. The printed row is 0 60 0 0 0 0.",
+          "section": "More Than / But Not Over"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmTableBand100",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:100"
+      ],
+      "cite": [
+        {
+          "source": "nm-trt-2025",
+          "page": 1,
+          "quote": "More Than $60 But Not Over $100. The printed row is 60 100 1 1 1 1.",
+          "section": "More Than / But Not Over"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmRate15",
+      "file": "nmPit.xml",
+      "values": [
+        "Rational:15/1000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmRate32",
+      "file": "nmPit.xml",
+      "values": [
+        "Rational:32/1000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmRate43",
+      "file": "nmPit.xml",
+      "values": [
+        "Rational:43/1000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmRate47",
+      "file": "nmPit.xml",
+      "values": [
+        "Rational:47/1000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmRate49",
+      "file": "nmPit.xml",
+      "values": [
+        "Rational:49/1000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmRate59",
+      "file": "nmPit.xml",
+      "values": [
+        "Rational:59/1000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleLimit1",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:5500"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleBase2",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:82.50"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleLimit2",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:16500"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleBase3",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:434.50"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleLimit3",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:33500"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleBase4",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:1165.50"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleLimit4",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:66500"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleBase5",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:2716.50"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleLimit5",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:210000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmSingleTopBase",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:9748"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $5,500      1.5% of taxable income Over $5,500 but not over $16,500   $82.50 plus 3.2% of excess over $5,500 Over $16,500 but not over $33,500   $434.50 plus 4.3% of excess over $16,500 Over $33,500 but not over $66,500   $1,165.50 plus 4.7% of excess over $33,500 Over $66,500 but not over $210,000   $2,716.50 plus 4.9% of excess over $66,500 Over $210,000      $9,748 plus 5.9% of excess over $210,000.",
+          "section": "7-2-7.B"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjLimit1",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:8000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjBase2",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:120"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjLimit2",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:25000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjBase3",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:664"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjLimit3",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:50000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjBase4",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:1739"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjBase5",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:4089"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjLimit5",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:315000"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmMfjTopBase",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:14624"
+      ],
+      "cite": [
+        {
+          "source": "nm-pit-rates-2025",
+          "page": 1,
+          "quote": "Not over $8,000      1.5% of taxable income Over $8,000 but not over $25,000   $120 plus 3.2% of excess over $8,000 Over $25,000 but not over $50,000   $664 plus 4.3% of excess over $25,000 Over $50,000 but not over $100,000  $1,739 plus 4.7% of excess over $50,000 Over $100,000 but not over $315,000  $4,089 plus 4.9% of excess over $100,000 Over $315,000     $14,624 plus 5.9% of excess over $315,000.",
+          "section": "7-2-7.A"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-pit-rates-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmWsSingleBase",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:4356"
+      ],
+      "cite": [
+        {
+          "source": "nm-trt-2025",
+          "page": 7,
+          "quote": "Single $210,000 $4,356 4.9% $100,000",
+          "section": "Taxable income not over"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmWsSingleTop",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:9746"
+      ],
+      "cite": [
+        {
+          "source": "nm-trt-2025",
+          "page": 7,
+          "quote": "Single $210,000 $9,746 5.9% $210,000",
+          "section": "Taxable income over"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmWsMfjBase",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:4087"
+      ],
+      "cite": [
+        {
+          "source": "nm-trt-2025",
+          "page": 7,
+          "quote": "Married Filing Jointly $315,000 $4,087 4.9% $100,000",
+          "section": "Taxable income not over"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/nmWsMfjTop",
+      "file": "nmPit.xml",
+      "values": [
+        "Dollar:14622"
+      ],
+      "cite": [
+        {
+          "source": "nm-trt-2025",
+          "page": 7,
+          "quote": "Married Filing Jointly $315,000 $14,622 5.9% $315,000",
+          "section": "Taxable income over"
+        }
+      ],
+      "provisional": {
+        "reason": "Every form or instruction cite is draft or priorYear: nm-trt-2025 (priorYear).",
+        "repinFrom": "2026 PIT-1 instructions and tax rate table",
         "tracking": "#91"
       }
     }

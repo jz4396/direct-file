@@ -138,6 +138,18 @@ const EXCEPTIONS: Record<string, Exception> = {
     kind: `structural`,
     reason: `half-up guard: multiply the cent-then-dollar round by 100, and subtract $1 only when that exceeds the exact product by more than 50 cents. 100,224 times 5.58% minus $87 stays $5,505. Refs #93.`,
   },
+  '/nmMidpoint': {
+    kind: `structural`,
+    reason: `Tax rate table row midpoint. The $0–$60 row uses $30, the $60–$100 row uses $80, and a later row steps line 17 minus $1 down by $100 and adds $50, so the row is lo < line 17 <= hi. The ceilings are /nmTableBand60 and /nmTableBand100. Refs #93.`,
+  },
+  '/nmTaxTimes100': {
+    kind: `structural`,
+    reason: `100 times PIT-1 line 18 before the dollar round: 100 times the bracket base plus the excess times 100 times the rate. The rates and bases are the tax-year parameters. Refs #93.`,
+  },
+  '/nmPit1Line18': {
+    kind: `structural`,
+    reason: `half-up guard: multiply the cent-then-dollar round by 100, and subtract $1 only when that exceeds the exact product by more than 50 cents. An exact half dollar stays the half-up dollar. Refs #93.`,
+  },
 };
 for (const field of [
   `writablePtcAnnualPremium`,

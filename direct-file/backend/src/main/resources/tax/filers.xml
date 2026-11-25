@@ -2605,6 +2605,25 @@
       </Derived>
     </Fact>
 
+    <Fact path="/livedInNm">
+      <Name>The filer(s) lives in New Mexico</Name>
+      <Description>#93 slice 9: /filerResidenceAndIncomeState is New Mexico. NMSA 1978 § 7-2-7 imposes the
+        individual income tax. Wired into stateReturn /stateReturnIsNm, /stateReturnComputed, and the state
+        Switches the way a computed return is wired. New Mexico is already in /scopedStateOptions. PIT-1 has
+        no local return. New Mexico is already in /livesInCommunityPropertyState, so a joint return is unchanged.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Equal>
+          <Left>
+            <Enum optionsPath="/scopedStateOptions">nm</Enum>
+          </Left>
+          <Right>
+            <Dependency path="/filerResidenceAndIncomeState" />
+          </Right>
+        </Equal>
+      </Derived>
+    </Fact>
+
     <Fact path="/livedInKs">
       <Name>The filer(s) lives in Kansas</Name>
       <Description>#93 slice 8: /filerResidenceAndIncomeState is Kansas. K.S.A. 79-32,110b imposes the

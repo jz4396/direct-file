@@ -1,0 +1,2168 @@
+<?xml-model href="./FactDictionaryModule.rng"?>
+<FactDictionaryModule>
+  <Facts>
+    <!--
+      #93 slice 9: 2026 PIT-1 for a full-year New Mexico resident with W-2 wages only.
+      Spec: https://github.com/jz4396/direct-file/issues/93#issuecomment-7164321295
+      Correction: https://github.com/jz4396/direct-file/issues/93#issuecomment-7164898822
+      Line 17 at or under $100,000 uses the 2025 tax rate table. A row is More Than lo, But Not
+      Over hi, so the row is the one with lo &lt; line 17 &lt;= hi. The first rows are $0 to $60
+      and $60 to $100. After that the rows are $100 wide. Tax is the § 7-2-7 amount at the row
+      midpoint, rounded once, half up, to the dollar. Line 17 over $100,000 uses the table's
+      worksheet. Those bases are $2 under a straight reading of § 7-2-7 ($4,356 not $4,358,
+      $9,746 not $9,748, $4,087 not $4,089, $14,622 not $14,624). The form's figures are used.
+      Dollar times Rational scales to cents half-even before Round half-up. /nmPit1Line18 subtracts
+      $1 when that cent-then-dollar result exceeds the exact product by more than 50 cents, so the
+      form gets one half-up round. An exact half dollar still rounds up.
+      Line 9 is federal AGI. Line 12 is the federal standard deduction. Lines 10, 11, 13, 14, 15,
+      19, 20, and 21 are zero. Line 17 is line 9 minus line 12, not below zero. Line 22 equals
+      line 18. Line 23 equals line 22. Line 27 is New Mexico withholding. Line 32 equals line 27.
+      Line 33 is the tax due. Line 42 is the refund.
+      Form structure: 2025 PIT-1, used until the 2026 form is posted. The official 2025 PIT-1 is
+      not fillable. This template adds fields on that form. Amounts entered are tax year 2026.
+      A stop below is BlockSubmissionOnTrue and print-refusing.
+    -->
+
+    <Fact path="/nmAgiFloorSingle">
+      <Name>New Mexico low-income exemption ceiling, single</Name>
+      <Description>PIT-1 line 14 worksheet. A single filer with federal AGI of $36,667 or less qualifies for the low- and middle-income exemption. That exemption, the low-income comprehensive tax rebate, and the working families tax credit are not calculated, so the return stops at this ceiling. 2025 PIT-1 instructions, page PIT-1-26.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>36667</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmAgiFloorMfj">
+      <Name>New Mexico low-income exemption ceiling, married filing jointly</Name>
+      <Description>PIT-1 line 14 worksheet. A joint return with federal AGI of $55,000 or less qualifies for the low- and middle-income exemption. That exemption, the low-income comprehensive tax rebate, and the working families tax credit are not calculated, so the return stops at this ceiling. 2025 PIT-1 instructions, page PIT-1-26.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>55000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmTaxTableLimit">
+      <Name>New Mexico tax rate table limit</Name>
+      <Description>Line 17 of $100,000 or less uses the tax rate table. Line 17 over $100,000 uses the worksheet on page T-7. 2025 Tax Rate Table, page T-7: If line 17 of Form PIT-1 (Taxable Income) is over $100,000 use the following table.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>100000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmTableBand60">
+      <Name>New Mexico tax table first row ceiling</Name>
+      <Description>The first tax-table row is more than $0 but not over $60. Its Single and joint tax is $0. 2025 Tax Rate Table, page T-1.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>60</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmTableBand100">
+      <Name>New Mexico tax table second row ceiling</Name>
+      <Description>The second tax-table row is more than $60 but not over $100. Its Single and joint tax is $1. Later rows are $100 wide. 2025 Tax Rate Table, page T-1.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>100</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmRate15">
+      <Name>New Mexico rate 1.5 percent</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Stored as 15/1000 so a whole-dollar amount times this rate stays exact to the tenth of a cent before the one half-up round.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>15/1000</Rational>
+      </Derived>
+    </Fact>
+    <Fact path="/nmRate32">
+      <Name>New Mexico rate 3.2 percent</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Stored as 32/1000 so a whole-dollar amount times this rate stays exact to the tenth of a cent before the one half-up round.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>32/1000</Rational>
+      </Derived>
+    </Fact>
+    <Fact path="/nmRate43">
+      <Name>New Mexico rate 4.3 percent</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Stored as 43/1000 so a whole-dollar amount times this rate stays exact to the tenth of a cent before the one half-up round.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>43/1000</Rational>
+      </Derived>
+    </Fact>
+    <Fact path="/nmRate47">
+      <Name>New Mexico rate 4.7 percent</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Stored as 47/1000 so a whole-dollar amount times this rate stays exact to the tenth of a cent before the one half-up round.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>47/1000</Rational>
+      </Derived>
+    </Fact>
+    <Fact path="/nmRate49">
+      <Name>New Mexico rate 4.9 percent</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Stored as 49/1000 so a whole-dollar amount times this rate stays exact to the tenth of a cent before the one half-up round.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>49/1000</Rational>
+      </Derived>
+    </Fact>
+    <Fact path="/nmRate59">
+      <Name>New Mexico rate 5.9 percent</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Stored as 59/1000 so a whole-dollar amount times this rate stays exact to the tenth of a cent before the one half-up round.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Rational>59/1000</Rational>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleLimit1">
+      <Name>Single bracket, not over $5,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Not over $5,500, 1.5% of taxable income.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>5500</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleBase2">
+      <Name>Single tax at $5,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $5,500 but not over $16,500, $82.50 plus 3.2% of the excess over $5,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>82.50</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleLimit2">
+      <Name>Single bracket ceiling $16,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $5,500 but not over $16,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>16500</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleBase3">
+      <Name>Single tax at $16,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $16,500 but not over $33,500, $434.50 plus 4.3% of the excess over $16,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>434.50</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleLimit3">
+      <Name>Single bracket ceiling $33,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $16,500 but not over $33,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>33500</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleBase4">
+      <Name>Single tax at $33,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $33,500 but not over $66,500, $1,165.50 plus 4.7% of the excess over $33,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>1165.50</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleLimit4">
+      <Name>Single bracket ceiling $66,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $33,500 but not over $66,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>66500</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleBase5">
+      <Name>Single tax at $66,500</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $66,500 but not over $210,000, $2,716.50 plus 4.9% of the excess over $66,500.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>2716.50</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleLimit5">
+      <Name>Single bracket ceiling $210,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $66,500 but not over $210,000. Over $210,000 the statute says $9,748 plus 5.9%.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>210000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmSingleTopBase">
+      <Name>Single statutory tax at $210,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $210,000, $9,748 plus 5.9% of the excess over $210,000. The worksheet on the tax table uses $9,746, which is $2 less. The worksheet fact is /nmWsSingleTop.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>9748</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjLimit1">
+      <Name>Joint bracket, not over $8,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Not over $8,000, 1.5% of taxable income.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>8000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjBase2">
+      <Name>Joint tax at $8,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $8,000 but not over $25,000, $120 plus 3.2% of the excess over $8,000.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>120</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjLimit2">
+      <Name>Joint bracket ceiling $25,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $8,000 but not over $25,000.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>25000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjBase3">
+      <Name>Joint tax at $25,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $25,000 but not over $50,000, $664 plus 4.3% of the excess over $25,000.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>664</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjLimit3">
+      <Name>Joint bracket ceiling $50,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $25,000 but not over $50,000.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>50000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjBase4">
+      <Name>Joint tax at $50,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $50,000 but not over $100,000, $1,739 plus 4.7% of the excess over $50,000.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>1739</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjBase5">
+      <Name>Joint statutory tax at $100,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $100,000 but not over $315,000, $4,089 plus 4.9% of the excess over $100,000. The worksheet uses $4,087, which is $2 less. The worksheet fact is /nmWsMfjBase.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>4089</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjLimit5">
+      <Name>Joint bracket ceiling $315,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $100,000 but not over $315,000. Over $315,000 the statute says $14,624 plus 5.9%.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>315000</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmMfjTopBase">
+      <Name>Joint statutory tax at $315,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. Over $315,000, $14,624 plus 5.9% of the excess over $315,000. The worksheet uses $14,622, which is $2 less. The worksheet fact is /nmWsMfjTop.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>14624</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmWsSingleBase">
+      <Name>Single worksheet tax at $100,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. 2025 Tax Rate Table, page T-7. Single, taxable income not over $210,000: $4,356 plus 4.9% of taxable income over $100,000. That base is $2 under the $4,358 a straight § 7-2-7 reading gives at $100,000. The form's figure is used.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>4356</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmWsSingleTop">
+      <Name>Single worksheet tax at $210,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. 2025 Tax Rate Table, page T-7. Single, taxable income over $210,000: $9,746 plus 5.9% of taxable income over $210,000. That base is $2 under the statutory $9,748. The form's figure is used.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>9746</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmWsMfjBase">
+      <Name>Joint worksheet tax at $100,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. 2025 Tax Rate Table, page T-7. Married filing jointly, taxable income not over $315,000: $4,087 plus 4.9% of taxable income over $100,000. That base is $2 under the statutory $4,089. The form's figure is used.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>4087</Dollar>
+      </Derived>
+    </Fact>
+    <Fact path="/nmWsMfjTop">
+      <Name>Joint worksheet tax at $315,000</Name>
+      <Description>NMSA 1978 § 7-2-7, as amended by Laws 2024, Chapter 67, Section 5, for taxable years beginning on or after January 1, 2025. No 2026 change is enacted. 2025 rate schedule published by the Taxation and Revenue Department. 2025 Tax Rate Table, page T-7. Married filing jointly, taxable income over $315,000: $14,622 plus 5.9% of taxable income over $315,000. That base is $2 under the statutory $14,624. The form's figure is used.</Description>
+      <TaxYear>2026</TaxYear>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dollar>14622</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmResidencyOptions">
+      <Name>New Mexico residency answers</Name>
+      <Description>Full-year resident is the supported PIT-1. Part-year, first-year, and nonresident returns use Schedule PIT-B and stop. 2025 PIT-1, residency status box 1e: R resident, N non-resident, F first-year, P part-year.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>fullYear</String>
+          <String>partYear</String>
+          <String>firstYear</String>
+          <String>nonresident</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmResidencyStatus">
+      <Name>New Mexico residency</Name>
+      <Description>Full year means you, and your spouse if you file jointly, were New Mexico residents all year. Part-year, first-year, and nonresident stop.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Enum optionsPath="/nmResidencyOptions" />
+      </Writable>
+    </Fact>
+
+    <Fact path="/nmResidencyIsOutOfScope">
+      <Name>New Mexico residency is part-year, first-year, or nonresident</Name>
+      <Description>True for Schedule PIT-B. Incomplete until /nmResidencyStatus is answered.</Description>
+      <Derived>
+        <Any>
+          <Equal>
+            <Left><Dependency path="/nmResidencyStatus" /></Left>
+            <Right><Enum optionsPath="/nmResidencyOptions">partYear</Enum></Right>
+          </Equal>
+          <Equal>
+            <Left><Dependency path="/nmResidencyStatus" /></Left>
+            <Right><Enum optionsPath="/nmResidencyOptions">firstYear</Enum></Right>
+          </Equal>
+          <Equal>
+            <Left><Dependency path="/nmResidencyStatus" /></Left>
+            <Right><Enum optionsPath="/nmResidencyOptions">nonresident</Enum></Right>
+          </Equal>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmHasPitAdj">
+      <Name>New Mexico PIT-ADJ addition or deduction</Name>
+      <Description>Yes if the return has a PIT-ADJ addition or deduction. That includes a New Mexico 529 contribution, armed forces active-duty pay, income earned on a reservation or pueblo by a tribal member, and any other New Mexico addition or deduction. PIT-ADJ is not calculated. Yes stops the return. 2025 PIT-1 instructions, lines 11 and 15. Incomplete until answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/nmHasCreditForTaxesPaid">
+      <Name>Credit for income tax paid to another state</Name>
+      <Description>Yes if the filer paid income tax to another state on income New Mexico also taxes. PIT-1 line 20 is not calculated. Yes stops the return. 2025 PIT-1 instructions, line 20. Incomplete until answered.</Description>
+      <Export downstreamFacts="true" />
+      <Writable>
+        <Boolean />
+      </Writable>
+    </Fact>
+
+    <Fact path="/nmPit1Line9">
+      <Name>PIT-1 line 9 federal adjusted gross income</Name>
+      <Description>Federal AGI. 2025 PIT-1 instructions, line 9: enter the federal adjusted gross income from Form 1040 or 1040SR.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="taxCalculations" path="/agi" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmZero">
+      <Name>PIT-1 zero</Name>
+      <Description>Printed on lines this return does not calculate. Those lines are zero in scope, or the case stops.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dollar>0</Dollar>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line10">
+      <Name>PIT-1 line 10 state and local tax add-back</Name>
+      <Description>Zero. Itemized deductions stop the return, so the state and local tax add-back is not calculated. 2025 PIT-1, line 10.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/nmZero" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line11">
+      <Name>PIT-1 line 11 additions</Name>
+      <Description>Zero. A PIT-ADJ addition stops the return. 2025 PIT-1, line 11.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/nmZero" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line12">
+      <Name>PIT-1 line 12 federal deduction</Name>
+      <Description>The federal standard deduction, Form 1040 line 12, when the standard deduction applies. 2025 PIT-1 instructions, line 12. Rev. Proc. 2025-32 sets the 2026 amount at $16,100 for a single filer and $32,200 for a joint return. This fact reads the federal standard deduction. Itemized deductions, age 65, blindness, and being claimed as a dependent stop the return.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Dependency module="standardDeduction" path="/standardDeduction" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line13">
+      <Name>PIT-1 line 13 deduction for certain dependents</Name>
+      <Description>Zero. Dependents stop the return, so the $4,000 deduction is not calculated. 2025 PIT-1 instructions, line 13.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/nmZero" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line14">
+      <Name>PIT-1 line 14 low- and middle-income exemption</Name>
+      <Description>Zero. Federal AGI at or under $36,667 single or $55,000 joint stops the return, so the exemption is not calculated. 2025 PIT-1 instructions, page PIT-1-26.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/nmZero" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line15">
+      <Name>PIT-1 line 15 deductions and exemptions</Name>
+      <Description>Zero. A PIT-ADJ deduction stops the return. 2025 PIT-1, line 15.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <Dependency path="/nmZero" />
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line17">
+      <Name>PIT-1 line 17 New Mexico taxable income</Name>
+      <Description>Add lines 9, 10, and 11, then subtract lines 12, 13, 14, and 15. If the result is negative, enter zero. Lines 10, 11, 13, 14, and 15 are zero, so this is line 9 minus line 12, not below zero. 2025 PIT-1 instructions, line 17.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend><Dependency path="/nmPit1Line9" /></Minuend>
+            <Subtrahends>
+              <Dependency path="/nmPit1Line12" />
+              <Dependency path="/nmPit1Line13" />
+              <Dependency path="/nmPit1Line14" />
+              <Dependency path="/nmPit1Line15" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmUsesTable">
+      <Name>PIT-1 line 17 uses the tax rate table</Name>
+      <Description>True when line 17 is $100,000 or less. The row is the one with lo less than line 17 and line 17 less than or equal to hi. Over $100,000 uses the worksheet.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmTaxTableLimit" /></Right>
+            </LessThanOrEqual>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmMidpoint">
+      <Name>Tax rate table row midpoint</Name>
+      <Description>For line 17 over $100, the row is $100 wide and the lookup is lo less than line 17 and line 17 less than or equal to hi. The midpoint is $50 above the $100 boundary below line 17, which is the same as stepping line 17 minus $1 down to a multiple of $100 and adding $50. Line 17 of $43,900 is the top of the $43,800 to $43,900 row, so the midpoint is $43,850. Line 17 of $100 is the top of the $60 to $100 row, so the midpoint is $80. Line 17 of $60 or less uses the midpoint $30. Line 17 of zero uses zero. 2025 Tax Rate Table. Issue 93 comment 7164898822.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dollar>0</Dollar></Right>
+            </LessThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmTableBand60" /></Right>
+            </LessThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>30</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmTableBand100" /></Right>
+            </LessThanOrEqual>
+            </When>
+            <Then>
+              <Dollar>80</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Add>
+                <StepwiseMultiply>
+                  <Multiplicand>
+                    <Subtract>
+                      <Minuend><Dependency path="/nmPit1Line17" /></Minuend>
+                      <Subtrahends><Dollar>1</Dollar></Subtrahends>
+                    </Subtract>
+                  </Multiplicand>
+                  <Rate>
+                    <Rational>100/100</Rational>
+                  </Rate>
+                </StepwiseMultiply>
+                <Dollar>50</Dollar>
+              </Add>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmTaxBase">
+      <Name>New Mexico tax before the rate portion</Name>
+      <Description>The bracket base for the row midpoint when line 17 is $100,000 or less, or the worksheet base when line 17 is over $100,000. The worksheet bases are the form's figures.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmMfjLimit5" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmWsMfjBase" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmWsMfjTop" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmSingleLimit5" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmWsSingleBase" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmWsSingleTop" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit1" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit2" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmMfjBase2" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit3" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmMfjBase3" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmMfjBase4" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit1" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit2" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmSingleBase2" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit3" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmSingleBase3" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit4" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmSingleBase4" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmSingleBase5" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmTaxExcess">
+      <Name>New Mexico income taxed at the marginal rate</Name>
+      <Description>The row midpoint minus the bracket floor, or line 17 minus the worksheet floor. Not below zero.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmMfjLimit5" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmPit1Line17" /></Minuend>
+                <Subtrahends><Dependency path="/nmTaxTableLimit" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmPit1Line17" /></Minuend>
+                <Subtrahends><Dependency path="/nmMfjLimit5" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmSingleLimit5" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmPit1Line17" /></Minuend>
+                <Subtrahends><Dependency path="/nmTaxTableLimit" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmPit1Line17" /></Minuend>
+                <Subtrahends><Dependency path="/nmSingleLimit5" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit1" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmMidpoint" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit2" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmMidpoint" /></Minuend>
+                <Subtrahends><Dependency path="/nmMfjLimit1" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit3" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmMidpoint" /></Minuend>
+                <Subtrahends><Dependency path="/nmMfjLimit2" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmMidpoint" /></Minuend>
+                <Subtrahends><Dependency path="/nmMfjLimit3" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit1" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmMidpoint" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit2" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmMidpoint" /></Minuend>
+                <Subtrahends><Dependency path="/nmSingleLimit1" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit3" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmMidpoint" /></Minuend>
+                <Subtrahends><Dependency path="/nmSingleLimit2" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit4" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmMidpoint" /></Minuend>
+                <Subtrahends><Dependency path="/nmSingleLimit3" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+            </All>
+            </When>
+            <Then>
+              <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmMidpoint" /></Minuend>
+                <Subtrahends><Dependency path="/nmSingleLimit4" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmTaxRate">
+      <Name>New Mexico marginal rate for this return</Name>
+      <Description>The § 7-2-7 rate for the bracket that contains the row midpoint, or 4.9% or 5.9% on the worksheet.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmMfjLimit5" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate49" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate59" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmPit1Line17" /></Left>
+              <Right><Dependency path="/nmSingleLimit5" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate49" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Not><Dependency path="/nmUsesTable" /></Not>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate59" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit1" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate15" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit2" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate32" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmMfjLimit3" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate43" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate47" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit1" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate15" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit2" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate32" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit3" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate43" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+              <LessThanOrEqual>
+              <Left><Dependency path="/nmMidpoint" /></Left>
+              <Right><Dependency path="/nmSingleLimit4" /></Right>
+            </LessThanOrEqual>
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate47" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+              <Dependency path="/nmUsesTable" />
+            </All>
+            </When>
+            <Then>
+              <Dependency path="/nmRate49" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmTaxCentRound">
+      <Name>New Mexico tax after the cent-then-dollar round</Name>
+      <Description>Round(base plus excess times the rate). Dollar times Rational scales to cents half-even before Round half-up, so a product whose exact fraction is just under half a dollar can become 50 cents and then round up a dollar. This is not always the amount entered on the form.</Description>
+      <Derived>
+        <Round>
+          <Add>
+            <Dependency path="/nmTaxBase" />
+            <Multiply>
+              <Dependency path="/nmTaxExcess" />
+              <Dependency path="/nmTaxRate" />
+            </Multiply>
+          </Add>
+        </Round>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmTaxTimes100">
+      <Name>One hundred times the exact New Mexico tax</Name>
+      <Description>One hundred times the base, plus the excess times one hundred times the rate. For a whole-dollar excess and these tenth-of-a-percent rates, that product is exact to the tenth of a cent. 4.9% times 100 is 49/10.</Description>
+      <Derived>
+        <Add>
+          <Multiply>
+            <Dependency path="/nmTaxBase" />
+            <Int>100</Int>
+          </Multiply>
+          <Multiply>
+            <Dependency path="/nmTaxExcess" />
+            <Multiply>
+              <Dependency path="/nmTaxRate" />
+              <Int>100</Int>
+            </Multiply>
+          </Multiply>
+        </Add>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line18">
+      <Name>PIT-1 line 18 New Mexico tax</Name>
+      <Description>One half-up round to the dollar of the table amount or the worksheet amount. The cent-then-dollar result is one dollar high when it exceeds the exact product by more than 50 cents. An exact half dollar stays the half-up dollar. 2025 PIT-1 instructions, line 18. The form says whole dollars only.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <GreaterThan>
+              <Left><Subtract>
+                  <Minuend>
+                    <Multiply>
+                      <Dependency path="/nmTaxCentRound" />
+                      <Int>100</Int>
+                    </Multiply>
+                  </Minuend>
+                  <Subtrahends>
+                    <Dependency path="/nmTaxTimes100" />
+                  </Subtrahends>
+                </Subtract></Left>
+              <Right><Dollar>50</Dollar></Right>
+            </GreaterThan>
+            </When>
+            <Then>
+              <Subtract>
+                <Minuend><Dependency path="/nmTaxCentRound" /></Minuend>
+                <Subtrahends><Dollar>1</Dollar></Subtrahends>
+              </Subtract>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dependency path="/nmTaxCentRound" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line19">
+      <Name>PIT-1 line 19 lump-sum tax</Name>
+      <Description>Zero. A lump-sum distribution is not W-2 wages and stops with the other-income stop. 2025 PIT-1, line 19.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived><Dependency path="/nmZero" /></Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line20">
+      <Name>PIT-1 line 20 credit for taxes paid to another state</Name>
+      <Description>Zero. That credit stops the return. 2025 PIT-1, line 20.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived><Dependency path="/nmZero" /></Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line21">
+      <Name>PIT-1 line 21 business credits</Name>
+      <Description>Zero. Business credits are not in scope. 2025 PIT-1, line 21.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived><Dependency path="/nmZero" /></Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line22">
+      <Name>PIT-1 line 22 net New Mexico income tax</Name>
+      <Description>Add lines 18 and 19, then subtract lines 20 and 21, not below zero. Those three lines are zero, so this equals line 18. 2025 PIT-1 instructions, line 22.</Description>
+      <Export downstreamFacts="true" />
+      <Derived>
+        <GreaterOf>
+          <Subtract>
+            <Minuend>
+              <Add>
+                <Dependency path="/nmPit1Line18" />
+                <Dependency path="/nmPit1Line19" />
+              </Add>
+            </Minuend>
+            <Subtrahends>
+              <Dependency path="/nmPit1Line20" />
+              <Dependency path="/nmPit1Line21" />
+            </Subtrahends>
+          </Subtract>
+          <Dollar>0</Dollar>
+        </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line23">
+      <Name>PIT-1 line 23 tax from line 22</Name>
+      <Description>The amount on line 22. 2025 PIT-1, line 23.</Description>
+      <Export downstreamFacts="true" />
+      <Derived><Dependency path="/nmPit1Line22" /></Derived>
+    </Fact>
+
+    <Fact path="/formW2s/*/nmWithholding">
+      <Name>This W-2's New Mexico withholding</Name>
+      <Description>Box 17 when box 15 is New Mexico, the same state as the residence. A blank box 15 is in scope and contributes zero. A box 15 for another state stops the return and contributes zero here.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../writableState" />
+                </IsComplete>
+                <Equal>
+                  <Left><Dependency path="../writableState" /></Left>
+                  <Right><Enum optionsPath="/incomeFormStateOptions">sameState</Enum></Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <Dependency path="../stateWithholding" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Dollar>0</Dollar>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line27">
+      <Name>PIT-1 line 27 New Mexico income tax withheld</Name>
+      <Description>Sum of W-2 box 17 where box 15 is New Mexico. 2025 PIT-1, line 27.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <CollectionSum>
+          <Dependency path="/formW2s/*/nmWithholding" />
+        </CollectionSum>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line32">
+      <Name>PIT-1 line 32 total payments and credits</Name>
+      <Description>Add lines 24 through 31. Lines 24, 25, 26, and 28 through 31 are zero, so this equals line 27. The working families tax credit on line 25 is not calculated. The AGI floor keeps a supported return above the credit. 2025 PIT-1, line 32.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived><Dependency path="/nmPit1Line27" /></Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line33">
+      <Name>PIT-1 line 33 tax due</Name>
+      <Description>If line 23 is greater than line 32, the difference. Otherwise zero. 2025 PIT-1, line 33.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmPit1Line23" /></Minuend>
+                <Subtrahends><Dependency path="/nmPit1Line32" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line38">
+      <Name>PIT-1 line 38 tax, penalty, and interest due</Name>
+      <Description>Add lines 33, 34, 36, and 37. Penalty and interest are zero, so this equals line 33. 2025 PIT-1, line 38.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived><Dependency path="/nmPit1Line33" /></Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line39">
+      <Name>PIT-1 line 39 overpayment</Name>
+      <Description>If line 23 is less than line 32, the difference. Otherwise zero. 2025 PIT-1, line 39.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived>
+        <GreaterOf>
+              <Subtract>
+                <Minuend><Dependency path="/nmPit1Line32" /></Minuend>
+                <Subtrahends><Dependency path="/nmPit1Line23" /></Subtrahends>
+              </Subtract>
+              <Dollar>0</Dollar>
+            </GreaterOf>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmPit1Line42">
+      <Name>PIT-1 line 42 refund</Name>
+      <Description>Line 39 minus lines 40 and 41. Contributions are zero, so this equals line 39. 2025 PIT-1, line 42.</Description>
+      <Export downstreamFacts="true" />
+      <ExportZero />
+      <Derived><Dependency path="/nmPit1Line39" /></Derived>
+    </Fact>
+
+    <Fact path="/nmHasOtherFederalIncome">
+      <Name>Federal income other than W-2 wages</Name>
+      <Description>Interest, tax-exempt interest, Social Security, a sale or capital gain, 1099-MISC, a 1099-R, Schedule C, or Schedule E. Any of that income stops a PIT-1.</Description>
+      <Derived>
+        <Any>
+          <All>
+            <IsComplete>
+              <Dependency module="income" path="/totalIncome" />
+            </IsComplete>
+            <IsComplete>
+              <Dependency module="formW2s" path="/wages" />
+            </IsComplete>
+            <NotEqual>
+              <Left>
+                <Dependency module="income" path="/totalIncome" />
+              </Left>
+              <Right>
+                <Dependency module="formW2s" path="/wages" />
+              </Right>
+            </NotEqual>
+          </All>
+          <GreaterThan>
+            <Left>
+              <Dependency module="interest" path="/taxExemptInterest" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="socialSecurity" path="/socialSecurityBenefits" />
+            </Left>
+            <Right>
+              <Dollar>0</Dollar>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleD" path="/soldCapitalAssets" />
+          <Dependency module="form1099Misc" path="/has1099Misc" />
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="form1099Rs" path="/form1099Rs" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <Dependency module="scheduleC" path="/hasScheduleCBusinesses" />
+          <Dependency module="scheduleE" path="/hasScheduleEIncome" />
+          <Dependency module="scheduleE" path="/scheduleEHasPartIIIncome" />
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmHasDependents">
+      <Name>Dependents or a qualifying person</Name>
+      <Description>Anyone in the household, or a filer who is a qualifying person for the child and dependent care credit. PIT-1 line 13 is $4,000 for certain dependents, and the child income tax credit is on PIT-RC. Neither is calculated.</Description>
+      <Derived>
+        <Any>
+          <GreaterThan>
+            <Left>
+              <CollectionSize>
+                <Dependency module="familyAndHousehold" path="/familyAndHousehold" />
+              </CollectionSize>
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+          <GreaterThan>
+            <Left>
+              <Dependency module="filers" path="/cdccQualifyingFilersCount" />
+            </Left>
+            <Right>
+              <Int>0</Int>
+            </Right>
+          </GreaterThan>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmAgeOrBlind">
+      <Name>Age 65 or blind</Name>
+      <Description>Primary filer is 65 or older or blind. On a joint return, either spouse. The federal additional standard deduction would change line 12, and New Mexico 65-or-older deductions and rebates are on PIT-ADJ and PIT-RC. Those are not calculated. The spouse is checked only on a joint return.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/age65OrOlder" />
+          <Dependency module="filers" path="/primaryFiler/isBlind" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Any>
+              <Dependency module="filers" path="/secondaryFiler/age65OrOlder" />
+              <Dependency module="filers" path="/secondaryFiler/isBlind" />
+            </Any>
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmClaimedAsDependent">
+      <Name>Filer can be claimed as a dependent</Name>
+      <Description>The primary filer, or either spouse on a joint return. The federal standard deduction for someone who can be claimed as a dependent is limited, so line 12 would not be the ordinary standard deduction. That limited amount is not used. The spouse is checked only on a joint return.</Description>
+      <Derived>
+        <Any>
+          <Dependency module="filers" path="/primaryFiler/canBeClaimed" />
+          <All>
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            <Dependency module="filers" path="/secondaryFiler/canBeClaimed" />
+          </All>
+        </Any>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmFilingStatusUnsupported">
+      <Name>Filing status other than single or joint</Name>
+      <Description>The supported PIT-1 is single, or married filing jointly with both spouses New Mexico residents all year. Married filing separately and head of household are not calculated. 2025 PIT-1, line 7.</Description>
+      <Derived>
+        <Not>
+          <Any>
+            <Dependency module="filingStatus" path="/isFilingStatusSingle" />
+            <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+          </Any>
+        </Not>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmHasSchedule1A">
+      <Name>Federal Schedule 1-A is more than zero</Name>
+      <Description>Qualified tips, overtime, car-loan interest, or the senior deduction on Schedule 1-A line 44. The READY spec calls this stop 1040 line 13b. The 2026 draft Form 1040 in this tool prints Schedule 1-A on line 13a and the qualified business income deduction on line 13b. New Mexico conformity for Schedule 1-A is not pinned, so the deduction is not entered. Incomplete when line 44 is incomplete.</Description>
+      <Derived>
+        <GreaterThan>
+          <Left>
+            <Dependency module="schedule1A" path="/schedule1ALine44" />
+          </Left>
+          <Right>
+            <Dollar>0</Dollar>
+          </Right>
+        </GreaterThan>
+      </Derived>
+    </Fact>
+
+    <Fact path="/nmLowAgi">
+      <Name>Federal AGI is at or under the New Mexico exemption ceiling</Name>
+      <Description>$36,667 or less for single. $55,000 or less for married filing jointly. Other filing statuses use the single ceiling and also stop for filing status. 2025 PIT-1 instructions, page PIT-1-26.</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency module="filingStatus" path="/isFilingStatusMFJ" />
+            </When>
+            <Then>
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Left>
+                <Right>
+                  <Dependency path="/nmAgiFloorMfj" />
+                </Right>
+              </LessThanOrEqual>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <LessThanOrEqual>
+                <Left>
+                  <Dependency module="taxCalculations" path="/agi" />
+                </Left>
+                <Right>
+                  <Dependency path="/nmAgiFloorSingle" />
+                </Right>
+              </LessThanOrEqual>
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmPartYearOrNonresident">
+      <Name>Flow knockout: New Mexico part-year, first-year, or nonresident</Name>
+      <Description>Schedule PIT-B is not calculated. Complete false when this is not a New Mexico return. Incomplete until /nmResidencyStatus is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmResidencyIsOutOfScope" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmResidencyIsOutOfScope" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmResidencyIsOutOfScope" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmW2NotNewMexico">
+      <Name>Flow knockout: a W-2 box 15 is not New Mexico</Name>
+      <Description>Any W-2 whose box 15 is a state other than New Mexico. A blank box 15 is in scope and is not this stop. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="formW2s" path="/flowKnockoutBox15IncomeFromDifferentState" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmOtherFederalIncome">
+      <Name>Flow knockout: income other than W-2 wages</Name>
+      <Description>Any federal income other than W-2 wages. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmHasOtherFederalIncome" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmHasOtherFederalIncome" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmHasOtherFederalIncome" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmDependents">
+      <Name>Flow knockout: dependents</Name>
+      <Description>The line 13 dependent deduction and the child income tax credit are not calculated. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmHasDependents" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmHasDependents" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmHasDependents" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmAgeOrBlind">
+      <Name>Flow knockout: age 65 or blind</Name>
+      <Description>The additional federal standard deduction and the New Mexico 65-or-older deductions and rebates are not calculated. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmAgeOrBlind" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmAgeOrBlind" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmAgeOrBlind" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmClaimedAsDependent">
+      <Name>Flow knockout: claimed as a dependent</Name>
+      <Description>The limited federal standard deduction for someone who can be claimed as a dependent is not used on line 12. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmClaimedAsDependent" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmClaimedAsDependent" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmClaimedAsDependent" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmFilingStatus">
+      <Name>Flow knockout: filing status other than single or joint</Name>
+      <Description>Married filing separately and head of household are not calculated. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmFilingStatusUnsupported" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmFilingStatusUnsupported" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmFilingStatusUnsupported" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmItemizedDeductions">
+      <Name>Flow knockout: itemized deductions</Name>
+      <Description>The line 10 state and local tax add-back is not calculated. 2025 PIT-1 instructions, line 12: mark box 12a only if you itemized. Complete false when this is not a New Mexico return. Incomplete until the itemizing choice is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency module="scheduleA" path="/itemizesDeductions" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency module="scheduleA" path="/itemizesDeductions" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmSchedule1A">
+      <Name>Flow knockout: federal Schedule 1-A</Name>
+      <Description>Schedule 1-A greater than zero stops. The READY spec calls this 1040 line 13b. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmHasSchedule1A" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmHasSchedule1A" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmHasSchedule1A" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmLowAgi">
+      <Name>Flow knockout: federal AGI at or under the New Mexico exemption ceiling</Name>
+      <Description>Single AGI of $36,667 or less, or joint AGI of $55,000 or less. The line 14 exemption, the low-income comprehensive tax rebate, and the working families tax credit are not calculated. Complete false when this is not a New Mexico return.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmLowAgi" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmLowAgi" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmLowAgi" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmPitAdj">
+      <Name>Flow knockout: a PIT-ADJ addition or deduction</Name>
+      <Description>PIT-ADJ is not calculated. Complete false when this is not a New Mexico return. Incomplete until the question is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmHasPitAdj" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmHasPitAdj" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmHasPitAdj" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+    <Fact path="/flowKnockoutNmCreditForTaxesPaid">
+      <Name>Flow knockout: credit for tax paid to another state</Name>
+      <Description>PIT-1 line 20 is not calculated. Complete false when this is not a New Mexico return. Incomplete until the question is answered.</Description>
+      <Export downstreamFacts="true" />
+      <BlockSubmissionOnTrue />
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <Not>
+                <Dependency module="stateReturn" path="/stateReturnIsNm" />
+              </Not>
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Not>
+                <IsComplete>
+                  <Dependency path="/nmHasCreditForTaxesPaid" />
+                </IsComplete>
+              </Not>
+            </When>
+            <Then>
+              <Dependency path="/nmHasCreditForTaxesPaid" />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Dependency path="/nmHasCreditForTaxesPaid" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+  </Facts>
+</FactDictionaryModule>
