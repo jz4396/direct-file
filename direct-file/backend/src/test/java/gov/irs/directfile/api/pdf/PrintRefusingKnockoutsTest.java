@@ -349,7 +349,9 @@ class PrintRefusingKnockoutsTest {
         // Part III again. #347 adds /flowKnockoutPaK1GuaranteedPayments. #93 slice 6 adds the fourteen Massachusetts
         // stops. 112 on main plus the box 16 stop is 113. #93 slice 7 adds the thirteen Idaho stops. 113 plus 13 is
         // 126. #93 slice 8 adds the twelve Kansas stops. 126 plus 12 is 138. #85 adds
-        // /flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits. 138 plus 1 is 139.
+        // /flowKnockoutScheduleEK1Box14CodeAEarnedIncomeCredits. 138 plus 1 is 139. Lifting the nonnegative
+        // Schedule K-1 (Form 1041) box 8 stop does not add or remove a path: /flowKnockoutScheduleEPartIIIBox8
+        // stays inside /flowKnockoutScheduleEPartII, and a loss still refuses the print. 139 plus 0 is 139.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
         assertEquals(139, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());

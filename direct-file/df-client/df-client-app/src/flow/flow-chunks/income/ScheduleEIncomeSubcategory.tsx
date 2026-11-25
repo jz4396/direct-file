@@ -31,7 +31,7 @@ import type { ConditionString } from '../../Condition.js';
  * Form 1120-S box 17 code V is a Form 8995 line 1 row on the supported path. Form 1065 box 20 code Z stays a stop.
  * Part III supported: domestic estate or trust, nonnegative box 6 in column (f), nonnegative box 7 in
  * column (d), material participation. A negative box 7 and a prior-year unallowed passive loss stop the return.
- * Box 8 is other rental income (26 U.S.C. 469(c)(2) and 469(c)(4)) and stops the return.
+ * Nonnegative box 8 is other rental income in column (d) (26 U.S.C. 469(c)(2) and 469(c)(4)). A loss stops the return.
  * Schedule K-1 (Form 1041) box 12 code A is Form 6251 line 2j. Codes B through I stop the return.
  * Part IV (REMIC, Schedule Q (Form 1066)) is asked of every filer and is an explicit stop.
  * The Schedule K-1 question is asked of every filer, not only after a yes to rental or royalty income

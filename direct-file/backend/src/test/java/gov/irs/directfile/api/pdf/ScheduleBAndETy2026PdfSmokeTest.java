@@ -161,7 +161,7 @@ class ScheduleBAndETy2026PdfSmokeTest {
         return m;
     }
 
-    /** Supported Part III estate: domestic, box 6 only, material participation. Box 8 is zero. */
+    /** Supported Part III estate: domestic, box 6 only, material participation. Box 7 and box 8 are zero. */
     static void estate(Map<String, String> m, String id, String name, String box6) {
         String p = "/scheduleEEstates/#" + id + "/";
         m.put(p + "entityName", string(name));
@@ -456,9 +456,9 @@ class ScheduleBAndETy2026PdfSmokeTest {
         }
         refuses(five, SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT);
 
-        Map<String, String> box8 = partIAndPartIII();
-        box8.put("/scheduleEEstates/#" + ESTATE + "/box8", dollar("1500.00"));
-        refuses(box8, SCHEDULE_E_PART_II_KNOCKOUT);
+        Map<String, String> box8Loss = partIAndPartIII();
+        box8Loss.put("/scheduleEEstates/#" + ESTATE + "/box8", dollar("-100.00"));
+        refuses(box8Loss, SCHEDULE_E_PART_II_KNOCKOUT);
 
         Map<String, String> remic = partI();
         remic.put("/scheduleEHasPartIVIncome", bool(true));
@@ -529,6 +529,51 @@ class ScheduleBAndETy2026PdfSmokeTest {
         assertTrue(
                 e.getBody().getProperties().get("blockingFacts").toString().contains("/flowKnockoutPaK11041Box7"),
                 e.getBody().toString());
+    }
+
+    /**
+     * Florida single filer, no Schedule E Part I. Schedule K-1 (Form 1041) box 8 of $5,000 is line 33 column (d),
+     * line 37, line 41, Schedule 1 line 5, and Form 8960 line 4a. Wages are $210,000, so MAGI is $215,000. Form 8960
+     * line 17 is min($5,000, $215,000 − $200,000) × 3.8% = $190. 2026 draft Schedule K-1 (Form 1041), page 2: "8. Other
+     * rental income" is reported on "Schedule E, line 33, column (d) or (f)". 26 U.S.C. 469(c)(2); 26 U.S.C. 469(c)(4);
+     * 26 U.S.C. 1411(a)(1); 26 U.S.C. 1411(b); 26 U.S.C. 1411(c)(1)(A)(i). Box 7 of $1,000 plus box 8 of $2,500 is
+     * column (d) $3,500. A box 8 loss of $100 refuses the print. 2025 Instructions for Form 8582, PDF p. 1, Who Must
+     * File.
+     */
+    @Test
+    void scheduleEPartIIIBox8PrintsColumnDAndForm8960Line4a() throws Exception {
+        Map<String, String> fiveThousand = floridaBox7("0.00");
+        fiveThousand.put("/scheduleEEstates/#" + ESTATE + "/box8", dollar("5000.00"));
+        byte[] bytes = generate(fiveThousand);
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            amount(se, "f2_56[0]", 5000, "line 33A column (d)");
+            blank(se, "f2_58[0]", "line 33A column (f)");
+            amount(se, "f2_64[0]", 5000, "line 34a column (d)");
+            amount(se, "f2_71[0]", 5000, "line 35");
+            amount(se, "f2_73[0]", 5000, "line 37");
+            amount(se, "f3_4[0]", 5000, "line 41");
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "f1_09[0]", 5000, "Schedule 1 line 5");
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            amount(f8960, "f1_6[0]", 5000, "Form 8960 line 4a");
+            amount(f8960, "f1_27[0]", 190, "Form 8960 line 17");
+        }
+
+        Map<String, String> both = floridaBox7("1000.00");
+        both.put("/scheduleEEstates/#" + ESTATE + "/box8", dollar("2500.00"));
+        byte[] bothBytes = generate(both);
+        try (PDDocument doc = Loader.loadPDF(bothBytes)) {
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            amount(se, "f2_56[0]", 3500, "line 33A column (d) is box 7 plus box 8");
+            amount(se, "f2_73[0]", 3500, "line 37");
+            Map<String, String> f8960 = fieldsOnPages(doc, "Form 8960 (2026)");
+            amount(f8960, "f1_6[0]", 3500, "Form 8960 line 4a");
+        }
+
+        Map<String, String> loss = floridaBox7("0.00");
+        loss.put("/scheduleEEstates/#" + ESTATE + "/box8", dollar("-100.00"));
+        refuses(loss, SCHEDULE_E_PART_II_KNOCKOUT);
     }
 
     /**
