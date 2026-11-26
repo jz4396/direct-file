@@ -31,6 +31,10 @@ headings:
     persona?
   /heading/income/dividends/box-7:
     Ingrese el <strong>encasillado 7</strong> y el <strong>encasillado 8</strong>, si los hay.
+  /heading/income/dividends/box-9: Ingrese la cantidad del <strong>encasillado 9</strong>, si la hay.
+  /heading/income/dividends/box-10: Ingrese la cantidad del <strong>encasillado 10</strong>, si la hay.
+  /heading/income/dividends/liquidation-basis:
+    ¿Los encasillados 3, 9 y 10 de este formulario, juntos, sobrepasan la base que le queda en esas acciones?
   /heading/income/dividends/boxes-14-16:
     Ingrese la información estatal de los <strong>encasillados 14, 15 y 16</strong>, si la hay.
   /heading/income/dividends/box-12: Ingrese la cantidad del <strong>encasillado 12</strong>, si la hay.
@@ -46,7 +50,8 @@ headings:
   /heading/knockout/dividends-holding-period:
     Esta herramienta aún no admite dividendos del encasillado 1b que no son calificados
   /heading/knockout/dividends-nondividend-over-basis:
-    Esta herramienta aún no admite distribuciones que no son dividendos mayores que su base
+    Esta herramienta aún no admite distribuciones que no son dividendos ni distribuciones de liquidación mayores que su
+    base
   /heading/knockout/dividends-section-199a:
     Esta herramienta no puede separar dividendos de la sección 199A que no son dividendos calificados de un REIT
   /heading/knockout/dividends-amounts-inconsistent: Verifique las cantidades que ingresó de este Formulario 1099-DIV
@@ -164,6 +169,23 @@ info:
           El encasillado 7 es el impuesto extranjero pagado sobre estos dividendos. El encasillado 8 es el país o la
           posesión de EE. UU. de ese impuesto. Deje un encasillado en blanco si está vacío en su formulario. Un fondo
           mutuo a menudo deja el encasillado 8 en blanco.
+  /info/income/dividends/box-9:
+    body:
+      - p:
+          El encasillado 9 es una distribución de liquidación en efectivo. No es ingreso hasta que haya recuperado su
+          base en las acciones. Déjelo en blanco si está vacío en su formulario.
+  /info/income/dividends/box-10:
+    body:
+      - p:
+          El encasillado 10 es una distribución de liquidación que no es en efectivo. No es ingreso hasta que haya
+          recuperado su base en las acciones. Déjelo en blanco si está vacío en su formulario.
+  /info/income/dividends/liquidation-basis:
+    body:
+      - p:
+          La base que le queda es lo que pagó por las acciones, menos las distribuciones anteriores que no fueron
+          dividendos y las distribuciones de liquidación anteriores. Responda sí si los encasillados 3, 9 y 10 de este
+          formulario, juntos, son mayores que lo que queda. Responda no si no lo son. Una cantidad igual o menor que la
+          base no se declara como ingreso.
   /info/income/dividends/boxes-14-16:
     body:
       - p:
@@ -173,10 +195,9 @@ info:
           calcula su declaración estatal, cuando su estado no tiene impuesto sobre el ingreso, o cuando el encasillado
           15 es un estado distinto. El encasillado 14 no se suma por usted. Si detalla, inclúyalo con los impuestos
           estatales y locales sobre el ingreso que anota en el Anexo A. El encasillado 15 es el estado y el número de
-          identificación estatal del pagador. El encasillado 16 es la distribución estatal. En una declaración de
-          Pensilvania, Illinois, Carolina del Norte, Arizona, Massachusetts o Idaho, una cantidad en el encasillado 16
-          tiene que ser igual al encasillado 1a más el encasillado 2a. Deje un encasillado en blanco si está vacío en
-          su formulario.
+          identificación estatal del pagador. El encasillado 16 es la distribución estatal. En una declaración estatal
+          calculada aquí (`/stateReturnComputed`), una cantidad en el encasillado 16 tiene que ser igual al encasillado
+          1a más el encasillado 2a. Deje un encasillado en blanco si está vacío en su formulario.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -209,10 +230,11 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Responda sí si su formulario muestra una cantidad en el encasillado 2c, 9 o 10. El encasillado 8 (país
-          extranjero) se ingresa con el encasillado 7. Los encasillados 14, 15 y 16 se ingresan en su propia pantalla.
-          El encasillado 11 (requisito de presentación de FATCA) se pregunta en su propia pantalla. Los encasillados 2b,
-          2d, 2e, 2f, 6, 12 y 13 se ingresan en sus propias pantallas."
+          "Responda sí si su formulario muestra una cantidad en el encasillado 2c. Los encasillados 9 y 10 se ingresan
+          en sus propias pantallas. El encasillado 8 (país extranjero) se ingresa con el encasillado 7. Los encasillados
+          14, 15 y 16 se ingresan en su propia pantalla. El encasillado 11 (requisito de presentación de FATCA) se
+          pregunta en su propia pantalla. Los encasillados 2b, 2d, 2e, 2f, 6, 12 y 13 se ingresan en sus propias
+          pantallas."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -260,9 +282,10 @@ info:
     alertText:
       body:
         - p:
-            Las distribuciones que no son dividendos y que sobrepasan su costo son una ganancia de capital que se
-            declara en el Formulario 8949. Esta herramienta aún no lo admite. Necesitará otra manera de presentar esta
-            declaración.
+            Las distribuciones que no son dividendos (encasillado 3) y las distribuciones de liquidación (encasillados 9
+            y 10) que sobrepasan la base que le queda son una ganancia de capital que se declara en el Formulario 8949.
+            Esta herramienta no recoge esa base, así que no puede declarar la ganancia. Necesitará otra manera de
+            presentar esta declaración.
   /info/knockout/dividends-section-199a:
     alertText:
       body:
@@ -288,18 +311,18 @@ info:
     alertText:
       body:
         - p:
-            Esta herramienta no admite una cantidad en el encasillado 2c, 9 o 10. El impuesto estatal retenido en el
-            encasillado 14 detiene esta declaración cuando esta herramienta calcula su declaración estatal
-            (Pensilvania, Illinois, Carolina del Norte, Arizona, Massachusetts o Idaho), cuando usted vive en Alaska,
-            Florida, Nevada, Dakota del Sur, Texas, Wyoming, Washington, Tennessee o Nuevo Hampshire, o cuando el
-            encasillado 15 es un estado distinto. Necesitará otra manera de presentar esta declaración.
+            Esta herramienta no admite una cantidad en el encasillado 2c. El impuesto estatal retenido en el encasillado
+            14 detiene esta declaración cuando esta herramienta calcula su declaración estatal (Pensilvania, Illinois,
+            Carolina del Norte, Arizona, Massachusetts o Idaho), cuando usted vive en Alaska, Florida, Nevada, Dakota
+            del Sur, Texas, Wyoming, Washington, Tennessee o Nuevo Hampshire, o cuando el encasillado 15 es un estado
+            distinto. Necesitará otra manera de presentar esta declaración.
   /info/knockout/dividends-state-distribution:
     alertText:
       body:
         - p:
-            En una declaración de Pensilvania, Illinois, Carolina del Norte, Arizona, Massachusetts o Idaho, el
-            encasillado 16 tiene que ser igual al encasillado 1a más el encasillado 2a. Esas declaraciones estatales
-            usan las cantidades federales. Necesitará otra manera de presentar esta declaración.
+            En una declaración estatal calculada aquí (`/stateReturnComputed`), el encasillado 16 tiene que ser igual al
+            encasillado 1a más el encasillado 2a. Esa declaración estatal usa las cantidades federales. Necesitará otra
+            manera de presentar esta declaración.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:
@@ -326,8 +349,8 @@ info:
             La parte de nominatario tampoco puede incluir el encasillado 2a, 2b, 2c, 2d, 2e, 2f, 3, 5, 7, 12 o 13. Una
             declaración estatal calculada usa las cantidades federales de dividendos, así que una cantidad de
             nominatario en esa declaración no se puede restar aquí. La línea 5 del Anexo B tiene 15 filas. Esta
-            declaración también se detiene cuando las filas de los pagadores no dejan espacio para el subtotal y la
-            fila Nominee Distribution.
+            declaración también se detiene cuando las filas de los pagadores no dejan espacio para el subtotal y la fila
+            Nominee Distribution.
         - p: Necesitará otra manera de presentar esta declaración.
 fields:
   /dividendReports:
@@ -389,6 +412,10 @@ fields:
     name: <strong>Encasillado 7</strong> - Impuesto extranjero pagado
   /dividendReports/*/writableForeignCountry:
     name: <strong>Encasillado 8</strong> - País extranjero o posesión de EE. UU.
+  /dividendReports/*/writableCashLiquidationDistributions:
+    name: <strong>Encasillado 9</strong> - Distribuciones de liquidación en efectivo
+  /dividendReports/*/writableNoncashLiquidationDistributions:
+    name: <strong>Encasillado 10</strong> - Distribuciones de liquidación que no son en efectivo
   /dividendReports/*/writableStateTaxWithheld:
     name: <strong>Encasillado 14</strong> - Impuesto estatal retenido
   /dividendReports/*/writableState:
@@ -431,6 +458,11 @@ dataviews:
       ¿Tuvo cada acción de REIT más de 45 días y no tuvo que pagar el dividendo a otra persona?
     /dividendReports/*/writableForeignTaxPaid: Encasillado 7 - Impuesto extranjero pagado
     /dividendReports/*/writableForeignCountry: Encasillado 8 - País extranjero o posesión de EE. UU.
+    /dividendReports/*/writableCashLiquidationDistributions: Encasillado 9 - Distribuciones de liquidación en efectivo
+    /dividendReports/*/writableNoncashLiquidationDistributions:
+      Encasillado 10 - Distribuciones de liquidación que no son en efectivo
+    /dividendReports/*/liquidationDistributionsExceedBasis:
+      ¿Los encasillados 3, 9 y 10 juntos sobrepasan la base que le queda?
     /dividendReports/*/writableStateTaxWithheld: Encasillado 14 - Impuesto estatal retenido
     /dividendReports/*/writableState: Encasillado 15 - Estado
     /dividendReports/*/writableStateIdNumber: Encasillado 15 - Número de identificación estatal

@@ -156,8 +156,32 @@ describe(`The \`dividends\` (Form 1099-DIV) subcategory`, () => {
       [`/dividendReports/#${id}/writableForeignTaxPaid`]: createDollarWrapper(`5`),
       [`/dividendReports/#${id}/foreignTaxElectionRequirementsMet`]: createBooleanWrapper(true),
     });
-    expect(at(elected, `1099-div-box-7-election`, task)).toRouteNextTo(`${path}/1099-div-box-12`);
-    expect(at(base(`single`, ord), `1099-div-box-7`, task)).toRouteNextTo(`${path}/1099-div-box-12`);
+    expect(at(elected, `1099-div-box-7-election`, task)).toRouteNextTo(`${path}/1099-div-box-9`);
+    expect(at(base(`single`, ord), `1099-div-box-7`, task)).toRouteNextTo(`${path}/1099-div-box-9`);
+    expect(at(base(`single`, ord), `1099-div-box-9`, task)).toRouteNextTo(`${path}/1099-div-box-10`);
+    const box9 = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableCashLiquidationDistributions`]: createDollarWrapper(`5000`),
+    });
+    expect(at(box9, `1099-div-box-10`, task)).toRouteNextTo(`${path}/1099-div-liquidation-basis`);
+    const box10 = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableNoncashLiquidationDistributions`]: createDollarWrapper(`2000`),
+    });
+    expect(at(box10, `1099-div-box-10`, task)).toRouteNextTo(`${path}/1099-div-liquidation-basis`);
+    const underBasis = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableCashLiquidationDistributions`]: createDollarWrapper(`5000`),
+      [`/dividendReports/#${id}/liquidationDistributionsExceedBasis`]: createBooleanWrapper(false),
+    });
+    expect(at(underBasis, `1099-div-liquidation-basis`, task)).toRouteNextTo(`${path}/1099-div-box-12`);
+    const overBasis = base(`single`, {
+      ...ord,
+      [`/dividendReports/#${id}/writableNoncashLiquidationDistributions`]: createDollarWrapper(`2000`),
+      [`/dividendReports/#${id}/liquidationDistributionsExceedBasis`]: createBooleanWrapper(true),
+    });
+    expect(at(overBasis, `1099-div-liquidation-basis`, task)).toRouteNextTo(`${path}/1099-div-liquidation-knockout`);
+    expect(at(base(`single`, ord), `1099-div-box-10`, task)).toRouteNextTo(`${path}/1099-div-box-12`);
     expect(at(base(`single`, ord), `1099-div-box-12`, task)).toRouteNextTo(`${path}/1099-div-box-13`);
     const box12 = base(`single`, {
       ...ord,

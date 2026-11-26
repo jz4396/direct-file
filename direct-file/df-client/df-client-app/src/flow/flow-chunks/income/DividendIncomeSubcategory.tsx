@@ -21,7 +21,7 @@ import {
 import type { ConditionString } from '../../Condition.js';
 
 /**
- * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15 and 16.
+ * Form 1099-DIV interview (#86): boxes 1a, 1b, 2a, 2b, 2d, 2e, 2f, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 and 16.
  * Form 1040 line 3b = box 1a, line 3a = box 1b, line 7a or Schedule D line 13 = box 2a, line 25b includes box 4,
  * line 2a includes box 12. Box 2b is the unrecaptured section 1250 portion of box 2a (26 U.S.C. 1(h)(6)) and is
  * not added again. Box 2e is the section 897 portion of box 1a and box 2f is the section 897 portion of
@@ -32,11 +32,12 @@ import type { ConditionString } from '../../Condition.js';
  * (26 U.S.C. 57(a)(5)) and cannot exceed box 12. Box 11 (FATCA) asks /requiredToFileForm8938. Yes stops.
  * No proceeds. Box 2d is the collectibles (28%) portion of box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)) and is
  * not added again. A box 2d greater than $0 with a Schedule D line 7 loss or a line 14 capital loss
- * carryover stops the return. Boxes 2c, 9, and 10 still stop the return. Box 14 greater than $0 is allowed
+ * carryover stops the return. Box 2c still stops the return. Boxes 9 and 10 at or below remaining basis,
+ * together with box 3, are not income. Above that basis they stop the return. Box 14 greater than $0 is allowed
  * only when the state return is not computed, the resident state has an income tax, and box 15 is that state.
  * Box 8 is the foreign country for box 7 and does not stop when the 904(j) election applies or box 7 is $0.
- * Boxes 15 and 16 are allowed when box 14 is $0. On a Pennsylvania, Illinois, North Carolina, Arizona,
- * Massachusetts, or Idaho return, a box 16 amount that is not box 1a plus box 2a stops the return.
+ * Boxes 15 and 16 are allowed when box 14 is $0. On a state return computed here (`/stateReturnComputed`), a
+ * box 16 amount that is not box 1a plus box 2a stops the return.
  * Ordinary and qualified dividends received as a nominee are subtracted on Schedule B line 5 (a subtotal,
  * then "Nominee Distribution") and on Form 1040 lines 3b and 3a. A nominee share of another box, an amount
  * over box 1a or box 1b, a subtraction that leaves remaining box 1b above remaining box 1a, or any nominee
@@ -255,6 +256,29 @@ export const DividendIncomeSubcategory = (
           <SaveAndOrContinueButton />
         </Screen>
         {knockout(`1099-div-box-7-knockout`, `/flowKnockoutDividendForeignTaxPaid`, `dividends-foreign-tax`)}
+        <Screen route='1099-div-box-9'>
+          <Heading i18nKey='/heading/income/dividends/box-9' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-9' />
+          <Dollar path='/dividendReports/*/writableCashLiquidationDistributions' required={false} />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='1099-div-box-10'>
+          <Heading i18nKey='/heading/income/dividends/box-10' />
+          <InfoDisplay i18nKey='/info/income/dividends/box-10' />
+          <Dollar path='/dividendReports/*/writableNoncashLiquidationDistributions' required={false} />
+          <SaveAndOrContinueButton />
+        </Screen>
+        <Screen route='1099-div-liquidation-basis' condition='/dividendReports/*/hasLiquidationDistributions'>
+          <Heading i18nKey='/heading/income/dividends/liquidation-basis' />
+          <InfoDisplay i18nKey='/info/income/dividends/liquidation-basis' />
+          <Boolean path='/dividendReports/*/liquidationDistributionsExceedBasis' />
+          <SaveAndOrContinueButton />
+        </Screen>
+        {knockout(
+          `1099-div-liquidation-knockout`,
+          `/flowKnockoutNondividendDistributionsOverBasis`,
+          `dividends-nondividend-over-basis`
+        )}
         <Screen route='1099-div-box-12'>
           <Heading i18nKey='/heading/income/dividends/box-12' />
           <InfoDisplay i18nKey='/info/income/dividends/box-12' />
@@ -303,11 +327,7 @@ export const DividendIncomeSubcategory = (
           `/dividendReports/*/stateTaxWithheldUnsupported`,
           `dividends-unsupported-boxes`
         )}
-        {knockout(
-          `1099-div-box-16-knockout`,
-          `/flowKnockoutDividendStateDistribution`,
-          `dividends-state-distribution`
-        )}
+        {knockout(`1099-div-box-16-knockout`, `/flowKnockoutDividendStateDistribution`, `dividends-state-distribution`)}
         <Screen route='1099-div-unsupported-boxes'>
           <Heading i18nKey='/heading/income/dividends/unsupported-boxes' />
           <InfoDisplay i18nKey='/info/income/dividends/unsupported-boxes' />

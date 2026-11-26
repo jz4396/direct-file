@@ -5,11 +5,13 @@
 // is not added again. Box 2d is the collectibles (28%) portion of box 2a (26 U.S.C. 1(h)(4) and 1(h)(5)) and is
 // not added again. A portion one dollar over its parent box stops the return. A box 2d greater than $0 with a
 // Schedule D line 7 loss or a line 14 capital loss carryover stops the return. A nonzero box 6 on a
-// PA-40 stops the return. Boxes 2c, 9, and 10 still stop. Box 14 greater than $0 is allowed only when the state
+// PA-40 stops the return. Box 2c still stops. Boxes 9 and 10 at or below remaining basis, together with box 3, are
+// not income and do not stop. Above that basis they stop. Box 14 greater than $0 is allowed only when the state
 // return is not computed, the resident state has an income tax, and box 15 is that state. Box 8 does not stop when
 // box 7 is $0 or meets 26 U.S.C. 904(j). Boxes 15 and 16 do not stop when box 14 is $0, except a box 16 amount
-// that differs from box 1a plus box 2a on a computed PA, IL, NC, AZ, MA, or ID return. Box 11 (FATCA filing requirement) does
-// not stop by itself: it asks /requiredToFileForm8938. Yes stops (26 U.S.C. 6038D). No proceeds. Form 1099-DIV
+// that differs from box 1a plus box 2a on a state return computed here (`/stateReturnComputed`). Box 11 (FATCA
+// filing requirement) does not stop by itself: it asks /requiredToFileForm8938. Yes stops (26 U.S.C. 6038D). No
+// proceeds. Form 1099-DIV
 // (Rev. December 2027) draft, Instructions for Recipient, Box 11. Instructions for Form 8938: a specified individual
 // living in the United States who is unmarried files when specified foreign financial assets are more than $50,000
 // on the last day of the year or more than $75,000 at any time. Those thresholds are not computed.
@@ -67,6 +69,8 @@ type Div = {
   box2e?: number;
   box2f?: number;
   box3?: number;
+  box9?: number;
+  box10?: number;
   box6?: number;
   box4?: number;
   box5?: number;
@@ -80,6 +84,7 @@ type Div = {
   box13?: number;
   holdingNotMet?: boolean;
   overBasis?: boolean;
+  liquidationOverBasis?: boolean;
   otherBoxes?: boolean;
   box11?: boolean;
   nominee?: boolean;
@@ -106,6 +111,8 @@ const divItem = (f: Div) => {
     ...opt(id, `Section897CapitalGain`, f.box2f),
     ...opt(id, `InvestmentExpenses`, f.box6),
     ...opt(id, `NondividendDistributions`, f.box3),
+    ...opt(id, `CashLiquidationDistributions`, f.box9),
+    ...opt(id, `NoncashLiquidationDistributions`, f.box10),
     ...opt(id, `FederalTaxWithheld`, f.box4),
     ...opt(id, `Section199ADividends`, f.box5),
     ...(f.box5
@@ -143,6 +150,13 @@ const divItem = (f: Div) => {
       : {}),
     ...(f.box3
       ? { [`/dividendReports/#${id}/nondividendDistributionsExceedBasis`]: createBooleanWrapper(f.overBasis ?? false) }
+      : {}),
+    ...((f.box9 ?? 0) > 0 || (f.box10 ?? 0) > 0
+      ? {
+          [`/dividendReports/#${id}/liquidationDistributionsExceedBasis`]: createBooleanWrapper(
+            f.liquidationOverBasis ?? false
+          ),
+        }
       : {}),
     [`/dividendReports/#${id}/hasUnsupportedBoxes`]: createBooleanWrapper(f.otherBoxes ?? false),
     ...(f.box11 === undefined
@@ -527,17 +541,93 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     );
   });
   it(`box 2c (section 1202 gain) still stops the return`, ({ task }) => {
-    // Form 1099-DIV instructions. Boxes 2c, 9, and 10 share /dividendReports/*/hasUnsupportedBoxes.
+    // Form 1099-DIV instructions. Box 2c is still /dividendReports/*/hasUnsupportedBoxes. Boxes 9 and 10 are not.
     task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
     blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
   });
-  it(`box 9 (cash liquidation distribution) still stops the return`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
-    blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
+  it(`box 9 $5,000 at or below basis does not change AGI and does not stop`, ({ task }) => {
+    // Pub. 550 (2025) p. 31, Liquidating Distributions. 26 U.S.C. 331(a); 301(c)(2). No means nothing is reported.
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/cashLiquidationDistributions`,
+      `/dividendReports/*/liquidationDistributionsExceedBasis`,
+      `/flowKnockoutNondividendDistributionsOverBasis`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+      `/ordinaryDividends`,
+      `/agi`,
+      `/form8960Line2`,
+      `/form8960Line5a`,
+      `/requiresScheduleB`,
+    ];
+    const blank = build(divs({ box1a: 2000 }));
+    const box9 = build(divs({ box1a: 2000, box9: 5000, liquidationOverBasis: false }));
+    expect(val(box9, `/dividendReports/#${d1}/cashLiquidationDistributions`)).toBe(`5000.00`);
+    expect(val(box9, `/dividendReports/#${d1}/noncashLiquidationDistributions`)).toBe(`0.00`);
+    expect(get(box9, `/dividendReports/#${d1}/hasLiquidationDistributions`).get).toBe(true);
+    expect(get(box9, `/dividendReports/#${d1}/liquidationDistributionsExceedBasis`).get).toBe(false);
+    expect(get(box9, `/dividendReports/#${d1}/hasUnsupportedBoxes`).get).toBe(false);
+    const unchanged = [
+      `/ordinaryDividends`,
+      `/qualifiedDividends`,
+      `/capitalGainsOrLosses`,
+      `/totalIncome`,
+      `/agi`,
+      `/form8960Line2`,
+      `/form8960Line5a`,
+      `/dividendReports/#${d1}/roundedOrdinaryDividends`,
+    ];
+    for (const line of unchanged) expect(val(box9, line), line).toBe(val(blank, line));
+    expect(get(box9, `/requiresScheduleB`).get).toBe(get(blank, `/requiresScheduleB`).get);
+    expect(val(box9, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(box9, `/dividendReports/#${d1}/roundedOrdinaryDividends`)).toBe(`2000.00`);
+    expect(val(box9, `/form8960Line2`)).toBe(`2000.00`);
+    expect(val(box9, `/form8960Line5a`)).toBe(`0.00`);
+    expect(val(box9, `/agi`)).toBe(`42000.00`);
+    expect(val(blank, `/agi`)).toBe(`42000.00`);
+    noKnockouts(box9);
   });
-  it(`box 10 (noncash liquidation distribution) still stops the return`, ({ task }) => {
-    task.meta.testedFactPaths = [`/flowKnockoutDividendUnsupportedBoxes`, `/dividendReports/*/hasUnsupportedBoxes`];
-    blocks(build(divs({ box1a: 100, otherBoxes: true })), `/flowKnockoutDividendUnsupportedBoxes`);
+  it(`box 10 $2,000 above remaining basis stops the return`, ({ task }) => {
+    // The excess is capital gain on Form 8949. Basis is not collected.
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/noncashLiquidationDistributions`,
+      `/flowKnockoutNondividendDistributionsOverBasis`,
+      `/flowKnockoutDividendUnsupportedBoxes`,
+    ];
+    const g = build(divs({ box1a: 2000, box10: 2000, liquidationOverBasis: true }));
+    expect(val(g, `/dividendReports/#${d1}/noncashLiquidationDistributions`)).toBe(`2000.00`);
+    expect(get(g, `/dividendReports/#${d1}/hasUnsupportedBoxes`).get).toBe(false);
+    expect(get(g, `/flowKnockoutDividendUnsupportedBoxes`).get).toBe(false);
+    blocks(g, `/flowKnockoutNondividendDistributionsOverBasis`);
+  });
+  it(`boxes 9 and 10 left blank leave the return unchanged`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/dividendReports/*/cashLiquidationDistributions`,
+      `/dividendReports/*/noncashLiquidationDistributions`,
+      `/dividendReports/*/hasLiquidationDistributions`,
+      `/agi`,
+      `/ordinaryDividends`,
+      `/form8960Line2`,
+    ];
+    const blank = build(divs({ box1a: 2000 }));
+    const zeros = build(divs({ box1a: 2000, box9: 0, box10: 0 }));
+    expect(val(blank, `/dividendReports/#${d1}/cashLiquidationDistributions`)).toBe(`0.00`);
+    expect(val(blank, `/dividendReports/#${d1}/noncashLiquidationDistributions`)).toBe(`0.00`);
+    expect(get(blank, `/dividendReports/#${d1}/hasLiquidationDistributions`).get).toBe(false);
+    expect(get(blank, `/dividendReports/#${d1}/liquidationDistributionsExceedBasis`).complete).toBe(false);
+    const lines = [
+      `/ordinaryDividends`,
+      `/totalIncome`,
+      `/agi`,
+      `/form8960Line2`,
+      `/form8960Line5a`,
+      `/capitalGainsOrLosses`,
+    ];
+    for (const line of lines) {
+      expect(val(blank, line), line).toBe(val(zeros, line));
+    }
+    expect(val(blank, `/ordinaryDividends`)).toBe(`2000.00`);
+    expect(val(blank, `/totalIncome`)).toBe(`42000.00`);
+    noKnockouts(blank);
+    noKnockouts(zeros);
   });
   it(`boxes 2b, 2d, 2e, 2f, and 6 do not use the unsupported-box stop`, () => {
     const supported = build(divs({ box1a: 100, box2a: 40, box2e: 100, box2f: 40, box6: 100, otherBoxes: false }));
@@ -770,10 +860,7 @@ describe(`1099-DIV knockouts (BlockSubmissionOnTrue, in /flowIsKnockedOut)`, () 
     // Box 1b is included in box 1a, so remaining box 1b cannot exceed remaining box 1a.
     // Form 1040 instr. (2025) p. 25, Line 3a. Box 1a $3,000, box 1b $2,500, nominee ordinary $1,000,
     // nominee qualified $200: remaining $2,300 > remaining $2,000. The box limits still hold.
-    task.meta.testedFactPaths = [
-      `/flowKnockoutDividendNominee`,
-      `/dividendReports/*/nomineeQualifiedExceedsOrdinary`,
-    ];
+    task.meta.testedFactPaths = [`/flowKnockoutDividendNominee`, `/dividendReports/*/nomineeQualifiedExceedsOrdinary`];
     const over = build(
       divs({
         box1a: 3000,
@@ -2156,20 +2243,23 @@ describe(`1099-DIV box 8 and boxes 14-16 (#86)`, () => {
       '/idResidencyStatus': createEnumWrapper(`fullYear`, `/idResidencyOptions`),
     });
   });
-  it(`box 16 stop text names Massachusetts and Idaho`, () => {
+  it(`box 16 stop text names a state return computed here`, () => {
     const here = dirname(fileURLToPath(import.meta.url));
-    const phrase = `Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho`;
+    const phrase = `a state return computed here (\`/stateReturnComputed\`)`;
     const sources = [
       resolve(here, `../../fact-dictionary/generate-src/xml-src/dividends.xml`),
       resolve(here, `../../locales/en.dividends.yaml`),
       resolve(here, `../../../../../backend/src/main/java/gov/irs/directfile/api/pdf/PrintRefusingKnockouts.java`),
-      resolve(
-        here,
-        `../../../../../backend/src/test/java/gov/irs/directfile/api/pdf/PrintRefusingKnockoutsTest.java`
-      ),
+      resolve(here, `../../../../../backend/src/test/java/gov/irs/directfile/api/pdf/PrintRefusingKnockoutsTest.java`),
     ];
     for (const file of sources) {
       expect(readFileSync(file, `utf8`), file).toContain(phrase);
     }
+    const en = readFileSync(resolve(here, `../../locales/en.dividends.yaml`), `utf8`);
+    const es = readFileSync(resolve(here, `../../locales/es.dividends.yaml`), `utf8`);
+    expect(en).not.toContain(`Massachusetts, or Idaho return, box 16`);
+    expect(en).not.toContain(`Massachusetts, or Idaho return, an amount in box 16`);
+    expect(es).toContain(`calculada aquí (\`/stateReturnComputed\`)`);
+    expect(es).not.toContain(`Massachusetts o Idaho, el`);
   });
 });

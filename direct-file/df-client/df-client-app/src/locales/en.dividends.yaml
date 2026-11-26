@@ -27,6 +27,10 @@ headings:
     Did you hold each REIT share more than 45 days around the dividend date and not have to pay the dividend to someone
     else?
   /heading/income/dividends/box-7: Enter <strong>box 7</strong> and <strong>box 8</strong>, if any.
+  /heading/income/dividends/box-9: Enter the amount from <strong>box 9</strong>, if any.
+  /heading/income/dividends/box-10: Enter the amount from <strong>box 10</strong>, if any.
+  /heading/income/dividends/liquidation-basis:
+    Do boxes 3, 9, and 10 on this form together exceed your remaining basis in that stock?
   /heading/income/dividends/boxes-14-16: Enter the state information from <strong>boxes 14, 15, and 16</strong>, if any.
   /heading/income/dividends/box-12: Enter the amount from <strong>box 12</strong>, if any.
   /heading/income/dividends/box-13: Enter the amount from <strong>box 13</strong>, if any.
@@ -39,7 +43,7 @@ headings:
   /heading/income/dividends/nominee-filing-duty: Give the owner a Form 1099-DIV and file it with the IRS
   /heading/knockout/dividends-holding-period: This tool doesn’t yet support box 1b dividends that aren’t qualified
   /heading/knockout/dividends-nondividend-over-basis:
-    This tool doesn’t yet support nondividend distributions above your basis
+    This tool doesn’t yet support nondividend or liquidation distributions above your basis
   /heading/knockout/dividends-section-199a:
     This tool can’t split section 199A dividends that aren’t qualified REIT dividends
   /heading/knockout/dividends-amounts-inconsistent: Check the amounts you entered from this 1099-DIV
@@ -145,6 +149,22 @@ info:
       - p:
           Box 7 is foreign tax paid on these dividends. Box 8 is the country or U.S. possession for that tax. Leave a
           box blank if it’s empty on your form. A mutual fund often leaves box 8 blank.
+  /info/income/dividends/box-9:
+    body:
+      - p:
+          Box 9 is a cash liquidation distribution. It isn’t income until you have recovered your basis in the stock.
+          Leave it blank if it’s empty on your form.
+  /info/income/dividends/box-10:
+    body:
+      - p:
+          Box 10 is a noncash liquidation distribution. It isn’t income until you have recovered your basis in the
+          stock. Leave it blank if it’s empty on your form.
+  /info/income/dividends/liquidation-basis:
+    body:
+      - p:
+          Your remaining basis is what you paid for the shares, reduced by earlier nondividend and liquidation
+          distributions. Answer yes if this form’s boxes 3, 9, and 10 together are more than what’s left. Answer no if
+          they are not. An amount at or below basis is not reported as income.
   /info/income/dividends/boxes-14-16:
     body:
       - p:
@@ -153,8 +173,8 @@ info:
           this tool computes your state return, when your state has no income tax, or when box 15 is a different state.
           Box 14 is not added for you. If you itemize, include it with the state and local income taxes you enter on
           Schedule A. Box 15 is the state and the payer’s state identification number. Box 16 is the state distribution.
-          On a Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho return, an amount in box 16 has
-          to equal box 1a plus box 2a. Leave a box blank if it’s empty on your form.
+          On a state return computed here (`/stateReturnComputed`), an amount in box 16 has to equal box 1a plus box 2a.
+          Leave a box blank if it’s empty on your form.
   /info/income/dividends/box-12:
     body:
       - p:
@@ -185,9 +205,10 @@ info:
   /info/income/dividends/unsupported-boxes:
     body:
       - p:
-          "Answer yes if your form shows an amount in box 2c, 9, or 10. Box 8 (foreign country) is entered with box 7.
-          Boxes 14, 15, and 16 are entered on their own screen. Box 11 (FATCA filing requirement) is asked on its own
-          screen. Boxes 2b, 2d, 2e, 2f, 6, 12, and 13 are entered on their own screens."
+          "Answer yes if your form shows an amount in box 2c. Boxes 9 and 10 are entered on their own screens. Box 8
+          (foreign country) is entered with box 7. Boxes 14, 15, and 16 are entered on their own screen. Box 11 (FATCA
+          filing requirement) is asked on its own screen. Boxes 2b, 2d, 2e, 2f, 6, 12, and 13 are entered on their own
+          screens."
   /info/income/dividends/nominee:
     body:
       - p:
@@ -231,8 +252,9 @@ info:
     alertText:
       body:
         - p:
-            Nondividend distributions above your cost are a capital gain reported on Form 8949. This tool doesn’t
-            support that yet. You’ll need another way to file this return.
+            Nondividend distributions (box 3) and liquidation distributions (boxes 9 and 10) above your remaining basis
+            are a capital gain reported on Form 8949. This tool doesn’t collect that basis, so it can’t report the gain.
+            You’ll need another way to file this return.
   /info/knockout/dividends-section-199a:
     alertText:
       body:
@@ -257,17 +279,16 @@ info:
     alertText:
       body:
         - p:
-            This tool doesn’t support an amount in box 2c, 9, or 10. State tax withheld in box 14 stops this return
-            when this tool computes your state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts,
-            or Idaho), when you live in Alaska, Florida, Nevada, South Dakota, Texas, Wyoming, Washington, Tennessee,
-            or New Hampshire, or when box 15 is a different state. You’ll need another way to file this return.
+            This tool doesn’t support an amount in box 2c. State tax withheld in box 14 stops this return when this tool
+            computes your state return (Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho), when
+            you live in Alaska, Florida, Nevada, South Dakota, Texas, Wyoming, Washington, Tennessee, or New Hampshire,
+            or when box 15 is a different state. You’ll need another way to file this return.
   /info/knockout/dividends-state-distribution:
     alertText:
       body:
         - p:
-            On a Pennsylvania, Illinois, North Carolina, Arizona, Massachusetts, or Idaho return, box 16 has to equal
-            box 1a plus box 2a. Those state returns use the federal amounts. You’ll need another way to file this
-            return.
+            On a state return computed here (`/stateReturnComputed`), box 16 has to equal box 1a plus box 2a. That state
+            return uses the federal amounts. You’ll need another way to file this return.
   /info/knockout/dividends-collectibles-with-loss:
     alertText:
       body:
@@ -352,6 +373,10 @@ fields:
     name: <strong>Box 7</strong> - Foreign tax paid
   /dividendReports/*/writableForeignCountry:
     name: <strong>Box 8</strong> - Foreign country or U.S. possession
+  /dividendReports/*/writableCashLiquidationDistributions:
+    name: <strong>Box 9</strong> - Cash liquidation distributions
+  /dividendReports/*/writableNoncashLiquidationDistributions:
+    name: <strong>Box 10</strong> - Noncash liquidation distributions
   /dividendReports/*/writableStateTaxWithheld:
     name: <strong>Box 14</strong> - State tax withheld
   /dividendReports/*/writableState:
@@ -393,6 +418,9 @@ dataviews:
       Did you hold each REIT share more than 45 days and not have to pay the dividend to someone else?
     /dividendReports/*/writableForeignTaxPaid: Box 7 - Foreign tax paid
     /dividendReports/*/writableForeignCountry: Box 8 - Foreign country or U.S. possession
+    /dividendReports/*/writableCashLiquidationDistributions: Box 9 - Cash liquidation distributions
+    /dividendReports/*/writableNoncashLiquidationDistributions: Box 10 - Noncash liquidation distributions
+    /dividendReports/*/liquidationDistributionsExceedBasis: Do boxes 3, 9, and 10 together exceed your remaining basis?
     /dividendReports/*/writableStateTaxWithheld: Box 14 - State tax withheld
     /dividendReports/*/writableState: Box 15 - State
     /dividendReports/*/writableStateIdNumber: Box 15 - State identification number
