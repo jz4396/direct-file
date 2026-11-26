@@ -59,8 +59,9 @@ abstract class PdfTemplate {
             // ASN 12A
             new Irs8949PdfForm("IRS8949"),
 
-            // ASN 13 (#17: 2026 draft Schedule E)
-            new PdfForm("IRS1040SE"),
+            // ASN 13 (#17: 2026 draft Schedule E). Overflow past line 28 rows A-D and line 33 rows A-B
+            // is one continuation page. 2026 draft Instructions for Schedule E, PDF p. 10.
+            new Irs1040SePdfForm("IRS1040SE"),
 
             // ASN 16 (#89 / #124: 2026 Schedule R final)
             new PdfForm("SCHEDULE_R"),

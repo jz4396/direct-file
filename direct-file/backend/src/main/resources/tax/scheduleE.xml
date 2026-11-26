@@ -1298,10 +1298,12 @@
         partnership or S corporation income (even if not received) or loss." 26 U.S.C. 702(a)
         (https://www.law.cornell.edu/uscode/text/26/702) and 1366(a)
         (https://www.law.cornell.edu/uscode/text/26/1366).
-        More than four entities are summed into lines 29a, 30,
-        and 32; line 28A is the first entity only. The 2026 draft
-        instructions, PDF p. 9, say to attach a
-        continuation sheet when Part II needs more space.
+        Lines 29a, 29b, 30, and 32 are the totals of every row. Line 28 prints rows A through D.
+        Rows from E on print on a continuation sheet. 2026 draft Instructions for Schedule E, PDF p. 10:
+        "If you need more space in Part II or III to list your income or losses, attach a continuation
+        sheet using the same format as shown in Part II or III. However, be sure to complete the 'Totals'
+        columns for lines 29a and 29b, or lines 34a and 34b, as appropriate." More than 20 entities stops
+        the return (/flowKnockoutScheduleEPartIIMoreThanTwenty).
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -5120,10 +5122,12 @@
         You should receive a Schedule K-1 (Form 1041) from the fiduciary." 26 U.S.C. 652(a)
         (https://www.law.cornell.edu/uscode/text/26/652) and 662(a)
         (https://www.law.cornell.edu/uscode/text/26/662).
-        More than two estates are summed into lines 34a, 35,
-        and 37. The 2026 draft instructions, PDF p. 10, say to
-        attach a continuation sheet when Part III needs
-        more space.
+        Lines 34a, 34b, 35, and 37 are the totals of every estate or trust. Line 33 prints rows A and B.
+        Rows from C on print on a continuation sheet. 2026 draft Instructions for Schedule E, PDF p. 10:
+        "If you need more space in Part II or III to list your income or losses, attach a continuation
+        sheet using the same format as shown in Part II or III. However, be sure to complete the 'Totals'
+        columns for lines 29a and 29b, or lines 34a and 34b, as appropriate." More than 10 estates or
+        trusts stops the return (/flowKnockoutScheduleEPartIIIMoreThanTen).
       </Description>
       <Export downstreamFacts="true" />
       <Writable>
@@ -8738,20 +8742,21 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutScheduleEPartIIMoreThanFour">
-      <Name>Knockout: more than four Schedule E Part II entities</Name>
+    <Fact path="/flowKnockoutScheduleEPartIIMoreThanTwenty">
+      <Name>Knockout: more than twenty Schedule E Part II entities</Name>
       <Description>
-        Line 28 has four rows (A-D). 2026 draft Instructions for Schedule E
-        (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf), PDF p. 9, say to attach a continuation sheet when
-        Part II
-        needs more space. This package has no continuation sheet. Lines 29a, 30, and 32 sum every
-        entity, so a fifth name
-        would be omitted while the total still included it.
+        Line 28 prints rows A-D. Rows from E on print on a continuation sheet. 2026 draft Instructions
+        for Schedule E (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf, SHA-256 71d19faaf741cf3c), PDF
+        p. 10: "If you need more space in Part II or III to list your income or losses, attach a
+        continuation sheet using the same format as shown in Part II or III. However, be sure to complete
+        the 'Totals' columns for lines 29a and 29b, or lines 34a and 34b, as appropriate." The instructions
+        do not set a maximum. This package prints at most 20 partnerships or S corporations and stops
+        above that. Lines 29a, 29b, 30, and 32 already sum every entity.
         True when /scheduleEReportsPartII is true and /scheduleEK1s
-        is a complete list of more than four
+        is a complete list of more than 20
         items. Complete false when Part II is not reported, the list is not finished
         yet, or the finished list
-        has four or fewer. An unfinished yes is already refused by
+        has 20 or fewer. An unfinished yes is already refused by
         /flowKnockoutScheduleEPartII, so this fact
         stays complete false until the size is known.
       </Description>
@@ -8790,7 +8795,7 @@
                   </CollectionSize>
                 </Left>
                 <Right>
-                  <Int>4</Int>
+                  <Int>20</Int>
                 </Right>
               </GreaterThan>
             </When>
@@ -8810,20 +8815,21 @@
       </Derived>
     </Fact>
 
-    <Fact path="/flowKnockoutScheduleEPartIIIMoreThanTwo">
-      <Name>Knockout: more than two Schedule E Part III estates or trusts</Name>
+    <Fact path="/flowKnockoutScheduleEPartIIIMoreThanTen">
+      <Name>Knockout: more than ten Schedule E Part III estates or trusts</Name>
       <Description>
-        Line 33 has two rows (A and B). 2026 draft Instructions for Schedule E
-        (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf), PDF p. 10, say to attach a continuation sheet when
-        Part III
-        needs more space. This package has no continuation sheet. Lines 34a, 35, and 37 sum every
-        estate or trust, so a
-        third name would be omitted while the total still included it.
+        Line 33 prints rows A and B. Rows from C on print on a continuation sheet. 2026 draft
+        Instructions for Schedule E (https://www.irs.gov/pub/irs-dft/i1040se--dft.pdf, SHA-256
+        71d19faaf741cf3c), PDF p. 10: "If you need more space in Part II or III to list your income or
+        losses, attach a continuation sheet using the same format as shown in Part II or III. However, be
+        sure to complete the 'Totals' columns for lines 29a and 29b, or lines 34a and 34b, as appropriate."
+        The instructions do not set a maximum. This package prints at most 10 estates or trusts and stops
+        above that. Lines 34a, 34b, 35, and 37 already sum every estate or trust.
         True when /scheduleEHasPartIIIIncome is true and
-        /scheduleEEstates is a complete list of more than two
+        /scheduleEEstates is a complete list of more than 10
         items. Complete false when Part III is not reported, the
         list is not finished yet, or the finished list
-        has two or fewer. An unfinished yes is already refused by
+        has 10 or fewer. An unfinished yes is already refused by
         /flowKnockoutScheduleEPartII, so this fact
         stays complete false until the size is known.
       </Description>
@@ -8874,7 +8880,7 @@
                   </CollectionSize>
                 </Left>
                 <Right>
-                  <Int>2</Int>
+                  <Int>10</Int>
                 </Right>
               </GreaterThan>
             </When>
