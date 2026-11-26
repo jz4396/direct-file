@@ -38,7 +38,10 @@
 // and profile X
 // (Golden X: full-year Pennsylvania resident, married filing jointly, both under 65, no dependents, two W-2s, Form
 // 8959 Additional Medicare Tax at the joint threshold with no employer withholding, and an AMT check that does not
-// apply).
+// apply), and profile Y
+// (Golden Y: full-year Florida resident, married filing separately, under 65, no dependents, standard deduction,
+// one W-2, and Form 1099-INT boxes 8 and 9 so Form 6251 line 2g produces alternative minimum tax, with Form 8959
+// at the $125,000 married-filing-separately threshold).
 // Every name, SSN, address, EIN and payer
 // in this file is made up. SSNs use the 900-999 area (never issued by SSA), with group numbers outside the ITIN
 // ranges, or group 00 (never issued by SSA either), so no fixture can match a real person. The expected figures are
@@ -101,6 +104,8 @@ export const GOLDEN_SSN_ALLOWLIST: readonly string[] = [
   `444-00-2018`,
   `444-00-2019`,
   `444-00-2020`,
+  `444-00-2021`,
+  `444-00-2022`,
 ];
 
 export const isGoldenTestTin = (tin: string) => GOLDEN_SSN_PATTERN.test(tin) || GOLDEN_SSN_ALLOWLIST.includes(tin);
@@ -1813,6 +1818,85 @@ export const profileXPaMfj8959 = {
   ...w2s(kerry.ssn, profileXPrimaryW2, profileXSpouseW2),
 };
 
+/**
+ * Profile Y (Golden Y, #135): full-year Florida resident, married filing separately, under 65, not blind, no
+ * dependents, standard deduction. The spouse files a separate return and does not itemize. One W-2 and one Form
+ * 1099-INT. Box 9 equals box 8, so the private-activity-bond preference is on Form 6251 line 2g and alternative
+ * minimum tax is owed. Medicare wages are over the $125,000 married-filing-separately threshold and under $200,000,
+ * so the employer does not withhold the 0.9% and the return owes it on Form 8959.
+ *
+ * W-2, Example Gulfshore Payroll LLC: boxes 1, 3, and 5 $130,000; box 2 $32,000; box 4 $8,060; box 6 $1,885. No
+ * state boxes. Box 4 is 6.2% × 130,000 = 8,060. 26 U.S.C. 3101(a). The wage is under the OASDI wage base. Box 6 is
+ * 1.45% × 130,000 = 1,885. 26 U.S.C. 3101(b)(1). No 0.9% in box 6, because this employer paid under $200,000.
+ * 26 U.S.C. 3102(f)(1). The nonstandard/corrected answer is `neither` on /w2NonstandardCorrectedOptions.
+ *
+ * Form 1099-INT, Example Gulf Bond: box 1 $0, box 8 $60,000, box 9 $60,000. Box 8 is Form 1040 line 2a and is not
+ * gross income. 26 U.S.C. 103(a). Box 9 is specified private activity bond interest. 26 U.S.C. 57(a)(5).
+ *
+ * SSNs are the cite's 444-00-2021 and 444-00-2022, group 00, the next pair after Golden X. Group 00 is never
+ * assigned by SSA. Fixed ids in the 13500000-0000-4000-8000-0000000028xx range.
+ *
+ * Federal, Rev. Proc. 2025-32. Line 1z, line 9, and line 11 are $130,000. Line 2a is $60,000. Line 12 is the
+ * single-or-MFS standard deduction $16,100 (§4.14; /singleOrMFSStandardDeduction; the 2026 draft prints it on line
+ * 12e). Line 15 is 130,000 − 16,100 = 113,900. Line 16 is the Tax Computation Worksheet, because taxable income is
+ * $100,000 or more. §4.01 Table 4 (married filing separately) is the same 24% band as Table 3: over $105,700 but not
+ * over $201,775, $17,966 plus 24% of the excess over $105,700. 17,966 + 24% × (113,900 − 105,700) = 17,966 + 1,968
+ * = 19,934. The same figure is 113,900 × 24% − 7,402 = 27,336 − 7,402 = 19,934.
+ *
+ * Form 6251. The cite's "line 1 $113,900" is draft line 1b. Line 1a is the $16,100 standard deduction. Line 2a is
+ * the same $16,100. 26 U.S.C. 56(b)(1)(E). Line 2g is box 9, $60,000. Line 4 AMTI is 113,900 + 16,100 + 60,000 =
+ * 190,000. That is under the $500,000 MFS phaseout start and under the $640,200 MFS add-back stop (§4.10, PDF p. 17),
+ * so line 5 is the full exemption $70,100 (§4.10, PDF p. 16). Line 6 is 119,900, under the $122,250 MFS 28%
+ * breakpoint, so line 7 is 119,900 × 26% = 31,174. Line 10 is the regular tax $19,934 (the cite's "line 9"). Line 11
+ * is 31,174 − 19,934 = 11,240. That is Schedule 2 line 2. The cite's "Schedule 2 line 1" is this draft's line 2
+ * (line 1z is $0).
+ *
+ * Form 8959. Line 1 and line 4 are $130,000. Line 5 is the $125,000 MFS threshold. 26 U.S.C. 3101(b)(2). The cite's
+ * "5 = 4 = $130,000" and "6 $125,000" do not match this draft: line 5 is the threshold and line 6 is the excess,
+ * $5,000. Line 7 is 5,000 × 0.9% = $45, which is line 12 and Schedule 2 line 17b. The cite's "Schedule 2 line 11
+ * $45" is that wage tax. Draft line 11 is the self-employment tax, and line 18 is $0. Line 19 is $1,885. Line 21 is
+ * 130,000 × 1.45% = $1,885. Line 24 is $0.
+ *
+ * Form 1040 line 18 is 19,934 + 11,240 = 31,174. Line 23 is $45. Line 24 is 31,219. Line 25a is $32,000. The refund
+ * is 32,000 − 31,219 = 781. That is under $1,000, and withholding is more than the tax, so Form 2210 is not filed.
+ * 26 U.S.C. 6654(e)(1). No state return.
+ */
+const sage: Person = { first: `Sage`, last: `Example`, ssn: [`444`, `00`, `2021`], dob: `1984-05-12` };
+const blair: Person = { first: `Blair`, last: `Example`, ssn: [`444`, `00`, `2022`], dob: `1986-11-30` };
+export const profileYInterestId = `13500000-0000-4000-8000-000000002802`;
+export const profileYW2: W2 = {
+  id: `13500000-0000-4000-8000-000000002801`,
+  employer: `Example Gulfshore Payroll LLC`,
+  ein: [`00`, `0002801`],
+  box1: 130000,
+  box2: 32000,
+  box3: 130000,
+  // 6.2% × 130,000 = 8,060. 26 U.S.C. 3101(a). Under the wage base.
+  box4: 8060,
+  box5: 130000,
+  // 1.45% × 130,000 = 1,885. 26 U.S.C. 3101(b)(1). No 0.9% (this employer paid under $200,000, 26 U.S.C. 3102(f)(1)).
+  box6: 1885,
+  filerId: primaryFilerId,
+  tin: sage.ssn,
+};
+export const profileYFlMfsPabAmt = {
+  ...single(sage, { street: `123 Example St`, city: `Tampa`, zip: `33602`, state: `FL` }),
+  ...mfsFilerData,
+  ...spouse(blair),
+  [`/filers/#${primaryFilerId}/dateOfBirth`]: createDayWrapper(sage.dob),
+  [`/filers/#${spouseId}/canBeClaimed`]: createBooleanWrapper(false),
+  // The spouse files a separate return, does not itemize, has an SSN, is under 65, and has no gross income.
+  '/MFSLivingSpouseFilingReturn': createBooleanWrapper(true),
+  '/MFSSpouseFilingReturn': createBooleanWrapper(true),
+  '/MFSSpouseHasNRTIN': createBooleanWrapper(false),
+  '/spouseItemizes': createBooleanWrapper(false),
+  '/MFSSpouse65OrOlder': createBooleanWrapper(false),
+  '/MFSSpouseHasGrossIncome': createBooleanWrapper(false),
+  '/filerResidenceAndIncomeState': createEnumWrapper(`fl`, `/scopedStateOptions`),
+  ...w2s(sage.ssn, profileYW2),
+  ...taxExemptInterest(profileYInterestId, `Example Gulf Bond`, 60000, 60000),
+};
+
 export const goldenProfiles = {
   profileADividendsNiit,
   profileADividendsNiitMfj,
@@ -1844,4 +1928,5 @@ export const goldenProfiles = {
   profileVPaToFlWages,
   profileWAzMfjW2,
   profileXPaMfj8959,
+  profileYFlMfsPabAmt,
 };
