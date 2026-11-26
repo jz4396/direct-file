@@ -1598,20 +1598,28 @@
 
     <Fact path="/earnedIncomeWithAllCombatPay">
       <Name>Earned income including all combat pay</Name>
-      <Description>Earned income plus all combat pay.
-
-        This value is reported on line 18a of schedule 8812, used to
-        calculate ACTC.</Description>
+      <Description>Earned income plus all combat pay. Reported on Schedule 8812 line 18a and used to
+        calculate the additional child tax credit. Wages (/employerIncomeSubtotal) plus nontaxable
+        combat pay plus the signed Schedule C net (scheduleC /scheduleCNetProfitOrLossForEitc: line
+        31 minus notary net profit minus the deductible part of self-employment tax). A loss reduces
+        the total. If the total is zero or less, the result is -0-. 2026 draft Instructions for
+        Schedule 8812 (https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf), PDF p. 8, Earned Income
+        Chart, line 18a, and PDF p. 9, Earned Income Worksheet, line 2b and line 3 ("If zero or less,
+        stop ... enter -0- ... on line 18a"). The CDCC does not use this fact. It keeps the floored
+        /scheduleCNetProfitForEarnedIncome.</Description>
       <Export downstreamFacts="true" mef="true" />
 
       <Derived>
         <Round>
-          <Add>
-            <Dependency path="/employerIncomeSubtotal" />
-            <Dependency module="formW2s" path="/allCombatPay" />
-            <!-- Positive Schedule C net profit is earned income for EITC/ACTC -->
-            <Dependency module="scheduleC" path="/scheduleCNetProfitForEarnedIncome" />
-          </Add>
+          <GreaterOf>
+            <Add>
+              <Dependency path="/employerIncomeSubtotal" />
+              <Dependency module="formW2s" path="/allCombatPay" />
+              <!-- Signed Schedule C net profit or (loss) for Schedule 8812 line 18a -->
+              <Dependency module="scheduleC" path="/scheduleCNetProfitOrLossForEitc" />
+            </Add>
+            <Dollar>0</Dollar>
+          </GreaterOf>
         </Round>
       </Derived>
     </Fact>

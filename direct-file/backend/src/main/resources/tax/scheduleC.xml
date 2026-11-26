@@ -678,9 +678,9 @@
         8959, and Form 8995 combine both spouses. Still stopped: more than one business owned by the secondary
         filer, and any secondary-filer business on a return that is not married filing jointly (that net is not
         reported on a Schedule SE). A qualified joint venture that is not the supported one-each election,
-        and a community-property state, stop on the facts below. A Schedule C loss with the CTC/ACTC or the
-        CDCC, and a joint return claiming the CDCC, stay on /flowKnockoutScheduleCEarnedIncomeCredits. A
-        childless EITC uses the signed Schedule C loss and does not stop there.
+        and a community-property state, stop on the facts below. A Schedule C loss with the CDCC, and a
+        joint return claiming the CDCC, stay on /flowKnockoutScheduleCEarnedIncomeCredits. The CTC/ACTC
+        and a childless EITC use the signed Schedule C loss and do not stop there.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -1470,25 +1470,35 @@
     </Fact>
 
     <Fact path="/flowKnockoutScheduleCEarnedIncomeCredits">
-      <Name>Knockout: Schedule C loss with the CTC/ACTC or CDCC, or a joint CDCC</Name>
+      <Name>Knockout: Schedule C loss with the CDCC, or a joint CDCC</Name>
       <Description>
-        #84. The CDCC (income /primaryFilerEarnedIncomeForCdccBase) and the ACTC
-        (income /earnedIncomeWithAllCombatPay) add /scheduleCNetProfitForEarnedIncome,
-        which is floored at $0. The EITC (eitc /eitcEarnedIncomeWithoutCombatPay) adds
-        /scheduleCNetProfitOrLossForEitc, the same net without that floor. Instructions
-        for Form 1040 (2025), PDF p. 47, EIC Worksheet B, line 1e (Schedule SE line 3
-        less the deductible part of self-employment tax) and line 4b ("Combine lines
-        1e, 2c, 3, and 4a"): a loss reduces earned income. With a loss there is no
-        self-employment tax, so line 1e equals the Schedule SE line 3 loss. If earned
-        income is $0 or less, the EITC is $0. TY2026 amounts: Rev. Proc. 2025-32, p. 15
-        (no qualifying child: earned income amount $8,680, 7.65%, maximum $664; phaseout
-        starts at $10,860 single / $18,140 MFJ and is complete at $19,540 / $26,820).
+        #84. The CDCC (income /primaryFilerEarnedIncomeForCdccBase) adds
+        /scheduleCNetProfitForEarnedIncome, which is floored at $0. The ACTC
+        (income /earnedIncomeWithAllCombatPay, Schedule 8812 line 18a) and the EITC
+        (eitc /eitcEarnedIncomeWithoutCombatPay) add /scheduleCNetProfitOrLossForEitc,
+        the same net without that floor. 2026 draft Instructions for Schedule 8812
+        (https://www.irs.gov/pub/irs-dft/i1040s8--dft.pdf), PDF p. 8, Earned Income
+        Chart, line 18a: if you are taking the EIC and completed Worksheet B, enter the
+        earned income from Worksheet B line 4b; if you are not taking the EIC, use the
+        Earned Income Worksheet. PDF p. 9, Earned Income Worksheet, line 2b: "Enter any
+        net profit or (loss) from Schedule C, line 31"; line 3: combine lines 1a, 1b,
+        2a, 2b, and 2e, and if zero or less stop and enter -0- on line 18a; line 5 is
+        Schedule 1 line 15; line 7 is line 3 minus line 6. Instructions for Form 1040
+        (2025), PDF p. 47, EIC Worksheet B, line 1e (Schedule SE line 3 less the
+        deductible part of self-employment tax) and line 4b ("Combine lines 1e, 2c, 3,
+        and 4a"): a loss reduces earned income. With a loss there is no self-employment
+        tax, so line 1e equals the Schedule SE line 3 loss. If earned income is $0 or
+        less, the EITC is $0 and line 18a is -0-. TY2026 amounts: /maxCtcAmount $2,200,
+        /maxActcAmount $1,700 (Rev. Proc. 2025-32), /actcRefundabilityThreshold $2,500,
+        15%. Rev. Proc. 2025-32, p. 15 (no qualifying child: earned income amount $8,680,
+        7.65%, maximum $664; phaseout starts at $10,860 single / $18,140 MFJ and is
+        complete at $19,540 / $26,820).
         Still stopped:
-        - A Schedule C net loss when the CTC/ACTC applies (ctcOdc /ctcQualified) or the
-        CDCC applies (cdcc /cdccQualified). The 2026 draft Instructions for Form 2441,
-        PDF p. 5, say "You must reduce your earned income by any loss from
-        self-employment." Those two earned-income facts are still floored at $0, so the
-        return stops. A childless EITC does not stop on the loss.
+        - A Schedule C net loss when the CDCC applies (cdcc /cdccQualified). The 2026
+        draft Instructions for Form 2441, PDF p. 5, say "You must reduce your earned
+        income by any loss from self-employment." The CDCC earned-income fact is still
+        floored at $0, so the return stops. A loss does not stop the CTC/ACTC. A
+        childless EITC does not stop on the loss.
         - A joint return with
         any Schedule C result and the CDCC:
         Form 2441 lines 4 and 5 need each spouse's
@@ -1517,7 +1527,7 @@
         result is a
         profit on a
         return that isn't a joint return claiming the
-        CDCC, or when the result is a loss and neither the CTC nor the CDCC applies.
+        CDCC, or when the result is a loss and the CDCC does not apply.
       </Description>
       <BlockSubmissionOnTrue />
       <Export downstreamFacts="true" />
@@ -1532,10 +1542,7 @@
                 <Dollar>0</Dollar>
               </Right>
             </LessThan>
-            <Any>
-              <Dependency module="cdcc" path="/cdccQualified" />
-              <Dependency module="ctcOdc" path="/ctcQualified" />
-            </Any>
+            <Dependency module="cdcc" path="/cdccQualified" />
           </All>
           <All>
             <Not>
@@ -8424,8 +8431,8 @@
         the deductible part of self-employment tax. An election that applies together with the earned
         income credit, the additional child tax credit, or the child and dependent care credit stops the
         return (scheduleSE /flowKnockoutScheduleSENonfarmOptionalMethodCredits). Floored at $0. The
-        CDCC and the ACTC still use this amount, and a loss still stops the return when either credit
-        applies (/flowKnockoutScheduleCEarnedIncomeCredits). The EITC uses
+        CDCC still uses this amount, and a loss still stops the return when the CDCC applies
+        (/flowKnockoutScheduleCEarnedIncomeCredits). The EITC and Schedule 8812 line 18a use
         /scheduleCNetProfitOrLossForEitc, which is this amount without the floor.
       </Description>
       <Export downstreamFacts="true" />
@@ -8462,19 +8469,20 @@
     <Fact path="/scheduleCNetProfitOrLossForEitc">
       <Name>Schedule C net profit or (loss) included in EITC earned income</Name>
       <Description>
-        Signed earned income from self-employment for the EITC only. Each filer's amount is that
-        filer's Schedule C net profit or (loss) minus that filer's notary net profit minus that
-        filer's deductible part of SE tax (that filer's Schedule SE line 13), and the two filers are
-        added. A loss is not floored at $0. 26 U.S.C. 32(c)(2)(A)(ii)
+        Signed earned income from self-employment for the EITC and for Schedule 8812 line 18a.
+        Each filer's amount is that filer's Schedule C net profit or (loss) minus that filer's
+        notary net profit minus that filer's deductible part of SE tax (that filer's Schedule SE
+        line 13), and the two filers are added. A loss is not floored at $0. 26 U.S.C. 32(c)(2)(A)(ii)
         (https://www.law.cornell.edu/uscode/text/26/32#c_2_A): earned income includes "net earnings
         from self-employment ... (within the meaning of section 1402(a)) ... determined with regard
         to the deduction allowed to the taxpayer by section 164(f)". Instructions for Form 1040
         (2025) (https://www.irs.gov/pub/irs-pdf/i1040gi.pdf), PDF p. 47, EIC Worksheet B, line 1e is
         Schedule SE line 3 less line 13, and line 4b says "Combine lines 1e, 2c, 3, and 4a." A loss
         reduces earned income. With a loss there is no self-employment tax, so line 1e equals the
-        Schedule SE line 3 loss. The CDCC and the ACTC keep the floored
-        /scheduleCNetProfitForEarnedIncome. A loss still stops the return when either of those
-        credits applies (/flowKnockoutScheduleCEarnedIncomeCredits).
+        Schedule SE line 3 loss. 2026 draft Instructions for Schedule 8812, PDF p. 9, Earned Income
+        Worksheet, line 2b, uses this signed Schedule C net. The CDCC keeps the floored
+        /scheduleCNetProfitForEarnedIncome. A loss still stops the return when the CDCC applies
+        (/flowKnockoutScheduleCEarnedIncomeCredits). It does not stop the CTC/ACTC.
       </Description>
       <Export downstreamFacts="true" />
       <Derived>
