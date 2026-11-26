@@ -103,6 +103,37 @@ class ScheduleDForm8949PdfSmokeTest {
     }
 
     /**
+     * Form 8949 instr. (2025) p. 6, Column (b). The Box A row is VARIOUS and stays Part I (column (b) VARIOUS, column
+     * (c) 05/05/2026, gain 4,000). The Box D row is INHERITED. Its sale date 2026-06-06 is two months after 2026-04-06,
+     * and the holding-period answer is short-term. 26 U.S.C. 1223(9) still puts it on Part II (column (b) INHERITED,
+     * column (c) 06/06/2026, gain 5,000). Schedule D lines 7, 15, and 16 stay 4,000, 5,000, and 9,000.
+     */
+    @Test
+    void variousAndInheritedPrintInColumnB() throws Exception {
+        String st = "/form8949Transactions/#a1111111-1111-4111-8111-111111111111/";
+        String lt = "/form8949Transactions/#a2222222-2222-4222-8222-222222222222/";
+        byte[] bytes = render(
+                facts -> {
+                    enumFact(facts, st + "dateAcquiredKind", "various", "/form8949DateAcquiredKindOptions");
+                    enumFact(facts, lt + "dateAcquiredKind", "inherited", "/form8949DateAcquiredKindOptions");
+                    enumFact(facts, lt + "holdingPeriod", "shortTerm", "/form8949HoldingPeriodOptions");
+                },
+                "schedule-d-8949-various-inherited.pdf");
+        try (PDDocument doc = Loader.loadPDF(bytes)) {
+            Map<String, String> byName = fields(doc);
+            assertEquals("VARIOUS", value(byName, "Table_Line1_Part1[0].Row1[0].f1_04[0]"), byName::toString);
+            assertEquals("05/05/2026", value(byName, "Table_Line1_Part1[0].Row1[0].f1_05[0]"), byName::toString);
+            assertEquals("INHERITED", value(byName, "Table_Line1_Part2[0].Row1[0].f2_04[0]"), byName::toString);
+            assertEquals("06/06/2026", value(byName, "Table_Line1_Part2[0].Row1[0].f2_05[0]"), byName::toString);
+            assertEquals(1, count(byName, "Table_Line1_Part1[0].Row1[0].f1_10[0]", "4000"), "8949 Part I (h)");
+            assertEquals(1, count(byName, "Table_Line1_Part2[0].Row1[0].f2_10[0]", "5000"), "8949 Part II (h)");
+            assertEquals(1, count(byName, "Page1[0].f1_22[0]", "4000"), "Sch D line 7");
+            assertEquals(1, count(byName, "Page1[0].f1_43[0]", "5000"), "Sch D line 15");
+            assertEquals(1, count(byName, "Page2[0].f2_1[0]", "9000"), "Sch D line 16");
+        }
+    }
+
+    /**
      * #35 follow-up, loss path. The Box D sale becomes 2,000 - 10,000 + 500 (column (g)) = (7,500), so Sch D line 8b is
      * (d) 2,000, (e) 10,000, (g) 500, (h) (7,500); line 15 = (7,500); line 16 = 4,000 - 7,500 = (3,500); line 21 =
      * smaller of the loss or $3,000 (IRC 1211(b)(1)) = 3,000. Line 16 is a loss, so lines 17-20 are skipped and line 22

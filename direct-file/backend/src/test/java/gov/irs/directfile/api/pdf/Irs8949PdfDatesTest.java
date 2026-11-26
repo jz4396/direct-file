@@ -78,4 +78,59 @@ class Irs8949PdfDatesTest {
             for (PDDocument doc : docs) doc.close();
         }
     }
+
+    /**
+     * Form 8949 instr. (2025) p. 6, Column (b): enter "VARIOUS" or "INHERITED". A dated row on the same run still
+     * prints MM/DD/YYYY. Column (c) is the sale date.
+     */
+    @Test
+    void variousAndInheritedFillColumnB() throws Exception {
+        UUID variousShort = new UUID(0, 1);
+        UUID variousLong = new UUID(0, 2);
+        UUID inherited = new UUID(0, 3);
+        UUID dated = new UUID(0, 4);
+        FactEvaluationResult facts = new FactEvaluationResult();
+        facts.put(
+                "/form8949Transactions",
+                new EvaluatedFactInfo("java.util.List", List.of(variousShort, variousLong, inherited, dated)));
+        facts.put(TX + variousShort + "/printBoxA", Boolean.TRUE);
+        facts.put(TX + variousShort + "/printPartIDateAcquiredText", "VARIOUS");
+        day(facts, TX + variousShort + "/printPartIDateSold", "2026-05-05");
+        facts.put(TX + variousLong + "/printBoxD", Boolean.TRUE);
+        facts.put(TX + variousLong + "/printPartIIDateAcquiredText", "VARIOUS");
+        day(facts, TX + variousLong + "/printPartIIDateSold", "2026-08-01");
+        facts.put(TX + inherited + "/printBoxE", Boolean.TRUE);
+        facts.put(TX + inherited + "/printPartIIDateAcquiredText", "INHERITED");
+        day(facts, TX + inherited + "/printPartIIDateSold", "2026-06-06");
+        facts.put(TX + dated + "/printBoxF", Boolean.TRUE);
+        day(facts, TX + dated + "/printPartIIDateAcquired", "2023-03-03");
+        day(facts, TX + dated + "/printPartIIDateSold", "2026-07-04");
+
+        PdfConfiguration config;
+        try (InputStream in = new FileInputStream(DIR + "configuration.yml")) {
+            config = PdfConfiguration.load(in);
+        }
+        byte[] template = Files.readAllBytes(Path.of(DIR + "f8949--dft.pdf"));
+        List<PDDocument> docs =
+                new Irs8949PdfForm("IRS8949").generateDocuments(facts, template, config, PdfLanguages.EN);
+        try {
+            assertEquals(4, docs.size(), "one form per box");
+            String p1 = "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].";
+            String p2 = "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].";
+            PDAcroForm a = docs.get(0).getDocumentCatalog().getAcroForm();
+            assertEquals("VARIOUS", a.getField(p1 + "f1_04[0]").getValueAsString());
+            assertEquals("05/05/2026", a.getField(p1 + "f1_05[0]").getValueAsString());
+            PDAcroForm d = docs.get(1).getDocumentCatalog().getAcroForm();
+            assertEquals("VARIOUS", d.getField(p2 + "f2_04[0]").getValueAsString());
+            assertEquals("08/01/2026", d.getField(p2 + "f2_05[0]").getValueAsString());
+            PDAcroForm e = docs.get(2).getDocumentCatalog().getAcroForm();
+            assertEquals("INHERITED", e.getField(p2 + "f2_04[0]").getValueAsString());
+            assertEquals("06/06/2026", e.getField(p2 + "f2_05[0]").getValueAsString());
+            PDAcroForm f = docs.get(3).getDocumentCatalog().getAcroForm();
+            assertEquals("03/03/2023", f.getField(p2 + "f2_04[0]").getValueAsString());
+            assertEquals("07/04/2026", f.getField(p2 + "f2_05[0]").getValueAsString());
+        } finally {
+            for (PDDocument doc : docs) doc.close();
+        }
+    }
 }

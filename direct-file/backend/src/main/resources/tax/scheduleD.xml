@@ -56,6 +56,19 @@
       </Derived>
     </Fact>
 
+    <Fact path="/form8949DateAcquiredKindOptions">
+      <Name>Form 8949 column (b) choices</Name>
+      <Description>Form 8949 instr. (2025) p. 6, Column (b): a date, VARIOUS, or INHERITED. Enum values are date,
+        various, and inherited. Column (b) prints the date, or the words VARIOUS and INHERITED.</Description>
+      <Derived>
+        <EnumOptions>
+          <String>date</String>
+          <String>various</String>
+          <String>inherited</String>
+        </EnumOptions>
+      </Derived>
+    </Fact>
+
     <Fact path="/capitalLossLimit">
       <Export downstreamFacts="true" />
       <Name>Capital loss limit against ordinary income</Name>
@@ -517,36 +530,50 @@
       </Writable>
     </Fact>
 
-    <Fact path="/form8949Transactions/*/dateAcquiredIsVariousOrInherited">
-      <Name>Date acquired is VARIOUS or INHERITED</Name>
-      <Description>#60: Form 8949 instr. (2025) p. 6, column (b): "Enter "INHERITED" in column (b)" for inherited
-        property, and for a block "acquired through several different purchases, you may report the sale on one row and
-        enter "VARIOUS" in column (b)." Our ../dateAcquired is a single Day, so phase A stops instead of printing a
-        made-up date.</Description>
+    <Fact path="/form8949Transactions/*/dateAcquiredKind">
+      <Name>Column (b) date acquired choice</Name>
+      <Description>Form 8949 instr. (2025) p. 6, Column (b), one choice per row: a date (../dateAcquired), VARIOUS, or
+        INHERITED. "Inherited property. Generally, if you disposed of property that you acquired by inheritance, report
+        the sale or exchange on Part II with the appropriate box checked D, E, F, J, K, or L. Enter "INHERITED" in
+        column (b)." "If you sold a block of stock or digital assets ... that you acquired through several different
+        purchases, you may report the sale on one row and enter "VARIOUS" in column (b). However, you must still report
+        the short-term gain (or loss) on the sale on Part I and the long-term gain (or loss) on Part II." A VARIOUS row
+        is one holding period; a block that is both is entered as two rows. 26 U.S.C. 1223(9) treats inherited property
+        as held more than one year, so an INHERITED row is long-term no matter the sale date. Unanswered stays on the
+        date path (placeholder date), the same as the previous Boolean placeholder of false, so a row that only has
+        ../dateAcquired is unchanged.</Description>
       <Writable>
-        <Boolean />
+        <Enum optionsPath="/form8949DateAcquiredKindOptions" />
       </Writable>
       <Placeholder>
-        <False />
+        <Enum optionsPath="/form8949DateAcquiredKindOptions">date</Enum>
       </Placeholder>
     </Fact>
 
-    <Fact path="/flowKnockoutForm8949DateAcquiredVariousOrInherited">
-      <Name>Knockout: Form 8949 date acquired VARIOUS or INHERITED</Name>
-      <Description>#60: any 8949 row whose date acquired is VARIOUS or INHERITED (Form 8949 instr. (2025) p. 6, column
-        (b)) blocks submission until column (b) can carry those values.</Description>
-      <Export downstreamFacts="true" />
-      <BlockSubmissionOnTrue />
+    <Fact path="/form8949Transactions/*/dateAcquiredIsVarious">
+      <Name>Column (b) is VARIOUS</Name>
+      <Description>True only when ../dateAcquiredKind is answered various. Unanswered, or date, is false. Form 8949
+        instr. (2025) p. 6, Column (b).</Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <Not>
-                <Dependency path="/hasForm8949Transactions" />
-              </Not>
+              <All>
+                <IsComplete>
+                  <Dependency path="../dateAcquiredKind" />
+                </IsComplete>
+                <Equal>
+                  <Left>
+                    <Dependency path="../dateAcquiredKind" />
+                  </Left>
+                  <Right>
+                    <Enum optionsPath="/form8949DateAcquiredKindOptions">various</Enum>
+                  </Right>
+                </Equal>
+              </All>
             </When>
             <Then>
-              <False />
+              <True />
             </Then>
           </Case>
           <Case>
@@ -554,19 +581,57 @@
               <True />
             </When>
             <Then>
-              <GreaterThan>
-                <Left>
-                  <Count>
-                    <Dependency path="/form8949Transactions/*/dateAcquiredIsVariousOrInherited" />
-                  </Count>
-                </Left>
-                <Right>
-                  <Int>0</Int>
-                </Right>
-              </GreaterThan>
+              <False />
             </Then>
           </Case>
         </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/dateAcquiredIsInherited">
+      <Name>Column (b) is INHERITED</Name>
+      <Description>True only when ../dateAcquiredKind is answered inherited. Unanswered, or date, is false. Form 8949
+        instr. (2025) p. 6, Column (b). 26 U.S.C. 1223(9).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <IsComplete>
+                  <Dependency path="../dateAcquiredKind" />
+                </IsComplete>
+                <Equal>
+                  <Left>
+                    <Dependency path="../dateAcquiredKind" />
+                  </Left>
+                  <Right>
+                    <Enum optionsPath="/form8949DateAcquiredKindOptions">inherited</Enum>
+                  </Right>
+                </Equal>
+              </All>
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/flowKnockoutForm8949DateAcquiredVariousOrInherited">
+      <Name>Knockout: Form 8949 date acquired VARIOUS or INHERITED</Name>
+      <Description>Lifted. Column (b) prints a date, VARIOUS, or INHERITED (Form 8949 instr. (2025) p. 6, Column (b);
+        26 U.S.C. 1223(9)). Complete false, and not an operand of /flowIsKnockedOut.</Description>
+      <Derived>
+        <False />
       </Derived>
     </Fact>
 
@@ -675,7 +740,8 @@
       <Name>Holding period</Name>
       <Description>shortTerm → Form 8949 Part I / Schedule D Part I;
         longTerm → Form 8949 Part II / Schedule D Part II.
-        IRC §1222.</Description>
+        IRC §1222. A VARIOUS row uses this answer (one row is one part; split a block that is both). An INHERITED
+        row does not: it is long-term. Form 8949 instr. (2025) p. 6, Column (b); 26 U.S.C. 1223(9).</Description>
       <Writable>
         <Enum optionsPath="/form8949HoldingPeriodOptions" />
       </Writable>
@@ -894,16 +960,46 @@
 
     <Fact path="/form8949Transactions/*/printPartIDateAcquired">
       <Name>Form 8949 Part I print: dateAcquired</Name>
-      <Description>#19 print-only: ../dateAcquired when the row belongs in Part I (short-term), otherwise no value so
-        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>../dateAcquired when the row is Part I and column (b) is a date. VARIOUS prints from
+        ../printPartIDateAcquiredText instead. Form 8949 instr. (2025) p. 6, Column (b).</Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <Dependency path="../isShortTerm" />
+              <All>
+                <Dependency path="../isShortTerm" />
+                <Not>
+                  <Dependency path="../dateAcquiredIsVarious" />
+                </Not>
+                <Not>
+                  <Dependency path="../dateAcquiredIsInherited" />
+                </Not>
+              </All>
             </When>
             <Then>
               <Dependency path="../dateAcquired" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIDateAcquiredText">
+      <Name>Form 8949 Part I column (b) word</Name>
+      <Description>VARIOUS when the row is Part I and ../dateAcquiredKind is various. Otherwise no value, so a dated
+        row keeps ../printPartIDateAcquired. Form 8949 instr. (2025) p. 6, Column (b): enter "VARIOUS" in column
+        (b).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../isShortTerm" />
+                <Dependency path="../dateAcquiredIsVarious" />
+              </All>
+            </When>
+            <Then>
+              <String>VARIOUS</String>
             </Then>
           </Case>
         </Switch>
@@ -1038,16 +1134,57 @@
 
     <Fact path="/form8949Transactions/*/printPartIIDateAcquired">
       <Name>Form 8949 Part II print: dateAcquired</Name>
-      <Description>#19 print-only: ../dateAcquired when the row belongs in Part II (long-term), otherwise no value so
-        the PDF cell stays blank. Form 8949 instr. (2025) p. 1.</Description>
+      <Description>../dateAcquired when the row is Part II and column (b) is a date. VARIOUS and INHERITED print from
+        ../printPartIIDateAcquiredText. Form 8949 instr. (2025) p. 6, Column (b).</Description>
       <Derived>
         <Switch>
           <Case>
             <When>
-              <Dependency path="../isLongTerm" />
+              <All>
+                <Dependency path="../isLongTerm" />
+                <Not>
+                  <Dependency path="../dateAcquiredIsVarious" />
+                </Not>
+                <Not>
+                  <Dependency path="../dateAcquiredIsInherited" />
+                </Not>
+              </All>
             </When>
             <Then>
               <Dependency path="../dateAcquired" />
+            </Then>
+          </Case>
+        </Switch>
+      </Derived>
+    </Fact>
+
+    <Fact path="/form8949Transactions/*/printPartIIDateAcquiredText">
+      <Name>Form 8949 Part II column (b) word</Name>
+      <Description>VARIOUS or INHERITED when the row is Part II. Otherwise no value, so a dated row keeps
+        ../printPartIIDateAcquired. Form 8949 instr. (2025) p. 6, Column (b): enter "INHERITED" or "VARIOUS" in column
+        (b). 26 U.S.C. 1223(9).</Description>
+      <Derived>
+        <Switch>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../isLongTerm" />
+                <Dependency path="../dateAcquiredIsVarious" />
+              </All>
+            </When>
+            <Then>
+              <String>VARIOUS</String>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <All>
+                <Dependency path="../isLongTerm" />
+                <Dependency path="../dateAcquiredIsInherited" />
+              </All>
+            </When>
+            <Then>
+              <String>INHERITED</String>
             </Then>
           </Case>
         </Switch>
@@ -1164,29 +1301,68 @@
 
     <Fact path="/form8949Transactions/*/isShortTerm">
       <Name>Is short-term transaction</Name>
+      <Description>../holdingPeriod shortTerm, except an INHERITED row is never short-term. Form 8949 instr. (2025)
+        p. 6, Column (b); 26 U.S.C. 1223(9).</Description>
       <Derived>
-        <Equal>
-          <Left>
-            <Dependency path="../holdingPeriod" />
-          </Left>
-          <Right>
-            <Enum optionsPath="/form8949HoldingPeriodOptions">shortTerm</Enum>
-          </Right>
-        </Equal>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../dateAcquiredIsInherited" />
+            </When>
+            <Then>
+              <False />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Equal>
+                <Left>
+                  <Dependency path="../holdingPeriod" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/form8949HoldingPeriodOptions">shortTerm</Enum>
+                </Right>
+              </Equal>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
     <Fact path="/form8949Transactions/*/isLongTerm">
       <Name>Is long-term transaction</Name>
+      <Description>../holdingPeriod longTerm, or INHERITED (long-term no matter the sale date and no matter a
+        short-term holding-period answer). Form 8949 instr. (2025) p. 6, Column (b), Part II; 26 U.S.C. 1223(9).
+        Schedule D lines 8b, 9, and 10 still follow the box (D/J, E/K, F/L).</Description>
       <Derived>
-        <Equal>
-          <Left>
-            <Dependency path="../holdingPeriod" />
-          </Left>
-          <Right>
-            <Enum optionsPath="/form8949HoldingPeriodOptions">longTerm</Enum>
-          </Right>
-        </Equal>
+        <Switch>
+          <Case>
+            <When>
+              <Dependency path="../dateAcquiredIsInherited" />
+            </When>
+            <Then>
+              <True />
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <True />
+            </When>
+            <Then>
+              <Equal>
+                <Left>
+                  <Dependency path="../holdingPeriod" />
+                </Left>
+                <Right>
+                  <Enum optionsPath="/form8949HoldingPeriodOptions">longTerm</Enum>
+                </Right>
+              </Equal>
+            </Then>
+          </Case>
+        </Switch>
       </Derived>
     </Fact>
 
@@ -1714,9 +1890,12 @@
           <IsComplete>
             <Dependency path="../box" />
           </IsComplete>
-          <IsComplete>
-            <Dependency path="../holdingPeriod" />
-          </IsComplete>
+          <Any>
+            <IsComplete>
+              <Dependency path="../holdingPeriod" />
+            </IsComplete>
+            <Dependency path="../dateAcquiredIsInherited" />
+          </Any>
         </All>
       </Derived>
     </Fact>

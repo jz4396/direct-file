@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { ConcretePath } from '@irs/js-factgraph-scala';
 import { InterceptingFactGraph } from '../factgraph/InterceptingFactGraph.js';
 import { SaveStateError } from './saveStateErrors.js';
 import {
@@ -55,6 +56,54 @@ describe(`save-state schema`, () => {
   it(`passes the current version through unchanged`, () => {
     const state = createSaveState(facts, 2026);
     expect(migrateSaveState(JSON.parse(JSON.stringify(state)))).toEqual(state);
+  });
+
+  it(`imports a v2 file and rewrites Form 8949 column (b)`, async () => {
+    // false becomes dateAcquiredKind date. true is dropped, so column (b) stays unanswered.
+    // A row with no Boolean is already unanswered. Form 8949 instr. (2025) p. 6, Column (b).
+    const dated = `a1111111-1111-4111-8111-111111111111`;
+    const stopped = `a2222222-2222-4222-8222-222222222222`;
+    const absent = `a3333333-3333-4333-8333-333333333333`;
+    const B = `gov.irs.factgraph.persisters.`;
+    const bool = (item: boolean) => ({ $type: `${B}BooleanWrapper`, item });
+    const old = (id: string) => `/form8949Transactions/#${id}/dateAcquiredIsVariousOrInherited`;
+    const kind = (id: string) => `/form8949Transactions/#${id}/dateAcquiredKind`;
+    const raw = {
+      format: SAVE_STATE_FORMAT,
+      version: 2,
+      taxYear: DEFAULT_TAX_YEAR,
+      savedAt: `2026-11-01T00:00:00.000Z`,
+      facts: {
+        '/form8949Transactions': {
+          $type: `${B}CollectionWrapper`,
+          item: { items: [dated, stopped, absent] },
+        },
+        [old(dated)]: bool(false),
+        [old(stopped)]: bool(true),
+      },
+    };
+
+    const state = await importSaveFile(JSON.stringify(raw));
+    expect(state.version).toBe(SAVE_STATE_VERSION);
+    expect(SAVE_STATE_VERSION).toBe(3);
+    expect(state.savedAt).toBe(`2026-11-01T00:00:00.000Z`);
+    expect(state.facts[old(dated)]).toBeUndefined();
+    expect(state.facts[kind(dated)]).toEqual({
+      $type: `${B}EnumWrapper`,
+      item: { value: [`date`], enumOptionsPath: `/form8949DateAcquiredKindOptions` },
+    });
+    expect(state.facts[old(stopped)]).toBeUndefined();
+    expect(state.facts[kind(stopped)]).toBeUndefined();
+    expect(state.facts[old(absent)]).toBeUndefined();
+    expect(state.facts[kind(absent)]).toBeUndefined();
+    expect(state.facts[`/form8949Transactions`]).toEqual(raw.facts[`/form8949Transactions`]);
+
+    const g = new InterceptingFactGraph(state.facts);
+    const read = (id: string) => g.get(kind(id) as ConcretePath);
+    expect(read(dated).complete).toBe(true);
+    expect(read(dated).get.toString()).toBe(`date`);
+    expect(read(stopped).complete).toBe(false);
+    expect(read(absent).complete).toBe(false);
   });
 
   it(`rejects a newer schema version instead of guessing`, () => {
