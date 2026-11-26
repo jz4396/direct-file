@@ -1,0 +1,218 @@
+{
+  "$comment": "Fixture copy of the ty2026.json shape for the offline re-pin helper. Not a tax year file.",
+  "taxYear": 2026,
+  "sources": {
+    "draft-form": {
+      "title": "Form 9999 (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f9999--dft.pdf",
+      "medium": "pdf",
+      "kind": "draft",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "other-draft": {
+      "title": "Schedule Z (2026), draft",
+      "url": "https://www.irs.gov/pub/irs-dft/f1040sz--dft.pdf",
+      "medium": "pdf",
+      "kind": "draft",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "irc": {
+      "title": "Internal Revenue Code, 26 U.S.C.",
+      "url": "https://www.law.cornell.edu/uscode/text/26",
+      "medium": "statute",
+      "kind": "statute"
+    },
+    "state-prior": {
+      "title": "2025 State booklet",
+      "url": "https://tax.illinois.gov/forms/2025.pdf",
+      "medium": "web",
+      "kind": "priorYear"
+    },
+    "mass-prior": {
+      "title": "2025 Form 1 instructions",
+      "url": "https://www.mass.gov/doc/2025-form-1-instructions/download",
+      "medium": "web",
+      "kind": "priorYear"
+    },
+    "vendor-prior": {
+      "title": "2025 rate table on a vendor host",
+      "url": "https://api.realfile.rtsclients.com/rates-2025.pdf",
+      "medium": "pdf",
+      "kind": "priorYear",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "legis": {
+      "title": "A state legislature page",
+      "url": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/1971/0/0002..HTM",
+      "medium": "statute",
+      "kind": "statute"
+    },
+    "federal-register": {
+      "title": "A Federal Register notice",
+      "url": "https://www.federalregister.gov/d/2025-19763",
+      "medium": "web",
+      "kind": "final"
+    }
+  },
+  "parameters": [
+    {
+      "fact": "/onlyDraft",
+      "file": "only.xml",
+      "values": ["Dollar:10"],
+      "note": "keep this note",
+      "cite": [
+        {
+          "source": "draft-form",
+          "page": 2,
+          "quote": "the only draft amount is $10"
+        }
+      ],
+      "provisional": {
+        "reason": "draft",
+        "repinFrom": "final form",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/mixed",
+      "file": "mixed.xml",
+      "values": ["Dollar:20"],
+      "cite": [
+        {
+          "source": "draft-form",
+          "page": 3,
+          "pageEnd": 4,
+          "quote": "mixed quote from the draft form"
+        },
+        {
+          "source": "other-draft",
+          "page": 1,
+          "quote": "still a draft"
+        }
+      ],
+      "provisional": {
+        "reason": "mixed",
+        "repinFrom": "both finals",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/withStatute",
+      "file": "statute.xml",
+      "values": ["Dollar:30"],
+      "cite": [
+        {
+          "source": "draft-form",
+          "page": 5,
+          "quote": "form quote next to the statute"
+        },
+        {
+          "source": "irc",
+          "section": "§ 1",
+          "url": "https://www.law.cornell.edu/uscode/text/26/1",
+          "quote": "statute quote that already counts as final"
+        }
+      ],
+      "provisional": {
+        "reason": "form still draft",
+        "repinFrom": "final form",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/noFlag",
+      "file": "noflag.xml",
+      "values": ["Dollar:15"],
+      "cite": [
+        {
+          "source": "draft-form",
+          "page": 6,
+          "quote": "already had no provisional flag"
+        }
+      ]
+    },
+    {
+      "fact": "/untouched",
+      "file": "other.xml",
+      "values": ["Dollar:40"],
+      "cite": [
+        {
+          "source": "other-draft",
+          "page": 8,
+          "quote": "other draft quote"
+        }
+      ],
+      "provisional": {
+        "reason": "other",
+        "repinFrom": "other final",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/copiesTable",
+      "file": "copy.xml",
+      "valuesFrom": "/untouched",
+      "cite": [
+        {
+          "source": "other-draft",
+          "page": 1,
+          "quote": "copies the other draft"
+        }
+      ],
+      "provisional": {
+        "reason": "other",
+        "repinFrom": "other final",
+        "tracking": "#91"
+      }
+    }
+  ],
+  "pendingReview": [
+    {
+      "fact": "/pendingOnly",
+      "file": "pending.xml",
+      "taggedYear": 2025,
+      "status": "current",
+      "values": ["Dollar:5"],
+      "note": "pending note",
+      "tracking": "#91",
+      "cite": [
+        {
+          "source": "draft-form",
+          "page": 9,
+          "quote": "pending quote"
+        }
+      ],
+      "provisional": {
+        "reason": "draft",
+        "repinFrom": "final form",
+        "tracking": "#91"
+      }
+    },
+    {
+      "fact": "/pendingMixed",
+      "file": "pending.xml",
+      "taggedYear": 2025,
+      "status": "current",
+      "values": ["Dollar:6"],
+      "note": "pending mixed note",
+      "tracking": "#91",
+      "cite": [
+        {
+          "source": "draft-form",
+          "page": 10,
+          "quote": "pending mixed quote"
+        },
+        {
+          "source": "other-draft",
+          "page": 2,
+          "quote": "pending still draft"
+        }
+      ],
+      "provisional": {
+        "reason": "mixed",
+        "repinFrom": "both finals",
+        "tracking": "#91"
+      }
+    }
+  ]
+}
