@@ -94,8 +94,8 @@ class PrintRefusingKnockoutsTest {
     static final String SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT = "/flowKnockoutScheduleESubstantialServices";
     static final String SCHEDULE_E_QBI_KNOCKOUT = "/flowKnockoutScheduleETradeOrBusinessQbi";
     static final String SCHEDULE_E_PART_II_KNOCKOUT = "/flowKnockoutScheduleEPartII";
-    static final String SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT = "/flowKnockoutScheduleEPartIIMoreThanFour";
-    static final String SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT = "/flowKnockoutScheduleEPartIIIMoreThanTwo";
+    static final String SCHEDULE_E_PART_II_MORE_THAN_TWENTY_KNOCKOUT = "/flowKnockoutScheduleEPartIIMoreThanTwenty";
+    static final String SCHEDULE_E_PART_III_MORE_THAN_TEN_KNOCKOUT = "/flowKnockoutScheduleEPartIIIMoreThanTen";
     static final String QBI_ABOVE_THRESHOLD_KNOCKOUT = "/flowKnockoutQbiAboveThreshold";
     static final String QBI_CARRYFORWARD_KNOCKOUT = "/flowKnockoutQbiPriorYearCarryforward";
     static final String QBI_COOPERATIVE_KNOCKOUT = "/flowKnockoutQbiCooperativePatron";
@@ -322,8 +322,8 @@ class PrintRefusingKnockoutsTest {
                 SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT, // substantial services belong on Schedule C
                 SCHEDULE_E_QBI_KNOCKOUT, // Schedule E rental treated as a trade or business (line 13b)
                 SCHEDULE_E_PART_II_KNOCKOUT, // Schedule E Parts II-III and Schedule SE K-1 box 14 code A
-                SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT, // line 28 has four rows; no continuation sheet
-                SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT, // line 33 has two rows; no continuation sheet
+                SCHEDULE_E_PART_II_MORE_THAN_TWENTY_KNOCKOUT, // line 28 prints four rows; continuation sheet to 20
+                SCHEDULE_E_PART_III_MORE_THAN_TEN_KNOCKOUT, // line 33 prints two rows; continuation sheet to 10
                 QBI_ABOVE_THRESHOLD_KNOCKOUT, // Form 8995-A
                 QBI_CARRYFORWARD_KNOCKOUT, // prior-year QBI loss carryforward
                 QBI_COOPERATIVE_KNOCKOUT, // cooperative patron
@@ -369,6 +369,8 @@ class PrintRefusingKnockoutsTest {
         // Schedule K-1 (Form 1041) box 8 stop does not add or remove a path: /flowKnockoutScheduleEPartIIIBox8
         // stays inside /flowKnockoutScheduleEPartII, and a loss still refuses the print. 139 plus 0 is 139.
         // #93 slice 9 adds the twelve New Mexico stops. 139 plus 12 is 151.
+        // Schedule E continuation sheets replace the four-row and two-row stops with the 20-row and 10-row
+        // stops. 151 minus 2 plus 2 is 151.
         // PA Schedule C print-refuse: PA-40 ∧ Sch C (IN p. 17; no PA Sch C PDF in this slice).
         assertEquals(151, PrintRefusingKnockouts.FACT_PATHS.size(), "FACT_PATHS entries");
         assertEquals(PrintRefusingKnockouts.FACT_PATHS.size() - TEMPLATE_PENDING.size(), FIELD_MAP_CHECKS.size());

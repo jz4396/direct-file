@@ -380,6 +380,8 @@ describe(`Schedule E Part I MVP (#38)`, () => {
 
 const partIIKnockouts = [
   `/flowKnockoutScheduleEPartII`,
+  `/flowKnockoutScheduleEPartIIMoreThanTwenty`,
+  `/flowKnockoutScheduleEPartIIIMoreThanTen`,
   `/flowKnockoutScheduleEPartIILoss`,
   `/flowKnockoutScheduleEPartIINotMaterialParticipation`,
   `/flowKnockoutScheduleEPartIIBox14CodeA`,
@@ -560,6 +562,173 @@ describe(`Schedule E Part II ordinary income (#85)`, () => {
       expect(get(g, path).complete, path).toBe(true);
       expect(get(g, path).get, path).toBe(false);
     }
+  });
+});
+
+const rowId = (n: number) => `b7e1c2a0-1111-4222-8333-${String(n).padStart(12, `0`)}`;
+const estateRowId = (n: number) => `c8f2d3b1-2222-4333-8444-${String(n).padStart(12, `0`)}`;
+/** Form 1065 K-1s. Box 1 is $100, $200, $300, $400, $500, $600, then $100. */
+const form1065s = (count: number, extra: Record<string, unknown> = {}) => {
+  const ids = Array.from({ length: count }, (_, i) => rowId(i + 1));
+  const rows = Object.assign(
+    {},
+    ...ids.map((id, i) =>
+      k1(id, String(i < 6 ? (i + 1) * 100 : 100), `P`, {
+        [`/scheduleEK1s/#${id}/entityName`]: createStringWrapper(
+          [`Alpha Partners`, `Bravo Partners`, `Charlie Partners`, `Delta Partners`, `Echo Partners`, `Foxtrot Partners`][
+            i
+          ] ?? `Partner ${i + 1}`
+        ),
+      })
+    )
+  );
+  return {
+    ...supported,
+    ...partIIGate,
+    '/hadScheduleEIncome': createBooleanWrapper(true),
+    // Wages of $50,000 keep MAGI at or under the 26 U.S.C. 1411(b) threshold. Part I rents and royalties
+    // are net investment income, and MAGI over the threshold with Schedule E income stops on Form 8960.
+    [`/formW2s/#${uuid}/writableWages`]: createDollarWrapper(`50000`),
+    '/scheduleEK1s': createCollectionWrapper(ids),
+    ...rows,
+    ...extra,
+  };
+};
+/** Estates. Box 6 is $1,000, $2,000, $3,000, then $100. */
+const estates = (count: number, extra: Record<string, unknown> = {}) => {
+  const ids = Array.from({ length: count }, (_, i) => estateRowId(i + 1));
+  const rows = Object.assign(
+    {},
+    ...ids.map((id, i) =>
+      estate(id, String(i < 3 ? (i + 1) * 1000 : 100), {
+        [`/scheduleEEstates/#${id}/entityName`]: createStringWrapper(
+          [`Harbor Trust`, `Inlet Trust`, `Jetty Trust`][i] ?? `Trust ${i + 1}`
+        ),
+      })
+    )
+  );
+  return {
+    ...form1065s(0),
+    '/scheduleEHasPartIIIIncome': createBooleanWrapper(true),
+    '/scheduleEEstatesIsDone': createBooleanWrapper(true),
+    '/scheduleEK1s': createCollectionWrapper([]),
+    '/scheduleEEstates': createCollectionWrapper(ids),
+    ...rows,
+    ...extra,
+  };
+};
+
+describe(`Schedule E Part II and Part III continuation sheets (#85)`, () => {
+  it(`six Form 1065 K-1s and three estates do not stop, and the totals are every row`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleEPartIIMoreThanTwenty`,
+      `/flowKnockoutScheduleEPartIIIMoreThanTen`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowIsKnockedOut`,
+      `/scheduleEPartIILine29aColumnK`,
+      `/scheduleEPartIILine30`,
+      `/scheduleEPartIILine32`,
+      `/scheduleEPartIIILine34aColumnF`,
+      `/scheduleEPartIIILine35`,
+      `/scheduleEPartIIILine37`,
+      `/scheduleELine41`,
+      `/schedule1Line5`,
+    ];
+    // 2026 draft Instructions for Schedule E, PDF p. 10. Lines 29a, 30, and 32 sum every partnership.
+    // Lines 34a, 35, and 37 sum every estate. Line 41 combines lines 26, 32, and 37.
+    // Box 1: 100 + 200 + 300 + 400 + 500 + 600 = 2,100. Box 6: 1,000 + 2,000 + 3,000 = 6,000.
+    // Part I net is 8,500. Line 41 is 8,500 + 2,100 + 6,000 = 16,600. 26 U.S.C. 702(a), 652(a), 662(a).
+    const g = fg({
+      ...form1065s(6),
+      '/scheduleEHasPartIIIIncome': createBooleanWrapper(true),
+      '/scheduleEEstatesIsDone': createBooleanWrapper(true),
+      '/scheduleEEstates': createCollectionWrapper([estateRowId(1), estateRowId(2), estateRowId(3)]),
+      ...estate(estateRowId(1), `1000`, {
+        [`/scheduleEEstates/#${estateRowId(1)}/entityName`]: createStringWrapper(`Harbor Trust`),
+      }),
+      ...estate(estateRowId(2), `2000`, {
+        [`/scheduleEEstates/#${estateRowId(2)}/entityName`]: createStringWrapper(`Inlet Trust`),
+      }),
+      ...estate(estateRowId(3), `3000`, {
+        [`/scheduleEEstates/#${estateRowId(3)}/entityName`]: createStringWrapper(`Jetty Trust`),
+      }),
+    });
+    expect(get(g, `/flowKnockoutScheduleEPartIIMoreThanTwenty`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartIIIMoreThanTen`).get).toBe(false);
+    expect(get(g, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(g, `/flowIsKnockedOut`).get).toBe(false);
+    expect(get(g, `/scheduleEPartIILine29aColumnK`).get.toString()).toBe(`2100.00`);
+    expect(get(g, `/scheduleEPartIILine30`).get.toString()).toBe(`2100.00`);
+    expect(get(g, `/scheduleEPartIILine32`).get.toString()).toBe(`2100.00`);
+    expect(get(g, `/scheduleEPartIIILine34aColumnD`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEPartIIILine34aColumnF`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/scheduleEPartIIILine35`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/scheduleEPartIIILine36`).get.toString()).toBe(`0.00`);
+    expect(get(g, `/scheduleEPartIIILine37`).get.toString()).toBe(`6000.00`);
+    expect(get(g, `/scheduleENetIncome`).get.toString()).toBe(`8500.00`);
+    expect(get(g, `/scheduleELine41`).get.toString()).toBe(`16600.00`);
+    expect(get(g, `/schedule1Line5`).get.toString()).toBe(`16600.00`);
+  });
+
+  it(`twenty partnerships and ten estates do not stop, and one more does`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleEPartIIMoreThanTwenty`,
+      `/flowKnockoutScheduleEPartIIIMoreThanTen`,
+      `/flowIsKnockedOut`,
+    ];
+    const twenty = fg(form1065s(20));
+    expect(get(twenty, `/flowKnockoutScheduleEPartIIMoreThanTwenty`).get).toBe(false);
+    expect(get(twenty, `/flowIsKnockedOut`).get).toBe(false);
+    const twentyOne = fg(form1065s(21));
+    expect(get(twentyOne, `/flowKnockoutScheduleEPartIIMoreThanTwenty`).get).toBe(true);
+    expect(get(twentyOne, `/flowKnockoutScheduleEPartII`).get).toBe(false);
+    expect(get(twentyOne, `/flowIsKnockedOut`).get).toBe(true);
+
+    const ten = fg(estates(10));
+    expect(get(ten, `/flowKnockoutScheduleEPartIIIMoreThanTen`).get).toBe(false);
+    expect(get(ten, `/flowIsKnockedOut`).get).toBe(false);
+    const eleven = fg(estates(11));
+    expect(get(eleven, `/flowKnockoutScheduleEPartIIIMoreThanTen`).get).toBe(true);
+    expect(get(eleven, `/flowIsKnockedOut`).get).toBe(true);
+  });
+
+  it(`a loss on row E and a basis limit on row C still stop`, ({ task }) => {
+    task.meta.testedFactPaths = [
+      `/flowKnockoutScheduleEPartIILoss`,
+      `/flowKnockoutScheduleEPartII`,
+      `/flowKnockoutScheduleEPartIIIBasis`,
+      `/flowKnockoutScheduleEPartIII`,
+      `/flowKnockoutScheduleEPartIIMoreThanTwenty`,
+      `/flowKnockoutScheduleEPartIIIMoreThanTen`,
+      `/flowIsKnockedOut`,
+    ];
+    const fifth = rowId(5);
+    const loss = fg({
+      ...form1065s(5),
+      [`/scheduleEK1s/#${fifth}/box1`]: createDollarWrapper(`-1`),
+    });
+    expect(get(loss, `/flowKnockoutScheduleEPartIIMoreThanTwenty`).get).toBe(false);
+    expect(get(loss, `/flowKnockoutScheduleEPartIILoss`).get).toBe(true);
+    expect(get(loss, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(loss, `/flowIsKnockedOut`).get).toBe(true);
+
+    const third = estateRowId(3);
+    const basis = fg({
+      ...form1065s(6),
+      '/scheduleEHasPartIIIIncome': createBooleanWrapper(true),
+      '/scheduleEEstatesIsDone': createBooleanWrapper(true),
+      '/scheduleEEstates': createCollectionWrapper([estateRowId(1), estateRowId(2), third]),
+      ...estate(estateRowId(1), `1000`),
+      ...estate(estateRowId(2), `2000`),
+      ...estate(third, `3000`, {
+        [`/scheduleEEstates/#${third}/basisLimitApplies`]: createBooleanWrapper(true),
+      }),
+    });
+    expect(get(basis, `/flowKnockoutScheduleEPartIIIMoreThanTen`).get).toBe(false);
+    expect(get(basis, `/flowKnockoutScheduleEPartIIIBasis`).get).toBe(true);
+    expect(get(basis, `/flowKnockoutScheduleEPartIII`).get).toBe(true);
+    expect(get(basis, `/flowKnockoutScheduleEPartII`).get).toBe(true);
+    expect(get(basis, `/flowIsKnockedOut`).get).toBe(true);
   });
 });
 
