@@ -345,16 +345,19 @@ public final class PrintRefusingKnockouts {
             // this same path. This list does not gain another Schedule E path. Asked of every filer, not only
             // after Part I.
             "/flowKnockoutScheduleEPartII",
-            // More than four partnerships or S corporations. 2026 draft Instructions for Schedule E, PDF p. 9: attach
-            // a continuation sheet. Lines 29a, 30, and 32 include every entity, and line 28 has only four rows, so
-            // the fifth name would be omitted. Complete false when Part II is not reported, the entity list is not
-            // finished (/flowKnockoutScheduleEPartII already refuses that), or the finished list has four or fewer.
-            "/flowKnockoutScheduleEPartIIMoreThanFour",
-            // More than two estates or trusts. 2026 draft Instructions for Schedule E, PDF p. 10: attach a
-            // continuation sheet. Lines 34a, 35, and 37 include every estate, and line 33 has only two rows, so
-            // the third name would be omitted. Complete false when Part III is not reported, the estate list is
-            // not finished (/flowKnockoutScheduleEPartII already refuses that), or the finished list has two or fewer.
-            "/flowKnockoutScheduleEPartIIIMoreThanTwo",
+            // More than 20 partnerships or S corporations. Line 28 prints rows A-D. Rows from E on print on one
+            // continuation page. 2026 draft Instructions for Schedule E, PDF p. 10 (SHA-256 prefix 71d19faaf741cf3c):
+            // attach a continuation sheet and complete the totals for lines 29a and 29b. The instructions do not set a
+            // maximum. This package stops above 20. Lines 29a, 30, and 32 already include every entity. Complete false
+            // when Part II is not reported, the entity list is not finished (/flowKnockoutScheduleEPartII already
+            // refuses that), or the finished list has 20 or fewer.
+            "/flowKnockoutScheduleEPartIIMoreThanTwenty",
+            // More than 10 estates or trusts. Line 33 prints rows A and B. Rows from C on print on the same
+            // continuation page. PDF p. 10: complete the totals for lines 34a and 34b. The instructions do not set a
+            // maximum. This package stops above 10. Lines 34a, 35, and 37 already include every estate. Complete false
+            // when Part III is not reported, the estate list is not finished (/flowKnockoutScheduleEPartII already
+            // refuses that), or the finished list has 10 or fewer.
+            "/flowKnockoutScheduleEPartIIIMoreThanTen",
             // Form 8995 cases this return can't compute. Form 8995 (2026) draft header: "Use this form if your taxable
             // income, before your qualified business income deduction, is at or below" the 26 U.S.C. 199A(e)(2)
             // threshold; above it Form 8995-A applies. A prior-year QBI loss carryforward (Form 8995 line 3), a

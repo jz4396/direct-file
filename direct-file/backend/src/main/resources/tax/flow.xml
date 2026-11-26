@@ -199,8 +199,8 @@
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEDepreciation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPersonalUse" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartII" />
-          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIMoreThanFour" />
-          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIMoreThanTwo" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIMoreThanTwenty" />
+          <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIIMoreThanTen" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIILoss" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIINotMaterialParticipation" />
           <Dependency module="scheduleE" path="/flowKnockoutScheduleEPartIIBox14CodeA" />
@@ -246,7 +246,6 @@
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanLease" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanOther" />
           <Dependency module="carLoanInterest" path="/flowKnockoutCarLoanMoreThanTwoVins" />
-          <Dependency module="scheduleD" path="/flowKnockoutForm8949DateAcquiredVariousOrInherited" />
         </Any>
       </Derived>
       <Placeholder>

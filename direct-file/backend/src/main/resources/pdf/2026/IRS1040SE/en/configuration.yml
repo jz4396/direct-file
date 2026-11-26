@@ -16,22 +16,25 @@
 # (rents) and/or 4 (royalties)." Line 26 is that total. Line 41 is /scheduleELine41 (lines 26, 32, 37, and 39).
 # Line 39 is $0 when the REMIC answer is no and incomplete when it is yes. The same amount is Schedule 1 line 5.
 #
-# Part II prints only the supported path already computed in scheduleE.xml: up to four domestic partnerships or
-# S corporations, column (a) name, column (b) P or S, column (k), line 29a column (k), lines 30 and 32, and line 27
-# No. 26 U.S.C. 702(a), 1366(a). Column (d) EIN is not collected. Columns (c), (e), (f), (g), (h), (i), and (j) stay
-# blank because a supported return has them unchecked or zero, and a yes on any of them refuses the print
-# (/flowKnockoutScheduleEPartII). A fifth entity refuses the print (/flowKnockoutScheduleEPartIIMoreThanFour): the
-# 2026 draft Instructions for Schedule E, PDF p. 9, say to attach a continuation sheet, which this package does not
-# produce, and lines 29a-32 would still include that entity.
+# Part II prints the supported path already computed in scheduleE.xml. Line 28 rows A-D: column (a) name,
+# column (b) P or S, column (k), line 29a column (k), lines 30 and 32, and line 27 No. Rows from E on print on
+# one generated continuation page, with the same columns, appended to this form. 26 U.S.C. 702(a), 1366(a).
+# Column (d) EIN is not collected except when Form 1120-S box 17 code V asks for it. Columns (c), (e), (f), (g),
+# (h), (i), and (j) stay blank because a supported return has them unchecked or zero, and a yes on any of them
+# refuses the print (/flowKnockoutScheduleEPartII). More than 20 entities refuses the print
+# (/flowKnockoutScheduleEPartIIMoreThanTwenty). 2026 draft Instructions for Schedule E, PDF p. 10 (SHA-256 prefix
+# 71d19faaf741cf3c): attach a continuation sheet and complete the totals for lines 29a and 29b. Lines 29a, 30, and
+# 32 already sum every entity. The instructions do not set a maximum; 20 is the cap this package prints.
 #
-# Part III prints the supported path: up to two estates or trusts, column (a) name and column (f) (nonpassive
-# Schedule K-1 (Form 1041) box 6), line 34a columns (d) and (f), and lines 35-37. 26 U.S.C. 652(a), 662(a).
-# Schedule K-1 (Form 1041) (2025) page 2 reports box 6 on line 33, column (d) or (f). Material participation
-# (26 U.S.C. 469(h)(1)) puts a nonnegative box 6 in column (f). Column (d) on the row stays blank: a supported
-# return has it at zero, and a nonzero box 8 is passive under 26 U.S.C. 469(c)(2) and 469(c)(4) and refuses the
-# print. Line 34a column (d) is that zero and is marked ExportZero, so it prints 0. A third estate refuses the
-# print (/flowKnockoutScheduleEPartIIIMoreThanTwo): PDF p. 10 says to attach a continuation sheet, which this
-# package does not produce, and lines 34a-37 would still include that estate. Column (b) EIN is not collected.
+# Part III prints the supported path. Line 33 rows A and B: column (a) name and column (f) (nonpassive
+# Schedule K-1 (Form 1041) box 6), line 34a columns (d) and (f), and lines 35-37. Rows from C on print on the
+# same continuation page. 26 U.S.C. 652(a), 662(a). Schedule K-1 (Form 1041) (2025) page 2 reports box 6 on
+# line 33, column (d) or (f). Material participation (26 U.S.C. 469(h)(1)) puts a nonnegative box 6 in column (f).
+# Column (d) on the row stays blank: a supported return has it at zero, and a nonnegative box 8 is passive under
+# 26 U.S.C. 469(c)(2) and 469(c)(4) and may print in column (d). Line 34a column (d) is that total and is marked
+# ExportZero, so it prints 0. More than 10 estates refuses the print (/flowKnockoutScheduleEPartIIIMoreThanTen).
+# PDF p. 10 says to complete the totals for lines 34a and 34b. Lines 34a, 35, and 37 already sum every estate.
+# The instructions do not set a maximum; 10 is the cap this package prints. Column (b) EIN is not collected.
 #
 # Part IV is not mapped. A REMIC yes makes /flowKnockoutScheduleEPartIV true, which makes
 # /flowKnockoutScheduleEPartII true even when the K-1 answer is no. Line 39 stays incomplete, so it is not

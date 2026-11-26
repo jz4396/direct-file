@@ -37,7 +37,9 @@ form:
       Table_Line1_Part1[0]:
         Row1[0]:
           f1_03[0]: /form8949Transactions/*/printPartIDescription
-          f1_04[0]: /form8949Transactions/*/printPartIDateAcquired
+          # Column (b): the word (VARIOUS) when that fact has a value, otherwise the date (MM/DD/YYYY).
+          # Form 8949 instr. (2025) p. 6, Column (b).
+          f1_04[0]: /form8949Transactions/*/printPartIDateAcquiredText /form8949Transactions/*/printPartIDateAcquired
           f1_05[0]: /form8949Transactions/*/printPartIDateSold
           f1_06[0]: /form8949Transactions/*/printPartIProceeds
           f1_07[0]: /form8949Transactions/*/printPartICostBasis
@@ -60,7 +62,9 @@ form:
       Table_Line1_Part2[0]:
         Row1[0]:
           f2_03[0]: /form8949Transactions/*/printPartIIDescription
-          f2_04[0]: /form8949Transactions/*/printPartIIDateAcquired
+          # Column (b): VARIOUS or INHERITED when that fact has a value, otherwise the date (MM/DD/YYYY).
+          # Form 8949 instr. (2025) p. 6, Column (b). 26 U.S.C. 1223(9).
+          f2_04[0]: /form8949Transactions/*/printPartIIDateAcquiredText /form8949Transactions/*/printPartIIDateAcquired
           f2_05[0]: /form8949Transactions/*/printPartIIDateSold
           f2_06[0]: /form8949Transactions/*/printPartIIProceeds
           f2_07[0]: /form8949Transactions/*/printPartIICostBasis

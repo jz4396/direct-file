@@ -25,9 +25,9 @@ import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.INTEREST_SUB
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_B_PART_III_PRINT_REFUSE;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_DEPRECIATION_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_LOSS_KNOCKOUT;
-import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT;
+import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_III_MORE_THAN_TEN_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_KNOCKOUT;
-import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT;
+import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PART_II_MORE_THAN_TWENTY_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_PERSONAL_USE_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.PrintRefusingKnockoutsTest.SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT;
 import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.bool;
@@ -40,6 +40,7 @@ import static gov.irs.directfile.api.pdf.ScheduleATy2026PdfSmokeTest.string;
 import static gov.irs.directfile.api.pdf.Schedules123Ty2026PdfSmokeTest.standardDeduction;
 import static gov.irs.directfile.api.pdf.Ty2026PdfPackageTest.checked;
 import static gov.irs.directfile.api.pdf.Ty2026PdfPackageTest.syntheticFiler;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -187,6 +188,56 @@ class ScheduleBAndETy2026PdfSmokeTest {
         m.put(p + "anyAmountNotAtRisk", bool(false));
         m.put(p + "passiveDeductionOrLoss", bool(false));
         m.put(p + "hasPriorYearUnallowedPassiveLoss", bool(false));
+    }
+
+    /**
+     * Part I plus {@code k1Count} Form 1065 K-1s and {@code estateCount} estates. The first six K-1 box 1 amounts are
+     * $100, $200, $300, $400, $500, and $600. The first three estate box 6 amounts are $1,000, $2,000, and $3,000.
+     * Further rows are $100. Part III stays no when there are no estates.
+     */
+    static Map<String, String> partnershipsAndEstates(int k1Count, int estateCount) {
+        Map<String, String> m = partI();
+        partIIGate(m);
+        if (k1Count == 0) {
+            m.put("/scheduleEK1s", EMPTY_COLLECTION);
+        } else {
+            String[] ids = new String[k1Count];
+            for (int i = 0; i < k1Count; i++) {
+                ids[i] = String.format("e1000000-0000-4000-8000-%012d", i + 1);
+            }
+            m.put("/scheduleEK1s", collection(ids));
+            String[] names = {
+                "Alpha Partners",
+                "Bravo Partners",
+                "Charlie Partners",
+                "Delta Partners",
+                "Echo Partners",
+                "Foxtrot Partners"
+            };
+            int[] box1 = {100, 200, 300, 400, 500, 600};
+            for (int i = 0; i < k1Count; i++) {
+                String name = i < names.length ? names[i] : "Partner " + (i + 1);
+                String amount = (i < box1.length ? box1[i] : 100) + ".00";
+                k1(m, ids[i], name, "P", amount);
+            }
+        }
+        if (estateCount > 0) {
+            m.put("/scheduleEHasPartIIIIncome", bool(true));
+            m.put("/scheduleEEstatesIsDone", bool(true));
+            String[] ids = new String[estateCount];
+            for (int i = 0; i < estateCount; i++) {
+                ids[i] = String.format("c8f2d3b1-2222-4333-8444-%012d", i + 1);
+            }
+            m.put("/scheduleEEstates", collection(ids));
+            String[] names = {"Harbor Trust", "Inlet Trust", "Jetty Trust"};
+            int[] box6 = {1000, 2000, 3000};
+            for (int i = 0; i < estateCount; i++) {
+                String name = i < names.length ? names[i] : "Trust " + (i + 1);
+                String amount = (i < box6.length ? box6[i] : 100) + ".00";
+                estate(m, ids[i], name, amount);
+            }
+        }
+        return m;
     }
 
     /** Part I $8,500 plus one supported estate, box 6 $9,000. Line 41 = $17,500. */
@@ -489,27 +540,159 @@ class ScheduleBAndETy2026PdfSmokeTest {
         refuses(services, SCHEDULE_E_SUBSTANTIAL_SERVICES_KNOCKOUT);
     }
 
+    /**
+     * Six Form 1065 K-1s and three estates. Line 28 shows rows A-D and line 33 shows rows A-B. Rows E-F and row C
+     * are on one continuation page. The main-page totals are the sum of every row. 2026 draft Instructions for
+     * Schedule E, PDF p. 10. 26 U.S.C. 702(a), 652(a), 662(a).
+     *
+     * <p>Golden values, whole dollars. Part I net $8,500. Box 1: $100 + $200 + $300 + $400 + $500 + $600 = $2,100 on
+     * lines 29a, 30, and 32. Box 6: $1,000 + $2,000 + $3,000 = $6,000 on lines 34a, 35, and 37. Line 41 and Schedule 1
+     * line 5 are $8,500 + $2,100 + $6,000 = $16,600. A filled line 28 and line 33 (four K-1s and two estates) has no
+     * continuation page, so this package is one page longer. A loss on row E still stops, and that stop is not the
+     * row cap.
+     */
     @Test
-    void scheduleERefusesPartIIIAndAFifthK1() throws Exception {
+    void scheduleEContinuationSheetPrintsSixK1sAndThreeEstates() throws Exception {
+        byte[] filled = generate(partnershipsAndEstates(4, 2));
+        byte[] overflow = generate(partnershipsAndEstates(6, 3));
+        try (PDDocument base = Loader.loadPDF(filled);
+                PDDocument doc = Loader.loadPDF(overflow)) {
+            assertEquals(0, continuationPages(base), "four K-1s and two estates stay on the form");
+            assertEquals(base.getNumberOfPages() + 1, doc.getNumberOfPages(), "the PDF page count goes up by one");
+            assertEquals(1, continuationPages(doc), "both parts share one continuation page");
+
+            Map<String, String> se = fieldsOnPages(doc, SE_FOOTER);
+            assertEquals("Alpha Partners", ScheduleSETy2026PdfSmokeTest.value(se, "f2_6[0]").trim());
+            assertEquals("P", ScheduleSETy2026PdfSmokeTest.value(se, "f2_7[0]").trim());
+            amount(se, "f2_22[0]", 100, "row A column (k)");
+            assertEquals("Bravo Partners", ScheduleSETy2026PdfSmokeTest.value(se, "f2_9[0]").trim());
+            amount(se, "f2_27[0]", 200, "row B column (k)");
+            assertEquals("Charlie Partners", ScheduleSETy2026PdfSmokeTest.value(se, "f2_12[0]").trim());
+            amount(se, "f2_32[0]", 300, "row C column (k)");
+            assertEquals("Delta Partners", ScheduleSETy2026PdfSmokeTest.value(se, "f2_15[0]").trim());
+            amount(se, "f2_37[0]", 400, "row D column (k)");
+            blank(se, "f2_8[0]", "row A EIN");
+            amount(se, "f2_42[0]", 2100, "line 29a column (k) is the sum of all six rows");
+            amount(se, "f2_48[0]", 2100, "line 30");
+            blank(se, "f2_49[0]", "line 31");
+            amount(se, "f2_50[0]", 2100, "line 32");
+
+            assertEquals("Harbor Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_51[0]").trim());
+            amount(se, "f2_58[0]", 1000, "row A column (f)");
+            blank(se, "f2_56[0]", "row A column (d)");
+            assertEquals("Inlet Trust", ScheduleSETy2026PdfSmokeTest.value(se, "f2_53[0]").trim());
+            amount(se, "f2_62[0]", 2000, "row B column (f)");
+            amount(se, "f2_64[0]", 0, "line 34a column (d)");
+            amount(se, "f2_66[0]", 6000, "line 34a column (f) is the sum of all three rows");
+            amount(se, "f2_71[0]", 6000, "line 35");
+            blank(se, "f2_72[0]", "line 36");
+            amount(se, "f2_73[0]", 6000, "line 37");
+            amount(se, "f2_5[0]", 8500, "line 26");
+            amount(se, "f3_4[0]", 16600, "line 41 = 8,500 + 2,100 + 6,000");
+            String formText = String.join("\n", se.values());
+            assertFalse(formText.contains("Echo Partners"), "row E stays off line 28");
+            assertFalse(formText.contains("Foxtrot Partners"), "row F stays off line 28");
+            assertFalse(formText.contains("Jetty Trust"), "row C stays off line 33");
+
+            String cont = continuationText(doc);
+            assertTrue(cont.contains(Irs1040SePdfForm.PART_II_HEADER));
+            assertTrue(cont.contains(Irs1040SePdfForm.PART_III_HEADER));
+            assertTrue(cont.contains("Name(s) shown on return"));
+            assertTrue(cont.contains("Exampleton"));
+            assertTrue(cont.contains("900-00-0001"), "SSN");
+            assertTrue(cont.contains("E") && cont.contains("Echo Partners") && cont.contains("500.00"));
+            assertTrue(cont.contains("F") && cont.contains("Foxtrot Partners") && cont.contains("600.00"));
+            assertTrue(cont.contains("C") && cont.contains("Jetty Trust") && cont.contains("3000.00"));
+            assertTrue(cont.contains("P"), "column (b)");
+            assertFalse(cont.contains("Alpha Partners"));
+            assertFalse(cont.contains("Delta Partners"));
+            assertFalse(cont.contains("Harbor Trust"));
+            assertFalse(cont.contains("Inlet Trust"));
+
+            Map<String, String> s1 = fieldsOnPages(doc, "Schedule 1 (Form 1040) 2026");
+            amount(s1, "f1_09[0]", 16600, "Schedule 1 line 5 = line 41");
+        }
+
+        Map<String, String> lossOnRowE = partnershipsAndEstates(5, 0);
+        lossOnRowE.put("/scheduleEK1s/#e1000000-0000-4000-8000-000000000005/box1", dollar("-1.00"));
+        // The per-row loss is /flowKnockoutScheduleEPartIILoss (Count of every /scheduleEK1s/*/isLoss).
+        // Print refusal reports the umbrella /flowKnockoutScheduleEPartII, which includes that loss. The row cap
+        // is a different path and is not the reason this return stops.
+        refuses(lossOnRowE, SCHEDULE_E_PART_II_KNOCKOUT);
+    }
+
+    /**
+     * Twenty partnerships and ten estates are the printed caps. Rows E-T and C-J are the continuation. Row T is
+     * Partner 20 and row J is Trust 10. 2026 draft Instructions for Schedule E, PDF p. 10.
+     */
+    @Test
+    void scheduleEContinuationSheetPrintsTwentyK1sAndTenEstatesOnOnePage() throws Exception {
+        byte[] pdf = assertDoesNotThrow(
+                () -> generate(partnershipsAndEstates(20, 10)),
+                "Schedule E continuation does not fit on one page");
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            assertEquals(1, continuationPages(doc), "the cap shares one continuation page");
+            String cont = continuationText(doc);
+            assertTrue(continuationLineContains(cont, "Partner 20", "T"), cont);
+            assertTrue(continuationLineContains(cont, "Trust 10", "J"), cont);
+        }
+    }
+
+    /** Twenty-one partnerships stop. Eleven estates and no partnership stop on the Part III cap. */
+    @Test
+    void scheduleERefusesTwentyOnePartnerships() throws Exception {
+        refuses(partnershipsAndEstates(21, 0), SCHEDULE_E_PART_II_MORE_THAN_TWENTY_KNOCKOUT);
+    }
+
+    @Test
+    void scheduleERefusesElevenEstates() throws Exception {
+        refuses(partnershipsAndEstates(0, 11), SCHEDULE_E_PART_III_MORE_THAN_TEN_KNOCKOUT);
+    }
+
+    static boolean continuationLineContains(String text, String name, String letter) {
+        for (String line : text.split("\\R")) {
+            if (line.contains(name) && line.contains(letter)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static int continuationPages(PDDocument doc) throws Exception {
+        int n = 0;
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            String text = pageText(doc, i);
+            if (text.contains(Irs1040SePdfForm.PART_II_HEADER) || text.contains(Irs1040SePdfForm.PART_III_HEADER)) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    static String continuationText(PDDocument doc) throws Exception {
+        String found = "";
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            String text = pageText(doc, i);
+            if (text.contains(Irs1040SePdfForm.PART_II_HEADER) || text.contains(Irs1040SePdfForm.PART_III_HEADER)) {
+                found = found + text;
+            }
+        }
+        return found;
+    }
+
+    static String pageText(PDDocument doc, int page) throws Exception {
+        PDFTextStripper stripper = new PDFTextStripper();
+        stripper.setStartPage(page + 1);
+        stripper.setEndPage(page + 1);
+        return stripper.getText(doc);
+    }
+
+    @Test
+    void scheduleERefusesAnUnansweredPartIIIAndOutOfScopeAmounts() throws Exception {
         Map<String, String> estate = partI();
         partIIGate(estate);
         estate.put("/scheduleEHasPartIIIIncome", bool(true));
         refuses(estate, SCHEDULE_E_PART_II_KNOCKOUT);
-
-        Map<String, String> five = partI();
-        partIIGate(five);
-        String[] ids = {
-            "e1000000-0000-4000-8000-000000000001",
-            "e1000000-0000-4000-8000-000000000002",
-            "e1000000-0000-4000-8000-000000000003",
-            "e1000000-0000-4000-8000-000000000004",
-            "e1000000-0000-4000-8000-000000000005"
-        };
-        five.put("/scheduleEK1s", collection(ids));
-        for (int i = 0; i < ids.length; i++) {
-            k1(five, ids[i], "Entity " + (i + 1), "P", "100.00");
-        }
-        refuses(five, SCHEDULE_E_PART_II_MORE_THAN_FOUR_KNOCKOUT);
 
         Map<String, String> box8Loss = partIAndPartIII();
         box8Loss.put("/scheduleEEstates/#" + ESTATE + "/box8", dollar("-100.00"));
@@ -518,13 +701,6 @@ class ScheduleBAndETy2026PdfSmokeTest {
         Map<String, String> remic = partI();
         remic.put("/scheduleEHasPartIVIncome", bool(true));
         refuses(remic, SCHEDULE_E_PART_II_KNOCKOUT);
-
-        Map<String, String> third = partIAndPartIII();
-        String thirdId = "c8f2d3b1-2222-4333-8444-555566667779";
-        third.put("/scheduleEEstates", collection(ESTATE, ESTATE_2, thirdId));
-        estate(third, ESTATE_2, "Cedar Trust", "2500.00");
-        estate(third, thirdId, "Elm Trust", "100.00");
-        refuses(third, SCHEDULE_E_PART_III_MORE_THAN_TWO_KNOCKOUT);
 
         Map<String, String> box7Loss = floridaBox7("4000.00");
         box7Loss.put("/scheduleEEstates/#" + ESTATE + "/box7", dollar("-1.00"));

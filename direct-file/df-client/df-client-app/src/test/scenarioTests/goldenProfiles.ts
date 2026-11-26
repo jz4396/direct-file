@@ -440,7 +440,7 @@ export const form8949Sale = (id: string, acquired: string, sold: string, proceed
   '/form8949Transactions': createCollectionWrapper([id]),
   [`/form8949Transactions/#${id}/description`]: createStringWrapper(`100 sh Example Index Fund`),
   [`/form8949Transactions/#${id}/dateAcquired`]: createDayWrapper(acquired),
-  [`/form8949Transactions/#${id}/dateAcquiredIsVariousOrInherited`]: createBooleanWrapper(false),
+  [`/form8949Transactions/#${id}/dateAcquiredKind`]: createEnumWrapper(`date`, `/form8949DateAcquiredKindOptions`),
   [`/form8949Transactions/#${id}/dateSold`]: createDayWrapper(sold),
   [`/form8949Transactions/#${id}/proceeds`]: createDollarWrapper(`${proceeds}`),
   [`/form8949Transactions/#${id}/costBasis`]: createDollarWrapper(`${basis}`),
